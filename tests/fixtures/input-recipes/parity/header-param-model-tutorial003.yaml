@@ -1,0 +1,226 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/header_param_models_tutorial003.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.request-parameter-model-tutorial.header-003-underscore-disabled
+  actions:
+  - action_id: header-underscore-valid
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - save_data
+        - 'true'
+      - - if_modified_since
+        - yesterday
+      - - traceparent
+        - '123'
+      - - x_tag
+        - one
+      - - x_tag
+        - two
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+  - action_id: header-hyphenated-name-missing
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - save-data
+        - 'true'
+      - - if-modified-since
+        - yesterday
+      - - traceparent
+        - '123'
+      - - x-tag
+        - one
+      - - x-tag
+        - two
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+  - action_id: header-underscore-defaults
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - save_data
+        - 'true'
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+  - action_id: header-underscore-required-missing
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+  - action_id: header-extra-ignored
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - save_data
+        - 'true'
+      - - tool
+        - plumbus
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+  - action_id: header-underscore-openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths/~1items~1/get/parameters
+      comparison: exact
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+  source_evidence:
+  - path: tests/test_tutorial/test_header_param_models/test_tutorial003.py
+    kind: upstream_test

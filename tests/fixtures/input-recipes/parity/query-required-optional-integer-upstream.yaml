@@ -1,4 +1,6 @@
 # Input-only cases corresponding to FastAPI 0.141.1 tests/test_query.py.
+# The collection routes in the supplementary workload accept the requested
+# trailing-slash paths directly; TestClient redirect-following is not selected.
 schema: fastapi-rs/python-asgi-workflow@2
 workload:
   file: tests/fixtures/workloads/query_required_optional_integer_upstream.py
@@ -611,6 +613,462 @@ cases:
       scheme: http
       path: /query/int/default
       query_string: query=foo
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_query.py
+    kind: upstream_test
+
+# FastAPI 0.141.1 tests/test_query.py:182-185 :: test_query_param
+- case_id: fastapi.query-required-optional-integer.test-query-param.missing
+  actions:
+  - action_id: param-optional-missing
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /query/param
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_query.py
+    kind: upstream_test
+# FastAPI 0.141.1 tests/test_query.py:188-191 :: test_query_param_query_50
+- case_id: fastapi.query-required-optional-integer.test-query-param.value
+  actions:
+  - action_id: param-optional-value
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /query/param
+      query_string: query=50
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_query.py
+    kind: upstream_test
+# FastAPI 0.141.1 tests/test_query.py:194-206 :: test_query_param_required
+- case_id: fastapi.query-required-optional-integer.test-query-param-required.missing
+  actions:
+  - action_id: param-required-missing
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /query/param-required
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_query.py
+    kind: upstream_test
+# FastAPI 0.141.1 tests/test_query.py:209-212 :: test_query_param_required_query_50
+- case_id: fastapi.query-required-optional-integer.test-query-param-required.value
+  actions:
+  - action_id: param-required-value
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /query/param-required
+      query_string: query=50
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_query.py
+    kind: upstream_test
+# FastAPI 0.141.1 tests/test_query.py:215-227 :: test_query_param_required_int
+- case_id: fastapi.query-required-optional-integer.test-query-param-required-int.missing
+  actions:
+  - action_id: param-required-int-missing
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /query/param-required/int
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_query.py
+    kind: upstream_test
+# FastAPI 0.141.1 tests/test_query.py:230-233 :: test_query_param_required_int_query_50
+- case_id: fastapi.query-required-optional-integer.test-query-param-required-int.valid
+  actions:
+  - action_id: param-required-int-valid
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /query/param-required/int
+      query_string: query=50
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_query.py
+    kind: upstream_test
+# FastAPI 0.141.1 tests/test_query.py:236-248 :: test_query_param_required_int_query_foo
+- case_id: fastapi.query-required-optional-integer.test-query-param-required-int.invalid
+  actions:
+  - action_id: param-required-int-invalid
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /query/param-required/int
+      query_string: query=foo
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_query.py
+    kind: upstream_test
+# FastAPI 0.141.1 tests/test_query.py:251-254 :: test_query_frozenset_query_1_query_1_query_2
+- case_id: fastapi.query-required-optional-integer.test-query-frozenset-query-1-query-1-query-2
+  actions:
+  - action_id: frozenset-repeated
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /query/frozenset/
+      query_string: query=1&query=1&query=2
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_query.py
+    kind: upstream_test
+# FastAPI 0.141.1 tests/test_query.py:257-260 :: test_query_list
+- case_id: fastapi.query-required-optional-integer.test-query-list.repeated
+  actions:
+  - action_id: list-repeated
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /query/list/
+      query_string: device_ids=1&device_ids=2
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_query.py
+    kind: upstream_test
+# FastAPI 0.141.1 tests/test_query.py:263-265 :: test_query_list_empty
+- case_id: fastapi.query-required-optional-integer.test-query-list.empty
+  actions:
+  - action_id: list-empty
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /query/list/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+  source_evidence:
+  - path: tests/test_query.py
+    kind: upstream_test
+# FastAPI 0.141.1 tests/test_query.py:268-271 :: test_query_list_default
+- case_id: fastapi.query-required-optional-integer.test-query-list-default.repeated
+  actions:
+  - action_id: list-default-repeated
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /query/list-default/
+      query_string: device_ids=1&device_ids=2
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_query.py
+    kind: upstream_test
+# FastAPI 0.141.1 tests/test_query.py:274-277 :: test_query_list_default_empty
+- case_id: fastapi.query-required-optional-integer.test-query-list-default.empty
+  actions:
+  - action_id: list-default-empty
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /query/list-default/
+      query_string: ''
       root_path: ''
       headers:
       - - host

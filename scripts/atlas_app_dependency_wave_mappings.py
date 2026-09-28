@@ -1598,7 +1598,7 @@ APP_DEPENDENCY_TEST_FUNCTION_EXCLUSIONS: dict[str, dict[str, dict[str, object]]]
             "test_iter_route_contexts_supports_nested_conflict_detection": "Directly calls the internal route-context iterator and inspects its conflict result.",
             "test_get_openapi_accepts_filtered_route_contexts_with_effective_paths": "Exercises OpenAPI generation directly; assigned to the OpenAPI/docs wave.",
             "test_get_openapi_accepts_webhook_route_contexts": "Exercises OpenAPI/webhook projection directly; assigned to the OpenAPI/docs wave.",
-            "test_live_route_addition_uses_include_metadata_for_runtime_and_openapi": "Combines live route mutation with OpenAPI output; only the narrower runtime context case is linked.",
+            "test_live_route_addition_uses_include_metadata_for_runtime_and_openapi": "Assigned to the separate source-reviewed public ASGI/OpenAPI live-route-after-include workflow.",
             "test_openapi_cache_updates_after_live_route_addition": "Asserts OpenAPI cache invalidation and document output; assigned to the OpenAPI/docs wave.",
             "test_nested_router_added_after_parent_inclusion_is_live": "Live nested-router mutation is not represented by an existing input case.",
             "test_repeated_deep_inclusions_handle_all_concrete_paths": "Exercises multiple concrete paths and path matching beyond the linked single-route context cases.",

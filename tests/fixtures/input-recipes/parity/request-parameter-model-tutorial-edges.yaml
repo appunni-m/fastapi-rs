@@ -1,0 +1,424 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/request_models.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.request-parameter-model-tutorial.query-002
+  actions:
+  - action_id: query-defaults
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /filters
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+  - action_id: query-validation-invalid
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /filters
+      query_string: limit=150&offset=-1&order_by=invalid
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+  - action_id: query-extra-forbidden
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /filters
+      query_string: limit=10&offset=5&order_by=updated_at&tags=tag1&tags=tag2&tool=plumbus
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+  - action_id: query-openapi-parameters
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /paths/~1filters/get/parameters
+      comparison: exact
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+  source_evidence:
+  - path: tests/test_tutorial/test_query_param_models/test_tutorial002.py
+    kind: upstream_test
+- case_id: fastapi.request-parameter-model-tutorial.header-002
+  actions:
+  - action_id: header-defaults
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /trace
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - save-data
+        - 'true'
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+  - action_id: header-required-missing
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /trace
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+  - action_id: header-extra-forbidden
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /trace
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - save-data
+        - 'true'
+      - - tool
+        - plumbus
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+  - action_id: header-openapi-parameters
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /paths/~1trace/get/parameters
+      comparison: exact
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+  source_evidence:
+  - path: tests/test_tutorial/test_header_param_models/test_tutorial002.py
+    kind: upstream_test
+- case_id: fastapi.request-parameter-model-tutorial.cookie-002
+  actions:
+  - action_id: cookie-defaults
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /session
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - cookie
+        - session_id=123
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+  - action_id: cookie-required-missing
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /session
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+  - action_id: cookie-extra-forbidden
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /session
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - cookie
+        - session_id=123; extra=track-me-here-too
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+  - action_id: cookie-openapi-parameters
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /paths/~1session/get/parameters
+      comparison: exact
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+  source_evidence:
+  - path: tests/test_tutorial/test_cookie_param_models/test_tutorial002.py
+    kind: upstream_test

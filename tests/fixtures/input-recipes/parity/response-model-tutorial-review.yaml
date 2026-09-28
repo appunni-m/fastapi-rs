@@ -1,0 +1,218 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/response_model_tutorial_review.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.response-model-review.tutorial001-explicit-and-inferred
+  actions:
+  - kind: http_request
+    action_id: create-explicit-model-with-all-fields
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /tutorial001-explicit/items/
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver], [content-type, application/json]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '{"name":"Jade","description":"Polished stone","price":18.75,"tax":2.25,"tags":["green","smooth"]}', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - kind: http_request
+    action_id: create-inferred-model-with-all-fields
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /tutorial001-inferred/items/
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver], [content-type, application/json]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '{"name":"Amber","description":"Cut glass","price":21.5,"tax":1.75,"tags":["gold","clear"]}', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - kind: http_request
+    action_id: create-inferred-model-with-required-fields
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /tutorial001-inferred/items/
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver], [content-type, application/json]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '{"name":"Opal","price":13}', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - kind: http_request
+    action_id: list-items-with-inferred-model-defaults
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /tutorial001-inferred/items/
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - kind: http_request
+    action_id: explicit-and-inferred-model-openapi-shapes
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths/~1tutorial001-explicit~1items~1/post/responses/200
+      - /paths/~1tutorial001-inferred~1items~1/post/responses/200
+      - /paths/~1tutorial001-inferred~1items~1/get/responses/200
+      - /components/schemas/Tutorial001ReviewItem
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_tutorial/test_response_model/test_tutorial001_tutorial001_01.py, kind: upstream_test}
+- case_id: fastapi.response-model-review.tutorial004-explicit-null-defaults
+  actions:
+  - kind: http_request
+    action_id: read-record-with-explicit-null-and-default-values
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /tutorial004/items/baz
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_tutorial/test_response_model/test_tutorial004.py, kind: upstream_test}
+- case_id: fastapi.response-model-review.tutorial005-openapi-filtered-routes
+  actions:
+  - kind: http_request
+    action_id: filtered-route-openapi-schema
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths/~1tutorial005~1items~1{item_id}~1name/get/responses/200
+      - /paths/~1tutorial005~1items~1{item_id}~1public/get/responses/200
+      - /components/schemas/Tutorial005ReviewItem
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_tutorial/test_response_model/test_tutorial005.py, kind: upstream_test}
+- case_id: fastapi.response-model-review.tutorial006-list-based-filters
+  actions:
+  - kind: http_request
+    action_id: include-selected-fields-from-list-option
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /tutorial006/items/quartz/name
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - kind: http_request
+    action_id: exclude-selected-fields-from-list-option
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /tutorial006/items/quartz/public
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - kind: http_request
+    action_id: list-based-filter-openapi-shapes
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths/~1tutorial006~1items~1{item_id}~1name/get/responses/200
+      - /paths/~1tutorial006~1items~1{item_id}~1public/get/responses/200
+      - /components/schemas/Tutorial006ReviewItem
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_tutorial/test_response_model/test_tutorial006.py, kind: upstream_test}

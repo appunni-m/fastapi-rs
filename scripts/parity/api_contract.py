@@ -2,13 +2,35 @@
 
 from __future__ import annotations
 
+import ast
+import json
 from collections import Counter, defaultdict
+from pathlib import Path
 from typing import Any
+
+import yaml
 
 from scripts.parity.contract import ContractError
 
 CONTRACT_SCHEMA = "fastapi-rs/public-api-contract@1"
 TARGET_PROFILE = "fastapi-rs-python-consumer"
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+OVERLAY_SCHEMA = "fastapi-rs/reviewed-api-contract-overlay@1"
+
+
+def _read_project_metadata() -> dict[str, Any]:
+    metadata_path = PROJECT_ROOT / "metadata.yaml"
+    metadata = yaml.safe_load(metadata_path.read_text(encoding="utf-8"))
+    if not isinstance(metadata, dict):
+        raise ContractError("metadata.yaml must be a mapping")
+    return metadata
+
+
+def _read_reviewed_overlay(metadata: dict[str, Any]) -> dict[str, Any]:
+    overlay = metadata.get("reviewed_api_contract_overlay")
+    if not isinstance(overlay, dict) or overlay.get("schema") != OVERLAY_SCHEMA:
+        raise ContractError("metadata.yaml reviewed API contract overlay is missing or unsupported")
+    return overlay
 
 
 def _pointer(*parts: str | int) -> str:
@@ -110,8 +132,57 @@ def build_api_surface_contract(
     backlog: dict[str, Any],
     runtime_core: dict[str, Any],
     runtime_standard: dict[str, Any],
+    reviewed_overlay: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Return exact source/runtime references for every source-supported API symbol."""
+    metadata = _read_project_metadata()
+    overlay = reviewed_overlay if reviewed_overlay is not None else _read_reviewed_overlay(metadata)
+    if overlay.get("schema") != OVERLAY_SCHEMA:
+        raise ContractError("reviewed API contract overlay schema is unsupported")
+    overlay_operations = overlay.get("operations")
+    if not isinstance(overlay_operations, dict):
+        raise ContractError("reviewed API contract overlay operations must be a mapping")
+    error_selector_rules = overlay.get("error_selector_rules", [])
+    if not isinstance(error_selector_rules, list) or any(
+        not isinstance(rule, dict) for rule in error_selector_rules
+    ):
+        raise ContractError("reviewed API error selector rules must be a list of mappings")
+    warning_reviews = overlay.get("warning_classification_reviews", {})
+    if not isinstance(warning_reviews, dict):
+        raise ContractError("reviewed warning classification overlays must be a mapping")
+    for warning_id, review in warning_reviews.items():
+        if not isinstance(review, dict):
+            raise ContractError(f"reviewed warning classification must be a mapping: {warning_id}")
+        evidence = review.get("evidence", [])
+        if not isinstance(evidence, list) or any(not isinstance(row, dict) for row in evidence):
+            raise ContractError(
+                f"reviewed warning evidence must be a list of mappings: {warning_id}"
+            )
+    for operation_id, operation in overlay_operations.items():
+        if not isinstance(operation, dict):
+            raise ContractError(f"reviewed API overlay operation must be a mapping: {operation_id}")
+        evidence = operation.get("source_evidence", [])
+        if not isinstance(evidence, list) or any(not isinstance(row, dict) for row in evidence):
+            raise ContractError(
+                f"reviewed API source evidence must be a list of mappings: {operation_id}"
+            )
+        docs = operation.get("documentation_contract_refs", [])
+        if not isinstance(docs, list) or any(not isinstance(row, dict) for row in docs):
+            raise ContractError(
+                f"reviewed API documentation references must be a list of mappings: {operation_id}"
+            )
+        for field in ("feature_ids", "observation_selectors", "error_contract_ids"):
+            values = operation.get(field, [])
+            if not isinstance(values, list) or any(not isinstance(value, str) for value in values):
+                raise ContractError(f"reviewed API {field} must be a string list: {operation_id}")
+        for documentation_ref in docs:
+            doc_selectors = documentation_ref.get("observation_selectors", [])
+            if not isinstance(doc_selectors, list) or any(
+                not isinstance(value, str) for value in doc_selectors
+            ):
+                raise ContractError(
+                    f"reviewed API docs selectors must be a string list: {operation_id}"
+                )
     inventory_refs = _inventory_rows(inventory)
     core_refs = _runtime_rows(runtime_core)
     standard_refs = _runtime_rows(runtime_standard)
@@ -148,6 +219,198 @@ def build_api_surface_contract(
     ]
     if len(api_symbol_ids) != len(set(api_symbol_ids)):
         raise ContractError("source API contract has duplicate supported symbol IDs")
+    unsupported_overlay_operations = set(overlay_operations) - set(api_symbol_ids)
+    if unsupported_overlay_operations:
+        raise ContractError(
+            "reviewed API overlay references operations outside the supported source contract: "
+            + ", ".join(sorted(unsupported_overlay_operations))
+        )
+
+    selector_catalog = json.loads(
+        (PROJECT_ROOT / "tests/fixtures/observation-selectors.json").read_text(encoding="utf-8")
+    )
+    known_selectors = {
+        row["id"]
+        for row in selector_catalog.get("selectors", [])
+        if isinstance(row, dict) and isinstance(row.get("id"), str)
+    }
+    matched_error_rules: set[str] = set()
+    rule_ids: set[str] = set()
+    for rule in error_selector_rules:
+        if not isinstance(rule, dict) or not isinstance(rule.get("id"), str):
+            raise ContractError("reviewed error selector rules require stable IDs")
+        if rule["id"] in rule_ids:
+            raise ContractError(f"reviewed error selector rule ID is duplicated: {rule['id']}")
+        rule_ids.add(rule["id"])
+        rule_selectors = rule.get("observation_selectors", [])
+        if (
+            not isinstance(rule_selectors, list)
+            or any(not isinstance(value, str) for value in rule_selectors)
+            or not set(rule_selectors) <= known_selectors
+        ):
+            raise ContractError(f"reviewed error selector rule has unknown selectors: {rule['id']}")
+        for field in ("candidate_ids", "target_paths"):
+            values = rule.get(field, [])
+            if not isinstance(values, list) or any(not isinstance(value, str) for value in values):
+                raise ContractError(
+                    f"reviewed error selector {field} must be a string list: {rule['id']}"
+                )
+        if not (rule.get("candidate_ids") or rule.get("target_paths")):
+            raise ContractError(
+                f"reviewed error selector rule has no source identity: {rule['id']}"
+            )
+    for candidate in atlas_candidates:
+        matching_rules = [
+            rule
+            for rule in error_selector_rules
+            if candidate["id"] in rule.get("candidate_ids", [])
+            or candidate.get("target_path") in rule.get("target_paths", [])
+        ]
+        if len(matching_rules) > 1:
+            raise ContractError(
+                f"source API candidate matches multiple error selector rules: {candidate['id']}"
+            )
+        if matching_rules:
+            matched_error_rules.add(matching_rules[0]["id"])
+    if matched_error_rules != rule_ids:
+        raise ContractError(
+            "reviewed error selector rules do not match pinned source candidates: "
+            + ", ".join(sorted(rule_ids - matched_error_rules))
+        )
+
+    authority = metadata.get("authority", {})
+    source_root = (PROJECT_ROOT / authority.get("checkout", "../fastapi")).resolve()
+
+    def verify_source_evidence(reference: dict[str, Any], context: str) -> None:
+        source_path = reference.get("path")
+        if not isinstance(source_path, str):
+            raise ContractError(f"reviewed source evidence has no path: {context}")
+        path = (source_root / source_path).resolve()
+        if source_root not in path.parents or not path.is_file():
+            raise ContractError(
+                f"reviewed source evidence path is missing or escapes checkout: {context}"
+            )
+        source_text = path.read_text(encoding="utf-8")
+        symbol = reference.get("symbol")
+        if symbol is not None:
+            try:
+                tree = ast.parse(source_text, filename=source_path)
+            except SyntaxError as exc:
+                raise ContractError(
+                    f"reviewed source evidence is not valid Python: {source_path}"
+                ) from exc
+            if not any(
+                isinstance(
+                    node,
+                    (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef),
+                )
+                and node.name == symbol
+                for node in ast.walk(tree)
+            ):
+                raise ContractError(f"reviewed source symbol is missing: {source_path}:{symbol}")
+        if reference.get("kind") == "source-definition":
+            try:
+                tree = ast.parse(source_text, filename=source_path)
+            except SyntaxError as exc:
+                raise ContractError(
+                    f"reviewed source evidence is not valid Python: {source_path}"
+                ) from exc
+            definitions = [
+                node
+                for node in ast.walk(tree)
+                if isinstance(node, (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef))
+                and node.name == reference.get("symbol")
+            ]
+            if not any(
+                node.lineno == reference.get("start_line")
+                and getattr(node, "end_lineno", None) == reference.get("end_line")
+                for node in definitions
+            ):
+                raise ContractError(f"reviewed source line range differs: {source_path}:{symbol}")
+        if reference.get("kind") == "release-note":
+            lines = source_text.splitlines()
+            line = reference.get("line")
+            if not isinstance(line, int) or line < 1 or line > len(lines):
+                raise ContractError(f"reviewed release-note line is out of range: {source_path}")
+            observed = lines[line - 1].replace("`", "")
+            if reference.get("statement") not in observed:
+                raise ContractError(
+                    f"reviewed release-note statement differs: {source_path}:{line}"
+                )
+            if reference.get("section") not in source_text:
+                raise ContractError(f"reviewed release-note section is missing: {source_path}")
+
+    for operation_id, operation in overlay_operations.items():
+        evidence = operation.get("source_evidence", [])
+        if not isinstance(evidence, list) or not evidence:
+            raise ContractError(f"reviewed API operation requires source evidence: {operation_id}")
+        for reference in evidence:
+            verify_source_evidence(reference, operation_id)
+    for warning_id, review in warning_reviews.items():
+        for reference in review.get("evidence", []):
+            verify_source_evidence(reference, warning_id)
+
+    known_features = {
+        feature_id
+        for row in coverage_by_doc_path.values()
+        for feature_id in row[1].get("feature_ids", [])
+    }
+    known_error_ids = set(errors)
+    for operation_id, operation in overlay_operations.items():
+        if not isinstance(operation, dict):
+            raise ContractError(f"reviewed API overlay operation must be a mapping: {operation_id}")
+        operation_features = operation.get("feature_ids", [])
+        operation_selectors = operation.get("observation_selectors", [])
+        operation_errors = operation.get("error_contract_ids", [])
+        if (
+            not isinstance(operation_features, list)
+            or not set(operation_features) <= known_features
+        ):
+            raise ContractError(f"reviewed API overlay has unknown feature IDs: {operation_id}")
+        if (
+            not isinstance(operation_selectors, list)
+            or not set(operation_selectors) <= known_selectors
+        ):
+            raise ContractError(f"reviewed API overlay has unknown selectors: {operation_id}")
+        if not isinstance(operation_errors, list) or not set(operation_errors) <= known_error_ids:
+            raise ContractError(
+                f"reviewed API overlay has unknown error references: {operation_id}"
+            )
+        for documentation_ref in operation.get("documentation_contract_refs", []):
+            if not isinstance(documentation_ref, dict):
+                raise ContractError(
+                    "reviewed API overlay documentation reference must be a mapping: "
+                    f"{operation_id}"
+                )
+            source_path = documentation_ref.get("source_path")
+            coverage_ref = coverage_by_doc_path.get(source_path)
+            if coverage_ref is None:
+                raise ContractError(
+                    f"reviewed API overlay references an unreviewed docs page: {source_path}"
+                )
+            coverage_row = coverage_ref[1]
+            if documentation_ref.get("fixture_id") != coverage_row.get("fixture_id"):
+                raise ContractError(
+                    f"reviewed API overlay docs fixture identity differs: {source_path}"
+                )
+            doc_selectors = documentation_ref.get("observation_selectors", [])
+            if not isinstance(doc_selectors, list) or not set(doc_selectors) <= set(
+                coverage_row.get("observation_selectors", [])
+            ):
+                raise ContractError(
+                    f"reviewed API overlay docs selectors exceed page evidence: {source_path}"
+                )
+
+    for warning_id, review in warning_reviews.items():
+        candidate = candidates_by_id.get(warning_id)
+        if candidate is None or candidate.get("classification") != review.get("classification"):
+            raise ContractError(
+                f"reviewed warning evidence must preserve source classification: {warning_id}"
+            )
+        if review.get("classification") != "uncertain":
+            raise ContractError(
+                f"warning evidence alone cannot promote a candidate classification: {warning_id}"
+            )
 
     signature_statuses: Counter[str] = Counter()
     owner_counts: Counter[str] = Counter()
@@ -225,6 +488,7 @@ def build_api_surface_contract(
         documentation_refs: list[dict[str, Any]] = []
         selectors: set[str] = set()
         feature_ids: set[str] = set()
+        reviewed_operation = overlay_operations.get(symbol_id, {})
         for source_path in sorted(_source_doc_paths(candidate.get("public_evidence", []))):
             row_ref = coverage_by_doc_path.get(source_path)
             if row_ref is None:
@@ -245,7 +509,30 @@ def build_api_surface_contract(
             selectors.update(coverage_row["observation_selectors"])
             feature_ids.update(coverage_row["feature_ids"])
 
-        error_refs = errors.get(symbol_id, [])
+        feature_ids.update(reviewed_operation.get("feature_ids", []))
+        selectors.update(reviewed_operation.get("observation_selectors", []))
+        for documentation_ref in reviewed_operation.get("documentation_contract_refs", []):
+            coverage_pointer, coverage_row = coverage_by_doc_path[documentation_ref["source_path"]]
+            fixture_id = coverage_row.get("fixture_id")
+            backlog_pointer = backlog_by_id.get(fixture_id) if fixture_id else None
+            documentation_refs.append(
+                {
+                    "coverage_matrix_ref": coverage_pointer,
+                    "source_path": documentation_ref["source_path"],
+                    "mapping_status": coverage_row["mapping_status"],
+                    "fixture_id": fixture_id,
+                    "fixture_design_ref": backlog_pointer,
+                    "observation_selectors": sorted(
+                        set(documentation_ref["observation_selectors"])
+                    ),
+                }
+            )
+            selectors.update(documentation_ref["observation_selectors"])
+
+        error_refs = list(errors.get(symbol_id, []))
+        for error_id in reviewed_operation.get("error_contract_ids", []):
+            error_refs.extend(errors[error_id])
+        error_refs = list(dict.fromkeys(error_refs))
         for error_pointer in error_refs:
             error_index = int(error_pointer.rsplit("/", 1)[1])
             selectors.update(atlas["errors"][error_index]["observation_selectors"])
@@ -275,7 +562,9 @@ def build_api_surface_contract(
                 "feature_ids": sorted(feature_ids),
                 "observation_selectors": sorted(selectors),
                 "behavior_contract_state": (
-                    "documentation-fixture-design-linked; operation-level review pending"
+                    "reviewed-operation-and-documentation-links; implementation pending"
+                    if reviewed_operation
+                    else "documentation-fixture-design-linked; operation-level review pending"
                     if documentation_refs
                     else "source-evidence-only; fixture link pending"
                 ),
@@ -311,6 +600,7 @@ def build_api_surface_contract(
         "target_profile": TARGET_PROFILE,
         "public_import": "fastapi",
         "classification_source": "source_artifacts.compatibility_atlas.api_candidates",
+        "reviewed_operation_overlay_source": "metadata.yaml:/reviewed_api_contract_overlay",
         "signature_source": [
             "source_artifacts.api_inventory",
             "source_artifacts.runtime_api_surface_core",

@@ -1951,31 +1951,135 @@ merge_test_review_mappings(
         },
         "tests/test_tutorial/test_body_updates/test_tutorial001.py": {
             "replace_module_features": True,
-            "module_feature_ids": ["request-validation", "response-serialization"],
+            "module_feature_ids": ["request-validation", "response-serialization", "openapi-docs"],
+            "rationale": "The tutorial app replaces an in-memory item through PUT; the module also observes its seeded GET response and generated OpenAPI document.",
+            "stimulus_notes": "The three independent ASGI cases mirror the pinned tutorial app's /items endpoints. Response bytes are a stricter projection than the upstream tests' parsed JSON assertions; inputs contain no expected outputs.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/body_updates/tutorial001_py310.py",
+                    "start_line": 7,
+                    "end_line": 29,
+                    "role": "Item model, seeded item records, and GET/PUT routes under review",
+                },
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/body-updates-tutorial001-upstream.yaml",
+                    "case_ids": [
+                        "fastapi.body-updates.tutorial001.get-baz",
+                        "fastapi.body-updates.tutorial001.put-bar",
+                        "fastapi.body-updates.tutorial001.openapi-schema",
+                    ],
+                    "observation_selectors": ["http.body.bytes", "http.status"],
+                },
+            ],
             "functions": {
+                "test_get": reviewed_case(
+                    ["response-serialization"],
+                    ["http.status", "http.body.bytes"],
+                    "A seeded GET request returns the tutorial's baz item through its Item response model.",
+                    supporting_sources=[
+                        {
+                            "path": "docs_src/body_updates/tutorial001_py310.py",
+                            "start_line": 16,
+                            "end_line": 25,
+                            "role": "seeded baz record and GET route",
+                        },
+                    ],
+                ),
                 "test_put": reviewed_case(
                     ["request-validation", "response-serialization"],
-                    ["http.body.json"],
-                    "A PUT workflow parses a complete update model and returns the app's updated JSON record.",
+                    ["http.status", "http.body.bytes"],
+                    "A PUT request replaces the seeded bar record using the tutorial Item model and returns the updated record.",
                     constraints={"fresh_app_state_per_case": True},
+                    supporting_sources=[
+                        {
+                            "path": "docs_src/body_updates/tutorial001_py310.py",
+                            "start_line": 7,
+                            "end_line": 13,
+                            "role": "Item request/response model",
+                        },
+                        {
+                            "path": "docs_src/body_updates/tutorial001_py310.py",
+                            "start_line": 15,
+                            "end_line": 29,
+                            "role": "seeded bar record and PUT route",
+                        },
+                    ],
+                ),
+                "test_openapi_schema": reviewed_case(
+                    ["openapi-docs"],
+                    ["http.status", "http.body.bytes"],
+                    "The generated OpenAPI response describes the tutorial's GET and PUT item operations and Item schema.",
+                    supporting_sources=[
+                        {
+                            "path": "docs_src/body_updates/tutorial001_py310.py",
+                            "start_line": 7,
+                            "end_line": 29,
+                            "role": "model and routes represented by the OpenAPI snapshot",
+                        },
+                    ],
                 ),
             },
         },
         "tests/test_tutorial/test_body_updates/test_tutorial002.py": {
             "replace_module_features": True,
-            "module_feature_ids": ["request-validation", "response-serialization"],
+            "module_feature_ids": ["request-validation", "response-serialization", "openapi-docs"],
             "functions": {
+                "test_get": reviewed_case(
+                    ["response-serialization"],
+                    ["http.status", "http.body.bytes"],
+                    "A seeded GET request returns the tutorial's baz item through its Item response model.",
+                    supporting_sources=[
+                        {
+                            "path": "docs_src/body_updates/tutorial002_py310.py",
+                            "start_line": 16,
+                            "end_line": 25,
+                            "role": "seeded baz record and GET route",
+                        },
+                    ],
+                ),
                 "test_patch_all": reviewed_case(
                     ["request-validation", "response-serialization"],
-                    ["http.body.json"],
+                    ["http.status", "http.body.bytes"],
                     "A PATCH workflow applies a fully supplied partial-update model and returns the resulting JSON record.",
                     constraints={"fresh_app_state_per_case": True},
+                    supporting_sources=[
+                        {
+                            "path": "docs_src/body_updates/tutorial002_py310.py",
+                            "start_line": 8,
+                            "end_line": 35,
+                            "role": "Item model and PATCH route",
+                        },
+                    ],
                 ),
                 "test_patch_name": reviewed_case(
                     ["request-validation", "response-serialization"],
-                    ["http.body.json"],
+                    ["http.status", "http.body.bytes"],
                     "A PATCH workflow preserves omitted stored fields while changing the supplied name.",
                     constraints={"fresh_app_state_per_case": True},
+                    supporting_sources=[
+                        {
+                            "path": "docs_src/body_updates/tutorial002_py310.py",
+                            "start_line": 8,
+                            "end_line": 35,
+                            "role": "Item model and PATCH route",
+                        },
+                    ],
+                ),
+                "test_openapi_schema": reviewed_case(
+                    ["openapi-docs"],
+                    ["openapi.document", "openapi.paths"],
+                    "The app's generated OpenAPI document describes the GET and PATCH item operations and Item schema.",
+                    contract_gate="The upstream test compares the full OpenAPI JSON snapshot; the linked independent input observes the PATCH request-body schema pointer only, so other document fields remain uncovered.",
+                    supporting_sources=[
+                        {
+                            "path": "docs_src/body_updates/tutorial002_py310.py",
+                            "start_line": 8,
+                            "end_line": 35,
+                            "role": "model and routes represented by the OpenAPI snapshot",
+                        },
+                    ],
                 ),
             },
         },
@@ -2624,136 +2728,6 @@ merge_test_review_mappings(
                 ),
             },
         },
-        "tests/test_tutorial/test_server_sent_events/test_tutorial002.py": {
-            "functions": {
-                "test_stream_items": reviewed_case(
-                    ["response-serialization"],
-                    ["http.status", "http.header.content_type", "http.body.sse_asserted_fields"],
-                    "The route streams comment and item events with event, ID, and retry fields.",
-                    supporting_sources=[
-                        {
-                            "path": "docs_src/server_sent_events/tutorial002_py310.py",
-                            "start_line": 10,
-                            "end_line": 26,
-                            "role": "Pydantic item model and SSE event generator",
-                        },
-                        {
-                            "path": "fastapi/routing.py",
-                            "start_line": 524,
-                            "end_line": 550,
-                            "role": "SSE item serialization",
-                        },
-                        {
-                            "path": "fastapi/sse.py",
-                            "start_line": 165,
-                            "end_line": 233,
-                            "role": "SSE field ordering and frame encoding",
-                        },
-                    ],
-                    contract_gate="Requires observation-schema support for a content-type projection and an SSE field projection limited to the event, ID, retry, and line-count assertions; raw body bytes and ordered headers overstate this test.",
-                    stimulus_notes="The test checks event/data line counts and selected fields but not item payload values or ASGI chunk boundaries; item data is Pydantic/app input.",
-                ),
-            },
-        },
-        "tests/test_tutorial/test_server_sent_events/test_tutorial003.py": {
-            "functions": {
-                "test_stream_logs": reviewed_case(
-                    ["response-serialization"],
-                    ["http.status", "http.header.content_type", "http.body.sse_asserted_fields"],
-                    "The route streams each log line as raw, non-JSON SSE data.",
-                    supporting_sources=[
-                        {
-                            "path": "docs_src/server_sent_events/tutorial003_py310.py",
-                            "start_line": 9,
-                            "end_line": 17,
-                            "role": "raw log event generator",
-                        },
-                        {
-                            "path": "fastapi/routing.py",
-                            "start_line": 524,
-                            "end_line": 545,
-                            "role": "raw_data bypasses JSON encoding",
-                        },
-                    ],
-                    contract_gate="Requires observation-schema support for a content-type projection and an SSE data-line projection limited to the assertions; raw body bytes and ordered headers overstate this test.",
-                    stimulus_notes="The log contents are application inputs; Starlette owns streaming send/disconnect mechanics, which the buffered response test does not inspect.",
-                ),
-            },
-        },
-        "tests/test_tutorial/test_server_sent_events/test_tutorial004.py": {
-            "functions": {
-                "test_stream_all_items": reviewed_case(
-                    ["response-serialization"],
-                    ["http.status", "http.body.sse_asserted_fields"],
-                    "The route emits all item events with sequential event IDs.",
-                    supporting_sources=[
-                        {
-                            "path": "docs_src/server_sent_events/tutorial004_py310.py",
-                            "start_line": 23,
-                            "end_line": 31,
-                            "role": "SSE route and full-stream iteration",
-                        }
-                    ],
-                    contract_gate="Requires observation-schema support for an SSE projection of only the asserted event count and IDs; raw body bytes, headers, and ASGI chunk boundaries are not observed.",
-                    stimulus_notes="The test checks event count and IDs, not response headers, item data values, or ASGI chunk boundaries.",
-                ),
-                "test_resume_from_last_event_id": reviewed_case(
-                    ["request-validation", "response-serialization"],
-                    ["http.status", "http.body.sse_asserted_fields"],
-                    "FastAPI extracts an integer Last-Event-ID header and the endpoint emits the resumed item suffix.",
-                    supporting_sources=[
-                        {
-                            "path": "docs_src/server_sent_events/tutorial004_py310.py",
-                            "start_line": 23,
-                            "end_line": 31,
-                            "role": "typed header and app-owned resume policy",
-                        }
-                    ],
-                    contract_gate="Requires observation-schema support for an SSE projection of only the asserted event count and IDs; raw body bytes, headers, and ASGI chunk boundaries are not observed.",
-                    stimulus_notes="Keep header parsing separate from the endpoint's last_event_id + 1 iteration logic; only the emitted IDs/count are asserted.",
-                ),
-                "test_resume_from_last_item": reviewed_case(
-                    ["request-validation", "response-serialization"],
-                    ["http.status", "http.body.sse_asserted_fields"],
-                    "A valid integer Last-Event-ID header selects the endpoint's remaining item event.",
-                    supporting_sources=[
-                        {
-                            "path": "docs_src/server_sent_events/tutorial004_py310.py",
-                            "start_line": 23,
-                            "end_line": 31,
-                            "role": "typed header and app-owned resume policy",
-                        }
-                    ],
-                    contract_gate="Requires observation-schema support for an SSE projection of only the asserted event count and IDs; raw body bytes, headers, and ASGI chunk boundaries are not observed.",
-                    stimulus_notes="Keep header parsing separate from the endpoint's resume logic; the test checks event count and ID, not payload values or chunks.",
-                ),
-            },
-        },
-        "tests/test_tutorial/test_server_sent_events/test_tutorial005.py": {
-            "functions": {
-                "test_stream_chat": reviewed_case(
-                    ["request-validation", "response-serialization"],
-                    ["http.status", "http.header.content_type", "http.body.sse_asserted_fields"],
-                    "A Pydantic Prompt body drives a POST SSE stream with JSON data events and one raw terminal event.",
-                    supporting_sources=[
-                        {
-                            "path": "docs_src/server_sent_events/tutorial005_py310.py",
-                            "start_line": 10,
-                            "end_line": 19,
-                            "role": "prompt model and chat event generator",
-                        },
-                        {
-                            "path": "fastapi/routing.py",
-                            "start_line": 524,
-                            "end_line": 550,
-                            "role": "JSON data versus raw_data SSE serialization",
-                        },
-                    ],
-                    contract_gate="Requires observation-schema support for a content-type projection and SSE fields limited to the asserted data/event lines; raw body bytes, ordered headers, and ASGI chunk boundaries overstate this test.",
-                    stimulus_notes="Prompt validation is Pydantic-backed; word splitting and event labels are app logic. The buffered test does not assert ASGI chunk boundaries or idle keepalives.",
-                ),
-            },
-        },
         "tests/test_tutorial/test_settings/test_app01.py": {
             "module_feature_ids": ["middleware-integrations", "openapi-docs"],
             "functions": {
@@ -3004,9 +2978,7 @@ TEST_REVIEW_MAPPINGS.setdefault(
     {
         "module_observation_selectors": [
             "http.status",
-            "http.headers.ordered",
             "http.body.bytes",
-            "http.body.json",
             "openapi.document",
             "openapi.paths",
         ],
@@ -3029,6 +3001,26 @@ TEST_REVIEW_MAPPINGS.setdefault(
                 "role": "documented partial-update model and PATCH workflow",
             },
         ],
+        "stimulus_notes": (
+            "The linked independent ASGI workflow covers the seeded GET, both PATCH inputs, and one selected OpenAPI request-body schema pointer. The upstream OpenAPI test compares the full document, so the pointer case is partial. Response bytes are stricter than the source tests' parsed JSON checks; fixtures store inputs only."
+        ),
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/nested-body-corner-wave.yaml",
+                "case_ids": [
+                    "fastapi.nested-body-corner-wave.patch-model.test-get",
+                    "fastapi.nested-body-corner-wave.patch-model.test-patch-all",
+                    "fastapi.nested-body-corner-wave.patch-model.test-patch-name",
+                    "fastapi.nested-body-corner-wave.patch-model.test-openapi-schema",
+                ],
+                "observation_selectors": [
+                    "http.body.bytes",
+                    "http.status",
+                    "openapi.document",
+                    "openapi.paths",
+                ],
+            },
+        ],
     }
 )
 
@@ -3047,6 +3039,23 @@ for test_path, exclusions in SECURITY_TEST_FUNCTION_EXCLUSIONS.items():
 for test_path, evidence in SECURITY_TEST_FUNCTION_EXCLUSION_EVIDENCE.items():
     TEST_FUNCTION_EXCLUSION_EVIDENCE.setdefault(test_path, {}).update(evidence)
 
+from atlas_security_tutorial_test_review_mappings import (  # noqa: E402
+    SECURITY_TUTORIAL_TEST_FUNCTION_EXCLUSIONS,
+    SECURITY_TUTORIAL_TEST_REVIEW_MAPPINGS,
+)
+
+merge_test_review_mappings(SECURITY_TUTORIAL_TEST_REVIEW_MAPPINGS)
+for test_path, exclusions in SECURITY_TUTORIAL_TEST_FUNCTION_EXCLUSIONS.items():
+    TEST_FUNCTION_EXCLUSIONS.setdefault(test_path, {}).update(
+        {function_name: exclusion["reason"] for function_name, exclusion in exclusions.items()}
+    )
+    TEST_FUNCTION_EXCLUSION_EVIDENCE.setdefault(test_path, {}).update(
+        {
+            function_name: exclusion.get("supporting_sources", [])
+            for function_name, exclusion in exclusions.items()
+        }
+    )
+
 # App, dependency, lifecycle, routing, exception, and WebSocket review.
 from atlas_app_dependency_wave_mappings import (  # noqa: E402
     APP_DEPENDENCY_TEST_FUNCTION_EXCLUSIONS,
@@ -3064,6 +3073,748 @@ APP_DEPENDENCY_SCOPE_REVIEW_BY_MODULE = {
     for test_path in set(APP_DEPENDENCY_TEST_MODULE_EXCLUSIONS)
     | set(APP_DEPENDENCY_TEST_FUNCTION_EXCLUSIONS)
 }
+
+# The routing/application review keeps its source cases and exclusions in a
+# separate file; adapt it into the atlas's function-level review contract here.
+from atlas_route_application_test_review_mappings import (  # noqa: E402
+    ROUTE_APPLICATION_TEST_SOURCE_REVIEW,
+)
+
+for _route_test_path, _route_module_review in ROUTE_APPLICATION_TEST_SOURCE_REVIEW[
+    "test_modules"
+].items():
+    merge_test_review_mappings(
+        {
+            _route_test_path: {
+                "functions": _route_module_review.get("test_mappings", {}),
+            }
+        }
+    )
+    for _function_name, _function_exclusion in _route_module_review.get("exclusions", {}).items():
+        TEST_FUNCTION_EXCLUSIONS.setdefault(_route_test_path, {})[_function_name] = (
+            _function_exclusion["reason"]
+        )
+        TEST_FUNCTION_EXCLUSION_EVIDENCE.setdefault(_route_test_path, {})[_function_name] = [
+            _function_exclusion["source_span"],
+            *_function_exclusion.get("supporting_sources", []),
+        ]
+
+from atlas_exception_handlers_test_review_mappings import (  # noqa: E402
+    EXCEPTION_HANDLERS_TEST_REVIEW_MAPPINGS,
+)
+
+merge_test_review_mappings(EXCEPTION_HANDLERS_TEST_REVIEW_MAPPINGS)
+
+from atlas_openapi_servers_root_path_prefix_test_review_mappings import (  # noqa: E402
+    OPENAPI_SERVERS_ROOT_PATH_PREFIX_TEST_REVIEW_MAPPINGS,
+)
+
+merge_test_review_mappings(OPENAPI_SERVERS_ROOT_PATH_PREFIX_TEST_REVIEW_MAPPINGS)
+
+from atlas_builtin_generic_type_test_review_mappings import (  # noqa: E402
+    BUILTIN_GENERIC_TYPE_TEST_REVIEW_MAPPINGS,
+)
+from atlas_custom_response_tutorial_test_review_mappings import (  # noqa: E402
+    CUSTOM_RESPONSE_TUTORIAL_TEST_REVIEW_MAPPINGS,
+)
+from atlas_dependency_tutorial_test_review_mappings import (  # noqa: E402
+    DEPENDENCY_TUTORIAL_TEST_MODULE_EXCLUSIONS,
+    DEPENDENCY_TUTORIAL_TEST_REVIEW_MAPPINGS,
+)
+from atlas_error_tutorial_test_review_mappings import (  # noqa: E402
+    ERROR_TUTORIAL_TEST_REVIEW_MAPPINGS,
+)
+from atlas_metadata_tutorial_test_review_mappings import (  # noqa: E402
+    METADATA_TUTORIAL_TEST_REVIEW_MAPPINGS,
+)
+from atlas_nested_body_tutorial_test_review_mappings import (  # noqa: E402
+    NESTED_BODY_TUTORIAL_TEST_MODULE_EXCLUSIONS,
+    NESTED_BODY_TUTORIAL_TEST_REVIEW_MAPPINGS,
+)
+from atlas_response_headers_status_cookies_tutorial_test_review_mappings import (  # noqa: E402
+    RESPONSE_HEADERS_STATUS_COOKIES_TUTORIAL_REVIEW_MAPPINGS,
+)
+from atlas_response_model_tutorial_test_review_mappings import (  # noqa: E402
+    RESPONSE_MODEL_TUTORIAL_TEST_REVIEW_MAPPINGS,
+)
+from atlas_sse_stream_test_review_mappings import (  # noqa: E402
+    SSE_STREAM_TEST_REVIEW_MAPPINGS,
+)
+
+merge_test_review_mappings(ERROR_TUTORIAL_TEST_REVIEW_MAPPINGS)
+merge_test_review_mappings(DEPENDENCY_TUTORIAL_TEST_REVIEW_MAPPINGS)
+merge_test_review_mappings(METADATA_TUTORIAL_TEST_REVIEW_MAPPINGS)
+merge_test_review_mappings(NESTED_BODY_TUTORIAL_TEST_REVIEW_MAPPINGS)
+merge_test_review_mappings(RESPONSE_HEADERS_STATUS_COOKIES_TUTORIAL_REVIEW_MAPPINGS)
+merge_test_review_mappings(SSE_STREAM_TEST_REVIEW_MAPPINGS)
+merge_test_review_mappings(RESPONSE_MODEL_TUTORIAL_TEST_REVIEW_MAPPINGS)
+merge_test_review_mappings(CUSTOM_RESPONSE_TUTORIAL_TEST_REVIEW_MAPPINGS)
+merge_test_review_mappings(BUILTIN_GENERIC_TYPE_TEST_REVIEW_MAPPINGS)
+
+from atlas_tutorial_response_body_input_review_mappings import (  # noqa: E402
+    TUTORIAL_RESPONSE_BODY_INPUT_REVIEW_MAPPINGS,
+)
+
+for (
+    _tutorial_test_path,
+    _tutorial_module_review,
+) in TUTORIAL_RESPONSE_BODY_INPUT_REVIEW_MAPPINGS.items():
+    _tutorial_functions = {}
+    for _tutorial_function_name, _tutorial_function_review in _tutorial_module_review[
+        "functions"
+    ].items():
+        if _tutorial_function_review.get("review_status") == "reviewed_excluded":
+            TEST_FUNCTION_EXCLUSIONS.setdefault(_tutorial_test_path, {})[
+                _tutorial_function_name
+            ] = _tutorial_function_review["exclusion_reason"]
+            TEST_FUNCTION_EXCLUSION_EVIDENCE.setdefault(_tutorial_test_path, {})[
+                _tutorial_function_name
+            ] = _tutorial_function_review.get("supporting_sources", [])
+            continue
+        _tutorial_functions[_tutorial_function_name] = {
+            key: value for key, value in _tutorial_function_review.items() if key != "review_status"
+        }
+    _tutorial_module_workflows_by_case = {}
+    for _tutorial_link in _tutorial_module_review.get("workflow_cases", []):
+        _tutorial_link_key = (_tutorial_link["recipe_path"], _tutorial_link["case_id"])
+        _tutorial_module_link = _tutorial_module_workflows_by_case.setdefault(
+            _tutorial_link_key,
+            {
+                "recipe_path": _tutorial_link["recipe_path"],
+                "case_ids": [_tutorial_link["case_id"]],
+                "observation_selectors": set(),
+            },
+        )
+        _tutorial_module_link["observation_selectors"].update(
+            _tutorial_link["observation_selectors"]
+        )
+    _tutorial_module_workflows = [
+        {
+            **link,
+            "observation_selectors": sorted(link["observation_selectors"]),
+        }
+        for link in _tutorial_module_workflows_by_case.values()
+    ]
+    merge_test_review_mappings(
+        {
+            _tutorial_test_path: {
+                "rationale": _tutorial_module_review["rationale"],
+                "supporting_sources": _tutorial_module_review.get("supporting_sources", []),
+                "module_observation_selectors": _tutorial_module_review.get(
+                    "module_observation_selectors", []
+                ),
+                "stimulus_notes": _tutorial_module_review.get("stimulus_notes", ""),
+                "workflow_cases": _tutorial_module_workflows,
+                "functions": _tutorial_functions,
+            }
+        }
+    )
+
+from atlas_openapi_examples_security_source_review_mappings import (  # noqa: E402
+    OPENAPI_EXAMPLES_SECURITY_SOURCE_REVIEW,
+)
+
+for _openapi_test_path, _openapi_module_review in OPENAPI_EXAMPLES_SECURITY_SOURCE_REVIEW[
+    "modules"
+].items():
+    _openapi_functions = {}
+    _openapi_module_sources = []
+    _openapi_module_selectors = set()
+    _openapi_module_workflows_by_case = {}
+    for _openapi_function_name, _openapi_function_review in _openapi_module_review[
+        "test_mappings"
+    ].items():
+        _openapi_module_sources.extend(_openapi_function_review.get("supporting_sources", []))
+        _openapi_module_selectors.update(_openapi_function_review.get("observation_selectors", []))
+        _openapi_function_workflows = []
+        for _openapi_link in _openapi_function_review.get("workflow_cases", []):
+            _openapi_case_key = (_openapi_link["recipe_path"], _openapi_link["case_id"])
+            _openapi_module_link = _openapi_module_workflows_by_case.setdefault(
+                _openapi_case_key,
+                {
+                    "recipe_path": _openapi_link["recipe_path"],
+                    "case_ids": [_openapi_link["case_id"]],
+                    "observation_selectors": set(),
+                },
+            )
+            _openapi_module_link["observation_selectors"].update(
+                _openapi_link["observation_selectors"]
+            )
+            _openapi_function_workflows.append(
+                {key: value for key, value in _openapi_link.items() if key != "coverage"}
+            )
+        _coverage_notes = [
+            f"{link['recipe_path']}::{link['case_id']} covers {link['coverage']}"
+            for link in _openapi_function_review.get("workflow_cases", [])
+            if link.get("coverage")
+        ]
+        _openapi_functions[_openapi_function_name] = {
+            key: value
+            for key, value in _openapi_function_review.items()
+            if key not in {"mapping_status", "workflow_cases"}
+        }
+        _openapi_functions[_openapi_function_name]["workflow_cases"] = _openapi_function_workflows
+        if _coverage_notes:
+            _openapi_functions[_openapi_function_name]["stimulus_notes"] = "; ".join(
+                [
+                    _openapi_function_review.get("stimulus_notes", ""),
+                    *_coverage_notes,
+                ]
+            )
+    for _openapi_function_name, _openapi_exclusion in _openapi_module_review.get(
+        "exclusions", {}
+    ).items():
+        TEST_FUNCTION_EXCLUSIONS.setdefault(_openapi_test_path, {})[_openapi_function_name] = (
+            _openapi_exclusion["reason"]
+        )
+        TEST_FUNCTION_EXCLUSION_EVIDENCE.setdefault(_openapi_test_path, {})[
+            _openapi_function_name
+        ] = [
+            _openapi_exclusion["source_span"],
+            *_openapi_exclusion.get("supporting_sources", []),
+        ]
+    merge_test_review_mappings(
+        {
+            _openapi_test_path: {
+                "rationale": (
+                    "Source-reviewed OpenAPI/security module; per-function workflow coverage "
+                    "and exclusions are linked below."
+                ),
+                "supporting_sources": _openapi_module_sources,
+                "module_observation_selectors": sorted(_openapi_module_selectors),
+                "workflow_cases": [
+                    {
+                        **link,
+                        "observation_selectors": sorted(link["observation_selectors"]),
+                    }
+                    for link in _openapi_module_workflows_by_case.values()
+                ],
+                "functions": _openapi_functions,
+            }
+        }
+    )
+
+# Supplemental source-reviewed input waves keep their workflows and source
+# links in separate review files while feeding the merged atlas map.
+from atlas_dependency_cache_source_wave_mappings import (  # noqa: E402
+    DEPENDENCY_CACHE_SOURCE_WAVE_MAPPINGS,
+)
+from atlas_dependency_overrides_required_subdependency_wave_mappings import (  # noqa: E402
+    DEPENDENCY_OVERRIDES_REQUIRED_SUBDEPENDENCY_WAVE_MAPPINGS,
+)
+from atlas_frontend_test_review_mappings import (  # noqa: E402
+    FRONTEND_TEST_FUNCTION_EXCLUSION_EVIDENCE,
+    FRONTEND_TEST_FUNCTION_EXCLUSIONS,
+    FRONTEND_TEST_REVIEW_MAPPINGS,
+)
+from atlas_response_model_return_annotation_gaps_wave_mappings import (  # noqa: E402
+    RESPONSE_MODEL_RETURN_ANNOTATION_GAP_WAVE_MAPPINGS,
+)
+from atlas_router_live_route_after_include_mappings import (  # noqa: E402
+    ROUTER_LIVE_ROUTE_AFTER_INCLUDE_SOURCE_REVIEW,
+)
+
+merge_test_review_mappings(DEPENDENCY_CACHE_SOURCE_WAVE_MAPPINGS)
+merge_test_review_mappings(DEPENDENCY_OVERRIDES_REQUIRED_SUBDEPENDENCY_WAVE_MAPPINGS)
+merge_test_review_mappings(FRONTEND_TEST_REVIEW_MAPPINGS)
+merge_test_review_mappings(RESPONSE_MODEL_RETURN_ANNOTATION_GAP_WAVE_MAPPINGS)
+_router_live_route_test_path = ROUTER_LIVE_ROUTE_AFTER_INCLUDE_SOURCE_REVIEW["test_module"]
+_router_live_route_test_mappings = ROUTER_LIVE_ROUTE_AFTER_INCLUDE_SOURCE_REVIEW["test_mappings"]
+_router_live_route_function = next(iter(_router_live_route_test_mappings.values()))
+merge_test_review_mappings(
+    {
+        _router_live_route_test_path: {
+            "feature_ids": _router_live_route_function["feature_ids"],
+            "module_observation_selectors": _router_live_route_function["observation_selectors"],
+            "rationale": _router_live_route_function["rationale"],
+            "supporting_sources": _router_live_route_function["supporting_sources"],
+            "workflow_cases": _router_live_route_function["workflow_cases"],
+            "source_review_scope_exclusions": [
+                {
+                    "scope": "wave_only",
+                    "source_path": _router_live_route_test_path,
+                    "source_function": function_name,
+                    "source_evidence": [exclusion["source_span"]],
+                    "reason": exclusion["reason"],
+                }
+                for function_name, exclusion in ROUTER_LIVE_ROUTE_AFTER_INCLUDE_SOURCE_REVIEW[
+                    "exclusions"
+                ].items()
+            ],
+            "functions": _router_live_route_test_mappings,
+        }
+    }
+)
+for test_path, exclusions in FRONTEND_TEST_FUNCTION_EXCLUSIONS.items():
+    TEST_FUNCTION_EXCLUSIONS.setdefault(test_path, {}).update(exclusions)
+for test_path, evidence in FRONTEND_TEST_FUNCTION_EXCLUSION_EVIDENCE.items():
+    TEST_FUNCTION_EXCLUSION_EVIDENCE.setdefault(test_path, {}).update(evidence)
+
+# Core validation/schema review keeps source links and exclusions in a focused
+# sidecar. Normalize its wave annotations into the atlas's stable review shape.
+from atlas_core_validation_contract_wave_mappings import (  # noqa: E402
+    CORE_VALIDATION_TEST_EXCLUSION_EVIDENCE,
+    CORE_VALIDATION_TEST_EXCLUSIONS,
+    CORE_VALIDATION_TEST_REVIEW_MAPPINGS,
+)
+
+_core_validation_review_mappings = {}
+for _core_test_path, _core_module_review in CORE_VALIDATION_TEST_REVIEW_MAPPINGS.items():
+    _core_functions = {}
+    for _core_function_name, _core_function_review in _core_module_review["functions"].items():
+        _core_functions[_core_function_name] = {
+            key: value for key, value in _core_function_review.items() if key != "mapping_status"
+        }
+        _core_functions[_core_function_name]["workflow_cases"] = [
+            {key: value for key, value in workflow.items() if key != "coverage"}
+            for workflow in _core_function_review.get("workflow_cases", [])
+        ]
+    _core_validation_review_mappings[_core_test_path] = {
+        "rationale": _core_module_review["rationale"],
+        "supporting_sources": _core_module_review.get("supporting_sources", []),
+        "functions": _core_functions,
+    }
+merge_test_review_mappings(_core_validation_review_mappings)
+for test_path, exclusions in CORE_VALIDATION_TEST_EXCLUSIONS.items():
+    TEST_FUNCTION_EXCLUSIONS.setdefault(test_path, {}).update(exclusions)
+for test_path, evidence in CORE_VALIDATION_TEST_EXCLUSION_EVIDENCE.items():
+    TEST_FUNCTION_EXCLUSION_EVIDENCE.setdefault(test_path, {}).update(evidence)
+
+# The response/serialization wave replaces broad prior response-scope notes
+# with function-level input cases while retaining the older scope evidence.
+from atlas_response_serialization_dependency_source_review_mappings import (  # noqa: E402
+    RESPONSE_SERIALIZATION_DEPENDENCY_SOURCE_REVIEW_MAPPINGS,
+)
+
+_response_serialization_review_mappings = {}
+for (
+    _response_test_path,
+    _response_module_review,
+) in RESPONSE_SERIALIZATION_DEPENDENCY_SOURCE_REVIEW_MAPPINGS.items():
+    _response_functions = {}
+    for _response_function_name, _response_function_review in _response_module_review[
+        "functions"
+    ].items():
+        _response_functions[_response_function_name] = {
+            key: value
+            for key, value in _response_function_review.items()
+            if key != "mapping_status"
+        }
+        _response_functions[_response_function_name]["workflow_cases"] = [
+            {key: value for key, value in workflow.items() if key != "coverage"}
+            for workflow in _response_function_review.get("workflow_cases", [])
+        ]
+    _response_serialization_review_mappings[_response_test_path] = {
+        "functions": _response_functions,
+    }
+merge_test_review_mappings(_response_serialization_review_mappings)
+
+# Request-union and endpoint-context review records function links plus shared
+# ownership boundaries; normalize both levels to the merged atlas contract.
+from atlas_union_error_context_review_mappings import (  # noqa: E402
+    UNION_ERROR_CONTEXT_TEST_REVIEW_MAPPINGS,
+)
+
+_union_error_context_review_mappings = {}
+for _union_test_path, _union_module_review in UNION_ERROR_CONTEXT_TEST_REVIEW_MAPPINGS.items():
+    _union_functions = {}
+    _union_workflows = {}
+    for _union_function_name, _union_function_review in _union_module_review["functions"].items():
+        _union_function = {
+            key: value
+            for key, value in _union_function_review.items()
+            if key not in {"review_status", "behavior_ownership", "workflow_cases"}
+        }
+        _function_workflows = []
+        for _union_link in _union_function_review.get("workflow_cases", []):
+            _link = {
+                "recipe_path": _union_link["recipe_path"],
+                "case_ids": [_union_link["case_id"]],
+                "observation_selectors": _union_link["observation_selectors"],
+            }
+            _function_workflows.append(_link)
+            _workflow_key = (_link["recipe_path"], _union_link["case_id"])
+            _module_link = _union_workflows.setdefault(
+                _workflow_key,
+                {
+                    "recipe_path": _link["recipe_path"],
+                    "case_ids": [_union_link["case_id"]],
+                    "observation_selectors": set(),
+                },
+            )
+            _module_link["observation_selectors"].update(_union_link["observation_selectors"])
+        _union_function["workflow_cases"] = _function_workflows
+        _union_functions[_union_function_name] = _union_function
+
+    _union_module_sources = [
+        source
+        for source in _union_module_review.get("supporting_sources", [])
+        if source.get("path") != "tests/fixtures/manifest.yaml"
+    ]
+    _union_module_stimulus = " ".join(
+        value
+        for value in (
+            _union_module_review.get("pydantic_ownership_boundary"),
+            _union_module_review.get("starlette_ownership_boundary"),
+            _union_module_review.get("rust_target_ownership_boundary"),
+        )
+        if value
+    )
+    _union_error_context_review_mappings[_union_test_path] = {
+        "rationale": _union_module_review["rationale"],
+        "supporting_sources": _union_module_sources,
+        "module_observation_selectors": _union_module_review.get(
+            "module_observation_selectors", []
+        ),
+        "workflow_cases": [
+            {
+                **link,
+                "observation_selectors": sorted(link["observation_selectors"]),
+            }
+            for link in _union_workflows.values()
+        ],
+        "contract_gate": _union_module_review.get("contract_gate"),
+        "stimulus_notes": _union_module_stimulus,
+        "functions": _union_functions,
+    }
+merge_test_review_mappings(_union_error_context_review_mappings)
+
+# Middleware/proxy workflows carry explicit owner boundaries and one source
+# exclusion for direct Pydantic Settings behavior; flatten them into the atlas.
+from atlas_middleware_proxy_source_review_mappings import (  # noqa: E402
+    MIDDLEWARE_PROXY_SOURCE_REVIEW_MAPPINGS,
+)
+
+_middleware_proxy_review_mappings = {}
+for (
+    _middleware_test_path,
+    _middleware_module_review,
+) in MIDDLEWARE_PROXY_SOURCE_REVIEW_MAPPINGS.items():
+    _middleware_functions = {}
+    _middleware_workflows = {}
+    for _middleware_function_name, _middleware_function_review in _middleware_module_review[
+        "functions"
+    ].items():
+        if _middleware_function_review.get("mapping_status") == "source-backed-exclusion":
+            TEST_FUNCTION_EXCLUSIONS.setdefault(_middleware_test_path, {})[
+                _middleware_function_name
+            ] = _middleware_function_review["exclusion_reason"]
+            TEST_FUNCTION_EXCLUSION_EVIDENCE.setdefault(_middleware_test_path, {})[
+                _middleware_function_name
+            ] = _middleware_function_review.get("supporting_sources", [])
+            continue
+
+        _middleware_function = {
+            key: value
+            for key, value in _middleware_function_review.items()
+            if key not in {"mapping_status", "workflow_cases"}
+        }
+        _function_workflows = []
+        for _middleware_link in _middleware_function_review.get("workflow_cases", []):
+            _link = {
+                "recipe_path": _middleware_link["recipe_path"],
+                "case_ids": [_middleware_link["case_id"]],
+                "observation_selectors": _middleware_link["observation_selectors"],
+            }
+            _function_workflows.append(_link)
+            _workflow_key = (_link["recipe_path"], _middleware_link["case_id"])
+            _module_link = _middleware_workflows.setdefault(
+                _workflow_key,
+                {
+                    "recipe_path": _link["recipe_path"],
+                    "case_ids": [_middleware_link["case_id"]],
+                    "observation_selectors": set(),
+                },
+            )
+            _module_link["observation_selectors"].update(_middleware_link["observation_selectors"])
+        _middleware_function["workflow_cases"] = _function_workflows
+        _middleware_functions[_middleware_function_name] = _middleware_function
+
+    _middleware_ownership = _middleware_module_review.get("ownership_boundaries", {})
+    _middleware_proxy_review_mappings[_middleware_test_path] = {
+        "rationale": _middleware_module_review["rationale"],
+        "supporting_sources": _middleware_module_review.get("supporting_sources", []),
+        "module_observation_selectors": _middleware_module_review.get(
+            "module_observation_selectors", []
+        ),
+        "workflow_cases": [
+            {
+                **link,
+                "observation_selectors": sorted(link["observation_selectors"]),
+            }
+            for link in _middleware_workflows.values()
+        ],
+        "stimulus_notes": " ".join(_middleware_ownership.values()),
+        "functions": _middleware_functions,
+    }
+merge_test_review_mappings(_middleware_proxy_review_mappings)
+
+from atlas_testing_websocket_tutorial_review_mappings import (  # noqa: E402
+    TESTING_WEBSOCKET_TUTORIAL_REVIEW_MAPPINGS,
+)
+
+_testing_websocket_review_mappings = {}
+for (
+    _testing_test_path,
+    _testing_module_review,
+) in TESTING_WEBSOCKET_TUTORIAL_REVIEW_MAPPINGS.items():
+    _testing_functions = {}
+    for _testing_function_name, _testing_function_review in _testing_module_review[
+        "functions"
+    ].items():
+        _testing_function = {
+            key: value
+            for key, value in _testing_function_review.items()
+            if key not in {"review_status", "workflow_cases"}
+        }
+        _testing_function["workflow_cases"] = [
+            {
+                "recipe_path": link["recipe_path"],
+                "case_ids": [link["case_id"]],
+                "observation_selectors": link["observation_selectors"],
+            }
+            for link in _testing_function_review.get("workflow_cases", [])
+        ]
+        _testing_functions[_testing_function_name] = _testing_function
+    _testing_websocket_review_mappings[_testing_test_path] = {
+        "rationale": _testing_module_review["rationale"],
+        "supporting_sources": _testing_module_review.get("supporting_sources", []),
+        "module_observation_selectors": _testing_module_review.get(
+            "module_observation_selectors", []
+        ),
+        "workflow_cases": _testing_module_review.get("workflow_cases", []),
+        "stimulus_notes": _testing_module_review.get("stimulus_notes", ""),
+        "functions": _testing_functions,
+    }
+merge_test_review_mappings(_testing_websocket_review_mappings)
+
+from atlas_form_upload_source_review_mappings import (  # noqa: E402
+    FORM_UPLOAD_SOURCE_REVIEW_MAPPINGS,
+)
+
+_form_upload_review_mappings = {}
+for _form_test_path, _form_module_review in FORM_UPLOAD_SOURCE_REVIEW_MAPPINGS.items():
+    _form_functions = {}
+    _form_workflows = {}
+    for _form_function_name, _form_function_review in _form_module_review["functions"].items():
+        if _form_function_review.get("function_role") != "source_test":
+            continue
+        _form_function = {
+            key: value
+            for key, value in _form_function_review.items()
+            if key not in {"review_status", "function_role", "workflow_cases"}
+        }
+        _function_workflows = []
+        for _form_link in _form_function_review.get("workflow_cases", []):
+            _link = {
+                "recipe_path": _form_link["recipe_path"],
+                "case_ids": [_form_link["case_id"]],
+                "observation_selectors": _form_link["observation_selectors"],
+            }
+            _function_workflows.append(_link)
+            _workflow_key = (_link["recipe_path"], _form_link["case_id"])
+            _module_link = _form_workflows.setdefault(
+                _workflow_key,
+                {
+                    "recipe_path": _link["recipe_path"],
+                    "case_ids": [_form_link["case_id"]],
+                    "observation_selectors": set(),
+                },
+            )
+            _module_link["observation_selectors"].update(_form_link["observation_selectors"])
+        _form_function["workflow_cases"] = _function_workflows
+        _form_functions[_form_function_name] = _form_function
+
+    _form_module_notes = _form_module_review.get("stimulus_notes", "")
+    _form_upload_review_mappings[_form_test_path] = {
+        "rationale": _form_module_review["rationale"],
+        "supporting_sources": _form_module_review.get("supporting_sources", []),
+        "module_observation_selectors": _form_module_review.get("observation_selectors", []),
+        "workflow_cases": [
+            {
+                **link,
+                "observation_selectors": sorted(link["observation_selectors"]),
+            }
+            for link in _form_workflows.values()
+        ],
+        "constraints": _form_module_review.get("constraints", {}),
+        "contract_gate": _form_module_review.get("contract_gate"),
+        "stimulus_notes": _form_module_notes,
+        "functions": _form_functions,
+    }
+merge_test_review_mappings(_form_upload_review_mappings)
+
+import atlas_query_header_parameter_tutorial_review_mappings as query_header_review  # noqa: E402
+
+QUERY_HEADER_FASTAPI_ROOT = query_header_review.FASTAPI_ROOT
+QUERY_HEADER_PARAMETER_TUTORIAL_REVIEW_MAPPINGS = (
+    query_header_review.QUERY_HEADER_PARAMETER_TUTORIAL_REVIEW_MAPPINGS
+)
+QUERY_HEADER_TARGET_OWNERSHIP = query_header_review.TARGET_OWNERSHIP
+
+_query_header_feature_ids = {
+    "request.query.parameters": "request-validation",
+    "request.header.parameters": "request-validation",
+    "openapi.parameters": "openapi-docs",
+}
+_query_header_review_mappings = {}
+for (
+    _query_header_test_path,
+    _query_header_module_review,
+) in QUERY_HEADER_PARAMETER_TUTORIAL_REVIEW_MAPPINGS.items():
+    _query_header_functions = {}
+    _query_header_workflows = {}
+    _query_header_docs = _query_header_module_review.get("supporting_docs", [])
+    if isinstance(_query_header_docs, dict):
+        _query_header_docs = list(_query_header_docs.values())
+    _query_header_sources = []
+    for _query_header_doc in _query_header_docs:
+        _query_header_doc_path = QUERY_HEADER_FASTAPI_ROOT / _query_header_doc
+        _query_header_doc_lines = _query_header_doc_path.read_text(encoding="utf-8").splitlines()
+        _query_header_sources.append(
+            {
+                "path": _query_header_doc,
+                "start_line": 1,
+                "end_line": max(1, len(_query_header_doc_lines)),
+                "role": "documented query/header parameter example source",
+            }
+        )
+    for _query_header_function_name, _query_header_function_review in _query_header_module_review[
+        "functions"
+    ].items():
+        _query_header_workflow_links = []
+        _function_sources = [
+            _query_header_function_review["source_span"],
+            *_query_header_sources,
+        ]
+        for _query_header_link in _query_header_function_review.get("workflow_cases", []):
+            _link = {
+                "recipe_path": _query_header_link["recipe_path"],
+                "case_ids": [_query_header_link["case_id"]],
+                "observation_selectors": _query_header_function_review["observation_selectors"],
+            }
+            _query_header_workflow_links.append(_link)
+            _workflow_key = (_link["recipe_path"], _query_header_link["case_id"])
+            _module_link = _query_header_workflows.setdefault(
+                _workflow_key,
+                {
+                    "recipe_path": _link["recipe_path"],
+                    "case_ids": [_query_header_link["case_id"]],
+                    "observation_selectors": set(),
+                },
+            )
+            _module_link["observation_selectors"].update(
+                _query_header_function_review["observation_selectors"]
+            )
+        _coverage_notes = _query_header_function_review.get("coverage_notes", [])
+        _query_header_functions[_query_header_function_name] = {
+            "feature_ids": [
+                _query_header_feature_ids[feature_id]
+                for feature_id in _query_header_module_review["feature_ids"]
+            ],
+            "observation_selectors": _query_header_function_review["observation_selectors"],
+            "rationale": _query_header_function_review["rationale"],
+            "replace_features": True,
+            "workflow_cases": _query_header_workflow_links,
+            "supporting_sources": _function_sources,
+            "stimulus_notes": " ".join(_coverage_notes),
+        }
+    _parameter_notes = "; ".join(
+        "%s %s alias=%s type=%s required=%s"
+        % (
+            parameter["name"],
+            parameter["location"],
+            parameter["alias"],
+            parameter["type"],
+            parameter["required"],
+        )
+        for parameter in _query_header_module_review.get("parameter_contracts", [])
+    )
+    _query_header_review_mappings[_query_header_test_path] = {
+        "rationale": (
+            "Source-reviewed query/header parameter tutorial with direct and Annotated inputs."
+        ),
+        "supporting_sources": _query_header_sources,
+        "module_observation_selectors": sorted(
+            {
+                selector
+                for function in _query_header_module_review["functions"].values()
+                for selector in function["observation_selectors"]
+            }
+        ),
+        "workflow_cases": [
+            {
+                **link,
+                "observation_selectors": sorted(link["observation_selectors"]),
+            }
+            for link in _query_header_workflows.values()
+        ],
+        "stimulus_notes": " ".join([*QUERY_HEADER_TARGET_OWNERSHIP.values(), _parameter_notes]),
+        "functions": _query_header_functions,
+    }
+merge_test_review_mappings(_query_header_review_mappings)
+
+for test_path, exclusion in DEPENDENCY_TUTORIAL_TEST_MODULE_EXCLUSIONS.items():
+    if not test_path.startswith("tests/test_") or not test_path.endswith(".py"):
+        continue
+    TEST_EXCLUSIONS[test_path] = exclusion["exclusion_reason"]
+    merge_test_review_mappings(
+        {
+            test_path: {
+                "rationale": exclusion["exclusion_reason"],
+                "supporting_sources": exclusion.get("supporting_sources", []),
+            }
+        }
+    )
+
+for test_path, exclusion in NESTED_BODY_TUTORIAL_TEST_MODULE_EXCLUSIONS.items():
+    if not test_path.startswith("tests/test_") or not test_path.endswith(".py"):
+        continue
+    TEST_EXCLUSIONS[test_path] = exclusion["exclusion_reason"]
+    merge_test_review_mappings(
+        {
+            test_path: {
+                "rationale": exclusion["exclusion_reason"],
+                "supporting_sources": exclusion.get("supporting_sources", []),
+            }
+        }
+    )
+
+from atlas_json_parameter_locations_review_mappings import (  # noqa: E402
+    JSON_PARAMETER_LOCATIONS_TEST_REVIEW_MAPPINGS,
+)
+
+merge_test_review_mappings(JSON_PARAMETER_LOCATIONS_TEST_REVIEW_MAPPINGS)
+
+from atlas_local_docs_test_review_mappings import (  # noqa: E402
+    LOCAL_DOCS_TEST_REVIEW_MAPPINGS,
+)
+
+merge_test_review_mappings(LOCAL_DOCS_TEST_REVIEW_MAPPINGS)
+
+from atlas_numeric_path_validation_tutorial_mappings import (  # noqa: E402
+    NUMERIC_PATH_VALIDATION_TUTORIAL_MAPPINGS,
+)
+
+merge_test_review_mappings(NUMERIC_PATH_VALIDATION_TUTORIAL_MAPPINGS)
+
+from atlas_query_string_validation_tutorial_mappings import (  # noqa: E402
+    QUERY_STRING_VALIDATION_TUTORIAL_BUILDER_REVIEW_MAPPINGS,
+    QUERY_STRING_VALIDATION_TUTORIAL_FUNCTION_EXCLUSION_EVIDENCE,
+    QUERY_STRING_VALIDATION_TUTORIAL_FUNCTION_EXCLUSIONS,
+)
+
+merge_test_review_mappings(QUERY_STRING_VALIDATION_TUTORIAL_BUILDER_REVIEW_MAPPINGS)
+for test_path, exclusions in QUERY_STRING_VALIDATION_TUTORIAL_FUNCTION_EXCLUSIONS.items():
+    TEST_FUNCTION_EXCLUSIONS.setdefault(test_path, {}).update(exclusions)
+for test_path, evidence in QUERY_STRING_VALIDATION_TUTORIAL_FUNCTION_EXCLUSION_EVIDENCE.items():
+    TEST_FUNCTION_EXCLUSION_EVIDENCE.setdefault(test_path, {}).update(evidence)
+
+from atlas_parameter_model_tutorial_mappings import (  # noqa: E402
+    PARAMETER_MODEL_TUTORIAL_BUILDER_REVIEW_MAPPINGS,
+)
+
+merge_test_review_mappings(PARAMETER_MODEL_TUTORIAL_BUILDER_REVIEW_MAPPINGS)
 
 # Request-parameter module review carries exact source-to-workflow links at
 # module scope; the six alias-specific function rows are normalized below to
@@ -4426,6 +5177,241 @@ DOC_PAGE_REVIEW_MAPPINGS = {
     },
 }
 
+
+# Normalize source-reviewed test waves that retain action IDs in their sidecars
+# to the atlas's stable workflow-case contract.
+def _normalize_source_review_workflow_mappings(
+    additions: dict[str, dict[str, Any]],
+) -> dict[str, dict[str, Any]]:
+    normalized_modules = {}
+    for test_path, module_review in additions.items():
+        normalized_functions = {}
+        module_workflows = {}
+        for function_name, function_review in module_review.get("functions", {}).items():
+            if function_review.get("review_status") == "reviewed_excluded":
+                TEST_FUNCTION_EXCLUSIONS.setdefault(test_path, {})[function_name] = function_review[
+                    "exclusion_reason"
+                ]
+                TEST_FUNCTION_EXCLUSION_EVIDENCE.setdefault(test_path, {})[function_name] = (
+                    function_review.get("supporting_sources", [])
+                )
+                continue
+
+            function_mapping = {
+                key: value
+                for key, value in function_review.items()
+                if key not in {"review_status", "workflow_cases"}
+            }
+            function_workflows = []
+            for link in function_review.get("workflow_cases", []):
+                case_id = link["case_id"]
+                normalized_link = {
+                    "recipe_path": link["recipe_path"],
+                    "case_ids": [case_id],
+                    "observation_selectors": link["observation_selectors"],
+                }
+                function_workflows.append(normalized_link)
+
+                workflow_key = (link["recipe_path"], case_id)
+                module_link = module_workflows.setdefault(
+                    workflow_key,
+                    {
+                        "recipe_path": link["recipe_path"],
+                        "case_ids": [],
+                        "observation_selectors": set(),
+                    },
+                )
+                if case_id not in module_link["case_ids"]:
+                    module_link["case_ids"].append(case_id)
+                module_link["observation_selectors"].update(link["observation_selectors"])
+
+            function_mapping["workflow_cases"] = function_workflows
+            normalized_functions[function_name] = function_mapping
+
+        normalized_module = {
+            "rationale": module_review["rationale"],
+            "supporting_sources": module_review.get("supporting_sources", []),
+            "module_observation_selectors": module_review.get("module_observation_selectors", []),
+            "workflow_cases": [
+                {
+                    **link,
+                    "observation_selectors": sorted(link["observation_selectors"]),
+                }
+                for link in module_workflows.values()
+            ],
+            "stimulus_notes": module_review.get("stimulus_notes", ""),
+            "functions": normalized_functions,
+        }
+        for key in ("contract_gate", "constraints"):
+            if key in module_review:
+                normalized_module[key] = module_review[key]
+        normalized_modules[test_path] = normalized_module
+    return normalized_modules
+
+
+from atlas_request_body_tutorial_review_mappings import (  # noqa: E402
+    REQUEST_BODY_TUTORIAL_TEST_REVIEW_MAPPINGS,
+)
+
+merge_test_review_mappings(
+    _normalize_source_review_workflow_mappings(REQUEST_BODY_TUTORIAL_TEST_REVIEW_MAPPINGS)
+)
+
+from atlas_path_operation_parameter_tutorials_mappings import (  # noqa: E402
+    PATH_OPERATION_PARAMETER_TUTORIALS_MAPPINGS,
+)
+
+merge_test_review_mappings(
+    _normalize_source_review_workflow_mappings(PATH_OPERATION_PARAMETER_TUTORIALS_MAPPINGS)
+)
+
+from atlas_openapi_tutorial_interface_review_mappings import (  # noqa: E402
+    OPENAPI_TUTORIAL_INTERFACE_REVIEW_MAPPINGS,
+)
+
+_openapi_tutorial_review_mappings = {}
+for (
+    _openapi_tutorial_path,
+    _openapi_tutorial_module,
+) in OPENAPI_TUTORIAL_INTERFACE_REVIEW_MAPPINGS.items():
+    _openapi_tutorial_functions = {}
+    for _openapi_tutorial_name, _openapi_tutorial_function in _openapi_tutorial_module[
+        "functions"
+    ].items():
+        _openapi_tutorial_status = _openapi_tutorial_function.get("mapping_status")
+        if _openapi_tutorial_status == "reviewed_excluded_from_asgi_input_lane":
+            _openapi_exclusion = _openapi_tutorial_function["exclusion"]
+            TEST_FUNCTION_EXCLUSIONS.setdefault(_openapi_tutorial_path, {})[
+                _openapi_tutorial_name
+            ] = _openapi_exclusion["reason"]
+            TEST_FUNCTION_EXCLUSION_EVIDENCE.setdefault(_openapi_tutorial_path, {})[
+                _openapi_tutorial_name
+            ] = _append_unique_review_sources(
+                _openapi_tutorial_function.get("supporting_sources", []),
+                [_openapi_tutorial_function["source_span"]]
+                if _openapi_tutorial_function.get("source_span")
+                else [],
+            )
+            continue
+
+        _openapi_function_notes = []
+        for _feature_id, _feature_review in _openapi_tutorial_function.get(
+            "feature_status", {}
+        ).items():
+            _openapi_function_notes.append(
+                f"{_feature_id}: {_feature_review.get('status')} — {_feature_review.get('scope')}"
+            )
+        _openapi_scope = _openapi_tutorial_function.get("openapi_observation_scope")
+        if _openapi_scope and _openapi_scope != "not_applicable":
+            _openapi_function_notes.append(f"OpenAPI observation scope: {_openapi_scope}")
+
+        _openapi_function_sources = _append_unique_review_sources(
+            _openapi_tutorial_function.get("supporting_sources", []),
+            [_openapi_tutorial_function["source_span"]]
+            if _openapi_tutorial_function.get("source_span")
+            else [],
+        )
+        _openapi_function_mapping = {
+            key: value
+            for key, value in _openapi_tutorial_function.items()
+            if key
+            not in {
+                "mapping_status",
+                "feature_status",
+                "openapi_observation_scope",
+                "source_span",
+                "workflow_cases",
+            }
+        }
+        _openapi_function_mapping["review_status"] = "reviewed_partial"
+        _openapi_function_mapping["supporting_sources"] = _openapi_function_sources
+        _openapi_function_mapping["stimulus_notes"] = "; ".join(
+            filter(
+                None,
+                [
+                    _openapi_tutorial_function.get("stimulus_notes", ""),
+                    "; ".join(_openapi_function_notes),
+                ],
+            )
+        )
+        _openapi_function_mapping["workflow_cases"] = _openapi_tutorial_function.get(
+            "workflow_cases", []
+        )
+        _openapi_tutorial_functions[_openapi_tutorial_name] = _openapi_function_mapping
+
+    _openapi_module_status_notes = [
+        f"{feature_id}: {review.get('status')} — {review.get('scope')}"
+        for feature_id, review in _openapi_tutorial_module.get("feature_status", {}).items()
+    ]
+    _openapi_tutorial_review_mappings[_openapi_tutorial_path] = {
+        "rationale": _openapi_tutorial_module["rationale"],
+        "supporting_sources": _openapi_tutorial_module.get("supporting_sources", []),
+        "module_observation_selectors": _openapi_tutorial_module.get(
+            "module_observation_selectors", []
+        ),
+        "stimulus_notes": "; ".join(_openapi_module_status_notes),
+        "functions": _openapi_tutorial_functions,
+    }
+
+merge_test_review_mappings(
+    _normalize_source_review_workflow_mappings(_openapi_tutorial_review_mappings)
+)
+
+from atlas_openapi_response_tutorial_source_review_mappings import (  # noqa: E402
+    OPENAPI_RESPONSE_TUTORIAL_SOURCE_REVIEW,
+)
+
+_openapi_response_tutorial_modules = {}
+for (
+    _openapi_response_tutorial_path,
+    _openapi_response_tutorial_functions,
+) in OPENAPI_RESPONSE_TUTORIAL_SOURCE_REVIEW["modules"].items():
+    _openapi_response_tutorial_selectors = sorted(
+        {
+            selector
+            for function_review in _openapi_response_tutorial_functions.values()
+            for selector in function_review["observation_selectors"]
+        }
+    )
+    _openapi_response_tutorial_modules[_openapi_response_tutorial_path] = {
+        "rationale": (
+            "Source-reviewed schema-example and direct-response tutorial functions; "
+            "the linked inputs select only the recorded response or OpenAPI observations."
+        ),
+        "module_observation_selectors": _openapi_response_tutorial_selectors,
+        "functions": _openapi_response_tutorial_functions,
+    }
+
+merge_test_review_mappings(
+    _normalize_source_review_workflow_mappings(_openapi_response_tutorial_modules)
+)
+
+import atlas_dependency_lifecycle_security_review_mappings as dependency_lifecycle_review  # noqa: E402
+
+_dependency_lifecycle_limits_note = "; ".join(
+    [
+        "Python source baseline >= "
+        + dependency_lifecycle_review.REVIEW_LIMITS["python"]["minimum"],
+        "generic TestClient behavior is owned by Starlette 1.6.0; FastAPI's lock resolves Starlette 1.3.1 and does not establish HTTPX pairing for the selected contract",
+        "Pydantic behavior is pinned to "
+        + dependency_lifecycle_review.REVIEW_LIMITS["pydantic"]["version"],
+    ]
+)
+_dependency_lifecycle_review_mappings = {
+    test_path: {
+        **module_review,
+        "stimulus_notes": "; ".join(
+            filter(
+                None, [module_review.get("stimulus_notes", ""), _dependency_lifecycle_limits_note]
+            )
+        ),
+    }
+    for test_path, module_review in dependency_lifecycle_review.DEPENDENCY_LIFECYCLE_SECURITY_REVIEW_MAPPINGS.items()
+}
+merge_test_review_mappings(
+    _normalize_source_review_workflow_mappings(_dependency_lifecycle_review_mappings)
+)
+
 # Tutorial-page curation is reviewed independently from the reference-page
 # mappings above. Its Starlette ownership spans are resolved against the pinned
 # Starlette 1.6.0 checkout during atlas generation.
@@ -4495,6 +5481,21 @@ FEATURES = [
         "stimulus": "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
     },
     {
+        "id": "root-path",
+        "terms": ("root_path", "root path", "root-path", "behind a proxy"),
+        "observations": [
+            "http.status",
+            "http.body.bytes",
+            "route.match",
+            "openapi.document",
+        ],
+        "starlette_areas": [
+            "routing-converters-mounts-hosts-and-errors",
+            "applications-requests-responses-background-concurrency",
+        ],
+        "stimulus": "Set or send an ASGI root_path, invoke the route, and inspect FastAPI's scope or OpenAPI server projection.",
+    },
+    {
         "id": "request-validation",
         "terms": (
             "query parameter",
@@ -4537,6 +5538,24 @@ FEATURES = [
         "stimulus": "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
     },
     {
+        "id": "request-body",
+        "terms": ("request-body", "request body", "requestbody", "body field"),
+        "observations": [
+            "http.status",
+            "http.headers.ordered",
+            "http.body.bytes",
+            "http.body.json",
+            "validation.error_class",
+            "validation.error_details",
+            "openapi.request_schema",
+        ],
+        "starlette_areas": [
+            "applications-requests-responses-background-concurrency",
+            "streaming-headers-cookies-errors-and-cleanup",
+        ],
+        "stimulus": "Declare body parameters and media types, submit independent request bodies, and inspect validation or OpenAPI projections.",
+    },
+    {
         "id": "dependency-security",
         "terms": (
             "depends(",
@@ -4567,6 +5586,23 @@ FEATURES = [
         "stimulus": "Declare the dependency/security graph and credential inputs, invoke the public endpoint, and observe response, call order, cleanup, and schema effects.",
     },
     {
+        "id": "dependency-overrides",
+        "terms": ("dependency override", "dependency overrides", "dependency_overrides"),
+        "observations": [
+            "http.status",
+            "http.headers.ordered",
+            "http.body.bytes",
+            "http.body.json",
+            "dependency.call_order",
+        ],
+        "starlette_areas": [
+            "middleware-authentication-endpoints-datastructures-status",
+            "asgi-http-websocket-lifespan",
+            "applications-requests-responses-background-concurrency",
+        ],
+        "stimulus": "Register a dependency override, call its dependent route with independent inputs, and observe the override's public response effects.",
+    },
+    {
         "id": "response-serialization",
         "terms": (
             "response_model",
@@ -4593,6 +5629,16 @@ FEATURES = [
             "streaming-headers-cookies-errors-and-cleanup",
         ],
         "stimulus": "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data.",
+    },
+    {
+        "id": "status-codes",
+        "terms": ("status_code", "status code", "status codes", "additional status"),
+        "observations": ["http.status", "http.body.bytes", "http.body.json", "openapi.paths"],
+        "starlette_areas": [
+            "applications-requests-responses-background-concurrency",
+            "middleware-authentication-endpoints-datastructures-status",
+        ],
+        "stimulus": "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status.",
     },
     {
         "id": "python-data-encoding",
@@ -4693,6 +5739,23 @@ FEATURES = [
             "applications-requests-responses-background-concurrency",
         ],
         "stimulus": "Enable the named optional integration or middleware, provide deterministic request/filesystem/configuration inputs, and observe its public effect.",
+    },
+    {
+        "id": "static-files",
+        "terms": ("static files", "staticfiles", "mount static"),
+        "observations": [
+            "http.status",
+            "http.headers.ordered",
+            "http.body.bytes",
+            "route.match",
+            "openapi.paths",
+        ],
+        "starlette_areas": [
+            "routing-converters-mounts-hosts-and-errors",
+            "applications-requests-responses-background-concurrency",
+            "wsgi-static-files-templates-schemas-configuration-testclient",
+        ],
+        "stimulus": "Mount the documented static-file application with independent filesystem inputs, then inspect its response and parent OpenAPI boundary.",
     },
     {
         "id": "public-api-errors",
@@ -6712,6 +7775,18 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                             if "workflow_cases" in reviewed_mapping
                             else {}
                         ),
+                        **(
+                            {
+                                "wave_scope_review_exclusions": [
+                                    {"scope": "wave_only", **exclusion}
+                                    for exclusion in reviewed_mapping[
+                                        "source_review_scope_exclusions"
+                                    ]
+                                ]
+                            }
+                            if "source_review_scope_exclusions" in reviewed_mapping
+                            else {}
+                        ),
                     }
                     if reviewed_mapping
                     else None,
@@ -7081,31 +8156,67 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             )
     deprecations = inventory.get("deprecations", [])
     error_candidates = []
+    api_contract_overlay = project_metadata.get("reviewed_api_contract_overlay", {})
+    selector_rules = api_contract_overlay.get("error_selector_rules", [])
+    matched_selector_rules: set[str] = set()
+    warning_reviews = api_contract_overlay.get("warning_classification_reviews", {})
+    generic_error_selectors = [
+        "error.class",
+        "error.args",
+        "error.public_attributes",
+    ]
     for record in candidates.values():
         candidate_name = record["id"].split(".")[-1]
         if re.search(r"(?:Exception|Error|Disconnect|Warning)$", candidate_name):
             is_warning = candidate_name.endswith("Warning")
-            error_candidates.append(
-                {
-                    "id": record["id"],
-                    "classification": record["classification"],
-                    "candidate_kind": "warning" if is_warning else "error",
-                    "source_evidence": record["source_evidence"],
-                    "public_evidence": record["public_evidence"],
-                    "observation_selectors": ["warnings.category_message"]
-                    if is_warning
-                    else [
-                        "error.class",
-                        "error.args",
-                        "error.public_attributes",
-                        "http.status",
-                        "http.headers.ordered",
-                        "http.body.bytes",
-                        "http.body.json",
-                        "websocket.close_code",
-                    ],
-                }
-            )
+            matching_rules = [
+                rule
+                for rule in selector_rules
+                if record["id"] in rule.get("candidate_ids", [])
+                or record.get("target_path") in rule.get("target_paths", [])
+            ]
+            if len(matching_rules) > 1:
+                raise ValueError(
+                    f"error candidate matches multiple protocol selector rules: {record['id']}"
+                )
+            if matching_rules:
+                matched_selector_rules.add(matching_rules[0]["id"])
+                observation_selectors = matching_rules[0]["observation_selectors"]
+            elif is_warning:
+                observation_selectors = ["warnings.category_message"]
+            else:
+                observation_selectors = generic_error_selectors
+
+            error_candidate = {
+                "id": record["id"],
+                "classification": record["classification"],
+                "candidate_kind": "warning" if is_warning else "error",
+                "source_evidence": record["source_evidence"],
+                "public_evidence": record["public_evidence"],
+                "observation_selectors": observation_selectors,
+            }
+            warning_review = warning_reviews.get(record["id"])
+            if warning_review is None and record.get("target_path"):
+                warning_review = warning_reviews.get(record["target_path"])
+            if warning_review is not None:
+                if (
+                    not is_warning
+                    or warning_review.get("classification") != record["classification"]
+                ):
+                    raise ValueError(
+                        f"warning review must preserve the source classification: {record['id']}"
+                    )
+                error_candidate["classification_review"] = warning_review
+            error_candidates.append(error_candidate)
+
+    missing_selector_rules = {
+        rule["id"] for rule in selector_rules if rule["id"] not in matched_selector_rules
+    }
+    if missing_selector_rules:
+        raise ValueError(
+            "reviewed error selector rules do not match pinned source candidates: "
+            + ", ".join(sorted(missing_selector_rules))
+        )
 
     for coverage_item in coverage_items:
         coverage_item["starlette_rs_contract_mappings"] = starlette_contract_mappings_for(

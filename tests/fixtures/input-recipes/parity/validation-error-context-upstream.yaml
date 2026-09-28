@@ -145,9 +145,9 @@ cases:
       code: 1000
       reason: workflow complete
     observations:
-    - kind: websocket
-      selector: messages
-      comparison: ordered
+    - kind: application_error
+      selector: validation_error_class
+      comparison: exact
   source_evidence:
   - path: tests/test_validation_error_context.py
     kind: upstream_test
@@ -181,9 +181,9 @@ cases:
       code: 1000
       reason: workflow complete
     observations:
-    - kind: websocket
-      selector: messages
-      comparison: ordered
+    - kind: application_error
+      selector: validation_error_class
+      comparison: exact
   source_evidence:
   - path: tests/test_validation_error_context.py
     kind: upstream_test

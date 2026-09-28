@@ -8,6 +8,7 @@ import ast
 import hashlib
 import json
 import subprocess
+import sys
 from collections import Counter
 from pathlib import Path
 from typing import Any
@@ -467,6 +468,27 @@ def validate() -> None:
         sibling_manifest["scope"]["inventory"]["revision"],
         sibling_metadata["authority"]["revision"],
     )
+
+    api_contract_check = subprocess.run(
+        [sys.executable, "-m", "scripts.build_api_surface_contract", "--check"],
+        cwd=ROOT,
+        capture_output=True,
+        check=False,
+        text=True,
+    )
+    if api_contract_check.returncode:
+        details = "\n".join(
+            part
+            for part in (
+                api_contract_check.stdout.strip(),
+                api_contract_check.stderr.strip(),
+            )
+            if part
+        )
+        raise MetadataError(
+            "manifest API contract, including reviewed metadata overlays, is stale or invalid"
+            + (f":\n{details}" if details else "")
+        )
 
     print(
         "metadata authority valid: "

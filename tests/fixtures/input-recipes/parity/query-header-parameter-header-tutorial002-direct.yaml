@@ -1,0 +1,224 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/query_header_parameter_tutorial_review.py
+  factory: create_header_tutorial002_direct_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.query-header-review.header002.direct.default-underscore-alias
+  actions:
+  - action_id: default-underscore-alias
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - user-agent
+        - testclient
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_header_params/test_tutorial002.py
+    kind: upstream_test
+  - path: docs_src/header_params/tutorial002_py310.py
+    kind: upstream_documentation
+- case_id: fastapi.query-header-review.header002.direct.irrelevant-x-header
+  actions:
+  - action_id: irrelevant-x-header
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - user-agent
+        - testclient
+      - - x-header
+        - notvalid
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_header_params/test_tutorial002.py
+    kind: upstream_test
+  - path: docs_src/header_params/tutorial002_py310.py
+    kind: upstream_documentation
+- case_id: fastapi.query-header-review.header002.direct.underscore-alias
+  actions:
+  - action_id: underscore-alias
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - user-agent
+        - testclient
+      - - strange_header
+        - FastAPI test
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_header_params/test_tutorial002.py
+    kind: upstream_test
+  - path: docs_src/header_params/tutorial002_py310.py
+    kind: upstream_documentation
+- case_id: fastapi.query-header-review.header002.direct.hyphen-does-not-match-underscore-alias
+  actions:
+  - action_id: hyphen-does-not-match-underscore-alias
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - user-agent
+        - testclient
+      - - strange-header
+        - Not really underscore
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_header_params/test_tutorial002.py
+    kind: upstream_test
+  - path: docs_src/header_params/tutorial002_py310.py
+    kind: upstream_documentation
+- case_id: fastapi.query-header-review.header002.direct.openapi
+  actions:
+  - action_id: openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - user-agent
+        - testclient
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /openapi
+      - /info
+      - /paths
+      - /components
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_header_params/test_tutorial002.py
+    kind: upstream_test
+  - path: docs_src/header_params/tutorial002_py310.py
+    kind: upstream_documentation

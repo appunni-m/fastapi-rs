@@ -1,0 +1,49 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/path_operation_parameter_tutorials_test_path_params_test_tutorial002_test_openapi_schema.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.path-operation-parameter-tutorials.test-path-params-test-tutorial002-test-openapi-schema
+  actions:
+  - action_id: inspect-openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: http
+      method: GET
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /paths/~1atlas~1test_path_params_test_tutorial002_test_openapi_schema~1items~1{item_id}/get/parameters
+      - /components/schemas/HTTPValidationError
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_path_params/test_tutorial002.py
+    kind: upstream_test
+  - path: docs_src/path_params/tutorial002_py310.py
+    kind: upstream_documentation

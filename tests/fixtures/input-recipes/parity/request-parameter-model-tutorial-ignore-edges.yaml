@@ -1,0 +1,149 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/request_parameter_openapi_wave.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.request-parameter-model-tutorial.header-001-ignore-edges
+  actions:
+  - action_id: header-required-missing
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /headers
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+  - action_id: header-extra-ignored
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /headers
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - save-data
+        - 'true'
+      - - tool
+        - plumbus
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+  source_evidence:
+  - path: tests/test_tutorial/test_header_param_models/test_tutorial001.py
+    kind: upstream_test
+- case_id: fastapi.request-parameter-model-tutorial.cookie-001-ignore-edges
+  actions:
+  - action_id: cookie-required-missing
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /cookies
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+  - action_id: cookie-extra-ignored
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /cookies
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - cookie
+        - session_id=123; extra=track-me-here-too
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+  source_evidence:
+  - path: tests/test_tutorial/test_cookie_param_models/test_tutorial001.py
+    kind: upstream_test

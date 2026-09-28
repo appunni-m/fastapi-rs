@@ -1,7 +1,8 @@
 schema: fastapi-rs/api-source-authority@1
 
-# Canonical human-maintained source identity and locators. API rows are generated
-# into the referenced artifacts; this file intentionally contains no API catalog.
+# Canonical human-maintained source identities, contract policy, and reviewed
+# API overlays. Candidate rows are generated from the pinned source; reviewed
+# overlays add only source-backed operation and observation links.
 authority:
   project: FastAPI
   repository: https://github.com/fastapi/fastapi
@@ -121,3 +122,167 @@ starlette_rs:
   metadata_revision_pointer: /authority/revision
   boundary: FastAPI records only its direct Starlette imports, aliases, inheritance and integration edges; generic Starlette API and behavior stay sibling-owned.
   catalog_policy: Link to sibling artifacts; never copy or expand the Starlette API catalog here.
+
+reviewed_api_contract_overlay:
+  schema: fastapi-rs/reviewed-api-contract-overlay@1
+  purpose: >-
+    Source-backed overlays link selected supported operations to documented
+    features, observable selectors, and candidate error records. An error link
+    does not promote an uncertain exception into the public import contract.
+  error_selector_rules:
+    - id: http-exception
+      candidate_ids:
+        - fastapi.exceptions.HTTPException
+        - fastapi.exceptions.StarletteHTTPException
+      target_paths:
+        - fastapi.exceptions.HTTPException
+        - starlette.exceptions.HTTPException
+      observation_selectors:
+        - error.class
+        - error.args
+        - error.public_attributes
+        - http.status
+        - http.headers.ordered
+        - http.body.bytes
+        - http.body.json
+    - id: request-validation
+      candidate_ids: [fastapi.exceptions.RequestValidationError]
+      target_paths: [fastapi.exceptions.RequestValidationError]
+      observation_selectors:
+        - error.class
+        - error.args
+        - error.public_attributes
+        - http.status
+        - http.headers.ordered
+        - http.body.bytes
+        - http.body.json
+        - validation.error_class
+        - validation.error_details
+    - id: websocket-exception
+      candidate_ids:
+        - fastapi.exceptions.WebSocketException
+        - fastapi.exceptions.StarletteWebSocketException
+      target_paths:
+        - fastapi.exceptions.WebSocketException
+        - starlette.exceptions.WebSocketException
+      observation_selectors:
+        - error.class
+        - error.args
+        - error.public_attributes
+        - websocket.close_code
+        - websocket.close_reason
+    - id: websocket-request-validation
+      candidate_ids: [fastapi.exceptions.WebSocketRequestValidationError]
+      target_paths: [fastapi.exceptions.WebSocketRequestValidationError]
+      observation_selectors:
+        - error.class
+        - error.args
+        - error.public_attributes
+        - validation.error_class
+        - validation.error_details
+        - websocket.close_code
+        - websocket.close_reason
+    - id: response-validation
+      candidate_ids: [fastapi.exceptions.ResponseValidationError]
+      target_paths: [fastapi.exceptions.ResponseValidationError]
+      observation_selectors:
+        - error.class
+        - error.args
+        - error.public_attributes
+        - asgi.application_error.exception
+        - validation.error_class
+        - validation.error_details
+  operations:
+    fastapi.exception_handlers.http_exception_handler:
+      source_evidence:
+        - {path: fastapi/exception_handlers.py, symbol: http_exception_handler}
+        - {path: docs_src/handling_errors/tutorial006_py310.py, symbol: custom_http_exception_handler}
+      feature_ids: [public-api-errors]
+      observation_selectors:
+        - http.status
+        - http.headers.ordered
+        - http.body.bytes
+        - http.body.json
+      documentation_contract_refs:
+        - source_path: docs/en/docs/tutorial/handling-errors.md
+          fixture_id: fastapi.docs.tutorial-handling-errors
+          observation_selectors:
+            - http.status
+            - http.headers.ordered
+            - http.body.bytes
+            - http.body.json
+      error_contract_ids:
+        - fastapi.exceptions.HTTPException
+        - fastapi.exceptions.StarletteHTTPException
+    fastapi.exception_handlers.request_validation_exception_handler:
+      source_evidence:
+        - {path: fastapi/exception_handlers.py, symbol: request_validation_exception_handler}
+        - {path: docs_src/handling_errors/tutorial006_py310.py, symbol: validation_exception_handler}
+      feature_ids: [public-api-errors, request-validation]
+      observation_selectors:
+        - http.status
+        - http.headers.ordered
+        - http.body.bytes
+        - http.body.json
+        - validation.error_class
+        - validation.error_details
+      documentation_contract_refs:
+        - source_path: docs/en/docs/tutorial/handling-errors.md
+          fixture_id: fastapi.docs.tutorial-handling-errors
+          observation_selectors:
+            - http.status
+            - http.body.bytes
+            - http.body.json
+            - validation.error_class
+            - validation.error_details
+      error_contract_ids: [fastapi.exceptions.RequestValidationError]
+    fastapi.applications.FastAPI.websocket:
+      source_evidence:
+        - {path: fastapi/applications.py, symbol: websocket}
+        - {path: fastapi/routing.py, symbol: get_websocket_app}
+      feature_ids: [request-validation, websocket-lifecycle]
+      observation_selectors:
+        - validation.error_class
+        - validation.error_details
+        - websocket.close_code
+        - websocket.close_reason
+      error_contract_ids: [fastapi.exceptions.WebSocketRequestValidationError]
+    fastapi.routing.APIRouter.websocket:
+      source_evidence:
+        - {path: fastapi/routing.py, symbol: websocket}
+        - {path: fastapi/routing.py, symbol: get_websocket_app}
+      feature_ids: [request-validation, websocket-lifecycle]
+      observation_selectors:
+        - validation.error_class
+        - validation.error_details
+        - websocket.close_code
+        - websocket.close_reason
+      error_contract_ids: [fastapi.exceptions.WebSocketRequestValidationError]
+    fastapi.routing.APIRoute.get_route_handler:
+      source_evidence:
+        - {path: fastapi/routing.py, symbol: get_route_handler}
+        - {path: fastapi/routing.py, symbol: get_request_handler}
+      feature_ids: [response-serialization]
+      observation_selectors:
+        - asgi.application_error.exception
+        - validation.error_class
+        - validation.error_details
+      error_contract_ids: [fastapi.exceptions.ResponseValidationError]
+  warning_classification_reviews:
+    fastapi.exceptions.FastAPIDeprecationWarning:
+      classification: uncertain
+      rationale: >-
+        The source defines a custom warning and the release notes announce it,
+        but neither establishes a direct public import contract. Keep the
+        source candidate visible without promoting its classification.
+      evidence:
+        - kind: source-definition
+          path: fastapi/exceptions.py
+          symbol: FastAPIDeprecationWarning
+          start_line: 252
+          end_line: 256
+        - kind: release-note
+          path: docs/en/docs/release-notes.md
+          line: 1073
+          section: 0.127.1 (2025-12-26)
+          statement: Add a custom FastAPIDeprecationWarning.

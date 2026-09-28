@@ -1,0 +1,89 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/atlas_openapi_callback_interface_review.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.atlas-openapi-tutorial.callback-documentation
+  actions:
+  - action_id: callback-openapi-document
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - ''
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_openapi_callbacks/test_tutorial001.py
+    kind: upstream_test
+  - path: docs/en/docs/advanced/openapi-callbacks.md
+    kind: upstream_documentation
+- case_id: fastapi.atlas-openapi-tutorial.callback-route-request
+  actions:
+  - action_id: submit-independent-transfer
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /transfers/
+      query_string: notification_url=https%3A%2F%2Fhooks.example.test%2Fnotices
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"reference":"tr-58","recipient":"Mira","amount":17.25}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_openapi_callbacks/test_tutorial001.py
+    kind: upstream_test
+  - path: docs/en/docs/advanced/openapi-callbacks.md
+    kind: upstream_documentation

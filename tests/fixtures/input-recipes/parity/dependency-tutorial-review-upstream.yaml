@@ -1,0 +1,369 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/dependency_tutorial_review_upstream.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.dependencies.tutorial-review.basic-defaults
+  actions:
+  - action_id: omit-query-values
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /library/
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_tutorial/test_dependencies/test_tutorial001_tutorial001_02.py, kind: upstream_test}
+  - {path: docs_src/dependencies/tutorial001_py310.py, kind: upstream_documentation}
+- case_id: fastapi.dependencies.tutorial-review.basic-partial-query
+  actions:
+  - action_id: set-query-and-use-numeric-defaults
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /members/
+      query_string: q=birch
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_tutorial/test_dependencies/test_tutorial001_tutorial001_02.py, kind: upstream_test}
+  - {path: docs_src/dependencies/tutorial001_py310.py, kind: upstream_documentation}
+- case_id: fastapi.dependencies.tutorial-review.catalog-default-window
+  actions:
+  - action_id: explicit-class-dependency
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /catalog/class/
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: untyped-class-dependency
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /catalog/untyped/
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: inferred-class-dependency
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /catalog/inferred/
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_tutorial/test_dependencies/test_tutorial002_tutorial003_tutorial004.py, kind: upstream_test}
+  - {path: docs_src/dependencies/tutorial002_py310.py, kind: upstream_documentation}
+- case_id: fastapi.dependencies.tutorial-review.catalog-custom-window
+  actions:
+  - action_id: explicit-class-query-window
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /catalog/class/
+      query_string: q=birch&skip=1&limit=1
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: untyped-class-query-window
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /catalog/untyped/
+      query_string: q=birch&skip=1&limit=1
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: inferred-class-query-window
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /catalog/inferred/
+      query_string: q=birch&skip=1&limit=1
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_tutorial/test_dependencies/test_tutorial002_tutorial003_tutorial004.py, kind: upstream_test}
+  - {path: docs_src/dependencies/tutorial002_py310.py, kind: upstream_documentation}
+- case_id: fastapi.dependencies.tutorial-review.headers-missing
+  actions:
+  - action_id: omit-both-required-headers
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /vault/
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_tutorial/test_dependencies/test_tutorial006.py, kind: upstream_test}
+  - {path: docs_src/dependencies/tutorial006_py310.py, kind: upstream_documentation}
+- case_id: fastapi.dependencies.tutorial-review.headers-invalid-token
+  actions:
+  - action_id: reject-first-header
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /vault/
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver], [x-access-token, invalid]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_tutorial/test_dependencies/test_tutorial006.py, kind: upstream_test}
+  - {path: docs_src/dependencies/tutorial006_py310.py, kind: upstream_documentation}
+- case_id: fastapi.dependencies.tutorial-review.headers-invalid-key
+  actions:
+  - action_id: reject-second-header
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /vault/
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver], [x-access-token, token-for-review], [x-archive-key, invalid]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_tutorial/test_dependencies/test_tutorial006.py, kind: upstream_test}
+  - {path: docs_src/dependencies/tutorial006_py310.py, kind: upstream_documentation}
+- case_id: fastapi.dependencies.tutorial-review.ownership-not-found
+  actions:
+  - action_id: request-unknown-asset
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /assets/unknown
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_tutorial/test_dependencies/test_tutorial008b.py, kind: upstream_test}
+  - {path: docs_src/dependencies/tutorial008b_py310.py, kind: upstream_documentation}
+- case_id: fastapi.dependencies.tutorial-review.ownership-denied
+  actions:
+  - action_id: request-other-owners-asset
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /assets/compass
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_tutorial/test_dependencies/test_tutorial008b.py, kind: upstream_test}
+  - {path: docs_src/dependencies/tutorial008b_py310.py, kind: upstream_documentation}
+- case_id: fastapi.dependencies.tutorial-review.search-default
+  actions:
+  - action_id: use-empty-search-phrase
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /search/
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_tutorial/test_dependencies/test_tutorial011.py, kind: upstream_test}
+  - {path: docs_src/dependencies/tutorial011_py310.py, kind: upstream_documentation}
+- case_id: fastapi.dependencies.tutorial-review.openapi-projection
+  actions:
+  - action_id: inspect-dependency-parameter-schema
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations:
+    - kind: http_response
+      selectors: [status]
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /paths/~1library~1/get/parameters
+      - /paths/~1members~1/get/parameters
+      - /paths/~1catalog~1class~1/get/parameters
+      - /paths/~1catalog~1untyped~1/get/parameters
+      - /paths/~1catalog~1inferred~1/get/parameters
+      - /paths/~1vault~1/get/parameters
+      - /paths/~1search~1/get/parameters
+      - /paths/~1library~1/get/responses/422/content/application~1json/schema/$ref
+      - /paths/~1catalog~1class~1/get/responses/422/content/application~1json/schema/$ref
+      - /paths/~1catalog~1untyped~1/get/responses/422/content/application~1json/schema/$ref
+      - /paths/~1catalog~1inferred~1/get/responses/422/content/application~1json/schema/$ref
+      - /paths/~1vault~1/get/responses/422/content/application~1json/schema/$ref
+      - /paths/~1search~1/get/responses/422/content/application~1json/schema/$ref
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_tutorial/test_dependencies/test_tutorial001_tutorial001_02.py, kind: upstream_test}
+  - {path: tests/test_tutorial/test_dependencies/test_tutorial002_tutorial003_tutorial004.py, kind: upstream_test}
+  - {path: tests/test_tutorial/test_dependencies/test_tutorial006.py, kind: upstream_test}
+  - {path: tests/test_tutorial/test_dependencies/test_tutorial011.py, kind: upstream_test}
+  - {path: docs_src/dependencies/tutorial001_py310.py, kind: upstream_documentation}
+  - {path: docs_src/dependencies/tutorial002_py310.py, kind: upstream_documentation}
+  - {path: docs_src/dependencies/tutorial004_py310.py, kind: upstream_documentation}
+  - {path: docs_src/dependencies/tutorial006_py310.py, kind: upstream_documentation}
+  - {path: docs_src/dependencies/tutorial011_py310.py, kind: upstream_documentation}

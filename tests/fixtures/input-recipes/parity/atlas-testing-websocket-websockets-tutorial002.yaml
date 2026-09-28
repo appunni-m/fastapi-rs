@@ -1,0 +1,448 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/atlas_testing_websocket_websocket_tutorial.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.atlas-testing.websocket-tutorial002
+  actions:
+  - action_id: read-main
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: http_response
+      selectors:
+      - body
+      comparison: exact
+  - action_id: cookie-plain
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /items/foo/ws
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - cookie
+        - session=fakesession
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.receive
+      text: Message one
+    - type: websocket.receive
+      text: Message two
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
+    - kind: websocket
+      selector: messages
+      comparison: ordered
+    - kind: websocket
+      selector: close_code
+      comparison: exact
+  - action_id: cookie-annotated
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /annotated/items/foo/ws
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - cookie
+        - session=fakesession
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.receive
+      text: Message one
+    - type: websocket.receive
+      text: Message two
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
+    - kind: websocket
+      selector: messages
+      comparison: ordered
+    - kind: websocket
+      selector: close_code
+      comparison: exact
+  - action_id: query-token-plain
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /items/bar/ws
+      query_string: token=some-token
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.receive
+      text: Message one
+    - type: websocket.receive
+      text: Message two
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
+    - kind: websocket
+      selector: messages
+      comparison: ordered
+    - kind: websocket
+      selector: close_code
+      comparison: exact
+  - action_id: query-token-annotated
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /annotated/items/bar/ws
+      query_string: token=some-token
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.receive
+      text: Message one
+    - type: websocket.receive
+      text: Message two
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
+    - kind: websocket
+      selector: messages
+      comparison: ordered
+    - kind: websocket
+      selector: close_code
+      comparison: exact
+  - action_id: query-token-q-plain
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /items/2/ws
+      query_string: q=3&token=some-token
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.receive
+      text: Message one
+    - type: websocket.receive
+      text: Message two
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
+    - kind: websocket
+      selector: messages
+      comparison: ordered
+    - kind: websocket
+      selector: close_code
+      comparison: exact
+  - action_id: query-token-q-annotated
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /annotated/items/2/ws
+      query_string: q=3&token=some-token
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.receive
+      text: Message one
+    - type: websocket.receive
+      text: Message two
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
+    - kind: websocket
+      selector: messages
+      comparison: ordered
+    - kind: websocket
+      selector: close_code
+      comparison: exact
+  - action_id: no-credentials-plain
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /items/foo/ws
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
+    - kind: websocket
+      selector: messages
+      comparison: ordered
+    - kind: websocket
+      selector: close_code
+      comparison: exact
+  - action_id: no-credentials-annotated
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /annotated/items/foo/ws
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
+    - kind: websocket
+      selector: messages
+      comparison: ordered
+    - kind: websocket
+      selector: close_code
+      comparison: exact
+  - action_id: invalid-query-plain
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /items/foo/ws
+      query_string: q=bar&token=some-token
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
+    - kind: websocket
+      selector: messages
+      comparison: ordered
+    - kind: websocket
+      selector: close_code
+      comparison: exact
+  - action_id: invalid-query-annotated
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /annotated/items/foo/ws
+      query_string: q=bar&token=some-token
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
+    - kind: websocket
+      selector: messages
+      comparison: ordered
+    - kind: websocket
+      selector: close_code
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_websockets/test_tutorial002.py
+    kind: upstream_test
+  - path: docs_src/websockets_/tutorial002_py310.py
+    kind: upstream_documentation
+  - path: docs_src/websockets_/tutorial002_an_py310.py
+    kind: upstream_documentation

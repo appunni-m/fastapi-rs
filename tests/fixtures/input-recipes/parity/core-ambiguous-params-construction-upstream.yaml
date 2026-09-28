@@ -1,0 +1,62 @@
+schema: fastapi-rs/python-asgi-workflow@3
+workload:
+  file: tests/fixtures/workloads/core_ambiguous_params_construction_upstream.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.request.ambiguous-params.path-default-in-annotated
+  factory_input:
+    scenario: annotated-path-default
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions: []
+  source_evidence:
+  - path: tests/test_ambiguous_params.py
+    kind: upstream_test
+- case_id: fastapi.request.ambiguous-params.query-default-in-annotated
+  factory_input:
+    scenario: annotated-query-default
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions: []
+  source_evidence:
+  - path: tests/test_ambiguous_params.py
+    kind: upstream_test
+- case_id: fastapi.request.ambiguous-params.depends-annotation-plus-default
+  factory_input:
+    scenario: depends-annotated-and-default
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions: []
+  source_evidence:
+  - path: tests/test_ambiguous_params.py
+    kind: upstream_test
+- case_id: fastapi.request.ambiguous-params.field-annotation-plus-depends-default
+  factory_input:
+    scenario: field-annotated-and-depends-default
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions: []
+  source_evidence:
+  - path: tests/test_ambiguous_params.py
+    kind: upstream_test

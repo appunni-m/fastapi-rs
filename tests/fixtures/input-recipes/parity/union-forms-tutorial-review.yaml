@@ -1,0 +1,117 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/union_forms_tutorial_review.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.request-union-forms.tutorial.user
+  actions:
+  - action_id: post-user-form
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /form-union/
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver], [content-type, application/x-www-form-urlencoded]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: 'name=John+Doe&email=john%40example.com', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_union_forms.py, kind: upstream_test}
+- case_id: fastapi.request-union-forms.tutorial.company
+  actions:
+  - action_id: post-company-form
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /form-union/
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver], [content-type, application/x-www-form-urlencoded]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: 'company_name=Tech+Corp&industry=Technology', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_union_forms.py, kind: upstream_test}
+- case_id: fastapi.request-union-forms.tutorial.invalid-mixed-fields
+  actions:
+  - action_id: post-invalid-mixed-form
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /form-union/
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver], [content-type, application/x-www-form-urlencoded]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: 'name=John&company_name=Tech+Corp', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_union_forms.py, kind: upstream_test}
+- case_id: fastapi.request-union-forms.tutorial.empty
+  actions:
+  - action_id: post-empty-form
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /form-union/
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_union_forms.py, kind: upstream_test}
+- case_id: fastapi.request-union-forms.tutorial.openapi
+  actions:
+  - action_id: union-forms-openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status], comparison: exact}
+    - {kind: openapi, json_pointers: [''], comparison: exact}
+  source_evidence:
+  - {path: tests/test_union_forms.py, kind: upstream_test}

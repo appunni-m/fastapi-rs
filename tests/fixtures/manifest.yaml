@@ -127,7 +127,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@2
-    sha256: fd1d21a52b3f53595323857b9f8fd6b2fa2b9f86bec2c34c64121ee6883c17f5
+    sha256: d02b1ff6bf51bdfe02dfbbce7ce6d0ab7072d11c6f8128ea576afdd012103c93
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -156,19 +156,19 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 258e1b46d96bc78be6fbbc3c3e72d9f20f779621139eb0a5215a631b9af52268
+    sha256: 424f0eb67d12c006c63ba716fb266c4a4989acb3a4155d9662696b9095e40e9c
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
-      designs: 557
-      test_case_designs: 2163
+      designs: 555
+      test_case_designs: 2113
     source_artifact_pointer: /fixture_backlog_ref
   observation_selector_catalog:
     path: tests/fixtures/observation-selectors.json
     schema: fastapi-rs/observation-selector-catalog@1
-    sha256: d609d70ce9f12df1709955cc8c3b2b4632d6bda8d58ddddd1f5d345dc70eadec
+    sha256: 8392af31788aaa97db4b277d62c863b649c9db7fb34ff931a40ba093734e7295
     purpose: Exact projection semantics for the atlas and fixture selectors
     counts:
-      selectors: 51
+      selectors: 48
       parameterized_selectors: 1
   runtime_api_surface_core:
     path: tests/fixtures/runtime-api-surface-core.json
@@ -193,14 +193,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@1
-    sha256: 1676a0cbaf84e8964dcdfc73ffd585ac5aacedfe8bbcad09668f55497245fd46
+    sha256: a9f28fba0bf82c281acac008ff73d555be37fd371c20d02821af368bd7464815
     schema_path: tests/fixtures/schemas/materialized-input-index.schema.json
     schema_sha256: 467200b835dfd99ab16dfbd4ca4507145e070c73aa55d4425fd78e11141c3e86
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 244
-      cases: 1094
-      partial_source_mappings: 652
+      workflows: 377
+      cases: 1543
+      partial_source_mappings: 855
 
 contract_metadata:
   aliases:
@@ -410,6 +410,7 @@ api_surface_contract:
   target_profile: fastapi-rs-python-consumer
   public_import: fastapi
   classification_source: source_artifacts.compatibility_atlas.api_candidates
+  reviewed_operation_overlay_source: metadata.yaml:/reviewed_api_contract_overlay
   signature_source:
   - source_artifacts.api_inventory
   - source_artifacts.runtime_api_surface_core
@@ -428,10 +429,10 @@ api_surface_contract:
     implementation_owner_plans:
       fastapi-rs: 415
       starlette-rs: 24
-    symbols_with_documented_feature_refs: 430
+    symbols_with_documented_feature_refs: 432
     symbols_with_alias_refs: 39
     symbols_with_deprecation_refs: 11
-    symbols_with_error_contract_refs: 7
+    symbols_with_error_contract_refs: 12
     target_bindings_implemented: 0
   symbols:
   - id: fastapi.APIRouter
@@ -1593,10 +1594,6 @@ api_surface_contract:
     - error.args
     - error.class
     - error.public_attributes
-    - http.body.bytes
-    - http.body.json
-    - http.headers.ordered
-    - http.status
     - websocket.close_code
     - websocket.event_order
     - websocket.messages
@@ -1658,6 +1655,7 @@ api_surface_contract:
     - python.object_identity
     - python.signature
     - websocket.close_code
+    - websocket.close_reason
     behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
@@ -2974,7 +2972,8 @@ api_surface_contract:
     signature_contract_state: runtime-signature-reflected
     alias_refs: []
     deprecation_refs: []
-    error_contract_refs: []
+    error_contract_refs:
+    - /errors/25
     documentation_contract_refs:
     - coverage_matrix_ref: /coverage_matrix/541
       source_path: docs/en/docs/reference/fastapi.md
@@ -2995,6 +2994,9 @@ api_surface_contract:
     - dependency.call_order
     - docs.response.body.bytes
     - docs.response.status
+    - error.args
+    - error.class
+    - error.public_attributes
     - http.body.bytes
     - http.body.json
     - http.headers.ordered
@@ -3013,9 +3015,11 @@ api_surface_contract:
     - validation.error_class
     - validation.error_details
     - warnings.category_message
+    - websocket.close_code
+    - websocket.close_reason
     - websocket.event_order
     - websocket.messages
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; implementation pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.applications.FastAPI.websocket
@@ -3738,11 +3742,31 @@ api_surface_contract:
     signature_contract_state: runtime-signature-reflected
     alias_refs: []
     deprecation_refs: []
-    error_contract_refs: []
-    documentation_contract_refs: []
-    feature_ids: []
-    observation_selectors: []
-    behavior_contract_state: source-evidence-only; fixture link pending
+    error_contract_refs:
+    - /errors/17
+    - /errors/21
+    documentation_contract_refs:
+    - coverage_matrix_ref: /coverage_matrix/586
+      source_path: docs/en/docs/tutorial/handling-errors.md
+      mapping_status: candidate
+      fixture_id: fastapi.docs.tutorial-handling-errors
+      fixture_design_ref: /fixture_designs/77
+      observation_selectors:
+      - http.body.bytes
+      - http.body.json
+      - http.headers.ordered
+      - http.status
+    feature_ids:
+    - public-api-errors
+    observation_selectors:
+    - error.args
+    - error.class
+    - error.public_attributes
+    - http.body.bytes
+    - http.body.json
+    - http.headers.ordered
+    - http.status
+    behavior_contract_state: reviewed-operation-and-documentation-links; implementation pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.exception_handlers.http_exception_handler
@@ -3776,11 +3800,34 @@ api_surface_contract:
     signature_contract_state: runtime-signature-reflected
     alias_refs: []
     deprecation_refs: []
-    error_contract_refs: []
-    documentation_contract_refs: []
-    feature_ids: []
-    observation_selectors: []
-    behavior_contract_state: source-evidence-only; fixture link pending
+    error_contract_refs:
+    - /errors/19
+    documentation_contract_refs:
+    - coverage_matrix_ref: /coverage_matrix/586
+      source_path: docs/en/docs/tutorial/handling-errors.md
+      mapping_status: candidate
+      fixture_id: fastapi.docs.tutorial-handling-errors
+      fixture_design_ref: /fixture_designs/77
+      observation_selectors:
+      - http.body.bytes
+      - http.body.json
+      - http.status
+      - validation.error_class
+      - validation.error_details
+    feature_ids:
+    - public-api-errors
+    - request-validation
+    observation_selectors:
+    - error.args
+    - error.class
+    - error.public_attributes
+    - http.body.bytes
+    - http.body.json
+    - http.headers.ordered
+    - http.status
+    - validation.error_class
+    - validation.error_details
+    behavior_contract_state: reviewed-operation-and-documentation-links; implementation pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.exception_handlers.request_validation_exception_handler
@@ -3963,7 +4010,8 @@ api_surface_contract:
     - http.body.json
     - http.headers.ordered
     - http.status
-    - websocket.close_code
+    - validation.error_class
+    - validation.error_details
     behavior_contract_state: source-evidence-only; fixture link pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
@@ -4089,6 +4137,7 @@ api_surface_contract:
     - python.object_identity
     - python.signature
     - websocket.close_code
+    - websocket.close_reason
     behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
@@ -18490,7 +18539,8 @@ api_surface_contract:
     signature_contract_state: runtime-signature-reflected
     alias_refs: []
     deprecation_refs: []
-    error_contract_refs: []
+    error_contract_refs:
+    - /errors/20
     documentation_contract_refs:
     - coverage_matrix_ref: /coverage_matrix/522
       source_path: docs/en/docs/how-to/custom-request-and-route.md
@@ -18506,10 +18556,16 @@ api_surface_contract:
     - request-validation
     - response-serialization
     observation_selectors:
+    - asgi.application_error.exception
+    - error.args
+    - error.class
+    - error.public_attributes
     - http.body.bytes
     - http.headers.ordered
     - http.status
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    - validation.error_class
+    - validation.error_details
+    behavior_contract_state: reviewed-operation-and-documentation-links; implementation pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.routing.APIRoute.get_route_handler
@@ -19400,7 +19456,8 @@ api_surface_contract:
     signature_contract_state: runtime-signature-reflected
     alias_refs: []
     deprecation_refs: []
-    error_contract_refs: []
+    error_contract_refs:
+    - /errors/25
     documentation_contract_refs:
     - coverage_matrix_ref: /coverage_matrix/536
       source_path: docs/en/docs/reference/apirouter.md
@@ -19417,6 +19474,9 @@ api_surface_contract:
     - websocket-lifecycle
     observation_selectors:
     - dependency.call_order
+    - error.args
+    - error.class
+    - error.public_attributes
     - http.body.bytes
     - http.body.json
     - http.headers.ordered
@@ -19428,8 +19488,10 @@ api_surface_contract:
     - route.match
     - validation.error_class
     - validation.error_details
+    - websocket.close_code
+    - websocket.close_reason
     - websocket.messages
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; implementation pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.routing.APIRouter.websocket
@@ -23247,10 +23309,6 @@ api_surface_contract:
     - error.args
     - error.class
     - error.public_attributes
-    - http.body.bytes
-    - http.body.json
-    - http.headers.ordered
-    - http.status
     - websocket.close_code
     - websocket.event_order
     - websocket.messages

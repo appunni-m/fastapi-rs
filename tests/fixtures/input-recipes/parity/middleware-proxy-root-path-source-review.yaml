@@ -1,0 +1,257 @@
+schema: fastapi-rs/python-asgi-workflow@3
+workload:
+  file: tests/fixtures/workloads/middleware_proxy_source_review.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.middleware-proxy.proxy-client-root-path
+  factory_input:
+    scenario: proxy-root-path
+    app_root_path: ''
+    message: Service scope inspected
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: read-service-root-path
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /service
+      query_string: ''
+      root_path: /edge/v4
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: read-service-openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: /edge/v4
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status], comparison: exact}
+    - kind: openapi
+      json_pointers:
+      - /openapi
+      - /info/title
+      - /info/version
+      - /servers
+      - /paths/~1service/get
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_behind_a_proxy/test_tutorial001.py
+    kind: upstream_test
+  - path: docs_src/behind_a_proxy/tutorial001_py310.py
+    kind: upstream_documentation
+  - path: docs/en/docs/advanced/behind-a-proxy.md
+    kind: upstream_documentation
+- case_id: fastapi.middleware-proxy.proxy-app-root-path
+  factory_input:
+    scenario: proxy-root-path
+    app_root_path: /edge/v4
+    message: App root scope inspected
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: read-configured-root-path
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /service
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: read-configured-openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status], comparison: exact}
+    - kind: openapi
+      json_pointers:
+      - /openapi
+      - /info/title
+      - /info/version
+      - /servers
+      - /paths/~1service/get
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_behind_a_proxy/test_tutorial002.py
+    kind: upstream_test
+  - path: docs_src/behind_a_proxy/tutorial002_py310.py
+    kind: upstream_documentation
+  - path: docs/en/docs/advanced/behind-a-proxy.md
+    kind: upstream_documentation
+- case_id: fastapi.middleware-proxy.proxy-root-path-with-servers
+  factory_input:
+    scenario: proxy-root-path
+    app_root_path: /edge/v4
+    message: Server list scope inspected
+    servers:
+    - {url: 'https://preview.example.net', description: Preview}
+    - {url: 'https://api.example.net', description: Production}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: read-service-with-configured-servers
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /service
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: read-configured-server-openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status], comparison: exact}
+    - kind: openapi
+      json_pointers:
+      - /openapi
+      - /info/title
+      - /info/version
+      - /servers
+      - /paths/~1service/get
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_behind_a_proxy/test_tutorial003.py
+    kind: upstream_test
+  - path: docs_src/behind_a_proxy/tutorial003_py310.py
+    kind: upstream_documentation
+  - path: docs/en/docs/advanced/behind-a-proxy.md
+    kind: upstream_documentation
+- case_id: fastapi.middleware-proxy.proxy-root-path-without-auto-server
+  factory_input:
+    scenario: proxy-root-path
+    app_root_path: /edge/v4
+    root_path_in_servers: false
+    message: Server filtering scope inspected
+    servers:
+    - {url: 'https://preview.example.net', description: Preview}
+    - {url: 'https://api.example.net', description: Production}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: read-service-with-server-filter
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /service
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: read-filtered-server-openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status], comparison: exact}
+    - kind: openapi
+      json_pointers:
+      - /openapi
+      - /info/title
+      - /info/version
+      - /servers
+      - /paths/~1service/get
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_behind_a_proxy/test_tutorial004.py
+    kind: upstream_test
+  - path: docs_src/behind_a_proxy/tutorial004_py310.py
+    kind: upstream_documentation
+  - path: docs/en/docs/advanced/behind-a-proxy.md
+    kind: upstream_documentation

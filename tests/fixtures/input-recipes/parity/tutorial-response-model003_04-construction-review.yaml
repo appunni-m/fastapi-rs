@@ -1,0 +1,19 @@
+schema: fastapi-rs/python-asgi-workflow@3
+workload:
+  file: tests/fixtures/workloads/tutorial_response_model_003_04_review.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.tutorial-response-model003-04.invalid-union-return-annotation
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions: []
+  source_evidence:
+  - path: tests/test_tutorial/test_response_model/test_tutorial003_04.py
+    kind: upstream_test

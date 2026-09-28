@@ -1,0 +1,170 @@
+schema: fastapi-rs/python-asgi-workflow@3
+workload:
+  file: tests/fixtures/workloads/middleware_proxy_source_review.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.middleware-proxy.decorator-middleware
+  factory_input:
+    scenario: decorator-middleware
+    process_time_marker: fixed-review-value
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: request-openapi-through-middleware
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers], comparison: exact}
+    - kind: openapi
+      json_pointers:
+      - /openapi
+      - /info/title
+      - /info/version
+      - /paths
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_middleware/test_tutorial001.py
+    kind: upstream_test
+  - path: docs_src/middleware/tutorial001_py310.py
+    kind: upstream_documentation
+  - path: docs/en/docs/tutorial/middleware.md
+    kind: upstream_documentation
+- case_id: fastapi.middleware-proxy.static-files
+  factory_input:
+    scenario: static-files
+    file_name: visible.txt
+    file_body: Independent mounted content for the source-review workload.
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: request-mounted-file
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /assets/visible.txt
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: request-missing-mounted-file
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /assets/missing.txt
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status], comparison: exact}
+  - action_id: request-static-openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status], comparison: exact}
+    - kind: openapi
+      json_pointers:
+      - /openapi
+      - /info/title
+      - /info/version
+      - /paths
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_static_files/test_tutorial001.py
+    kind: upstream_test
+  - path: docs_src/static_files/tutorial001_py310.py
+    kind: upstream_documentation
+  - path: docs/en/docs/tutorial/static-files.md
+    kind: upstream_documentation
+- case_id: fastapi.middleware-proxy.settings-dependency-override
+  factory_input:
+    scenario: dependency-override
+    default_profile:
+      service_name: Independent Service
+      contact_address: default@example.net
+      batch_limit: 17
+    overridden_profile:
+      service_name: Independent Service
+      contact_address: review@example.net
+      batch_limit: 17
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: request-overridden-profile
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /profile
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - path: tests/test_tutorial/test_settings/test_app02.py
+    kind: upstream_test
+  - path: docs_src/settings/app02_py310/main.py
+    kind: upstream_documentation
+  - path: docs_src/settings/app02_py310/test_main.py
+    kind: upstream_documentation
+  - path: docs_src/settings/app02_py310/config.py
+    kind: upstream_documentation
+  - path: docs/en/docs/advanced/settings.md
+    kind: upstream_documentation

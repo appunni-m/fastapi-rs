@@ -1,0 +1,84 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/tutorial_response_status_code_review.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.tutorial-response-status-code001.created-item
+  actions:
+  - action_id: create-item-with-query-name
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: http
+      method: POST
+      path: /items/
+      query_string: name=Field%20Guide
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_response_status_code/test_tutorial001_tutorial002.py
+    kind: upstream_test
+- case_id: fastapi.tutorial-response-status-code001.openapi
+  actions:
+  - action_id: inspect-created-response
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: http
+      method: GET
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /paths/~1items~1/post/parameters
+      - /paths/~1items~1/post/responses/201
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_response_status_code/test_tutorial001_tutorial002.py
+    kind: upstream_test

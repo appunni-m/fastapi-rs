@@ -32,6 +32,10 @@ def create_app() -> FastAPI:
     async def json_header(x_items: Annotated[Json[list[str]], Header()]) -> list[str]:
         return x_items
 
+    @app.get("/json/cookie")
+    async def json_cookie(items: Annotated[Json[list[str]], Cookie()]) -> list[str]:
+        return items
+
     @app.get("/alias/query")
     async def query_alias(parameters: Annotated[AliasParameters, Query()]) -> dict[str, str]:
         return {"value": parameters.value}

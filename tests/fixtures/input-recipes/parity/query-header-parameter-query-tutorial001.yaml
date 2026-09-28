@@ -1,0 +1,177 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/query_header_parameter_tutorial_review.py
+  factory: create_query_tutorial001_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.query-header-review.query001.items-default
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - user-agent
+        - testclient
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_query_params/test_tutorial001.py
+    kind: upstream_test
+  - path: docs_src/query_params/tutorial001_py310.py
+    kind: upstream_documentation
+- case_id: fastapi.query-header-review.query001.items-skip
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/
+      query_string: skip=1
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - user-agent
+        - testclient
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_query_params/test_tutorial001.py
+    kind: upstream_test
+  - path: docs_src/query_params/tutorial001_py310.py
+    kind: upstream_documentation
+- case_id: fastapi.query-header-review.query001.items-skip-limit
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/
+      query_string: skip=1&limit=1
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - user-agent
+        - testclient
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_query_params/test_tutorial001.py
+    kind: upstream_test
+  - path: docs_src/query_params/tutorial001_py310.py
+    kind: upstream_documentation
+- case_id: fastapi.query-header-review.query001.openapi
+  actions:
+  - action_id: openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - user-agent
+        - testclient
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /openapi
+      - /info
+      - /paths
+      - /components
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_query_params/test_tutorial001.py
+    kind: upstream_test
+  - path: docs_src/query_params/tutorial001_py310.py
+    kind: upstream_documentation

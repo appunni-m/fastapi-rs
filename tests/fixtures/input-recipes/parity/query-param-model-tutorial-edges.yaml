@@ -1,0 +1,43 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/query_param_models.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.request-parameter-model-tutorial.query-001-extra-ignore
+  actions:
+  - action_id: query-extra-ignored
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/
+      query_string: limit=10&offset=5&order_by=updated_at&tags=tag1&tags=tag2&tool=plumbus
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+  source_evidence:
+  - path: tests/test_tutorial/test_query_param_models/test_tutorial001.py
+    kind: upstream_test

@@ -1,0 +1,183 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/query_header_parameter_tutorial_review.py
+  factory: create_header_tutorial003_annotated_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.query-header-review.header003.annotated.missing-list-header
+  actions:
+  - action_id: missing-list-header
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - user-agent
+        - testclient
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_header_params/test_tutorial003.py
+    kind: upstream_test
+  - path: docs_src/header_params/tutorial003_an_py310.py
+    kind: upstream_documentation
+- case_id: fastapi.query-header-review.header003.annotated.single-list-header-value
+  actions:
+  - action_id: single-list-header-value
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - user-agent
+        - testclient
+      - - x-token
+        - foo
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_header_params/test_tutorial003.py
+    kind: upstream_test
+  - path: docs_src/header_params/tutorial003_an_py310.py
+    kind: upstream_documentation
+- case_id: fastapi.query-header-review.header003.annotated.repeated-list-header-values
+  actions:
+  - action_id: repeated-list-header-values
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - user-agent
+        - testclient
+      - - x-token
+        - foo
+      - - x-token
+        - bar
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_header_params/test_tutorial003.py
+    kind: upstream_test
+  - path: docs_src/header_params/tutorial003_an_py310.py
+    kind: upstream_documentation
+- case_id: fastapi.query-header-review.header003.annotated.openapi
+  actions:
+  - action_id: openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - user-agent
+        - testclient
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /openapi
+      - /info
+      - /paths
+      - /components
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_header_params/test_tutorial003.py
+    kind: upstream_test
+  - path: docs_src/header_params/tutorial003_an_py310.py
+    kind: upstream_documentation

@@ -22,10 +22,8 @@ def _register_handlers(app: FastAPI) -> None:
     async def response_error(_request: Request, exc: ResponseValidationError) -> Response:
         return PlainTextResponse(str(exc), status_code=500)
 
-    async def websocket_error(websocket: WebSocket, exc: WebSocketRequestValidationError) -> None:
-        await websocket.accept()
-        await websocket.send_text(str(exc))
-        await websocket.close()
+    async def websocket_error(_: WebSocket, exc: WebSocketRequestValidationError) -> None:
+        raise exc
 
     app.exception_handler(RequestValidationError)(request_error)
     app.exception_handler(ResponseValidationError)(response_error)

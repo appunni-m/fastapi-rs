@@ -1,0 +1,45 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/route_scope_websocket_path.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.route-scope.websocket-route-path
+  actions:
+  - action_id: observe-route-scope
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /streams/nebula-7
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
+    - kind: websocket
+      selector: messages
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_route_scope.py
+    kind: upstream_test

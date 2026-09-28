@@ -495,26 +495,6 @@ RESPONSE_OPENAPI_TEST_REVIEW_MAPPINGS = {
             ),
         },
     },
-    "tests/test_stream_status_code.py": {
-        "functions": {
-            "test_status_code": _case(
-                "tests/test_stream_status_code.py",
-                152,
-                154,
-                ["response-serialization"],
-                ["http.status"],
-                "Nine streaming route combinations expose route status codes with and without response dependencies and explicit dependency status overrides.",
-                "Use stream-status-code-upstream.yaml case fastapi.test.test-stream-status-code.test-status-code; its nine requests observe the source's status-only assertions.",
-                implementation=_source(
-                    "fastapi/routing.py",
-                    697,
-                    740,
-                    "FastAPI resolves response status and serializes the endpoint result",
-                ),
-                contract_gate="The recipe covers status observations only. EventSourceResponse and StreamingResponse body/headers, streaming iteration, and TestClient behavior remain in the Starlette-RS contract.",
-            ),
-        },
-    },
     "tests/test_validate_response.py": {
         "functions": {
             "test_invalid": _case(
@@ -620,47 +600,17 @@ RESPONSE_OPENAPI_TEST_REVIEW_MAPPINGS = {
             ),
         },
     },
-    "tests/test_response_code_no_body.py": {
-        "functions": {
-            "test_get_response": _case(
-                "tests/test_response_code_no_body.py",
-                41,
-                45,
-                ["response-serialization"],
-                ["http.status", "http.headers.ordered", "http.body.bytes"],
-                "A 204 route with an explicit response class returns an empty body without content-length; the source checks status, header absence, and empty bytes.",
-                "Use response-policy-matrix.yaml case fastapi.response.bodyless-204, action empty-response.",
-                implementation=_source(
-                    "fastapi/routing.py",
-                    697,
-                    740,
-                    "FastAPI constructs the configured response from route output and status",
-                ),
-                contract_gate="The response policy case observes status, headers, and bytes but uses a different 204 route. Header/body suppression rules of the response class are generic Starlette behavior; track those through the pinned Starlette-RS contract.",
-            ),
-        },
-    },
-    "tests/test_response_set_response_code_empty.py": {
-        "functions": {
-            "test_dependency_set_status_code": _case(
-                "tests/test_response_set_response_code_empty.py",
-                26,
-                29,
-                ["response-serialization"],
-                ["http.status", "http.body.json"],
-                "The handler overrides a declared 204 response status with 400 and returns a nonempty JSON body.",
-                "Use response-policy-matrix.yaml case fastapi.response.status-overwrite, action delete-record.",
-                implementation=_source(
-                    "fastapi/routing.py",
-                    697,
-                    740,
-                    "FastAPI combines endpoint response data with the mutable response status",
-                ),
-                contract_gate="The source checks 400 and a nonempty body plus parsed JSON; the recipe compares an independent path/id/body and raw response bytes. Generic response emission belongs to the Starlette-RS contract.",
-            ),
-        },
-    },
 }
+
+
+# Keep response status/body review separate from the response and encoder wave.
+# This wave links its source functions to existing recipe cases, avoiding a
+# second copy of the same response stimuli.
+from atlas_response_status_body_wave_mappings import (  # noqa: E402
+    RESPONSE_STATUS_BODY_TEST_REVIEW_MAPPINGS,
+)
+
+RESPONSE_OPENAPI_TEST_REVIEW_MAPPINGS.update(RESPONSE_STATUS_BODY_TEST_REVIEW_MAPPINGS)
 
 
 # The builder's existing function exclusions cover test_encode_model_with_alias_raises

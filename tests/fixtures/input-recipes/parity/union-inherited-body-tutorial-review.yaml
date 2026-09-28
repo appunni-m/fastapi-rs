@@ -1,0 +1,73 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/union_inherited_body_tutorial_review.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.request-union-body.inherited.extended-item
+  actions:
+  - action_id: post-extended-item
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /items/
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver], [content-type, application/json]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '{"name":"Foo","age":5}', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_union_inherited_body.py, kind: upstream_test}
+- case_id: fastapi.request-union-body.inherited.base-item
+  actions:
+  - action_id: post-base-item
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /items/
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver], [content-type, application/json]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '{"name":"Foo"}', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_union_inherited_body.py, kind: upstream_test}
+- case_id: fastapi.request-union-body.inherited.openapi
+  actions:
+  - action_id: inherited-union-openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status], comparison: exact}
+    - {kind: openapi, json_pointers: [''], comparison: exact}
+  source_evidence:
+  - {path: tests/test_union_inherited_body.py, kind: upstream_test}

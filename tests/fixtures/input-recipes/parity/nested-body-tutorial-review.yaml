@@ -1,0 +1,579 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/nested_body_tutorial_review.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.nested-body-tutorial-review.typed-tags-body
+  actions:
+  - action_id: put-typed-entry
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: PUT
+      scheme: http
+      path: /tag-forms/typed/27
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"name":"Juniper","score":18.25,"tags":["cedar","ash","cedar"]}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_body_nested_models/test_tutorial001_tutorial002_tutorial003.py
+    kind: upstream_test
+- case_id: fastapi.nested-body-tutorial-review.typed-tags-only-required
+  actions:
+  - action_id: put-typed-entry-with-defaults
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: PUT
+      scheme: http
+      path: /tag-forms/typed/31
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"name":"Willow","score":11.5}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_body_nested_models/test_tutorial001_tutorial002_tutorial003.py
+    kind: upstream_test
+- case_id: fastapi.nested-body-tutorial-review.typed-tags-schema
+  actions:
+  - action_id: inspect-typed-tags
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /components/schemas/TypedTagEntry/properties/tags
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_body_nested_models/test_tutorial001_tutorial002_tutorial003.py
+    kind: upstream_test
+- case_id: fastapi.nested-body-tutorial-review.unique-tags-body
+  actions:
+  - action_id: put-unique-entry
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: PUT
+      scheme: http
+      path: /tag-forms/unique/43
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"name":"Rowan","score":9.75,"tags":["copper","teal","copper"]}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_body_nested_models/test_tutorial001_tutorial002_tutorial003.py
+    kind: upstream_test
+- case_id: fastapi.nested-body-tutorial-review.unique-tags-schema
+  actions:
+  - action_id: inspect-unique-tags
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /components/schemas/UniqueTagEntry/properties/tags
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_body_nested_models/test_tutorial001_tutorial002_tutorial003.py
+    kind: upstream_test
+- case_id: fastapi.nested-body-tutorial-review.asset-only-required
+  actions:
+  - action_id: put-asset-with-defaults
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: PUT
+      scheme: http
+      path: /assets/62
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"name":"Desk lamp","cost":26.4}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_body_nested_models/test_tutorial006.py
+    kind: upstream_test
+- case_id: fastapi.nested-body-tutorial-review.asset-invalid-url
+  actions:
+  - action_id: put-asset-with-invalid-image-url
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: PUT
+      scheme: http
+      path: /assets/74
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"name":"Travel case","cost":42.0,"image":{"href":"plain-text-address","caption":"Front
+        panel"}}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_body_nested_models/test_tutorial005.py
+    kind: upstream_test
+- case_id: fastapi.nested-body-tutorial-review.asset-request-schema
+  actions:
+  - action_id: inspect-asset-and-image-schema
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /components/schemas/ReviewAsset/properties/images
+      - /components/schemas/ReviewImage/properties/href
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_body_nested_models/test_tutorial006.py
+    kind: upstream_test
+- case_id: fastapi.nested-body-tutorial-review.offer-only-required
+  actions:
+  - action_id: post-offer-with-required-fields
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /offers/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"name":"Field set","cost":53.0,"lines":[{"name":"Socket driver","cost":18.0,"images":[{"href":"https://catalog.example.test/driver.png","caption":"Case
+        sample"}]}]}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_body_nested_models/test_tutorial007.py
+    kind: upstream_test
+- case_id: fastapi.nested-body-tutorial-review.offer-empty-body
+  actions:
+  - action_id: post-empty-offer
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /offers/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_body_nested_models/test_tutorial007.py
+    kind: upstream_test
+- case_id: fastapi.nested-body-tutorial-review.offer-missing-nested-image-fields
+  actions:
+  - action_id: post-offer-with-incomplete-image
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /offers/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"name":"Workshop bundle","cost":77.5,"lines":[{"name":"Measuring tape","cost":8.25,"images":[{}]}]}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_body_nested_models/test_tutorial007.py
+    kind: upstream_test
+- case_id: fastapi.nested-body-tutorial-review.image-batch-invalid-url
+  actions:
+  - action_id: post-image-batch-with-invalid-url
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /image-batches/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '[{"href":"not-a-site","caption":"Specimen"}]'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_body_nested_models/test_tutorial008.py
+    kind: upstream_test
+- case_id: fastapi.nested-body-tutorial-review.image-batch-object-body
+  actions:
+  - action_id: post-image-object-instead-of-list
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /image-batches/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"href":"https://assets.example.invalid/specimen.png","caption":"Specimen"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_body_nested_models/test_tutorial008.py
+    kind: upstream_test
+- case_id: fastapi.nested-body-tutorial-review.image-batch-request-schema
+  actions:
+  - action_id: inspect-image-batch-request-schema
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths/~1image-batches~1/post/requestBody/content/application~1json/schema
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_body_nested_models/test_tutorial008.py
+    kind: upstream_test
+- case_id: fastapi.nested-body-tutorial-review.weight-map-request-schema
+  actions:
+  - action_id: inspect-weight-map-request-schema
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths/~1weight-maps~1/post/requestBody/content/application~1json/schema
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_body_nested_models/test_tutorial009.py
+    kind: upstream_test

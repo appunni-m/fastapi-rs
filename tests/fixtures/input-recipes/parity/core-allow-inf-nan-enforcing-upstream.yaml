@@ -1,0 +1,704 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/core_allow_inf_nan_enforcing_upstream.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.request.allow-inf-nan.query-true
+  actions:
+  - action_id: query-true-1
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /
+      query_string: allow=-1
+      root_path: ''
+      headers:
+      - &id001
+        - host
+        - testserver
+      client: &id002
+      - 127.0.0.1
+      - 123
+      server: &id003
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: query-true-2
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /
+      query_string: allow=inf
+      root_path: ''
+      headers:
+      - *id001
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: query-true-3
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /
+      query_string: allow=-inf
+      root_path: ''
+      headers:
+      - *id001
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: query-true-4
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /
+      query_string: allow=nan
+      root_path: ''
+      headers:
+      - *id001
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: query-true-5
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /
+      query_string: allow=0
+      root_path: ''
+      headers:
+      - *id001
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: query-true-6
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /
+      query_string: allow=342
+      root_path: ''
+      headers:
+      - *id001
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_allow_inf_nan_in_enforcing.py
+    kind: upstream_test
+- case_id: fastapi.request.allow-inf-nan.query-false
+  actions:
+  - action_id: query-false-1
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /
+      query_string: reject=-1
+      root_path: ''
+      headers:
+      - *id001
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: query-false-2
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /
+      query_string: reject=inf
+      root_path: ''
+      headers:
+      - *id001
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: query-false-3
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /
+      query_string: reject=-inf
+      root_path: ''
+      headers:
+      - *id001
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: query-false-4
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /
+      query_string: reject=nan
+      root_path: ''
+      headers:
+      - *id001
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: query-false-5
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /
+      query_string: reject=0
+      root_path: ''
+      headers:
+      - *id001
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: query-false-6
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /
+      query_string: reject=342
+      root_path: ''
+      headers:
+      - *id001
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_allow_inf_nan_in_enforcing.py
+    kind: upstream_test
+- case_id: fastapi.request.allow-inf-nan.query-default
+  actions:
+  - action_id: query-default-1
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /
+      query_string: inherited=-1
+      root_path: ''
+      headers:
+      - *id001
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: query-default-2
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /
+      query_string: inherited=inf
+      root_path: ''
+      headers:
+      - *id001
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: query-default-3
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /
+      query_string: inherited=-inf
+      root_path: ''
+      headers:
+      - *id001
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: query-default-4
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /
+      query_string: inherited=nan
+      root_path: ''
+      headers:
+      - *id001
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: query-default-5
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /
+      query_string: inherited=0
+      root_path: ''
+      headers:
+      - *id001
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: query-default-6
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /
+      query_string: inherited=342
+      root_path: ''
+      headers:
+      - *id001
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_allow_inf_nan_in_enforcing.py
+    kind: upstream_test
+- case_id: fastapi.request.allow-inf-nan.body-false
+  actions:
+  - action_id: body-false-1
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id001
+      - - content-type
+        - application/json
+      - - content-length
+        - '4'
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: '"-1"'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: body-false-2
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id001
+      - - content-type
+        - application/json
+      - - content-length
+        - '5'
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: '"inf"'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: body-false-3
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id001
+      - - content-type
+        - application/json
+      - - content-length
+        - '6'
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: '"-inf"'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: body-false-4
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id001
+      - - content-type
+        - application/json
+      - - content-length
+        - '5'
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: '"nan"'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: body-false-5
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id001
+      - - content-type
+        - application/json
+      - - content-length
+        - '3'
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: '"0"'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: body-false-6
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id001
+      - - content-type
+        - application/json
+      - - content-length
+        - '5'
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: '"342"'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_allow_inf_nan_in_enforcing.py
+    kind: upstream_test

@@ -1,0 +1,47 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/path_operation_parameter_tutorials_test_path_operation_advanced_configurations_test_tutorial004_test_query_params_str_validations.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.path-operation-parameter-tutorials.test-path-operation-advanced-configurations-test-tutorial004-test-query-params-str-validations
+  actions:
+  - action_id: valid-record
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: http
+      method: POST
+      path: /atlas/test_path_operation_advanced_configurations_test_tutorial004_test_query_params_str_validations/items/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"title":"cedar ledger","price":17.5,"tags":["amber"]}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_path_operation_advanced_configurations/test_tutorial004.py
+    kind: upstream_test
+  - path: docs_src/path_operation_advanced_configuration/tutorial004_py310.py
+    kind: upstream_documentation

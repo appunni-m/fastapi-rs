@@ -1,0 +1,240 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/atlas_openapi_swagger_parameters_interface_review.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.atlas-openapi-tutorial.syntax-highlighting-disabled
+  actions:
+  - action_id: syntax-off-swagger-ui
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /syntax-off/docs
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_configure_swagger_ui/test_tutorial001.py
+    kind: upstream_test
+  - path: docs/en/docs/how-to/configure-swagger-ui.md
+    kind: upstream_documentation
+- case_id: fastapi.atlas-openapi-tutorial.syntax-highlighting-route
+  actions:
+  - action_id: syntax-off-member-route
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /syntax-off/members/mira
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_configure_swagger_ui/test_tutorial001.py
+    kind: upstream_test
+  - path: docs/en/docs/how-to/configure-swagger-ui.md
+    kind: upstream_documentation
+- case_id: fastapi.atlas-openapi-tutorial.nested-theme-configuration
+  actions:
+  - action_id: theme-swagger-ui
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /theme/docs
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_configure_swagger_ui/test_tutorial002.py
+    kind: upstream_test
+  - path: docs/en/docs/how-to/configure-swagger-ui.md
+    kind: upstream_documentation
+- case_id: fastapi.atlas-openapi-tutorial.nested-theme-route
+  actions:
+  - action_id: theme-member-route
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /theme/members/nova
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_configure_swagger_ui/test_tutorial002.py
+    kind: upstream_test
+  - path: docs/en/docs/how-to/configure-swagger-ui.md
+    kind: upstream_documentation
+- case_id: fastapi.atlas-openapi-tutorial.default-parameter-override
+  actions:
+  - action_id: deep-link-off-swagger-ui
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /deep-link-off/docs
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_configure_swagger_ui/test_tutorial003.py
+    kind: upstream_test
+  - path: docs/en/docs/how-to/configure-swagger-ui.md
+    kind: upstream_documentation
+- case_id: fastapi.atlas-openapi-tutorial.default-parameter-route
+  actions:
+  - action_id: deep-link-off-member-route
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /deep-link-off/members/sol
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_configure_swagger_ui/test_tutorial003.py
+    kind: upstream_test
+  - path: docs/en/docs/how-to/configure-swagger-ui.md
+    kind: upstream_documentation

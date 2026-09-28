@@ -1,0 +1,177 @@
+# Supplemental input-only coverage for pending cases from the pinned FastAPI
+# response-model return-annotation test module. The source function and endpoint
+# line spans are recorded in comments and the mapping sidecar.
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/response_model_return_annotation_gaps_wave.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.response-model-return-annotation-gaps.forward-reference-list
+  # Source endpoint: ../fastapi/tests/test_response_model_as_return_annotation.py:207-212.
+  # Source test_no_response_model_annotation_forward_ref_list_of_model: 454-460.
+  actions:
+  - action_id: serve-forward-reference-list
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /forward-reference-list
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_response_model_as_return_annotation.py, kind: upstream_test}
+- case_id: fastapi.response-model-return-annotation-gaps.explicit-dict-extra
+  # Source endpoint: ../fastapi/tests/test_response_model_as_return_annotation.py:60-64.
+  # Source test_response_model_no_annotation_return_dict_with_extra_data: 290-293.
+  actions:
+  - action_id: filter-extra-dict-field
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /explicit-dict-extra
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_response_model_as_return_annotation.py, kind: upstream_test}
+- case_id: fastapi.response-model-return-annotation-gaps.explicit-submodel-extra
+  # Source endpoint: ../fastapi/tests/test_response_model_as_return_annotation.py:67-71.
+  # Source test_response_model_no_annotation_return_submodel_with_extra_data: 296-301.
+  actions:
+  - action_id: filter-extra-explicit-submodel-field
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /explicit-submodel-extra
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_response_model_as_return_annotation.py, kind: upstream_test}
+- case_id: fastapi.response-model-return-annotation-gaps.inferred-submodel-extra
+  # Source endpoint: ../fastapi/tests/test_response_model_as_return_annotation.py:99-102.
+  # Source test_no_response_model_annotation_return_submodel_with_extra_data: 334-339.
+  actions:
+  - action_id: filter-extra-inferred-submodel-field
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /inferred-submodel-extra
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_response_model_as_return_annotation.py, kind: upstream_test}
+- case_id: fastapi.response-model-return-annotation-gaps.explicit-model-over-annotation
+  # Source endpoint: ../fastapi/tests/test_response_model_as_return_annotation.py:175-180.
+  # Source test_response_model_model1_annotation_model2_return_submodel_with_extra_data: 420-425.
+  actions:
+  - action_id: explicit-model-over-annotation
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /explicit-model-over-annotation
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_response_model_as_return_annotation.py, kind: upstream_test}
+- case_id: fastapi.response-model-return-annotation-gaps.jsonresponse-annotation
+  # Source endpoint: ../fastapi/tests/test_response_model_as_return_annotation.py:246-248.
+  # Source test_no_response_model_annotation_json_response_class: 493-496.
+  actions:
+  - action_id: return-annotated-jsonresponse
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /jsonresponse-annotation
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_response_model_as_return_annotation.py, kind: upstream_test}
+- case_id: fastapi.response-model-return-annotation-gaps.invalid-inferred-model-validation
+  # Source endpoint: ../fastapi/tests/test_response_model_as_return_annotation.py:89-91.
+  # Source test_no_response_model_annotation_return_invalid_model: 322-325.
+  actions:
+  - action_id: reject-invalid-model-output
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /invalid-inferred-submodel
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: application_error, selector: validation_error_class, comparison: exact}
+  source_evidence:
+  - {path: tests/test_response_model_as_return_annotation.py, kind: upstream_test}
