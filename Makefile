@@ -134,6 +134,7 @@ parity-oracle-standard: parity-inputs ## Execute optional-feature inputs with St
 	$(PYTHON) -m scripts.parity.cli oracle --input "$(PARITY_INPUT)" --python "$(ORACLE_STANDARD_PYTHON)"
 
 parity-target: parity-inputs ## Execute PARITY_INPUT against the isolated FastAPI-RS target
+	$(TARGET_PYTHON) scripts/check_target_runtime_boundary.py
 	$(PYTHON) -m scripts.parity.cli target --input "$(PARITY_INPUT)" --python "$(TARGET_PYTHON)" --starlette-rs-source "$(STARLETTE_RS_SOURCE)"
 
 parity-compare: ## Compare live source/target result artifacts exactly

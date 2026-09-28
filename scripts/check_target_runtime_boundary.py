@@ -1,4 +1,4 @@
-"""Reject the original FastAPI distribution from the target runtime."""
+"""Enforce the FastAPI-RS Python pass-through and runtime dependency boundary."""
 
 from __future__ import annotations
 
@@ -45,6 +45,21 @@ def check_python_facade_control_flow() -> None:
                     f"{path.relative_to(PROJECT_ROOT)}:{node.lineno}: "
                     f"{type(node).__name__} is forbidden in the Python pass-through layer"
                 )
+            if isinstance(node, ast.Import) and any(
+                alias.name == "fastapi" or alias.name.startswith("fastapi.")
+                for alias in node.names
+            ):
+                violations.append(
+                    f"{path.relative_to(PROJECT_ROOT)}:{node.lineno}: "
+                    "the original FastAPI package cannot be imported by the target facade"
+                )
+            if isinstance(node, ast.ImportFrom) and (
+                node.module == "fastapi" or (node.module or "").startswith("fastapi.")
+            ):
+                violations.append(
+                    f"{path.relative_to(PROJECT_ROOT)}:{node.lineno}: "
+                    "the original FastAPI package cannot be imported by the target facade"
+                )
     if violations:
         raise SystemExit("\n".join(violations))
 
@@ -59,7 +74,10 @@ def main() -> int:
     )
     args = parser.parse_args()
     if args.source_only:
-        print("Python facade static boundary valid: no branches, loops, or handlers")
+        print(
+            "Python facade static boundary valid: no branches, loops, handlers, "
+            "or imports from original FastAPI"
+        )
         return 0
 
     try:
