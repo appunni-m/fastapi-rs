@@ -1,0 +1,1087 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fastapi-rs.dev/schemas/python-asgi-workflow/3",
+  "title": "FastAPI-RS Python/ASGI workflow input v3",
+  "description": "Version 3 adds per-case factory input, construction observations, and explicit ASGI lifespan startup/shutdown workflows while retaining the v2 HTTP and WebSocket contract.",
+  "type": "object",
+  "required": [
+    "schema",
+    "workload",
+    "cases"
+  ],
+  "properties": {
+    "schema": {
+      "const": "fastapi-rs/python-asgi-workflow@3"
+    },
+    "workload": {
+      "$ref": "#/$defs/workload"
+    },
+    "oracle_profile_extension": {
+      "enum": [
+        "standard-multipart"
+      ],
+      "description": "Optional pinned package overlay. It retains the sole Starlette 1.6.0 contract."
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/case"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "relativePythonFile": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.?(?:/|$))[A-Za-z0-9._/-]+\\.py$",
+      "description": "Repository-relative Python file path; absolute paths and dot traversal segments are forbidden."
+    },
+    "workload": {
+      "type": "object",
+      "required": [
+        "file",
+        "factory",
+        "instantiate_per_case"
+      ],
+      "properties": {
+        "file": {
+          "$ref": "#/$defs/relativePythonFile"
+        },
+        "factory": {
+          "type": "string",
+          "pattern": "^[A-Za-z_][A-Za-z0-9_]*$",
+          "description": "Called once per case as factory(factory_input, event_trace), with a fresh mutable list of ordered callback markers."
+        },
+        "instantiate_per_case": {
+          "const": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "sourceEvidence": {
+      "type": "object",
+      "required": [
+        "path",
+        "kind"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.?(?:/|$))[A-Za-z0-9._/-]+$"
+        },
+        "kind": {
+          "enum": [
+            "upstream_test",
+            "upstream_documentation"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "httpScope": {
+      "type": "object",
+      "required": [
+        "type",
+        "asgi",
+        "http_version",
+        "method",
+        "scheme",
+        "path",
+        "query_string",
+        "root_path",
+        "headers",
+        "client",
+        "server"
+      ],
+      "properties": {
+        "type": {
+          "const": "http"
+        },
+        "asgi": {
+          "type": "object",
+          "required": [
+            "version"
+          ],
+          "properties": {
+            "version": {
+              "const": "3.0"
+            },
+            "spec_version": {
+              "type": "string",
+              "pattern": "^[0-9]+\\.[0-9]+$"
+            }
+          },
+          "additionalProperties": false
+        },
+        "http_version": {
+          "enum": [
+            "1.0",
+            "1.1",
+            "2",
+            "3"
+          ]
+        },
+        "method": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9!#$%&'*+.^_`|~-]*$"
+        },
+        "scheme": {
+          "enum": [
+            "http",
+            "https"
+          ]
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^/"
+        },
+        "raw_path_base64": {
+          "type": "string",
+          "contentEncoding": "base64",
+          "pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$",
+          "description": "Optional ASGI raw_path bytes encoded as standard base64."
+        },
+        "query_string": {
+          "type": "string",
+          "pattern": "^[\\x21-\\x7E]*$",
+          "description": "ASCII URL-encoded query bytes, without the leading question mark."
+        },
+        "root_path": {
+          "type": "string"
+        },
+        "headers": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "prefixItems": [
+              {
+                "type": "string",
+                "pattern": "^[a-z0-9!#$%&'*+.^_`|~-]+$",
+                "description": "Lowercase ASCII ASGI header name."
+              },
+              {
+                "type": "string",
+                "pattern": "^[^\\r\\n]*$",
+                "description": "Header value encoded as UTF-8 when constructing the ASGI scope."
+              }
+            ],
+            "minItems": 2,
+            "maxItems": 2,
+            "items": false
+          }
+        },
+        "client": {
+          "oneOf": [
+            {
+              "type": "array",
+              "prefixItems": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 65535
+                }
+              ],
+              "minItems": 2,
+              "maxItems": 2,
+              "items": false
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "server": {
+          "oneOf": [
+            {
+              "type": "array",
+              "prefixItems": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 65535
+                }
+              ],
+              "minItems": 2,
+              "maxItems": 2,
+              "items": false
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "receiveEvent": {
+      "type": "object",
+      "required": [
+        "type",
+        "body",
+        "more_body"
+      ],
+      "properties": {
+        "type": {
+          "const": "http.request"
+        },
+        "body": {
+          "type": "string",
+          "description": "Raw event body bytes represented as UTF-8 text. The ordered event list is the receive sequence."
+        },
+        "more_body": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "httpObservation": {
+      "type": "object",
+      "required": [
+        "kind",
+        "selectors",
+        "comparison"
+      ],
+      "properties": {
+        "kind": {
+          "const": "http_response"
+        },
+        "selectors": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "status",
+              "headers",
+              "body"
+            ]
+          }
+        },
+        "comparison": {
+          "const": "exact"
+        }
+      },
+      "additionalProperties": false
+    },
+    "openapiObservation": {
+      "type": "object",
+      "required": [
+        "kind",
+        "json_pointers",
+        "comparison"
+      ],
+      "properties": {
+        "kind": {
+          "const": "openapi"
+        },
+        "json_pointers": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^/"
+          },
+          "description": "RFC 6901 pointers into the live OpenAPI response body."
+        },
+        "comparison": {
+          "const": "exact"
+        }
+      },
+      "additionalProperties": false
+    },
+    "asgiSendObservation": {
+      "type": "object",
+      "required": [
+        "kind",
+        "selector",
+        "comparison"
+      ],
+      "properties": {
+        "kind": {
+          "const": "asgi_send"
+        },
+        "selector": {
+          "const": "message_types"
+        },
+        "comparison": {
+          "const": "ordered"
+        }
+      },
+      "additionalProperties": false
+    },
+    "applicationErrorObservation": {
+      "type": "object",
+      "required": [
+        "kind",
+        "selector",
+        "comparison"
+      ],
+      "properties": {
+        "kind": {
+          "const": "application_error"
+        },
+        "selector": {
+          "const": "validation_error_class",
+          "description": "Select the fully qualified exception class raised during ASGI dispatch; a completed dispatch with no exception is recorded as null."
+        },
+        "comparison": {
+          "const": "exact"
+        }
+      },
+      "additionalProperties": false
+    },
+    "observation": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/httpObservation"
+        },
+        {
+          "$ref": "#/$defs/openapiObservation"
+        },
+        {
+          "$ref": "#/$defs/asgiSendObservation"
+        },
+        {
+          "$ref": "#/$defs/applicationErrorObservation"
+        },
+        {
+          "$ref": "#/$defs/websocketObservation"
+        }
+      ]
+    },
+    "case": {
+      "type": "object",
+      "required": [
+        "case_id",
+        "factory_input",
+        "construction_observation",
+        "actions",
+        "source_evidence"
+      ],
+      "properties": {
+        "case_id": {
+          "type": "string",
+          "pattern": "^fastapi(?:\\.[a-z0-9][a-z0-9-]*){2,}$"
+        },
+        "actions": {
+          "type": "array",
+          "minItems": 0,
+          "items": {
+            "$ref": "#/$defs/action"
+          },
+          "allOf": [
+            {
+              "contains": {
+                "$ref": "#/$defs/lifespanAction"
+              },
+              "minContains": 0,
+              "maxContains": 1
+            },
+            {
+              "if": {
+                "contains": {
+                  "$ref": "#/$defs/lifespanAction"
+                }
+              },
+              "then": {
+                "prefixItems": [
+                  {
+                    "$ref": "#/$defs/lifespanAction"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "source_evidence": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/sourceEvidence"
+          }
+        },
+        "factory_input": {
+          "$ref": "#/$defs/factoryInput"
+        },
+        "construction_observation": {
+          "$ref": "#/$defs/constructionObservationSelection"
+        }
+      },
+      "additionalProperties": false,
+      "description": "Each case constructs one application from factory_input; actions may be empty for construction-only observations."
+    },
+    "websocketScope": {
+      "type": "object",
+      "required": [
+        "type",
+        "asgi",
+        "http_version",
+        "scheme",
+        "path",
+        "query_string",
+        "root_path",
+        "headers",
+        "client",
+        "server",
+        "subprotocols"
+      ],
+      "properties": {
+        "type": {
+          "const": "websocket"
+        },
+        "asgi": {
+          "type": "object",
+          "required": [
+            "version"
+          ],
+          "properties": {
+            "version": {
+              "const": "3.0"
+            },
+            "spec_version": {
+              "type": "string",
+              "pattern": "^[0-9]+\\.[0-9]+$"
+            }
+          },
+          "additionalProperties": false
+        },
+        "http_version": {
+          "enum": [
+            "1.0",
+            "1.1",
+            "2",
+            "3"
+          ]
+        },
+        "scheme": {
+          "enum": [
+            "ws",
+            "wss"
+          ]
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^/"
+        },
+        "raw_path_base64": {
+          "type": "string",
+          "contentEncoding": "base64",
+          "pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$",
+          "description": "Optional ASGI raw_path bytes encoded as standard base64."
+        },
+        "query_string": {
+          "type": "string",
+          "pattern": "^[\\x21-\\x7E]*$",
+          "description": "ASCII URL-encoded query bytes, without the leading question mark."
+        },
+        "root_path": {
+          "type": "string"
+        },
+        "headers": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "prefixItems": [
+              {
+                "type": "string",
+                "pattern": "^[a-z0-9!#$%&'*+.^_`|~-]+$",
+                "description": "Lowercase ASCII ASGI header name."
+              },
+              {
+                "type": "string",
+                "pattern": "^[^\\r\\n]*$",
+                "description": "Header value encoded as UTF-8 when constructing the ASGI scope."
+              }
+            ],
+            "minItems": 2,
+            "maxItems": 2,
+            "items": false
+          }
+        },
+        "client": {
+          "oneOf": [
+            {
+              "type": "array",
+              "prefixItems": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 65535
+                }
+              ],
+              "minItems": 2,
+              "maxItems": 2,
+              "items": false
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "server": {
+          "oneOf": [
+            {
+              "type": "array",
+              "prefixItems": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 65535
+                }
+              ],
+              "minItems": 2,
+              "maxItems": 2,
+              "items": false
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "subprotocols": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "state": {
+          "type": "object"
+        },
+        "extensions": {
+          "type": "object"
+        }
+      },
+      "additionalProperties": false
+    },
+    "websocketConnectEvent": {
+      "type": "object",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "websocket.connect"
+        }
+      },
+      "additionalProperties": false
+    },
+    "websocketTextReceiveEvent": {
+      "type": "object",
+      "required": [
+        "type",
+        "text"
+      ],
+      "properties": {
+        "type": {
+          "const": "websocket.receive"
+        },
+        "text": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "websocketBytesReceiveEvent": {
+      "type": "object",
+      "required": [
+        "type",
+        "bytes_base64"
+      ],
+      "properties": {
+        "type": {
+          "const": "websocket.receive"
+        },
+        "bytes_base64": {
+          "type": "string",
+          "contentEncoding": "base64",
+          "pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$",
+          "description": "Optional ASGI raw_path bytes encoded as standard base64."
+        }
+      },
+      "additionalProperties": false
+    },
+    "websocketReceiveEvent": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/websocketTextReceiveEvent"
+        },
+        {
+          "$ref": "#/$defs/websocketBytesReceiveEvent"
+        }
+      ]
+    },
+    "websocketDisconnectEvent": {
+      "type": "object",
+      "required": [
+        "type",
+        "code"
+      ],
+      "properties": {
+        "type": {
+          "const": "websocket.disconnect"
+        },
+        "code": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 65535
+        },
+        "reason": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "websocketObservation": {
+      "type": "object",
+      "required": [
+        "kind",
+        "selector",
+        "comparison"
+      ],
+      "properties": {
+        "kind": {
+          "const": "websocket"
+        },
+        "selector": {
+          "enum": [
+            "close_code",
+            "event_order",
+            "messages"
+          ]
+        },
+        "comparison": {
+          "enum": [
+            "exact",
+            "ordered"
+          ]
+        }
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "selector": {
+              "const": "close_code"
+            },
+            "comparison": {
+              "const": "exact"
+            }
+          }
+        },
+        {
+          "properties": {
+            "selector": {
+              "const": "event_order"
+            },
+            "comparison": {
+              "const": "ordered"
+            }
+          }
+        },
+        {
+          "properties": {
+            "selector": {
+              "const": "messages"
+            },
+            "comparison": {
+              "const": "ordered"
+            }
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "httpAction": {
+      "type": "object",
+      "required": [
+        "action_id",
+        "kind",
+        "scope",
+        "receive_events",
+        "observations"
+      ],
+      "properties": {
+        "action_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "kind": {
+          "const": "http_request"
+        },
+        "scope": {
+          "$ref": "#/$defs/httpScope"
+        },
+        "receive_events": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/receiveEvent"
+          },
+          "description": "Concrete input events returned to the ASGI application, in receive order."
+        },
+        "observations": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/observation"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "websocketAction": {
+      "type": "object",
+      "required": [
+        "action_id",
+        "kind",
+        "scope",
+        "receive_events",
+        "observations"
+      ],
+      "properties": {
+        "action_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "kind": {
+          "const": "websocket_session"
+        },
+        "scope": {
+          "$ref": "#/$defs/websocketScope"
+        },
+        "receive_events": {
+          "type": "array",
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "$ref": "#/$defs/websocketConnectEvent"
+            }
+          ],
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/websocketReceiveEvent"
+              },
+              {
+                "$ref": "#/$defs/websocketDisconnectEvent"
+              }
+            ]
+          },
+          "description": "Input-only events returned to the ASGI application, beginning with websocket.connect and ending with an explicit websocket.disconnect."
+        },
+        "observations": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/observation"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "action": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/httpAction"
+        },
+        {
+          "$ref": "#/$defs/websocketAction"
+        },
+        {
+          "$ref": "#/$defs/lifespanAction"
+        }
+      ]
+    },
+    "jsonValue": {
+      "description": "A JSON value available in case-specific workflow input.",
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "string"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/jsonValue"
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/jsonValue"
+          }
+        }
+      ]
+    },
+    "factoryInput": {
+      "type": "object",
+      "description": "Case-specific JSON data passed as the first workload factory argument; a fresh mutable event trace is passed as the second argument.",
+      "additionalProperties": {
+        "$ref": "#/$defs/jsonValue"
+      }
+    },
+    "asgiLifespanObservation": {
+      "type": "object",
+      "required": [
+        "kind",
+        "selector",
+        "comparison"
+      ],
+      "properties": {
+        "kind": {
+          "const": "asgi_lifespan"
+        },
+        "selector": {
+          "enum": [
+            "event_order",
+            "startup",
+            "shutdown",
+            "application_errors",
+            "workload_trace"
+          ]
+        },
+        "comparison": {
+          "enum": [
+            "exact",
+            "ordered"
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "selector": {
+                "const": "event_order"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "comparison": {
+                "const": "ordered"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "selector": {
+                "const": "startup"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "comparison": {
+                "const": "exact"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "selector": {
+                "const": "shutdown"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "comparison": {
+                "const": "exact"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "selector": {
+                "const": "application_errors"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "comparison": {
+                "const": "exact"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "selector": {
+                "const": "workload_trace"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "comparison": {
+                "const": "ordered"
+              }
+            }
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "lifespanAction": {
+      "type": "object",
+      "required": [
+        "action_id",
+        "kind",
+        "events",
+        "observations"
+      ],
+      "properties": {
+        "action_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "kind": {
+          "const": "lifespan"
+        },
+        "events": {
+          "const": [
+            "lifespan.startup",
+            "lifespan.shutdown"
+          ],
+          "description": "ASGI server input: startup is sent before request actions and shutdown is sent after them whenever startup completes. The server seeds scope state from initial_state and carries startup-complete state to request scopes."
+        },
+        "observations": {
+          "type": "array",
+          "minItems": 5,
+          "items": {
+            "$ref": "#/$defs/asgiLifespanObservation"
+          },
+          "maxItems": 5,
+          "uniqueItems": true,
+          "allOf": [
+            {
+              "contains": {
+                "properties": {
+                  "selector": {
+                    "const": "event_order"
+                  }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "properties": {
+                  "selector": {
+                    "const": "startup"
+                  }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "properties": {
+                  "selector": {
+                    "const": "shutdown"
+                  }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "properties": {
+                  "selector": {
+                    "const": "application_errors"
+                  }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "properties": {
+                  "selector": {
+                    "const": "workload_trace"
+                  }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            }
+          ]
+        },
+        "initial_state": {
+          "$ref": "#/$defs/initialState"
+        }
+      },
+      "additionalProperties": false
+    },
+    "constructionObservationSelection": {
+      "type": "object",
+      "description": "Compare successful construction status, or exception class and str(exception) without tracebacks.",
+      "required": [
+        "kind",
+        "selectors",
+        "comparison"
+      ],
+      "properties": {
+        "kind": {
+          "const": "construction"
+        },
+        "selectors": {
+          "const": [
+            "outcome",
+            "exception_class",
+            "exception_message"
+          ],
+          "description": "Always compare construction outcome, fully qualified exception class, and str(exception), without traceback text."
+        },
+        "comparison": {
+          "const": "exact"
+        }
+      },
+      "additionalProperties": false
+    },
+    "initialState": {
+      "type": "object",
+      "description": "Optional initial ASGI lifespan scope state for this case.",
+      "additionalProperties": {
+        "$ref": "#/$defs/jsonValue"
+      }
+    }
+  }
+}

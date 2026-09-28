@@ -1,0 +1,394 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/response_validation_uncovered_wave.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.response-validation.pydantic.invalid-field
+  actions:
+  - action_id: response-validation
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/invalid
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: application_error
+      selector: validation_error_class
+      comparison: exact
+  source_evidence:
+  - path: tests/test_validate_response.py
+    kind: upstream_test
+- case_id: fastapi.response-validation.pydantic.nonnullable-none
+  actions:
+  - action_id: response-validation
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/invalid-none
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: application_error
+      selector: validation_error_class
+      comparison: exact
+  source_evidence:
+  - path: tests/test_validate_response.py
+    kind: upstream_test
+- case_id: fastapi.response-validation.pydantic.multiple-invalid-fields
+  actions:
+  - action_id: response-validation
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/inner-invalid
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: application_error
+      selector: validation_error_class
+      comparison: exact
+  source_evidence:
+  - path: tests/test_validate_response.py
+    kind: upstream_test
+- case_id: fastapi.response-validation.pydantic.invalid-list
+  actions:
+  - action_id: response-validation
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/invalid-list
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: application_error
+      selector: validation_error_class
+      comparison: exact
+  source_evidence:
+  - path: tests/test_validate_response.py
+    kind: upstream_test
+- case_id: fastapi.response-validation.pydantic.nullable-object
+  actions:
+  - action_id: nullable-response
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/valid-none
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_validate_response.py
+    kind: upstream_test
+- case_id: fastapi.response-validation.pydantic.nullable-none
+  actions:
+  - action_id: nullable-none-response
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/valid-none
+      query_string: send_none=true
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_validate_response.py
+    kind: upstream_test
+- case_id: fastapi.response-validation.dataclass.invalid-field
+  actions:
+  - action_id: dataclass-response-validation
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /dataclass/invalid
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: application_error
+      selector: validation_error_class
+      comparison: exact
+  source_evidence:
+  - path: tests/test_validate_response_dataclass.py
+    kind: upstream_test
+- case_id: fastapi.response-validation.dataclass.multiple-invalid-fields
+  actions:
+  - action_id: dataclass-response-validation
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /dataclass/inner-invalid
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: application_error
+      selector: validation_error_class
+      comparison: exact
+  source_evidence:
+  - path: tests/test_validate_response_dataclass.py
+    kind: upstream_test
+- case_id: fastapi.response-validation.dataclass.invalid-list
+  actions:
+  - action_id: dataclass-response-validation
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /dataclass/invalid-list
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: application_error
+      selector: validation_error_class
+      comparison: exact
+  source_evidence:
+  - path: tests/test_validate_response_dataclass.py
+    kind: upstream_test
+- case_id: fastapi.response-serialization.recursive-nested-models
+  actions:
+  - action_id: recursive-model
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/recursive
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: recursive-submodel
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/recursive-submodel
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_validate_response_recursive/test_validate_response_recursive.py
+    kind: upstream_test

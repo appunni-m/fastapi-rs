@@ -1,0 +1,257 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/request_uploads.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.request-uploads.optional-file-list.test-optional-bytes-list
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /optional-bytes
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=UploadBoundary7MA4YWxkTrZu0gW
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: "--UploadBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; name=\"files\"; filename=\"\
+        north.txt\"\r\nContent-Type: text/plain\r\n\r\nnorth\r\n--UploadBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition:\
+        \ form-data; name=\"files\"; filename=\"south.txt\"\r\nContent-Type: text/plain\r\n\r\nsouth\r\
+        \n--UploadBoundary7MA4YWxkTrZu0gW--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_optional_file_list.py
+    kind: upstream_test
+- case_id: fastapi.request-uploads.file-form-order.test-file-form-order
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /ordered-form-file
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=UploadBoundary7MA4YWxkTrZu0gW
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: "--UploadBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; name=\"upload\"; filename=\"\
+        note.txt\"\r\nContent-Type: text/plain\r\n\r\nnorth\r\n--UploadBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition:\
+        \ form-data; name=\"label\"\r\n\r\ncaption\r\n--UploadBoundary7MA4YWxkTrZu0gW--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_file_and_form_order_issue_9116.py
+    kind: upstream_test
+- case_id: fastapi.request-uploads.bytes-file-order.test-list-bytes-file-preserves-order
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /preserve-bytes
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=UploadBoundary7MA4YWxkTrZu0gW
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: "--UploadBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; name=\"files\"; filename=\"\
+        one.txt\"\r\nContent-Type: text/plain\r\n\r\nnorth\r\n--UploadBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition:\
+        \ form-data; name=\"files\"; filename=\"two.txt\"\r\nContent-Type: text/plain\r\n\r\nsouth\r\n\
+        --UploadBoundary7MA4YWxkTrZu0gW--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_list_bytes_file_order_preserved_issue_14811.py
+    kind: upstream_test
+- case_id: fastapi.request-uploads.request-files-001-02.test-post-upload-file
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /single-upload
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=UploadBoundary7MA4YWxkTrZu0gW
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: "--UploadBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; name=\"upload\"; filename=\"\
+        report.txt\"\r\nContent-Type: text/plain\r\n\r\nfield report\r\n--UploadBoundary7MA4YWxkTrZu0gW--\r\
+        \n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_request_files/test_tutorial001_02.py
+    kind: upstream_test
+- case_id: fastapi.request-uploads.request-files-002.test-post-files
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /multiple-uploads
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=UploadBoundary7MA4YWxkTrZu0gW
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: "--UploadBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; name=\"uploads\"; filename=\"\
+        north.txt\"\r\nContent-Type: text/plain\r\n\r\nnorth\r\n--UploadBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition:\
+        \ form-data; name=\"uploads\"; filename=\"south.txt\"\r\nContent-Type: text/plain\r\n\r\nsouth\r\
+        \n--UploadBoundary7MA4YWxkTrZu0gW--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_request_files/test_tutorial002.py
+    kind: upstream_test
+- case_id: fastapi.request-uploads.request-forms-files-001.test-post-files-and-token
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /token-uploads
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=UploadBoundary7MA4YWxkTrZu0gW
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: "--UploadBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; name=\"token\"\r\n\r\n\
+        access-key\r\n--UploadBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; name=\"uploads\"\
+        ; filename=\"north.txt\"\r\nContent-Type: text/plain\r\n\r\nnorth\r\n--UploadBoundary7MA4YWxkTrZu0gW--\r\
+        \n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_request_forms_and_files/test_tutorial001.py
+    kind: upstream_test
+oracle_profile_extension: standard-multipart

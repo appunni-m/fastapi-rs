@@ -1,0 +1,90 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/root_path_proxy.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.root-path.scope-echo
+  actions:
+  - action_id: read-app
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /app
+      query_string: ''
+      root_path: /api/v1
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+  source_evidence:
+  - path: docs/en/docs/advanced/behind-a-proxy.md
+    kind: upstream_documentation
+  - path: tests/test_tutorial/test_behind_a_proxy/test_tutorial001.py
+    kind: upstream_test
+- case_id: fastapi.root-path.openapi-server
+  actions:
+  - action_id: get-openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: /api/v1
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /servers/0/url
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/advanced/behind-a-proxy.md
+    kind: upstream_documentation
+  - path: tests/test_tutorial/test_behind_a_proxy/test_tutorial001.py
+    kind: upstream_test

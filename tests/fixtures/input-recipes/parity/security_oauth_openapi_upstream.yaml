@@ -1,0 +1,1597 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/security_oauth_openapi_upstream.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.security.oauth2-authorization-code-bearer.test-no-token
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /oauth/code
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_oauth2_authorization_code_bearer.py
+    kind: upstream_test
+- case_id: fastapi.security.oauth2-authorization-code-bearer.test-incorrect-token
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /oauth/code
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Non-existent testtoken
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_oauth2_authorization_code_bearer.py
+    kind: upstream_test
+- case_id: fastapi.security.oauth2-authorization-code-bearer.test-token
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /oauth/code
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Bearer testtoken
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_oauth2_authorization_code_bearer.py
+    kind: upstream_test
+- case_id: fastapi.security.oauth2-authorization-code-bearer.test-token-with-whitespaces
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /oauth/code
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - 'Bearer  testtoken '
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_oauth2_authorization_code_bearer.py
+    kind: upstream_test
+- case_id: fastapi.security.oauth2-authorization-code-bearer.test-openapi-schema
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /components/securitySchemes/OAuth2AuthorizationCodeBearer/type
+      - /components/securitySchemes/OAuth2AuthorizationCodeBearer/flows/authorizationCode/authorizationUrl
+      - /components/securitySchemes/OAuth2AuthorizationCodeBearer/flows/authorizationCode/tokenUrl
+      - /paths/~1oauth~1code/get/security
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_oauth2_authorization_code_bearer.py
+    kind: upstream_test
+- case_id: fastapi.security.oauth2-authorization-code-bearer-scopes-openapi.test-read-with-oauth2-scheme
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /oauth/scopes-via-scheme
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Bearer testtoken
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_oauth2_authorization_code_bearer_scopes_openapi.py
+    kind: upstream_test
+- case_id: fastapi.security.oauth2-authorization-code-bearer-scopes-openapi.test-read-with-get-token
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /oauth/scopes-via-helper
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Bearer testtoken
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_oauth2_authorization_code_bearer_scopes_openapi.py
+    kind: upstream_test
+- case_id: fastapi.security.oauth2-authorization-code-bearer-scopes-openapi.test-read-token
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /oauth/items/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Bearer testtoken
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_oauth2_authorization_code_bearer_scopes_openapi.py
+    kind: upstream_test
+- case_id: fastapi.security.oauth2-authorization-code-bearer-scopes-openapi.test-create-token
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /oauth/items/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Bearer testtoken
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_oauth2_authorization_code_bearer_scopes_openapi.py
+    kind: upstream_test
+- case_id: fastapi.security.oauth2-authorization-code-bearer-scopes-openapi.test-openapi-schema
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /components/securitySchemes/OAuth2AuthorizationCodeBearer/flows/authorizationCode/scopes/read
+      - /components/securitySchemes/OAuth2AuthorizationCodeBearer/flows/authorizationCode/scopes/write
+      - /paths/~1oauth~1scopes-via-scheme/get/security
+      - /paths/~1oauth~1scopes-via-helper/get/security
+      - /paths/~1oauth~1items~1/get/security
+      - /paths/~1oauth~1items~1/post/security
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_oauth2_authorization_code_bearer_scopes_openapi.py
+    kind: upstream_test
+- case_id: fastapi.security.oauth2-authorization-code-bearer-scopes-openapi-simple.test-read-admin
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /oauth/scopes-via-helper
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Bearer faketoken
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_oauth2_authorization_code_bearer_scopes_openapi_simple.py
+    kind: upstream_test
+- case_id: fastapi.security.oauth2-authorization-code-bearer-scopes-openapi-simple.test-openapi-schema
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /paths/~1oauth~1scopes-via-helper/get/security
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_oauth2_authorization_code_bearer_scopes_openapi_simple.py
+    kind: upstream_test
+- case_id: fastapi.security.oauth2-password-bearer-optional-description.test-no-token
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /oauth/password-optional/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_oauth2_password_bearer_optional_description.py
+    kind: upstream_test
+- case_id: fastapi.security.oauth2-password-bearer-optional-description.test-token
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /oauth/password-optional/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Bearer testtoken
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_oauth2_password_bearer_optional_description.py
+    kind: upstream_test
+- case_id: fastapi.security.oauth2-password-bearer-optional-description.test-incorrect-token
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /oauth/password-optional/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Notexistent testtoken
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_oauth2_password_bearer_optional_description.py
+    kind: upstream_test
+- case_id: fastapi.security.oauth2-password-bearer-optional-description.test-openapi-schema
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /components/securitySchemes/OAuth2PasswordBearer/type
+      - /components/securitySchemes/OAuth2PasswordBearer/flows/password/tokenUrl
+      - /components/securitySchemes/OAuth2PasswordBearer/description
+      - /paths/~1oauth~1password-optional~1/get/security
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_oauth2_password_bearer_optional_description.py
+    kind: upstream_test
+- case_id: fastapi.security.oauth2-optional-description.test-security-oauth2
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /oauth/generic-optional
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Bearer footokenbar
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_oauth2_optional_description.py
+    kind: upstream_test
+- case_id: fastapi.security.oauth2-optional-description.test-security-oauth2-password-other-header
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /oauth/generic-optional
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Other footokenbar
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_oauth2_optional_description.py
+    kind: upstream_test
+- case_id: fastapi.security.oauth2-optional-description.test-security-oauth2-password-bearer-no-header
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /oauth/generic-optional
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_oauth2_optional_description.py
+    kind: upstream_test
+- case_id: fastapi.security.oauth2-optional-description.test-openapi-schema
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /components/securitySchemes/OAuth2/type
+      - /components/securitySchemes/OAuth2/flows/password/tokenUrl
+      - /components/securitySchemes/OAuth2/description
+      - /paths/~1oauth~1generic-optional/get/security
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_oauth2_optional_description.py
+    kind: upstream_test
+- case_id: fastapi.security.openid-connect.test-security-oauth2
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openid/required
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Bearer footokenbar
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_openid_connect.py
+    kind: upstream_test
+- case_id: fastapi.security.openid-connect.test-security-oauth2-password-other-header
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openid/required
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Other footokenbar
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_openid_connect.py
+    kind: upstream_test
+- case_id: fastapi.security.openid-connect.test-security-oauth2-password-bearer-no-header
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openid/required
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_openid_connect.py
+    kind: upstream_test
+- case_id: fastapi.security.openid-connect.test-openapi-schema
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /components/securitySchemes/OpenIdConnect/type
+      - /components/securitySchemes/OpenIdConnect/openIdConnectUrl
+      - /paths/~1openid~1required/get/security
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_openid_connect.py
+    kind: upstream_test
+- case_id: fastapi.security.openid-connect-description.test-security-oauth2
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openid/described
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Bearer footokenbar
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_openid_connect_description.py
+    kind: upstream_test
+- case_id: fastapi.security.openid-connect-description.test-security-oauth2-password-other-header
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openid/described
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Other footokenbar
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_openid_connect_description.py
+    kind: upstream_test
+- case_id: fastapi.security.openid-connect-description.test-security-oauth2-password-bearer-no-header
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openid/described
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_openid_connect_description.py
+    kind: upstream_test
+- case_id: fastapi.security.openid-connect-description.test-openapi-schema
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /components/securitySchemes/DescribedOpenIdConnect/type
+      - /components/securitySchemes/DescribedOpenIdConnect/openIdConnectUrl
+      - /paths/~1openid~1described/get/security
+      - /components/securitySchemes/DescribedOpenIdConnect/description
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_openid_connect_description.py
+    kind: upstream_test
+- case_id: fastapi.security.openid-connect-optional.test-security-oauth2
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openid/optional
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Bearer footokenbar
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_openid_connect_optional.py
+    kind: upstream_test
+- case_id: fastapi.security.openid-connect-optional.test-security-oauth2-password-other-header
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openid/optional
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Other footokenbar
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_openid_connect_optional.py
+    kind: upstream_test
+- case_id: fastapi.security.openid-connect-optional.test-security-oauth2-password-bearer-no-header
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openid/optional
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_openid_connect_optional.py
+    kind: upstream_test
+- case_id: fastapi.security.openid-connect-optional.test-openapi-schema
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /components/securitySchemes/OptionalOpenIdConnect/type
+      - /components/securitySchemes/OptionalOpenIdConnect/openIdConnectUrl
+      - /paths/~1openid~1optional/get/security
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_openid_connect_optional.py
+    kind: upstream_test
+- case_id: fastapi.security.test-top-level-security-scheme-in-openapi.test-get-root
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Bearer token
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_top_level_security_scheme_in_openapi.py
+    kind: upstream_test
+- case_id: fastapi.security.test-top-level-security-scheme-in-openapi.test-get-root-no-token
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_top_level_security_scheme_in_openapi.py
+    kind: upstream_test
+- case_id: fastapi.security.test-top-level-security-scheme-in-openapi.test-openapi-schema
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /components/securitySchemes/HTTPBearer/type
+      - /components/securitySchemes/HTTPBearer/scheme
+      - /paths/~1/get/security
+      comparison: exact
+  source_evidence:
+  - path: tests/test_top_level_security_scheme_in_openapi.py
+    kind: upstream_test
+- case_id: fastapi.security.oauth2-authorization-code-bearer-description.test-no-token
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /oauth/code-described
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_oauth2_authorization_code_bearer_description.py
+    kind: upstream_test
+- case_id: fastapi.security.oauth2-authorization-code-bearer-description.test-incorrect-token
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /oauth/code-described
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Non-existent testtoken
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_oauth2_authorization_code_bearer_description.py
+    kind: upstream_test
+- case_id: fastapi.security.oauth2-authorization-code-bearer-description.test-token
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /oauth/code-described
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Bearer testtoken
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_oauth2_authorization_code_bearer_description.py
+    kind: upstream_test
+- case_id: fastapi.security.oauth2-authorization-code-bearer-description.test-openapi-schema
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /components/securitySchemes/DescribedOAuth2AuthorizationCodeBearer/type
+      - /components/securitySchemes/DescribedOAuth2AuthorizationCodeBearer/flows/authorizationCode/authorizationUrl
+      - /components/securitySchemes/DescribedOAuth2AuthorizationCodeBearer/flows/authorizationCode/tokenUrl
+      - /components/securitySchemes/DescribedOAuth2AuthorizationCodeBearer/description
+      - /paths/~1oauth~1code-described/get/security
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_oauth2_authorization_code_bearer_description.py
+    kind: upstream_test

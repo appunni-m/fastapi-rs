@@ -1,0 +1,476 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/docs_dependencies_security.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.docs.documentation-wave.dependencies-security.classes-as-dependencies
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /catalog
+      query_string: term=maple&page_size=3
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - x-tenant-key
+        - tenant-key
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /paths/~1catalog/get/parameters
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/dependencies/classes-as-dependencies.md
+    kind: upstream_documentation
+  - path: docs_src/dependencies/tutorial002_an_py310.py
+    kind: upstream_documentation
+- case_id: fastapi.docs.documentation-wave.dependencies-security.path-operation-dependencies
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /archive
+      query_string: confirmed=true
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - x-tenant-key
+        - tenant-key
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /paths/~1archive/get/parameters
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/dependencies/dependencies-in-path-operation-decorators.md
+    kind: upstream_documentation
+  - path: docs_src/dependencies/tutorial006_an_py310.py
+    kind: upstream_documentation
+- case_id: fastapi.docs.documentation-wave.dependencies-security.global-dependencies
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /reports
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - x-tenant-key
+        - tenant-key
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /paths/~1reports/get/parameters
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/dependencies/global-dependencies.md
+    kind: upstream_documentation
+  - path: docs_src/dependencies/tutorial012_an_py310.py
+    kind: upstream_documentation
+- case_id: fastapi.docs.documentation-wave.dependencies-security.current-user
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /users/me
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - x-tenant-key
+        - tenant-key
+      - - authorization
+        - Bearer reader-token
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /paths/~1users~1me/get/security
+      - /components/securitySchemes/OAuth2PasswordBearer/flows/password/tokenUrl
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/security/get-current-user.md
+    kind: upstream_documentation
+  - path: docs_src/security/tutorial001_an_py310.py
+    kind: upstream_documentation
+- case_id: fastapi.docs.documentation-wave.dependencies-security.simple-oauth2-token-form
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /token
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - x-tenant-key
+        - tenant-key
+      - - content-type
+        - application/x-www-form-urlencoded
+      - - content-length
+        - '41'
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: username=reader&password=fixture-password
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /paths/~1token/post/requestBody/content/application~1x-www-form-urlencoded/schema
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/security/simple-oauth2.md
+    kind: upstream_documentation
+  - path: docs_src/security/tutorial003_an_py310.py
+    kind: upstream_documentation
+- case_id: fastapi.docs.documentation-wave.dependencies-security.authentication-error-status
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /me
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - x-tenant-key
+        - tenant-key
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /paths/~1me/get/security
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/how-to/authentication-error-status-code.md
+    kind: upstream_documentation
+  - path: docs_src/authentication_error_status_code/tutorial001_an_py310.py
+    kind: upstream_documentation
+oracle_profile_extension: standard-multipart

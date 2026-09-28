@@ -1,0 +1,386 @@
+schema: fastapi-rs/python-asgi-workflow@3
+workload:
+  file: tests/fixtures/workloads/app_testing_main_b_upstream_wave.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.app-testing.main-b-default-header
+  factory_input:
+    header_style: default
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: create-existing-item-conflict
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /items/
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      - [content-type, application/json]
+      - [x-token, coneofsilence]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '{"id":"foo","title":"The Foo ID Stealers","description":"There goes my stealer"}', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: create-new-item
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /items/
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      - [content-type, application/json]
+      - [x-token, coneofsilence]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '{"id":"foobar","title":"Foo Bar","description":"The Foo Barters"}', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: create-item-invalid-token
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /items/
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      - [content-type, application/json]
+      - [x-token, hailhydra]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '{"id":"bazz","title":"Bazz","description":"Drop the bazz"}', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: read-missing-item
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/baz
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver], [x-token, coneofsilence]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: read-existing-item
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/foo
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver], [x-token, coneofsilence]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: read-item-invalid-token
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/foo
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver], [x-token, hailhydra]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: read-item-with-required-token-absent
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/foo
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: create-item-with-required-field-absent
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /items/
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      - [content-type, application/json]
+      - [x-token, coneofsilence]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '{"id":"missing-title"}', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: openapi-header-and-item-schemas
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths/~1items~1{item_id}/get/parameters
+      - /paths/~1items~1/post/parameters
+      - /paths/~1items~1/post/requestBody
+      - /components/schemas/Item
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_testing/test_main_b.py
+    kind: upstream_test
+  - path: docs_src/app_testing/app_b_py310/main.py
+    kind: upstream_documentation
+  - path: docs_src/app_testing/app_b_py310/test_main.py
+    kind: upstream_documentation
+- case_id: fastapi.app-testing.main-b-annotated-header
+  factory_input:
+    header_style: annotated
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: create-existing-item-conflict
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /items/
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      - [content-type, application/json]
+      - [x-token, coneofsilence]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '{"id":"foo","title":"The Foo ID Stealers","description":"There goes my stealer"}', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: create-new-item
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /items/
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      - [content-type, application/json]
+      - [x-token, coneofsilence]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '{"id":"foobar","title":"Foo Bar","description":"The Foo Barters"}', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: create-item-invalid-token
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /items/
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      - [content-type, application/json]
+      - [x-token, hailhydra]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '{"id":"bazz","title":"Bazz","description":"Drop the bazz"}', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: read-missing-item
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/baz
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver], [x-token, coneofsilence]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: read-existing-item
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/foo
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver], [x-token, coneofsilence]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: read-item-invalid-token
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/foo
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver], [x-token, hailhydra]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: read-item-with-required-token-absent
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/foo
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: create-item-with-required-field-absent
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /items/
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      - [content-type, application/json]
+      - [x-token, coneofsilence]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '{"id":"missing-title"}', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: openapi-header-and-item-schemas
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths/~1items~1{item_id}/get/parameters
+      - /paths/~1items~1/post/parameters
+      - /paths/~1items~1/post/requestBody
+      - /components/schemas/Item
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_testing/test_main_b.py
+    kind: upstream_test
+  - path: docs_src/app_testing/app_b_an_py310/main.py
+    kind: upstream_documentation
+  - path: docs_src/app_testing/app_b_an_py310/test_main.py
+    kind: upstream_documentation

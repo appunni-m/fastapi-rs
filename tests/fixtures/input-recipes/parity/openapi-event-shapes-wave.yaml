@@ -1,0 +1,114 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/openapi_event_shapes_wave.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.openapi-event-shapes-wave.tutorial001.test-openapi-schema
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths/~1items~1{item_id}/get
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_events/test_tutorial001.py
+    kind: upstream_test
+- case_id: fastapi.openapi-event-shapes-wave.tutorial002.test-openapi-schema
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths/~1items~1/get
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_events/test_tutorial002.py
+    kind: upstream_test
+- case_id: fastapi.openapi-event-shapes-wave.tutorial003.test-openapi-schema
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths/~1predict/get
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_events/test_tutorial003.py
+    kind: upstream_test

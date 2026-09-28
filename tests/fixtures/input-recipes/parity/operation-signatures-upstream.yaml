@@ -1,0 +1,156 @@
+schema: fastapi-rs/python-api-workflow@1
+workload:
+  file: tests/fixtures/workloads/operation_signatures_upstream.py
+  factory: create_argument_bundles
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.test.test-operations-signatures.test-signatures-consistency
+  probes:
+  - probe_id: apirouter-get-signature
+    public_callable:
+      module: fastapi.routing
+      attribute: APIRouter.get
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: apirouter-put-signature
+    public_callable:
+      module: fastapi.routing
+      attribute: APIRouter.put
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: apirouter-post-signature
+    public_callable:
+      module: fastapi.routing
+      attribute: APIRouter.post
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: apirouter-delete-signature
+    public_callable:
+      module: fastapi.routing
+      attribute: APIRouter.delete
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: apirouter-options-signature
+    public_callable:
+      module: fastapi.routing
+      attribute: APIRouter.options
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: apirouter-head-signature
+    public_callable:
+      module: fastapi.routing
+      attribute: APIRouter.head
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: apirouter-patch-signature
+    public_callable:
+      module: fastapi.routing
+      attribute: APIRouter.patch
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: apirouter-trace-signature
+    public_callable:
+      module: fastapi.routing
+      attribute: APIRouter.trace
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: fastapi-get-signature
+    public_callable:
+      module: fastapi.applications
+      attribute: FastAPI.get
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: fastapi-put-signature
+    public_callable:
+      module: fastapi.applications
+      attribute: FastAPI.put
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: fastapi-post-signature
+    public_callable:
+      module: fastapi.applications
+      attribute: FastAPI.post
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: fastapi-delete-signature
+    public_callable:
+      module: fastapi.applications
+      attribute: FastAPI.delete
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: fastapi-options-signature
+    public_callable:
+      module: fastapi.applications
+      attribute: FastAPI.options
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: fastapi-head-signature
+    public_callable:
+      module: fastapi.applications
+      attribute: FastAPI.head
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: fastapi-patch-signature
+    public_callable:
+      module: fastapi.applications
+      attribute: FastAPI.patch
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: fastapi-trace-signature
+    public_callable:
+      module: fastapi.applications
+      attribute: FastAPI.trace
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  source_evidence:
+  - path: tests/test_operations_signatures.py
+    kind: upstream_test
+    sha256: f491a8f09ca5dfdfb4ce29c4448687014e7d81c5a01b2deb08982bc50ae03796

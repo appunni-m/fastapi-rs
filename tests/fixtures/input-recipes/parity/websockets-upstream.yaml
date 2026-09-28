@@ -1,0 +1,405 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/websockets_upstream.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.test.test-ws-dependencies.test-index
+  actions:
+  - action_id: session
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: websocket
+      selector: messages
+      comparison: ordered
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_ws_dependencies.py
+    kind: upstream_test
+- case_id: fastapi.test.test-ws-dependencies.test-routerindex
+  actions:
+  - action_id: session
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /router
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: websocket
+      selector: messages
+      comparison: ordered
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_ws_dependencies.py
+    kind: upstream_test
+- case_id: fastapi.test.test-ws-dependencies.test-routerprefixindex
+  actions:
+  - action_id: session
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /prefix/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: websocket
+      selector: messages
+      comparison: ordered
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_ws_dependencies.py
+    kind: upstream_test
+- case_id: fastapi.test.test-tutorial-test-websockets-test-tutorial001.test-main
+  actions:
+  - action_id: home
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_websockets/test_tutorial001.py
+    kind: upstream_test
+- case_id: fastapi.test.test-tutorial-test-websockets-test-tutorial001.test-websocket
+  actions:
+  - action_id: echo
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /ws
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.receive
+      text: Message one
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: websocket
+      selector: messages
+      comparison: ordered
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_tutorial/test_websockets/test_tutorial001.py
+    kind: upstream_test
+- case_id: fastapi.test.test-tutorial-test-websockets-test-tutorial002.test-websocket-with-cookie
+  actions:
+  - action_id: authenticated
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /items/2/ws
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - cookie
+        - session=fakesession
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.receive
+      text: Message one
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: websocket
+      selector: messages
+      comparison: ordered
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_tutorial/test_websockets/test_tutorial002.py
+    kind: upstream_test
+- case_id: fastapi.test.test-tutorial-test-websockets-test-tutorial002.test-websocket-with-header
+  actions:
+  - action_id: authenticated
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /items/2/ws
+      query_string: token=some-token
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.receive
+      text: Message one
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: websocket
+      selector: messages
+      comparison: ordered
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_tutorial/test_websockets/test_tutorial002.py
+    kind: upstream_test
+- case_id: fastapi.test.test-tutorial-test-websockets-test-tutorial002.test-websocket-with-header-and-query
+  actions:
+  - action_id: authenticated
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /items/2/ws
+      query_string: q=3&token=some-token
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.receive
+      text: Message one
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: websocket
+      selector: messages
+      comparison: ordered
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_tutorial/test_websockets/test_tutorial002.py
+    kind: upstream_test
+- case_id: fastapi.test.test-tutorial-test-websockets-test-tutorial002.test-websocket-no-credentials
+  actions:
+  - action_id: missing-credential
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /items/foo/ws
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: websocket
+      selector: close_code
+      comparison: exact
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_tutorial/test_websockets/test_tutorial002.py
+    kind: upstream_test
+- case_id: fastapi.test.test-tutorial-test-websockets-test-tutorial002.test-websocket-invalid-data
+  actions:
+  - action_id: invalid-query
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /items/foo/ws
+      query_string: q=bar&token=some-token
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: websocket
+      selector: close_code
+      comparison: exact
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_tutorial/test_websockets/test_tutorial002.py
+    kind: upstream_test

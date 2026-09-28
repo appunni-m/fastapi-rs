@@ -1,0 +1,176 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/docs_sql_databases_fake_dependency.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.docs.sql-databases.fake-yield.create-and-cleanup
+  actions:
+  - action_id: create-hero-with-public-response-model
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /heroes/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - content-type
+        - application/json
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"name":"Ada","age":37,"secret_name":"The Analyst"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: observe-yield-dependency-cleanup
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /cleanup-state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/sql-databases.md
+    kind: upstream_documentation
+  - path: docs_src/sql_databases/tutorial002_an_py310.py
+    kind: upstream_documentation
+  - path: tests/test_tutorial/test_sql_databases/test_tutorial002.py
+    kind: upstream_test
+- case_id: fastapi.docs.sql-databases.fake-yield.invalid-request
+  actions:
+  - action_id: create-hero-with-missing-required-name
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /heroes/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - content-type
+        - application/json
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"age":37,"secret_name":"The Analyst"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/sql-databases.md
+    kind: upstream_documentation
+  - path: docs_src/sql_databases/tutorial002_an_py310.py
+    kind: upstream_documentation
+  - path: tests/test_tutorial/test_sql_databases/test_tutorial002.py
+    kind: upstream_test
+- case_id: fastapi.docs.sql-databases.fake-yield.openapi-models
+  actions:
+  - action_id: observe-request-and-public-models
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /components/schemas/HeroCreate
+      - /components/schemas/HeroPublic
+      - /paths/~1heroes~1/post/requestBody/content/application~1json/schema
+      - /paths/~1heroes~1/post/responses/200/content/application~1json/schema
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/sql-databases.md
+    kind: upstream_documentation
+  - path: docs_src/sql_databases/tutorial002_an_py310.py
+    kind: upstream_documentation
+  - path: tests/test_tutorial/test_sql_databases/test_tutorial002.py
+    kind: upstream_test

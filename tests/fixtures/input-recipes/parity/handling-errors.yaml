@@ -1,0 +1,331 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/handling_errors.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.docs.handling-errors.success
+  actions:
+  - action_id: read-existing-product
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /products/kettle
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/handling-errors.md
+    kind: upstream_documentation
+  - path: docs_src/handling_errors/tutorial001_py310.py
+    kind: upstream_documentation
+  - path: tests/test_tutorial/test_handling_errors/test_tutorial001.py
+    kind: upstream_test
+  - path: docs_src/handling_errors/tutorial002_py310.py
+    kind: upstream_documentation
+  - path: tests/test_tutorial/test_handling_errors/test_tutorial002.py
+    kind: upstream_test
+  - path: docs_src/handling_errors/tutorial003_py310.py
+    kind: upstream_documentation
+  - path: tests/test_tutorial/test_handling_errors/test_tutorial003.py
+    kind: upstream_test
+  - path: docs_src/handling_errors/tutorial006_py310.py
+    kind: upstream_documentation
+  - path: tests/test_tutorial/test_handling_errors/test_tutorial006.py
+    kind: upstream_test
+- case_id: fastapi.docs.handling-errors.http-exception-detail
+  actions:
+  - action_id: read-missing-product
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /products/missing
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/handling-errors.md
+    kind: upstream_documentation
+  - path: docs_src/handling_errors/tutorial001_py310.py
+    kind: upstream_documentation
+  - path: tests/test_tutorial/test_handling_errors/test_tutorial001.py
+    kind: upstream_test
+  - path: docs_src/handling_errors/tutorial002_py310.py
+    kind: upstream_documentation
+  - path: tests/test_tutorial/test_handling_errors/test_tutorial002.py
+    kind: upstream_test
+- case_id: fastapi.docs.handling-errors.http-exception-status
+  actions:
+  - action_id: read-blocked-product
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /products/blocked
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/handling-errors.md
+    kind: upstream_documentation
+  - path: docs_src/handling_errors/tutorial006_py310.py
+    kind: upstream_documentation
+  - path: tests/test_tutorial/test_handling_errors/test_tutorial006.py
+    kind: upstream_test
+- case_id: fastapi.docs.handling-errors.starlette-exception
+  actions:
+  - action_id: read-restricted-product
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /products/legacy
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/handling-errors.md
+    kind: upstream_documentation
+- case_id: fastapi.docs.handling-errors.custom-exception
+  actions:
+  - action_id: read-custom-exception-route
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /creatures/yonder
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/handling-errors.md
+    kind: upstream_documentation
+  - path: docs_src/handling_errors/tutorial003_py310.py
+    kind: upstream_documentation
+  - path: tests/test_tutorial/test_handling_errors/test_tutorial003.py
+    kind: upstream_test
+- case_id: fastapi.docs.handling-errors.validation-error
+  actions:
+  - action_id: parse-invalid-quantity
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /quantities/not-a-number
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/handling-errors.md
+    kind: upstream_documentation
+  - path: docs_src/handling_errors/tutorial006_py310.py
+    kind: upstream_documentation
+  - path: tests/test_tutorial/test_handling_errors/test_tutorial006.py
+    kind: upstream_test
+- case_id: fastapi.docs.handling-errors.openapi
+  actions:
+  - action_id: inspect-error-workload-openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /paths/~1products~1{product_id}/get/parameters/0/in
+      - /paths/~1products~1{product_id}/get/parameters/0/schema/type
+      - /paths/~1products~1{product_id}/get/responses/422/content/application~1json/schema/$ref
+      - /paths/~1quantities~1{quantity}/get/parameters/0/schema/type
+      - /paths/~1quantities~1{quantity}/get/responses/422/content/application~1json/schema/$ref
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/handling-errors.md
+    kind: upstream_documentation
+  - path: docs_src/handling_errors/tutorial001_py310.py
+    kind: upstream_documentation
+  - path: tests/test_tutorial/test_handling_errors/test_tutorial001.py
+    kind: upstream_test
+  - path: docs_src/handling_errors/tutorial002_py310.py
+    kind: upstream_documentation
+  - path: tests/test_tutorial/test_handling_errors/test_tutorial002.py
+    kind: upstream_test
+  - path: docs_src/handling_errors/tutorial003_py310.py
+    kind: upstream_documentation
+  - path: tests/test_tutorial/test_handling_errors/test_tutorial003.py
+    kind: upstream_test
+  - path: docs_src/handling_errors/tutorial006_py310.py
+    kind: upstream_documentation
+  - path: tests/test_tutorial/test_handling_errors/test_tutorial006.py
+    kind: upstream_test

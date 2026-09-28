@@ -1,0 +1,88 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/server_sent_events_tutorials_upstream.py
+  instantiate_per_case: true
+  factory: create_tutorial002_app
+cases:
+- case_id: fastapi.tutorial.server-sent-events.tutorial002.event-fields
+  actions:
+  - action_id: stream-event-fields
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/stream
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_server_sent_events/test_tutorial002.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/server-sent-events.md
+    kind: upstream_documentation
+  - path: docs_src/server_sent_events/tutorial002_py310.py
+    kind: upstream_documentation
+- case_id: fastapi.tutorial.server-sent-events.tutorial002.openapi
+  actions:
+  - action_id: openapi-event-item
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths/~1items~1stream/get
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_server_sent_events/test_tutorial002.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/server-sent-events.md
+    kind: upstream_documentation
+  - path: docs_src/server_sent_events/tutorial002_py310.py
+    kind: upstream_documentation

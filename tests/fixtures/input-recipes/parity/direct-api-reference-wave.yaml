@@ -1,0 +1,111 @@
+schema: fastapi-rs/python-api-workflow@1
+workload:
+  file: tests/fixtures/workloads/direct_api_reference_wave.py
+  factory: create_argument_bundles
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.direct-api-reference-wave.http-exception-signature
+  probes:
+  - probe_id: http-exception-signature
+    public_callable:
+      module: fastapi
+      attribute: HTTPException
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/reference/exceptions.md
+    kind: upstream_documentation
+    sha256: 409cadc3d831c4487ed7b67277cac93f91a8494a7827009cc3150aff264a0f50
+  - path: docs_src/dependencies/tutorial008b_py310.py
+    kind: upstream_documentation
+    sha256: b106c0c620dcf44f6e45461abf0993e37023a62aa20a49b760bb090751a370db
+- case_id: fastapi.direct-api-reference-wave.websocket-exception-signature
+  probes:
+  - probe_id: websocket-exception-signature
+    public_callable:
+      module: fastapi
+      attribute: WebSocketException
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/reference/exceptions.md
+    kind: upstream_documentation
+    sha256: 409cadc3d831c4487ed7b67277cac93f91a8494a7827009cc3150aff264a0f50
+  - path: docs_src/websockets_/tutorial002_py310.py
+    kind: upstream_documentation
+    sha256: 3c6e0f5ff954211492361591a7607b788adf0011226d8fadf120f34205a5f3ef
+- case_id: fastapi.direct-api-reference-wave.openapi-schema-signature
+  probes:
+  - probe_id: openapi-schema-signature
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: Schema
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/reference/openapi/models.md
+    kind: upstream_documentation
+    sha256: edcc6862b45c3c393494c66db826080da6125afb4cbe13f9d05c182db49a45ab
+  - path: tests/test_openapi_schema_type.py
+    kind: upstream_test
+    sha256: 5092566eb8e8e9480c35310360f061eb97cf6d28313e4b1b3537e132a596381f
+- case_id: fastapi.direct-api-reference-wave.encoder-reference-dataclass
+  probes:
+  - probe_id: encode-dataclass-record
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: dataclass-record
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/reference/encoders.md
+    kind: upstream_documentation
+    sha256: 1da15322f32044f832a48395b252c975d4fdf227f15c44be05d2f0de6d57341a
+  - path: tests/test_jsonable_encoder.py
+    kind: upstream_test
+    sha256: cea093a4d8b99f5e2728b05b172378582f8add4b7199390bb47058dfe532b8a5
+- case_id: fastapi.direct-api-reference-wave.openapi-model-signature
+  probes:
+  - probe_id: openapi-model-signature
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: OpenAPI
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/reference/openapi/models.md
+    kind: upstream_documentation
+    sha256: edcc6862b45c3c393494c66db826080da6125afb4cbe13f9d05c182db49a45ab
+- case_id: fastapi.direct-api-reference-wave.openapi-info-signature
+  probes:
+  - probe_id: openapi-info-signature
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: Info
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/reference/openapi/models.md
+    kind: upstream_documentation
+    sha256: edcc6862b45c3c393494c66db826080da6125afb4cbe13f9d05c182db49a45ab

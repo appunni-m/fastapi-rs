@@ -1,0 +1,505 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/security_dependencies.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.docs.security.api-key-required-missing
+  actions:
+  - action_id: private-key-missing
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /archive/private
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/reference/security/index.md
+    kind: upstream_documentation
+  - path: tests/test_security_api_key_header.py
+    kind: upstream_test
+- case_id: fastapi.docs.security.api-key-required-provided
+  actions:
+  - action_id: private-key-provided
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /archive/private
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - x-archive-key
+        - vault-pass
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/reference/security/index.md
+    kind: upstream_documentation
+  - path: tests/test_security_api_key_header.py
+    kind: upstream_test
+- case_id: fastapi.docs.security.api-key-optional-missing
+  actions:
+  - action_id: context-key-missing
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /archive/context
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/reference/security/index.md
+    kind: upstream_documentation
+  - path: tests/test_security_api_key_header_optional.py
+    kind: upstream_test
+- case_id: fastapi.docs.security.api-key-optional-provided
+  actions:
+  - action_id: context-key-provided
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /archive/context
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - x-context-key
+        - visitor-tag
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/reference/security/index.md
+    kind: upstream_documentation
+  - path: tests/test_security_api_key_header_optional.py
+    kind: upstream_test
+- case_id: fastapi.docs.security.bearer-required-missing
+  actions:
+  - action_id: required-bearer-missing
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /records/rec-91
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/reference/security/index.md
+    kind: upstream_documentation
+  - path: docs/en/docs/tutorial/security/first-steps.md
+    kind: upstream_documentation
+  - path: docs_src/security/tutorial001_py310.py
+    kind: upstream_documentation
+  - path: tests/test_tutorial/test_security/test_tutorial001.py
+    kind: upstream_test
+- case_id: fastapi.docs.security.bearer-required-valid
+  actions:
+  - action_id: required-bearer-provided
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /records/rec-91
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Bearer records-access
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/reference/security/index.md
+    kind: upstream_documentation
+  - path: docs/en/docs/tutorial/security/first-steps.md
+    kind: upstream_documentation
+  - path: docs_src/security/tutorial001_py310.py
+    kind: upstream_documentation
+  - path: tests/test_tutorial/test_security/test_tutorial001.py
+    kind: upstream_test
+  - path: docs/en/docs/advanced/security/oauth2-scopes.md
+    kind: upstream_documentation
+  - path: docs_src/security/tutorial005_py310.py
+    kind: upstream_documentation
+- case_id: fastapi.docs.security.bearer-required-wrong-scheme
+  actions:
+  - action_id: required-bearer-wrong-scheme
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /records/rec-91
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Basic records-access
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/reference/security/index.md
+    kind: upstream_documentation
+  - path: docs/en/docs/tutorial/security/first-steps.md
+    kind: upstream_documentation
+  - path: docs_src/security/tutorial001_py310.py
+    kind: upstream_documentation
+  - path: tests/test_tutorial/test_security/test_tutorial001.py
+    kind: upstream_test
+- case_id: fastapi.docs.security.bearer-optional-missing
+  actions:
+  - action_id: optional-bearer-missing
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /preview
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/reference/security/index.md
+    kind: upstream_documentation
+  - path: tests/test_security_oauth2_password_bearer_optional.py
+    kind: upstream_test
+- case_id: fastapi.docs.security.bearer-optional-valid
+  actions:
+  - action_id: optional-bearer-provided
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /preview
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Bearer preview-access
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/reference/security/index.md
+    kind: upstream_documentation
+  - path: tests/test_security_oauth2_password_bearer_optional.py
+    kind: upstream_test
+- case_id: fastapi.docs.security.bearer-optional-wrong-scheme
+  actions:
+  - action_id: optional-bearer-wrong-scheme
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /preview
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Basic preview-access
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/reference/security/index.md
+    kind: upstream_documentation
+  - path: tests/test_security_oauth2_password_bearer_optional.py
+    kind: upstream_test
+- case_id: fastapi.docs.security.openapi
+  actions:
+  - action_id: inspect-security-schemes-and-operations
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /components/securitySchemes/ArchiveKey/type
+      - /components/securitySchemes/ArchiveKey/name
+      - /components/securitySchemes/ArchiveKey/in
+      - /components/securitySchemes/ContextKey/type
+      - /components/securitySchemes/ContextKey/name
+      - /components/securitySchemes/ContextKey/in
+      - /components/securitySchemes/RecordOAuth2/type
+      - /components/securitySchemes/RecordOAuth2/flows/password/tokenUrl
+      - /components/securitySchemes/RecordOAuth2/flows/password/scopes/records:read
+      - /components/securitySchemes/OptionalRecordOAuth2/type
+      - /components/securitySchemes/OptionalRecordOAuth2/flows/password/tokenUrl
+      - /paths/~1archive~1private/get/security
+      - /paths/~1archive~1context/get/security
+      - /paths/~1records~1{record_id}/get/security
+      - /paths/~1preview/get/security
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/reference/security/index.md
+    kind: upstream_documentation
+  - path: docs/en/docs/tutorial/security/first-steps.md
+    kind: upstream_documentation
+  - path: docs/en/docs/advanced/security/oauth2-scopes.md
+    kind: upstream_documentation
+  - path: docs_src/security/tutorial001_py310.py
+    kind: upstream_documentation
+  - path: docs_src/security/tutorial005_py310.py
+    kind: upstream_documentation
+  - path: tests/test_security_api_key_header.py
+    kind: upstream_test
+  - path: tests/test_security_api_key_header_optional.py
+    kind: upstream_test
+  - path: tests/test_tutorial/test_security/test_tutorial001.py
+    kind: upstream_test
+  - path: tests/test_security_oauth2_password_bearer_optional.py
+    kind: upstream_test

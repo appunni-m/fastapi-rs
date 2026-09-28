@@ -1,0 +1,632 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/request_validation_parameters.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.request-parameters.path.valid-integer
+  actions:
+  - action_id: get-path-integer
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /path-values/42
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_path.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/path-params.md
+    kind: upstream_documentation
+- case_id: fastapi.request-parameters.path.invalid-integer
+  actions:
+  - action_id: get-path-invalid-integer
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /path-values/not-an-integer
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_path.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/path-params.md
+    kind: upstream_documentation
+- case_id: fastapi.request-parameters.path-query.same-alias
+  actions:
+  - action_id: get-same-path-query-alias
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /bindings/leaf
+      query_string: token=search
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_repeated_parameter_alias.py
+    kind: upstream_test
+- case_id: fastapi.request-parameters.query.required-missing
+  actions:
+  - action_id: get-required-query-missing
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /lookup
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_query/test_required_str.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/query-params.md
+    kind: upstream_documentation
+- case_id: fastapi.request-parameters.query.alias-valid
+  actions:
+  - action_id: get-query-by-alias
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /lookup
+      query_string: term=17
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_query/test_required_str.py
+    kind: upstream_test
+- case_id: fastapi.request-parameters.query.alias-name-missing
+  actions:
+  - action_id: get-query-by-python-name
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /lookup
+      query_string: query_value=17
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_query/test_required_str.py
+    kind: upstream_test
+- case_id: fastapi.request-parameters.query.invalid-integer
+  actions:
+  - action_id: get-query-invalid-integer
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /lookup
+      query_string: term=seventeen
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_query.py
+    kind: upstream_test
+  - path: tests/test_request_params/test_query/test_required_str.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/query-params.md
+    kind: upstream_documentation
+- case_id: fastapi.request-parameters.query.repeated-alias-values
+  actions:
+  - action_id: get-repeated-query-values
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /tags
+      query_string: tag=red&tag=blue
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_query/test_list.py
+    kind: upstream_test
+- case_id: fastapi.request-parameters.query.repeated-invalid-integers
+  actions:
+  - action_id: get-invalid-query-values
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /quantities
+      query_string: values=broken&values=also-broken
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_multi_query_errors.py
+    kind: upstream_test
+- case_id: fastapi.request-parameters.header.underscore-alias
+  actions:
+  - action_id: get-underscore-header-alias
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /headers/trace
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - x-trace-id
+        - trace-42
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_header/test_required_str.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/header-params.md
+    kind: upstream_documentation
+  - path: tests/test_query_cookie_header_model_extra_params.py
+    kind: upstream_test
+- case_id: fastapi.request-parameters.header.required-missing
+  actions:
+  - action_id: get-required-header-missing
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /headers/trace
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_header/test_required_str.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/header-params.md
+    kind: upstream_documentation
+- case_id: fastapi.request-parameters.header.repeated-values
+  actions:
+  - action_id: get-repeated-header-values
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /headers/repeated
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - x-token
+        - north
+      - - x-token
+        - south
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_header/test_list.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/header-params.md
+    kind: upstream_documentation
+- case_id: fastapi.request-parameters.cookie.alias-valid
+  actions:
+  - action_id: get-cookie-by-alias
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /cookies/required
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - cookie
+        - session-id=alpha
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_cookie/test_required_str.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/cookie-params.md
+    kind: upstream_documentation
+- case_id: fastapi.request-parameters.cookie.alias-name-missing
+  actions:
+  - action_id: get-cookie-by-python-name
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /cookies/required
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - cookie
+        - session=alpha
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_cookie/test_required_str.py
+    kind: upstream_test
+- case_id: fastapi.request-parameters.cookie.required-missing
+  actions:
+  - action_id: get-required-cookie-missing
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /cookies/required
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_cookie/test_required_str.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/cookie-params.md
+    kind: upstream_documentation
+- case_id: fastapi.request-parameters.cookie.optional-missing
+  actions:
+  - action_id: get-optional-cookie-missing
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /cookies/optional
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_cookie/test_optional_str.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/cookie-params.md
+    kind: upstream_documentation

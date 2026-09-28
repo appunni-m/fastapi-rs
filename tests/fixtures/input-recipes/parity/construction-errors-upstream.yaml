@@ -1,0 +1,573 @@
+schema: fastapi-rs/python-asgi-workflow@3
+workload:
+  file: tests/fixtures/workloads/construction_errors_upstream.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.construction.invalid-path-model-sequence
+  factory_input:
+    route:
+      method: get
+      path: /items/{id}
+      endpoint_name: read_items
+      parameters:
+      - name: id
+        annotation:
+          kind: generic
+          origin: list
+          arguments:
+          - kind: model
+            name: Item
+            base: pydantic-v2
+            fields:
+              title: str
+        default:
+          kind: required
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions: []
+  source_evidence:
+  - path: tests/test_invalid_path_param.py
+    kind: upstream_test
+- case_id: fastapi.construction.invalid-path-model-tuple
+  factory_input:
+    route:
+      method: get
+      path: /items/{id}
+      endpoint_name: read_items
+      parameters:
+      - name: id
+        annotation:
+          kind: generic
+          origin: tuple
+          arguments:
+          - kind: model
+            name: Item
+            base: pydantic-v2
+            fields:
+              title: str
+          - kind: model
+            name: Item
+            base: pydantic-v2
+            fields:
+              title: str
+        default:
+          kind: required
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions: []
+  source_evidence:
+  - path: tests/test_invalid_path_param.py
+    kind: upstream_test
+- case_id: fastapi.construction.invalid-path-model-mapping
+  factory_input:
+    route:
+      method: get
+      path: /items/{id}
+      endpoint_name: read_items
+      parameters:
+      - name: id
+        annotation:
+          kind: generic
+          origin: dict
+          arguments:
+          - kind: builtin
+            name: str
+          - kind: model
+            name: Item
+            base: pydantic-v2
+            fields:
+              title: str
+        default:
+          kind: required
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions: []
+  source_evidence:
+  - path: tests/test_invalid_path_param.py
+    kind: upstream_test
+- case_id: fastapi.construction.invalid-path-bare-list
+  factory_input:
+    route:
+      method: get
+      path: /items/{id}
+      endpoint_name: read_items
+      parameters:
+      - name: id
+        annotation:
+          kind: builtin
+          name: list
+        default:
+          kind: required
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions: []
+  source_evidence:
+  - path: tests/test_invalid_path_param.py
+    kind: upstream_test
+- case_id: fastapi.construction.invalid-path-bare-tuple
+  factory_input:
+    route:
+      method: get
+      path: /items/{id}
+      endpoint_name: read_items
+      parameters:
+      - name: id
+        annotation:
+          kind: builtin
+          name: tuple
+        default:
+          kind: required
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions: []
+  source_evidence:
+  - path: tests/test_invalid_path_param.py
+    kind: upstream_test
+- case_id: fastapi.construction.invalid-path-bare-set
+  factory_input:
+    route:
+      method: get
+      path: /items/{id}
+      endpoint_name: read_items
+      parameters:
+      - name: id
+        annotation:
+          kind: builtin
+          name: set
+        default:
+          kind: required
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions: []
+  source_evidence:
+  - path: tests/test_invalid_path_param.py
+    kind: upstream_test
+- case_id: fastapi.construction.invalid-path-bare-dict
+  factory_input:
+    route:
+      method: get
+      path: /items/{id}
+      endpoint_name: read_items
+      parameters:
+      - name: id
+        annotation:
+          kind: builtin
+          name: dict
+        default:
+          kind: required
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions: []
+  source_evidence:
+  - path: tests/test_invalid_path_param.py
+    kind: upstream_test
+- case_id: fastapi.construction.invalid-query-model-sequence
+  factory_input:
+    route:
+      method: get
+      path: /items/
+      endpoint_name: read_items
+      parameters:
+      - name: q
+        annotation:
+          kind: generic
+          origin: list
+          arguments:
+          - kind: model
+            name: Item
+            base: pydantic-v2
+            fields:
+              title: str
+        default:
+          kind: query-none
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions: []
+  source_evidence:
+  - path: tests/test_invalid_sequence_param.py
+    kind: upstream_test
+- case_id: fastapi.construction.invalid-query-model-tuple
+  factory_input:
+    route:
+      method: get
+      path: /items/
+      endpoint_name: read_items
+      parameters:
+      - name: q
+        annotation:
+          kind: generic
+          origin: tuple
+          arguments:
+          - kind: model
+            name: Item
+            base: pydantic-v2
+            fields:
+              title: str
+          - kind: model
+            name: Item
+            base: pydantic-v2
+            fields:
+              title: str
+        default:
+          kind: query-none
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions: []
+  source_evidence:
+  - path: tests/test_invalid_sequence_param.py
+    kind: upstream_test
+- case_id: fastapi.construction.invalid-query-model-mapping
+  factory_input:
+    route:
+      method: get
+      path: /items/
+      endpoint_name: read_items
+      parameters:
+      - name: q
+        annotation:
+          kind: generic
+          origin: dict
+          arguments:
+          - kind: builtin
+            name: str
+          - kind: model
+            name: Item
+            base: pydantic-v2
+            fields:
+              title: str
+        default:
+          kind: query-none
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions: []
+  source_evidence:
+  - path: tests/test_invalid_sequence_param.py
+    kind: upstream_test
+- case_id: fastapi.construction.invalid-query-bare-optional-mapping
+  factory_input:
+    route:
+      method: get
+      path: /items/
+      endpoint_name: read_items
+      parameters:
+      - name: q
+        annotation:
+          kind: union
+          members:
+          - kind: builtin
+            name: dict
+          - kind: none
+        default:
+          kind: query-none
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions: []
+  source_evidence:
+  - path: tests/test_invalid_sequence_param.py
+    kind: upstream_test
+- case_id: fastapi.construction.invalid-response-model-direct
+  factory_input:
+    route:
+      method: get
+      path: /
+      endpoint_name: read_root
+      response_model:
+        kind: class
+        name: NonPydanticModel
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions: []
+  source_evidence:
+  - path: tests/test_response_model_invalid.py
+    kind: upstream_test
+- case_id: fastapi.construction.invalid-response-model-sequence
+  factory_input:
+    route:
+      method: get
+      path: /
+      endpoint_name: read_root
+      response_model:
+        kind: generic
+        origin: list
+        arguments:
+        - kind: class
+          name: NonPydanticModel
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions: []
+  source_evidence:
+  - path: tests/test_response_model_invalid.py
+    kind: upstream_test
+- case_id: fastapi.construction.invalid-additional-response-model-direct
+  factory_input:
+    route:
+      method: get
+      path: /
+      endpoint_name: read_root
+      responses:
+      - status_code: '500'
+        model:
+          kind: class
+          name: NonPydanticModel
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions: []
+  source_evidence:
+  - path: tests/test_response_model_invalid.py
+    kind: upstream_test
+- case_id: fastapi.construction.invalid-additional-response-model-sequence
+  factory_input:
+    route:
+      method: get
+      path: /
+      endpoint_name: read_root
+      responses:
+      - status_code: '500'
+        model:
+          kind: generic
+          origin: list
+          arguments:
+          - kind: class
+            name: NonPydanticModel
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions: []
+  source_evidence:
+  - path: tests/test_response_model_invalid.py
+    kind: upstream_test
+- case_id: fastapi.construction.pydantic-v1-endpoint-parameter
+  factory_input:
+    route:
+      method: post
+      path: /param
+      endpoint_name: endpoint
+      parameters:
+      - name: data
+        annotation:
+          kind: model
+          name: ParamModelV1
+          base: pydantic-v1
+          fields:
+            name: str
+        default:
+          kind: required
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions: []
+  source_evidence:
+  - path: tests/test_pydantic_v1_error.py
+    kind: upstream_test
+- case_id: fastapi.construction.pydantic-v1-return-type
+  factory_input:
+    route:
+      method: get
+      path: /return
+      endpoint_name: endpoint
+      return_annotation:
+        kind: model
+        name: ReturnModelV1
+        base: pydantic-v1
+        fields:
+          name: str
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions: []
+  source_evidence:
+  - path: tests/test_pydantic_v1_error.py
+    kind: upstream_test
+- case_id: fastapi.construction.pydantic-v1-response-model
+  factory_input:
+    route:
+      method: get
+      path: /response-model
+      endpoint_name: endpoint
+      response_model:
+        kind: model
+        name: ResponseModelV1
+        base: pydantic-v1
+        fields:
+          name: str
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions: []
+  source_evidence:
+  - path: tests/test_pydantic_v1_error.py
+    kind: upstream_test
+- case_id: fastapi.construction.pydantic-v1-additional-response
+  factory_input:
+    route:
+      method: get
+      path: /responses
+      endpoint_name: endpoint
+      disable_response_model: true
+      responses:
+      - status_code: 400
+        model:
+          kind: model
+          name: ErrorModelV1
+          base: pydantic-v1
+          fields:
+            detail: str
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions: []
+  source_evidence:
+  - path: tests/test_pydantic_v1_error.py
+    kind: upstream_test
+- case_id: fastapi.construction.pydantic-v1-union-parameter
+  factory_input:
+    route:
+      method: post
+      path: /union
+      endpoint_name: endpoint
+      parameters:
+      - name: data
+        annotation:
+          kind: union
+          members:
+          - kind: builtin
+            name: dict
+          - kind: model
+            name: ModelV1A
+            base: pydantic-v1
+            fields:
+              name: str
+        default:
+          kind: required
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions: []
+  source_evidence:
+  - path: tests/test_pydantic_v1_error.py
+    kind: upstream_test
+- case_id: fastapi.construction.pydantic-v1-sequence-parameter
+  factory_input:
+    route:
+      method: post
+      path: /sequence
+      endpoint_name: endpoint
+      parameters:
+      - name: data
+        annotation:
+          kind: generic
+          origin: list
+          arguments:
+          - kind: model
+            name: ModelV1A
+            base: pydantic-v1
+            fields:
+              name: str
+        default:
+          kind: required
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions: []
+  source_evidence:
+  - path: tests/test_pydantic_v1_error.py
+    kind: upstream_test

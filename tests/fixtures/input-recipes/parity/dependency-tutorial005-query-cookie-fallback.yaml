@@ -1,0 +1,178 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/dependency_tutorial005_query_cookie_fallback.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.dependencies.tutorial005.query-cookie.fallback
+  actions:
+  - action_id: use-cookie-when-query-is-absent
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - cookie
+        - last_query=from_cookie
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_dependencies/test_tutorial005.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/dependencies/sub-dependencies.md
+    kind: upstream_documentation
+  - path: docs_src/dependencies/tutorial005_py310.py
+    kind: upstream_documentation
+- case_id: fastapi.dependencies.tutorial005.query-cookie.query-precedence
+  actions:
+  - action_id: prefer-query-over-cookie
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/
+      query_string: q=foo
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - cookie
+        - last_query=from_cookie
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_dependencies/test_tutorial005.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/dependencies/sub-dependencies.md
+    kind: upstream_documentation
+  - path: docs_src/dependencies/tutorial005_py310.py
+    kind: upstream_documentation
+- case_id: fastapi.dependencies.tutorial005.query-cookie.no-query-or-cookie
+  actions:
+  - action_id: use-null-when-query-and-cookie-are-absent
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_dependencies/test_tutorial005.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/dependencies/sub-dependencies.md
+    kind: upstream_documentation
+  - path: docs_src/dependencies/tutorial005_py310.py
+    kind: upstream_documentation
+- case_id: fastapi.dependencies.tutorial005.query-cookie.openapi-parameters
+  actions:
+  - action_id: inspect-query-and-cookie-parameter-definitions
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /paths/~1items~1/get/parameters/0
+      - /paths/~1items~1/get/parameters/1
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_dependencies/test_tutorial005.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/dependencies/sub-dependencies.md
+    kind: upstream_documentation
+  - path: docs_src/dependencies/tutorial005_py310.py
+    kind: upstream_documentation

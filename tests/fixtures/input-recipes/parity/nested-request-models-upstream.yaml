@@ -1,0 +1,385 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/nested_request_models.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.body-nested-models.tutorial006-nested-entry
+  actions:
+  - action_id: put-catalog-entry
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: PUT
+      scheme: http
+      path: /catalog/42
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"title":"Calibrated wrench","summary":"A compact workshop tool","price":14.75,"tax":0.85,"tags":["copper","copper"],"images":[{"url":"https://images.example.net/tools/wrench.png","caption":"Side
+        view"}]}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_body_nested_models/test_tutorial006.py
+    kind: upstream_test
+- case_id: fastapi.body-nested-models.tutorial006-invalid-image-container
+  actions:
+  - action_id: put-invalid-catalog-entry
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: PUT
+      scheme: http
+      path: /catalog/8
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"title":"Desk light","price":22.0,"images":{"url":"https://images.example.net/lights/desk.png","caption":"On"}}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_body_nested_models/test_tutorial006.py
+    kind: upstream_test
+- case_id: fastapi.body-nested-models.tutorial006-request-schema
+  actions:
+  - action_id: inspect-catalog-operation
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /components/schemas/CatalogItem
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_body_nested_models/test_tutorial006.py
+    kind: upstream_test
+- case_id: fastapi.body-nested-models.tutorial007-nested-promotion
+  actions:
+  - action_id: post-promotion
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /promotions/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"title":"Weekend toolkit","price":31.5,"items":[{"title":"Precision driver","price":12.25,"tags":["verdigris"]},{"title":"Measuring
+        tape","price":7.5,"images":[{"url":"https://images.example.net/tools/tape.png","caption":"Retracted"}]}]}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_body_nested_models/test_tutorial007.py
+    kind: upstream_test
+- case_id: fastapi.body-nested-models.tutorial007-missing-child-fields
+  actions:
+  - action_id: post-incomplete-promotion
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /promotions/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"title":"Workshop set","price":45.0,"items":[{"title":"Socket key"}]}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_body_nested_models/test_tutorial007.py
+    kind: upstream_test
+- case_id: fastapi.body-nested-models.tutorial007-request-schema
+  actions:
+  - action_id: inspect-promotion-operation
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /components/schemas/Promotion
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_body_nested_models/test_tutorial007.py
+    kind: upstream_test
+- case_id: fastapi.body-nested-models.tutorial009-integer-key-map
+  actions:
+  - action_id: post-index-weights
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /weights/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"8":1.25,"13":5.5}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_body_nested_models/test_tutorial009.py
+    kind: upstream_test
+- case_id: fastapi.body-nested-models.tutorial009-invalid-map-key
+  actions:
+  - action_id: post-invalid-index-weights
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /weights/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"north":1.25,"13":5.5}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_body_nested_models/test_tutorial009.py
+    kind: upstream_test
+- case_id: fastapi.body-updates.tutorial001-partial-field-update
+  actions:
+  - action_id: put-record-patch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: PUT
+      scheme: http
+      path: /records/quartz
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"title":"Revised notebook","price":9.75,"summary":null}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: read-after-patch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /records/quartz
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_body_updates/test_tutorial001.py
+    kind: upstream_test

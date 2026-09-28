@@ -1,0 +1,381 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/body_surface.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.body.embedded-scalar-valid
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /labels
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      - - content-length
+        - '18'
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"label":"copper"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_request_params/test_body/test_required_str.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/body.md
+    kind: upstream_documentation
+- case_id: fastapi.body.embedded-scalar-missing
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /labels
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      - - content-length
+        - '18'
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"other":"copper"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_request_params/test_body/test_required_str.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/body.md
+    kind: upstream_documentation
+- case_id: fastapi.body.embedded-list-valid
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /swatches
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      - - content-length
+        - '31'
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"swatches":["amber","indigo"]}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_request_params/test_body/test_list.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/body.md
+    kind: upstream_documentation
+- case_id: fastapi.body.multiple-values-valid
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /bundles
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      - - content-length
+        - '93'
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"product":{"name":"field-kit","price":42.5,"description":"portable","tax":3.4},"priority":2}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_tutorial/test_body_multiple_params/test_tutorial001.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/body-multiple-params.md
+    kind: upstream_documentation
+- case_id: fastapi.body.multiple-values-invalid
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /bundles
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      - - content-length
+        - '58'
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"product":{"name":"field-kit","price":42.5},"priority":0}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_tutorial/test_body_multiple_params/test_tutorial001.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/body-multiple-params.md
+    kind: upstream_documentation
+- case_id: fastapi.body.optional-model-absent
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: PUT
+      scheme: http
+      path: /products/7
+      query_string: q=metadata
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_tutorial/test_body_multiple_params/test_tutorial001.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/body-multiple-params.md
+    kind: upstream_documentation
+- case_id: fastapi.body.optional-model-present
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: PUT
+      scheme: http
+      path: /products/9
+      query_string: q=complete
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      - - content-length
+        - '68'
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"name":"field-kit","price":42.5,"description":"portable","tax":3.4}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_tutorial/test_body_multiple_params/test_tutorial001.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/body-multiple-params.md
+    kind: upstream_documentation
+- case_id: fastapi.body.openapi-schemas
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+    - kind: openapi
+      json_pointers:
+      - /paths/~1bundles/post/requestBody/content/application~1json/schema
+      - /paths/~1products~1{product_id}/put/requestBody/content/application~1json/schema
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_body_multiple_params/test_tutorial001.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/body-multiple-params.md
+    kind: upstream_documentation
+  - path: docs/en/docs/tutorial/body.md
+    kind: upstream_documentation

@@ -1,0 +1,78 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/path_operation_advanced_configurations_tutorial006_upstream.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.path-operation-advanced-configurations.tutorial006
+  actions:
+  - action_id: raw-body
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: http
+      query_string: ''
+      root_path: ''
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      method: POST
+      path: /items/
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - text/plain; charset=utf-8
+    receive_events:
+    - type: http.request
+      body: this is actually not validated
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: declared-request-body
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: http
+      query_string: ''
+      root_path: ''
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      method: GET
+      path: /openapi.json
+      headers:
+      - - host
+        - testserver
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths/~1items~1/post/requestBody
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_path_operation_advanced_configurations/test_tutorial006.py
+    kind: upstream_test
+  - path: docs_src/path_operation_advanced_configuration/tutorial006_py310.py
+    kind: upstream_documentation

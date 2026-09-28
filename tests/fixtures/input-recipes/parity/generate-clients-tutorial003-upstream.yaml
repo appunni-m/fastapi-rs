@@ -1,0 +1,89 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/generate_clients_tutorial003_upstream.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.test.test-tutorial-test-generate-clients-test-tutorial003.custom-operation-ids
+  actions:
+  - action_id: create-item
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /items/
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver], [content-type, application/json]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '{"name":"Foo","price":5}', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: create-user
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /users/
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver], [content-type, application/json]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '{"username":"Foo","email":"foo@example.com"}', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: list-items
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: openapi-operation-ids
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status], comparison: exact}
+    - kind: openapi
+      json_pointers:
+      - /paths/~1items~1/get/operationId
+      - /paths/~1items~1/post/operationId
+      - /paths/~1users~1/post/operationId
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_tutorial/test_generate_clients/test_tutorial003.py, kind: upstream_test}
+  - {path: docs_src/generate_clients/tutorial003_py310.py, kind: upstream_documentation}

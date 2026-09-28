@@ -1,0 +1,189 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/body_tutorial_model_upstream.py
+  factory: create_body_model_with_query_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.body.tutorial004.complete-model
+  actions:
+  - action_id: tutorial004-replace-complete-record
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: PUT
+      scheme: http
+      path: /records/23
+      query_string: q=night-shift
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      - - content-length
+        - '77'
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"label":"field-notebook","cost":79.5,"notes":"water-resistant","rebate":4.5}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_body/test_tutorial004.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/body.md
+    kind: upstream_documentation
+  - path: docs_src/body/tutorial004_py310.py
+    kind: upstream_documentation
+- case_id: fastapi.body.tutorial004.optional-model-fields-absent
+  actions:
+  - action_id: tutorial004-replace-required-fields-only
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: PUT
+      scheme: http
+      path: /records/24
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      - - content-length
+        - '38'
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"label":"field-notebook","cost":79.5}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_body/test_tutorial004.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/body.md
+    kind: upstream_documentation
+  - path: docs_src/body/tutorial004_py310.py
+    kind: upstream_documentation
+- case_id: fastapi.body.tutorial004.required-model-fields-missing
+  actions:
+  - action_id: tutorial004-reject-incomplete-record
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: PUT
+      scheme: http
+      path: /records/25
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      - - content-length
+        - '2'
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_body/test_tutorial004.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/body.md
+    kind: upstream_documentation
+  - path: docs_src/body/tutorial004_py310.py
+    kind: upstream_documentation
+- case_id: fastapi.body.tutorial004.openapi-operation-and-model
+  actions:
+  - action_id: tutorial004-inspect-body-operation
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /paths/~1records~1{record_id}/put
+      - /components/schemas/Record
+      - /components/schemas/HTTPValidationError
+      - /components/schemas/ValidationError
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_body/test_tutorial004.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/body.md
+    kind: upstream_documentation
+  - path: docs_src/body/tutorial004_py310.py
+    kind: upstream_documentation

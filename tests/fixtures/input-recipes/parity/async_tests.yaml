@@ -1,0 +1,50 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/async_tests.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.docs.async-tests.async-route
+  actions:
+  - action_id: async-root
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/advanced/async-tests.md
+    kind: upstream_documentation
+  - path: docs_src/async_tests/app_a_py310/main.py
+    kind: upstream_documentation
+  - path: docs_src/async_tests/app_a_py310/test_main.py
+    kind: upstream_documentation
+  - path: tests/test_tutorial/test_async_tests/test_main_a.py
+    kind: upstream_test

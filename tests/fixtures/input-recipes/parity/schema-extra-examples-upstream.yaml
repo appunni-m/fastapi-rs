@@ -1,0 +1,489 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/schema_extra_examples_upstream.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.schema-extra-example.model-schema-extra
+  actions:
+  - action_id: submit-config-extra
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: PUT
+      scheme: http
+      path: /examples/model-config/8
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"name":"Compass","description":"A field notebook","price":28.5,"tax":1.4}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+  - action_id: model-config-openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /components/schemas/ConfigExampleRecord
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_schema_extra_example/test_tutorial001.py
+    kind: upstream_test
+  - path: docs_src/schema_extra_example/tutorial001_py310.py
+    kind: upstream_documentation
+- case_id: fastapi.schema-extra-example.field-examples
+  actions:
+  - action_id: submit-field-examples
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: PUT
+      scheme: http
+      path: /examples/field-values/8
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"name":"Compass","description":"A field notebook","price":28.5,"tax":1.4}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+  - action_id: field-examples-openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /components/schemas/FieldExamplesRecord
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_schema_extra_example/test_tutorial002.py
+    kind: upstream_test
+  - path: docs_src/schema_extra_example/tutorial002_py310.py
+    kind: upstream_documentation
+- case_id: fastapi.schema-extra-example.body-examples-list
+  actions:
+  - action_id: submit-body-examples-default
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: PUT
+      scheme: http
+      path: /examples/body-default/8
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"name":"Compass","description":"A field notebook","price":28.5,"tax":1.4}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+  - action_id: submit-body-examples-annotated
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: PUT
+      scheme: http
+      path: /examples/body-annotated/8
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"name":"Compass","description":"A field notebook","price":28.5,"tax":1.4}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+  - action_id: body-examples-openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /paths/~1examples~1body-default~1{record_id}/put/requestBody/content/application~1json/schema
+      - /paths/~1examples~1body-annotated~1{record_id}/put/requestBody/content/application~1json/schema
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_schema_extra_example/test_tutorial003.py
+    kind: upstream_test
+  - path: docs_src/schema_extra_example/tutorial003_py310.py
+    kind: upstream_documentation
+  - path: docs_src/schema_extra_example/tutorial003_an_py310.py
+    kind: upstream_documentation
+- case_id: fastapi.schema-extra-example.body-examples-several
+  actions:
+  - action_id: submit-body-examples-default
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: PUT
+      scheme: http
+      path: /examples/body-multiple-default/8
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"name":"Compass","description":"A field notebook","price":28.5,"tax":1.4}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+  - action_id: submit-body-examples-annotated
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: PUT
+      scheme: http
+      path: /examples/body-multiple-annotated/8
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"name":"Compass","description":"A field notebook","price":28.5,"tax":1.4}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+  - action_id: several-examples-openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /paths/~1examples~1body-multiple-default~1{record_id}/put/requestBody/content/application~1json/schema
+      - /paths/~1examples~1body-multiple-annotated~1{record_id}/put/requestBody/content/application~1json/schema
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_schema_extra_example/test_tutorial004.py
+    kind: upstream_test
+  - path: docs_src/schema_extra_example/tutorial004_py310.py
+    kind: upstream_documentation
+  - path: docs_src/schema_extra_example/tutorial004_an_py310.py
+    kind: upstream_documentation
+- case_id: fastapi.schema-extra-example.openapi-example-objects
+  actions:
+  - action_id: submit-openapi-examples-default
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: PUT
+      scheme: http
+      path: /examples/openapi-default/8
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"name":"Compass","description":"A field notebook","price":28.5,"tax":1.4}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+  - action_id: submit-openapi-examples-annotated
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: PUT
+      scheme: http
+      path: /examples/openapi-annotated/8
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"name":"Compass","description":"A field notebook","price":28.5,"tax":1.4}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+  - action_id: named-examples-openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /paths/~1examples~1openapi-default~1{record_id}/put/requestBody/content/application~1json/examples
+      - /paths/~1examples~1openapi-annotated~1{record_id}/put/requestBody/content/application~1json/examples
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_schema_extra_example/test_tutorial005.py
+    kind: upstream_test
+  - path: docs_src/schema_extra_example/tutorial005_py310.py
+    kind: upstream_documentation
+  - path: docs_src/schema_extra_example/tutorial005_an_py310.py
+    kind: upstream_documentation

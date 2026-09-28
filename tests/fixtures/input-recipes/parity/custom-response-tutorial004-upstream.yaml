@@ -1,0 +1,89 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/custom_response_tutorial004_upstream.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.custom-response.tutorial004.items-response
+  actions:
+  - action_id: items
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_custom_response/test_tutorial002_tutorial003_tutorial004.py
+    kind: upstream_test
+  - path: docs_src/custom_response/tutorial004_py310.py
+    kind: upstream_documentation
+- case_id: fastapi.custom-response.tutorial004.openapi
+  actions:
+  - action_id: openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /openapi
+      - /info
+      - /paths
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_custom_response/test_tutorial002_tutorial003_tutorial004.py
+    kind: upstream_test
+  - path: docs_src/custom_response/tutorial004_py310.py
+    kind: upstream_documentation

@@ -1,0 +1,81 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/proxy_slash_redirect_upstream.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.test.test-tutorial-test-behind-a-proxy-test-tutorial001-01.test-redirect
+  actions:
+  - action_id: request-without-slash
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: https
+      path: /items
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - example.com
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - example.com
+      - 443
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_behind_a_proxy/test_tutorial001_01.py
+    kind: upstream_test
+- case_id: fastapi.test.test-tutorial-test-behind-a-proxy-test-tutorial001-01.test-no-redirect
+  actions:
+  - action_id: request-with-slash
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: https
+      path: /items/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - example.com
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - example.com
+      - 443
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_behind_a_proxy/test_tutorial001_01.py
+    kind: upstream_test

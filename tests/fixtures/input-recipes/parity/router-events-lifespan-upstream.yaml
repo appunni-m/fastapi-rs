@@ -1,0 +1,926 @@
+# FastAPI 0.141.1 requires Python >=3.10; the pinned oracle profile uses CPython 3.12.13.
+# The v3 workflow has no construction-warning selector, so deprecation warning capture is an explicit gap.
+schema: fastapi-rs/python-asgi-workflow@3
+workload:
+  file: tests/fixtures/workloads/router_events_lifespan_upstream.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.lifecycle.router-events-legacy
+  factory_input:
+    application:
+      legacy_on_event:
+      - stage: startup
+        marker: app-startup
+        async: false
+      - stage: shutdown
+        marker: app-shutdown
+        async: false
+      routers:
+      - legacy_on_event:
+        - stage: startup
+          marker: router-startup
+          async: false
+        - stage: shutdown
+          marker: router-shutdown
+          async: false
+        routers:
+        - legacy_on_event:
+          - stage: startup
+            marker: sub-router-startup
+            async: false
+          - stage: shutdown
+            marker: sub-router-shutdown
+            async: false
+      routes:
+      - path: /
+        message: Hello World
+    request_path: /
+  construction_observation:
+    kind: construction
+    selectors: &id001
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: lifespan
+    kind: lifespan
+    events:
+    - lifespan.startup
+    - lifespan.shutdown
+    observations:
+    - kind: asgi_lifespan
+      selector: event_order
+      comparison: ordered
+    - kind: asgi_lifespan
+      selector: startup
+      comparison: exact
+    - kind: asgi_lifespan
+      selector: shutdown
+      comparison: exact
+    - kind: asgi_lifespan
+      selector: application_errors
+      comparison: exact
+    - kind: asgi_lifespan
+      selector: workload_trace
+      comparison: ordered
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.0'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 12345
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_router_events.py
+    kind: upstream_test
+  - path: docs/en/docs/advanced/events.md
+    kind: upstream_documentation
+  - path: docs/en/docs/advanced/testing-events.md
+    kind: upstream_documentation
+- case_id: fastapi.lifecycle.app-lifespan-state
+  factory_input:
+    application:
+      lifespan:
+        kind: async-context-manager
+        startup_marker: app-startup
+        shutdown_marker: app-shutdown
+        state: null
+      routes:
+      - path: /
+        message: Hello World
+    request_path: /
+  construction_observation:
+    kind: construction
+    selectors: *id001
+    comparison: exact
+  actions:
+  - action_id: lifespan
+    kind: lifespan
+    events:
+    - lifespan.startup
+    - lifespan.shutdown
+    observations:
+    - kind: asgi_lifespan
+      selector: event_order
+      comparison: ordered
+    - kind: asgi_lifespan
+      selector: startup
+      comparison: exact
+    - kind: asgi_lifespan
+      selector: shutdown
+      comparison: exact
+    - kind: asgi_lifespan
+      selector: application_errors
+      comparison: exact
+    - kind: asgi_lifespan
+      selector: workload_trace
+      comparison: ordered
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.0'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 12345
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_router_events.py
+    kind: upstream_test
+  - path: docs/en/docs/advanced/events.md
+    kind: upstream_documentation
+  - path: docs/en/docs/advanced/testing-events.md
+    kind: upstream_documentation
+- case_id: fastapi.lifecycle.nested-lifespan-state
+  factory_input:
+    application:
+      lifespan:
+        kind: async-context-manager
+        startup_marker: app-startup
+        shutdown_marker: app-shutdown
+        state:
+          app: true
+      routers:
+      - lifespan:
+          kind: async-context-manager
+          startup_marker: router-startup
+          shutdown_marker: router-shutdown
+          state:
+            router: true
+        routers:
+        - lifespan:
+            kind: async-context-manager
+            startup_marker: sub-router-startup
+            shutdown_marker: sub-router-shutdown
+            state:
+              sub_router: true
+      routes:
+      - path: /
+        message: Hello World
+    request_path: /
+  construction_observation:
+    kind: construction
+    selectors: *id001
+    comparison: exact
+  actions:
+  - action_id: lifespan
+    kind: lifespan
+    events:
+    - lifespan.startup
+    - lifespan.shutdown
+    observations:
+    - kind: asgi_lifespan
+      selector: event_order
+      comparison: ordered
+    - kind: asgi_lifespan
+      selector: startup
+      comparison: exact
+    - kind: asgi_lifespan
+      selector: shutdown
+      comparison: exact
+    - kind: asgi_lifespan
+      selector: application_errors
+      comparison: exact
+    - kind: asgi_lifespan
+      selector: workload_trace
+      comparison: ordered
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.0'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 12345
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_router_events.py
+    kind: upstream_test
+  - path: docs/en/docs/advanced/events.md
+    kind: upstream_documentation
+  - path: docs/en/docs/advanced/testing-events.md
+    kind: upstream_documentation
+- case_id: fastapi.lifecycle.parent-lifespan-state-override
+  factory_input:
+    application:
+      lifespan:
+        kind: async-context-manager
+        state:
+          app_specific: true
+          overridden: app
+      routers:
+      - lifespan:
+          kind: async-context-manager
+          state:
+            router_specific: true
+            overridden: router
+      routes:
+      - path: /
+        message: Hello World
+    request_path: /
+  construction_observation:
+    kind: construction
+    selectors: *id001
+    comparison: exact
+  actions:
+  - action_id: lifespan
+    kind: lifespan
+    events:
+    - lifespan.startup
+    - lifespan.shutdown
+    observations:
+    - kind: asgi_lifespan
+      selector: event_order
+      comparison: ordered
+    - kind: asgi_lifespan
+      selector: startup
+      comparison: exact
+    - kind: asgi_lifespan
+      selector: shutdown
+      comparison: exact
+    - kind: asgi_lifespan
+      selector: application_errors
+      comparison: exact
+    - kind: asgi_lifespan
+      selector: workload_trace
+      comparison: ordered
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.0'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 12345
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_router_events.py
+    kind: upstream_test
+  - path: docs/en/docs/advanced/events.md
+    kind: upstream_documentation
+  - path: docs/en/docs/advanced/testing-events.md
+    kind: upstream_documentation
+- case_id: fastapi.lifecycle.empty-merged-lifespan-state
+  factory_input:
+    application:
+      lifespan:
+        kind: async-context-manager
+        state: null
+      routers:
+      - lifespan:
+          kind: async-context-manager
+          state: null
+      routes:
+      - path: /
+        message: Hello World
+    request_path: /
+  construction_observation:
+    kind: construction
+    selectors: *id001
+    comparison: exact
+  actions:
+  - action_id: lifespan
+    kind: lifespan
+    events:
+    - lifespan.startup
+    - lifespan.shutdown
+    observations:
+    - kind: asgi_lifespan
+      selector: event_order
+      comparison: ordered
+    - kind: asgi_lifespan
+      selector: startup
+      comparison: exact
+    - kind: asgi_lifespan
+      selector: shutdown
+      comparison: exact
+    - kind: asgi_lifespan
+      selector: application_errors
+      comparison: exact
+    - kind: asgi_lifespan
+      selector: workload_trace
+      comparison: ordered
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.0'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 12345
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_router_events.py
+    kind: upstream_test
+  - path: docs/en/docs/advanced/events.md
+    kind: upstream_documentation
+  - path: docs/en/docs/advanced/testing-events.md
+    kind: upstream_documentation
+- case_id: fastapi.lifecycle.mixed-merged-lifespan-state
+  factory_input:
+    application:
+      lifespan:
+        kind: async-context-manager
+        state: null
+      routers:
+      - lifespan:
+          kind: async-context-manager
+          state:
+            router: true
+        routers:
+        - lifespan:
+            kind: async-context-manager
+            state: null
+      routes:
+      - path: /
+        message: Hello World
+    request_path: /
+  construction_observation:
+    kind: construction
+    selectors: *id001
+    comparison: exact
+  actions:
+  - action_id: lifespan
+    kind: lifespan
+    events:
+    - lifespan.startup
+    - lifespan.shutdown
+    observations:
+    - kind: asgi_lifespan
+      selector: event_order
+      comparison: ordered
+    - kind: asgi_lifespan
+      selector: startup
+      comparison: exact
+    - kind: asgi_lifespan
+      selector: shutdown
+      comparison: exact
+    - kind: asgi_lifespan
+      selector: application_errors
+      comparison: exact
+    - kind: asgi_lifespan
+      selector: workload_trace
+      comparison: ordered
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.0'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 12345
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_router_events.py
+    kind: upstream_test
+  - path: docs/en/docs/advanced/events.md
+    kind: upstream_documentation
+  - path: docs/en/docs/advanced/testing-events.md
+    kind: upstream_documentation
+- case_id: fastapi.lifecycle.async-shutdown-handler
+  factory_input:
+    application:
+      legacy_on_event:
+      - stage: shutdown
+        marker: app-shutdown
+        async: true
+      routes:
+      - path: /
+        message: Hello World
+    request_path: /
+  construction_observation:
+    kind: construction
+    selectors: *id001
+    comparison: exact
+  actions:
+  - action_id: lifespan
+    kind: lifespan
+    events:
+    - lifespan.startup
+    - lifespan.shutdown
+    observations:
+    - kind: asgi_lifespan
+      selector: event_order
+      comparison: ordered
+    - kind: asgi_lifespan
+      selector: startup
+      comparison: exact
+    - kind: asgi_lifespan
+      selector: shutdown
+      comparison: exact
+    - kind: asgi_lifespan
+      selector: application_errors
+      comparison: exact
+    - kind: asgi_lifespan
+      selector: workload_trace
+      comparison: ordered
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.0'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 12345
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_router_events.py
+    kind: upstream_test
+  - path: docs/en/docs/advanced/events.md
+    kind: upstream_documentation
+  - path: docs/en/docs/advanced/testing-events.md
+    kind: upstream_documentation
+- case_id: fastapi.lifecycle.sync-generator-lifespan
+  factory_input:
+    application:
+      lifespan:
+        kind: sync-generator
+        startup_marker: app-startup
+        shutdown_marker: app-shutdown
+        state: null
+      routes:
+      - path: /
+        message: Hello World
+    request_path: /
+  construction_observation:
+    kind: construction
+    selectors: *id001
+    comparison: exact
+  actions:
+  - action_id: lifespan
+    kind: lifespan
+    events:
+    - lifespan.startup
+    - lifespan.shutdown
+    observations:
+    - kind: asgi_lifespan
+      selector: event_order
+      comparison: ordered
+    - kind: asgi_lifespan
+      selector: startup
+      comparison: exact
+    - kind: asgi_lifespan
+      selector: shutdown
+      comparison: exact
+    - kind: asgi_lifespan
+      selector: application_errors
+      comparison: exact
+    - kind: asgi_lifespan
+      selector: workload_trace
+      comparison: ordered
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.0'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 12345
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_router_events.py
+    kind: upstream_test
+  - path: docs/en/docs/advanced/events.md
+    kind: upstream_documentation
+  - path: docs/en/docs/advanced/testing-events.md
+    kind: upstream_documentation
+- case_id: fastapi.lifecycle.async-generator-lifespan
+  factory_input:
+    application:
+      lifespan:
+        kind: async-generator
+        startup_marker: app-startup
+        shutdown_marker: app-shutdown
+        state: null
+      routes:
+      - path: /
+        message: Hello World
+    request_path: /
+  construction_observation:
+    kind: construction
+    selectors: *id001
+    comparison: exact
+  actions:
+  - action_id: lifespan
+    kind: lifespan
+    events:
+    - lifespan.startup
+    - lifespan.shutdown
+    observations:
+    - kind: asgi_lifespan
+      selector: event_order
+      comparison: ordered
+    - kind: asgi_lifespan
+      selector: startup
+      comparison: exact
+    - kind: asgi_lifespan
+      selector: shutdown
+      comparison: exact
+    - kind: asgi_lifespan
+      selector: application_errors
+      comparison: exact
+    - kind: asgi_lifespan
+      selector: workload_trace
+      comparison: ordered
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.0'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 12345
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_router_events.py
+    kind: upstream_test
+  - path: docs/en/docs/advanced/events.md
+    kind: upstream_documentation
+  - path: docs/en/docs/advanced/testing-events.md
+    kind: upstream_documentation
+- case_id: fastapi.lifecycle.parameter-event-handlers
+  factory_input:
+    application:
+      parameter_events:
+        startup:
+        - app-startup
+        shutdown:
+        - app-shutdown
+      routers:
+      - parameter_events:
+          startup:
+          - router-startup
+          shutdown:
+          - router-shutdown
+        routers:
+        - parameter_events:
+            startup:
+            - sub-router-startup
+            shutdown:
+            - sub-router-shutdown
+      routes:
+      - path: /
+        message: Hello World
+    request_path: /
+  construction_observation:
+    kind: construction
+    selectors: *id001
+    comparison: exact
+  actions:
+  - action_id: lifespan
+    kind: lifespan
+    events:
+    - lifespan.startup
+    - lifespan.shutdown
+    observations:
+    - kind: asgi_lifespan
+      selector: event_order
+      comparison: ordered
+    - kind: asgi_lifespan
+      selector: startup
+      comparison: exact
+    - kind: asgi_lifespan
+      selector: shutdown
+      comparison: exact
+    - kind: asgi_lifespan
+      selector: application_errors
+      comparison: exact
+    - kind: asgi_lifespan
+      selector: workload_trace
+      comparison: ordered
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.0'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 12345
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_router_events.py
+    kind: upstream_test
+  - path: docs/en/docs/advanced/events.md
+    kind: upstream_documentation
+  - path: docs/en/docs/advanced/testing-events.md
+    kind: upstream_documentation
+- case_id: fastapi.lifecycle.mounted-subapp-lifespan-exclusion
+  factory_input:
+    application:
+      lifespan:
+        kind: async-context-manager
+        startup_marker: main-startup
+        shutdown_marker: main-shutdown
+        state:
+          root: true
+      routes:
+      - path: /
+        message: main
+      mounts:
+      - path: /nested
+        application:
+          lifespan:
+            kind: async-context-manager
+            startup_marker: nested-startup
+            shutdown_marker: nested-shutdown
+            state:
+              nested: true
+          routes:
+          - path: /
+            message: nested
+    request_path: /nested/
+  construction_observation:
+    kind: construction
+    selectors: *id001
+    comparison: exact
+  actions:
+  - action_id: lifespan
+    kind: lifespan
+    events:
+    - lifespan.startup
+    - lifespan.shutdown
+    observations:
+    - kind: asgi_lifespan
+      selector: event_order
+      comparison: ordered
+    - kind: asgi_lifespan
+      selector: startup
+      comparison: exact
+    - kind: asgi_lifespan
+      selector: shutdown
+      comparison: exact
+    - kind: asgi_lifespan
+      selector: application_errors
+      comparison: exact
+    - kind: asgi_lifespan
+      selector: workload_trace
+      comparison: ordered
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.0'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /nested/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 12345
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/advanced/events.md
+    kind: upstream_documentation

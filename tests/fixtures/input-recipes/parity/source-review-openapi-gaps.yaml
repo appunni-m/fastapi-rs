@@ -1,0 +1,89 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/source_review_openapi_gaps.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.source-review-openapi-gaps.form-feed-description
+  actions:
+  - action_id: openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /paths/~1facilities~1{facility_id}/get
+      - /components/schemas/DeliveryAddress/description
+      - /components/schemas/FacilityRecord
+      comparison: exact
+  source_evidence:
+  - path: tests/test_get_model_definitions_formfeed_escape.py
+    kind: upstream_test
+- case_id: fastapi.source-review-openapi-gaps.subrouter-callbacks
+  actions:
+  - action_id: openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /paths/~1invoices~1/post
+      - /paths/~1invoices~1/post/callbacks
+      comparison: exact
+  source_evidence:
+  - path: tests/test_sub_callbacks.py
+    kind: upstream_test

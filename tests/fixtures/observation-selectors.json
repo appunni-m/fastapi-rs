@@ -1,0 +1,300 @@
+{
+  "schema": "fastapi-rs/observation-selector-catalog@1",
+  "authority": {
+    "fastapi": "0.141.1",
+    "starlette": "1.6.0"
+  },
+  "comparison_policy": "Compare each declared projection exactly; order-sensitive projections preserve event order. Apply no implicit normalization.",
+  "selectors": [
+    {
+      "id": "asgi.lifespan.application_errors",
+      "projection": "Ordered lifespan application exceptions by stage, fully qualified class, and exact exception message.",
+      "comparison": "ordered-exact",
+      "workflow_support": "supported"
+    },
+    {
+      "id": "asgi.lifespan.event_order",
+      "projection": "Ordered ASGI lifespan receive/send event types across startup and shutdown.",
+      "comparison": "ordered-exact",
+      "workflow_support": "supported"
+    },
+    {
+      "id": "asgi.lifespan.shutdown",
+      "projection": "Exact shutdown outcome, response type, and message, including whether shutdown was sent.",
+      "comparison": "exact",
+      "workflow_support": "supported"
+    },
+    {
+      "id": "asgi.lifespan.startup",
+      "projection": "Exact startup outcome, response type, and message.",
+      "comparison": "exact",
+      "workflow_support": "supported"
+    },
+    {
+      "id": "asgi.lifespan.workload_trace",
+      "projection": "Ordered callback-side effects explicitly recorded by the independent workload and observed after cleanup.",
+      "comparison": "ordered-exact",
+      "workflow_support": "supported"
+    },
+    {
+      "id": "construction.exception_class",
+      "projection": "Fully qualified exception class raised during app construction, or null on success.",
+      "comparison": "exact",
+      "workflow_support": "supported"
+    },
+    {
+      "id": "construction.exception_message",
+      "projection": "Exact str(exception) raised during app construction, or null on success; traceback text is excluded.",
+      "comparison": "exact",
+      "workflow_support": "supported"
+    },
+    {
+      "id": "construction.outcome",
+      "projection": "Whether per-case FastAPI app construction completed or raised an exception.",
+      "comparison": "exact",
+      "workflow_support": "supported"
+    },
+    {
+      "id": "dependency.call_order",
+      "projection": "Ordered labels emitted by dependency call hooks in the independent workload.",
+      "comparison": "ordered-exact",
+      "workflow_support": "planned"
+    },
+    {
+      "id": "dependency.cleanup_order",
+      "projection": "Ordered labels emitted when yield dependencies and cleanup hooks finish.",
+      "comparison": "ordered-exact",
+      "workflow_support": "planned"
+    },
+    {
+      "id": "docs.response.body.bytes",
+      "projection": "Raw body bytes returned by the selected documentation endpoint.",
+      "comparison": "exact-bytes",
+      "encoding": "base64",
+      "workflow_support": "supported"
+    },
+    {
+      "id": "docs.response.headers",
+      "projection": "Ordered ASGI response header byte pairs from the selected documentation endpoint.",
+      "comparison": "ordered-exact",
+      "encoding": "base64-pairs",
+      "workflow_support": "supported"
+    },
+    {
+      "id": "docs.response.status",
+      "projection": "ASGI HTTP response status from the selected documentation endpoint.",
+      "comparison": "exact",
+      "workflow_support": "supported"
+    },
+    {
+      "id": "error.args",
+      "projection": "Exception args as an ordered JSON-safe value sequence.",
+      "comparison": "ordered-exact",
+      "workflow_support": "planned"
+    },
+    {
+      "id": "error.class",
+      "projection": "Exception class module and qualified name.",
+      "comparison": "exact",
+      "workflow_support": "planned"
+    },
+    {
+      "id": "error.public_attributes",
+      "projection": "Explicitly selected public exception attributes and their values.",
+      "comparison": "exact",
+      "workflow_support": "planned"
+    },
+    {
+      "id": "http.body.bytes",
+      "projection": "Concatenated raw ASGI HTTP response body bytes.",
+      "comparison": "exact-bytes",
+      "encoding": "base64",
+      "workflow_support": "supported"
+    },
+    {
+      "id": "http.body.json",
+      "projection": "Response JSON parsed without field filtering; pair with http.body.bytes when wire representation matters.",
+      "comparison": "exact-json-value",
+      "workflow_support": "planned"
+    },
+    {
+      "id": "http.body.prefix",
+      "projection": "Exact byte prefix emitted by the response stream before the selected stopping condition.",
+      "comparison": "exact-bytes",
+      "encoding": "base64",
+      "workflow_support": "planned"
+    },
+    {
+      "id": "http.body.sse_asserted_fields",
+      "projection": "Ordered SSE event fields selected by the input recipe, preserving event order and field values.",
+      "comparison": "ordered-exact",
+      "workflow_support": "planned"
+    },
+    {
+      "id": "http.cookies",
+      "projection": "Ordered cookie records derived from Set-Cookie response headers, including attributes.",
+      "comparison": "ordered-exact",
+      "workflow_support": "planned"
+    },
+    {
+      "id_pattern": "http.header.absent:{lowercase_header_name}",
+      "pattern": "^http\\.header\\.absent:[a-z0-9!#$%&'*+.^_`|~-]+$",
+      "projection": "Boolean absence of the named lower-case response header.",
+      "comparison": "exact",
+      "workflow_support": "planned"
+    },
+    {
+      "id": "http.header.content_type",
+      "projection": "Exact Content-Type response header value.",
+      "comparison": "exact",
+      "workflow_support": "planned"
+    },
+    {
+      "id": "http.headers.ordered",
+      "projection": "Ordered ASGI response header byte pairs, retaining duplicate names and values.",
+      "comparison": "ordered-exact",
+      "encoding": "base64-pairs",
+      "workflow_support": "supported"
+    },
+    {
+      "id": "http.status",
+      "projection": "ASGI HTTP response status code.",
+      "comparison": "exact",
+      "workflow_support": "supported"
+    },
+    {
+      "id": "lifecycle.cleanup_effects",
+      "projection": "Explicitly selected side effects emitted during lifespan shutdown and cleanup.",
+      "comparison": "exact",
+      "workflow_support": "planned"
+    },
+    {
+      "id": "lifecycle.event_order",
+      "projection": "Ordered ASGI lifespan startup, request, shutdown, and cleanup events.",
+      "comparison": "ordered-exact",
+      "workflow_support": "planned"
+    },
+    {
+      "id": "openapi.document",
+      "projection": "Full app.openapi() JSON value; use selected JSON pointers for focused cases.",
+      "comparison": "exact-json-value",
+      "workflow_support": "partial"
+    },
+    {
+      "id": "openapi.paths",
+      "projection": "OpenAPI paths JSON values with array order preserved; the HTTP body byte selector covers wire representation.",
+      "comparison": "exact-json-value",
+      "workflow_support": "partial"
+    },
+    {
+      "id": "openapi.request_schema",
+      "projection": "Request-body schema values at explicitly selected OpenAPI JSON pointers.",
+      "comparison": "exact-json-value",
+      "workflow_support": "supported"
+    },
+    {
+      "id": "openapi.security",
+      "projection": "Security requirements and schemes at explicitly selected OpenAPI JSON pointers.",
+      "comparison": "exact-json-value",
+      "workflow_support": "supported"
+    },
+    {
+      "id": "process.exit_code",
+      "projection": "Process return code after the documented command completes.",
+      "comparison": "exact",
+      "workflow_support": "planned"
+    },
+    {
+      "id": "process.stderr",
+      "projection": "Raw standard-error bytes emitted by the documented command.",
+      "comparison": "exact-bytes",
+      "encoding": "base64",
+      "workflow_support": "planned"
+    },
+    {
+      "id": "process.stdout",
+      "projection": "Raw standard-output bytes emitted by the documented command.",
+      "comparison": "exact-bytes",
+      "encoding": "base64",
+      "workflow_support": "planned"
+    },
+    {
+      "id": "python.attribute_value",
+      "projection": "Explicitly selected public attribute value using a typed JSON-safe representation.",
+      "comparison": "exact",
+      "workflow_support": "supported"
+    },
+    {
+      "id": "python.import_path",
+      "projection": "Importable module path and bound public symbol name.",
+      "comparison": "exact",
+      "workflow_support": "planned"
+    },
+    {
+      "id": "python.object_identity",
+      "projection": "Identity relation between explicitly selected public aliases, evaluated with Python `is`.",
+      "comparison": "exact-identity-relation",
+      "workflow_support": "planned"
+    },
+    {
+      "id": "python.signature",
+      "projection": "Ordered callable parameters with names, kinds, defaults, annotations, and return annotation.",
+      "comparison": "ordered-exact",
+      "workflow_support": "supported"
+    },
+    {
+      "id": "python.warnings",
+      "projection": "Ordered Python warning category classes and exact messages emitted during the selected import, construction, or call phase.",
+      "comparison": "ordered-exact",
+      "workflow_support": "planned"
+    },
+    {
+      "id": "response.background_effects",
+      "projection": "Explicitly selected background-task effects emitted in execution order.",
+      "comparison": "ordered-exact",
+      "workflow_support": "planned"
+    },
+    {
+      "id": "route.match",
+      "projection": "Matched route identity and extracted path parameters for the request.",
+      "comparison": "exact",
+      "workflow_support": "planned"
+    },
+    {
+      "id": "validation.error_class",
+      "projection": "Fully qualified exception class raised during the selected ASGI dispatch; response-validation cases use it to identify FastAPI's validation exception, and null records that dispatch returned without raising.",
+      "comparison": "exact",
+      "workflow_support": "partial"
+    },
+    {
+      "id": "validation.error_details",
+      "projection": "Ordered Pydantic validation error records, including location, type, message, and input/context when present.",
+      "comparison": "ordered-exact",
+      "workflow_support": "planned"
+    },
+    {
+      "id": "warnings.category_message",
+      "projection": "Ordered warning category module/name and exact warning message.",
+      "comparison": "ordered-exact",
+      "workflow_support": "planned"
+    },
+    {
+      "id": "websocket.close_code",
+      "projection": "Final WebSocket close code.",
+      "comparison": "exact",
+      "workflow_support": "supported"
+    },
+    {
+      "id": "websocket.event_order",
+      "projection": "Ordered ASGI WebSocket receive and send message types.",
+      "comparison": "ordered-exact",
+      "workflow_support": "supported"
+    },
+    {
+      "id": "websocket.messages",
+      "projection": "Ordered WebSocket text or binary payloads with their message types.",
+      "comparison": "ordered-exact",
+      "workflow_support": "supported"
+    }
+  ]
+}

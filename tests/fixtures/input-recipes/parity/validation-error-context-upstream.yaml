@@ -1,0 +1,263 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/validation_error_context.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.validation-error-context.path-parameter-http
+  actions:
+  - action_id: read-invalid-member
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /members/bad-id
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_validation_error_context.py
+    kind: upstream_test
+- case_id: fastapi.validation-error-context.response-model-http
+  actions:
+  - action_id: read-invalid-summary
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /summary
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_validation_error_context.py
+    kind: upstream_test
+- case_id: fastapi.validation-error-context.mounted-path-parameter-http
+  actions:
+  - action_id: read-invalid-mounted-member
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /mounted/members/bad-id
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_validation_error_context.py
+    kind: upstream_test
+- case_id: fastapi.validation-error-context.websocket
+  actions:
+  - action_id: open-invalid-websocket
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /socket/bad-id
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.disconnect
+      code: 1000
+      reason: workflow complete
+    observations:
+    - kind: websocket
+      selector: messages
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_validation_error_context.py
+    kind: upstream_test
+- case_id: fastapi.validation-error-context.mounted-websocket
+  actions:
+  - action_id: open-invalid-mounted-websocket
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /mounted/socket/bad-id
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.disconnect
+      code: 1000
+      reason: workflow complete
+    observations:
+    - kind: websocket
+      selector: messages
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_validation_error_context.py
+    kind: upstream_test
+- case_id: fastapi.validation-error-context.explicit-path-only
+  actions:
+  - action_id: render-path-only-context
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /diagnostics/path-only
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_validation_error_context.py
+    kind: upstream_test
+- case_id: fastapi.validation-error-context.empty-endpoint-context
+  actions:
+  - action_id: render-empty-context
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /diagnostics/empty-context
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_validation_error_context.py
+    kind: upstream_test

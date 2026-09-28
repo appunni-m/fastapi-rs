@@ -1,0 +1,267 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/middleware.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.middleware.decorator-openapi
+  actions:
+  - action_id: inspect-openapi-through-middleware
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: https
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - example.com
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - example.com
+      - 443
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /info/title
+      - /paths/~1status/get
+      - /paths/~1echo/post
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/middleware.md
+    kind: upstream_documentation
+  - path: docs_src/middleware/tutorial001_py310.py
+    kind: upstream_documentation
+  - path: tests/test_tutorial/test_middleware/test_tutorial001.py
+    kind: upstream_test
+- case_id: fastapi.middleware.https-redirect-http
+  actions:
+  - action_id: redirect-insecure-request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /status
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - example.com
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - example.com
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/advanced/middleware.md
+    kind: upstream_documentation
+  - path: docs_src/advanced_middleware/tutorial001_py310.py
+    kind: upstream_documentation
+  - path: tests/test_tutorial/test_advanced_middleware/test_tutorial001.py
+    kind: upstream_test
+- case_id: fastapi.middleware.trusted-host-wildcard-allowed
+  actions:
+  - action_id: accept-subdomain-host
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: https
+      path: /status
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - api.example.com
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - api.example.com
+      - 443
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/advanced/middleware.md
+    kind: upstream_documentation
+  - path: docs_src/advanced_middleware/tutorial002_py310.py
+    kind: upstream_documentation
+  - path: tests/test_tutorial/test_advanced_middleware/test_tutorial002.py
+    kind: upstream_test
+- case_id: fastapi.middleware.trusted-host-rejected
+  actions:
+  - action_id: reject-unlisted-host
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: https
+      path: /status
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - untrusted.invalid
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - untrusted.invalid
+      - 443
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/advanced/middleware.md
+    kind: upstream_documentation
+  - path: docs_src/advanced_middleware/tutorial002_py310.py
+    kind: upstream_documentation
+  - path: tests/test_tutorial/test_advanced_middleware/test_tutorial002.py
+    kind: upstream_test
+- case_id: fastapi.middleware.custom-asgi-body-accepted
+  actions:
+  - action_id: read-within-limit-body
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: https
+      path: /echo
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - example.com
+      - - content-type
+        - text/plain
+      - - content-length
+        - '4'
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - example.com
+      - 443
+    receive_events:
+    - type: http.request
+      body: tiny
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_custom_middleware_exception.py
+    kind: upstream_test
+  - path: docs/en/docs/advanced/middleware.md
+    kind: upstream_documentation
+- case_id: fastapi.middleware.custom-asgi-body-exceeded
+  actions:
+  - action_id: reject-over-limit-body
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: https
+      path: /echo
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - example.com
+      - - content-type
+        - text/plain
+      - - content-length
+        - '8'
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - example.com
+      - 443
+    receive_events:
+    - type: http.request
+      body: oversize
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_custom_middleware_exception.py
+    kind: upstream_test
+  - path: docs/en/docs/advanced/middleware.md
+    kind: upstream_documentation

@@ -1,0 +1,207 @@
+# FastAPI-RS parity and benchmark plan
+
+This plan defines how to establish behavioral and performance evidence for
+FastAPI-RS. It assumes Starlette-RS will be a full Starlette replacement and
+does not include implementing or benchmarking Starlette-RS itself.
+
+## Reference and target boundary
+
+Use the released FastAPI **0.141.1** source at commit
+`95f8322ee1dcda7ceace7b1c4f6c9915b36d748f` with **Starlette 1.6.0 only**, at
+`4f250d6b814587e20c5365f0a5f0c4d42bcb929f`. FastAPI declares
+`starlette>=0.46.0`, which admits this selected contract. Pin Pydantic 2.13.4,
+pydantic-core 2.46.4, AnyIO 4.12.1, the Python patch, and all other
+behavior-relevant package versions in each run identity. FastAPI's benchmark
+CI uses CPython 3.13; `.python-version` in the source tag is 3.11, so choose
+and record the benchmark runtime explicitly rather than inheriting the
+developer's interpreter. Keep additional supported-Python profiles separate;
+do not add a second Starlette version profile.
+
+Optional-feature workflows record package overlays separately from the core
+identity. The multipart lane adds `python-multipart` 0.0.32 from the locked
+standard environment; FastAPI, Pydantic, Python, and Starlette remain pinned to
+the same versions.
+
+The primary target profile is the **FastAPI-RS Python consumer surface**:
+user code builds the app, routes, endpoint callables, and Pydantic models
+through the published Python interface, with FastAPI-RS backed by Rust and
+Starlette-RS. Run this in a separate process/environment from upstream FastAPI
+because both use the `fastapi` import namespace and must not share imported
+modules or mutable application state. Verify the target revision, build,
+Python ABI, feature set, Pydantic/pydantic-core versions, and exact
+Starlette-RS revision before running a case.
+
+The FastAPI contract owns FastAPI exports and behavior: route registration and
+dependency interpretation, parameter extraction, validation/serialization
+wiring, FastAPI exception mapping, OpenAPI/docs generation, and its
+integration of HTTP, WebSocket, and lifespan operations. Starlette-RS's own
+contract owns the generic Starlette APIs and primitives. FastAPI workflows
+must still exercise these primitives through FastAPI so integration and
+cross-layer regressions are visible; the FastAPI manifest should not duplicate
+Starlette's entire public denominator. If FastAPI-RS also exposes a native
+Rust API, declare it as a distinct target with a documented mapping to
+consumer-visible operations. Do not treat native Rust microbenchmarks as
+Python-facade or FastAPI parity results.
+
+## Parity suite
+
+Keep the complete FastAPI public inventory in the one project manifest and
+make every parity case reference a public operation and semantic requirement.
+Use input files as executable stimuli only: app/route setup, ordered public
+actions, arguments, deterministic assets, selected observations, and target
+profiles. Do not store expected status codes, response bodies, schemas, error
+messages, or oracle outputs in fixtures. Each isolated worker executes the
+same workflow against its live public implementation and emits the same
+structured result interface. A host runner checks source and target identity,
+matches case/step IDs, then compares public success/error status and declared
+observations. Missing, skipped, partial, or unsupported behavior remains
+visible and cannot pass.
+
+Where the public contract permits exact comparison, compare exact values,
+including HTTP status, response bytes, headers, cookies, WebSocket messages,
+and lifecycle event order. Compare OpenAPI as structured JSON while retaining
+observable fields such as paths, operations, schemas, references, security,
+responses, and extensions. Error observations should include public error
+class, status, structured validation details, and message when stable. Use a
+normalization only when it is reusable, justified by the public contract, and
+declared once in the comparison policy. Never normalize away a real
+compatibility difference or accept an unspecified error as equivalent.
+
+Build requirements and workflows across these feature groups:
+
+| Feature group | Representative parity dimensions |
+| --- | --- |
+| App and routing | app/router construction, route inclusion, prefixes, tags, dependencies, operation metadata, custom route classes, mounts/sub-applications, route order and conflicts |
+| HTTP inputs | path/query/header/cookie parameters; aliases and defaults; required/invalid values; JSON/body fields and nested models; forms/files/uploads; scalar and collection constraints |
+| Dependency injection | nested and shared dependencies, overrides, caching, sync/async callables, request/response injection, security scopes, yield cleanup and error propagation |
+| Outputs and errors | response models and filtering, aliases/exclusion flags, model/dict returns, direct/custom responses, status/headers/cookies, background task wiring, request and response validation failures, exception handlers |
+| OpenAPI and docs | cold and cached schema, operation IDs, models/references, request/response schemas, security, callbacks/webhooks, deprecation, custom schema changes, `/docs`, `/redoc`, and `/openapi.json` configuration |
+| WebSocket and lifecycle | endpoint dependencies and validation, accept/receive/send/close/error sequences, lifespan startup/shutdown ordering, and event-handler compatibility |
+| Public surface | documented exports, aliases, signatures/defaults, deprecated names, constants, helper functions, and supported Starlette re-exports as defined by the FastAPI inventory |
+
+Fixtures should cover successful and failing inputs, defaults and boundaries,
+representative types, sync and async execution, and interactions between
+features. Include an observation only when it is part of the behavior being
+specified. Arbitrary user Python callables and Pydantic model declarations
+must be built through shared, reviewed workload definitions and passed through
+the public interface; the runner must not branch on case IDs or call private
+target internals to manufacture compatibility.
+
+### Execution and evidence
+
+- Keep oracle and target environments, working directories, temporary files,
+  and application state isolated. The orchestration process may compare
+  result artifacts but must never load both implementations into one worker.
+- Verify the oracle package version, source commit, runtime, and dependency
+  identity at startup. Verify target revision/build/profile similarly. A
+  startup failure, timeout, crash, malformed result, duplicate/missing case,
+  or count mismatch is infrastructure failure, not a FastAPI behavior error.
+- Invoke each product through its consumer-facing Python API. Adapters may
+  encode values, map public values/errors to the result protocol, and manage
+  handles; they must not reimplement FastAPI semantics.
+- Store immutable run artifacts outside the input tree with manifest/input/
+  asset digests, identity details, command, raw observations (or references),
+  comparisons, and infrastructure errors. Inputs describe work; results
+  describe what happened.
+- Report parity per case and target profile, with explicit pass, fail, or
+  not-run. Do not turn unsupported cases or unrun requirements into passes.
+
+## Benchmark plan
+
+Start with FastAPI's own workloads in `tests/benchmarks/` and
+`tests/memory_benchmarks/` at the pinned tag. This preserves comparisons to
+FastAPI's established work while the additional workloads isolate costs that
+the upstream suite does not measure. Upstream has 20 in-process request
+benchmarks, one OpenAPI generation benchmark, and three memory benchmarks.
+
+Measure three subjects where the workload supports them: FastAPI 0.141.1 with
+Starlette 1.6.0, FastAPI-RS with Starlette-RS, and a raw Starlette 1.6.0
+control. The control should use Starlette's public routing and response APIs
+for a plain route with the same request and response bytes. Treat it as context
+for the generic ASGI/HTTP path; it does not implement FastAPI validation,
+dependency injection, response-model filtering, or OpenAPI behavior. Keep its
+results separate and do not subtract them from FastAPI timings as a claimed
+FastAPI-only cost. Only compare FastAPI to FastAPI-RS for workloads whose
+behavioral parity gate passes.
+
+| Tier | Workload | Timing boundary and purpose |
+| --- | --- | --- |
+| 1. Request path | Preserve sync/async input-model validation; small dict/model output with and without `response_model`; nested dependencies; large request payload; and large dict/model response with and without `response_model`. The upstream large response contains 300 items with 25 integers each plus metadata. Add a plain-route control implemented with Starlette 1.6.0's public `Route` and response APIs. | Match upstream's in-process `TestClient` path. Construct the app and client outside the timed request; exclude the one warmup request. Keep the raw Starlette control to the same simple request/response work; it is not a feature-equivalent FastAPI comparison. This is an integrated Python/ASGI/client measurement, not network-server latency. |
+| 2. OpenAPI | Preserve the upstream graph: 20 routes sharing a 101-dependency chain, with query parameters discovered from the graph. | Measure cold generation by clearing the schema cache then calling `app.openapi()`. Keep route/app construction outside the measured function, as upstream does. Add warm cached lookup as a separate workload. |
+| 3. Construction and memory | Preserve route dependency graph construction (20 routes) and the graph with 50 endpoint parameters and 100-deep dependencies. Measure application setup, route registration, and retained/peak memory in distinct workloads. | Time construction only when it is the declared workload. Report memory separately from latency and identify whether app creation, OpenAPI generation, or request execution is inside the measurement. |
+| 4. ASGI/server | Add direct in-process ASGI requests and loopback HTTP server runs only after the upstream-equivalent tier is stable. Include startup/shutdown, steady-state request latency, throughput, concurrency, and tail latency as separate declared measurements. | Use the same pinned server, client, transport, configuration, payload, machine class, and concurrency for source and target. Keep server start-up out of steady-state request timings; report it separately. |
+| 5. Native Rust | If a public Rust surface exists, measure it with equivalent work and publish the exact boundary. | Report standalone native costs separately from Python facade calls and from the upstream FastAPI comparison. Never imply they are like-for-like when the Python runtime, validation, or transport layers differ. |
+
+For each workload, the input declares its subjects, exact work, measurement
+boundary, measured steps, metrics, warmups, sample/iteration policy,
+concurrency, cache state, environment requirements, and correctness gate.
+Keep timings, memory samples, baselines, and budget outcomes in immutable
+benchmark results, not in benchmark inputs or the manifest. Pin the compiler
+and optimization profile for Rust runs and record CPU/OS, Python build, Rust
+toolchain, enabled Cargo features, Starlette-RS revision, Pydantic versions,
+and benchmark runner. Keep environment identity constant across paired runs;
+mark evidence incompatible when it differs.
+
+### Correctness gates and reporting
+
+1. Run the selected live parity workflows for the exact source and target
+   identities before timing. A parity failure, missing observation, unsupported
+   workload, or infrastructure failure blocks that comparison's benchmark.
+2. Perform an untimed correctness invocation using the benchmark workload and
+   verify its status and output through the same public consumer surface. Keep
+   that output check outside the timed region. Workloads must not silently
+   skip validation, dependencies, response serialization, or schema work on
+   one side.
+3. For timed request workloads, verify the result after the measurement and
+   preserve the raw result where practical. Report latency distributions and
+   throughput from repeated samples; include warmups and sample counts.
+   Collect allocation/peak/resident memory as distinct metrics and do not
+   substitute them for latency.
+4. Publish comparison results only for matching input digest, workload,
+   feature set, boundary, and compatible environment. Store oracle and target
+   measurements separately with a derived ratio and complete evidence links.
+   No performance claim is valid when its correctness gate did not pass.
+
+## Implementation order
+
+### Essential foundation
+
+1. Pin the FastAPI source revision and a reproducible oracle environment; pin
+   each target build/profile independently. Establish the Python facade as the
+   initial parity target.
+2. Build the complete API inventory and one strict manifest/input index. Add
+   structural validation for signatures, parameters, operations, requirements,
+   input references, and public-surface-to-case mapping before creating a
+   large fixture corpus.
+3. Define one result protocol, identity handshake, process runner, public API
+   adapters, and generic comparator. Start with a vertical slice spanning a
+   simple HTTP route and validation error, dependency resolution, response
+   model serialization, OpenAPI generation, plus representative WebSocket and
+   lifespan workflows.
+4. Convert the pinned upstream request and OpenAPI benchmarks into
+   input-described workloads, but do not record performance claims until a
+   target exists, its relevant parity passes, and the measurement environment
+   is controlled.
+
+### Follow-on work
+
+Expand the parity corpus to every manifest requirement and supported profile,
+then add cross-version/platform matrices and managed coverage mapping. Add
+performance budgets only after repeatable baselines exist. Add server/load,
+concurrency, startup, allocation, and memory suites as separate workloads.
+Generate specification and evidence-status documentation from the manifest
+and compatible result artifacts, and fail CI on inventory drift, stale
+evidence, incompatible identities, or hidden unsupported cases.
+
+## Source pointers
+
+- FastAPI release reference: `fastapi/`, `tests/`, `docs/en/docs/`, and
+  `docs_src/` at commit `95f8322ee1dcda7ceace7b1c4f6c9915b36d748f`.
+- Upstream request/OpenAPI workloads:
+  `tests/benchmarks/test_general_performance.py`,
+  `tests/benchmarks/test_openapi.py`, and `tests/benchmarks/utils.py`.
+- Upstream memory workloads: `tests/memory_benchmarks/`.
+- Upstream benchmark CI: `.github/workflows/test.yml` (CPython 3.13,
+  CodSpeed simulation plus a memory run).
+- Repository parity conventions: `AGENTS.md` and the migration-parity
+  manifest/evidence contracts used by the project.

@@ -1,0 +1,702 @@
+schema: fastapi-rs/python-asgi-workflow@2
+oracle_profile_extension: standard-multipart
+workload:
+  file: tests/fixtures/workloads/request_multipart.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.request-multipart.form.required-present
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /forms/required
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/x-www-form-urlencoded
+      - - content-length
+        - '11'
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: value=amber
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_form/test_required_str.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/request-forms.md
+    kind: upstream_documentation
+- case_id: fastapi.request-multipart.form.required-missing
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /forms/required
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/x-www-form-urlencoded
+      - - content-length
+        - '0'
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_form/test_required_str.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/request-forms.md
+    kind: upstream_documentation
+- case_id: fastapi.request-multipart.form.optional-missing
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /forms/optional
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/x-www-form-urlencoded
+      - - content-length
+        - '0'
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_form/test_optional_str.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/request-forms.md
+    kind: upstream_documentation
+- case_id: fastapi.request-multipart.form.optional-present
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /forms/optional
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/x-www-form-urlencoded
+      - - content-length
+        - '11'
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: value=amber
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_form/test_optional_str.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/request-forms.md
+    kind: upstream_documentation
+- case_id: fastapi.request-multipart.form.list-repeated
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /forms/list
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/x-www-form-urlencoded
+      - - content-length
+        - '24'
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: values=amber&values=blue
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_form/test_list.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/request-forms.md
+    kind: upstream_documentation
+- case_id: fastapi.request-multipart.form.optional-list-missing
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /forms/optional-list
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/x-www-form-urlencoded
+      - - content-length
+        - '0'
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_form/test_optional_list.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/request-forms.md
+    kind: upstream_documentation
+- case_id: fastapi.request-multipart.form.optional-list-repeated
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /forms/optional-list
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/x-www-form-urlencoded
+      - - content-length
+        - '24'
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: values=amber&values=blue
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_form/test_optional_list.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/request-forms.md
+    kind: upstream_documentation
+- case_id: fastapi.request-multipart.file.bytes-present
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /files/required-bytes
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=fastapi-rs-boundary
+      - - content-length
+        - '147'
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: "--fastapi-rs-boundary\r\nContent-Disposition: form-data; name=\"p\"; filename=\"amber.txt\"\
+        \r\nContent-Type: text/plain\r\n\r\namber\r\n--fastapi-rs-boundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_file/test_required.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/request-files.md
+    kind: upstream_documentation
+- case_id: fastapi.request-multipart.file.upload-present
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /files/required-upload
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=fastapi-rs-boundary
+      - - content-length
+        - '147'
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: "--fastapi-rs-boundary\r\nContent-Disposition: form-data; name=\"p\"; filename=\"amber.txt\"\
+        \r\nContent-Type: text/plain\r\n\r\namber\r\n--fastapi-rs-boundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_file/test_required.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/request-files.md
+    kind: upstream_documentation
+- case_id: fastapi.request-multipart.file.required-missing
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /files/required-upload
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=fastapi-rs-boundary
+      - - content-length
+        - '25'
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: "--fastapi-rs-boundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_file/test_required.py
+    kind: upstream_test
+- case_id: fastapi.request-multipart.file.optional-missing
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /files/optional-upload
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=fastapi-rs-boundary
+      - - content-length
+        - '25'
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: "--fastapi-rs-boundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_file/test_optional.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/request-files.md
+    kind: upstream_documentation
+- case_id: fastapi.request-multipart.file.optional-present
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /files/optional-upload
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=fastapi-rs-boundary
+      - - content-length
+        - '147'
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: "--fastapi-rs-boundary\r\nContent-Disposition: form-data; name=\"p\"; filename=\"amber.txt\"\
+        \r\nContent-Type: text/plain\r\n\r\namber\r\n--fastapi-rs-boundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_file/test_optional.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/request-files.md
+    kind: upstream_documentation
+- case_id: fastapi.request-multipart.file.list-repeated
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /files/list
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=fastapi-rs-boundary
+      - - content-length
+        - '258'
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: "--fastapi-rs-boundary\r\nContent-Disposition: form-data; name=\"p\"; filename=\"a.txt\"\r\
+        \nContent-Type: text/plain\r\n\r\nred\r\n--fastapi-rs-boundary\r\nContent-Disposition: form-data;\
+        \ name=\"p\"; filename=\"b.txt\"\r\nContent-Type: text/plain\r\n\r\nblue\r\n--fastapi-rs-boundary--\r\
+        \n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_file/test_list.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/request-files.md
+    kind: upstream_documentation
+- case_id: fastapi.request-multipart.file.optional-list-missing
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /files/optional-list
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=fastapi-rs-boundary
+      - - content-length
+        - '25'
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: "--fastapi-rs-boundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_file/test_optional_list.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/request-files.md
+    kind: upstream_documentation
+- case_id: fastapi.request-multipart.file.optional-list-repeated
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /files/optional-list
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=fastapi-rs-boundary
+      - - content-length
+        - '258'
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: "--fastapi-rs-boundary\r\nContent-Disposition: form-data; name=\"p\"; filename=\"a.txt\"\r\
+        \nContent-Type: text/plain\r\n\r\nred\r\n--fastapi-rs-boundary\r\nContent-Disposition: form-data;\
+        \ name=\"p\"; filename=\"b.txt\"\r\nContent-Type: text/plain\r\n\r\nblue\r\n--fastapi-rs-boundary--\r\
+        \n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_file/test_optional_list.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/request-files.md
+    kind: upstream_documentation
+- case_id: fastapi.request-multipart.mixed.form-and-file
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /mixed
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=fastapi-rs-boundary
+      - - content-length
+        - '239'
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: "--fastapi-rs-boundary\r\nContent-Disposition: form-data; name=\"caption\"\r\n\r\nshelf sample\r\
+        \n--fastapi-rs-boundary\r\nContent-Disposition: form-data; name=\"file\"; filename=\"sample.txt\"\
+        \r\nContent-Type: text/plain\r\n\r\ncopper\r\n--fastapi-rs-boundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/request-forms-and-files.md
+    kind: upstream_documentation

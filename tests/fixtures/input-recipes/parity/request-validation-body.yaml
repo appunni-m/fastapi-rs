@@ -1,0 +1,141 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/request_validation_body.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.docs.handling-errors.body-echo.invalid-input
+  actions:
+  - action_id: submit-invalid-package
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /packages
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"label":"parcel","units":"several"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/handling-errors.md
+    kind: upstream_documentation
+  - path: docs_src/handling_errors/tutorial005_py310.py
+    kind: upstream_documentation
+  - path: tests/test_tutorial/test_handling_errors/test_tutorial005.py
+    kind: upstream_test
+- case_id: fastapi.docs.handling-errors.body-echo.valid-input
+  actions:
+  - action_id: submit-valid-package
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /packages
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"label":"parcel","units":3}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/handling-errors.md
+    kind: upstream_documentation
+  - path: docs_src/handling_errors/tutorial005_py310.py
+    kind: upstream_documentation
+  - path: tests/test_tutorial/test_handling_errors/test_tutorial005.py
+    kind: upstream_test
+- case_id: fastapi.docs.handling-errors.body-echo.openapi
+  actions:
+  - action_id: inspect-package-validation-openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /paths/~1packages/post/requestBody/content/application~1json/schema/$ref
+      - /paths/~1packages/post/responses/422/content/application~1json/schema/$ref
+      - /components/schemas/PackageInput/properties/units/type
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/handling-errors.md
+    kind: upstream_documentation
+  - path: docs_src/handling_errors/tutorial005_py310.py
+    kind: upstream_documentation
+  - path: tests/test_tutorial/test_handling_errors/test_tutorial005.py
+    kind: upstream_test

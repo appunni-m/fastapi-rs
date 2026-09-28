@@ -1,0 +1,20 @@
+schema: fastapi-rs/python-asgi-workflow@3
+workload:
+  file: tests/fixtures/workloads/router_circular_self_include_upstream.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.routing.router-self-include-construction
+  factory_input:
+    include_router_into_self: true
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions: []
+  source_evidence:
+  - path: tests/test_router_circular_import.py
+    kind: upstream_test

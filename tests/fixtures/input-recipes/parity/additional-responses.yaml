@@ -1,0 +1,145 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/additional_responses.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.docs.additional-responses.found
+  actions:
+  - action_id: get-existing-stock
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /inventory/R-218
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/advanced/additional-responses.md
+    kind: upstream_documentation
+  - path: docs_src/additional_responses/tutorial001_py310.py
+    kind: upstream_documentation
+  - path: tests/test_additional_responses_response_class.py
+    kind: upstream_test
+  - path: tests/test_tutorial/test_additional_responses/test_tutorial001.py
+    kind: upstream_test
+- case_id: fastapi.docs.additional-responses.not-found
+  actions:
+  - action_id: get-missing-stock
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /inventory/R-404
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/advanced/additional-responses.md
+    kind: upstream_documentation
+  - path: docs_src/additional_responses/tutorial001_py310.py
+    kind: upstream_documentation
+  - path: tests/test_additional_responses_response_class.py
+    kind: upstream_test
+  - path: tests/test_tutorial/test_additional_responses/test_tutorial001.py
+    kind: upstream_test
+- case_id: fastapi.docs.additional-responses.openapi
+  actions:
+  - action_id: read-stock-openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /paths/~1inventory~1{sku}/get/responses/200/content/application~1vnd.fastapi-rs.inventory+json/schema/$ref
+      - /paths/~1inventory~1{sku}/get/responses/404/description
+      - /paths/~1inventory~1{sku}/get/responses/404/content/application~1vnd.fastapi-rs.inventory+json/schema/$ref
+      - /components/schemas/InventoryItem/properties/sku/type
+      - /components/schemas/Unavailable/properties/code/type
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/advanced/additional-responses.md
+    kind: upstream_documentation
+  - path: docs_src/additional_responses/tutorial001_py310.py
+    kind: upstream_documentation
+  - path: tests/test_additional_responses_response_class.py
+    kind: upstream_test
+  - path: tests/test_tutorial/test_additional_responses/test_tutorial001.py
+    kind: upstream_test

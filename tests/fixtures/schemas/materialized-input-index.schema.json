@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fastapi-rs.dev/schemas/materialized-input-index/1",
+  "title": "FastAPI-RS materialized fixture index",
+  "description": "Maps independently authored, input-only workflows and their concrete cases to selected source backlog items. A partial mapping does not claim full source-suite coverage.",
+  "type": "object",
+  "required": ["schema", "authority", "workflows", "mappings"],
+  "properties": {
+    "schema": {"const": "fastapi-rs/materialized-input-index@1"},
+    "authority": {
+      "type": "object",
+      "required": ["fastapi", "starlette"],
+      "properties": {
+        "fastapi": {"const": "0.141.1"},
+        "starlette": {"const": "1.6.0"}
+      },
+      "additionalProperties": false
+    },
+    "workflows": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/workflow"}
+    },
+    "mappings": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/mapping"}
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "relativePath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.?(?:/|$))[A-Za-z0-9._/-]+$"
+    },
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "workflow": {
+      "type": "object",
+      "required": [
+        "id",
+        "input_path",
+        "input_sha256",
+        "recipe_path",
+        "recipe_sha256",
+        "workload_path",
+        "workload_sha256",
+        "case_ids"
+      ],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z][a-z0-9-]*$"},
+        "input_path": {"$ref": "#/$defs/relativePath"},
+        "input_sha256": {"$ref": "#/$defs/sha256"},
+        "recipe_path": {"$ref": "#/$defs/relativePath"},
+        "recipe_sha256": {"$ref": "#/$defs/sha256"},
+        "workload_path": {"$ref": "#/$defs/relativePath"},
+        "workload_sha256": {"$ref": "#/$defs/sha256"},
+        "oracle_profile_extension": {"enum": ["standard-multipart"]},
+        "case_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "pattern": "^fastapi(?:\\.[a-z0-9][a-z0-9-]*){2,}$"}
+        }
+      },
+      "additionalProperties": false
+    },
+    "mapping": {
+      "type": "object",
+      "required": [
+        "source_item_id",
+        "fixture_id",
+        "workflow_id",
+        "coverage_status",
+        "coverage_scope",
+        "case_ids",
+        "observation_selectors"
+      ],
+      "properties": {
+        "source_item_id": {"type": "string", "minLength": 1},
+        "fixture_id": {"type": "string", "minLength": 1},
+        "workflow_id": {"type": "string", "pattern": "^[a-z][a-z0-9-]*$"},
+        "coverage_status": {"const": "partial"},
+        "coverage_scope": {"type": "string", "minLength": 1},
+        "case_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "pattern": "^fastapi(?:\\.[a-z0-9][a-z0-9-]*){2,}$"}
+        },
+        "observation_selectors": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

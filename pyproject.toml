@@ -1,0 +1,57 @@
+[build-system]
+requires = ["maturin==1.14.1"]
+build-backend = "maturin"
+
+[project]
+name = "fastapi-rs"
+dynamic = ["version"]
+description = "Rust implementation of FastAPI"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE.md", "THIRD_PARTY_NOTICES.md"]
+dependencies = [
+    "pydantic>=2.9.0,<3",
+    "starlette-rs-py==0.1.0",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Rust",
+    "Topic :: Internet :: WWW/HTTP :: HTTP Servers",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+[project.urls]
+Repository = "https://github.com/appunni-m/fastapi-rs"
+Upstream = "https://github.com/fastapi/fastapi"
+
+[tool.maturin]
+manifest-path = "fastapi-rs-py/Cargo.toml"
+python-source = "fastapi-rs-py/python"
+python-packages = ["fastapi_rs"]
+module-name = "fastapi_rs._core"
+features = ["pyo3/extension-module"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+
+# Source-backed atlas prose and generated Markdown rows are string data, not
+# executable layout; keep citations readable without weakening other checks.
+[tool.ruff.lint.per-file-ignores]
+"scripts/build_fastapi_compatibility_atlas.py" = ["E501", "UP031"]
+"scripts/atlas_*_review_mappings.py" = ["E501"]
+"scripts/inventory_fastapi_api.py" = ["E501"]
+"scripts/render_rust_target_dependency_inventory.py" = ["E501"]
+# Existing percent formatting keeps generated error prose and Markdown literal.

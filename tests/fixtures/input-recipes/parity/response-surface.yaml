@@ -1,0 +1,323 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/response_surface.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.response.injected-headers
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /metadata/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_tutorial/test_response_headers/test_tutorial001.py
+    kind: upstream_test
+  - path: docs/en/docs/advanced/response-headers.md
+    kind: upstream_documentation
+- case_id: fastapi.response.cookie-header
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /sessions/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_tutorial/test_response_cookies/test_tutorial001.py
+    kind: upstream_test
+  - path: docs/en/docs/advanced/response-cookies.md
+    kind: upstream_documentation
+- case_id: fastapi.response.declared-status
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /orders/
+      query_string: name=maple%20box
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_tutorial/test_response_status_code/test_tutorial001_tutorial002.py
+    kind: upstream_test
+  - path: docs/en/docs/advanced/response-change-status-code.md
+    kind: upstream_documentation
+- case_id: fastapi.docs.reference-wave.status-code-from-constant
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+  source_evidence:
+  - path: docs/en/docs/reference/status.md
+    kind: upstream_documentation
+- case_id: fastapi.response.direct-plain-text
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: PUT
+      scheme: http
+      path: /documents/alpha-7
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_tutorial/test_response_directly/test_tutorial001.py
+    kind: upstream_test
+  - path: docs/en/docs/advanced/response-directly.md
+    kind: upstream_documentation
+  - path: docs/en/docs/advanced/custom-response.md
+    kind: upstream_documentation
+  - path: docs/en/docs/reference/responses.md
+    kind: upstream_documentation
+- case_id: fastapi.response.direct-json
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /raw-json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+  source_evidence:
+  - path: docs/en/docs/advanced/custom-response.md
+    kind: upstream_documentation
+  - path: docs/en/docs/advanced/additional-status-codes.md
+    kind: upstream_documentation
+- case_id: fastapi.response.openapi-status-and-media
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+    - kind: openapi
+      json_pointers:
+      - /paths/~1orders~1/post/responses/201
+      - /paths/~1documents~1{document_id}/put/responses/200
+      - /paths/~1raw-json/get/responses/200
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_response_status_code/test_tutorial001_tutorial002.py
+    kind: upstream_test
+  - path: tests/test_tutorial/test_response_directly/test_tutorial001.py
+    kind: upstream_test
+  - path: docs/en/docs/advanced/response-change-status-code.md
+    kind: upstream_documentation
+  - path: docs/en/docs/advanced/response-directly.md
+    kind: upstream_documentation
+  - path: docs/en/docs/advanced/custom-response.md
+    kind: upstream_documentation
+  - path: docs/en/docs/tutorial/response-status-code.md
+    kind: upstream_documentation

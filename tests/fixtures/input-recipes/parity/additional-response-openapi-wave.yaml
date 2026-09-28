@@ -1,0 +1,150 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/additional_response_openapi_wave.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.additional-response-openapi-wave.media-content.test-openapi-schema
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths/~1media~1{item_id}/get/responses
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_additional_responses/test_tutorial002.py
+    kind: upstream_test
+- case_id: fastapi.additional-response-openapi-wave.modeled-not-found.test-openapi-schema
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths/~1documented~1{item_id}/get/responses
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_additional_responses/test_tutorial003.py
+    kind: upstream_test
+- case_id: fastapi.additional-response-openapi-wave.multiple-statuses.test-openapi-schema
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths/~1status-codes~1{item_id}/get/responses
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_additional_responses/test_tutorial004.py
+    kind: upstream_test
+- case_id: fastapi.additional-response-openapi-wave.default-validation-error-schema.test-openapi-schema
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths/~1untyped~1{key}/get/responses
+      comparison: exact
+  source_evidence:
+  - path: tests/test_additional_responses_default_validationerror.py
+    kind: upstream_test

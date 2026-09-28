@@ -1,0 +1,285 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/response_model_serialization.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.response-model.include.nested
+  actions:
+  - action_id: include-selected-fields
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /include
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/response-model.md
+    kind: upstream_documentation
+  - path: tests/test_response_model_include_exclude.py
+    kind: upstream_test
+- case_id: fastapi.response-model.exclude.nested
+  actions:
+  - action_id: exclude-private-nested-field
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /exclude
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/response-model.md
+    kind: upstream_documentation
+  - path: tests/test_response_model_include_exclude.py
+    kind: upstream_test
+- case_id: fastapi.response-model.exclude-unset.explicit-null
+  actions:
+  - action_id: exclude-unset-preferences
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /exclude-unset
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/response-model.md
+    kind: upstream_documentation
+  - path: tests/test_skip_defaults.py
+    kind: upstream_test
+  - path: tests/test_serialize_response_model.py
+    kind: upstream_test
+- case_id: fastapi.response-model.exclude-defaults.explicit-defaults
+  actions:
+  - action_id: exclude-explicit-default-values
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /exclude-defaults
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/response-model.md
+    kind: upstream_documentation
+  - path: tests/test_skip_defaults.py
+    kind: upstream_test
+- case_id: fastapi.response-model.alias.default-by-alias
+  actions:
+  - action_id: use-default-alias-serialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /alias-default
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/response-model.md
+    kind: upstream_documentation
+  - path: tests/test_response_by_alias.py
+    kind: upstream_test
+- case_id: fastapi.response-model.alias.field-name-output
+  actions:
+  - action_id: serialize-python-field-name
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /alias-field-name
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/response-model.md
+    kind: upstream_documentation
+  - path: tests/test_response_by_alias.py
+    kind: upstream_test
+- case_id: fastapi.response-model.validation.missing-output-field
+  actions:
+  - action_id: return-missing-required-output-field
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /invalid-output
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: application_error
+      selector: validation_error_class
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/response-model.md
+    kind: upstream_documentation
+  - path: tests/test_response_model_as_return_annotation.py
+    kind: upstream_test

@@ -1,0 +1,325 @@
+# EmailStr is supplied by the pinned standard-multipart oracle profile.
+schema: fastapi-rs/python-asgi-workflow@3
+oracle_profile_extension: standard-multipart
+workload:
+  file: tests/fixtures/workloads/extra_models_tutorials_upstream_wave.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.extra-models.tutorial001-flat-user-models
+  factory_input:
+    workflow: user
+    user_model_style: flat
+  construction_observation: &construction
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: create-user
+    kind: http_request
+    scope: &user-scope
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /user/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"username":"marisol","password":"raw-secret","email":"marisol@example.com","full_name":"Marisol Rivera"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: openapi-user-models
+    kind: http_request
+    scope: &openapi-scope
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events: &empty-request
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /openapi
+      - /info
+      - /paths
+      - /components/schemas/UserIn/title
+      - /components/schemas/UserIn/type
+      - /components/schemas/UserIn/properties
+      - /components/schemas/UserOut/title
+      - /components/schemas/UserOut/type
+      - /components/schemas/UserOut/required
+      - /components/schemas/UserOut/properties
+      - /components/schemas/ValidationError
+      - /components/schemas/HTTPValidationError
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_extra_models/test_tutorial001_tutorial002.py
+    kind: upstream_test
+  - path: docs_src/extra_models/tutorial001_py310.py
+    kind: upstream_documentation
+- case_id: fastapi.extra-models.tutorial002-inherited-user-models
+  factory_input:
+    workflow: user
+    user_model_style: inherited
+  construction_observation: *construction
+  actions:
+  - action_id: create-user
+    kind: http_request
+    scope: *user-scope
+    receive_events:
+    - type: http.request
+      body: '{"username":"marisol","password":"raw-secret","email":"marisol@example.com","full_name":"Marisol Rivera"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: openapi-user-models
+    kind: http_request
+    scope: *openapi-scope
+    receive_events: *empty-request
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /openapi
+      - /info
+      - /paths
+      - /components/schemas/UserIn/title
+      - /components/schemas/UserIn/type
+      - /components/schemas/UserIn/properties
+      - /components/schemas/UserOut/title
+      - /components/schemas/UserOut/type
+      - /components/schemas/UserOut/required
+      - /components/schemas/UserOut/properties
+      - /components/schemas/ValidationError
+      - /components/schemas/HTTPValidationError
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_extra_models/test_tutorial001_tutorial002.py
+    kind: upstream_test
+  - path: docs_src/extra_models/tutorial002_py310.py
+    kind: upstream_documentation
+- case_id: fastapi.extra-models.tutorial003-union-response-model
+  factory_input:
+    workflow: union
+  construction_observation: *construction
+  actions:
+  - action_id: read-car-variant
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/coupe
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events: *empty-request
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: read-plane-variant
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/jet
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events: *empty-request
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: openapi-union-model
+    kind: http_request
+    scope: *openapi-scope
+    receive_events: *empty-request
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /openapi
+      - /info
+      - /paths
+      - /components/schemas/CarItem
+      - /components/schemas/PlaneItem
+      - /components/schemas/ValidationError
+      - /components/schemas/HTTPValidationError
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_extra_models/test_tutorial003.py
+    kind: upstream_test
+  - path: docs_src/extra_models/tutorial003_py310.py
+    kind: upstream_documentation
+- case_id: fastapi.extra-models.tutorial004-typed-list-response
+  factory_input:
+    workflow: list
+  construction_observation: *construction
+  actions:
+  - action_id: read-item-list
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events: *empty-request
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: openapi-list-response-model
+    kind: http_request
+    scope: *openapi-scope
+    receive_events: *empty-request
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths
+      - /components/schemas/Item
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_extra_models/test_tutorial004.py
+    kind: upstream_test
+  - path: docs_src/extra_models/tutorial004_py310.py
+    kind: upstream_documentation
+- case_id: fastapi.extra-models.tutorial005-typed-map-response
+  factory_input:
+    workflow: map
+  construction_observation: *construction
+  actions:
+  - action_id: read-keyword-weights
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /keyword-weights/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events: *empty-request
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: openapi-map-response-model
+    kind: http_request
+    scope: *openapi-scope
+    receive_events: *empty-request
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_extra_models/test_tutorial005.py
+    kind: upstream_test
+  - path: docs_src/extra_models/tutorial005_py310.py
+    kind: upstream_documentation

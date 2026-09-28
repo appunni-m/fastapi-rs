@@ -1,0 +1,259 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/http_basic.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.advanced.security.http-basic.valid
+  actions:
+  - action_id: valid-basic-credentials
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /users/me
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Basic am9objpzZWNyZXQ=
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_http_basic_realm.py
+    kind: upstream_test
+  - path: docs/en/docs/advanced/security/http-basic-auth.md
+    kind: upstream_documentation
+- case_id: fastapi.advanced.security.http-basic.missing
+  actions:
+  - action_id: missing-basic-credentials
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /users/me
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_http_basic_realm.py
+    kind: upstream_test
+  - path: docs/en/docs/advanced/security/http-basic-auth.md
+    kind: upstream_documentation
+- case_id: fastapi.advanced.security.http-basic.malformed-base64
+  actions:
+  - action_id: invalid-basic-base64
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /users/me
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Basic notabase64token
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_http_basic_realm.py
+    kind: upstream_test
+  - path: docs/en/docs/advanced/security/http-basic-auth.md
+    kind: upstream_documentation
+- case_id: fastapi.advanced.security.http-basic.malformed-pair
+  actions:
+  - action_id: basic-payload-without-separator
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /users/me
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Basic am9obnNlY3JldA==
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_http_basic_realm.py
+    kind: upstream_test
+  - path: docs/en/docs/advanced/security/http-basic-auth.md
+    kind: upstream_documentation
+- case_id: fastapi.advanced.security.http-basic.non-basic-scheme
+  actions:
+  - action_id: non-basic-authorization-scheme
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /users/me
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Bearer am9objpzZWNyZXQ=
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_http_basic_realm.py
+    kind: upstream_test
+  - path: docs/en/docs/advanced/security/http-basic-auth.md
+    kind: upstream_documentation
+- case_id: fastapi.advanced.security.http-basic.openapi
+  actions:
+  - action_id: inspect-basic-security-schema
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /components/securitySchemes/HTTPBasic/type
+      - /components/securitySchemes/HTTPBasic/scheme
+      - /paths/~1users~1me/get/security
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_http_basic_realm.py
+    kind: upstream_test
+  - path: docs/en/docs/advanced/security/http-basic-auth.md
+    kind: upstream_documentation

@@ -1,0 +1,47 @@
+# The source test asserts an import-time DeprecationWarning around importing
+# the example. V3 has no warning selector, so that assertion remains a gap.
+# The source defines no app shutdown callback; shutdown observation covers the
+# ASGI lifecycle handshake after the in-lifespan request, without inventing one.
+schema: fastapi-rs/python-asgi-workflow@3
+workload:
+  file: tests/fixtures/workloads/testing_tutorial003_upstream.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.test.test-tutorial-test-testing-test-tutorial003.startup-items-lifecycle
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: lifespan
+    kind: lifespan
+    events: [lifespan.startup, lifespan.shutdown]
+    observations:
+    - {kind: asgi_lifespan, selector: event_order, comparison: ordered}
+    - {kind: asgi_lifespan, selector: startup, comparison: exact}
+    - {kind: asgi_lifespan, selector: shutdown, comparison: exact}
+    - {kind: asgi_lifespan, selector: application_errors, comparison: exact}
+    - {kind: asgi_lifespan, selector: workload_trace, comparison: ordered}
+  - action_id: read-startup-item
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/foo
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_tutorial/test_testing/test_tutorial003.py, kind: upstream_test}
+  - {path: docs_src/app_testing/tutorial003_py310.py, kind: upstream_documentation}

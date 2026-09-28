@@ -1,0 +1,156 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/docs_security_schemes.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.docs.security-schemes.query-api-key
+  actions:
+  - action_id: query-key-route
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: http
+      root_path: ''
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      method: GET
+      path: /query-key
+      query_string: api_key=sample-query-key
+      headers:
+      - - host
+        - testserver
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: query-key-openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: http
+      root_path: ''
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      method: GET
+      path: /openapi.json
+      query_string: ''
+      headers:
+      - - host
+        - testserver
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /components/securitySchemes/QueryApiKey
+      - /paths/~1query-key/get/security
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/security/index.md
+    kind: upstream_documentation
+- case_id: fastapi.docs.security-schemes.cookie-api-key
+  actions:
+  - action_id: cookie-key-route
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: http
+      root_path: ''
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      method: GET
+      path: /cookie-key
+      query_string: ''
+      headers:
+      - - host
+        - testserver
+      - - cookie
+        - session_key=sample-cookie-key
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: cookie-key-openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: http
+      root_path: ''
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      method: GET
+      path: /openapi.json
+      query_string: ''
+      headers:
+      - - host
+        - testserver
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /components/securitySchemes/CookieSession
+      - /paths/~1cookie-key/get/security
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/security/index.md
+    kind: upstream_documentation

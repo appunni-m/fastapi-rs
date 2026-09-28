@@ -1,0 +1,207 @@
+schema: fastapi-rs/python-asgi-workflow@2
+oracle_profile_extension: standard-multipart
+workload:
+  file: tests/fixtures/workloads/request_file_form_tutorials_wave.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.request-files-tutorial001.post-file-bytes
+  actions:
+  - action_id: submit-file
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /files/bytes
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=TutorialFileBoundary
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: "--TutorialFileBoundary\r\nContent-Disposition: form-data; name=\"file\"; filename=\"test.txt\"\
+        \r\nContent-Type: text/plain\r\n\r\n<file content>\r\n--TutorialFileBoundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_request_files/test_tutorial001.py
+    kind: upstream_test
+- case_id: fastapi.request-files-tutorial001-03.post-upload-file
+  actions:
+  - action_id: submit-upload
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /files/upload
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=TutorialUploadBoundary
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: "--TutorialUploadBoundary\r\nContent-Disposition: form-data; name=\"file\"; filename=\"test.txt\"\
+        \r\nContent-Type: text/plain\r\n\r\n<file content>\r\n--TutorialUploadBoundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_request_files/test_tutorial001_03.py
+    kind: upstream_test
+- case_id: fastapi.request-files-tutorial003.post-multiple-byte-files
+  actions:
+  - action_id: submit-files
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /files/multiple-bytes
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=TutorialFilesBoundary
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: "--TutorialFilesBoundary\r\nContent-Disposition: form-data; name=\"files\"; filename=\"test.txt\"\
+        \r\nContent-Type: text/plain\r\n\r\n<file content>\r\n--TutorialFilesBoundary\r\nContent-Disposition:\
+        \ form-data; name=\"files\"; filename=\"test2.txt\"\r\nContent-Type: text/plain\r\n\r\n<file content2>\r\
+        \n--TutorialFilesBoundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_request_files/test_tutorial003.py
+    kind: upstream_test
+- case_id: fastapi.request-form-models-tutorial001.post-form-model
+  actions:
+  - action_id: submit-form-model
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /forms/model
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/x-www-form-urlencoded
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: username=Foo&password=secret
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_request_form_models/test_tutorial001.py
+    kind: upstream_test
+- case_id: fastapi.request-forms-tutorial001.post-form-fields
+  actions:
+  - action_id: submit-form-fields
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /forms/fields
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/x-www-form-urlencoded
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: username=Foo&password=secret
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_request_forms/test_tutorial001.py
+    kind: upstream_test

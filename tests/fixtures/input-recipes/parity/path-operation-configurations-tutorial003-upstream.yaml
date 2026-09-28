@@ -1,0 +1,79 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/path_operation_configurations_tutorial003_upstream.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.path-operation-configurations.tutorial003-explicit-description
+  actions:
+  - action_id: create-item
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: http
+      query_string: ''
+      root_path: ''
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      method: POST
+      path: /items/
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+    receive_events:
+    - type: http.request
+      body: '{"name":"Foo","price":42.0}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: operation-description
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: http
+      query_string: ''
+      root_path: ''
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      method: GET
+      path: /openapi.json
+      headers:
+      - - host
+        - testserver
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths/~1items~1/post/summary
+      - /paths/~1items~1/post/description
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_path_operation_configurations/test_tutorial003_tutorial004.py
+    kind: upstream_test
+  - path: docs_src/path_operation_configuration/tutorial003_py310.py
+    kind: upstream_documentation

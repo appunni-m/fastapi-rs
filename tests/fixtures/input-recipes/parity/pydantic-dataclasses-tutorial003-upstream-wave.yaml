@@ -1,0 +1,116 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/pydantic_dataclasses_tutorial003_upstream_wave.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.pydantic-dataclasses.tutorial003-nested-request-and-defaults
+  actions:
+  - action_id: create-author-items
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /authors/north-signal/items/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '[{"name":"Wayfinder"},{"name":"Star Map","description":"A pocket atlas"}]'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: read-authors-with-empty-default-items
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /authors/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: openapi-nested-dataclass-models
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /openapi
+      - /info
+      - /paths
+      - /components/schemas/Author
+      - /components/schemas/Item
+      - /components/schemas/ValidationError
+      - /components/schemas/HTTPValidationError
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_dataclasses/test_tutorial003.py
+    kind: upstream_test
+  - path: docs_src/dataclasses_/tutorial003_py310.py
+    kind: upstream_documentation

@@ -1,0 +1,2268 @@
+{
+  "reflection_note": "All 137 names resolve and reflect in the identity-checked oracle environment; runtime availability establishes existence/signature only, not public support.",
+  "rows": [
+    {
+      "evidence": [
+        "docs/en/docs/deployment/manually.md",
+        "tests/test_application.py"
+      ],
+      "evidence_basis": [
+        "documented"
+      ],
+      "id": "fastapi.applications.FastAPI.__call__",
+      "reason": "The ASGI callable entry point is part of the documented manual deployment contract.",
+      "recommendation": "supported",
+      "source": {
+        "line": 1160,
+        "path": "fastapi/applications.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/fastapi.md",
+        "tests/test_application.py"
+      ],
+      "evidence_basis": [
+        "documented"
+      ],
+      "id": "fastapi.applications.FastAPI.__init__",
+      "reason": "FastAPI reference documents the application constructor and its configuration contract.",
+      "recommendation": "supported",
+      "source": {
+        "line": 58,
+        "path": "fastapi/applications.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/release-notes.md:2886",
+        "tests/test_application.py"
+      ],
+      "evidence_basis": [
+        "explicitly-internal-release-note",
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.applications.FastAPI.add_api_route",
+      "reason": "Release notes explicitly call FastAPI.add_api_route semi-internal; ordinary documented route decorators are the supported interface.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 1165,
+        "path": "fastapi/applications.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/advanced/websockets.md",
+        "docs/en/docs/release-notes.md:7226",
+        "tests/test_ws_router.py"
+      ],
+      "evidence_basis": [
+        "explicitly-internal-release-note",
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.applications.FastAPI.add_api_websocket_route",
+      "reason": "Source-defined callable is importable/tested but lacks a documented public or extension contract and is used as implementation detail.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 1361,
+        "path": "fastapi/applications.py"
+      }
+    },
+    {
+      "evidence": [
+        "tests/test_application.py"
+      ],
+      "evidence_basis": [
+        "tests-or-runtime-prove-existence-only"
+      ],
+      "id": "fastapi.applications.FastAPI.api_route",
+      "reason": "Path-operation decorator exists, but current docs enumerate verb-specific decorators and do not establish api_route as a supported contract.",
+      "recommendation": "uncertain",
+      "source": {
+        "line": 1301,
+        "path": "fastapi/applications.py"
+      }
+    },
+    {
+      "evidence": [
+        "tests/test_application.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.applications.FastAPI.build_middleware_stack",
+      "reason": "Source-defined callable is importable/tested but lacks a documented public or extension contract and is used as implementation detail.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 1020,
+        "path": "fastapi/applications.py"
+      }
+    },
+    {
+      "evidence": [
+        "tests/test_application.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.applications.FastAPI.setup",
+      "reason": "Source-defined callable is importable/tested but lacks a documented public or extension contract and is used as implementation detail.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 1105,
+        "path": "fastapi/applications.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/advanced/websockets.md",
+        "docs/en/docs/release-notes.md:7226",
+        "tests/test_ws_router.py"
+      ],
+      "evidence_basis": [
+        "related-doc-not-member-contract",
+        "alpha-or-advanced-release-note",
+        "tests-or-runtime-prove-existence-only"
+      ],
+      "id": "fastapi.applications.FastAPI.websocket_route",
+      "reason": "WebSocket registration is documented through websocket decorators; the exact websocket_route spelling lacks an explicit stable reference target.",
+      "recommendation": "uncertain",
+      "source": {
+        "line": 4645,
+        "path": "fastapi/applications.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/tutorial/background-tasks.md",
+        "docs/en/docs/reference/background.md",
+        "tests/test_response_dependency.py"
+      ],
+      "evidence_basis": [
+        "documented"
+      ],
+      "id": "fastapi.background.BackgroundTasks.add_task",
+      "reason": "The background-task guide/reference documents this task-registration method.",
+      "recommendation": "supported",
+      "source": {
+        "line": 40,
+        "path": "fastapi/background.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/fastapi-cli.md",
+        "tests/test_fastapi_cli.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.cli.main",
+      "reason": "Console-script entry point tested as CLI plumbing; the supported user interface is the documented fastapi command.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 8,
+        "path": "fastapi/cli.py"
+      }
+    },
+    {
+      "evidence": [
+        "fastapi/dependencies/utils.py"
+      ],
+      "evidence_basis": [
+        "source-callers-and-no-public-reference"
+      ],
+      "id": "fastapi.concurrency.contextmanager_in_threadpool",
+      "reason": "Internal dependency-yield/context-manager adapter; invoked by dependency solving and not a documented FastAPI API.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 18,
+        "path": "fastapi/concurrency.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/release-notes.md:6179",
+        "tests/test_datastructures.py"
+      ],
+      "evidence_basis": [
+        "explicitly-internal-release-note",
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.datastructures.Default",
+      "reason": "Internal default sentinel; release notes describe DefaultPlaceholder as used internally and direct tests cover representation/semantics only.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 174,
+        "path": "fastapi/datastructures.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/release-notes.md:6179",
+        "tests/test_datastructures.py"
+      ],
+      "evidence_basis": [
+        "explicitly-internal-release-note",
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.datastructures.DefaultPlaceholder.__bool__",
+      "reason": "Internal default sentinel; release notes describe DefaultPlaceholder as used internally and direct tests cover representation/semantics only.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 164,
+        "path": "fastapi/datastructures.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/release-notes.md:6179",
+        "tests/test_datastructures.py"
+      ],
+      "evidence_basis": [
+        "explicitly-internal-release-note",
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.datastructures.DefaultPlaceholder.__eq__",
+      "reason": "Internal default sentinel; release notes describe DefaultPlaceholder as used internally and direct tests cover representation/semantics only.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 167,
+        "path": "fastapi/datastructures.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/release-notes.md:6179",
+        "tests/test_datastructures.py"
+      ],
+      "evidence_basis": [
+        "explicitly-internal-release-note",
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.datastructures.DefaultPlaceholder.__init__",
+      "reason": "Internal default sentinel; release notes describe DefaultPlaceholder as used internally and direct tests cover representation/semantics only.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 161,
+        "path": "fastapi/datastructures.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/uploadfile.md",
+        "tests/test_datastructures.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.datastructures.UploadFile.__get_pydantic_core_schema__",
+      "reason": "Pydantic integration protocol hook; public behavior is UploadFile validation/schema integration, not a callable hook contract.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 145,
+        "path": "fastapi/datastructures.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/uploadfile.md",
+        "tests/test_datastructures.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.datastructures.UploadFile.__get_pydantic_json_schema__",
+      "reason": "Pydantic integration protocol hook; public behavior is UploadFile validation/schema integration, not a callable hook contract.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 139,
+        "path": "fastapi/datastructures.py"
+      }
+    },
+    {
+      "evidence": [
+        "tests/test_dependencies_utils.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.dependencies.utils.add_non_field_param_to_dependency",
+      "reason": "Dependency-graph/parameter analysis helper used by FastAPI internals; focused tests cover implementation mechanics, not a documented user API.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 350,
+        "path": "fastapi/dependencies/utils.py"
+      }
+    },
+    {
+      "evidence": [
+        "tests/test_dependencies_utils.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.dependencies.utils.add_param_to_fields",
+      "reason": "Dependency-graph/parameter analysis helper used by FastAPI internals; focused tests cover implementation mechanics, not a documented user API.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 550,
+        "path": "fastapi/dependencies/utils.py"
+      }
+    },
+    {
+      "evidence": [
+        "tests/test_dependencies_utils.py",
+        "tests/test_dependency_models.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.dependencies.utils.analyze_param",
+      "reason": "Dependency-graph/parameter analysis helper used by FastAPI internals; focused tests cover implementation mechanics, not a documented user API.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 381,
+        "path": "fastapi/dependencies/utils.py"
+      }
+    },
+    {
+      "evidence": [
+        "tests/test_dependencies_utils.py",
+        "tests/test_multipart_installation.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.dependencies.utils.ensure_multipart_is_installed",
+      "reason": "Dependency-graph/parameter analysis helper used by FastAPI internals; focused tests cover implementation mechanics, not a documented user API.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 103,
+        "path": "fastapi/dependencies/utils.py"
+      }
+    },
+    {
+      "evidence": [
+        "tests/test_dependencies_utils.py",
+        "tests/test_dependency_models.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.dependencies.utils.get_dependant",
+      "reason": "Dependency-graph/parameter analysis helper used by FastAPI internals; focused tests cover implementation mechanics, not a documented user API.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 271,
+        "path": "fastapi/dependencies/utils.py"
+      }
+    },
+    {
+      "evidence": [
+        "tests/test_dependencies_utils.py",
+        "tests/test_dependency_models.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.dependencies.utils.get_flat_params",
+      "reason": "Dependency-graph/parameter analysis helper used by FastAPI internals; focused tests cover implementation mechanics, not a documented user API.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 169,
+        "path": "fastapi/dependencies/utils.py"
+      }
+    },
+    {
+      "evidence": [
+        "tests/test_dependencies_utils.py",
+        "tests/test_dependency_paramless.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.dependencies.utils.get_parameterless_sub_dependant",
+      "reason": "Dependency-graph/parameter analysis helper used by FastAPI internals; focused tests cover implementation mechanics, not a documented user API.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 132,
+        "path": "fastapi/dependencies/utils.py"
+      }
+    },
+    {
+      "evidence": [
+        "tests/test_dependencies_utils.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.dependencies.utils.get_stream_item_type",
+      "reason": "Dependency-graph/parameter analysis helper used by FastAPI internals; focused tests cover implementation mechanics, not a documented user API.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 261,
+        "path": "fastapi/dependencies/utils.py"
+      }
+    },
+    {
+      "evidence": [
+        "tests/test_dependencies_utils.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.dependencies.utils.get_typed_annotation",
+      "reason": "Dependency-graph/parameter analysis helper used by FastAPI internals; focused tests cover implementation mechanics, not a documented user API.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 230,
+        "path": "fastapi/dependencies/utils.py"
+      }
+    },
+    {
+      "evidence": [
+        "tests/test_dependencies_utils.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.dependencies.utils.get_typed_return_annotation",
+      "reason": "Dependency-graph/parameter analysis helper used by FastAPI internals; focused tests cover implementation mechanics, not a documented user API.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 239,
+        "path": "fastapi/dependencies/utils.py"
+      }
+    },
+    {
+      "evidence": [
+        "tests/test_dependencies_utils.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.dependencies.utils.get_typed_signature",
+      "reason": "Dependency-graph/parameter analysis helper used by FastAPI internals; focused tests cover implementation mechanics, not a documented user API.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 213,
+        "path": "fastapi/dependencies/utils.py"
+      }
+    },
+    {
+      "evidence": [
+        "tests/test_dependencies_utils.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.dependencies.utils.get_validation_alias",
+      "reason": "Dependency-graph/parameter analysis helper used by FastAPI internals; focused tests cover implementation mechanics, not a documented user API.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 1051,
+        "path": "fastapi/dependencies/utils.py"
+      }
+    },
+    {
+      "evidence": [
+        "tests/test_dependencies_utils.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.dependencies.utils.is_union_of_base_models",
+      "reason": "Dependency-graph/parameter analysis helper used by FastAPI internals; focused tests cover implementation mechanics, not a documented user API.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 869,
+        "path": "fastapi/dependencies/utils.py"
+      }
+    },
+    {
+      "evidence": [
+        "tests/test_dependencies_utils.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.dependencies.utils.request_body_to_args",
+      "reason": "Dependency-graph/parameter analysis helper used by FastAPI internals; focused tests cover implementation mechanics, not a documented user API.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 951,
+        "path": "fastapi/dependencies/utils.py"
+      }
+    },
+    {
+      "evidence": [
+        "tests/test_dependencies_utils.py",
+        "tests/test_dependency_models.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.dependencies.utils.request_params_to_args",
+      "reason": "Dependency-graph/parameter analysis helper used by FastAPI internals; focused tests cover implementation mechanics, not a documented user API.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 780,
+        "path": "fastapi/dependencies/utils.py"
+      }
+    },
+    {
+      "evidence": [
+        "tests/test_dependencies_utils.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.dependencies.utils.solve_dependencies",
+      "reason": "Dependency-graph/parameter analysis helper used by FastAPI internals; focused tests cover implementation mechanics, not a documented user API.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 586,
+        "path": "fastapi/dependencies/utils.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/encoders.md",
+        "tests/test_jsonable_encoder.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.encoders.decimal_encoder",
+      "reason": "Encoder helper is not a documented public target; docs expose jsonable_encoder, and tests do not establish these helper functions as stable API.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 59,
+        "path": "fastapi/encoders.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/encoders.md",
+        "tests/test_jsonable_encoder.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.encoders.generate_encoders_by_class_tuples",
+      "reason": "Encoder helper is not a documented public target; docs expose jsonable_encoder, and tests do not establish these helper functions as stable API.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 115,
+        "path": "fastapi/encoders.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/encoders.md",
+        "tests/test_jsonable_encoder.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.encoders.isoformat",
+      "reason": "Encoder helper is not a documented public target; docs expose jsonable_encoder, and tests do not establish these helper functions as stable API.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 53,
+        "path": "fastapi/encoders.py"
+      }
+    },
+    {
+      "evidence": [
+        "tests/test_exception_handlers.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.exception_handlers.websocket_request_validation_exception_handler",
+      "reason": "Framework-installed exception handler implementation; applications configure exception types/handlers through documented APIs.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 29,
+        "path": "fastapi/exception_handlers.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/exceptions.md",
+        "docs/en/docs/tutorial/handling-errors.md",
+        "tests/test_exception_handlers.py",
+        "tests/test_validation_error_context.py"
+      ],
+      "evidence_basis": [
+        "documented"
+      ],
+      "id": "fastapi.exceptions.HTTPException.__init__",
+      "reason": "The exception reference documents construction and use of this exception type.",
+      "recommendation": "supported",
+      "source": {
+        "line": 45,
+        "path": "fastapi/exceptions.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/exceptions.md",
+        "docs/en/docs/tutorial/handling-errors.md",
+        "tests/test_exception_handlers.py",
+        "tests/test_validation_error_context.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.exceptions.RequestValidationError.__init__",
+      "reason": "Exception support class/protocol constructor is not documented as a stable direct-construction API; exception handling contract is documented separately.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 213,
+        "path": "fastapi/exceptions.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/exceptions.md",
+        "docs/en/docs/tutorial/handling-errors.md",
+        "tests/test_exception_handlers.py",
+        "tests/test_validation_error_context.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.exceptions.ResponseValidationError.__init__",
+      "reason": "Exception support class/protocol constructor is not documented as a stable direct-construction API; exception handling contract is documented separately.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 235,
+        "path": "fastapi/exceptions.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/exceptions.md",
+        "docs/en/docs/tutorial/handling-errors.md",
+        "tests/test_exception_handlers.py",
+        "tests/test_validation_error_context.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.exceptions.ValidationException.__init__",
+      "reason": "Exception support class/protocol constructor is not documented as a stable direct-construction API; exception handling contract is documented separately.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 175,
+        "path": "fastapi/exceptions.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/exceptions.md",
+        "docs/en/docs/tutorial/handling-errors.md",
+        "tests/test_exception_handlers.py",
+        "tests/test_validation_error_context.py"
+      ],
+      "evidence_basis": [
+        "related-doc-not-member-contract",
+        "tests-or-runtime-prove-existence-only"
+      ],
+      "id": "fastapi.exceptions.ValidationException.__str__",
+      "reason": "Formatting is observable and tested, but docs do not promise a stable string representation.",
+      "recommendation": "uncertain",
+      "source": {
+        "line": 204,
+        "path": "fastapi/exceptions.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/exceptions.md",
+        "docs/en/docs/tutorial/handling-errors.md",
+        "tests/test_exception_handlers.py",
+        "tests/test_validation_error_context.py"
+      ],
+      "evidence_basis": [
+        "documented"
+      ],
+      "id": "fastapi.exceptions.ValidationException.errors",
+      "reason": "The error-handling tutorial invokes errors() as the validation-error inspection contract.",
+      "recommendation": "supported",
+      "source": {
+        "line": 190,
+        "path": "fastapi/exceptions.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/exceptions.md",
+        "docs/en/docs/tutorial/handling-errors.md",
+        "tests/test_exception_handlers.py",
+        "tests/test_validation_error_context.py"
+      ],
+      "evidence_basis": [
+        "documented"
+      ],
+      "id": "fastapi.exceptions.WebSocketException.__init__",
+      "reason": "The exception reference documents construction and use of this exception type.",
+      "recommendation": "supported",
+      "source": {
+        "line": 128,
+        "path": "fastapi/exceptions.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/exceptions.md",
+        "docs/en/docs/tutorial/handling-errors.md",
+        "tests/test_exception_handlers.py",
+        "tests/test_validation_error_context.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.exceptions.WebSocketRequestValidationError.__init__",
+      "reason": "Exception support class/protocol constructor is not documented as a stable direct-construction API; exception handling contract is documented separately.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 225,
+        "path": "fastapi/exceptions.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/advanced/middleware.md",
+        "tests/test_application.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.middleware.asyncexitstack.AsyncExitStackMiddleware.__call__",
+      "reason": "Internal middleware wrapper installed by FastAPI’s middleware stack; no standalone public reference contract.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 15,
+        "path": "fastapi/middleware/asyncexitstack.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/advanced/middleware.md",
+        "tests/test_application.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.middleware.asyncexitstack.AsyncExitStackMiddleware.__init__",
+      "reason": "Internal middleware wrapper installed by FastAPI’s middleware stack; no standalone public reference contract.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 9,
+        "path": "fastapi/middleware/asyncexitstack.py"
+      }
+    },
+    {
+      "evidence": [
+        "fastapi/openapi/utils.py:266-278"
+      ],
+      "evidence_basis": [
+        "explicit-deprecation/source-contract"
+      ],
+      "id": "fastapi.openapi.utils.generate_operation_id",
+      "reason": "The callable emits an explicit deprecation warning, says it is not used internally, and remains exposed in the pinned release; classify it as supported but deprecated pending removal.",
+      "recommendation": "supported",
+      "source": {
+        "line": 266,
+        "path": "fastapi/openapi/utils.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/how-to/extending-openapi.md",
+        "tests/test_openapi_route_extensions.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.openapi.utils.generate_operation_summary",
+      "reason": "OpenAPI assembly helper is an internal decomposition; the documented extension point is get_openapi, not this operation-level helper.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 281,
+        "path": "fastapi/openapi/utils.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/how-to/extending-openapi.md",
+        "tests/test_openapi_route_extensions.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.openapi.utils.get_fields_from_routes",
+      "reason": "OpenAPI assembly helper is an internal decomposition; the documented extension point is get_openapi, not this operation-level helper.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 551,
+        "path": "fastapi/openapi/utils.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/how-to/extending-openapi.md",
+        "tests/test_openapi_route_extensions.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.openapi.utils.get_openapi_operation_metadata",
+      "reason": "OpenAPI assembly helper is an internal decomposition; the documented extension point is get_openapi, not this operation-level helper.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 287,
+        "path": "fastapi/openapi/utils.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/how-to/extending-openapi.md",
+        "tests/test_openapi_route_extensions.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.openapi.utils.get_openapi_operation_request_body",
+      "reason": "OpenAPI assembly helper is an internal decomposition; the documented extension point is get_openapi, not this operation-level helper.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 231,
+        "path": "fastapi/openapi/utils.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/how-to/extending-openapi.md",
+        "tests/test_openapi_route_extensions.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.openapi.utils.get_openapi_path",
+      "reason": "OpenAPI assembly helper is an internal decomposition; the documented extension point is get_openapi, not this operation-level helper.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 311,
+        "path": "fastapi/openapi/utils.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/parameters.md",
+        "tests/test_param_class.py"
+      ],
+      "evidence_basis": [
+        "documented"
+      ],
+      "id": "fastapi.params.Body.__init__",
+      "reason": "The parameter reference documents this concrete Path/Query/Header/Cookie/Body/Form/File constructor.",
+      "recommendation": "supported",
+      "source": {
+        "line": 470,
+        "path": "fastapi/params.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/parameters.md",
+        "tests/test_param_class.py",
+        "tests/test_params_repr.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.params.Body.__repr__",
+      "reason": "Only representation tests pin this diagnostic string; parameter repr is not a documented compatibility surface.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 577,
+        "path": "fastapi/params.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/parameters.md",
+        "tests/test_param_class.py"
+      ],
+      "evidence_basis": [
+        "documented"
+      ],
+      "id": "fastapi.params.Cookie.__init__",
+      "reason": "The parameter reference documents this concrete Path/Query/Header/Cookie/Body/Form/File constructor.",
+      "recommendation": "supported",
+      "source": {
+        "line": 390,
+        "path": "fastapi/params.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/parameters.md",
+        "tests/test_param_class.py"
+      ],
+      "evidence_basis": [
+        "documented"
+      ],
+      "id": "fastapi.params.File.__init__",
+      "reason": "The parameter reference documents this concrete Path/Query/Header/Cookie/Body/Form/File constructor.",
+      "recommendation": "supported",
+      "source": {
+        "line": 664,
+        "path": "fastapi/params.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/parameters.md",
+        "tests/test_param_class.py"
+      ],
+      "evidence_basis": [
+        "documented"
+      ],
+      "id": "fastapi.params.Form.__init__",
+      "reason": "The parameter reference documents this concrete Path/Query/Header/Cookie/Body/Form/File constructor.",
+      "recommendation": "supported",
+      "source": {
+        "line": 582,
+        "path": "fastapi/params.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/parameters.md",
+        "tests/test_param_class.py"
+      ],
+      "evidence_basis": [
+        "documented"
+      ],
+      "id": "fastapi.params.Header.__init__",
+      "reason": "The parameter reference documents this concrete Path/Query/Header/Cookie/Body/Form/File constructor.",
+      "recommendation": "supported",
+      "source": {
+        "line": 306,
+        "path": "fastapi/params.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/parameters.md",
+        "tests/test_param_class.py"
+      ],
+      "evidence_basis": [
+        "related-doc-not-member-contract",
+        "tests-or-runtime-prove-existence-only"
+      ],
+      "id": "fastapi.params.Param.__init__",
+      "reason": "Concrete parameter constructors are documented, but the abstract base Param constructor is not independently documented.",
+      "recommendation": "uncertain",
+      "source": {
+        "line": 29,
+        "path": "fastapi/params.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/parameters.md",
+        "tests/test_param_class.py",
+        "tests/test_params_repr.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.params.Param.__repr__",
+      "reason": "Only representation tests pin this diagnostic string; parameter repr is not a documented compatibility surface.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 133,
+        "path": "fastapi/params.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/parameters.md",
+        "tests/test_param_class.py"
+      ],
+      "evidence_basis": [
+        "documented"
+      ],
+      "id": "fastapi.params.Path.__init__",
+      "reason": "The parameter reference documents this concrete Path/Query/Header/Cookie/Body/Form/File constructor.",
+      "recommendation": "supported",
+      "source": {
+        "line": 140,
+        "path": "fastapi/params.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/parameters.md",
+        "tests/test_param_class.py"
+      ],
+      "evidence_basis": [
+        "documented"
+      ],
+      "id": "fastapi.params.Query.__init__",
+      "reason": "The parameter reference documents this concrete Path/Query/Header/Cookie/Body/Form/File constructor.",
+      "recommendation": "supported",
+      "source": {
+        "line": 224,
+        "path": "fastapi/params.py"
+      }
+    },
+    {
+      "evidence": [
+        "tests/test_custom_route_class.py"
+      ],
+      "evidence_basis": [
+        "tests-or-runtime-prove-existence-only"
+      ],
+      "id": "fastapi.routing.APIRoute.__init__",
+      "reason": "APIRoute construction is implementation-driven; custom subclassing is explicitly described as undocumented/experimental.",
+      "recommendation": "uncertain",
+      "source": {
+        "line": 1161,
+        "path": "fastapi/routing.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/how-to/custom-request-and-route.md",
+        "tests/test_custom_route_class.py"
+      ],
+      "evidence_basis": [
+        "documented"
+      ],
+      "id": "fastapi.routing.APIRoute.get_route_handler",
+      "reason": "The custom Request/Route guide documents this APIRoute override hook.",
+      "recommendation": "supported",
+      "source": {
+        "line": 1225,
+        "path": "fastapi/routing.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/release-notes.md:378-387",
+        "tests/test_custom_route_class.py"
+      ],
+      "evidence_basis": [
+        "related-doc-not-member-contract",
+        "alpha-or-advanced-release-note",
+        "tests-or-runtime-prove-existence-only"
+      ],
+      "id": "fastapi.routing.APIRoute.handle",
+      "reason": "Routing protocol method is inherited/overridden plumbing; subclass customization remains documented as experimental.",
+      "recommendation": "uncertain",
+      "source": {
+        "line": 1261,
+        "path": "fastapi/routing.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/release-notes.md:378-387",
+        "tests/test_custom_route_class.py"
+      ],
+      "evidence_basis": [
+        "related-doc-not-member-contract",
+        "alpha-or-advanced-release-note",
+        "tests-or-runtime-prove-existence-only"
+      ],
+      "id": "fastapi.routing.APIRoute.matches",
+      "reason": "Routing protocol method is inherited/overridden plumbing; subclass customization remains documented as experimental.",
+      "recommendation": "uncertain",
+      "source": {
+        "line": 1251,
+        "path": "fastapi/routing.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/apirouter.md",
+        "tests/test_custom_route_class.py",
+        "tests/test_ws_router.py"
+      ],
+      "evidence_basis": [
+        "documented"
+      ],
+      "id": "fastapi.routing.APIRouter.__init__",
+      "reason": "The APIRouter reference documents the router constructor and configuration.",
+      "recommendation": "supported",
+      "source": {
+        "line": 2282,
+        "path": "fastapi/routing.py"
+      }
+    },
+    {
+      "evidence": [
+        "tests/test_custom_route_class.py",
+        "tests/test_ws_router.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.routing.APIRouter.add_api_route",
+      "reason": "Framework routing helper/protocol member is reached through supported FastAPI registration APIs; no independent public contract found.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 2889,
+        "path": "fastapi/routing.py"
+      }
+    },
+    {
+      "evidence": [
+        "tests/test_custom_route_class.py",
+        "tests/test_ws_router.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.routing.APIRouter.add_api_websocket_route",
+      "reason": "Framework routing helper/protocol member is reached through supported FastAPI registration APIs; no independent public contract found.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 3035,
+        "path": "fastapi/routing.py"
+      }
+    },
+    {
+      "evidence": [
+        "fastapi/routing.py:6396-6410",
+        "tests/test_router_events.py"
+      ],
+      "evidence_basis": [
+        "explicit-source-contract",
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.routing.APIRouter.add_event_handler",
+      "reason": "The source docstring says this API is retained for backward compatibility after Starlette removed its startup/shutdown handler support; router-event tests exercise that contract.",
+      "recommendation": "supported",
+      "source": {
+        "line": 6396,
+        "path": "fastapi/routing.py"
+      }
+    },
+    {
+      "evidence": [
+        "tests/test_custom_route_class.py",
+        "tests/test_ws_router.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only",
+        "delegated-starlette-contract"
+      ],
+      "id": "fastapi.routing.APIRouter.add_route",
+      "reason": "Generic Starlette Router dispatch/registration method is owned by the separate Starlette contract, not FastAPI API support.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 2604,
+        "path": "fastapi/routing.py"
+      }
+    },
+    {
+      "evidence": [
+        "tests/test_custom_route_class.py",
+        "tests/test_ws_router.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only",
+        "delegated-starlette-contract"
+      ],
+      "id": "fastapi.routing.APIRouter.add_websocket_route",
+      "reason": "Generic Starlette Router dispatch/registration method is owned by the separate Starlette contract, not FastAPI API support.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 2621,
+        "path": "fastapi/routing.py"
+      }
+    },
+    {
+      "evidence": [
+        "tests/test_custom_route_class.py",
+        "tests/test_ws_router.py"
+      ],
+      "evidence_basis": [
+        "tests-or-runtime-prove-existence-only"
+      ],
+      "id": "fastapi.routing.APIRouter.api_route",
+      "reason": "No direct APIRouter.api_route reference found; docs center on concrete verb decorators while implementation delegates to add_api_route.",
+      "recommendation": "uncertain",
+      "source": {
+        "line": 2973,
+        "path": "fastapi/routing.py"
+      }
+    },
+    {
+      "evidence": [
+        "tests/test_custom_route_class.py",
+        "tests/test_ws_router.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only",
+        "delegated-starlette-contract"
+      ],
+      "id": "fastapi.routing.APIRouter.app",
+      "reason": "Generic Starlette Router dispatch/registration method is owned by the separate Starlette contract, not FastAPI API support.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 2719,
+        "path": "fastapi/routing.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/release-notes.md:378-387",
+        "tests/test_custom_route_class.py",
+        "tests/test_ws_router.py"
+      ],
+      "evidence_basis": [
+        "related-doc-not-member-contract",
+        "alpha-or-advanced-release-note",
+        "tests-or-runtime-prove-existence-only"
+      ],
+      "id": "fastapi.routing.APIRouter.handle",
+      "reason": "Release notes put router handle customization under alpha features, not officially supported.",
+      "recommendation": "uncertain",
+      "source": {
+        "line": 2783,
+        "path": "fastapi/routing.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/release-notes.md:378-387",
+        "tests/test_custom_route_class.py",
+        "tests/test_ws_router.py"
+      ],
+      "evidence_basis": [
+        "related-doc-not-member-contract",
+        "alpha-or-advanced-release-note",
+        "tests-or-runtime-prove-existence-only"
+      ],
+      "id": "fastapi.routing.APIRouter.matches",
+      "reason": "Release notes put router matches customization under alpha features, not officially supported.",
+      "recommendation": "uncertain",
+      "source": {
+        "line": 2793,
+        "path": "fastapi/routing.py"
+      }
+    },
+    {
+      "evidence": [
+        "tests/test_custom_route_class.py",
+        "tests/test_ws_router.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only",
+        "delegated-starlette-contract"
+      ],
+      "id": "fastapi.routing.APIRouter.route",
+      "reason": "Generic Starlette Router dispatch/registration method is owned by the separate Starlette contract, not FastAPI API support.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 2870,
+        "path": "fastapi/routing.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/release-notes.md:7226",
+        "tests/test_custom_route_class.py",
+        "tests/test_ws_router.py"
+      ],
+      "evidence_basis": [
+        "release-note"
+      ],
+      "id": "fastapi.routing.APIRouter.websocket_route",
+      "reason": "Release notes identify websocket_route support on APIRouter and upstream router tests cover it.",
+      "recommendation": "supported",
+      "source": {
+        "line": 3124,
+        "path": "fastapi/routing.py"
+      }
+    },
+    {
+      "evidence": [
+        "tests/test_custom_route_class.py",
+        "tests/test_ws_router.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.routing.APIWebSocketRoute.__init__",
+      "reason": "Internal WebSocket route object/protocol member constructed by router registration; no direct public reference contract.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 802,
+        "path": "fastapi/routing.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/release-notes.md:378-387",
+        "tests/test_custom_route_class.py",
+        "tests/test_ws_router.py"
+      ],
+      "evidence_basis": [
+        "explicitly-internal-release-note",
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.routing.APIWebSocketRoute.matches",
+      "reason": "Internal WebSocket route object/protocol member constructed by router registration; no direct public reference contract.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 833,
+        "path": "fastapi/routing.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/release-notes.md:300",
+        "tests/test_custom_route_class.py",
+        "tests/test_router_include_context.py"
+      ],
+      "evidence_basis": [
+        "explicitly-internal-release-note",
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.routing.RouteContext.__getattr__",
+      "reason": "Compatibility attribute forwarding is an implementation protocol detail; individual RouteContext data fields remain uncommitted.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 1581,
+        "path": "fastapi/routing.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/release-notes.md:300",
+        "tests/test_custom_route_class.py",
+        "tests/test_router_include_context.py"
+      ],
+      "evidence_basis": [
+        "related-doc-not-member-contract",
+        "alpha-or-advanced-release-note",
+        "tests-or-runtime-prove-existence-only"
+      ],
+      "id": "fastapi.routing.RouteContext.endpoint",
+      "reason": "The helper is announced for advanced use, but this specific context property is test-covered without an individually documented field contract.",
+      "recommendation": "uncertain",
+      "source": {
+        "line": 1578,
+        "path": "fastapi/routing.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/release-notes.md:300",
+        "tests/test_custom_route_class.py",
+        "tests/test_router_include_context.py"
+      ],
+      "evidence_basis": [
+        "related-doc-not-member-contract",
+        "alpha-or-advanced-release-note",
+        "tests-or-runtime-prove-existence-only"
+      ],
+      "id": "fastapi.routing.RouteContext.methods",
+      "reason": "The helper is announced for advanced use, but this specific context property is test-covered without an individually documented field contract.",
+      "recommendation": "uncertain",
+      "source": {
+        "line": 1574,
+        "path": "fastapi/routing.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/release-notes.md:300",
+        "tests/test_custom_route_class.py",
+        "tests/test_router_include_context.py"
+      ],
+      "evidence_basis": [
+        "related-doc-not-member-contract",
+        "alpha-or-advanced-release-note",
+        "tests-or-runtime-prove-existence-only"
+      ],
+      "id": "fastapi.routing.RouteContext.name",
+      "reason": "The helper is announced for advanced use, but this specific context property is test-covered without an individually documented field contract.",
+      "recommendation": "uncertain",
+      "source": {
+        "line": 1570,
+        "path": "fastapi/routing.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/release-notes.md:300",
+        "tests/test_custom_route_class.py",
+        "tests/test_router_include_context.py"
+      ],
+      "evidence_basis": [
+        "related-doc-not-member-contract",
+        "alpha-or-advanced-release-note",
+        "tests-or-runtime-prove-existence-only"
+      ],
+      "id": "fastapi.routing.RouteContext.original_route",
+      "reason": "The helper is announced for advanced use, but this specific context property is test-covered without an individually documented field contract.",
+      "recommendation": "uncertain",
+      "source": {
+        "line": 1550,
+        "path": "fastapi/routing.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/release-notes.md:300",
+        "tests/test_custom_route_class.py",
+        "tests/test_router_include_context.py"
+      ],
+      "evidence_basis": [
+        "related-doc-not-member-contract",
+        "alpha-or-advanced-release-note",
+        "tests-or-runtime-prove-existence-only"
+      ],
+      "id": "fastapi.routing.RouteContext.path",
+      "reason": "The helper is announced for advanced use, but this specific context property is test-covered without an individually documented field contract.",
+      "recommendation": "uncertain",
+      "source": {
+        "line": 1562,
+        "path": "fastapi/routing.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/release-notes.md:300",
+        "tests/test_custom_route_class.py",
+        "tests/test_router_include_context.py"
+      ],
+      "evidence_basis": [
+        "related-doc-not-member-contract",
+        "alpha-or-advanced-release-note",
+        "tests-or-runtime-prove-existence-only"
+      ],
+      "id": "fastapi.routing.RouteContext.path_format",
+      "reason": "The helper is announced for advanced use, but this specific context property is test-covered without an individually documented field contract.",
+      "recommendation": "uncertain",
+      "source": {
+        "line": 1566,
+        "path": "fastapi/routing.py"
+      }
+    },
+    {
+      "evidence": [
+        "tests/test_custom_route_class.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.routing.get_request_handler",
+      "reason": "Framework route adapter/dispatcher used internally; upstream tests validate behavior but docs expose route declarations and extension hooks instead.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 375,
+        "path": "fastapi/routing.py"
+      }
+    },
+    {
+      "evidence": [
+        "tests/test_custom_route_class.py",
+        "tests/test_ws_router.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.routing.get_websocket_app",
+      "reason": "Framework route adapter/dispatcher used internally; upstream tests validate behavior but docs expose route declarations and extension hooks instead.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 764,
+        "path": "fastapi/routing.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/release-notes.md:300",
+        "tests/test_custom_route_class.py",
+        "tests/test_router_include_context.py"
+      ],
+      "evidence_basis": [
+        "documented",
+        "release-note"
+      ],
+      "id": "fastapi.routing.iter_route_contexts",
+      "reason": "Release notes explicitly announce this advanced-user helper; upstream tests exercise route-context iteration.",
+      "recommendation": "supported",
+      "source": {
+        "line": 1828,
+        "path": "fastapi/routing.py"
+      }
+    },
+    {
+      "evidence": [
+        "tests/test_custom_route_class.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.routing.request_response",
+      "reason": "Framework route adapter/dispatcher used internally; upstream tests validate behavior but docs expose route declarations and extension hooks instead.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 121,
+        "path": "fastapi/routing.py"
+      }
+    },
+    {
+      "evidence": [
+        "tests/test_custom_route_class.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.routing.run_endpoint_function",
+      "reason": "Framework route adapter/dispatcher used internally; upstream tests validate behavior but docs expose route declarations and extension hooks instead.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 344,
+        "path": "fastapi/routing.py"
+      }
+    },
+    {
+      "evidence": [
+        "tests/test_custom_route_class.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.routing.serialize_response",
+      "reason": "Framework route adapter/dispatcher used internally; upstream tests validate behavior but docs expose route declarations and extension hooks instead.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 301,
+        "path": "fastapi/routing.py"
+      }
+    },
+    {
+      "evidence": [
+        "tests/test_custom_route_class.py",
+        "tests/test_ws_router.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.routing.websocket_session",
+      "reason": "Framework route adapter/dispatcher used internally; upstream tests validate behavior but docs expose route declarations and extension hooks instead.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 165,
+        "path": "fastapi/routing.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/security/index.md",
+        "tests/test_security_api_key_query.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.security.api_key.APIKeyBase.__init__",
+      "reason": "Abstract security base constructor is not documented independently; concrete APIKey scheme constructors are the documented API.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 14,
+        "path": "fastapi/security/api_key.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/security/index.md",
+        "tests/test_security_api_key_query.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.security.api_key.APIKeyBase.check_api_key",
+      "reason": "API-key validation helper used internally by concrete schemes; docs expose the schemes and authentication result, not this hook.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 47,
+        "path": "fastapi/security/api_key.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/security/index.md",
+        "docs/en/docs/how-to/authentication-error-status-code.md:7",
+        "tests/test_security_api_key_query.py"
+      ],
+      "evidence_basis": [
+        "documented"
+      ],
+      "id": "fastapi.security.api_key.APIKeyBase.make_not_authenticated_error",
+      "reason": "The authentication-status guide explicitly documents overriding this security failure hook.",
+      "recommendation": "supported",
+      "source": {
+        "line": 31,
+        "path": "fastapi/security/api_key.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/security/index.md",
+        "tests/test_security_api_key_query.py",
+        "tests/test_security_api_key_cookie.py"
+      ],
+      "evidence_basis": [
+        "documented"
+      ],
+      "id": "fastapi.security.api_key.APIKeyCookie.__call__",
+      "reason": "The security reference documents the concrete dependency scheme/form API; upstream tests cover its behavior.",
+      "recommendation": "supported",
+      "source": {
+        "line": 318,
+        "path": "fastapi/security/api_key.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/security/index.md",
+        "tests/test_security_api_key_query.py",
+        "tests/test_security_api_key_cookie.py"
+      ],
+      "evidence_basis": [
+        "documented"
+      ],
+      "id": "fastapi.security.api_key.APIKeyCookie.__init__",
+      "reason": "The security reference documents the concrete dependency scheme/form API; upstream tests cover its behavior.",
+      "recommendation": "supported",
+      "source": {
+        "line": 267,
+        "path": "fastapi/security/api_key.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/security/index.md",
+        "tests/test_security_api_key_query.py",
+        "tests/test_security_api_key_header.py"
+      ],
+      "evidence_basis": [
+        "documented"
+      ],
+      "id": "fastapi.security.api_key.APIKeyHeader.__call__",
+      "reason": "The security reference documents the concrete dependency scheme/form API; upstream tests cover its behavior.",
+      "recommendation": "supported",
+      "source": {
+        "line": 230,
+        "path": "fastapi/security/api_key.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/security/index.md",
+        "tests/test_security_api_key_query.py",
+        "tests/test_security_api_key_header.py"
+      ],
+      "evidence_basis": [
+        "documented"
+      ],
+      "id": "fastapi.security.api_key.APIKeyHeader.__init__",
+      "reason": "The security reference documents the concrete dependency scheme/form API; upstream tests cover its behavior.",
+      "recommendation": "supported",
+      "source": {
+        "line": 179,
+        "path": "fastapi/security/api_key.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/security/index.md",
+        "tests/test_security_api_key_query.py"
+      ],
+      "evidence_basis": [
+        "documented"
+      ],
+      "id": "fastapi.security.api_key.APIKeyQuery.__call__",
+      "reason": "The security reference documents the concrete dependency scheme/form API; upstream tests cover its behavior.",
+      "recommendation": "supported",
+      "source": {
+        "line": 142,
+        "path": "fastapi/security/api_key.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/security/index.md",
+        "tests/test_security_api_key_query.py"
+      ],
+      "evidence_basis": [
+        "documented"
+      ],
+      "id": "fastapi.security.api_key.APIKeyQuery.__init__",
+      "reason": "The security reference documents the concrete dependency scheme/form API; upstream tests cover its behavior.",
+      "recommendation": "supported",
+      "source": {
+        "line": 87,
+        "path": "fastapi/security/api_key.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/security/index.md",
+        "tests/test_security_http_base.py"
+      ],
+      "evidence_basis": [
+        "related-doc-not-member-contract",
+        "tests-or-runtime-prove-existence-only"
+      ],
+      "id": "fastapi.security.http.HTTPBase.__call__",
+      "reason": "Base-class callable appears in focused tests, while security docs target concrete schemes and do not state a stable HTTPBase call contract.",
+      "recommendation": "uncertain",
+      "source": {
+        "line": 94,
+        "path": "fastapi/security/http.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/security/index.md",
+        "tests/test_security_http_base.py"
+      ],
+      "evidence_basis": [
+        "related-doc-not-member-contract",
+        "tests-or-runtime-prove-existence-only"
+      ],
+      "id": "fastapi.security.http.HTTPBase.__init__",
+      "reason": "Base-class construction appears in focused tests, while security docs target concrete schemes and do not state a stable HTTPBase constructor contract.",
+      "recommendation": "uncertain",
+      "source": {
+        "line": 72,
+        "path": "fastapi/security/http.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/security/index.md",
+        "tests/test_security_http_base.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.security.http.HTTPBase.make_authenticate_headers",
+      "reason": "Internal challenge-header construction helper; user-facing authentication behavior is exposed by concrete security schemes.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 84,
+        "path": "fastapi/security/http.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/security/index.md",
+        "docs/en/docs/how-to/authentication-error-status-code.md:7",
+        "tests/test_security_http_base.py"
+      ],
+      "evidence_basis": [
+        "documented"
+      ],
+      "id": "fastapi.security.http.HTTPBase.make_not_authenticated_error",
+      "reason": "The authentication-status guide explicitly documents overriding this security failure hook.",
+      "recommendation": "supported",
+      "source": {
+        "line": 87,
+        "path": "fastapi/security/http.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/security/index.md",
+        "tests/test_security_http_basic_realm.py"
+      ],
+      "evidence_basis": [
+        "documented"
+      ],
+      "id": "fastapi.security.http.HTTPBasic.__call__",
+      "reason": "The security reference documents the concrete dependency scheme/form API; upstream tests cover its behavior.",
+      "recommendation": "supported",
+      "source": {
+        "line": 202,
+        "path": "fastapi/security/http.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/security/index.md",
+        "tests/test_security_http_basic_realm.py"
+      ],
+      "evidence_basis": [
+        "documented"
+      ],
+      "id": "fastapi.security.http.HTTPBasic.__init__",
+      "reason": "The security reference documents the concrete dependency scheme/form API; upstream tests cover its behavior.",
+      "recommendation": "supported",
+      "source": {
+        "line": 140,
+        "path": "fastapi/security/http.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/security/index.md",
+        "tests/test_security_http_basic_realm.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.security.http.HTTPBasic.make_authenticate_headers",
+      "reason": "Internal challenge-header construction helper; user-facing authentication behavior is exposed by concrete security schemes.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 197,
+        "path": "fastapi/security/http.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/security/index.md",
+        "tests/test_security_http_bearer.py"
+      ],
+      "evidence_basis": [
+        "documented"
+      ],
+      "id": "fastapi.security.http.HTTPBearer.__call__",
+      "reason": "The security reference documents the concrete dependency scheme/form API; upstream tests cover its behavior.",
+      "recommendation": "supported",
+      "source": {
+        "line": 303,
+        "path": "fastapi/security/http.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/security/index.md",
+        "tests/test_security_http_bearer.py"
+      ],
+      "evidence_basis": [
+        "documented"
+      ],
+      "id": "fastapi.security.http.HTTPBearer.__init__",
+      "reason": "The security reference documents the concrete dependency scheme/form API; upstream tests cover its behavior.",
+      "recommendation": "supported",
+      "source": {
+        "line": 254,
+        "path": "fastapi/security/http.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/security/index.md",
+        "tests/test_security_http_digest.py"
+      ],
+      "evidence_basis": [
+        "documented"
+      ],
+      "id": "fastapi.security.http.HTTPDigest.__call__",
+      "reason": "The security reference documents the concrete dependency scheme/form API; upstream tests cover its behavior.",
+      "recommendation": "supported",
+      "source": {
+        "line": 404,
+        "path": "fastapi/security/http.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/security/index.md",
+        "tests/test_security_http_digest.py"
+      ],
+      "evidence_basis": [
+        "documented"
+      ],
+      "id": "fastapi.security.http.HTTPDigest.__init__",
+      "reason": "The security reference documents the concrete dependency scheme/form API; upstream tests cover its behavior.",
+      "recommendation": "supported",
+      "source": {
+        "line": 357,
+        "path": "fastapi/security/http.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/security/index.md",
+        "tests/test_security_oauth2.py"
+      ],
+      "evidence_basis": [
+        "documented"
+      ],
+      "id": "fastapi.security.oauth2.OAuth2.__call__",
+      "reason": "The security reference documents the concrete dependency scheme/form API; upstream tests cover its behavior.",
+      "recommendation": "supported",
+      "source": {
+        "line": 423,
+        "path": "fastapi/security/oauth2.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/security/index.md",
+        "tests/test_security_oauth2.py"
+      ],
+      "evidence_basis": [
+        "documented"
+      ],
+      "id": "fastapi.security.oauth2.OAuth2.__init__",
+      "reason": "The security reference documents the concrete dependency scheme/form API; upstream tests cover its behavior.",
+      "recommendation": "supported",
+      "source": {
+        "line": 343,
+        "path": "fastapi/security/oauth2.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/security/index.md",
+        "docs/en/docs/how-to/authentication-error-status-code.md:7",
+        "tests/test_security_oauth2.py"
+      ],
+      "evidence_basis": [
+        "documented"
+      ],
+      "id": "fastapi.security.oauth2.OAuth2.make_not_authenticated_error",
+      "reason": "The authentication-status guide explicitly documents overriding this security failure hook.",
+      "recommendation": "supported",
+      "source": {
+        "line": 401,
+        "path": "fastapi/security/oauth2.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/security/index.md",
+        "tests/test_security_oauth2.py"
+      ],
+      "evidence_basis": [
+        "documented"
+      ],
+      "id": "fastapi.security.oauth2.OAuth2AuthorizationCodeBearer.__call__",
+      "reason": "The security reference documents the concrete dependency scheme/form API; upstream tests cover its behavior.",
+      "recommendation": "supported",
+      "source": {
+        "line": 642,
+        "path": "fastapi/security/oauth2.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/security/index.md",
+        "tests/test_security_oauth2.py"
+      ],
+      "evidence_basis": [
+        "documented"
+      ],
+      "id": "fastapi.security.oauth2.OAuth2AuthorizationCodeBearer.__init__",
+      "reason": "The security reference documents the concrete dependency scheme/form API; upstream tests cover its behavior.",
+      "recommendation": "supported",
+      "source": {
+        "line": 553,
+        "path": "fastapi/security/oauth2.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/security/index.md",
+        "tests/test_security_oauth2.py"
+      ],
+      "evidence_basis": [
+        "documented"
+      ],
+      "id": "fastapi.security.oauth2.OAuth2PasswordBearer.__call__",
+      "reason": "The security reference documents the concrete dependency scheme/form API; upstream tests cover its behavior.",
+      "recommendation": "supported",
+      "source": {
+        "line": 536,
+        "path": "fastapi/security/oauth2.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/security/index.md",
+        "tests/test_security_oauth2.py"
+      ],
+      "evidence_basis": [
+        "documented"
+      ],
+      "id": "fastapi.security.oauth2.OAuth2PasswordBearer.__init__",
+      "reason": "The security reference documents the concrete dependency scheme/form API; upstream tests cover its behavior.",
+      "recommendation": "supported",
+      "source": {
+        "line": 442,
+        "path": "fastapi/security/oauth2.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/security/index.md",
+        "tests/test_security_oauth2.py"
+      ],
+      "evidence_basis": [
+        "documented"
+      ],
+      "id": "fastapi.security.oauth2.OAuth2PasswordRequestForm.__init__",
+      "reason": "The security reference documents the concrete dependency scheme/form API; upstream tests cover its behavior.",
+      "recommendation": "supported",
+      "source": {
+        "line": 59,
+        "path": "fastapi/security/oauth2.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/security/index.md",
+        "tests/test_security_oauth2.py"
+      ],
+      "evidence_basis": [
+        "documented"
+      ],
+      "id": "fastapi.security.oauth2.OAuth2PasswordRequestFormStrict.__init__",
+      "reason": "The security reference documents the concrete dependency scheme/form API; upstream tests cover its behavior.",
+      "recommendation": "supported",
+      "source": {
+        "line": 226,
+        "path": "fastapi/security/oauth2.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/security/index.md",
+        "docs/en/docs/advanced/security/oauth2-scopes.md",
+        "tests/test_security_oauth2.py",
+        "tests/test_security_scopes.py"
+      ],
+      "evidence_basis": [
+        "documented"
+      ],
+      "id": "fastapi.security.oauth2.SecurityScopes.__init__",
+      "reason": "The security reference documents the concrete dependency scheme/form API; upstream tests cover its behavior.",
+      "recommendation": "supported",
+      "source": {
+        "line": 666,
+        "path": "fastapi/security/oauth2.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/security/index.md"
+      ],
+      "evidence_basis": [
+        "documented"
+      ],
+      "id": "fastapi.security.open_id_connect_url.OpenIdConnect.__call__",
+      "reason": "The security reference documents the concrete dependency scheme/form API; upstream tests cover its behavior.",
+      "recommendation": "supported",
+      "source": {
+        "line": 87,
+        "path": "fastapi/security/open_id_connect_url.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/security/index.md"
+      ],
+      "evidence_basis": [
+        "documented"
+      ],
+      "id": "fastapi.security.open_id_connect_url.OpenIdConnect.__init__",
+      "reason": "The security reference documents the concrete dependency scheme/form API; upstream tests cover its behavior.",
+      "recommendation": "supported",
+      "source": {
+        "line": 22,
+        "path": "fastapi/security/open_id_connect_url.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/security/index.md",
+        "docs/en/docs/how-to/authentication-error-status-code.md:7"
+      ],
+      "evidence_basis": [
+        "documented"
+      ],
+      "id": "fastapi.security.open_id_connect_url.OpenIdConnect.make_not_authenticated_error",
+      "reason": "The authentication-status guide explicitly documents overriding this security failure hook.",
+      "recommendation": "supported",
+      "source": {
+        "line": 80,
+        "path": "fastapi/security/open_id_connect_url.py"
+      }
+    },
+    {
+      "evidence": [
+        "tests/test_security_oauth2.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.security.utils.get_authorization_scheme_param",
+      "reason": "Authorization-header parser is a module helper used by security implementations; no public reference or extension contract.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 1,
+        "path": "fastapi/security/utils.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/reference/sse.md",
+        "tests/test_sse.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.sse.format_sse_event",
+      "reason": "Direct formatter is test-covered implementation detail; the SSE reference exposes EventSourceResponse and ServerSentEvent instead.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 165,
+        "path": "fastapi/sse.py"
+      }
+    },
+    {
+      "evidence": [
+        "docs/en/docs/release-notes.md:2837",
+        "tests/test_generate_unique_id_function.py"
+      ],
+      "evidence_basis": [
+        "explicitly-internal-release-note",
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.utils.create_model_field",
+      "reason": "Release notes explicitly label create_model_field internal; public field behavior is specified through request/response APIs.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 58,
+        "path": "fastapi/utils.py"
+      }
+    },
+    {
+      "evidence": [
+        "tests/test_generate_unique_id_function.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.utils.deep_dict_update",
+      "reason": "Utility used to implement documented FastAPI behavior; no independent public reference contract (generate_unique_id is configured through a callback instead).",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 103,
+        "path": "fastapi/utils.py"
+      }
+    },
+    {
+      "evidence": [
+        "fastapi/utils.py:80-92",
+        "tests/test_generate_unique_id_function.py"
+      ],
+      "evidence_basis": [
+        "explicit-deprecation/source-contract"
+      ],
+      "id": "fastapi.utils.generate_operation_id_for_path",
+      "reason": "The callable emits an explicit deprecation warning and remains exposed in the pinned release; classify as supported but deprecated pending removal.",
+      "recommendation": "supported",
+      "source": {
+        "line": 80,
+        "path": "fastapi/utils.py"
+      }
+    },
+    {
+      "evidence": [
+        "tests/test_generate_unique_id_function.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.utils.generate_unique_id",
+      "reason": "Utility used to implement documented FastAPI behavior; no independent public reference contract (generate_unique_id is configured through a callback instead).",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 95,
+        "path": "fastapi/utils.py"
+      }
+    },
+    {
+      "evidence": [
+        "tests/test_generate_unique_id_function.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.utils.get_path_param_names",
+      "reason": "Utility used to implement documented FastAPI behavior; no independent public reference contract (generate_unique_id is configured through a callback instead).",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 43,
+        "path": "fastapi/utils.py"
+      }
+    },
+    {
+      "evidence": [
+        "tests/test_generate_unique_id_function.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.utils.get_value_or_default",
+      "reason": "Utility used to implement documented FastAPI behavior; no independent public reference contract (generate_unique_id is configured through a callback instead).",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 121,
+        "path": "fastapi/utils.py"
+      }
+    },
+    {
+      "evidence": [
+        "tests/test_generate_unique_id_function.py"
+      ],
+      "evidence_basis": [
+        "tests-are-implementation-coverage-only"
+      ],
+      "id": "fastapi.utils.is_body_allowed_for_status_code",
+      "reason": "Utility used to implement documented FastAPI behavior; no independent public reference contract (generate_unique_id is configured through a callback instead).",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 26,
+        "path": "fastapi/utils.py"
+      }
+    }
+  ],
+  "schema": "fastapi-callable-classification-review/v1",
+  "scope": {
+    "candidate_count": 137,
+    "candidate_set": "uncertain public_or_protocol_callable candidates from the 267-callable inventory subset",
+    "recommendation_counts": {
+      "private/internal": 72,
+      "supported": 47,
+      "uncertain": 18
+    }
+  },
+  "source_identity": {
+    "package": "FastAPI",
+    "selected_starlette_profile": "1.6.0",
+    "source_commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
+    "version": "0.141.1"
+  }
+}

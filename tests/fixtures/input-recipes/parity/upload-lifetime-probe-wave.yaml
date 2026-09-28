@@ -1,0 +1,78 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/upload_lifetime_probe_wave.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.upload-lifetime-probe-wave.upload-file-is-closed.test-upload-file-is-closed
+  actions:
+  - action_id: submit-upload
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /uploadfile/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=FixtureBoundary
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: "--FixtureBoundary\r\nContent-Disposition: form-data; name=\"file\"; filename=\"sample.txt\"\
+        \r\nContent-Type: text/plain\r\n\r\nworkload payload\r\n--FixtureBoundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: inspect-lifetime
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /upload-state/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_datastructures.py
+    kind: upstream_test

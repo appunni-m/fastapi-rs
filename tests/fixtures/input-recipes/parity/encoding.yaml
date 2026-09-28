@@ -1,0 +1,174 @@
+schema: fastapi-rs/python-api-workflow@1
+workload:
+  file: tests/fixtures/workloads/encoding.py
+  factory: create_argument_bundles
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.jsonable-encoder.tutorial.datetime-model
+  probes:
+  - probe_id: invoke-jsonable-encoder
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: tutorial-item
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/encoder.md
+    kind: upstream_documentation
+    sha256: a7116cae1b44f5ac5841475b533b2df621875c41047d70cb02841ada13e3a486
+  - path: docs_src/encoder/tutorial001_py310.py
+    kind: upstream_documentation
+    sha256: a06f3772ba98331b67d09cca79f0f7778e209236f3fb809a9706fdf01d9db5f1
+  - path: tests/test_tutorial/test_encoder/test_tutorial001.py
+    kind: upstream_test
+    sha256: 1e85a977b388a1e7975b925de13fa843912136ed3577df061548de3f860e6d2d
+- case_id: fastapi.jsonable-encoder.mapping.include
+  probes:
+  - probe_id: invoke-jsonable-encoder
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: mapping-include
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  source_evidence:
+  - path: tests/test_jsonable_encoder.py
+    kind: upstream_test
+    sha256: cea093a4d8b99f5e2728b05b172378582f8add4b7199390bb47058dfe532b8a5
+- case_id: fastapi.jsonable-encoder.mapping.exclude
+  probes:
+  - probe_id: invoke-jsonable-encoder
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: mapping-exclude
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  source_evidence:
+  - path: tests/test_jsonable_encoder.py
+    kind: upstream_test
+    sha256: cea093a4d8b99f5e2728b05b172378582f8add4b7199390bb47058dfe532b8a5
+- case_id: fastapi.jsonable-encoder.model.alias
+  probes:
+  - probe_id: invoke-jsonable-encoder
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: model-alias
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  source_evidence:
+  - path: tests/test_jsonable_encoder.py
+    kind: upstream_test
+    sha256: cea093a4d8b99f5e2728b05b172378582f8add4b7199390bb47058dfe532b8a5
+- case_id: fastapi.jsonable-encoder.model.defaults
+  probes:
+  - probe_id: invoke-jsonable-encoder
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: model-defaults
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  source_evidence:
+  - path: tests/test_jsonable_encoder.py
+    kind: upstream_test
+    sha256: cea093a4d8b99f5e2728b05b172378582f8add4b7199390bb47058dfe532b8a5
+- case_id: fastapi.jsonable-encoder.model.exclude-unset
+  probes:
+  - probe_id: invoke-jsonable-encoder
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: model-exclude-unset
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  source_evidence:
+  - path: tests/test_jsonable_encoder.py
+    kind: upstream_test
+    sha256: cea093a4d8b99f5e2728b05b172378582f8add4b7199390bb47058dfe532b8a5
+- case_id: fastapi.jsonable-encoder.model.exclude-defaults
+  probes:
+  - probe_id: invoke-jsonable-encoder
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: model-exclude-defaults
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  source_evidence:
+  - path: tests/test_jsonable_encoder.py
+    kind: upstream_test
+    sha256: cea093a4d8b99f5e2728b05b172378582f8add4b7199390bb47058dfe532b8a5
+- case_id: fastapi.jsonable-encoder.custom-encoder.exact-type
+  probes:
+  - probe_id: invoke-jsonable-encoder
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: custom-encoder-exact
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  source_evidence:
+  - path: tests/test_jsonable_encoder.py
+    kind: upstream_test
+    sha256: cea093a4d8b99f5e2728b05b172378582f8add4b7199390bb47058dfe532b8a5
+- case_id: fastapi.jsonable-encoder.custom-encoder.base-type
+  probes:
+  - probe_id: invoke-jsonable-encoder
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: custom-encoder-base
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  source_evidence:
+  - path: tests/test_jsonable_encoder.py
+    kind: upstream_test
+    sha256: cea093a4d8b99f5e2728b05b172378582f8add4b7199390bb47058dfe532b8a5

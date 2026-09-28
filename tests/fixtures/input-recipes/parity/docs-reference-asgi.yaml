@@ -1,0 +1,293 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/docs_reference_asgi.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.test.test-http-connection-injection.test-value-extracting-by-http
+  actions:
+  - action_id: http-dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /http
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/reference/httpconnection.md
+    kind: upstream_documentation
+  - path: tests/test_http_connection_injection.py
+    kind: upstream_test
+- case_id: fastapi.test.test-http-connection-injection.test-value-extracting-by-ws
+  actions:
+  - action_id: websocket-session
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /ws
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.disconnect
+      code: 1000
+      reason: complete
+    observations:
+    - kind: websocket
+      selector: close_code
+      comparison: exact
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
+    - kind: websocket
+      selector: messages
+      comparison: ordered
+  source_evidence:
+  - path: docs/en/docs/reference/httpconnection.md
+    kind: upstream_documentation
+  - path: tests/test_http_connection_injection.py
+    kind: upstream_test
+- case_id: fastapi.docs.reference-wave.asgi.http-exception-mapping
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /errors/missing
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/reference/exceptions.md
+    kind: upstream_documentation
+- case_id: fastapi.docs.reference-wave.asgi.websocket-exception-close
+  actions:
+  - action_id: websocket-session
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /errors/policy
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.disconnect
+      code: 1000
+      reason: complete
+    observations:
+    - kind: websocket
+      selector: close_code
+      comparison: exact
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
+    - kind: websocket
+      selector: messages
+      comparison: ordered
+  source_evidence:
+  - path: docs/en/docs/reference/exceptions.md
+    kind: upstream_documentation
+- case_id: fastapi.docs.reference-wave.asgi.websocket-endpoint-session
+  actions:
+  - action_id: websocket-session
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /echo
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.receive
+      text: catalog-item
+    - type: websocket.disconnect
+      code: 1000
+      reason: complete
+    observations:
+    - kind: websocket
+      selector: close_code
+      comparison: exact
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
+    - kind: websocket
+      selector: messages
+      comparison: ordered
+  source_evidence:
+  - path: docs/en/docs/reference/websockets.md
+    kind: upstream_documentation
+- case_id: fastapi.docs.reference-wave.asgi.uploadfile-multipart
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /uploads
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=doc-boundary
+      - - content-length
+        - '149'
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: "--doc-boundary\r\nContent-Disposition: form-data; name=\"upload\"; filename=\"field-notes.txt\"\
+        \r\nContent-Type: text/plain\r\n\r\namber pine\r\n--doc-boundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /paths/~1uploads/post/requestBody/content/multipart~1form-data/schema
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/reference/uploadfile.md
+    kind: upstream_documentation
+oracle_profile_extension: standard-multipart
