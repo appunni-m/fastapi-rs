@@ -16,13 +16,15 @@ from scripts.parity.api_contract import (
     validate_api_surface_contract,
     validate_api_workflow_public_surface,
 )
-from scripts.parity.comparator import compare_workflow_results
+from scripts.parity.comparator import SHARED_ORACLE_PACKAGES, compare_workflow_results
 from scripts.parity.contract import (
     API_WORKFLOW_SCHEMA_ID,
     COMPARISON_SCHEMA_IDS_BY_WORKFLOW,
     COMPARISON_SCHEMAS,
     RESULT_SCHEMAS,
     ROOT,
+    WORKFLOW_SCHEMA_ID,
+    WORKFLOW_SCHEMA_V3_ID,
     ContractError,
     load_workflow,
     read_json,
@@ -39,6 +41,7 @@ from scripts.parity.materialized import validate_materialized_input_index
 DEFAULT_INPUT = Path("tests/fixtures/inputs/parity/first-asgi-request.json")
 DEFAULT_FASTAPI_SOURCE = (ROOT / "../fastapi").resolve()
 DEFAULT_STARLETTE_SOURCE = (ROOT / "../starlette").resolve()
+DEFAULT_STARLETTE_RS_SOURCE = (ROOT / "../starlette-rs").resolve()
 API_RESULT_SCHEMA = ROOT / "tests/fixtures/schemas/python-api-workflow-result.schema.json"
 
 
@@ -50,7 +53,7 @@ def _relative_path(path: Path) -> str:
         raise ContractError(f"path is outside the repository: {path}") from exc
 
 
-def _validate_result(result: dict[str, Any], input_digest: str) -> None:
+def _validate_result(result: dict[str, Any], input_digest: str, *, product: str = "oracle") -> None:
     schema_path = RESULT_SCHEMAS.get(result.get("schema"))
     if schema_path is None:
         raise ContractError(f"unsupported product result schema: {result.get('schema')!r}")
@@ -59,9 +62,11 @@ def _validate_result(result: dict[str, Any], input_digest: str) -> None:
     errors = sorted(validator.iter_errors(result), key=lambda error: error.message)
     if errors:
         details = "; ".join(error.message for error in errors)
-        raise ContractError(f"oracle result does not match its schema: {details}")
+        raise ContractError(f"{product} result does not match its schema: {details}")
+    if result.get("product") != product:
+        raise ContractError(f"expected a {product} result")
     if result["input"]["sha256"] != input_digest:
-        raise ContractError("oracle worker result references a different workflow input")
+        raise ContractError(f"{product} worker result references a different workflow input")
 
 
 def _load_result_artifact(path: Path, expected_product: str) -> tuple[dict[str, Any], Path, str]:
@@ -298,6 +303,118 @@ def oracle_command(args: argparse.Namespace) -> dict[str, Any]:
     actual_ids = [case["case_id"] for case in result["cases"]]
     if actual_ids != expected_ids:
         raise ContractError("oracle result cases do not match input order and cardinality")
+    artifact_path = _write_immutable_result(result, args.output_dir)
+    return {
+        "status": result["status"],
+        "product": result["product"],
+        "identity": result["identity"],
+        "case_count": len(result["cases"]),
+        "product_error_cases": [
+            case["case_id"]
+            for case in result["cases"]
+            if case["status"] == "product_error"
+            or any(action["status"] == "product_error" for action in case["actions"])
+        ],
+        "construction_error_cases": [
+            case["case_id"]
+            for case in result["cases"]
+            if case.get("construction_observation", {}).get("values", {}).get("outcome") == "error"
+        ],
+        "artifact": _relative_path(artifact_path),
+    }
+
+
+def target_command(args: argparse.Namespace) -> dict[str, Any]:
+    workflow, workflow_path, input_digest, workload_path = load_workflow(args.input)
+    if workflow["schema"] not in {WORKFLOW_SCHEMA_ID, WORKFLOW_SCHEMA_V3_ID}:
+        raise ContractError("target requires a Python/ASGI v2 or v3 workflow")
+    python = args.python.absolute()
+    if not python.is_file():
+        raise ContractError(
+            f"target Python interpreter does not exist: {python}; run make parity-prepare-target"
+        )
+    manifest_path = ROOT / "tests/fixtures/manifest.yaml"
+    manifest = read_manifest()
+    manifest_digest = sha256_file(manifest_path)
+    workload_digest = sha256_file(workload_path)
+    target_profile = {
+        "python": manifest["oracle_profile"]["python"],
+        "shared_runtime_packages": {
+            name: version
+            for name, version in manifest["oracle_profile"]["packages"].items()
+            if name in SHARED_ORACLE_PACKAGES
+        },
+        "target": manifest["target"],
+    }
+    command = [
+        str(python),
+        "-m",
+        "scripts.parity.target_worker",
+        "--input",
+        str(workflow_path),
+        "--target-source",
+        str(args.target_source.resolve()),
+        "--starlette-rs-source",
+        str(args.starlette_rs_source.resolve()),
+        "--target-profile",
+        json.dumps(target_profile, separators=(",", ":")),
+        "--input-sha256",
+        input_digest,
+        "--workload-sha256",
+        workload_digest,
+        "--manifest-sha256",
+        manifest_digest,
+    ]
+    environment = os.environ.copy()
+    for variable in ("PYTHONPATH", "PYTHONHOME", "VIRTUAL_ENV"):
+        environment.pop(variable, None)
+    environment["PYTHONNOUSERSITE"] = "1"
+    environment["PYTHONDONTWRITEBYTECODE"] = "1"
+    try:
+        completed = subprocess.run(
+            command,
+            cwd=ROOT,
+            env=environment,
+            capture_output=True,
+            text=True,
+            timeout=args.timeout_seconds,
+            check=False,
+        )
+    except subprocess.TimeoutExpired as exc:
+        raise ContractError(f"target worker exceeded {args.timeout_seconds}s") from exc
+    if completed.returncode != 0:
+        try:
+            worker_error = json.loads(completed.stdout)
+        except json.JSONDecodeError:
+            worker_error = {"message": completed.stderr.strip() or completed.stdout.strip()}
+        raise ContractError(f"target worker failed: {worker_error}")
+    try:
+        result = json.loads(completed.stdout)
+    except json.JSONDecodeError as exc:
+        raise ContractError("target worker emitted malformed JSON") from exc
+    if not isinstance(result, dict):
+        raise ContractError("target worker result must be a JSON object")
+    if not isinstance(result.get("command"), dict):
+        raise ContractError("target worker result has no command record")
+    result["command"]["argv"] = command
+    _validate_result(result, input_digest, product="target")
+    if result["manifest"]["sha256"] != manifest_digest:
+        raise ContractError("target result references a different manifest")
+    if result["input"]["path"] != workflow_path.relative_to(ROOT).as_posix():
+        raise ContractError("target result references a different workflow path")
+    if result["input"].get("schema") != workflow["schema"]:
+        raise ContractError("target result references a different workflow schema")
+    if (
+        result["workload"]["path"] != workflow["workload"]["file"]
+        or result["workload"]["sha256"] != workload_digest
+        or result["workload"]["factory"] != workflow["workload"]["factory"]
+    ):
+        raise ContractError("target result references a different workload")
+    expected_ids = [case["case_id"] for case in workflow["cases"]]
+    actual_ids = [case["case_id"] for case in result["cases"]]
+    if actual_ids != expected_ids:
+        raise ContractError("target result cases do not match input order and cardinality")
+
     artifact_path = _write_immutable_result(result, args.output_dir)
     return {
         "status": result["status"],
@@ -585,6 +702,17 @@ def build_parser() -> argparse.ArgumentParser:
     oracle.add_argument("--timeout-seconds", type=int, default=180)
     oracle.add_argument("--output-dir", type=Path, default=ROOT / "parity-results/oracle")
     oracle.set_defaults(handler=oracle_command)
+
+    target = subparsers.add_parser(
+        "target", help="run an input workflow in the isolated FastAPI-RS target environment"
+    )
+    target.add_argument("--input", type=Path, default=DEFAULT_INPUT)
+    target.add_argument("--python", type=Path, default=ROOT / ".venv-target/bin/python")
+    target.add_argument("--target-source", type=Path, default=ROOT)
+    target.add_argument("--starlette-rs-source", type=Path, default=DEFAULT_STARLETTE_RS_SOURCE)
+    target.add_argument("--timeout-seconds", type=int, default=180)
+    target.add_argument("--output-dir", type=Path, default=ROOT / "parity-results/target")
+    target.set_defaults(handler=target_command)
 
     api_validate = subparsers.add_parser(
         "api-validate", help="validate a direct Python public API workflow and source references"

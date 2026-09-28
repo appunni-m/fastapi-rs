@@ -8,6 +8,8 @@ UV ?= uv
 ORACLE_PYTHON ?= $(CURDIR)/.venv-oracle/bin/python
 ORACLE_STANDARD_ENV ?= $(CURDIR)/.venv-oracle-standard
 ORACLE_STANDARD_PYTHON ?= $(ORACLE_STANDARD_ENV)/bin/python
+TARGET_ENV ?= $(CURDIR)/.venv-target
+TARGET_PYTHON ?= $(TARGET_ENV)/bin/python
 FASTAPI_SOURCE ?= $(abspath ../fastapi)
 STARLETTE_SOURCE ?= $(abspath ../starlette)
 STARLETTE_RS_SOURCE ?= $(abspath ../starlette-rs)
@@ -16,7 +18,7 @@ TARGET_RESULT ?=
 PARITY_INPUT ?= tests/fixtures/inputs/parity/first-asgi-request.json
 
 .DEFAULT_GOAL := help
-.PHONY: help fmt format clippy build build-rust build-python compatibility-atlas-update api-contract-update api-contract-check metadata-check parity-inputs parity-prepare-oracle parity-prepare-oracle-standard parity-api-runtime parity-validate parity-index-update parity-index-check parity-oracle parity-oracle-standard parity-compare verify clean
+.PHONY: help fmt format clippy build build-rust build-python compatibility-atlas-update api-contract-update api-contract-check metadata-check parity-inputs parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-target parity-api-runtime parity-validate parity-index-update parity-index-check parity-oracle parity-oracle-standard parity-target parity-compare verify clean
 
 help: ## Show common development commands
 	@printf '%s\n' \
@@ -34,12 +36,14 @@ help: ## Show common development commands
 	  '  make parity-inputs    Materialize ignored JSON workflows from YAML recipes' \
 	  '  make parity-prepare-oracle Prepare pinned FastAPI 0.141.1 / Starlette 1.6.0 Python env' \
 	  '  make parity-prepare-oracle-standard Prepare the locked optional-feature reflection profile' \
+	  '  make parity-prepare-target Prepare .venv-target with pinned shared deps and editable local FastAPI-RS / ../starlette-rs' \
 	  '  make parity-api-runtime Reflect and verify the pinned FastAPI Python API surface' \
 	  '  make parity-validate Validate workflows, source atlas, and fixture mappings' \
 	  '  make parity-index-update Rebuild source mappings for current fixture workflows' \
 	  '  make parity-index-check  Check the materialized fixture index is current' \
 	  '  make parity-oracle   Run PARITY_INPUT against the isolated FastAPI oracle' \
 	  '  make parity-oracle-standard Run PARITY_INPUT with locked standard extras' \
+	  '  make parity-target   Run PARITY_INPUT against the isolated FastAPI-RS target' \
 	  '  make parity-compare  Compare live source/target result artifacts exactly' \
 	  '  make verify         Run formatting, lint, static contracts, and wheel build' \
 	  '  make clean          Remove Cargo outputs under target/' '' \
@@ -90,6 +94,16 @@ parity-prepare-oracle-standard: ## Prepare standard FastAPI extras and TestClien
 	$(UV) pip install --python "$(ORACLE_STANDARD_PYTHON)" --no-deps --editable "$(STARLETTE_SOURCE)"
 	$(UV) pip check --python "$(ORACLE_STANDARD_PYTHON)"
 
+parity-prepare-target: ## Prepare .venv-target with FastAPI-RS and sibling Starlette-RS only
+	$(UV) venv --python "$(PYTHON)" "$(TARGET_ENV)"
+	$(UV) pip install --python "$(TARGET_PYTHON)" \
+	  "annotated-doc==0.0.4" "annotated-types==0.7.0" "anyio==4.12.1" \
+	  "idna==3.18" "pydantic==2.13.4" "pydantic-core==2.46.4" \
+	  "typing-extensions==4.16.0" "typing-inspection==0.4.2"
+	PYO3_PYTHON="$(TARGET_PYTHON)" $(UV) pip install --python "$(TARGET_PYTHON)" --no-deps --editable "$(STARLETTE_RS_SOURCE)"
+	PYO3_PYTHON="$(TARGET_PYTHON)" $(UV) pip install --python "$(TARGET_PYTHON)" --no-deps --editable "$(CURDIR)"
+	$(UV) pip check --python "$(TARGET_PYTHON)"
+
 parity-api-runtime: parity-inputs ## Regenerate pinned-source runtime reflections for core and standard profiles
 	$(ORACLE_PYTHON) scripts/inventory_fastapi_runtime.py --output tests/fixtures/runtime-api-surface-core.json
 	$(ORACLE_STANDARD_PYTHON) scripts/inventory_fastapi_runtime.py --output tests/fixtures/runtime-api-surface-standard.json --optional-extras standard,docs-tests
@@ -112,6 +126,9 @@ parity-oracle: parity-inputs ## Execute the input workflow against the isolated 
 
 parity-oracle-standard: parity-inputs ## Execute optional-feature inputs with Starlette 1.6.0 and standard extras
 	$(PYTHON) -m scripts.parity.cli oracle --input "$(PARITY_INPUT)" --python "$(ORACLE_STANDARD_PYTHON)"
+
+parity-target: parity-inputs ## Execute PARITY_INPUT against the isolated FastAPI-RS target
+	$(PYTHON) -m scripts.parity.cli target --input "$(PARITY_INPUT)" --python "$(TARGET_PYTHON)" --starlette-rs-source "$(STARLETTE_RS_SOURCE)"
 
 parity-compare: ## Compare live source/target result artifacts exactly
 	$(PYTHON) -m scripts.parity.cli compare --source-result "$(SOURCE_RESULT)" --target-result "$(TARGET_RESULT)"
