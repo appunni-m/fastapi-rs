@@ -1,0 +1,87 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/source_wave_b_request_direct.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.source-wave-b.request-direct.client-address
+  actions:
+  - action_id: read-asgi-client-host
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /request/items/device
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - testclient
+      - 50000
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_using_request_directly/test_tutorial001.py
+    kind: upstream_test
+  - path: docs_src/using_request_directly/tutorial001_py310.py
+    kind: upstream_documentation
+- case_id: fastapi.source-wave-b.request-direct.openapi
+  actions:
+  - action_id: inspect-request-direct-openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 41234
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - ''
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_using_request_directly/test_tutorial001.py
+    kind: upstream_test
+  - path: docs_src/using_request_directly/tutorial001_py310.py
+    kind: upstream_documentation

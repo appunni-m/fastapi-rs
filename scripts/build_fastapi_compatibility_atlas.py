@@ -5187,6 +5187,15 @@ def _normalize_source_review_workflow_mappings(
     for test_path, module_review in additions.items():
         normalized_functions = {}
         module_workflows = {}
+        scope_exclusions: dict[str, list[tuple[str, dict[str, Any]]]] = defaultdict(list)
+        for exclusion in module_review.get("source_review_scope_exclusions", []):
+            note = "Source-backed scope exclusion (%s): %s" % (
+                exclusion.get("scope", "partial behavior"),
+                exclusion["reason"],
+            )
+            for function_name in exclusion.get("test_functions", {}):
+                scope_exclusions[function_name].append((note, exclusion))
+
         for function_name, function_review in module_review.get("functions", {}).items():
             if function_review.get("review_status") == "reviewed_excluded":
                 TEST_FUNCTION_EXCLUSIONS.setdefault(test_path, {})[function_name] = function_review[
@@ -5202,28 +5211,38 @@ def _normalize_source_review_workflow_mappings(
                 for key, value in function_review.items()
                 if key not in {"review_status", "workflow_cases"}
             }
+            for note, exclusion in scope_exclusions.get(function_name, []):
+                gate = function_mapping.get("contract_gate", "")
+                if note not in gate:
+                    function_mapping["contract_gate"] = "; ".join(filter(None, (gate, note)))
+                function_mapping["supporting_sources"] = _append_unique_review_sources(
+                    function_mapping.get("supporting_sources", []),
+                    exclusion.get("supporting_sources", []),
+                )
+
             function_workflows = []
             for link in function_review.get("workflow_cases", []):
-                case_id = link["case_id"]
-                normalized_link = {
-                    "recipe_path": link["recipe_path"],
-                    "case_ids": [case_id],
-                    "observation_selectors": link["observation_selectors"],
-                }
-                function_workflows.append(normalized_link)
-
-                workflow_key = (link["recipe_path"], case_id)
-                module_link = module_workflows.setdefault(
-                    workflow_key,
-                    {
+                case_ids = link.get("case_ids", [link.get("case_id")])
+                for case_id in case_ids:
+                    normalized_link = {
                         "recipe_path": link["recipe_path"],
-                        "case_ids": [],
-                        "observation_selectors": set(),
-                    },
-                )
-                if case_id not in module_link["case_ids"]:
-                    module_link["case_ids"].append(case_id)
-                module_link["observation_selectors"].update(link["observation_selectors"])
+                        "case_ids": [case_id],
+                        "observation_selectors": link["observation_selectors"],
+                    }
+                    function_workflows.append(normalized_link)
+
+                    workflow_key = (link["recipe_path"], case_id)
+                    module_link = module_workflows.setdefault(
+                        workflow_key,
+                        {
+                            "recipe_path": link["recipe_path"],
+                            "case_ids": [],
+                            "observation_selectors": set(),
+                        },
+                    )
+                    if case_id not in module_link["case_ids"]:
+                        module_link["case_ids"].append(case_id)
+                    module_link["observation_selectors"].update(link["observation_selectors"])
 
             function_mapping["workflow_cases"] = function_workflows
             normalized_functions[function_name] = function_mapping
@@ -5447,6 +5466,25 @@ for doc_path, exclusion in remaining_docs_wave.DOC_PAGE_EXCLUSION_MAPPINGS.items
         "exclusion_reason": reason,
         "supporting_sources": exclusion["supporting_sources"],
     }
+
+# The final pending test-source wave is reviewed in independent sidecars. Keep
+# each function mapping and its scoped exclusions in the merged fixture atlas.
+from atlas_pending_source_wave_a_mappings import (  # noqa: E402
+    FASTAPI_SOURCE_WAVE_A_TEST_REVIEW_MAPPINGS,
+)
+from atlas_pending_source_wave_review_mappings import (  # noqa: E402
+    PENDING_SOURCE_WAVE_REVIEW_MAPPINGS,
+)
+from atlas_source_wave_b_review_mappings import (  # noqa: E402
+    SOURCE_WAVE_B_TEST_REVIEW_MAPPINGS,
+)
+
+for _pending_test_wave in (
+    FASTAPI_SOURCE_WAVE_A_TEST_REVIEW_MAPPINGS,
+    SOURCE_WAVE_B_TEST_REVIEW_MAPPINGS,
+    PENDING_SOURCE_WAVE_REVIEW_MAPPINGS,
+):
+    merge_test_review_mappings(_normalize_source_review_workflow_mappings(_pending_test_wave))
 
 FEATURES = [
     {
@@ -5901,7 +5939,7 @@ def read_first_asgi_workflow() -> dict[str, Any]:
             "factory": workflow["workload"].get("factory"),
             "sha256": sha256(PROJECT / workload_path),
         },
-        "state": "input validated by the pinned-source oracle; exact comparator and fail-closed target worker present; public fastapi facade pending",
+        "state": "input-only recipe and workload present; source and target runs for current digests pending; exact comparator and fail-closed target worker present; public fastapi facade pending",
     }
 
 
@@ -6025,10 +6063,10 @@ def test_function_evidence(content: str, module_path: str = "") -> list[dict[str
                 if node.name == "test" or node.name.startswith("test_"):
                     snippet = ast.get_source_segment(content, node) or ""
                     matches = feature_match_evidence(qualified_name, snippet)
-                    mapping_scope = "test_function_source"
+                    mapping_scope = "test_function_source" if matches else None
                     if not matches and module_evidence:
                         matches = module_evidence
-                    mapping_scope = "module_path_candidate"
+                        mapping_scope = "module_path_candidate"
                     functions.append(
                         {
                             "name": node.name,
@@ -7682,6 +7720,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             mapping_status = "excluded"
         elif case_designs and (
             unmatched_test_functions
+            or bool(reviewed_mapping.get("contract_gate"))
             or any(
                 case["mapping_status"] == "contract_gated_source_candidate" for case in case_designs
             )
@@ -7726,9 +7765,12 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                     if not exclusion and unmatched_test_functions
                     else "At least one behavior mapping is contract-gated and is not represented by a complete independent workflow."
                     if not exclusion
-                    and any(
-                        case["mapping_status"] == "contract_gated_source_candidate"
-                        for case in case_designs
+                    and (
+                        bool(reviewed_mapping.get("contract_gate"))
+                        or any(
+                            case["mapping_status"] == "contract_gated_source_candidate"
+                            for case in case_designs
+                        )
                     )
                     else "No executable test function has a behavior mapping; manual mapping required."
                     if not exclusion and not case_designs
@@ -8262,9 +8304,9 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         },
         {
             "id": "fixture-recipe-execution-contract",
-            "status": "source-oracle-comparator-and-fail-closed-target-worker-present; public-target-pending",
+            "status": "recipe-and-workload-present; current-source-and-target-runs-pending; public-target-pending",
             "question": "Implement the public `fastapi` facade, run it through the identity-checked target worker, and review an exact source/target comparison from both live products.",
-            "evidence": "The strict input-only workflow has executed against the pinned FastAPI 0.141.1 and Starlette 1.6.0 oracle; the exact comparator and target worker exist. The worker verifies the isolated local FastAPI-RS and Starlette-RS packages and fails closed until the public `fastapi` facade exists.",
+            "evidence": "The strict input-only recipe and workload exist, and the exact comparator and fail-closed target worker are present. Previously recorded source-only runs use older input and manifest digests, so a source run for the current fixture is still pending. The target worker verifies isolated local FastAPI-RS and Starlette-RS packages and fails closed until the public `fastapi` facade exists.",
         },
         {
             "id": "starlette-rs-target-revision",
@@ -8286,7 +8328,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         {
             "priority": 0,
             "id": "first-end-to-end-request-response-slice",
-            "status": "source-oracle-executed; comparator-present; target-implementation-pending",
+            "status": "current-source-run-pending; comparator-present; target-implementation-pending",
             "schema_path": first_slice_workflow["schema_path"],
             "fixture_path": first_slice_workflow["input_path"],
             "workload_path": first_slice_workflow["workload"]["path"],
@@ -8719,7 +8761,9 @@ def render_markdown(atlas: dict[str, Any]) -> str:
                 materialized_partial_mappings,
             ),
             "",
-            "Candidate rows carry source path/SHA evidence, exact whole-token signals, family IDs, and family-level selectors. Per-function mapping scope distinguishes reviewed source mappings, function-body signals, and filename candidates. Test modules index function names/lines without copying bodies. These are backlog leads, not independent executable parity cases: each behavior still needs a tailored stimulus and selector review. Rows without a signal remain `review_required`; exclusions include a reason. Benchmark modules are routed to correctness-gated benchmark work.",
+            "`mapping_status` labels source-to-feature mapping, while `review_status` and independent workflow links record whether a partial input mapping was reviewed. A row may therefore retain `candidate` while already having `review_status: reviewed_partial` and exact fixture cases/selectors. The documentation denominator is feature pages; `documented_sections` are discovery leads, not separately reviewed workflow units.",
+            "",
+            "Candidate function and section records carry source path/SHA evidence, exact whole-token signals, family IDs, and family-level selectors. Per-function mapping scope distinguishes reviewed source mappings, function-body signals, and filename candidates. Test modules index function names/lines without copying bodies. These records are backlog leads, not independent executable parity cases; linked workflows cover only their declared partial behavior, and additional behavior needs tailored stimuli and selector review. Rows without a signal remain `review_required`; exclusions include a reason. Benchmark modules are routed to correctness-gated benchmark work.",
             "",
             "`make parity-validate` checks %d API classifications against pinned FastAPI source evidence, every source digest in the coverage matrix, fixture links or exclusion reasons for all %d test modules and %d documentation pages, direct Starlette 1.6.0 dependency edges, and all %d declared observation selectors. It also validates %d input-only design records, including %d per-function test designs, selector evidence, source digests, and the absence of expected result fields. The current materialized-input index contains %d input-only workflows, %d cases, and %d partial source mappings. These are oracle inputs, not target parity results; the remaining design candidates still need review and materialization. Selectors marked `planned` in `observation-selectors.json` still need runner support."
             % (
@@ -8798,9 +8842,9 @@ def render_markdown(atlas: dict[str, Any]) -> str:
             "",
             "## First end-to-end request/response slice and next backlog",
             "",
-            "Priority 0 is a scoped end-to-end POST `/items/{item_id}` slice: public app/route construction, path and query parsing, a header-backed dependency, Pydantic request validation, response-model filtering, exact HTTP observations, ordered ASGI send-message types, and selected generated OpenAPI fields. Three input-only cases are in `tests/fixtures/input-recipes/parity/first-asgi-request.yaml` under the strict schema `tests/fixtures/schemas/python-asgi-workflow-v2.schema.json`; `make parity-inputs` materializes the ignored JSON input, and the independently authored workload is `tests/fixtures/workloads/first_slice.py`. The source oracle and exact comparator are ready, and the fail-closed target worker is present. The public target package is not implemented, so no live parity comparison is available.",
+            "Priority 0 is a scoped end-to-end POST `/items/{item_id}` slice: public app/route construction, path and query parsing, a header-backed dependency, Pydantic request validation, response-model filtering, exact HTTP observations, ordered ASGI send-message types, and selected generated OpenAPI fields. Three input-only cases are in `tests/fixtures/input-recipes/parity/first-asgi-request.yaml` under the strict schema `tests/fixtures/schemas/python-asgi-workflow-v2.schema.json`; `make parity-inputs` materializes the ignored JSON input, and the independently authored workload is `tests/fixtures/workloads/first_slice.py`. The exact comparator and fail-closed target worker are present. Earlier source-only run artifacts use older input and manifest digests; rerun the oracle against current digests. The public target package is not implemented, so no live parity comparison is available.",
             "",
-            "Oracle environment check: FastAPI 0.141.1 imported and generated OpenAPI with only Starlette 1.6.0 and Pydantic 2.13.4 under CPython 3.12.13; `pip check` passed. The separate ASGI workflow run is source-only evidence, not a source/target parity result.",
+            "Oracle environment check: FastAPI 0.141.1 imported and generated OpenAPI with only Starlette 1.6.0 and Pydantic 2.13.4 under CPython 3.12.13; `pip check` passed. Historical ASGI workflow artifacts are source-only, have stale fixture/manifest digests, and are not current parity evidence.",
             "",
             "1. Review the 1.6.0 Starlette-RS consumption crosswalk and its contract-area ownership.",
             "2. Review uncertain API candidates and runtime-generated Python/Pydantic surfaces, retaining explicit uncertainty where source evidence cannot decide.",

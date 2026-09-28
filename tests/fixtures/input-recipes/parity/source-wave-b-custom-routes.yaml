@@ -1,0 +1,168 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/source_wave_b_custom_routes.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.source-wave-b.custom-request.uncompressed-json
+  actions:
+  - action_id: post-uncompressed-json
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /decode/sum
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 41234
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '[2,4,8]'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_custom_request_and_route/test_tutorial001.py
+    kind: upstream_test
+  - path: docs_src/custom_request_and_route/tutorial001_py310.py
+    kind: upstream_documentation
+- case_id: fastapi.source-wave-b.custom-request.request-subclass
+  actions:
+  - action_id: inspect-custom-request-class
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /decode/request-type
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 41234
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_custom_request_and_route/test_tutorial001.py
+    kind: upstream_test
+  - path: docs_src/custom_request_and_route/tutorial001_py310.py
+    kind: upstream_documentation
+- case_id: fastapi.source-wave-b.custom-route.validation-context
+  actions:
+  - action_id: post-invalid-shape-with-context
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /validation/context
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 41234
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"values":[2,4,8]}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_custom_request_and_route/test_tutorial002.py
+    kind: upstream_test
+  - path: docs_src/custom_request_and_route/tutorial002_py310.py
+    kind: upstream_documentation
+- case_id: fastapi.source-wave-b.custom-route.valid-request
+  actions:
+  - action_id: post-valid-list
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /validation/context
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 41234
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '[3,5,7]'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_custom_request_and_route/test_tutorial002.py
+    kind: upstream_test
+  - path: docs_src/custom_request_and_route/tutorial002_py310.py
+    kind: upstream_documentation

@@ -10,7 +10,7 @@
   Python/ASGI runner/comparator. Inventory is discovery, not support evidence.
 - Expose `fastapi`; original FastAPI is source-oracle/dev-only, with zero
   target runtime dependency or import. Python runtime files allow only direct
-  native re-exports and literal `__all__`; no helpers, functions, branches,
+  native re-exports and literal `__all__`; no helpers, functions, `if`/`else`,
   loops, or fallback behavior. Rust owns FastAPI behavior and control flow.
   Put it in `fastapi-rs/`; limit `fastapi-rs-py/` to PyO3 binding and
   value conversion. Enforce with `make python-facade-check`.

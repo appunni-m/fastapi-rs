@@ -1,0 +1,687 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/source_wave_b_router_config.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.source-wave-b.router-defaults.explicit-response
+  actions:
+  - action_id: request-explicit
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /response/explicit
+      query_string: value=indigo
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 41234
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_include_router_defaults_overrides.py
+    kind: upstream_test
+- case_id: fastapi.source-wave-b.router-defaults.inherited-response
+  actions:
+  - action_id: request-inherited
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /response/inherited
+      query_string: value=coral
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 41234
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_include_router_defaults_overrides.py
+    kind: upstream_test
+- case_id: fastapi.source-wave-b.router-defaults.nested-explicit
+  actions:
+  - action_id: request-nested-explicit
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /depth-three/middle/leaf/explicit
+      query_string: value=teal
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 41234
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_include_router_defaults_overrides.py
+    kind: upstream_test
+- case_id: fastapi.source-wave-b.router-defaults.nested-inherited
+  actions:
+  - action_id: request-nested-inherited
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /depth-three/middle/leaf/inherited
+      query_string: value=amber
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 41234
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_include_router_defaults_overrides.py
+    kind: upstream_test
+- case_id: fastapi.source-wave-b.router-defaults.five-level-explicit
+  actions:
+  - action_id: request-five-level-explicit
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /depth-five/level2/level3/level4/level5/explicit
+      query_string: value=plum
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 41234
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_include_router_defaults_overrides.py
+    kind: upstream_test
+- case_id: fastapi.source-wave-b.router-defaults.five-level-inherited
+  actions:
+  - action_id: request-five-level-inherited
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /depth-five/level2/level3/level4/level5/inherited
+      query_string: value=olive
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 41234
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_include_router_defaults_overrides.py
+    kind: upstream_test
+- case_id: fastapi.source-wave-b.router-defaults.openapi
+  actions:
+  - action_id: inspect-router-openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 41234
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - ''
+      comparison: exact
+  source_evidence:
+  - path: tests/test_include_router_defaults_overrides.py
+    kind: upstream_test
+- case_id: fastapi.source-wave-b.strict-content-type.lax-no-header
+  actions:
+  - action_id: post-lax-without-type
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /content/lax/record
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 41234
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"name":"Ember"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_strict_content_type_router_level.py
+    kind: upstream_test
+- case_id: fastapi.source-wave-b.strict-content-type.strict-no-header
+  actions:
+  - action_id: post-strict-without-type
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /content/strict/record
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 41234
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"name":"Ember"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_strict_content_type_router_level.py
+    kind: upstream_test
+- case_id: fastapi.source-wave-b.strict-content-type.default-no-header
+  actions:
+  - action_id: post-default-without-type
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /content/default/record
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 41234
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"name":"Ember"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_strict_content_type_router_level.py
+    kind: upstream_test
+- case_id: fastapi.source-wave-b.strict-content-type.lax-with-json-header
+  actions:
+  - action_id: post-lax-with-type
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /content/lax/record
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 41234
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"name":"Ember"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_strict_content_type_router_level.py
+    kind: upstream_test
+- case_id: fastapi.source-wave-b.strict-content-type.strict-with-json-header
+  actions:
+  - action_id: post-strict-with-type
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /content/strict/record
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 41234
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"name":"Ember"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_strict_content_type_router_level.py
+    kind: upstream_test
+- case_id: fastapi.source-wave-b.strict-content-type.default-with-json-header
+  actions:
+  - action_id: post-default-with-type
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /content/default/record
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 41234
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"name":"Ember"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_strict_content_type_router_level.py
+    kind: upstream_test
+- case_id: fastapi.source-wave-b.router-prefix.template-parameters
+  actions:
+  - action_id: request-prefixed-template
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /orbit/users/individual
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 41234
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_router_prefix_with_template.py
+    kind: upstream_test
+- case_id: fastapi.source-wave-b.router-config.convertors.integer
+  actions:
+  - action_id: request-integer-convertor
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /convert/int/7
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 41234
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_starlette_urlconvertors.py
+    kind: upstream_test
+- case_id: fastapi.source-wave-b.router-config.convertors.float
+  actions:
+  - action_id: request-float-convertor
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /convert/float/12.75
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 41234
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_starlette_urlconvertors.py
+    kind: upstream_test
+- case_id: fastapi.source-wave-b.router-config.convertors.path
+  actions:
+  - action_id: request-path-convertor
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /convert/path/chapter/one
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 41234
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_starlette_urlconvertors.py
+    kind: upstream_test
+- case_id: fastapi.source-wave-b.router-config.convertors.query
+  actions:
+  - action_id: request-query-parameter
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /convert/query/
+      query_string: value=blue+sky
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 41234
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_starlette_urlconvertors.py
+    kind: upstream_test
