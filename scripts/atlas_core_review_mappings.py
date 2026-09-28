@@ -67,10 +67,47 @@ CORE_TEST_REVIEW_MAPPINGS = {
     "tests/test_ws_router.py": {
         "module_observation_selectors": [
             "websocket.close_code",
+            "websocket.close_reason",
             "websocket.event_order",
             "websocket.messages",
         ],
         "supporting_sources": [
+            {
+                "path": "tests/test_ws_router.py",
+                "start_line": 16,
+                "end_line": 55,
+                "role": "root and router WebSocket route definitions, prefixes, and path parameters",
+            },
+            {
+                "path": "tests/test_ws_router.py",
+                "start_line": 107,
+                "end_line": 115,
+                "role": "APIRouter inclusion with included and native prefixes",
+            },
+            {
+                "path": "fastapi/routing.py",
+                "start_line": 801,
+                "end_line": 831,
+                "role": "FastAPI builds APIWebSocketRoute endpoints and dependencies",
+            },
+            {
+                "path": "fastapi/routing.py",
+                "start_line": 1324,
+                "end_line": 1370,
+                "role": "FastAPI composes included APIRouter routes and prefixes",
+            },
+            {
+                "path": "fastapi/applications.py",
+                "start_line": 1000,
+                "end_line": 1012,
+                "role": "FastAPI installs default and user-supplied WebSocket exception handlers",
+            },
+            {
+                "path": "fastapi/exception_handlers.py",
+                "start_line": 29,
+                "end_line": 34,
+                "role": "FastAPI closes invalid WebSocket requests with policy-violation status",
+            },
             {
                 "path": "tests/test_ws_router.py",
                 "start_line": 58,
@@ -91,15 +128,115 @@ CORE_TEST_REVIEW_MAPPINGS = {
             },
         ],
         "functions": {
+            "test_app": _case(
+                ["app-routing"],
+                [
+                    "websocket.close_code",
+                    "websocket.close_reason",
+                    "websocket.event_order",
+                    "websocket.messages",
+                ],
+                "The FastAPI root WebSocket route accepts and emits its message; the fixture records the complete ASGI WebSocket event and close projections.",
+            ),
+            "test_router": _case(
+                ["app-routing"],
+                [
+                    "websocket.close_code",
+                    "websocket.close_reason",
+                    "websocket.event_order",
+                    "websocket.messages",
+                ],
+                "An APIRouter WebSocket route is included and dispatched by FastAPI; generic handshake behavior remains Starlette-RS-owned.",
+            ),
+            "test_prefix_router": _case(
+                ["app-routing"],
+                [
+                    "websocket.close_code",
+                    "websocket.close_reason",
+                    "websocket.event_order",
+                    "websocket.messages",
+                ],
+                "FastAPI applies an include_router prefix to a root WebSocket route while preserving its endpoint message.",
+            ),
+            "test_native_prefix_router": _case(
+                ["app-routing"],
+                [
+                    "websocket.close_code",
+                    "websocket.close_reason",
+                    "websocket.event_order",
+                    "websocket.messages",
+                ],
+                "FastAPI includes an APIRouter with its configured native prefix and dispatches the prefixed WebSocket route.",
+            ),
+            "test_router2": _case(
+                ["app-routing"],
+                [
+                    "websocket.close_code",
+                    "websocket.close_reason",
+                    "websocket.event_order",
+                    "websocket.messages",
+                ],
+                "The APIRouter.websocket decorator registers and dispatches the same route behavior as websocket_route.",
+            ),
             "test_router_ws_depends": _case(
                 ["app-routing", "dependency-security"],
-                ["websocket.close_code", "websocket.event_order", "websocket.messages"],
+                [
+                    "websocket.close_code",
+                    "websocket.close_reason",
+                    "websocket.event_order",
+                    "websocket.messages",
+                ],
                 "An APIRouter WebSocket endpoint receives a FastAPI-resolved dependency; the workflow records its message and the full handshake/event sequence.",
             ),
             "test_router_ws_depends_with_override": _case(
                 ["app-routing", "dependency-security"],
-                ["websocket.close_code", "websocket.event_order", "websocket.messages"],
+                [
+                    "websocket.close_code",
+                    "websocket.close_reason",
+                    "websocket.event_order",
+                    "websocket.messages",
+                ],
                 "FastAPI's app-level dependency override changes the APIRouter WebSocket dependency result; the workflow records the full handshake/event sequence.",
+            ),
+            "test_router_with_params": _case(
+                ["app-routing", "request-validation"],
+                [
+                    "websocket.close_code",
+                    "websocket.close_reason",
+                    "websocket.event_order",
+                    "websocket.messages",
+                ],
+                "FastAPI binds a path-converter parameter containing slashes and a query parameter before invoking the WebSocket endpoint.",
+            ),
+            "test_depend_validation": _case(
+                ["app-routing", "request-validation", "public-api-errors"],
+                [
+                    "websocket.close_code",
+                    "websocket.close_reason",
+                    "websocket.event_order",
+                    "websocket.messages",
+                ],
+                "A missing dependency header is converted by FastAPI's WebSocket validation handler into a policy-violation close instead of escaping to user middleware.",
+            ),
+            "test_depend_err_middleware": _case(
+                ["app-routing", "middleware-integrations"],
+                [
+                    "websocket.close_code",
+                    "websocket.close_reason",
+                    "websocket.event_order",
+                    "websocket.messages",
+                ],
+                "A user WebSocket middleware catches an application dependency exception and sends an abnormal-close event with its reason.",
+            ),
+            "test_depend_err_handler": _case(
+                ["app-routing", "public-api-errors"],
+                [
+                    "websocket.close_code",
+                    "websocket.close_reason",
+                    "websocket.event_order",
+                    "websocket.messages",
+                ],
+                "A FastAPI exception handler maps an application WebSocket exception to the configured close code and reason.",
             ),
         },
     },

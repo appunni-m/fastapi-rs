@@ -852,6 +852,13 @@ TEST_FUNCTION_EXCLUSIONS = {
         "test_get_password_hash": "Direct application password-helper behavior is outside FastAPI; the neighboring HTTP auth-flow case covers FastAPI integration.",
         "test_create_access_token": "Direct PyJWT token-helper behavior is outside FastAPI; the neighboring HTTP auth-flow case covers FastAPI integration.",
     },
+    "tests/test_ws_router.py": {
+        "test_wrong_uri": (
+            "This case observes only Starlette Router.not_found's generic WebSocket close; "
+            "the pinned Starlette-RS contract already covers "
+            "starlette.routing.WebSocketRoute.route-dispatch.router-miss-close."
+        ),
+    },
 }
 
 TEST_FUNCTION_EXCLUSION_EVIDENCE = {
@@ -1023,6 +1030,16 @@ TEST_FUNCTION_EXCLUSION_EVIDENCE = {
                 "end_line": 104,
                 "role": "application token helper",
             }
+        ],
+    },
+    "tests/test_ws_router.py": {
+        "test_wrong_uri": [
+            {
+                "path": "tests/test_ws_router.py",
+                "start_line": 177,
+                "end_line": 185,
+                "role": "unmatched WebSocket URI and generic close-code assertion delegated to Starlette-RS",
+            },
         ],
     },
 }

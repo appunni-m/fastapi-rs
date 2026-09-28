@@ -3392,10 +3392,30 @@
       "recipe_path": "tests/fixtures/input-recipes/parity/websocket-router-dependencies-upstream.yaml",
       "recipe_sha256": "eb9fe1dfc41904845f139dbea54803ed40ccab5cf3459d67ff9af106a1b1d9a4",
       "workload_path": "tests/fixtures/workloads/websocket_router_dependencies_upstream.py",
-      "workload_sha256": "c36c690dff07c38950ca274006820478f7e2f76090ec5574a4056cf95923facd",
+      "workload_sha256": "06786d226524dc33d45bc08a4638870f236a583669007edbd9e9d9c92002cf51",
       "case_ids": [
         "fastapi.test.test-ws-router.test-router-ws-depends",
         "fastapi.test.test-ws-router.test-router-ws-depends-with-override"
+      ]
+    },
+    {
+      "id": "websocket-router-routes-errors-upstream",
+      "input_path": "tests/fixtures/inputs/parity/websocket-router-routes-errors-upstream.json",
+      "input_sha256": "3ded8e38e2d29bd3cadd147125abd5cc99151e04befc7d2bb7ab27b38ca4a75b",
+      "recipe_path": "tests/fixtures/input-recipes/parity/websocket-router-routes-errors-upstream.yaml",
+      "recipe_sha256": "1f9480bd5978ea229cc29ed23332403ff9eb1384c6513da58f5ea1b81da18972",
+      "workload_path": "tests/fixtures/workloads/websocket_router_dependencies_upstream.py",
+      "workload_sha256": "06786d226524dc33d45bc08a4638870f236a583669007edbd9e9d9c92002cf51",
+      "case_ids": [
+        "fastapi.test.test-ws-router.test-app",
+        "fastapi.test.test-ws-router.test-router",
+        "fastapi.test.test-ws-router.test-prefix-router",
+        "fastapi.test.test-ws-router.test-native-prefix-router",
+        "fastapi.test.test-ws-router.test-router2",
+        "fastapi.test.test-ws-router.test-router-with-params",
+        "fastapi.test.test-ws-router.test-depend-validation",
+        "fastapi.test.test-ws-router.test-depend-err-middleware",
+        "fastapi.test.test-ws-router.test-depend-err-handler"
       ]
     },
     {
@@ -13433,6 +13453,30 @@
       ],
       "observation_selectors": [
         "websocket.close_code",
+        "websocket.event_order",
+        "websocket.messages"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_ws_router.py",
+      "fixture_id": "fastapi.test.test-ws-router",
+      "workflow_id": "websocket-router-routes-errors-upstream",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 9 case(s); observes websocket.close_code, websocket.close_reason, websocket.event_order, websocket.messages. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.test.test-ws-router.test-app",
+        "fastapi.test.test-ws-router.test-depend-err-handler",
+        "fastapi.test.test-ws-router.test-depend-err-middleware",
+        "fastapi.test.test-ws-router.test-depend-validation",
+        "fastapi.test.test-ws-router.test-native-prefix-router",
+        "fastapi.test.test-ws-router.test-prefix-router",
+        "fastapi.test.test-ws-router.test-router",
+        "fastapi.test.test-ws-router.test-router-with-params",
+        "fastapi.test.test-ws-router.test-router2"
+      ],
+      "observation_selectors": [
+        "websocket.close_code",
+        "websocket.close_reason",
         "websocket.event_order",
         "websocket.messages"
       ]

@@ -76,7 +76,7 @@
     "schema": "fastapi-rs/python-asgi-workflow@2",
     "schema_id": "https://fastapi-rs.dev/schemas/python-asgi-workflow/2",
     "schema_path": "tests/fixtures/schemas/python-asgi-workflow-v2.schema.json",
-    "schema_sha256": "9cfd75ffcf755a82a38f81a51704a63621289629baf29f8e264fbbeb3013f54c",
+    "schema_sha256": "ba9aa68d4eaf9d6624b91626840e8811956f1458bba30e096583a4a203de9952",
     "state": "input validated by the pinned-source oracle; exact comparator and fail-closed target worker present; public fastapi facade pending",
     "workload": {
       "factory": "create_app",
@@ -256194,33 +256194,180 @@
         {
           "feature_evidence": [
             {
-              "feature_id": "websocket-lifecycle",
+              "feature_id": "app-routing",
               "signals": [
                 {
-                  "line": 3,
-                  "source": "content",
-                  "term": "websocket"
+                  "end_line": 122,
+                  "line": 118,
+                  "path": "tests/test_ws_router.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 55,
+                  "line": 16,
+                  "path": "tests/test_ws_router.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 115,
+                  "line": 107,
+                  "path": "tests/test_ws_router.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 831,
+                  "line": 801,
+                  "path": "fastapi/routing.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 1370,
+                  "line": 1324,
+                  "path": "fastapi/routing.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 1012,
+                  "line": 1000,
+                  "path": "fastapi/applications.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 34,
+                  "line": 29,
+                  "path": "fastapi/exception_handlers.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 69,
+                  "line": 58,
+                  "path": "tests/test_ws_router.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 831,
+                  "line": 764,
+                  "path": "fastapi/routing.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 647,
+                  "line": 619,
+                  "path": "fastapi/dependencies/utils.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 }
               ]
             }
           ],
           "feature_ids": [
-            "websocket-lifecycle"
+            "app-routing"
           ],
           "id": "fastapi.test.test-ws-router.test-app",
-          "mapping_scope": "module_path_candidate",
-          "mapping_status": "candidate",
+          "mapping_scope": "reviewed_source_mapping",
+          "mapping_status": "reviewed_source_candidate",
           "observation_selectors": [
             "websocket.close_code",
+            "websocket.close_reason",
             "websocket.event_order",
             "websocket.messages"
           ],
-          "reviewed_mapping": null,
+          "reviewed_mapping": {
+            "rationale": "The FastAPI root WebSocket route accepts and emits its message; the fixture records the complete ASGI WebSocket event and close projections.",
+            "source_evidence": [
+              {
+                "end_line": 122,
+                "path": "tests/test_ws_router.py",
+                "role": "upstream test function",
+                "sha256": "b5673afbf8ba1d8891045555856571400091ac627aba4e88b2ec8ce1c8004ab9",
+                "start_line": 118
+              },
+              {
+                "end_line": 55,
+                "path": "tests/test_ws_router.py",
+                "role": "root and router WebSocket route definitions, prefixes, and path parameters",
+                "sha256": "b5673afbf8ba1d8891045555856571400091ac627aba4e88b2ec8ce1c8004ab9",
+                "start_line": 16
+              },
+              {
+                "end_line": 115,
+                "path": "tests/test_ws_router.py",
+                "role": "APIRouter inclusion with included and native prefixes",
+                "sha256": "b5673afbf8ba1d8891045555856571400091ac627aba4e88b2ec8ce1c8004ab9",
+                "start_line": 107
+              },
+              {
+                "end_line": 831,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI builds APIWebSocketRoute endpoints and dependencies",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 801
+              },
+              {
+                "end_line": 1370,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI composes included APIRouter routes and prefixes",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 1324
+              },
+              {
+                "end_line": 1012,
+                "path": "fastapi/applications.py",
+                "role": "FastAPI installs default and user-supplied WebSocket exception handlers",
+                "sha256": "38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c",
+                "start_line": 1000
+              },
+              {
+                "end_line": 34,
+                "path": "fastapi/exception_handlers.py",
+                "role": "FastAPI closes invalid WebSocket requests with policy-violation status",
+                "sha256": "615713f19cb4db555861e79c81dca1e581148c420729c2eca5b9127f839f6c92",
+                "start_line": 29
+              },
+              {
+                "end_line": 69,
+                "path": "tests/test_ws_router.py",
+                "role": "router WebSocket dependency and endpoint behavior",
+                "sha256": "b5673afbf8ba1d8891045555856571400091ac627aba4e88b2ec8ce1c8004ab9",
+                "start_line": 58
+              },
+              {
+                "end_line": 831,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI resolves dependencies for APIWebSocketRoute",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 764
+              },
+              {
+                "end_line": 647,
+                "path": "fastapi/dependencies/utils.py",
+                "role": "FastAPI applies app-level dependency overrides during resolution",
+                "sha256": "13693375ab95e32424e5434c21f928463634af5ee1261cf3e04031381bdf47d9",
+                "start_line": 619
+              }
+            ]
+          },
           "selector_evidence": [
             {
-              "feature_id": "websocket-lifecycle",
+              "feature_id": null,
+              "schema_extension_required": [
+                "websocket.close_code",
+                "websocket.close_reason",
+                "websocket.event_order",
+                "websocket.messages"
+              ],
               "selectors": [
                 "websocket.close_code",
+                "websocket.close_reason",
                 "websocket.event_order",
                 "websocket.messages"
               ]
@@ -256230,7 +256377,7 @@
           "source_function": "test_app",
           "source_line": 118,
           "stimulus_design": [
-            "Create a WebSocket or lifespan workflow with ordered public actions and observe messages, close/error state, startup, shutdown, and cleanup."
+            "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection."
           ],
           "stimulus_design_notes": null
         },
@@ -256244,36 +256391,107 @@
                   "term": "router"
                 }
               ]
-            },
-            {
-              "feature_id": "websocket-lifecycle",
-              "signals": [
-                {
-                  "line": 3,
-                  "source": "content",
-                  "term": "websocket"
-                }
-              ]
             }
           ],
           "feature_ids": [
-            "app-routing",
-            "websocket-lifecycle"
+            "app-routing"
           ],
           "id": "fastapi.test.test-ws-router.test-router",
-          "mapping_scope": "module_path_candidate",
-          "mapping_status": "candidate",
+          "mapping_scope": "reviewed_source_mapping",
+          "mapping_status": "reviewed_source_candidate",
           "observation_selectors": [
             "websocket.close_code",
+            "websocket.close_reason",
             "websocket.event_order",
             "websocket.messages"
           ],
-          "reviewed_mapping": null,
+          "reviewed_mapping": {
+            "rationale": "An APIRouter WebSocket route is included and dispatched by FastAPI; generic handshake behavior remains Starlette-RS-owned.",
+            "source_evidence": [
+              {
+                "end_line": 129,
+                "path": "tests/test_ws_router.py",
+                "role": "upstream test function",
+                "sha256": "b5673afbf8ba1d8891045555856571400091ac627aba4e88b2ec8ce1c8004ab9",
+                "start_line": 125
+              },
+              {
+                "end_line": 55,
+                "path": "tests/test_ws_router.py",
+                "role": "root and router WebSocket route definitions, prefixes, and path parameters",
+                "sha256": "b5673afbf8ba1d8891045555856571400091ac627aba4e88b2ec8ce1c8004ab9",
+                "start_line": 16
+              },
+              {
+                "end_line": 115,
+                "path": "tests/test_ws_router.py",
+                "role": "APIRouter inclusion with included and native prefixes",
+                "sha256": "b5673afbf8ba1d8891045555856571400091ac627aba4e88b2ec8ce1c8004ab9",
+                "start_line": 107
+              },
+              {
+                "end_line": 831,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI builds APIWebSocketRoute endpoints and dependencies",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 801
+              },
+              {
+                "end_line": 1370,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI composes included APIRouter routes and prefixes",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 1324
+              },
+              {
+                "end_line": 1012,
+                "path": "fastapi/applications.py",
+                "role": "FastAPI installs default and user-supplied WebSocket exception handlers",
+                "sha256": "38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c",
+                "start_line": 1000
+              },
+              {
+                "end_line": 34,
+                "path": "fastapi/exception_handlers.py",
+                "role": "FastAPI closes invalid WebSocket requests with policy-violation status",
+                "sha256": "615713f19cb4db555861e79c81dca1e581148c420729c2eca5b9127f839f6c92",
+                "start_line": 29
+              },
+              {
+                "end_line": 69,
+                "path": "tests/test_ws_router.py",
+                "role": "router WebSocket dependency and endpoint behavior",
+                "sha256": "b5673afbf8ba1d8891045555856571400091ac627aba4e88b2ec8ce1c8004ab9",
+                "start_line": 58
+              },
+              {
+                "end_line": 831,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI resolves dependencies for APIWebSocketRoute",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 764
+              },
+              {
+                "end_line": 647,
+                "path": "fastapi/dependencies/utils.py",
+                "role": "FastAPI applies app-level dependency overrides during resolution",
+                "sha256": "13693375ab95e32424e5434c21f928463634af5ee1261cf3e04031381bdf47d9",
+                "start_line": 619
+              }
+            ]
+          },
           "selector_evidence": [
             {
-              "feature_id": "websocket-lifecycle",
+              "feature_id": null,
+              "schema_extension_required": [
+                "websocket.close_code",
+                "websocket.close_reason",
+                "websocket.event_order",
+                "websocket.messages"
+              ],
               "selectors": [
                 "websocket.close_code",
+                "websocket.close_reason",
                 "websocket.event_order",
                 "websocket.messages"
               ]
@@ -256283,8 +256501,7 @@
           "source_function": "test_router",
           "source_line": 125,
           "stimulus_design": [
-            "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
-            "Create a WebSocket or lifespan workflow with ordered public actions and observe messages, close/error state, startup, shutdown, and cleanup."
+            "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection."
           ],
           "stimulus_design_notes": null
         },
@@ -256298,36 +256515,107 @@
                   "term": "router"
                 }
               ]
-            },
-            {
-              "feature_id": "websocket-lifecycle",
-              "signals": [
-                {
-                  "line": 3,
-                  "source": "content",
-                  "term": "websocket"
-                }
-              ]
             }
           ],
           "feature_ids": [
-            "app-routing",
-            "websocket-lifecycle"
+            "app-routing"
           ],
           "id": "fastapi.test.test-ws-router.test-prefix-router",
-          "mapping_scope": "module_path_candidate",
-          "mapping_status": "candidate",
+          "mapping_scope": "reviewed_source_mapping",
+          "mapping_status": "reviewed_source_candidate",
           "observation_selectors": [
             "websocket.close_code",
+            "websocket.close_reason",
             "websocket.event_order",
             "websocket.messages"
           ],
-          "reviewed_mapping": null,
+          "reviewed_mapping": {
+            "rationale": "FastAPI applies an include_router prefix to a root WebSocket route while preserving its endpoint message.",
+            "source_evidence": [
+              {
+                "end_line": 136,
+                "path": "tests/test_ws_router.py",
+                "role": "upstream test function",
+                "sha256": "b5673afbf8ba1d8891045555856571400091ac627aba4e88b2ec8ce1c8004ab9",
+                "start_line": 132
+              },
+              {
+                "end_line": 55,
+                "path": "tests/test_ws_router.py",
+                "role": "root and router WebSocket route definitions, prefixes, and path parameters",
+                "sha256": "b5673afbf8ba1d8891045555856571400091ac627aba4e88b2ec8ce1c8004ab9",
+                "start_line": 16
+              },
+              {
+                "end_line": 115,
+                "path": "tests/test_ws_router.py",
+                "role": "APIRouter inclusion with included and native prefixes",
+                "sha256": "b5673afbf8ba1d8891045555856571400091ac627aba4e88b2ec8ce1c8004ab9",
+                "start_line": 107
+              },
+              {
+                "end_line": 831,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI builds APIWebSocketRoute endpoints and dependencies",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 801
+              },
+              {
+                "end_line": 1370,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI composes included APIRouter routes and prefixes",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 1324
+              },
+              {
+                "end_line": 1012,
+                "path": "fastapi/applications.py",
+                "role": "FastAPI installs default and user-supplied WebSocket exception handlers",
+                "sha256": "38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c",
+                "start_line": 1000
+              },
+              {
+                "end_line": 34,
+                "path": "fastapi/exception_handlers.py",
+                "role": "FastAPI closes invalid WebSocket requests with policy-violation status",
+                "sha256": "615713f19cb4db555861e79c81dca1e581148c420729c2eca5b9127f839f6c92",
+                "start_line": 29
+              },
+              {
+                "end_line": 69,
+                "path": "tests/test_ws_router.py",
+                "role": "router WebSocket dependency and endpoint behavior",
+                "sha256": "b5673afbf8ba1d8891045555856571400091ac627aba4e88b2ec8ce1c8004ab9",
+                "start_line": 58
+              },
+              {
+                "end_line": 831,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI resolves dependencies for APIWebSocketRoute",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 764
+              },
+              {
+                "end_line": 647,
+                "path": "fastapi/dependencies/utils.py",
+                "role": "FastAPI applies app-level dependency overrides during resolution",
+                "sha256": "13693375ab95e32424e5434c21f928463634af5ee1261cf3e04031381bdf47d9",
+                "start_line": 619
+              }
+            ]
+          },
           "selector_evidence": [
             {
-              "feature_id": "websocket-lifecycle",
+              "feature_id": null,
+              "schema_extension_required": [
+                "websocket.close_code",
+                "websocket.close_reason",
+                "websocket.event_order",
+                "websocket.messages"
+              ],
               "selectors": [
                 "websocket.close_code",
+                "websocket.close_reason",
                 "websocket.event_order",
                 "websocket.messages"
               ]
@@ -256337,8 +256625,7 @@
           "source_function": "test_prefix_router",
           "source_line": 132,
           "stimulus_design": [
-            "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
-            "Create a WebSocket or lifespan workflow with ordered public actions and observe messages, close/error state, startup, shutdown, and cleanup."
+            "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection."
           ],
           "stimulus_design_notes": null
         },
@@ -256352,36 +256639,107 @@
                   "term": "router"
                 }
               ]
-            },
-            {
-              "feature_id": "websocket-lifecycle",
-              "signals": [
-                {
-                  "line": 3,
-                  "source": "content",
-                  "term": "websocket"
-                }
-              ]
             }
           ],
           "feature_ids": [
-            "app-routing",
-            "websocket-lifecycle"
+            "app-routing"
           ],
           "id": "fastapi.test.test-ws-router.test-native-prefix-router",
-          "mapping_scope": "module_path_candidate",
-          "mapping_status": "candidate",
+          "mapping_scope": "reviewed_source_mapping",
+          "mapping_status": "reviewed_source_candidate",
           "observation_selectors": [
             "websocket.close_code",
+            "websocket.close_reason",
             "websocket.event_order",
             "websocket.messages"
           ],
-          "reviewed_mapping": null,
+          "reviewed_mapping": {
+            "rationale": "FastAPI includes an APIRouter with its configured native prefix and dispatches the prefixed WebSocket route.",
+            "source_evidence": [
+              {
+                "end_line": 143,
+                "path": "tests/test_ws_router.py",
+                "role": "upstream test function",
+                "sha256": "b5673afbf8ba1d8891045555856571400091ac627aba4e88b2ec8ce1c8004ab9",
+                "start_line": 139
+              },
+              {
+                "end_line": 55,
+                "path": "tests/test_ws_router.py",
+                "role": "root and router WebSocket route definitions, prefixes, and path parameters",
+                "sha256": "b5673afbf8ba1d8891045555856571400091ac627aba4e88b2ec8ce1c8004ab9",
+                "start_line": 16
+              },
+              {
+                "end_line": 115,
+                "path": "tests/test_ws_router.py",
+                "role": "APIRouter inclusion with included and native prefixes",
+                "sha256": "b5673afbf8ba1d8891045555856571400091ac627aba4e88b2ec8ce1c8004ab9",
+                "start_line": 107
+              },
+              {
+                "end_line": 831,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI builds APIWebSocketRoute endpoints and dependencies",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 801
+              },
+              {
+                "end_line": 1370,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI composes included APIRouter routes and prefixes",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 1324
+              },
+              {
+                "end_line": 1012,
+                "path": "fastapi/applications.py",
+                "role": "FastAPI installs default and user-supplied WebSocket exception handlers",
+                "sha256": "38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c",
+                "start_line": 1000
+              },
+              {
+                "end_line": 34,
+                "path": "fastapi/exception_handlers.py",
+                "role": "FastAPI closes invalid WebSocket requests with policy-violation status",
+                "sha256": "615713f19cb4db555861e79c81dca1e581148c420729c2eca5b9127f839f6c92",
+                "start_line": 29
+              },
+              {
+                "end_line": 69,
+                "path": "tests/test_ws_router.py",
+                "role": "router WebSocket dependency and endpoint behavior",
+                "sha256": "b5673afbf8ba1d8891045555856571400091ac627aba4e88b2ec8ce1c8004ab9",
+                "start_line": 58
+              },
+              {
+                "end_line": 831,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI resolves dependencies for APIWebSocketRoute",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 764
+              },
+              {
+                "end_line": 647,
+                "path": "fastapi/dependencies/utils.py",
+                "role": "FastAPI applies app-level dependency overrides during resolution",
+                "sha256": "13693375ab95e32424e5434c21f928463634af5ee1261cf3e04031381bdf47d9",
+                "start_line": 619
+              }
+            ]
+          },
           "selector_evidence": [
             {
-              "feature_id": "websocket-lifecycle",
+              "feature_id": null,
+              "schema_extension_required": [
+                "websocket.close_code",
+                "websocket.close_reason",
+                "websocket.event_order",
+                "websocket.messages"
+              ],
               "selectors": [
                 "websocket.close_code",
+                "websocket.close_reason",
                 "websocket.event_order",
                 "websocket.messages"
               ]
@@ -256391,8 +256749,7 @@
           "source_function": "test_native_prefix_router",
           "source_line": 139,
           "stimulus_design": [
-            "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
-            "Create a WebSocket or lifespan workflow with ordered public actions and observe messages, close/error state, startup, shutdown, and cleanup."
+            "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection."
           ],
           "stimulus_design_notes": null
         },
@@ -256407,36 +256764,107 @@
                   "term": "router"
                 }
               ]
-            },
-            {
-              "feature_id": "websocket-lifecycle",
-              "signals": [
-                {
-                  "line": 3,
-                  "source": "content",
-                  "term": "websocket"
-                }
-              ]
             }
           ],
           "feature_ids": [
-            "app-routing",
-            "websocket-lifecycle"
+            "app-routing"
           ],
           "id": "fastapi.test.test-ws-router.test-router2",
-          "mapping_scope": "module_path_candidate",
-          "mapping_status": "candidate",
+          "mapping_scope": "reviewed_source_mapping",
+          "mapping_status": "reviewed_source_candidate",
           "observation_selectors": [
             "websocket.close_code",
+            "websocket.close_reason",
             "websocket.event_order",
             "websocket.messages"
           ],
-          "reviewed_mapping": null,
+          "reviewed_mapping": {
+            "rationale": "The APIRouter.websocket decorator registers and dispatches the same route behavior as websocket_route.",
+            "source_evidence": [
+              {
+                "end_line": 150,
+                "path": "tests/test_ws_router.py",
+                "role": "upstream test function",
+                "sha256": "b5673afbf8ba1d8891045555856571400091ac627aba4e88b2ec8ce1c8004ab9",
+                "start_line": 146
+              },
+              {
+                "end_line": 55,
+                "path": "tests/test_ws_router.py",
+                "role": "root and router WebSocket route definitions, prefixes, and path parameters",
+                "sha256": "b5673afbf8ba1d8891045555856571400091ac627aba4e88b2ec8ce1c8004ab9",
+                "start_line": 16
+              },
+              {
+                "end_line": 115,
+                "path": "tests/test_ws_router.py",
+                "role": "APIRouter inclusion with included and native prefixes",
+                "sha256": "b5673afbf8ba1d8891045555856571400091ac627aba4e88b2ec8ce1c8004ab9",
+                "start_line": 107
+              },
+              {
+                "end_line": 831,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI builds APIWebSocketRoute endpoints and dependencies",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 801
+              },
+              {
+                "end_line": 1370,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI composes included APIRouter routes and prefixes",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 1324
+              },
+              {
+                "end_line": 1012,
+                "path": "fastapi/applications.py",
+                "role": "FastAPI installs default and user-supplied WebSocket exception handlers",
+                "sha256": "38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c",
+                "start_line": 1000
+              },
+              {
+                "end_line": 34,
+                "path": "fastapi/exception_handlers.py",
+                "role": "FastAPI closes invalid WebSocket requests with policy-violation status",
+                "sha256": "615713f19cb4db555861e79c81dca1e581148c420729c2eca5b9127f839f6c92",
+                "start_line": 29
+              },
+              {
+                "end_line": 69,
+                "path": "tests/test_ws_router.py",
+                "role": "router WebSocket dependency and endpoint behavior",
+                "sha256": "b5673afbf8ba1d8891045555856571400091ac627aba4e88b2ec8ce1c8004ab9",
+                "start_line": 58
+              },
+              {
+                "end_line": 831,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI resolves dependencies for APIWebSocketRoute",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 764
+              },
+              {
+                "end_line": 647,
+                "path": "fastapi/dependencies/utils.py",
+                "role": "FastAPI applies app-level dependency overrides during resolution",
+                "sha256": "13693375ab95e32424e5434c21f928463634af5ee1261cf3e04031381bdf47d9",
+                "start_line": 619
+              }
+            ]
+          },
           "selector_evidence": [
             {
-              "feature_id": "websocket-lifecycle",
+              "feature_id": null,
+              "schema_extension_required": [
+                "websocket.close_code",
+                "websocket.close_reason",
+                "websocket.event_order",
+                "websocket.messages"
+              ],
               "selectors": [
                 "websocket.close_code",
+                "websocket.close_reason",
                 "websocket.event_order",
                 "websocket.messages"
               ]
@@ -256446,8 +256874,7 @@
           "source_function": "test_router2",
           "source_line": 146,
           "stimulus_design": [
-            "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
-            "Create a WebSocket or lifespan workflow with ordered public actions and observe messages, close/error state, startup, shutdown, and cleanup."
+            "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection."
           ],
           "stimulus_design_notes": null
         },
@@ -256486,6 +256913,7 @@
           "mapping_status": "reviewed_source_candidate",
           "observation_selectors": [
             "websocket.close_code",
+            "websocket.close_reason",
             "websocket.event_order",
             "websocket.messages"
           ],
@@ -256498,6 +256926,48 @@
                 "role": "upstream test function",
                 "sha256": "b5673afbf8ba1d8891045555856571400091ac627aba4e88b2ec8ce1c8004ab9",
                 "start_line": 153
+              },
+              {
+                "end_line": 55,
+                "path": "tests/test_ws_router.py",
+                "role": "root and router WebSocket route definitions, prefixes, and path parameters",
+                "sha256": "b5673afbf8ba1d8891045555856571400091ac627aba4e88b2ec8ce1c8004ab9",
+                "start_line": 16
+              },
+              {
+                "end_line": 115,
+                "path": "tests/test_ws_router.py",
+                "role": "APIRouter inclusion with included and native prefixes",
+                "sha256": "b5673afbf8ba1d8891045555856571400091ac627aba4e88b2ec8ce1c8004ab9",
+                "start_line": 107
+              },
+              {
+                "end_line": 831,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI builds APIWebSocketRoute endpoints and dependencies",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 801
+              },
+              {
+                "end_line": 1370,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI composes included APIRouter routes and prefixes",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 1324
+              },
+              {
+                "end_line": 1012,
+                "path": "fastapi/applications.py",
+                "role": "FastAPI installs default and user-supplied WebSocket exception handlers",
+                "sha256": "38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c",
+                "start_line": 1000
+              },
+              {
+                "end_line": 34,
+                "path": "fastapi/exception_handlers.py",
+                "role": "FastAPI closes invalid WebSocket requests with policy-violation status",
+                "sha256": "615713f19cb4db555861e79c81dca1e581148c420729c2eca5b9127f839f6c92",
+                "start_line": 29
               },
               {
                 "end_line": 69,
@@ -256527,11 +256997,13 @@
               "feature_id": null,
               "schema_extension_required": [
                 "websocket.close_code",
+                "websocket.close_reason",
                 "websocket.event_order",
                 "websocket.messages"
               ],
               "selectors": [
                 "websocket.close_code",
+                "websocket.close_reason",
                 "websocket.event_order",
                 "websocket.messages"
               ]
@@ -256581,6 +257053,7 @@
           "mapping_status": "reviewed_source_candidate",
           "observation_selectors": [
             "websocket.close_code",
+            "websocket.close_reason",
             "websocket.event_order",
             "websocket.messages"
           ],
@@ -256593,6 +257066,48 @@
                 "role": "upstream test function",
                 "sha256": "b5673afbf8ba1d8891045555856571400091ac627aba4e88b2ec8ce1c8004ab9",
                 "start_line": 159
+              },
+              {
+                "end_line": 55,
+                "path": "tests/test_ws_router.py",
+                "role": "root and router WebSocket route definitions, prefixes, and path parameters",
+                "sha256": "b5673afbf8ba1d8891045555856571400091ac627aba4e88b2ec8ce1c8004ab9",
+                "start_line": 16
+              },
+              {
+                "end_line": 115,
+                "path": "tests/test_ws_router.py",
+                "role": "APIRouter inclusion with included and native prefixes",
+                "sha256": "b5673afbf8ba1d8891045555856571400091ac627aba4e88b2ec8ce1c8004ab9",
+                "start_line": 107
+              },
+              {
+                "end_line": 831,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI builds APIWebSocketRoute endpoints and dependencies",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 801
+              },
+              {
+                "end_line": 1370,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI composes included APIRouter routes and prefixes",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 1324
+              },
+              {
+                "end_line": 1012,
+                "path": "fastapi/applications.py",
+                "role": "FastAPI installs default and user-supplied WebSocket exception handlers",
+                "sha256": "38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c",
+                "start_line": 1000
+              },
+              {
+                "end_line": 34,
+                "path": "fastapi/exception_handlers.py",
+                "role": "FastAPI closes invalid WebSocket requests with policy-violation status",
+                "sha256": "615713f19cb4db555861e79c81dca1e581148c420729c2eca5b9127f839f6c92",
+                "start_line": 29
               },
               {
                 "end_line": 69,
@@ -256622,11 +257137,13 @@
               "feature_id": null,
               "schema_extension_required": [
                 "websocket.close_code",
+                "websocket.close_reason",
                 "websocket.event_order",
                 "websocket.messages"
               ],
               "selectors": [
                 "websocket.close_code",
+                "websocket.close_reason",
                 "websocket.event_order",
                 "websocket.messages"
               ]
@@ -256671,37 +257188,108 @@
                   "term": "file("
                 }
               ]
-            },
-            {
-              "feature_id": "websocket-lifecycle",
-              "signals": [
-                {
-                  "line": 3,
-                  "source": "content",
-                  "term": "websocket"
-                }
-              ]
             }
           ],
           "feature_ids": [
             "app-routing",
-            "request-validation",
-            "websocket-lifecycle"
+            "request-validation"
           ],
           "id": "fastapi.test.test-ws-router.test-router-with-params",
-          "mapping_scope": "module_path_candidate",
-          "mapping_status": "candidate",
+          "mapping_scope": "reviewed_source_mapping",
+          "mapping_status": "reviewed_source_candidate",
           "observation_selectors": [
             "websocket.close_code",
+            "websocket.close_reason",
             "websocket.event_order",
             "websocket.messages"
           ],
-          "reviewed_mapping": null,
+          "reviewed_mapping": {
+            "rationale": "FastAPI binds a path-converter parameter containing slashes and a query parameter before invoking the WebSocket endpoint.",
+            "source_evidence": [
+              {
+                "end_line": 174,
+                "path": "tests/test_ws_router.py",
+                "role": "upstream test function",
+                "sha256": "b5673afbf8ba1d8891045555856571400091ac627aba4e88b2ec8ce1c8004ab9",
+                "start_line": 166
+              },
+              {
+                "end_line": 55,
+                "path": "tests/test_ws_router.py",
+                "role": "root and router WebSocket route definitions, prefixes, and path parameters",
+                "sha256": "b5673afbf8ba1d8891045555856571400091ac627aba4e88b2ec8ce1c8004ab9",
+                "start_line": 16
+              },
+              {
+                "end_line": 115,
+                "path": "tests/test_ws_router.py",
+                "role": "APIRouter inclusion with included and native prefixes",
+                "sha256": "b5673afbf8ba1d8891045555856571400091ac627aba4e88b2ec8ce1c8004ab9",
+                "start_line": 107
+              },
+              {
+                "end_line": 831,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI builds APIWebSocketRoute endpoints and dependencies",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 801
+              },
+              {
+                "end_line": 1370,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI composes included APIRouter routes and prefixes",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 1324
+              },
+              {
+                "end_line": 1012,
+                "path": "fastapi/applications.py",
+                "role": "FastAPI installs default and user-supplied WebSocket exception handlers",
+                "sha256": "38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c",
+                "start_line": 1000
+              },
+              {
+                "end_line": 34,
+                "path": "fastapi/exception_handlers.py",
+                "role": "FastAPI closes invalid WebSocket requests with policy-violation status",
+                "sha256": "615713f19cb4db555861e79c81dca1e581148c420729c2eca5b9127f839f6c92",
+                "start_line": 29
+              },
+              {
+                "end_line": 69,
+                "path": "tests/test_ws_router.py",
+                "role": "router WebSocket dependency and endpoint behavior",
+                "sha256": "b5673afbf8ba1d8891045555856571400091ac627aba4e88b2ec8ce1c8004ab9",
+                "start_line": 58
+              },
+              {
+                "end_line": 831,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI resolves dependencies for APIWebSocketRoute",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 764
+              },
+              {
+                "end_line": 647,
+                "path": "fastapi/dependencies/utils.py",
+                "role": "FastAPI applies app-level dependency overrides during resolution",
+                "sha256": "13693375ab95e32424e5434c21f928463634af5ee1261cf3e04031381bdf47d9",
+                "start_line": 619
+              }
+            ]
+          },
           "selector_evidence": [
             {
-              "feature_id": "websocket-lifecycle",
+              "feature_id": null,
+              "schema_extension_required": [
+                "websocket.close_code",
+                "websocket.close_reason",
+                "websocket.event_order",
+                "websocket.messages"
+              ],
               "selectors": [
                 "websocket.close_code",
+                "websocket.close_reason",
                 "websocket.event_order",
                 "websocket.messages"
               ]
@@ -256712,8 +257300,7 @@
           "source_line": 166,
           "stimulus_design": [
             "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
-            "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
-            "Create a WebSocket or lifespan workflow with ordered public actions and observe messages, close/error state, startup, shutdown, and cleanup."
+            "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs."
           ],
           "stimulus_design_notes": null
         },
@@ -256723,98 +257310,74 @@
               "feature_id": "app-routing",
               "signals": [
                 {
-                  "line": 7,
-                  "source": "content",
-                  "term": "router"
-                }
-              ]
-            },
-            {
-              "feature_id": "websocket-lifecycle",
-              "signals": [
-                {
-                  "line": 3,
-                  "source": "content",
-                  "term": "websocket"
-                }
-              ]
-            }
-          ],
-          "feature_ids": [
-            "app-routing",
-            "websocket-lifecycle"
-          ],
-          "id": "fastapi.test.test-ws-router.test-wrong-uri",
-          "mapping_scope": "module_path_candidate",
-          "mapping_status": "candidate",
-          "observation_selectors": [
-            "websocket.close_code",
-            "websocket.event_order",
-            "websocket.messages"
-          ],
-          "reviewed_mapping": null,
-          "selector_evidence": [
-            {
-              "feature_id": "websocket-lifecycle",
-              "selectors": [
-                "websocket.close_code",
-                "websocket.event_order",
-                "websocket.messages"
-              ]
-            }
-          ],
-          "source_end_line": 185,
-          "source_function": "test_wrong_uri",
-          "source_line": 177,
-          "stimulus_design": [
-            "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
-            "Create a WebSocket or lifespan workflow with ordered public actions and observe messages, close/error state, startup, shutdown, and cleanup."
-          ],
-          "stimulus_design_notes": null
-        },
-        {
-          "feature_evidence": [
-            {
-              "feature_id": "request-validation",
-              "signals": [
-                {
-                  "source": "path",
-                  "term": "validation"
-                }
-              ]
-            },
-            {
-              "feature_id": "dependency-security",
-              "signals": [
-                {
-                  "line": 19,
-                  "source": "content",
-                  "term": "depends("
+                  "end_line": 233,
+                  "line": 210,
+                  "path": "tests/test_ws_router.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 },
                 {
-                  "line": 3,
-                  "source": "content",
-                  "term": "dependency"
-                }
-              ]
-            },
-            {
-              "feature_id": "websocket-lifecycle",
-              "signals": [
+                  "end_line": 55,
+                  "line": 16,
+                  "path": "tests/test_ws_router.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
                 {
-                  "line": 7,
-                  "source": "content",
-                  "term": "websocket"
-                }
-              ]
-            },
-            {
-              "feature_id": "middleware-integrations",
-              "signals": [
+                  "end_line": 115,
+                  "line": 107,
+                  "path": "tests/test_ws_router.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
                 {
-                  "line": 7,
-                  "source": "content",
-                  "term": "middleware"
+                  "end_line": 831,
+                  "line": 801,
+                  "path": "fastapi/routing.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 1370,
+                  "line": 1324,
+                  "path": "fastapi/routing.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 1012,
+                  "line": 1000,
+                  "path": "fastapi/applications.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 34,
+                  "line": 29,
+                  "path": "fastapi/exception_handlers.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 69,
+                  "line": 58,
+                  "path": "tests/test_ws_router.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 831,
+                  "line": 764,
+                  "path": "fastapi/routing.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 647,
+                  "line": 619,
+                  "path": "fastapi/dependencies/utils.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 }
               ]
             },
@@ -256827,29 +257390,118 @@
                   "term": "exception handler"
                 }
               ]
+            },
+            {
+              "feature_id": "request-validation",
+              "signals": [
+                {
+                  "source": "path",
+                  "term": "validation"
+                }
+              ]
             }
           ],
           "feature_ids": [
-            "request-validation",
-            "dependency-security",
-            "websocket-lifecycle",
-            "middleware-integrations",
-            "public-api-errors"
+            "app-routing",
+            "public-api-errors",
+            "request-validation"
           ],
           "id": "fastapi.test.test-ws-router.test-depend-validation",
-          "mapping_scope": "module_path_candidate",
-          "mapping_status": "candidate",
+          "mapping_scope": "reviewed_source_mapping",
+          "mapping_status": "reviewed_source_candidate",
           "observation_selectors": [
             "websocket.close_code",
+            "websocket.close_reason",
             "websocket.event_order",
             "websocket.messages"
           ],
-          "reviewed_mapping": null,
+          "reviewed_mapping": {
+            "rationale": "A missing dependency header is converted by FastAPI's WebSocket validation handler into a policy-violation close instead of escaping to user middleware.",
+            "source_evidence": [
+              {
+                "end_line": 233,
+                "path": "tests/test_ws_router.py",
+                "role": "upstream test function",
+                "sha256": "b5673afbf8ba1d8891045555856571400091ac627aba4e88b2ec8ce1c8004ab9",
+                "start_line": 210
+              },
+              {
+                "end_line": 55,
+                "path": "tests/test_ws_router.py",
+                "role": "root and router WebSocket route definitions, prefixes, and path parameters",
+                "sha256": "b5673afbf8ba1d8891045555856571400091ac627aba4e88b2ec8ce1c8004ab9",
+                "start_line": 16
+              },
+              {
+                "end_line": 115,
+                "path": "tests/test_ws_router.py",
+                "role": "APIRouter inclusion with included and native prefixes",
+                "sha256": "b5673afbf8ba1d8891045555856571400091ac627aba4e88b2ec8ce1c8004ab9",
+                "start_line": 107
+              },
+              {
+                "end_line": 831,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI builds APIWebSocketRoute endpoints and dependencies",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 801
+              },
+              {
+                "end_line": 1370,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI composes included APIRouter routes and prefixes",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 1324
+              },
+              {
+                "end_line": 1012,
+                "path": "fastapi/applications.py",
+                "role": "FastAPI installs default and user-supplied WebSocket exception handlers",
+                "sha256": "38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c",
+                "start_line": 1000
+              },
+              {
+                "end_line": 34,
+                "path": "fastapi/exception_handlers.py",
+                "role": "FastAPI closes invalid WebSocket requests with policy-violation status",
+                "sha256": "615713f19cb4db555861e79c81dca1e581148c420729c2eca5b9127f839f6c92",
+                "start_line": 29
+              },
+              {
+                "end_line": 69,
+                "path": "tests/test_ws_router.py",
+                "role": "router WebSocket dependency and endpoint behavior",
+                "sha256": "b5673afbf8ba1d8891045555856571400091ac627aba4e88b2ec8ce1c8004ab9",
+                "start_line": 58
+              },
+              {
+                "end_line": 831,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI resolves dependencies for APIWebSocketRoute",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 764
+              },
+              {
+                "end_line": 647,
+                "path": "fastapi/dependencies/utils.py",
+                "role": "FastAPI applies app-level dependency overrides during resolution",
+                "sha256": "13693375ab95e32424e5434c21f928463634af5ee1261cf3e04031381bdf47d9",
+                "start_line": 619
+              }
+            ]
+          },
           "selector_evidence": [
             {
-              "feature_id": "websocket-lifecycle",
+              "feature_id": null,
+              "schema_extension_required": [
+                "websocket.close_code",
+                "websocket.close_reason",
+                "websocket.event_order",
+                "websocket.messages"
+              ],
               "selectors": [
                 "websocket.close_code",
+                "websocket.close_reason",
                 "websocket.event_order",
                 "websocket.messages"
               ]
@@ -256859,33 +257511,86 @@
           "source_function": "test_depend_validation",
           "source_line": 210,
           "stimulus_design": [
-            "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
-            "Declare the dependency/security graph and credential inputs, invoke the public endpoint, and observe response, call order, cleanup, and schema effects.",
-            "Create a WebSocket or lifespan workflow with ordered public actions and observe messages, close/error state, startup, shutdown, and cleanup.",
-            "Enable the named optional integration or middleware, provide deterministic request/filesystem/configuration inputs, and observe its public effect.",
-            "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable."
+            "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
+            "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable.",
+            "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs."
           ],
           "stimulus_design_notes": null
         },
         {
           "feature_evidence": [
             {
-              "feature_id": "dependency-security",
+              "feature_id": "app-routing",
               "signals": [
                 {
+                  "end_line": 254,
+                  "line": 236,
+                  "path": "tests/test_ws_router.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 55,
                   "line": 16,
-                  "source": "content",
-                  "term": "depends("
-                }
-              ]
-            },
-            {
-              "feature_id": "websocket-lifecycle",
-              "signals": [
+                  "path": "tests/test_ws_router.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
                 {
-                  "line": 3,
-                  "source": "content",
-                  "term": "websocket"
+                  "end_line": 115,
+                  "line": 107,
+                  "path": "tests/test_ws_router.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 831,
+                  "line": 801,
+                  "path": "fastapi/routing.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 1370,
+                  "line": 1324,
+                  "path": "fastapi/routing.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 1012,
+                  "line": 1000,
+                  "path": "fastapi/applications.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 34,
+                  "line": 29,
+                  "path": "fastapi/exception_handlers.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 69,
+                  "line": 58,
+                  "path": "tests/test_ws_router.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 831,
+                  "line": 764,
+                  "path": "fastapi/routing.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 647,
+                  "line": 619,
+                  "path": "fastapi/dependencies/utils.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 }
               ]
             },
@@ -256900,24 +257605,105 @@
             }
           ],
           "feature_ids": [
-            "dependency-security",
-            "websocket-lifecycle",
+            "app-routing",
             "middleware-integrations"
           ],
           "id": "fastapi.test.test-ws-router.test-depend-err-middleware",
-          "mapping_scope": "module_path_candidate",
-          "mapping_status": "candidate",
+          "mapping_scope": "reviewed_source_mapping",
+          "mapping_status": "reviewed_source_candidate",
           "observation_selectors": [
             "websocket.close_code",
+            "websocket.close_reason",
             "websocket.event_order",
             "websocket.messages"
           ],
-          "reviewed_mapping": null,
+          "reviewed_mapping": {
+            "rationale": "A user WebSocket middleware catches an application dependency exception and sends an abnormal-close event with its reason.",
+            "source_evidence": [
+              {
+                "end_line": 254,
+                "path": "tests/test_ws_router.py",
+                "role": "upstream test function",
+                "sha256": "b5673afbf8ba1d8891045555856571400091ac627aba4e88b2ec8ce1c8004ab9",
+                "start_line": 236
+              },
+              {
+                "end_line": 55,
+                "path": "tests/test_ws_router.py",
+                "role": "root and router WebSocket route definitions, prefixes, and path parameters",
+                "sha256": "b5673afbf8ba1d8891045555856571400091ac627aba4e88b2ec8ce1c8004ab9",
+                "start_line": 16
+              },
+              {
+                "end_line": 115,
+                "path": "tests/test_ws_router.py",
+                "role": "APIRouter inclusion with included and native prefixes",
+                "sha256": "b5673afbf8ba1d8891045555856571400091ac627aba4e88b2ec8ce1c8004ab9",
+                "start_line": 107
+              },
+              {
+                "end_line": 831,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI builds APIWebSocketRoute endpoints and dependencies",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 801
+              },
+              {
+                "end_line": 1370,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI composes included APIRouter routes and prefixes",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 1324
+              },
+              {
+                "end_line": 1012,
+                "path": "fastapi/applications.py",
+                "role": "FastAPI installs default and user-supplied WebSocket exception handlers",
+                "sha256": "38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c",
+                "start_line": 1000
+              },
+              {
+                "end_line": 34,
+                "path": "fastapi/exception_handlers.py",
+                "role": "FastAPI closes invalid WebSocket requests with policy-violation status",
+                "sha256": "615713f19cb4db555861e79c81dca1e581148c420729c2eca5b9127f839f6c92",
+                "start_line": 29
+              },
+              {
+                "end_line": 69,
+                "path": "tests/test_ws_router.py",
+                "role": "router WebSocket dependency and endpoint behavior",
+                "sha256": "b5673afbf8ba1d8891045555856571400091ac627aba4e88b2ec8ce1c8004ab9",
+                "start_line": 58
+              },
+              {
+                "end_line": 831,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI resolves dependencies for APIWebSocketRoute",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 764
+              },
+              {
+                "end_line": 647,
+                "path": "fastapi/dependencies/utils.py",
+                "role": "FastAPI applies app-level dependency overrides during resolution",
+                "sha256": "13693375ab95e32424e5434c21f928463634af5ee1261cf3e04031381bdf47d9",
+                "start_line": 619
+              }
+            ]
+          },
           "selector_evidence": [
             {
-              "feature_id": "websocket-lifecycle",
+              "feature_id": null,
+              "schema_extension_required": [
+                "websocket.close_code",
+                "websocket.close_reason",
+                "websocket.event_order",
+                "websocket.messages"
+              ],
               "selectors": [
                 "websocket.close_code",
+                "websocket.close_reason",
                 "websocket.event_order",
                 "websocket.messages"
               ]
@@ -256927,8 +257713,7 @@
           "source_function": "test_depend_err_middleware",
           "source_line": 236,
           "stimulus_design": [
-            "Declare the dependency/security graph and credential inputs, invoke the public endpoint, and observe response, call order, cleanup, and schema effects.",
-            "Create a WebSocket or lifespan workflow with ordered public actions and observe messages, close/error state, startup, shutdown, and cleanup.",
+            "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
             "Enable the named optional integration or middleware, provide deterministic request/filesystem/configuration inputs, and observe its public effect."
           ],
           "stimulus_design_notes": null
@@ -256936,44 +257721,256 @@
         {
           "feature_evidence": [
             {
-              "feature_id": "websocket-lifecycle",
+              "feature_id": "app-routing",
               "signals": [
                 {
-                  "line": 3,
-                  "source": "content",
-                  "term": "websocket"
+                  "end_line": 271,
+                  "line": 257,
+                  "path": "tests/test_ws_router.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 55,
+                  "line": 16,
+                  "path": "tests/test_ws_router.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 115,
+                  "line": 107,
+                  "path": "tests/test_ws_router.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 831,
+                  "line": 801,
+                  "path": "fastapi/routing.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 1370,
+                  "line": 1324,
+                  "path": "fastapi/routing.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 1012,
+                  "line": 1000,
+                  "path": "fastapi/applications.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 34,
+                  "line": 29,
+                  "path": "fastapi/exception_handlers.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 69,
+                  "line": 58,
+                  "path": "tests/test_ws_router.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 831,
+                  "line": 764,
+                  "path": "fastapi/routing.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 647,
+                  "line": 619,
+                  "path": "fastapi/dependencies/utils.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 }
               ]
             },
             {
-              "feature_id": "middleware-integrations",
+              "feature_id": "public-api-errors",
               "signals": [
                 {
-                  "line": 3,
-                  "source": "content",
-                  "term": "middleware"
+                  "end_line": 271,
+                  "line": 257,
+                  "path": "tests/test_ws_router.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 55,
+                  "line": 16,
+                  "path": "tests/test_ws_router.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 115,
+                  "line": 107,
+                  "path": "tests/test_ws_router.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 831,
+                  "line": 801,
+                  "path": "fastapi/routing.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 1370,
+                  "line": 1324,
+                  "path": "fastapi/routing.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 1012,
+                  "line": 1000,
+                  "path": "fastapi/applications.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 34,
+                  "line": 29,
+                  "path": "fastapi/exception_handlers.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 69,
+                  "line": 58,
+                  "path": "tests/test_ws_router.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 831,
+                  "line": 764,
+                  "path": "fastapi/routing.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 647,
+                  "line": 619,
+                  "path": "fastapi/dependencies/utils.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 }
               ]
             }
           ],
           "feature_ids": [
-            "websocket-lifecycle",
-            "middleware-integrations"
+            "app-routing",
+            "public-api-errors"
           ],
           "id": "fastapi.test.test-ws-router.test-depend-err-handler",
-          "mapping_scope": "module_path_candidate",
-          "mapping_status": "candidate",
+          "mapping_scope": "reviewed_source_mapping",
+          "mapping_status": "reviewed_source_candidate",
           "observation_selectors": [
             "websocket.close_code",
+            "websocket.close_reason",
             "websocket.event_order",
             "websocket.messages"
           ],
-          "reviewed_mapping": null,
+          "reviewed_mapping": {
+            "rationale": "A FastAPI exception handler maps an application WebSocket exception to the configured close code and reason.",
+            "source_evidence": [
+              {
+                "end_line": 271,
+                "path": "tests/test_ws_router.py",
+                "role": "upstream test function",
+                "sha256": "b5673afbf8ba1d8891045555856571400091ac627aba4e88b2ec8ce1c8004ab9",
+                "start_line": 257
+              },
+              {
+                "end_line": 55,
+                "path": "tests/test_ws_router.py",
+                "role": "root and router WebSocket route definitions, prefixes, and path parameters",
+                "sha256": "b5673afbf8ba1d8891045555856571400091ac627aba4e88b2ec8ce1c8004ab9",
+                "start_line": 16
+              },
+              {
+                "end_line": 115,
+                "path": "tests/test_ws_router.py",
+                "role": "APIRouter inclusion with included and native prefixes",
+                "sha256": "b5673afbf8ba1d8891045555856571400091ac627aba4e88b2ec8ce1c8004ab9",
+                "start_line": 107
+              },
+              {
+                "end_line": 831,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI builds APIWebSocketRoute endpoints and dependencies",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 801
+              },
+              {
+                "end_line": 1370,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI composes included APIRouter routes and prefixes",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 1324
+              },
+              {
+                "end_line": 1012,
+                "path": "fastapi/applications.py",
+                "role": "FastAPI installs default and user-supplied WebSocket exception handlers",
+                "sha256": "38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c",
+                "start_line": 1000
+              },
+              {
+                "end_line": 34,
+                "path": "fastapi/exception_handlers.py",
+                "role": "FastAPI closes invalid WebSocket requests with policy-violation status",
+                "sha256": "615713f19cb4db555861e79c81dca1e581148c420729c2eca5b9127f839f6c92",
+                "start_line": 29
+              },
+              {
+                "end_line": 69,
+                "path": "tests/test_ws_router.py",
+                "role": "router WebSocket dependency and endpoint behavior",
+                "sha256": "b5673afbf8ba1d8891045555856571400091ac627aba4e88b2ec8ce1c8004ab9",
+                "start_line": 58
+              },
+              {
+                "end_line": 831,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI resolves dependencies for APIWebSocketRoute",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 764
+              },
+              {
+                "end_line": 647,
+                "path": "fastapi/dependencies/utils.py",
+                "role": "FastAPI applies app-level dependency overrides during resolution",
+                "sha256": "13693375ab95e32424e5434c21f928463634af5ee1261cf3e04031381bdf47d9",
+                "start_line": 619
+              }
+            ]
+          },
           "selector_evidence": [
             {
-              "feature_id": "websocket-lifecycle",
+              "feature_id": null,
+              "schema_extension_required": [
+                "websocket.close_code",
+                "websocket.close_reason",
+                "websocket.event_order",
+                "websocket.messages"
+              ],
               "selectors": [
                 "websocket.close_code",
+                "websocket.close_reason",
                 "websocket.event_order",
                 "websocket.messages"
               ]
@@ -256983,8 +257980,8 @@
           "source_function": "test_depend_err_handler",
           "source_line": 257,
           "stimulus_design": [
-            "Create a WebSocket or lifespan workflow with ordered public actions and observe messages, close/error state, startup, shutdown, and cleanup.",
-            "Enable the named optional integration or middleware, provide deterministic request/filesystem/configuration inputs, and observe its public effect."
+            "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
+            "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable."
           ],
           "stimulus_design_notes": null
         }
@@ -256994,21 +257991,28 @@
         "dependency-security",
         "middleware-integrations",
         "public-api-errors",
-        "request-validation",
-        "websocket-lifecycle"
+        "request-validation"
       ],
       "id": "fastapi.test.test-ws-router",
       "input_only": true,
       "observation_selectors": [
         "websocket.close_code",
+        "websocket.close_reason",
         "websocket.event_order",
         "websocket.messages"
       ],
       "selector_evidence": [
         {
-          "feature_id": "websocket-lifecycle",
+          "feature_id": null,
+          "schema_extension_required": [
+            "websocket.close_code",
+            "websocket.close_reason",
+            "websocket.event_order",
+            "websocket.messages"
+          ],
           "selectors": [
             "websocket.close_code",
+            "websocket.close_reason",
             "websocket.event_order",
             "websocket.messages"
           ]
@@ -257033,8 +258037,7 @@
         "Declare the dependency/security graph and credential inputs, invoke the public endpoint, and observe response, call order, cleanup, and schema effects.",
         "Enable the named optional integration or middleware, provide deterministic request/filesystem/configuration inputs, and observe its public effect.",
         "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable.",
-        "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
-        "Create a WebSocket or lifespan workflow with ordered public actions and observe messages, close/error state, startup, shutdown, and cleanup."
+        "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs."
       ],
       "stimulus_design_notes": null
     }

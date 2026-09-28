@@ -1,0 +1,290 @@
+# Partial source slice for test_ws_router.py. Generic handshake and unmatched
+# route behavior stay owned by the pinned Starlette-RS contract.
+schema: fastapi-rs/python-asgi-workflow@3
+workload:
+  file: tests/fixtures/workloads/websocket_router_dependencies_upstream.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.test.test-ws-router.test-app
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: root-websocket
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      scheme: ws
+      path: /
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+      subprotocols: []
+    receive_events:
+    - {type: websocket.connect}
+    - {type: websocket.disconnect, code: 1000, reason: client complete}
+    observations:
+    - {kind: websocket, selector: close_code, comparison: exact}
+    - {kind: websocket, selector: close_reason, comparison: exact}
+    - {kind: websocket, selector: event_order, comparison: ordered}
+    - {kind: websocket, selector: messages, comparison: ordered}
+  source_evidence:
+  - {path: tests/test_ws_router.py, kind: upstream_test}
+- case_id: fastapi.test.test-ws-router.test-router
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: router-websocket
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      scheme: ws
+      path: /router
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+      subprotocols: []
+    receive_events:
+    - {type: websocket.connect}
+    - {type: websocket.disconnect, code: 1000, reason: client complete}
+    observations:
+    - {kind: websocket, selector: close_code, comparison: exact}
+    - {kind: websocket, selector: close_reason, comparison: exact}
+    - {kind: websocket, selector: event_order, comparison: ordered}
+    - {kind: websocket, selector: messages, comparison: ordered}
+  source_evidence:
+  - {path: tests/test_ws_router.py, kind: upstream_test}
+- case_id: fastapi.test.test-ws-router.test-prefix-router
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: included-prefix-websocket
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      scheme: ws
+      path: /prefix/
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+      subprotocols: []
+    receive_events:
+    - {type: websocket.connect}
+    - {type: websocket.disconnect, code: 1000, reason: client complete}
+    observations:
+    - {kind: websocket, selector: close_code, comparison: exact}
+    - {kind: websocket, selector: close_reason, comparison: exact}
+    - {kind: websocket, selector: event_order, comparison: ordered}
+    - {kind: websocket, selector: messages, comparison: ordered}
+  source_evidence:
+  - {path: tests/test_ws_router.py, kind: upstream_test}
+- case_id: fastapi.test.test-ws-router.test-native-prefix-router
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: router-native-prefix-websocket
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      scheme: ws
+      path: /native/
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+      subprotocols: []
+    receive_events:
+    - {type: websocket.connect}
+    - {type: websocket.disconnect, code: 1000, reason: client complete}
+    observations:
+    - {kind: websocket, selector: close_code, comparison: exact}
+    - {kind: websocket, selector: close_reason, comparison: exact}
+    - {kind: websocket, selector: event_order, comparison: ordered}
+    - {kind: websocket, selector: messages, comparison: ordered}
+  source_evidence:
+  - {path: tests/test_ws_router.py, kind: upstream_test}
+- case_id: fastapi.test.test-ws-router.test-router2
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: router-websocket-decorator
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      scheme: ws
+      path: /router2
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+      subprotocols: []
+    receive_events:
+    - {type: websocket.connect}
+    - {type: websocket.disconnect, code: 1000, reason: client complete}
+    observations:
+    - {kind: websocket, selector: close_code, comparison: exact}
+    - {kind: websocket, selector: close_reason, comparison: exact}
+    - {kind: websocket, selector: event_order, comparison: ordered}
+    - {kind: websocket, selector: messages, comparison: ordered}
+  source_evidence:
+  - {path: tests/test_ws_router.py, kind: upstream_test}
+- case_id: fastapi.test.test-ws-router.test-router-with-params
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: path-and-query-parameters
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      scheme: ws
+      path: /router/path/to/file
+      query_string: queryparam=a_query_param
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+      subprotocols: []
+    receive_events:
+    - {type: websocket.connect}
+    - {type: websocket.disconnect, code: 1000, reason: client complete}
+    observations:
+    - {kind: websocket, selector: close_code, comparison: exact}
+    - {kind: websocket, selector: close_reason, comparison: exact}
+    - {kind: websocket, selector: event_order, comparison: ordered}
+    - {kind: websocket, selector: messages, comparison: ordered}
+  source_evidence:
+  - {path: tests/test_ws_router.py, kind: upstream_test}
+- case_id: fastapi.test.test-ws-router.test-depend-validation
+  factory_input:
+    middleware_mode: catch_validation_error
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: missing-websocket-dependency-header
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      scheme: ws
+      path: /depends-validate/
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+      subprotocols: []
+    receive_events:
+    - {type: websocket.connect}
+    - {type: websocket.disconnect, code: 1000, reason: client complete}
+    observations:
+    - {kind: websocket, selector: close_code, comparison: exact}
+    - {kind: websocket, selector: close_reason, comparison: exact}
+    - {kind: websocket, selector: event_order, comparison: ordered}
+    - {kind: websocket, selector: messages, comparison: ordered}
+  source_evidence:
+  - {path: tests/test_ws_router.py, kind: upstream_test}
+- case_id: fastapi.test.test-ws-router.test-depend-err-middleware
+  factory_input:
+    middleware_mode: catch_dependency_error
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: middleware-catches-dependency-error
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      scheme: ws
+      path: /depends-err/
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+      subprotocols: []
+    receive_events:
+    - {type: websocket.connect}
+    - {type: websocket.disconnect, code: 1000, reason: client complete}
+    observations:
+    - {kind: websocket, selector: close_code, comparison: exact}
+    - {kind: websocket, selector: close_reason, comparison: exact}
+    - {kind: websocket, selector: event_order, comparison: ordered}
+    - {kind: websocket, selector: messages, comparison: ordered}
+  source_evidence:
+  - {path: tests/test_ws_router.py, kind: upstream_test}
+- case_id: fastapi.test.test-ws-router.test-depend-err-handler
+  factory_input:
+    custom_error_handler: true
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: application-websocket-error-handler
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      scheme: ws
+      path: /custom_error/
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+      subprotocols: []
+    receive_events:
+    - {type: websocket.connect}
+    - {type: websocket.disconnect, code: 1000, reason: client complete}
+    observations:
+    - {kind: websocket, selector: close_code, comparison: exact}
+    - {kind: websocket, selector: close_reason, comparison: exact}
+    - {kind: websocket, selector: event_order, comparison: ordered}
+    - {kind: websocket, selector: messages, comparison: ordered}
+  source_evidence:
+  - {path: tests/test_ws_router.py, kind: upstream_test}

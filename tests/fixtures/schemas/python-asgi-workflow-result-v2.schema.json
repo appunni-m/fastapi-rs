@@ -852,6 +852,7 @@
         "selector": {
           "enum": [
             "close_code",
+            "close_reason",
             "event_order",
             "messages"
           ]
@@ -880,6 +881,32 @@
                   ],
                   "minimum": 0,
                   "maximum": 65535
+                }
+              }
+            }
+          }
+        },
+        {
+          "properties": {
+            "selector": {
+              "const": "close_reason"
+            },
+            "values": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "close_reason"
+              ],
+              "properties": {
+                "close_reason": {
+                  "type": [
+                    "string",
+                    "number",
+                    "boolean",
+                    "object",
+                    "array",
+                    "null"
+                  ]
                 }
               }
             }

@@ -389,6 +389,12 @@ def _observe(
                 ]
                 value = close_events[-1].get("code") if close_events else None
                 values = {"close_code": value}
+            elif selector == "close_reason":
+                close_events = [
+                    message for message in messages if message.get("type") == "websocket.close"
+                ]
+                value = close_events[-1].get("reason") if close_events else None
+                values = {"close_reason": value}
             elif selector == "event_order":
                 values = {"event_order": [event["type"] for event in trace]}
             elif selector == "messages":
