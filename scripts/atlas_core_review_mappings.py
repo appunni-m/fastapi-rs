@@ -16,6 +16,145 @@ def _case(feature_ids, observation_selectors, rationale, **extra):
 
 
 CORE_TEST_REVIEW_MAPPINGS = {
+    "tests/test_custom_middleware_exception.py": {
+        "module_observation_selectors": ["http.status", "http.body.bytes"],
+        "constraints": {"python": ">=3.10"},
+        "rationale": "The module exercises a user ASGI middleware that counts request-body receive events around a FastAPI file-upload route, then raises FastAPI HTTPException when its byte budget is exceeded. FastAPI owns its HTTPException type, default JSON handler, and placement of ExceptionMiddleware inside user middleware; Starlette owns generic ASGI exception dispatch, multipart parsing, UploadFile behavior, and TestClient file encoding.",
+        "stimulus_notes": "The dedicated custom-middleware-upload-limit.yaml input independently authors a receive-wrapper middleware and /attachments UploadFile route, with one under-budget multipart request and one over-budget request split across two ASGI receive events. It uses new middleware, route, field, filenames, success body, and error detail; the existing middleware.yaml body-limit cases are related examples but use plain text and different middleware/response behavior. The workflow calls FastAPI directly through ASGI and delegates generic Starlette middleware, multipart, and client behavior to the pinned Starlette-RS contract.",
+        "supporting_sources": [
+            {
+                "path": "tests/test_custom_middleware_exception.py",
+                "start_line": 1,
+                "end_line": 5,
+                "role": "upstream imports for FastAPI routing, File/UploadFile, FastAPI HTTPException, TestClient, and the ASGI app type",
+            },
+            {
+                "path": "tests/test_custom_middleware_exception.py",
+                "start_line": 13,
+                "end_line": 58,
+                "role": "receive-wrapper middleware counts raw HTTP request body bytes and raises FastAPI HTTPException above its configured cap",
+            },
+            {
+                "path": "tests/test_custom_middleware_exception.py",
+                "start_line": 61,
+                "end_line": 68,
+                "role": "FastAPI file-upload route and custom middleware registration",
+            },
+            {
+                "path": "tests/test_custom_middleware_exception.py",
+                "start_line": 70,
+                "end_line": 96,
+                "role": "oversized and accepted file-upload assertions through TestClient",
+            },
+            {
+                "path": "docs/en/docs/advanced/middleware.md",
+                "start_line": 11,
+                "end_line": 40,
+                "role": "FastAPI accepts arbitrary ASGI middleware and app.add_middleware preserves internal exception handling",
+            },
+            {
+                "path": "docs/en/docs/tutorial/handling-errors.md",
+                "start_line": 30,
+                "end_line": 68,
+                "role": "HTTPException terminates request handling and its detail may be a JSON-convertible dict or list",
+            },
+            {
+                "path": "docs/en/docs/tutorial/handling-errors.md",
+                "start_line": 112,
+                "end_line": 118,
+                "role": "FastAPI default HTTPException handler returns JSON and can be overridden",
+            },
+            {
+                "path": "fastapi/exceptions.py",
+                "start_line": 6,
+                "end_line": 17,
+                "role": "FastAPI HTTPException subclasses Starlette HTTPException",
+            },
+            {
+                "path": "fastapi/applications.py",
+                "start_line": 1000,
+                "end_line": 1005,
+                "role": "FastAPI registers its default HTTPException response handler",
+            },
+            {
+                "path": "fastapi/applications.py",
+                "start_line": 1020,
+                "end_line": 1068,
+                "role": "FastAPI places user middleware outside ExceptionMiddleware and constructs the ASGI stack",
+            },
+            {
+                "path": "fastapi/exception_handlers.py",
+                "start_line": 11,
+                "end_line": 17,
+                "role": "FastAPI serializes HTTPException.detail under the response detail key with the exception status",
+            },
+            {
+                "path": "fastapi/routing.py",
+                "start_line": 425,
+                "end_line": 473,
+                "role": "FastAPI parses File/Form request bodies and explicitly re-raises an HTTPException from the receive path",
+            },
+            {
+                "path": "fastapi/params.py",
+                "start_line": 663,
+                "end_line": 675,
+                "role": "FastAPI File declares multipart/form-data request fields",
+            },
+            {
+                "path": "starlette/middleware/exceptions.py",
+                "start_line": 47,
+                "end_line": 65,
+                "role": "Starlette 1.6.0 exception middleware wraps HTTP dispatch and invokes the registered HTTP exception handler; behavior is assigned to the separate Starlette-RS contract",
+            },
+            {
+                "path": "starlette/requests.py",
+                "start_line": 268,
+                "end_line": 311,
+                "role": "Starlette 1.6.0 Request.form parses multipart streams; behavior is assigned to the separate Starlette-RS contract",
+            },
+        ],
+        "functions": {
+            "test_custom_middleware_exception": _case(
+                [
+                    "middleware-integrations",
+                    "public-api-errors",
+                    "request-validation",
+                    "response-serialization",
+                ],
+                ["http.status", "http.body.bytes"],
+                "The source raises HTTPException from the receive wrapper when a multipart upload exceeds the middleware cap, then checks the 422 response and its JSON detail object. The independent over-budget case observes the same FastAPI middleware/error-handling path with its own configured detail value.",
+                contract_gate="Keep this mapping partial: the workload uses a new route and exception-detail value, direct ASGI input instead of TestClient.files plus tmp_path, and exact response bytes rather than the source's response.json() equality. It samples receive-wrapper exception handling but does not reproduce the source's exact error payload or client multipart encoding; multipart parsing and generic ExceptionMiddleware behavior belong to the separate Starlette-RS contract.",
+                stimulus_notes="Use custom-middleware-upload-limit.yaml case fastapi.middleware.custom-upload-budget-exceeded. Its body is a valid multipart file request split across two http.request events; the second event crosses the middleware's 256-byte cap and causes the workload to raise FastAPI HTTPException.",
+                supporting_sources=[
+                    {
+                        "path": "tests/test_custom_middleware_exception.py",
+                        "start_line": 70,
+                        "end_line": 85,
+                        "role": "upstream oversize upload stimulus and status/detail assertions",
+                    }
+                ],
+            ),
+            "test_custom_middleware_exception_not_raised": _case(
+                [
+                    "middleware-integrations",
+                    "request-validation",
+                    "response-serialization",
+                ],
+                ["http.status", "http.body.bytes"],
+                "The source submits a file within the middleware budget and checks that the upload route returns HTTP 200 with JSON content.",
+                contract_gate="Keep this mapping partial: the independent under-budget case uses a new route, filename, response object, and direct ASGI multipart body rather than TestClient.files and tmp_path. It observes successful FastAPI file parsing and route dispatch, with exact response bytes beyond the source's parsed-JSON assertion; generic multipart and UploadFile behavior belongs to the separate Starlette-RS contract.",
+                stimulus_notes="Use custom-middleware-upload-limit.yaml case fastapi.middleware.custom-upload-budget-accepted. Its independently authored multipart upload stays below the workload's receive-byte limit and reaches the route.",
+                supporting_sources=[
+                    {
+                        "path": "tests/test_custom_middleware_exception.py",
+                        "start_line": 88,
+                        "end_line": 96,
+                        "role": "upstream under-budget upload stimulus and status/JSON assertions",
+                    }
+                ],
+            ),
+        },
+    },
     "tests/test_response_class_no_mediatype.py": {
         "feature_ids": ["openapi-docs", "response-serialization"],
         "module_observation_selectors": ["http.status", "openapi.document"],

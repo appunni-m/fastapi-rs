@@ -1,0 +1,101 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/custom_middleware_upload_limit.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.middleware.custom-upload-budget-accepted
+  actions:
+  - action_id: accept-bounded-multipart-upload
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /attachments
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=asgi-case
+      - - content-length
+        - '149'
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: "--asgi-case\r\nContent-Disposition: form-data; name=\"upload\"; filename=\"small.bin\"\r\nContent-Type: application/octet-stream\r\n\r\npiece-14\r\n--asgi-case--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_custom_middleware_exception.py
+    kind: upstream_test
+  - path: docs/en/docs/advanced/middleware.md
+    kind: upstream_documentation
+  - path: docs/en/docs/tutorial/handling-errors.md
+    kind: upstream_documentation
+- case_id: fastapi.middleware.custom-upload-budget-exceeded
+  actions:
+  - action_id: reject-over-budget-multipart-upload
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /attachments
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=asgi-case
+      - - content-length
+        - '261'
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: "--asgi-case\r\nContent-Disposition: form-data; name=\"upload\"; filename=\"large.bin\"\r\nContent-Type: application/octet-stream\r\n\r\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      more_body: true
+    - type: http.request
+      body: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\r\n--asgi-case--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_custom_middleware_exception.py
+    kind: upstream_test
+  - path: docs/en/docs/advanced/middleware.md
+    kind: upstream_documentation
+  - path: docs/en/docs/tutorial/handling-errors.md
+    kind: upstream_documentation

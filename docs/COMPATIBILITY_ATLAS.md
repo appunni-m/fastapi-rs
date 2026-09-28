@@ -32,17 +32,17 @@ The single `tests/fixtures/manifest.yaml` now indexes 439 source-supported symbo
 
 | Source denominator | Total | Candidate/backlog links | Links pending behavior review | Explicitly excluded |
 |---|---:|---:|---:|---:|
-| Upstream `test_*.py` modules | 492 | 453 | 423 | 39 |
+| Upstream `test_*.py` modules | 492 | 453 | 422 | 39 |
 | User-facing documentation pages | 155 | 104 | 104 | 51 |
 | Documentation Python files (examples + support initializers) | 461 | 355 | 355 | 106 |
 
 Python-source exclusions are one debugging/setup example and 91 package initializers; the remaining examples are grouped with their mapped documentation pages.
 
-Candidate/backlog links are not concrete independent input coverage. The materialized index has 453 distinct upstream test modules and 104 documentation pages linked to workflows; all 626 mapping rows are partial. All 423 eligible test-module links and 104 documentation-page links remain behavior-review candidates, and no source module or documentation page is fully covered by an input workflow.
+Candidate/backlog links are not concrete independent input coverage. The materialized index has 453 distinct upstream test modules and 104 documentation pages linked to workflows; all 630 mapping rows are partial. All 422 eligible test-module links and 104 documentation-page links remain behavior-review candidates, and no source module or documentation page is fully covered by an input workflow.
 
 Candidate rows carry source path/SHA evidence, exact whole-token signals, family IDs, and family-level selectors. Per-function mapping scope distinguishes reviewed source mappings, function-body signals, and filename candidates. Test modules index function names/lines without copying bodies. These are backlog leads, not independent executable parity cases: each behavior still needs a tailored stimulus and selector review. Rows without a signal remain `review_required`; exclusions include a reason. Benchmark modules are routed to correctness-gated benchmark work.
 
-`make parity-validate` checks 1593 API classifications against pinned FastAPI source evidence, every source digest in the coverage matrix, fixture links or exclusion reasons for all 492 test modules and 155 documentation pages, direct Starlette 1.6.0 dependency edges, and all 50 declared observation selectors. It also validates 557 input-only design records, including 2165 per-function test designs, selector evidence, source digests, and the absence of expected result fields. The current materialized-input index contains 237 input-only workflows, 1069 cases, and 626 partial source mappings. These are oracle inputs, not target parity results; the remaining design candidates still need review and materialization. Selectors marked `planned` in `observation-selectors.json` still need runner support.
+`make parity-validate` checks 1593 API classifications against pinned FastAPI source evidence, every source digest in the coverage matrix, fixture links or exclusion reasons for all 492 test modules and 155 documentation pages, direct Starlette 1.6.0 dependency edges, and all 50 declared observation selectors. It also validates 557 input-only design records, including 2165 per-function test designs, selector evidence, source digests, and the absence of expected result fields. The current materialized-input index contains 238 input-only workflows, 1072 cases, and 630 partial source mappings. These are oracle inputs, not target parity results; the remaining design candidates still need review and materialization. Selectors marked `planned` in `observation-selectors.json` still need runner support.
 
 ## Independently authored input workflows
 
@@ -73,6 +73,7 @@ Reviewed workflow recipes live in `tests/fixtures/input-recipes/parity/*.yaml`. 
 | `computed-fields-shared-schemas-upstream` | 1 | 1 | [`tests/fixtures/input-recipes/parity/computed-fields-shared-schemas-upstream.yaml`](../tests/fixtures/input-recipes/parity/computed-fields-shared-schemas-upstream.yaml) | [`tests/fixtures/workloads/computed_fields_upstream.py`](../tests/fixtures/workloads/computed_fields_upstream.py) |
 | `construction-errors-upstream` | 21 | 4 | [`tests/fixtures/input-recipes/parity/construction-errors-upstream.yaml`](../tests/fixtures/input-recipes/parity/construction-errors-upstream.yaml) | [`tests/fixtures/workloads/construction_errors_upstream.py`](../tests/fixtures/workloads/construction_errors_upstream.py) |
 | `cors-middleware-upstream` | 4 | 2 | [`tests/fixtures/input-recipes/parity/cors-middleware-upstream.yaml`](../tests/fixtures/input-recipes/parity/cors-middleware-upstream.yaml) | [`tests/fixtures/workloads/cors_middleware_upstream.py`](../tests/fixtures/workloads/cors_middleware_upstream.py) |
+| `custom-middleware-upload-limit` | 2 | 3 | [`tests/fixtures/input-recipes/parity/custom-middleware-upload-limit.yaml`](../tests/fixtures/input-recipes/parity/custom-middleware-upload-limit.yaml) | [`tests/fixtures/workloads/custom_middleware_upload_limit.py`](../tests/fixtures/workloads/custom_middleware_upload_limit.py) |
 | `custom-response-tutorial001-upstream` | 2 | 1 | [`tests/fixtures/input-recipes/parity/custom-response-tutorial001-upstream.yaml`](../tests/fixtures/input-recipes/parity/custom-response-tutorial001-upstream.yaml) | [`tests/fixtures/workloads/custom_response_tutorial001_upstream.py`](../tests/fixtures/workloads/custom_response_tutorial001_upstream.py) |
 | `custom-response-tutorial002-upstream` | 2 | 1 | [`tests/fixtures/input-recipes/parity/custom-response-tutorial002-upstream.yaml`](../tests/fixtures/input-recipes/parity/custom-response-tutorial002-upstream.yaml) | [`tests/fixtures/workloads/custom_response_tutorial002_upstream.py`](../tests/fixtures/workloads/custom_response_tutorial002_upstream.py) |
 | `custom-response-tutorial003-upstream` | 2 | 1 | [`tests/fixtures/input-recipes/parity/custom-response-tutorial003-upstream.yaml`](../tests/fixtures/input-recipes/parity/custom-response-tutorial003-upstream.yaml) | [`tests/fixtures/workloads/custom_response_tutorial003_upstream.py`](../tests/fixtures/workloads/custom_response_tutorial003_upstream.py) |
@@ -194,7 +195,7 @@ Reviewed workflow recipes live in `tests/fixtures/input-recipes/parity/*.yaml`. 
 | `request-parameter-matrix` | 18 | 7 | [`tests/fixtures/input-recipes/parity/request-parameter-matrix.yaml`](../tests/fixtures/input-recipes/parity/request-parameter-matrix.yaml) | [`tests/fixtures/workloads/request_parameter_matrix.py`](../tests/fixtures/workloads/request_parameter_matrix.py) |
 | `request-parameter-openapi-wave` | 15 | 5 | [`tests/fixtures/input-recipes/parity/request-parameter-openapi-wave.yaml`](../tests/fixtures/input-recipes/parity/request-parameter-openapi-wave.yaml) | [`tests/fixtures/workloads/request_parameter_openapi_wave.py`](../tests/fixtures/workloads/request_parameter_openapi_wave.py) |
 | `request-parameter-tail-wave` | 11 | 3 | [`tests/fixtures/input-recipes/parity/request-parameter-tail-wave.yaml`](../tests/fixtures/input-recipes/parity/request-parameter-tail-wave.yaml) | [`tests/fixtures/workloads/request_parameter_tail_wave.py`](../tests/fixtures/workloads/request_parameter_tail_wave.py) |
-| `request-uploads` | 6 | 6 | [`tests/fixtures/input-recipes/parity/request-uploads.yaml`](../tests/fixtures/input-recipes/parity/request-uploads.yaml) | [`tests/fixtures/workloads/request_uploads.py`](../tests/fixtures/workloads/request_uploads.py) |
+| `request-uploads` | 7 | 7 | [`tests/fixtures/input-recipes/parity/request-uploads.yaml`](../tests/fixtures/input-recipes/parity/request-uploads.yaml) | [`tests/fixtures/workloads/request_uploads.py`](../tests/fixtures/workloads/request_uploads.py) |
 | `request-validation-body` | 3 | 2 | [`tests/fixtures/input-recipes/parity/request-validation-body.yaml`](../tests/fixtures/input-recipes/parity/request-validation-body.yaml) | [`tests/fixtures/workloads/request_validation_body.py`](../tests/fixtures/workloads/request_validation_body.py) |
 | `request-validation-parameters` | 16 | 12 | [`tests/fixtures/input-recipes/parity/request-validation-parameters.yaml`](../tests/fixtures/input-recipes/parity/request-validation-parameters.yaml) | [`tests/fixtures/workloads/request_validation_parameters.py`](../tests/fixtures/workloads/request_validation_parameters.py) |
 | `request-validation-wave` | 10 | 10 | [`tests/fixtures/input-recipes/parity/request-validation-wave.yaml`](../tests/fixtures/input-recipes/parity/request-validation-wave.yaml) | [`tests/fixtures/workloads/request_validation_wave.py`](../tests/fixtures/workloads/request_validation_wave.py) |
@@ -294,7 +295,7 @@ The merged coverage matrix links each FastAPI test, documented feature, or examp
 
 | FastAPI source rows with feature links | Feature links to sibling operations | Feature links outside current sibling slice | Distinct sibling operations referenced |
 |---:|---:|---:|---:|
-| 973 | 2413 | 402 | 6 |
+| 973 | 2414 | 402 | 6 |
 
 The sibling Starlette-RS manifest, API review, and coverage matrix remain the sole Starlette API inventory. FastAPI's atlas stores only relevant requirement references plus manifest/catalog/review/matrix SHA-256 digests. The inspected Starlette-RS implementation revision is 89941aa25f1cc93ce903129c102095d9d61d175d (pinned, clean sibling Git commit).
 

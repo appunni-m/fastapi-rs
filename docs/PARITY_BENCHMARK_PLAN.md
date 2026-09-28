@@ -24,12 +24,17 @@ the same versions.
 
 The primary target profile is the **FastAPI-RS Python consumer surface**:
 user code builds the app, routes, endpoint callables, and Pydantic models
-through the published Python interface, with FastAPI-RS backed by Rust and
-Starlette-RS. Run this in a separate process/environment from upstream FastAPI
-because both use the `fastapi` import namespace and must not share imported
-modules or mutable application state. Verify the target revision, build,
-Python ABI, feature set, Pydantic/pydantic-core versions, and exact
-Starlette-RS revision before running a case.
+through FastAPI-RS's public `fastapi` import, whose Python layer mechanically
+forwards to PyO3 and Rust. The `fastapi-rs` crate owns FastAPI decisions and
+control flow; `fastapi-rs-py` handles PyO3 boundary conversion. Upstream
+FastAPI is source-oracle/dev-only and must not be an installed runtime
+dependency or imported by the target process. FastAPI-RS uses Starlette-RS for
+the generic Starlette contract. Run the target in a separate
+process/environment from upstream FastAPI because both use the `fastapi`
+import namespace and must not share imported modules or mutable application
+state. Verify the target revision, build, Python ABI, feature set,
+Pydantic/pydantic-core versions, and exact Starlette-RS revision before running
+a case.
 
 The FastAPI contract owns FastAPI exports and behavior: route registration and
 dependency interpretation, parameter extraction, validation/serialization
@@ -115,14 +120,17 @@ the upstream suite does not measure. Upstream has 20 in-process request
 benchmarks, one OpenAPI generation benchmark, and three memory benchmarks.
 
 Measure three subjects where the workload supports them: FastAPI 0.141.1 with
-Starlette 1.6.0, FastAPI-RS with Starlette-RS, and a raw Starlette 1.6.0
-control. The control should use Starlette's public routing and response APIs
-for a plain route with the same request and response bytes. Treat it as context
-for the generic ASGI/HTTP path; it does not implement FastAPI validation,
-dependency injection, response-model filtering, or OpenAPI behavior. Keep its
-results separate and do not subtract them from FastAPI timings as a claimed
-FastAPI-only cost. Only compare FastAPI to FastAPI-RS for workloads whose
-behavioral parity gate passes.
+Starlette 1.6.0, FastAPI-RS through its public Python `fastapi` import with
+Starlette-RS, and a raw Starlette 1.6.0 control. The FastAPI-RS result measures
+the complete pass-through Python/PyO3/Rust call path; never substitute the
+upstream FastAPI package inside the target runtime. The control should use
+Starlette's public routing and response APIs for a plain route with the same
+request and response bytes. Treat it as context for the generic ASGI/HTTP
+path; it does not implement FastAPI validation, dependency injection,
+response-model filtering, or OpenAPI behavior. Keep its results separate and
+do not subtract them from FastAPI timings as a claimed FastAPI-only cost. Only
+compare FastAPI to FastAPI-RS for workloads whose behavioral parity gate
+passes.
 
 | Tier | Workload | Timing boundary and purpose |
 | --- | --- | --- |
@@ -130,7 +138,7 @@ behavioral parity gate passes.
 | 2. OpenAPI | Preserve the upstream graph: 20 routes sharing a 101-dependency chain, with query parameters discovered from the graph. | Measure cold generation by clearing the schema cache then calling `app.openapi()`. Keep route/app construction outside the measured function, as upstream does. Add warm cached lookup as a separate workload. |
 | 3. Construction and memory | Preserve route dependency graph construction (20 routes) and the graph with 50 endpoint parameters and 100-deep dependencies. Measure application setup, route registration, and retained/peak memory in distinct workloads. | Time construction only when it is the declared workload. Report memory separately from latency and identify whether app creation, OpenAPI generation, or request execution is inside the measurement. |
 | 4. ASGI/server | Add direct in-process ASGI requests and loopback HTTP server runs only after the upstream-equivalent tier is stable. Include startup/shutdown, steady-state request latency, throughput, concurrency, and tail latency as separate declared measurements. | Use the same pinned server, client, transport, configuration, payload, machine class, and concurrency for source and target. Keep server start-up out of steady-state request timings; report it separately. |
-| 5. Native Rust | If a public Rust surface exists, measure it with equivalent work and publish the exact boundary. | Report standalone native costs separately from Python facade calls and from the upstream FastAPI comparison. Never imply they are like-for-like when the Python runtime, validation, or transport layers differ. |
+| 5. Native Rust | For workloads with a measurable Rust boundary, record native Rust time/cost separately from the public Python `fastapi` call; state the instrumentation or native harness boundary. | Keep the public Python-facade result as the primary FastAPI-RS comparison. Report native Rust measurements separately, even when collected through internal instrumentation, and mark them unavailable when the boundary cannot be measured. Do not infer native cost by subtracting from end-to-end time or present it as Python-facade/FastAPI parity. |
 
 For each workload, the input declares its subjects, exact work, measurement
 boundary, measured steps, metrics, warmups, sample/iteration policy,

@@ -4,6 +4,16 @@
 
 Authority is FastAPI **0.141.1**, tag commit `95f8322ee1dcda7ceace7b1c4f6c9915b36d748f`. The package supports Python `>=3.10`; that is a range, not a pinned interpreter. Its tagged [`pyproject.toml`](https://github.com/fastapi/fastapi/blob/0.141.1/pyproject.toml) declares five runtime requirements, while [`uv.lock`](https://github.com/fastapi/fastapi/blob/0.141.1/uv.lock) resolves a 205-package environment spanning runtime, extras, docs, and contributor tools. Do not count all 205 as runtime.
 
+This describes the pinned **source-oracle** environment. FastAPI 0.141.1 itself
+must never be installed or imported by the FastAPI-RS target at runtime; its
+framework behavior belongs in Rust, with Python bindings acting as pass-through
+glue. FastAPI-RS may separately select Pydantic and Starlette-RS as pinned
+runtime components; this oracle graph does not make the remaining upstream
+packages target dependencies. FastAPI-specific routing, dependency resolution,
+validation orchestration, serialization/OpenAPI, middleware, lifecycle, and
+protocol control flow stay in Rust. The Python `fastapi` package only forwards
+arguments/results and preserves Python object, exception, and awaitable identity.
+
 The lock resolves the following core packages for CPython 3.11. For this interpreter, the normal Python runtime closure is **nine packages**. On Python 3.10, add `exceptiongroup` (ten total). The lock is multi-Python and does not pin the interpreter itself.
 
 This table preserves FastAPI 0.141.1's source lock exactly for dependency
@@ -85,7 +95,7 @@ These groups and their recursive lock closure are development inputs, not depend
 
 ## Implications for FastAPI-RS
 
-1. Preserve the default Python facade's Pydantic v2 model, annotation, field, validation-error, serialization, and schema behavior. Pydantic already has a Rust validator/serializer, so duplicating that engine would add compatibility and licensing surface without replacing Pydantic's Python model-definition API.
+1. Reproduce FastAPI's observable Pydantic v2 behavior. Pydantic may be a separately pinned FastAPI-RS runtime dependency for model APIs and Rust-backed validation/serialization; FastAPI-level validation orchestration and schema flow remain in Rust, with Python bindings passing through user model objects. This oracle graph does not require Pydantic or any other upstream package in the target manifest.
 2. Treat the Starlette boundary as a full replacement: FastAPI subclasses `Starlette` and imports routes, middleware, ASGI types, and private Starlette helpers. The required `starlette` import namespace and user-visible object identity must be satisfied by Starlette-RS as established in its own contract.
 3. Keep FastAPI's optional features optional in FastAPI-RS. HTTPX, Uvicorn, Jinja2, multipart parsing, email validation, settings/types, CLI, sessions, and YAML schema support each add independent user-visible behaviors and license obligations.
 4. Pin the oracle package versions, Starlette-RS revision, Pydantic version, and Python implementation/version for each parity lane. Separately cover FastAPI's declared lower bounds; the broad `>=` requirements do not mean every future version is an oracle.

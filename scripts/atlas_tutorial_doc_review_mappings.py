@@ -1428,36 +1428,94 @@ DOC_PAGE_REVIEW_MAPPINGS = {
     "tutorial/request-files.md": {
         "heading": "Request Files { #request-files }",
         "replace_features": True,
-        "feature_ids": ["app-routing", "public-api-errors", "request-validation"],
-        "observation_selectors": [
-            "http.status",
-            "http.headers.ordered",
-            "http.body.bytes",
-            "http.body.json",
-            "route.match",
-            "validation.error_class",
-            "validation.error_details",
-            "openapi.request_schema",
-            "python.import_path",
-            "python.object_identity",
-        ],
+        "feature_ids": ["openapi-docs", "request-validation"],
+        "observation_selectors": ["http.status", "http.body.bytes", "openapi.document"],
         "rationale": (
-            "The request-file mapping is valid, and the page also documents the FastAPI "
-            "responses import as a direct Starlette convenience. File-upload handling itself "
-            "is an input contract; generic response classes remain Starlette-owned."
+            "The page specifies File/UploadFile request extraction, required and optional file "
+            "parameters, byte and UploadFile values, and repeated file fields. FastAPI infers "
+            "UploadFile annotations as File and bridges Starlette form parsing into dependency "
+            "validation. The fastapi.responses note is an import convenience, not a file-input "
+            "behavior."
+        ),
+        "stimulus_notes": (
+            "tests/fixtures/input-recipes/parity/request-multipart.yaml cases "
+            "fastapi.request-multipart.file.bytes-present, "
+            "fastapi.request-multipart.file.upload-present, "
+            "fastapi.request-multipart.file.required-missing, "
+            "fastapi.request-multipart.file.optional-missing, and the optional-list cases "
+            "exercise independent multipart bodies for bytes/UploadFile, required/optional, "
+            "and repeated file inputs. tests/fixtures/input-recipes/parity/request-uploads.yaml "
+            "cases fastapi.request-uploads.request-files-001-02.test-post-upload-file and "
+            "fastapi.request-uploads.request-files-002.test-post-files exercise the documented "
+            "single and multiple UploadFile examples with independent names and values. These "
+            "workflows observe HTTP status and exact response bytes. The same request-uploads "
+            "recipe's fastapi.request-uploads.request-files.openapi-schema case observes the "
+            "complete OpenAPI document for the independent upload routes."
+        ),
+        "contract_gate": (
+            "The page also documents generated multipart OpenAPI schemas, UploadFile's raw "
+            "SpooledTemporaryFile interface, spool-to-disk behavior, seek/write/close, async "
+            "thread-pool execution, and Pydantic compatibility. The linked request workflows "
+            "observe a complete OpenAPI document for independent routes, not the exact documented "
+            "example schemas; they also do not observe Python import/object identity, upload-file "
+            "lifetime, or spooling behavior. Multipart execution requires the optional "
+            "python-multipart profile; the input cases do not test missing-parser behavior. Do "
+            "not infer these unobserved behaviors from successful body extraction."
         ),
         "supporting_sources": [
             {
                 "path": "docs/en/docs/tutorial/request-files.md",
                 "start_line": 1,
-                "end_line": 40,
-                "role": "file and upload request parameters",
+                "end_line": 176,
+                "role": "FastAPI File/UploadFile request, optional, repeated, and metadata contract",
+            },
+            {
+                "path": "fastapi/__init__.py",
+                "start_line": 12,
+                "end_line": 20,
+                "role": "FastAPI root exports the File parameter helper",
+            },
+            {
+                "path": "fastapi/params.py",
+                "start_line": 663,
+                "end_line": 742,
+                "role": "File is a Form specialization with multipart/form-data media type",
+            },
+            {
+                "path": "fastapi/dependencies/utils.py",
+                "start_line": 498,
+                "end_line": 505,
+                "role": "FastAPI infers File for UploadFile and UploadFile sequence annotations",
+            },
+            {
+                "path": "fastapi/datastructures.py",
+                "start_line": 21,
+                "end_line": 150,
+                "role": "FastAPI UploadFile subclass, Pydantic validation/schema hooks, and async file methods",
+            },
+            {
+                "path": "fastapi/routing.py",
+                "start_line": 425,
+                "end_line": 431,
+                "role": "FastAPI parses form request bodies and schedules parsed file cleanup",
+            },
+            {
+                "path": "fastapi/openapi/utils.py",
+                "start_line": 231,
+                "end_line": 263,
+                "role": "FastAPI emits request-body media type and schema in OpenAPI operations",
             },
             {
                 "path": "docs/en/docs/tutorial/request-files.md",
                 "start_line": 150,
                 "end_line": 166,
                 "role": "FastAPI response import convenience from Starlette",
+            },
+            {
+                "path": "fastapi/__init__.py",
+                "start_line": 9,
+                "end_line": 16,
+                "role": "FastAPI root exports UploadFile and File",
             },
             {
                 "path": "fastapi/responses.py",
@@ -1468,11 +1526,17 @@ DOC_PAGE_REVIEW_MAPPINGS = {
         ],
         "starlette_contract_sources": [
             {
-                "path": "starlette/responses.py",
-                "start_line": 173,
-                "end_line": 181,
-                "role": "selected Starlette HTMLResponse implementation",
-            }
+                "path": "starlette/datastructures.py",
+                "start_line": 410,
+                "end_line": 476,
+                "role": "Starlette UploadFile storage, metadata, and async file methods inherited by FastAPI",
+            },
+            {
+                "path": "starlette/requests.py",
+                "start_line": 268,
+                "end_line": 311,
+                "role": "Starlette request.form parses multipart/form-urlencoded bodies and owns parser error handling",
+            },
         ],
     },
     "tutorial/response-status-code.md": {

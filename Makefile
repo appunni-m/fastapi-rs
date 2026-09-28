@@ -18,12 +18,13 @@ TARGET_RESULT ?=
 PARITY_INPUT ?= tests/fixtures/inputs/parity/first-asgi-request.json
 
 .DEFAULT_GOAL := help
-.PHONY: help fmt format clippy build build-rust build-python compatibility-atlas-update api-contract-update api-contract-check metadata-check parity-inputs parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-target parity-api-runtime parity-validate parity-index-update parity-index-check parity-oracle parity-oracle-standard parity-target parity-compare verify clean
+.PHONY: help fmt format clippy build build-rust build-python python-facade-check compatibility-atlas-update api-contract-update api-contract-check metadata-check parity-inputs parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-target parity-api-runtime parity-validate parity-index-update parity-index-check parity-oracle parity-oracle-standard parity-target parity-compare verify clean
 
 help: ## Show common development commands
 	@printf '%s\n' \
 	  'FastAPI-RS — Rust-backed FastAPI compatibility project' '' \
 	  '  make fmt            Check Rust formatting and Python lint' \
+	  '  make python-facade-check Reject control flow in the Python pass-through package' \
 	  '  make format         Apply Rust formatting' \
 	  '  make clippy         Run strict workspace Clippy' \
 	  '  make build          Build the Rust crates and Python wheel' \
@@ -53,6 +54,10 @@ fmt: ## Check Rust formatting and Python lint
 	$(CARGO) fmt --package fastapi-rs --package fastapi-rs-py -- --check
 	$(PYTHON) -m ruff format --check fastapi-rs-py/python scripts tests/fixtures/workloads
 	$(PYTHON) -m ruff check fastapi-rs-py/python scripts tests/fixtures/workloads
+	$(MAKE) python-facade-check
+
+python-facade-check: ## Reject control flow in the Python pass-through package
+	$(PYTHON) scripts/check_target_runtime_boundary.py --source-only
 
 format: ## Apply Rust formatting
 	$(CARGO) fmt --package fastapi-rs --package fastapi-rs-py
@@ -103,6 +108,7 @@ parity-prepare-target: ## Prepare .venv-target with FastAPI-RS and sibling Starl
 	PYO3_PYTHON="$(TARGET_PYTHON)" $(UV) pip install --python "$(TARGET_PYTHON)" --no-deps --editable "$(STARLETTE_RS_SOURCE)"
 	PYO3_PYTHON="$(TARGET_PYTHON)" $(UV) pip install --python "$(TARGET_PYTHON)" --no-deps --editable "$(CURDIR)"
 	$(UV) pip check --python "$(TARGET_PYTHON)"
+	$(TARGET_PYTHON) scripts/check_target_runtime_boundary.py
 
 parity-api-runtime: parity-inputs ## Regenerate pinned-source runtime reflections for core and standard profiles
 	$(ORACLE_PYTHON) scripts/inventory_fastapi_runtime.py --output tests/fixtures/runtime-api-surface-core.json

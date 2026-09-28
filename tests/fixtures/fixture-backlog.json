@@ -59720,34 +59720,69 @@
         }
       ],
       "feature_ids": [
-        "app-routing",
-        "public-api-errors",
+        "openapi-docs",
         "request-validation"
       ],
       "id": "fastapi.docs.tutorial-request-files",
       "input_only": true,
       "observation_selectors": [
         "http.status",
-        "http.headers.ordered",
         "http.body.bytes",
-        "http.body.json",
-        "route.match",
-        "validation.error_class",
-        "validation.error_details",
-        "openapi.request_schema",
-        "python.import_path",
-        "python.object_identity"
+        "openapi.document"
       ],
       "related_usage_sources": [],
       "reviewed_source_mapping": {
-        "rationale": "The request-file mapping is valid, and the page also documents the FastAPI responses import as a direct Starlette convenience. File-upload handling itself is an input contract; generic response classes remain Starlette-owned.",
+        "contract_gate": "The page also documents generated multipart OpenAPI schemas, UploadFile's raw SpooledTemporaryFile interface, spool-to-disk behavior, seek/write/close, async thread-pool execution, and Pydantic compatibility. The linked request workflows observe a complete OpenAPI document for independent routes, not the exact documented example schemas; they also do not observe Python import/object identity, upload-file lifetime, or spooling behavior. Multipart execution requires the optional python-multipart profile; the input cases do not test missing-parser behavior. Do not infer these unobserved behaviors from successful body extraction.",
+        "rationale": "The page specifies File/UploadFile request extraction, required and optional file parameters, byte and UploadFile values, and repeated file fields. FastAPI infers UploadFile annotations as File and bridges Starlette form parsing into dependency validation. The fastapi.responses note is an import convenience, not a file-input behavior.",
         "source_evidence": [
           {
-            "end_line": 40,
+            "end_line": 176,
             "path": "docs/en/docs/tutorial/request-files.md",
-            "role": "file and upload request parameters",
+            "role": "FastAPI File/UploadFile request, optional, repeated, and metadata contract",
             "sha256": "4faafb4853d46b41cb9bc4c7c57e3ab293bcb9ce318b3b369162c4e239425ab6",
             "start_line": 1
+          },
+          {
+            "end_line": 20,
+            "path": "fastapi/__init__.py",
+            "role": "FastAPI root exports the File parameter helper",
+            "sha256": "036406d9f615d215ac92794c38c799eee6b498935659ce0335debfd47815d7b9",
+            "start_line": 12
+          },
+          {
+            "end_line": 742,
+            "path": "fastapi/params.py",
+            "role": "File is a Form specialization with multipart/form-data media type",
+            "sha256": "d5f34d48ae49ecf339170f85e7ff6e3b2b00d8d802fbad666f72e5ac15a9a893",
+            "start_line": 663
+          },
+          {
+            "end_line": 505,
+            "path": "fastapi/dependencies/utils.py",
+            "role": "FastAPI infers File for UploadFile and UploadFile sequence annotations",
+            "sha256": "13693375ab95e32424e5434c21f928463634af5ee1261cf3e04031381bdf47d9",
+            "start_line": 498
+          },
+          {
+            "end_line": 150,
+            "path": "fastapi/datastructures.py",
+            "role": "FastAPI UploadFile subclass, Pydantic validation/schema hooks, and async file methods",
+            "sha256": "5cfba09e88c7738374ede1795e9d534e774fda032fd5f1b893ed0be1576beca7",
+            "start_line": 21
+          },
+          {
+            "end_line": 431,
+            "path": "fastapi/routing.py",
+            "role": "FastAPI parses form request bodies and schedules parsed file cleanup",
+            "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+            "start_line": 425
+          },
+          {
+            "end_line": 263,
+            "path": "fastapi/openapi/utils.py",
+            "role": "FastAPI emits request-body media type and schema in OpenAPI operations",
+            "sha256": "81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527",
+            "start_line": 231
           },
           {
             "end_line": 166,
@@ -59755,6 +59790,13 @@
             "role": "FastAPI response import convenience from Starlette",
             "sha256": "4faafb4853d46b41cb9bc4c7c57e3ab293bcb9ce318b3b369162c4e239425ab6",
             "start_line": 150
+          },
+          {
+            "end_line": 16,
+            "path": "fastapi/__init__.py",
+            "role": "FastAPI root exports UploadFile and File",
+            "sha256": "036406d9f615d215ac92794c38c799eee6b498935659ce0335debfd47815d7b9",
+            "start_line": 9
           },
           {
             "end_line": 12,
@@ -59767,42 +59809,37 @@
         "starlette_contract_authority": "1.6.0",
         "starlette_source_evidence": [
           {
-            "end_line": 181,
-            "path": "starlette/responses.py",
-            "role": "selected Starlette HTMLResponse implementation",
-            "sha256": "10a5f318bb014296e57d9a3f6ffa51d478e21b07d5bf978597dba2ec9dc21e4a",
+            "end_line": 476,
+            "path": "starlette/datastructures.py",
+            "role": "Starlette UploadFile storage, metadata, and async file methods inherited by FastAPI",
+            "sha256": "f9e310036299d6a427443ca96ba118e58486e5927cd4c3bac0ffb815626e52cd",
             "source_authority": "Starlette 1.6.0",
-            "start_line": 173
+            "start_line": 410
+          },
+          {
+            "end_line": 311,
+            "path": "starlette/requests.py",
+            "role": "Starlette request.form parses multipart/form-urlencoded bodies and owns parser error handling",
+            "sha256": "8691b01ae49ecfa085fe6419343678f73b77c92fc63a411106a77d8e9bf0ac44",
+            "source_authority": "Starlette 1.6.0",
+            "start_line": 268
           }
-        ]
+        ],
+        "stimulus_notes": "tests/fixtures/input-recipes/parity/request-multipart.yaml cases fastapi.request-multipart.file.bytes-present, fastapi.request-multipart.file.upload-present, fastapi.request-multipart.file.required-missing, fastapi.request-multipart.file.optional-missing, and the optional-list cases exercise independent multipart bodies for bytes/UploadFile, required/optional, and repeated file inputs. tests/fixtures/input-recipes/parity/request-uploads.yaml cases fastapi.request-uploads.request-files-001-02.test-post-upload-file and fastapi.request-uploads.request-files-002.test-post-files exercise the documented single and multiple UploadFile examples with independent names and values. These workflows observe HTTP status and exact response bytes. The same request-uploads recipe's fastapi.request-uploads.request-files.openapi-schema case observes the complete OpenAPI document for the independent upload routes."
       },
       "selector_evidence": [
         {
-          "feature_id": "app-routing",
+          "feature_id": "openapi-docs",
           "selectors": [
-            "http.status",
-            "http.headers.ordered",
             "http.body.bytes",
-            "route.match"
-          ]
-        },
-        {
-          "feature_id": "public-api-errors",
-          "selectors": [
-            "python.import_path",
-            "python.object_identity"
+            "openapi.document"
           ]
         },
         {
           "feature_id": "request-validation",
           "selectors": [
             "http.status",
-            "http.headers.ordered",
-            "http.body.bytes",
-            "http.body.json",
-            "validation.error_class",
-            "validation.error_details",
-            "openapi.request_schema"
+            "http.body.bytes"
           ]
         }
       ],
@@ -59852,11 +59889,53 @@
           "sha256": "7cf24e56bc59319a89bf0bdcff21cc464d488785a634350aa0e59c2d32e1311d"
         },
         {
-          "end_line": 40,
+          "end_line": 176,
           "path": "docs/en/docs/tutorial/request-files.md",
-          "role": "file and upload request parameters",
+          "role": "FastAPI File/UploadFile request, optional, repeated, and metadata contract",
           "sha256": "4faafb4853d46b41cb9bc4c7c57e3ab293bcb9ce318b3b369162c4e239425ab6",
           "start_line": 1
+        },
+        {
+          "end_line": 20,
+          "path": "fastapi/__init__.py",
+          "role": "FastAPI root exports the File parameter helper",
+          "sha256": "036406d9f615d215ac92794c38c799eee6b498935659ce0335debfd47815d7b9",
+          "start_line": 12
+        },
+        {
+          "end_line": 742,
+          "path": "fastapi/params.py",
+          "role": "File is a Form specialization with multipart/form-data media type",
+          "sha256": "d5f34d48ae49ecf339170f85e7ff6e3b2b00d8d802fbad666f72e5ac15a9a893",
+          "start_line": 663
+        },
+        {
+          "end_line": 505,
+          "path": "fastapi/dependencies/utils.py",
+          "role": "FastAPI infers File for UploadFile and UploadFile sequence annotations",
+          "sha256": "13693375ab95e32424e5434c21f928463634af5ee1261cf3e04031381bdf47d9",
+          "start_line": 498
+        },
+        {
+          "end_line": 150,
+          "path": "fastapi/datastructures.py",
+          "role": "FastAPI UploadFile subclass, Pydantic validation/schema hooks, and async file methods",
+          "sha256": "5cfba09e88c7738374ede1795e9d534e774fda032fd5f1b893ed0be1576beca7",
+          "start_line": 21
+        },
+        {
+          "end_line": 431,
+          "path": "fastapi/routing.py",
+          "role": "FastAPI parses form request bodies and schedules parsed file cleanup",
+          "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+          "start_line": 425
+        },
+        {
+          "end_line": 263,
+          "path": "fastapi/openapi/utils.py",
+          "role": "FastAPI emits request-body media type and schema in OpenAPI operations",
+          "sha256": "81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527",
+          "start_line": 231
         },
         {
           "end_line": 166,
@@ -59866,6 +59945,13 @@
           "start_line": 150
         },
         {
+          "end_line": 16,
+          "path": "fastapi/__init__.py",
+          "role": "FastAPI root exports UploadFile and File",
+          "sha256": "036406d9f615d215ac92794c38c799eee6b498935659ce0335debfd47815d7b9",
+          "start_line": 9
+        },
+        {
           "end_line": 12,
           "path": "fastapi/responses.py",
           "role": "direct Starlette response-class re-exports",
@@ -59873,12 +59959,20 @@
           "start_line": 6
         },
         {
-          "end_line": 181,
-          "path": "starlette/responses.py",
-          "role": "selected Starlette HTMLResponse implementation",
-          "sha256": "10a5f318bb014296e57d9a3f6ffa51d478e21b07d5bf978597dba2ec9dc21e4a",
+          "end_line": 476,
+          "path": "starlette/datastructures.py",
+          "role": "Starlette UploadFile storage, metadata, and async file methods inherited by FastAPI",
+          "sha256": "f9e310036299d6a427443ca96ba118e58486e5927cd4c3bac0ffb815626e52cd",
           "source_authority": "Starlette 1.6.0",
-          "start_line": 173
+          "start_line": 410
+        },
+        {
+          "end_line": 311,
+          "path": "starlette/requests.py",
+          "role": "Starlette request.form parses multipart/form-urlencoded bodies and owns parser error handling",
+          "sha256": "8691b01ae49ecfa085fe6419343678f73b77c92fc63a411106a77d8e9bf0ac44",
+          "source_authority": "Starlette 1.6.0",
+          "start_line": 268
         }
       ],
       "source_item_id": "documented-page:tutorial/request-files.md",
@@ -59886,12 +59980,11 @@
       "starlette_rs_planning_areas": [
         "applications-requests-responses-background-concurrency",
         "middleware-authentication-endpoints-datastructures-status",
-        "routing-converters-mounts-hosts-and-errors",
-        "streaming-headers-cookies-errors-and-cleanup"
+        "streaming-headers-cookies-errors-and-cleanup",
+        "wsgi-static-files-templates-schemas-configuration-testclient"
       ],
       "stimulus_design": [
-        "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
-        "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable.",
+        "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response.",
         "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs."
       ]
     },
@@ -76707,6 +76800,139 @@
         {
           "feature_evidence": [
             {
+              "feature_id": "middleware-integrations",
+              "signals": [
+                {
+                  "source": "path",
+                  "term": "middleware"
+                }
+              ]
+            },
+            {
+              "feature_id": "public-api-errors",
+              "signals": [
+                {
+                  "end_line": 85,
+                  "line": 70,
+                  "path": "tests/test_custom_middleware_exception.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 5,
+                  "line": 1,
+                  "path": "tests/test_custom_middleware_exception.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 58,
+                  "line": 13,
+                  "path": "tests/test_custom_middleware_exception.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 68,
+                  "line": 61,
+                  "path": "tests/test_custom_middleware_exception.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 96,
+                  "line": 70,
+                  "path": "tests/test_custom_middleware_exception.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 40,
+                  "line": 11,
+                  "path": "docs/en/docs/advanced/middleware.md",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 68,
+                  "line": 30,
+                  "path": "docs/en/docs/tutorial/handling-errors.md",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 118,
+                  "line": 112,
+                  "path": "docs/en/docs/tutorial/handling-errors.md",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 17,
+                  "line": 6,
+                  "path": "fastapi/exceptions.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 1005,
+                  "line": 1000,
+                  "path": "fastapi/applications.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 1068,
+                  "line": 1020,
+                  "path": "fastapi/applications.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 17,
+                  "line": 11,
+                  "path": "fastapi/exception_handlers.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 473,
+                  "line": 425,
+                  "path": "fastapi/routing.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 675,
+                  "line": 663,
+                  "path": "fastapi/params.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 65,
+                  "line": 47,
+                  "path": "starlette/middleware/exceptions.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 311,
+                  "line": 268,
+                  "path": "starlette/requests.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 85,
+                  "line": 70,
+                  "path": "tests/test_custom_middleware_exception.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                }
+              ]
+            },
+            {
               "feature_id": "request-validation",
               "signals": [
                 {
@@ -76727,58 +76953,294 @@
               ]
             },
             {
-              "feature_id": "middleware-integrations",
+              "feature_id": "response-serialization",
               "signals": [
                 {
-                  "source": "path",
-                  "term": "middleware"
+                  "end_line": 85,
+                  "line": 70,
+                  "path": "tests/test_custom_middleware_exception.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 5,
+                  "line": 1,
+                  "path": "tests/test_custom_middleware_exception.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 58,
+                  "line": 13,
+                  "path": "tests/test_custom_middleware_exception.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 68,
+                  "line": 61,
+                  "path": "tests/test_custom_middleware_exception.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 96,
+                  "line": 70,
+                  "path": "tests/test_custom_middleware_exception.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 40,
+                  "line": 11,
+                  "path": "docs/en/docs/advanced/middleware.md",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 68,
+                  "line": 30,
+                  "path": "docs/en/docs/tutorial/handling-errors.md",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 118,
+                  "line": 112,
+                  "path": "docs/en/docs/tutorial/handling-errors.md",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 17,
+                  "line": 6,
+                  "path": "fastapi/exceptions.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 1005,
+                  "line": 1000,
+                  "path": "fastapi/applications.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 1068,
+                  "line": 1020,
+                  "path": "fastapi/applications.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 17,
+                  "line": 11,
+                  "path": "fastapi/exception_handlers.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 473,
+                  "line": 425,
+                  "path": "fastapi/routing.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 675,
+                  "line": 663,
+                  "path": "fastapi/params.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 65,
+                  "line": 47,
+                  "path": "starlette/middleware/exceptions.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 311,
+                  "line": 268,
+                  "path": "starlette/requests.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 85,
+                  "line": 70,
+                  "path": "tests/test_custom_middleware_exception.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 }
               ]
             }
           ],
           "feature_ids": [
+            "middleware-integrations",
+            "public-api-errors",
             "request-validation",
-            "middleware-integrations"
+            "response-serialization"
           ],
           "id": "fastapi.test.test-custom-middleware-exception.test-custom-middleware-exception",
-          "mapping_scope": "module_path_candidate",
-          "mapping_status": "candidate",
+          "mapping_scope": "reviewed_source_mapping",
+          "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
-            "http.body.bytes",
-            "http.body.json",
-            "http.headers.ordered",
             "http.status",
-            "openapi.request_schema",
-            "process.exit_code",
-            "process.stderr",
-            "process.stdout",
-            "validation.error_class",
-            "validation.error_details"
+            "http.body.bytes"
           ],
-          "reviewed_mapping": null,
-          "selector_evidence": [
-            {
-              "feature_id": "request-validation",
-              "selectors": [
-                "http.status",
-                "http.headers.ordered",
-                "http.body.bytes",
-                "http.body.json",
-                "validation.error_class",
-                "validation.error_details",
-                "openapi.request_schema"
-              ]
+          "reviewed_mapping": {
+            "constraints": {
+              "python": ">=3.10"
             },
+            "contract_gate": "Keep this mapping partial: the workload uses a new route and exception-detail value, direct ASGI input instead of TestClient.files plus tmp_path, and exact response bytes rather than the source's response.json() equality. It samples receive-wrapper exception handling but does not reproduce the source's exact error payload or client multipart encoding; multipart parsing and generic ExceptionMiddleware behavior belong to the separate Starlette-RS contract.",
+            "rationale": "The source raises HTTPException from the receive wrapper when a multipart upload exceeds the middleware cap, then checks the 422 response and its JSON detail object. The independent over-budget case observes the same FastAPI middleware/error-handling path with its own configured detail value.",
+            "source_evidence": [
+              {
+                "end_line": 85,
+                "path": "tests/test_custom_middleware_exception.py",
+                "role": "upstream test function",
+                "sha256": "dc122f1b9639c019f124ee4f75b6cffb639adeeca9ca4bdb80094942878e0b2d",
+                "start_line": 70
+              },
+              {
+                "end_line": 5,
+                "path": "tests/test_custom_middleware_exception.py",
+                "role": "upstream imports for FastAPI routing, File/UploadFile, FastAPI HTTPException, TestClient, and the ASGI app type",
+                "sha256": "dc122f1b9639c019f124ee4f75b6cffb639adeeca9ca4bdb80094942878e0b2d",
+                "start_line": 1
+              },
+              {
+                "end_line": 58,
+                "path": "tests/test_custom_middleware_exception.py",
+                "role": "receive-wrapper middleware counts raw HTTP request body bytes and raises FastAPI HTTPException above its configured cap",
+                "sha256": "dc122f1b9639c019f124ee4f75b6cffb639adeeca9ca4bdb80094942878e0b2d",
+                "start_line": 13
+              },
+              {
+                "end_line": 68,
+                "path": "tests/test_custom_middleware_exception.py",
+                "role": "FastAPI file-upload route and custom middleware registration",
+                "sha256": "dc122f1b9639c019f124ee4f75b6cffb639adeeca9ca4bdb80094942878e0b2d",
+                "start_line": 61
+              },
+              {
+                "end_line": 96,
+                "path": "tests/test_custom_middleware_exception.py",
+                "role": "oversized and accepted file-upload assertions through TestClient",
+                "sha256": "dc122f1b9639c019f124ee4f75b6cffb639adeeca9ca4bdb80094942878e0b2d",
+                "start_line": 70
+              },
+              {
+                "end_line": 40,
+                "path": "docs/en/docs/advanced/middleware.md",
+                "role": "FastAPI accepts arbitrary ASGI middleware and app.add_middleware preserves internal exception handling",
+                "sha256": "051ef9c6cd54a566be9192e0e4b6667b0e84604db7a3cffea8d970f874d72014",
+                "start_line": 11
+              },
+              {
+                "end_line": 68,
+                "path": "docs/en/docs/tutorial/handling-errors.md",
+                "role": "HTTPException terminates request handling and its detail may be a JSON-convertible dict or list",
+                "sha256": "c0cb7aeafe8ed3802396f2421755cf1e740000347305c515a2c828c0c41f4b1a",
+                "start_line": 30
+              },
+              {
+                "end_line": 118,
+                "path": "docs/en/docs/tutorial/handling-errors.md",
+                "role": "FastAPI default HTTPException handler returns JSON and can be overridden",
+                "sha256": "c0cb7aeafe8ed3802396f2421755cf1e740000347305c515a2c828c0c41f4b1a",
+                "start_line": 112
+              },
+              {
+                "end_line": 17,
+                "path": "fastapi/exceptions.py",
+                "role": "FastAPI HTTPException subclasses Starlette HTTPException",
+                "sha256": "7d434e051748b142d4d139cef1a3418371e825ec89c57a7d515e83f3062ef652",
+                "start_line": 6
+              },
+              {
+                "end_line": 1005,
+                "path": "fastapi/applications.py",
+                "role": "FastAPI registers its default HTTPException response handler",
+                "sha256": "38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c",
+                "start_line": 1000
+              },
+              {
+                "end_line": 1068,
+                "path": "fastapi/applications.py",
+                "role": "FastAPI places user middleware outside ExceptionMiddleware and constructs the ASGI stack",
+                "sha256": "38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c",
+                "start_line": 1020
+              },
+              {
+                "end_line": 17,
+                "path": "fastapi/exception_handlers.py",
+                "role": "FastAPI serializes HTTPException.detail under the response detail key with the exception status",
+                "sha256": "615713f19cb4db555861e79c81dca1e581148c420729c2eca5b9127f839f6c92",
+                "start_line": 11
+              },
+              {
+                "end_line": 473,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI parses File/Form request bodies and explicitly re-raises an HTTPException from the receive path",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 425
+              },
+              {
+                "end_line": 675,
+                "path": "fastapi/params.py",
+                "role": "FastAPI File declares multipart/form-data request fields",
+                "sha256": "d5f34d48ae49ecf339170f85e7ff6e3b2b00d8d802fbad666f72e5ac15a9a893",
+                "start_line": 663
+              },
+              {
+                "end_line": 65,
+                "path": "starlette/middleware/exceptions.py",
+                "role": "Starlette 1.6.0 exception middleware wraps HTTP dispatch and invokes the registered HTTP exception handler; behavior is assigned to the separate Starlette-RS contract",
+                "sha256": "ece812522060c074b854c9a9696970db5b8328d0e638cccb559ad60cb0d4a96a",
+                "source_authority": "Starlette 1.6.0",
+                "start_line": 47
+              },
+              {
+                "end_line": 311,
+                "path": "starlette/requests.py",
+                "role": "Starlette 1.6.0 Request.form parses multipart streams; behavior is assigned to the separate Starlette-RS contract",
+                "sha256": "8691b01ae49ecfa085fe6419343678f73b77c92fc63a411106a77d8e9bf0ac44",
+                "source_authority": "Starlette 1.6.0",
+                "start_line": 268
+              },
+              {
+                "end_line": 85,
+                "path": "tests/test_custom_middleware_exception.py",
+                "role": "upstream oversize upload stimulus and status/detail assertions",
+                "sha256": "dc122f1b9639c019f124ee4f75b6cffb639adeeca9ca4bdb80094942878e0b2d",
+                "start_line": 70
+              }
+            ],
+            "stimulus_notes": "Use custom-middleware-upload-limit.yaml case fastapi.middleware.custom-upload-budget-exceeded. Its body is a valid multipart file request split across two http.request events; the second event crosses the middleware's 256-byte cap and causes the workload to raise FastAPI HTTPException."
+          },
+          "selector_evidence": [
             {
               "feature_id": "middleware-integrations",
               "selectors": [
                 "http.status",
-                "http.headers.ordered",
-                "http.body.bytes",
-                "http.body.json",
-                "process.exit_code",
-                "process.stdout",
-                "process.stderr"
+                "http.body.bytes"
+              ]
+            },
+            {
+              "feature_id": "request-validation",
+              "selectors": [
+                "http.status",
+                "http.body.bytes"
+              ]
+            },
+            {
+              "feature_id": "response-serialization",
+              "selectors": [
+                "http.status",
+                "http.body.bytes"
               ]
             }
           ],
@@ -76786,13 +77248,24 @@
           "source_function": "test_custom_middleware_exception",
           "source_line": 70,
           "stimulus_design": [
+            "Enable the named optional integration or middleware, provide deterministic request/filesystem/configuration inputs, and observe its public effect.",
+            "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable.",
             "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
-            "Enable the named optional integration or middleware, provide deterministic request/filesystem/configuration inputs, and observe its public effect."
+            "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
           ],
-          "stimulus_design_notes": null
+          "stimulus_design_notes": "Use custom-middleware-upload-limit.yaml case fastapi.middleware.custom-upload-budget-exceeded. Its body is a valid multipart file request split across two http.request events; the second event crosses the middleware's 256-byte cap and causes the workload to raise FastAPI HTTPException."
         },
         {
           "feature_evidence": [
+            {
+              "feature_id": "middleware-integrations",
+              "signals": [
+                {
+                  "source": "path",
+                  "term": "middleware"
+                }
+              ]
+            },
             {
               "feature_id": "request-validation",
               "signals": [
@@ -76809,58 +77282,293 @@
               ]
             },
             {
-              "feature_id": "middleware-integrations",
+              "feature_id": "response-serialization",
               "signals": [
                 {
-                  "source": "path",
-                  "term": "middleware"
+                  "end_line": 96,
+                  "line": 88,
+                  "path": "tests/test_custom_middleware_exception.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 5,
+                  "line": 1,
+                  "path": "tests/test_custom_middleware_exception.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 58,
+                  "line": 13,
+                  "path": "tests/test_custom_middleware_exception.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 68,
+                  "line": 61,
+                  "path": "tests/test_custom_middleware_exception.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 96,
+                  "line": 70,
+                  "path": "tests/test_custom_middleware_exception.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 40,
+                  "line": 11,
+                  "path": "docs/en/docs/advanced/middleware.md",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 68,
+                  "line": 30,
+                  "path": "docs/en/docs/tutorial/handling-errors.md",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 118,
+                  "line": 112,
+                  "path": "docs/en/docs/tutorial/handling-errors.md",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 17,
+                  "line": 6,
+                  "path": "fastapi/exceptions.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 1005,
+                  "line": 1000,
+                  "path": "fastapi/applications.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 1068,
+                  "line": 1020,
+                  "path": "fastapi/applications.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 17,
+                  "line": 11,
+                  "path": "fastapi/exception_handlers.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 473,
+                  "line": 425,
+                  "path": "fastapi/routing.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 675,
+                  "line": 663,
+                  "path": "fastapi/params.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 65,
+                  "line": 47,
+                  "path": "starlette/middleware/exceptions.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 311,
+                  "line": 268,
+                  "path": "starlette/requests.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 96,
+                  "line": 88,
+                  "path": "tests/test_custom_middleware_exception.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 }
               ]
             }
           ],
           "feature_ids": [
+            "middleware-integrations",
             "request-validation",
-            "middleware-integrations"
+            "response-serialization"
           ],
           "id": "fastapi.test.test-custom-middleware-exception.test-custom-middleware-exception-not-raised",
-          "mapping_scope": "module_path_candidate",
-          "mapping_status": "candidate",
+          "mapping_scope": "reviewed_source_mapping",
+          "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
-            "http.body.bytes",
-            "http.body.json",
-            "http.headers.ordered",
             "http.status",
-            "openapi.request_schema",
-            "process.exit_code",
-            "process.stderr",
-            "process.stdout",
-            "validation.error_class",
-            "validation.error_details"
+            "http.body.bytes"
           ],
-          "reviewed_mapping": null,
-          "selector_evidence": [
-            {
-              "feature_id": "request-validation",
-              "selectors": [
-                "http.status",
-                "http.headers.ordered",
-                "http.body.bytes",
-                "http.body.json",
-                "validation.error_class",
-                "validation.error_details",
-                "openapi.request_schema"
-              ]
+          "reviewed_mapping": {
+            "constraints": {
+              "python": ">=3.10"
             },
+            "contract_gate": "Keep this mapping partial: the independent under-budget case uses a new route, filename, response object, and direct ASGI multipart body rather than TestClient.files and tmp_path. It observes successful FastAPI file parsing and route dispatch, with exact response bytes beyond the source's parsed-JSON assertion; generic multipart and UploadFile behavior belongs to the separate Starlette-RS contract.",
+            "rationale": "The source submits a file within the middleware budget and checks that the upload route returns HTTP 200 with JSON content.",
+            "source_evidence": [
+              {
+                "end_line": 96,
+                "path": "tests/test_custom_middleware_exception.py",
+                "role": "upstream test function",
+                "sha256": "dc122f1b9639c019f124ee4f75b6cffb639adeeca9ca4bdb80094942878e0b2d",
+                "start_line": 88
+              },
+              {
+                "end_line": 5,
+                "path": "tests/test_custom_middleware_exception.py",
+                "role": "upstream imports for FastAPI routing, File/UploadFile, FastAPI HTTPException, TestClient, and the ASGI app type",
+                "sha256": "dc122f1b9639c019f124ee4f75b6cffb639adeeca9ca4bdb80094942878e0b2d",
+                "start_line": 1
+              },
+              {
+                "end_line": 58,
+                "path": "tests/test_custom_middleware_exception.py",
+                "role": "receive-wrapper middleware counts raw HTTP request body bytes and raises FastAPI HTTPException above its configured cap",
+                "sha256": "dc122f1b9639c019f124ee4f75b6cffb639adeeca9ca4bdb80094942878e0b2d",
+                "start_line": 13
+              },
+              {
+                "end_line": 68,
+                "path": "tests/test_custom_middleware_exception.py",
+                "role": "FastAPI file-upload route and custom middleware registration",
+                "sha256": "dc122f1b9639c019f124ee4f75b6cffb639adeeca9ca4bdb80094942878e0b2d",
+                "start_line": 61
+              },
+              {
+                "end_line": 96,
+                "path": "tests/test_custom_middleware_exception.py",
+                "role": "oversized and accepted file-upload assertions through TestClient",
+                "sha256": "dc122f1b9639c019f124ee4f75b6cffb639adeeca9ca4bdb80094942878e0b2d",
+                "start_line": 70
+              },
+              {
+                "end_line": 40,
+                "path": "docs/en/docs/advanced/middleware.md",
+                "role": "FastAPI accepts arbitrary ASGI middleware and app.add_middleware preserves internal exception handling",
+                "sha256": "051ef9c6cd54a566be9192e0e4b6667b0e84604db7a3cffea8d970f874d72014",
+                "start_line": 11
+              },
+              {
+                "end_line": 68,
+                "path": "docs/en/docs/tutorial/handling-errors.md",
+                "role": "HTTPException terminates request handling and its detail may be a JSON-convertible dict or list",
+                "sha256": "c0cb7aeafe8ed3802396f2421755cf1e740000347305c515a2c828c0c41f4b1a",
+                "start_line": 30
+              },
+              {
+                "end_line": 118,
+                "path": "docs/en/docs/tutorial/handling-errors.md",
+                "role": "FastAPI default HTTPException handler returns JSON and can be overridden",
+                "sha256": "c0cb7aeafe8ed3802396f2421755cf1e740000347305c515a2c828c0c41f4b1a",
+                "start_line": 112
+              },
+              {
+                "end_line": 17,
+                "path": "fastapi/exceptions.py",
+                "role": "FastAPI HTTPException subclasses Starlette HTTPException",
+                "sha256": "7d434e051748b142d4d139cef1a3418371e825ec89c57a7d515e83f3062ef652",
+                "start_line": 6
+              },
+              {
+                "end_line": 1005,
+                "path": "fastapi/applications.py",
+                "role": "FastAPI registers its default HTTPException response handler",
+                "sha256": "38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c",
+                "start_line": 1000
+              },
+              {
+                "end_line": 1068,
+                "path": "fastapi/applications.py",
+                "role": "FastAPI places user middleware outside ExceptionMiddleware and constructs the ASGI stack",
+                "sha256": "38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c",
+                "start_line": 1020
+              },
+              {
+                "end_line": 17,
+                "path": "fastapi/exception_handlers.py",
+                "role": "FastAPI serializes HTTPException.detail under the response detail key with the exception status",
+                "sha256": "615713f19cb4db555861e79c81dca1e581148c420729c2eca5b9127f839f6c92",
+                "start_line": 11
+              },
+              {
+                "end_line": 473,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI parses File/Form request bodies and explicitly re-raises an HTTPException from the receive path",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 425
+              },
+              {
+                "end_line": 675,
+                "path": "fastapi/params.py",
+                "role": "FastAPI File declares multipart/form-data request fields",
+                "sha256": "d5f34d48ae49ecf339170f85e7ff6e3b2b00d8d802fbad666f72e5ac15a9a893",
+                "start_line": 663
+              },
+              {
+                "end_line": 65,
+                "path": "starlette/middleware/exceptions.py",
+                "role": "Starlette 1.6.0 exception middleware wraps HTTP dispatch and invokes the registered HTTP exception handler; behavior is assigned to the separate Starlette-RS contract",
+                "sha256": "ece812522060c074b854c9a9696970db5b8328d0e638cccb559ad60cb0d4a96a",
+                "source_authority": "Starlette 1.6.0",
+                "start_line": 47
+              },
+              {
+                "end_line": 311,
+                "path": "starlette/requests.py",
+                "role": "Starlette 1.6.0 Request.form parses multipart streams; behavior is assigned to the separate Starlette-RS contract",
+                "sha256": "8691b01ae49ecfa085fe6419343678f73b77c92fc63a411106a77d8e9bf0ac44",
+                "source_authority": "Starlette 1.6.0",
+                "start_line": 268
+              },
+              {
+                "end_line": 96,
+                "path": "tests/test_custom_middleware_exception.py",
+                "role": "upstream under-budget upload stimulus and status/JSON assertions",
+                "sha256": "dc122f1b9639c019f124ee4f75b6cffb639adeeca9ca4bdb80094942878e0b2d",
+                "start_line": 88
+              }
+            ],
+            "stimulus_notes": "Use custom-middleware-upload-limit.yaml case fastapi.middleware.custom-upload-budget-accepted. Its independently authored multipart upload stays below the workload's receive-byte limit and reaches the route."
+          },
+          "selector_evidence": [
             {
               "feature_id": "middleware-integrations",
               "selectors": [
                 "http.status",
-                "http.headers.ordered",
-                "http.body.bytes",
-                "http.body.json",
-                "process.exit_code",
-                "process.stdout",
-                "process.stderr"
+                "http.body.bytes"
+              ]
+            },
+            {
+              "feature_id": "request-validation",
+              "selectors": [
+                "http.status",
+                "http.body.bytes"
+              ]
+            },
+            {
+              "feature_id": "response-serialization",
+              "selectors": [
+                "http.status",
+                "http.body.bytes"
               ]
             }
           ],
@@ -76868,53 +77576,45 @@
           "source_function": "test_custom_middleware_exception_not_raised",
           "source_line": 88,
           "stimulus_design": [
+            "Enable the named optional integration or middleware, provide deterministic request/filesystem/configuration inputs, and observe its public effect.",
             "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
-            "Enable the named optional integration or middleware, provide deterministic request/filesystem/configuration inputs, and observe its public effect."
+            "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
           ],
-          "stimulus_design_notes": null
+          "stimulus_design_notes": "Use custom-middleware-upload-limit.yaml case fastapi.middleware.custom-upload-budget-accepted. Its independently authored multipart upload stays below the workload's receive-byte limit and reaches the route."
         }
       ],
       "feature_ids": [
         "middleware-integrations",
-        "request-validation"
+        "public-api-errors",
+        "request-validation",
+        "response-serialization"
       ],
       "id": "fastapi.test.test-custom-middleware-exception",
       "input_only": true,
       "observation_selectors": [
-        "http.body.bytes",
-        "http.body.json",
-        "http.headers.ordered",
         "http.status",
-        "openapi.request_schema",
-        "process.exit_code",
-        "process.stderr",
-        "process.stdout",
-        "validation.error_class",
-        "validation.error_details"
+        "http.body.bytes"
       ],
       "selector_evidence": [
         {
           "feature_id": "middleware-integrations",
           "selectors": [
             "http.status",
-            "http.headers.ordered",
-            "http.body.bytes",
-            "http.body.json",
-            "process.exit_code",
-            "process.stdout",
-            "process.stderr"
+            "http.body.bytes"
           ]
         },
         {
           "feature_id": "request-validation",
           "selectors": [
             "http.status",
-            "http.headers.ordered",
-            "http.body.bytes",
-            "http.body.json",
-            "validation.error_class",
-            "validation.error_details",
-            "openapi.request_schema"
+            "http.body.bytes"
+          ]
+        },
+        {
+          "feature_id": "response-serialization",
+          "selectors": [
+            "http.status",
+            "http.body.bytes"
           ]
         }
       ],
@@ -76923,7 +77623,7 @@
         "sha256": "dc122f1b9639c019f124ee4f75b6cffb639adeeca9ca4bdb80094942878e0b2d"
       },
       "source_item_id": "upstream-test:tests/test_custom_middleware_exception.py",
-      "stage": "candidate; independent stimuli require review/materialization",
+      "stage": "partially mapped; one or more behaviors remain contract-gated",
       "starlette_rs_planning_areas": [
         "applications-requests-responses-background-concurrency",
         "middleware-authentication-endpoints-datastructures-status",
@@ -76932,9 +77632,11 @@
       ],
       "stimulus_design": [
         "Enable the named optional integration or middleware, provide deterministic request/filesystem/configuration inputs, and observe its public effect.",
-        "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs."
+        "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable.",
+        "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
+        "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
       ],
-      "stimulus_design_notes": null
+      "stimulus_design_notes": "The dedicated custom-middleware-upload-limit.yaml input independently authors a receive-wrapper middleware and /attachments UploadFile route, with one under-budget multipart request and one over-budget request split across two ASGI receive events. It uses new middleware, route, field, filenames, success body, and error detail; the existing middleware.yaml body-limit cases are related examples but use plain text and different middleware/response behavior. The workflow calls FastAPI directly through ASGI and delegates generic Starlette middleware, multipart, and client behavior to the pinned Starlette-RS contract."
     },
     {
       "case_designs": [

@@ -335,6 +335,19 @@
       ]
     },
     {
+      "id": "custom-middleware-upload-limit",
+      "input_path": "tests/fixtures/inputs/parity/custom-middleware-upload-limit.json",
+      "input_sha256": "c86d4716735bb9116f9ff89637de41113c26252aa5cc25ea5a1ddc89c1b36ff2",
+      "recipe_path": "tests/fixtures/input-recipes/parity/custom-middleware-upload-limit.yaml",
+      "recipe_sha256": "e25b52b871ea59d144e81eb504dfaa97d0cd93cb84b5bde8b175bac463f9daf5",
+      "workload_path": "tests/fixtures/workloads/custom_middleware_upload_limit.py",
+      "workload_sha256": "7af4b3fd0747c2058dea4325c4e2410cab127fad378b10b125f934b05603907f",
+      "case_ids": [
+        "fastapi.middleware.custom-upload-budget-accepted",
+        "fastapi.middleware.custom-upload-budget-exceeded"
+      ]
+    },
+    {
       "id": "custom-response-tutorial001-upstream",
       "input_path": "tests/fixtures/inputs/parity/custom-response-tutorial001-upstream.json",
       "input_sha256": "044a4fd49efc8745a0537878d7c68b72cdf9858a55bf8546fdb7383feda18b18",
@@ -2223,9 +2236,9 @@
     {
       "id": "request-uploads",
       "input_path": "tests/fixtures/inputs/parity/request-uploads.json",
-      "input_sha256": "eca4e35f405b41f6b1f553304c27692f80848d4c4e04dcebb4e02a9690bead5b",
+      "input_sha256": "17593bb5af860d5104180ebaf754812784bc53828f69c888a1f4fd085521ad7f",
       "recipe_path": "tests/fixtures/input-recipes/parity/request-uploads.yaml",
-      "recipe_sha256": "a4c8fbcc39c7abbd2461f13abc684b408faeeaec8bb55bddf874fa51eda21933",
+      "recipe_sha256": "8545158d66e3f89c2c30eda3ae738c40e194b48b513ae6aa9f6a22b9bd8cd27f",
       "workload_path": "tests/fixtures/workloads/request_uploads.py",
       "workload_sha256": "934b7d2453af1185edbe45f99fc8413ef86ff26ef6f952d2efcd505e9feddba2",
       "case_ids": [
@@ -2234,7 +2247,8 @@
         "fastapi.request-uploads.bytes-file-order.test-list-bytes-file-preserves-order",
         "fastapi.request-uploads.request-files-001-02.test-post-upload-file",
         "fastapi.request-uploads.request-files-002.test-post-files",
-        "fastapi.request-uploads.request-forms-files-001.test-post-files-and-token"
+        "fastapi.request-uploads.request-forms-files-001.test-post-files-and-token",
+        "fastapi.request-uploads.request-files.openapi-schema"
       ],
       "oracle_profile_extension": "standard-multipart"
     },
@@ -4452,6 +4466,53 @@
       "observation_selectors": [
         "http.body.bytes",
         "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:advanced/middleware.md",
+      "fixture_id": "fastapi.docs.advanced-middleware",
+      "workflow_id": "custom-middleware-upload-limit",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.middleware.custom-upload-budget-accepted",
+        "fastapi.middleware.custom-upload-budget-exceeded"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/handling-errors.md",
+      "fixture_id": "fastapi.docs.tutorial-handling-errors",
+      "workflow_id": "custom-middleware-upload-limit",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.middleware.custom-upload-budget-accepted",
+        "fastapi.middleware.custom-upload-budget-exceeded"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_custom_middleware_exception.py",
+      "fixture_id": "fastapi.test.test-custom-middleware-exception",
+      "workflow_id": "custom-middleware-upload-limit",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.middleware.custom-upload-budget-accepted",
+        "fastapi.middleware.custom-upload-budget-exceeded"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
         "http.status"
       ]
     },
@@ -7091,14 +7152,13 @@
       "fixture_id": "fastapi.test.test-custom-middleware-exception",
       "workflow_id": "middleware",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.middleware.custom-asgi-body-accepted",
         "fastapi.middleware.custom-asgi-body-exceeded"
       ],
       "observation_selectors": [
         "http.body.bytes",
-        "http.headers.ordered",
         "http.status"
       ]
     },
@@ -9764,6 +9824,23 @@
       ]
     },
     {
+      "source_item_id": "documented-page:tutorial/request-files.md",
+      "fixture_id": "fastapi.docs.tutorial-request-files",
+      "workflow_id": "request-uploads",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.request-uploads.request-files-001-02.test-post-upload-file",
+        "fastapi.request-uploads.request-files-002.test-post-files",
+        "fastapi.request-uploads.request-files.openapi-schema"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status",
+        "openapi.document"
+      ]
+    },
+    {
       "source_item_id": "upstream-test:tests/test_file_and_form_order_issue_9116.py",
       "fixture_id": "fastapi.test.test-file-and-form-order-issue-9116",
       "workflow_id": "request-uploads",
@@ -9810,13 +9887,16 @@
       "fixture_id": "fastapi.test.test-tutorial-test-request-files-test-tutorial001-02",
       "workflow_id": "request-uploads",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes docs.response.status, http.body.bytes, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
-        "fastapi.request-uploads.request-files-001-02.test-post-upload-file"
+        "fastapi.request-uploads.request-files-001-02.test-post-upload-file",
+        "fastapi.request-uploads.request-files.openapi-schema"
       ],
       "observation_selectors": [
+        "docs.response.status",
         "http.body.bytes",
-        "http.status"
+        "http.status",
+        "openapi.document"
       ]
     },
     {
