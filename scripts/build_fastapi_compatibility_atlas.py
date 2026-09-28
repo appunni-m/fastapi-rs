@@ -2938,6 +2938,28 @@ from atlas_tutorial_test_review_mappings import TUTORIAL_TEST_REVIEW_MAPPINGS  #
 
 merge_test_review_mappings(TUTORIAL_TEST_REVIEW_MAPPINGS)
 
+# Response, encoder, and security waves keep their source review separate from
+# the generator's heuristic classification logic.
+from atlas_response_openapi_wave_mappings import (  # noqa: E402
+    RESPONSE_OPENAPI_TEST_EXCLUSIONS,
+    RESPONSE_OPENAPI_TEST_REVIEW_MAPPINGS,
+)
+from atlas_security_wave_mappings import SECURITY_TEST_REVIEW_MAPPINGS  # noqa: E402
+
+merge_test_review_mappings(RESPONSE_OPENAPI_TEST_REVIEW_MAPPINGS)
+merge_test_review_mappings(SECURITY_TEST_REVIEW_MAPPINGS)
+
+for test_path, exclusions in RESPONSE_OPENAPI_TEST_EXCLUSIONS.items():
+    TEST_FUNCTION_EXCLUSIONS.setdefault(test_path, {}).update(
+        {function_name: evidence["reason"] for function_name, evidence in exclusions.items()}
+    )
+    TEST_FUNCTION_EXCLUSION_EVIDENCE.setdefault(test_path, {}).update(
+        {
+            function_name: evidence.get("supporting_sources", [])
+            for function_name, evidence in exclusions.items()
+        }
+    )
+
 TEST_REVIEW_MAPPINGS.setdefault("tests/test_multipart_installation.py", {}).update(
     {
         "feature_ids": ["request-validation", "public-api-errors"],
@@ -4283,6 +4305,13 @@ from atlas_tutorial_doc_review_mappings import (  # noqa: E402
 
 DOC_PAGE_REVIEW_MAPPINGS.update(TUTORIAL_DOC_PAGE_REVIEW_MAPPINGS)
 DOC_EXCLUSION_OVERRIDES.update(TUTORIAL_DOC_EXCLUSION_OVERRIDES)
+
+# Selected advanced and how-to pages reuse already-indexed workflow cases.
+from atlas_advanced_howto_wave_mappings import (  # noqa: E402
+    DOC_PAGE_REVIEW_MAPPINGS as ADVANCED_HOWTO_DOC_PAGE_REVIEW_MAPPINGS,
+)
+
+DOC_PAGE_REVIEW_MAPPINGS.update(ADVANCED_HOWTO_DOC_PAGE_REVIEW_MAPPINGS)
 
 FEATURES = [
     {

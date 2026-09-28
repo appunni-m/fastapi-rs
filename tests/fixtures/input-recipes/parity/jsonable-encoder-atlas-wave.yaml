@@ -1,0 +1,300 @@
+schema: fastapi-rs/python-api-workflow@1
+workload:
+  file: tests/fixtures/workloads/jsonable_encoder_atlas_wave.py
+  factory: create_argument_bundles
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.jsonable-encoder-atlas-wave.output-matrix
+  probes:
+  - probe_id: dict-default
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: dict.default
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  - probe_id: dict-include-set
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: dict.include-set
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  - probe_id: dict-exclude-set
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: dict.exclude-set
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  - probe_id: dict-empty-include
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: dict.empty-include
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  - probe_id: dict-empty-exclude
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: dict.empty-exclude
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  - probe_id: dict-include-list
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: dict.include-list
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  - probe_id: dict-exclude-list
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: dict.exclude-list
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  - probe_id: custom-class
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: object.custom-class
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  - probe_id: dictable-object
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: object.dictable
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  - probe_id: dataclass
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: object.dataclass
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  - probe_id: custom-field-serializer
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: model.custom-serializer
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  - probe_id: model-enum-config
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: model.enum-config
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  - probe_id: model-alias
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: model.alias
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  - probe_id: model-defaults
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: model.defaults
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  - probe_id: model-exclude-unset
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: model.exclude-unset
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  - probe_id: model-exclude-defaults
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: model.exclude-defaults
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  - probe_id: model-combined-filters
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: model.combined-filter
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  - probe_id: nested-model-list
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: nested.model-list
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  - probe_id: nested-model-dict
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: nested.model-dict
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  - probe_id: nested-model-dict-list
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: nested.model-dict-list
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  - probe_id: custom-encoder-exact-subtype
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: custom-encoder.exact
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  - probe_id: custom-encoder-parent-type
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: custom-encoder.base
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  - probe_id: custom-enum-encoder
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: enum.custom-encoder
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  - probe_id: pure-path-in-model
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: path.model-pure
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  - probe_id: pure-posix-path-in-model
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: path.model-posix
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  - probe_id: pure-windows-path-in-model
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: path.model-windows
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  - probe_id: pure-path-value
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: path.value
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  - probe_id: decimal-finite-float
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: decimal.float
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  - probe_id: decimal-integer
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: decimal.integer
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  - probe_id: deque-child-model
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: nested.deque-models
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  - probe_id: undefined-value
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: undefined.value
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  - probe_id: pydantic-color
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: color.core
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  source_evidence:
+  - path: tests/test_jsonable_encoder.py
+    kind: upstream_test
+    sha256: cea093a4d8b99f5e2728b05b172378582f8add4b7199390bb47058dfe532b8a5

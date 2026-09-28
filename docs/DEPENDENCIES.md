@@ -37,7 +37,7 @@ AnyIO 4.12.1's exact runtime edges are `idna>=2.8`, `typing_extensions>=4.5; pyt
 
 ### Pydantic's native subtree
 
-Pydantic is **not all Rust**. Its Python package defines models, inspects annotations, and generates core schemas; `pydantic-core` executes validation and serialization in Rust. FastAPI uses both layers and imports Pydantic internals as well as `pydantic_core` symbols. Reusing Pydantic therefore avoids reimplementing arbitrary Python model/type behavior; it does not make the FastAPI facade Rust-native. FastAPI 0.141.1's compatibility helpers explicitly reject Pydantic v1 models.
+Pydantic is **not all Rust**. Its Python package defines models, inspects annotations, and generates core schemas; `pydantic-core` executes validation and serialization in Rust. FastAPI uses both layers and imports Pydantic internals as well as `pydantic_core` symbols. FastAPI-RS keeps Pydantic as the model/schema dependency rather than reimplementing arbitrary user-defined Python model behavior; FastAPI-specific orchestration remains Rust-owned behind the pass-through facade. FastAPI 0.141.1's compatibility helpers explicitly reject Pydantic v1 models.
 
 The separately versioned `pydantic-core 2.46.4` Cargo manifest resolves these direct native dependencies in its own Rust graph. This is **not** an extra Python runtime requirement of FastAPI-RS if it consumes the published Pydantic wheel; it becomes part of the Rust SBOM if the project vendors or rebuilds that engine.
 

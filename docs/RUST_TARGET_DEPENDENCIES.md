@@ -92,7 +92,9 @@ dependency. These target Python requirements are ranges or package pins, not a
 FastAPI-RS Python lockfile; the FastAPI 0.141.1 oracle closure is separately
 locked and documented in [`DEPENDENCY_GRAPH.md`](DEPENDENCY_GRAPH.md).
 
-The application-level language boundary is therefore Python package code for
-Pydantic models and user-facing Python API behavior, Rust for the FastAPI and
-Starlette implementation cores and `pydantic-core`, and PyO3 for the native
-module boundary. The current FastAPI-RS Python package is still only a scaffold.
+The language boundary is Python for Pydantic's model/schema layer and user
+application code, Rust for FastAPI-RS and Starlette-RS framework behavior and
+`pydantic-core`, and PyO3 for the native module boundary. FastAPI-RS's own
+public `fastapi` Python package is restricted to native re-exports and direct
+argument forwarding. The current FastAPI-RS Python package is still only a
+scaffold.

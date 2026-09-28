@@ -127,7 +127,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@2
-    sha256: 05f00aa203384da55a7dc827e3eebffae5e6234e37d33cdc469c1d90c3df0372
+    sha256: c984dbe8c7d7579ca3b65d01f0a4b46acb77eac1a719e7f5fe271fa2406d0680
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -156,11 +156,11 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 4efadcd89bb93a620b03e28b02d10b87936f57f771fa038279b4fec279f5455a
+    sha256: cd46c10503e5ee2270b165f519ae43a1d7f2f4040b776a5ca3149f27fba7bae5
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 557
-      test_case_designs: 2165
+      test_case_designs: 2163
     source_artifact_pointer: /fixture_backlog_ref
   observation_selector_catalog:
     path: tests/fixtures/observation-selectors.json
@@ -193,14 +193,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@1
-    sha256: cf0a53c18387852c9f03be14624fa3b761a164f22d8f54b993f98323986e0a45
+    sha256: 8927156ba39e690f2a79621a820c2ecee93fd3fd9d2b6bd2429b2cca23a99f9c
     schema_path: tests/fixtures/schemas/materialized-input-index.schema.json
     schema_sha256: 467200b835dfd99ab16dfbd4ca4507145e070c73aa55d4425fd78e11141c3e86
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 238
-      cases: 1072
-      partial_source_mappings: 630
+      workflows: 241
+      cases: 1090
+      partial_source_mappings: 647
 
 contract_metadata:
   aliases:
@@ -18751,50 +18751,17 @@ api_surface_contract:
       fixture_id: fastapi.docs.how-to-custom-request-and-route
       fixture_design_ref: /fixture_designs/34
       observation_selectors:
-      - error.class
-      - error.public_attributes
       - http.body.bytes
-      - http.body.json
       - http.headers.ordered
       - http.status
-      - openapi.paths
-      - openapi.request_schema
-      - process.exit_code
-      - process.stderr
-      - process.stdout
-      - python.attribute_value
-      - python.import_path
-      - python.object_identity
-      - python.signature
-      - route.match
-      - validation.error_class
-      - validation.error_details
-      - warnings.category_message
     feature_ids:
     - app-routing
-    - middleware-integrations
-    - public-api-errors
     - request-validation
+    - response-serialization
     observation_selectors:
-    - error.class
-    - error.public_attributes
     - http.body.bytes
-    - http.body.json
     - http.headers.ordered
     - http.status
-    - openapi.paths
-    - openapi.request_schema
-    - process.exit_code
-    - process.stderr
-    - process.stdout
-    - python.attribute_value
-    - python.import_path
-    - python.object_identity
-    - python.signature
-    - route.match
-    - validation.error_class
-    - validation.error_details
-    - warnings.category_message
     behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
@@ -20728,25 +20695,11 @@ api_surface_contract:
       fixture_id: fastapi.docs.how-to-authentication-error-status-code
       fixture_design_ref: /fixture_designs/30
       observation_selectors: &id018
-      - dependency.call_order
-      - dependency.cleanup_order
-      - error.class
-      - error.public_attributes
+      - docs.response.status
       - http.body.bytes
-      - http.body.json
       - http.headers.ordered
       - http.status
-      - openapi.paths
-      - openapi.request_schema
       - openapi.security
-      - python.attribute_value
-      - python.import_path
-      - python.object_identity
-      - python.signature
-      - route.match
-      - validation.error_class
-      - validation.error_details
-      - warnings.category_message
     - coverage_matrix_ref: /coverage_matrix/552
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
@@ -20754,32 +20707,22 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/51
       observation_selectors: *id017
     feature_ids:
-    - app-routing
     - dependency-security
     - openapi-docs
     - public-api-errors
     - request-validation
     observation_selectors:
     - dependency.call_order
-    - dependency.cleanup_order
-    - error.class
-    - error.public_attributes
+    - docs.response.status
     - http.body.bytes
     - http.body.json
     - http.headers.ordered
     - http.status
     - openapi.document
-    - openapi.paths
     - openapi.request_schema
     - openapi.security
-    - python.attribute_value
-    - python.import_path
-    - python.object_identity
-    - python.signature
-    - route.match
     - validation.error_class
     - validation.error_details
-    - warnings.category_message
     behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
@@ -21395,32 +21338,22 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/51
       observation_selectors: *id017
     feature_ids:
-    - app-routing
     - dependency-security
     - openapi-docs
     - public-api-errors
     - request-validation
     observation_selectors:
     - dependency.call_order
-    - dependency.cleanup_order
-    - error.class
-    - error.public_attributes
+    - docs.response.status
     - http.body.bytes
     - http.body.json
     - http.headers.ordered
     - http.status
     - openapi.document
-    - openapi.paths
     - openapi.request_schema
     - openapi.security
-    - python.attribute_value
-    - python.import_path
-    - python.object_identity
-    - python.signature
-    - route.match
     - validation.error_class
     - validation.error_details
-    - warnings.category_message
     behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
@@ -22206,32 +22139,22 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/51
       observation_selectors: *id017
     feature_ids:
-    - app-routing
     - dependency-security
     - openapi-docs
     - public-api-errors
     - request-validation
     observation_selectors:
     - dependency.call_order
-    - dependency.cleanup_order
-    - error.class
-    - error.public_attributes
+    - docs.response.status
     - http.body.bytes
     - http.body.json
     - http.headers.ordered
     - http.status
     - openapi.document
-    - openapi.paths
     - openapi.request_schema
     - openapi.security
-    - python.attribute_value
-    - python.import_path
-    - python.object_identity
-    - python.signature
-    - route.match
     - validation.error_class
     - validation.error_details
-    - warnings.category_message
     behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
@@ -23174,32 +23097,22 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/51
       observation_selectors: *id017
     feature_ids:
-    - app-routing
     - dependency-security
     - openapi-docs
     - public-api-errors
     - request-validation
     observation_selectors:
     - dependency.call_order
-    - dependency.cleanup_order
-    - error.class
-    - error.public_attributes
+    - docs.response.status
     - http.body.bytes
     - http.body.json
     - http.headers.ordered
     - http.status
     - openapi.document
-    - openapi.paths
     - openapi.request_schema
     - openapi.security
-    - python.attribute_value
-    - python.import_path
-    - python.object_identity
-    - python.signature
-    - route.match
     - validation.error_class
     - validation.error_details
-    - warnings.category_message
     behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
