@@ -70,6 +70,7 @@ CORE_TEST_REVIEW_MAPPINGS = {
             "websocket.close_reason",
             "websocket.event_order",
             "websocket.messages",
+            "websocket.workload_trace",
         ],
         "supporting_sources": [
             {
@@ -215,8 +216,9 @@ CORE_TEST_REVIEW_MAPPINGS = {
                     "websocket.close_reason",
                     "websocket.event_order",
                     "websocket.messages",
+                    "websocket.workload_trace",
                 ],
-                "A missing dependency header is converted by FastAPI's WebSocket validation handler into a policy-violation close instead of escaping to user middleware.",
+                "A missing dependency header is converted by FastAPI's WebSocket validation handler into a policy-violation close; the workload trace confirms the custom middleware catches no error.",
             ),
             "test_depend_err_middleware": _case(
                 ["app-routing", "middleware-integrations"],

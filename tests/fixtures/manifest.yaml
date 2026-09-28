@@ -127,7 +127,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@2
-    sha256: 6eb2892087c5709c13c1a87d411cf840377302668ce4c04da00efed5c2d4256b
+    sha256: 4655d91202eb0094f4fd0fd2f84369cc54064a0204de7ec8379d875662373d06
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -156,7 +156,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 829890832522781667b0b4e84bb0910ed59c943b56deb0d3c2e4821f2c5d287d
+    sha256: 7709acfbacb3e02b70a0a124d119bf45fd5a3a5d4828fefd735584d420c44ccf
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 557
@@ -165,10 +165,10 @@ source_artifacts:
   observation_selector_catalog:
     path: tests/fixtures/observation-selectors.json
     schema: fastapi-rs/observation-selector-catalog@1
-    sha256: a7ad92abef583fd6ae6fd80d6b4e893dc458f04b777dfcb64c6122385a2f9530
+    sha256: 94d7f4e802a83048794c064b6b840d395ea5027b377fc3d4c51bd730332a69b6
     purpose: Exact projection semantics for the atlas and fixture selectors
     counts:
-      selectors: 48
+      selectors: 49
       parameterized_selectors: 1
   runtime_api_surface_core:
     path: tests/fixtures/runtime-api-surface-core.json
@@ -193,13 +193,13 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@1
-    sha256: 41b5a9196897d8d2c23beb0f62dc83ae432f76e1074e4109213f0c063c0e5dfb
+    sha256: 870ece2588779f39a63180293b14bfe3761ba8ac816d640a7d8f53b3ef961cde
     schema_path: tests/fixtures/schemas/materialized-input-index.schema.json
     schema_sha256: 467200b835dfd99ab16dfbd4ca4507145e070c73aa55d4425fd78e11141c3e86
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 221
-      cases: 1015
+      workflows: 223
+      cases: 1016
       partial_source_mappings: 616
 
 contract_metadata:
@@ -291,10 +291,10 @@ unresolved:
     comparator_state: exact-selector-comparator-implemented; live target comparison unavailable
     schema_id: fastapi-rs/python-asgi-workflow@2
     schema_path: tests/fixtures/schemas/python-asgi-workflow-v2.schema.json
-    schema_sha256: ba9aa68d4eaf9d6624b91626840e8811956f1458bba30e096583a4a203de9952
+    schema_sha256: d4e54fe337eb941ac027145d9c18d806c52a1c15b0f758be5a76b1da56f88e74
     result_schema_id: fastapi-rs/python-asgi-workflow-result@2
     result_schema_path: tests/fixtures/schemas/python-asgi-workflow-result-v2.schema.json
-    result_schema_sha256: c2ca294afad2e57d7eef6ea7b0b05fe7da4067c2cdf44753a3c49d954172af75
+    result_schema_sha256: 639681139e566b9fcc6b06cc8bd1c94be3b5ef4df5940020d4f8c71934d2e68b
     comparison_schema_id: fastapi-rs/python-asgi-comparison@2
     comparison_schema_path: tests/fixtures/schemas/python-asgi-comparison-v2.schema.json
     comparison_schema_sha256: 3e9cb95f0786f370f795e65316e8c69c7b23c9f0ce613e40c40ae8fe987d84c3
@@ -322,17 +322,17 @@ unresolved:
       oracle; the isolated target worker is present but stops until the public
       fastapi facade and its identity are available.
   python_asgi_workflow_v3:
-    state: schema-and-runner-present; 190 indexed workflows include lifecycle and constructor-error cases
+    state: schema-and-runner-present; 13 indexed v3 workflows include constructor, WebSocket, and lifecycle cases
     schema_id: fastapi-rs/python-asgi-workflow@3
     schema_path: tests/fixtures/schemas/python-asgi-workflow-v3.schema.json
-    schema_sha256: 4a4c7be3048a3add65dc1551207259d9533591b574a6739d5f2e9e541519f089
+    schema_sha256: 09a3272cb193304bd8e1b0857993e7666fe04739b3792dbfaa5623b9f161fdba
     result_schema_id: fastapi-rs/python-asgi-workflow-result@3
     result_schema_path: tests/fixtures/schemas/python-asgi-workflow-result-v3.schema.json
-    result_schema_sha256: b9742873355ffa73f351e3e78729ef47e2bbea652b716a9f909de98d2e26be5a
+    result_schema_sha256: 6cff7e6ae1e5fe0e819d57bed98ca8d8ffeecb6829f7a91bb6092e99b44d2869
     comparison_schema_id: fastapi-rs/python-asgi-comparison@3
     comparison_schema_path: tests/fixtures/schemas/python-asgi-comparison-v3.schema.json
     comparison_schema_sha256: 26d107e919e8aa276ffc29c20d6d1f58df8e8b1a158a25d3e0e018901a0cc8bc
-    coverage: constructor observations and explicit ASGI lifespan startup/request/shutdown workflows
+    coverage: constructor observations, explicit HTTP/WebSocket ASGI actions, and lifespan startup/request/shutdown workflows
     warning_capture: planned; no workflow selector observes Python warning category/message
   python_api_workflow:
     state: oracle-only; target-comparison-unavailable

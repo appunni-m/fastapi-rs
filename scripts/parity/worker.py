@@ -19,6 +19,8 @@ import uuid
 from pathlib import Path
 from typing import Any
 
+from starlette.websockets import WebSocketDisconnect
+
 ROOT = Path(__file__).resolve().parents[2]
 WORKFLOW_SCHEMA_ID = "fastapi-rs/python-asgi-workflow@2"
 WORKFLOW_SCHEMA_V3_ID = "fastapi-rs/python-asgi-workflow@3"
@@ -327,12 +329,29 @@ def _pointer_get(document: Any, pointer: str) -> tuple[bool, Any]:
     return True, value
 
 
+def _is_expected_websocket_disconnect(
+    error: Exception,
+    scope: dict[str, Any],
+    event_trace: list[dict[str, Any]],
+) -> bool:
+    """Normalize terminal peer closure after Starlette raises while receiving it."""
+    return (
+        scope.get("type") == "websocket"
+        and isinstance(error, WebSocketDisconnect)
+        and any(
+            event.get("direction") == "receive" and event.get("type") == "websocket.disconnect"
+            for event in event_trace
+        )
+    )
+
+
 def _observe(
     observations: list[dict[str, Any]],
     messages: list[dict[str, Any]],
     *,
     validation_error_class: str | None = None,
     event_trace: list[dict[str, Any]] | None = None,
+    workload_trace: list[str] | None = None,
 ) -> list[dict[str, Any]]:
     starts = [message for message in messages if message.get("type") == "http.response.start"]
     start = starts[0] if starts else None
@@ -419,6 +438,10 @@ def _observe(
                             }
                         )
                 values = {"messages": payloads}
+            elif selector == "workload_trace":
+                if workload_trace is None:
+                    raise WorkerError("WebSocket workload trace requires a v3 workload")
+                values = {"workload_trace": copy.deepcopy(workload_trace)}
             else:
                 raise WorkerError(f"worker does not support WebSocket selector: {selector}")
             result.append({"index": index, "kind": kind, "selector": selector, "values": values})
@@ -459,7 +482,9 @@ async def _run_case(case: dict[str, Any], factory: Any) -> dict[str, Any]:
         try:
             await app(scope, receive, _make_send(messages, event_trace))
         except Exception as exc:
-            dispatch_error = exc
+            dispatch_error = (
+                None if _is_expected_websocket_disconnect(exc, scope, event_trace) else exc
+            )
 
         if dispatch_error is not None and not captures_validation_error_class:
             error = {
@@ -565,6 +590,7 @@ async def _run_action_v3(
     app: Any,
     *,
     lifespan_state: dict[str, Any] | None = None,
+    workload_trace: list[str],
 ) -> dict[str, Any]:
     scope = _make_scope(action["scope"])
     if lifespan_state is not None:
@@ -583,7 +609,7 @@ async def _run_action_v3(
     try:
         await app(scope, receive, _make_send(messages, event_trace))
     except Exception as exc:
-        dispatch_error = exc
+        dispatch_error = None if _is_expected_websocket_disconnect(exc, scope, event_trace) else exc
 
     if dispatch_error is not None and not captures_validation_error_class:
         return {
@@ -603,6 +629,7 @@ async def _run_action_v3(
             messages,
             validation_error_class=qualified_error_class,
             event_trace=event_trace,
+            workload_trace=workload_trace,
         )
     except Exception as exc:
         return {
@@ -735,6 +762,7 @@ async def _run_lifespan_action_v3(
                     request_action,
                     app,
                     lifespan_state=lifecycle_state,
+                    workload_trace=workload_trace,
                 )
         finally:
             # The same application and lifespan task stay live until request actions
@@ -828,7 +856,9 @@ async def _run_case_v3(case: dict[str, Any], factory: Any) -> dict[str, Any]:
         )
         ordered_results = [action_results[action["action_id"]] for action in actions]
     else:
-        ordered_results = [await _run_action_v3(action, app) for action in actions]
+        ordered_results = [
+            await _run_action_v3(action, app, workload_trace=workload_trace) for action in actions
+        ]
     return {
         "case_id": case["case_id"],
         "status": "completed",

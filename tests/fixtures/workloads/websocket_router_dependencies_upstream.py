@@ -52,7 +52,6 @@ def websocket_middleware(middleware_func: Any) -> Any:
 
 def create_app(factory_input: Mapping[str, Any], event_trace: list[str]) -> FastAPI:
     """Create the route matrix and selected dependency/error configuration."""
-    del event_trace
 
     middleware = []
     middleware_mode = factory_input.get("middleware_mode")
@@ -63,6 +62,7 @@ def create_app(factory_input: Mapping[str, Any], event_trace: list[str]) -> Fast
             try:
                 await call_next()
             except Exception:
+                event_trace.append("validation-error-caught")
                 raise
 
         middleware = [Middleware(websocket_middleware(validation_catcher))]

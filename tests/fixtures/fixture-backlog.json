@@ -76,7 +76,7 @@
     "schema": "fastapi-rs/python-asgi-workflow@2",
     "schema_id": "https://fastapi-rs.dev/schemas/python-asgi-workflow/2",
     "schema_path": "tests/fixtures/schemas/python-asgi-workflow-v2.schema.json",
-    "schema_sha256": "ba9aa68d4eaf9d6624b91626840e8811956f1458bba30e096583a4a203de9952",
+    "schema_sha256": "d4e54fe337eb941ac027145d9c18d806c52a1c15b0f758be5a76b1da56f88e74",
     "state": "input validated by the pinned-source oracle; exact comparator and fail-closed target worker present; public fastapi facade pending",
     "workload": {
       "factory": "create_app",
@@ -257413,10 +257413,11 @@
             "websocket.close_code",
             "websocket.close_reason",
             "websocket.event_order",
-            "websocket.messages"
+            "websocket.messages",
+            "websocket.workload_trace"
           ],
           "reviewed_mapping": {
-            "rationale": "A missing dependency header is converted by FastAPI's WebSocket validation handler into a policy-violation close instead of escaping to user middleware.",
+            "rationale": "A missing dependency header is converted by FastAPI's WebSocket validation handler into a policy-violation close; the workload trace confirms the custom middleware catches no error.",
             "source_evidence": [
               {
                 "end_line": 233,
@@ -257497,13 +257498,15 @@
                 "websocket.close_code",
                 "websocket.close_reason",
                 "websocket.event_order",
-                "websocket.messages"
+                "websocket.messages",
+                "websocket.workload_trace"
               ],
               "selectors": [
                 "websocket.close_code",
                 "websocket.close_reason",
                 "websocket.event_order",
-                "websocket.messages"
+                "websocket.messages",
+                "websocket.workload_trace"
               ]
             }
           ],
@@ -257999,7 +258002,8 @@
         "websocket.close_code",
         "websocket.close_reason",
         "websocket.event_order",
-        "websocket.messages"
+        "websocket.messages",
+        "websocket.workload_trace"
       ],
       "selector_evidence": [
         {
@@ -258008,13 +258012,15 @@
             "websocket.close_code",
             "websocket.close_reason",
             "websocket.event_order",
-            "websocket.messages"
+            "websocket.messages",
+            "websocket.workload_trace"
           ],
           "selectors": [
             "websocket.close_code",
             "websocket.close_reason",
             "websocket.event_order",
-            "websocket.messages"
+            "websocket.messages",
+            "websocket.workload_trace"
           ]
         }
       ],

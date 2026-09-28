@@ -285,10 +285,12 @@
           "minItems": 1,
           "uniqueItems": true,
           "items": {
-            "type": "string",
-            "pattern": "^/"
+            "oneOf": [
+              {"const": ""},
+              {"type": "string", "pattern": "^/"}
+            ]
           },
-          "description": "RFC 6901 pointers into the live OpenAPI response body."
+          "description": "RFC 6901 pointers into the live OpenAPI response body, including the empty-string document root pointer."
         },
         "comparison": {
           "const": "exact"

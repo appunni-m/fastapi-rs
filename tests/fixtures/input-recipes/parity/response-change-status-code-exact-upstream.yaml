@@ -1,0 +1,36 @@
+schema: fastapi-rs/python-asgi-workflow@3
+workload:
+  file: tests/fixtures/workloads/response_change_status_code_exact_upstream.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.response.change-status-code.nested-dependency
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: request-root
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+  # Upstream stimulus: tests/test_response_change_status_code.py:7-8 sets 201;
+  # :11-12 creates the parent dependency; :15-17 attaches it and returns the body.
+  # This case observes the upstream assertions at tests/test_response_change_status_code.py:23-26.
+  source_evidence:
+  - {path: tests/test_response_change_status_code.py, kind: upstream_test}

@@ -680,8 +680,10 @@
                     ],
                     "properties": {
                       "pointer": {
-                        "type": "string",
-                        "minLength": 1
+                        "oneOf": [
+                          {"const": ""},
+                          {"type": "string", "pattern": "^/"}
+                        ]
                       },
                       "present": {
                         "const": true
@@ -707,8 +709,10 @@
                     ],
                     "properties": {
                       "pointer": {
-                        "type": "string",
-                        "minLength": 1
+                        "oneOf": [
+                          {"const": ""},
+                          {"type": "string", "pattern": "^/"}
+                        ]
                       },
                       "present": {
                         "const": false
@@ -881,7 +885,8 @@
             "close_code",
             "close_reason",
             "event_order",
-            "messages"
+            "messages",
+            "workload_trace"
           ]
         },
         "values": {
@@ -984,6 +989,29 @@
                   "type": "array",
                   "items": {
                     "$ref": "#/$defs/websocketMessage"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "properties": {
+            "selector": {
+              "const": "workload_trace"
+            },
+            "values": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "workload_trace"
+              ],
+              "properties": {
+                "workload_trace": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
                   }
                 }
               }

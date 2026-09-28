@@ -1,3 +1,5 @@
+# The documented app replies repeatedly; the worker normalizes the terminal peer
+# disconnect after both exchanges have been observed.
 schema: fastapi-rs/python-asgi-workflow@2
 workload:
   file: tests/fixtures/workloads/websocket_echo.py
@@ -15,7 +17,7 @@ cases:
         spec_version: '2.4'
       http_version: '1.1'
       scheme: ws
-      path: /ws/echo
+      path: /ws
       query_string: ''
       root_path: ''
       headers:
@@ -32,59 +34,12 @@ cases:
     - type: websocket.connect
     - type: websocket.receive
       text: fastapi-rs
-    - type: websocket.disconnect
-      code: 1000
-      reason: client complete
-    observations:
-    - kind: websocket
-      selector: close_code
-      comparison: exact
-    - kind: websocket
-      selector: event_order
-      comparison: ordered
-    - kind: websocket
-      selector: messages
-      comparison: ordered
-  source_evidence:
-  - path: tests/test_ws_router.py
-    kind: upstream_test
-  - path: docs/en/docs/advanced/websockets.md
-    kind: upstream_documentation
-- case_id: fastapi.websocket.echo-binary
-  actions:
-  - action_id: echo-binary-session
-    kind: websocket_session
-    scope:
-      type: websocket
-      asgi:
-        version: '3.0'
-        spec_version: '2.4'
-      http_version: '1.1'
-      scheme: ws
-      path: /ws/echo-binary
-      query_string: ''
-      root_path: ''
-      headers:
-      - - host
-        - testserver
-      client:
-      - 127.0.0.1
-      - 123
-      server:
-      - testserver
-      - 80
-      subprotocols: []
-    receive_events:
-    - type: websocket.connect
     - type: websocket.receive
-      bytes_base64: ABD/
+      text: fastapi-rs-again
     - type: websocket.disconnect
       code: 1000
       reason: client complete
     observations:
-    - kind: websocket
-      selector: close_code
-      comparison: exact
     - kind: websocket
       selector: event_order
       comparison: ordered
@@ -92,7 +47,5 @@ cases:
       selector: messages
       comparison: ordered
   source_evidence:
-  - path: tests/test_ws_router.py
-    kind: upstream_test
   - path: docs/en/docs/advanced/websockets.md
     kind: upstream_documentation

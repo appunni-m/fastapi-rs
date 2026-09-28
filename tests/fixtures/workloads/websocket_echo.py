@@ -1,4 +1,4 @@
-"""Independent text-echo WebSocket workload for the FastAPI compatibility lane."""
+"""Independent text-exchange workload from the FastAPI WebSocket tutorial."""
 
 from __future__ import annotations
 
@@ -8,18 +8,11 @@ from fastapi import FastAPI, WebSocket
 def create_app() -> FastAPI:
     app = FastAPI()
 
-    @app.websocket("/ws/echo")
+    @app.websocket("/ws")
     async def echo(websocket: WebSocket) -> None:
         await websocket.accept()
-        message = await websocket.receive_text()
-        await websocket.send_text(message.upper())
-        await websocket.close()
-
-    @app.websocket("/ws/echo-binary")
-    async def echo_binary(websocket: WebSocket) -> None:
-        await websocket.accept()
-        payload = await websocket.receive_bytes()
-        await websocket.send_bytes(payload[::-1])
-        await websocket.close()
+        while True:
+            message = await websocket.receive_text()
+            await websocket.send_text(f"Message text was: {message}")
 
     return app
