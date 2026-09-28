@@ -46,8 +46,7 @@ def check_python_facade_control_flow() -> None:
                     f"{type(node).__name__} is forbidden in the Python pass-through layer"
                 )
             if isinstance(node, ast.Import) and any(
-                alias.name == "fastapi" or alias.name.startswith("fastapi.")
-                for alias in node.names
+                alias.name == "fastapi" or alias.name.startswith("fastapi.") for alias in node.names
             ):
                 violations.append(
                     f"{path.relative_to(PROJECT_ROOT)}:{node.lineno}: "
