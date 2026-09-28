@@ -68,6 +68,41 @@ def _source_doc_paths(value: Any) -> set[str]:
     return paths
 
 
+def _implementation_owner_plan(
+    candidate: dict[str, Any],
+    *,
+    candidates_by_id: dict[str, dict[str, Any]],
+    candidate_indexes: dict[str, int],
+) -> tuple[str, str, list[str]]:
+    """Follow source identity aliases to the implementation that owns the object."""
+    current = candidate
+    visited: set[str] = set()
+    source_refs: list[str] = []
+    while True:
+        candidate_id = current["id"]
+        if candidate_id in visited:
+            break
+        visited.add(candidate_id)
+        source_refs.append(_pointer("api_candidates", candidate_indexes[candidate_id]))
+        if current.get("starlette_delegation") == "direct_reexport":
+            reason = (
+                "direct_starlette_reexport"
+                if len(source_refs) == 1
+                else "identity_alias_chain_to_starlette"
+            )
+            return "starlette-rs", reason, source_refs
+        if current.get("identity_alias") is not True:
+            break
+        target = current.get("target_path")
+        if not isinstance(target, str):
+            break
+        target_candidate = candidates_by_id.get(target)
+        if target_candidate is None:
+            break
+        current = target_candidate
+    return "fastapi-rs", "fastapi_owned_or_adapter", source_refs
+
+
 def build_api_surface_contract(
     *,
     inventory: dict[str, Any],
@@ -85,6 +120,8 @@ def build_api_surface_contract(
         for index, row in enumerate(runtime_core["modules"])
     }
     atlas_candidates = atlas["api_candidates"]
+    candidates_by_id = {candidate["id"]: candidate for candidate in atlas_candidates}
+    candidate_indexes = {candidate["id"]: index for index, candidate in enumerate(atlas_candidates)}
     aliases: dict[str, list[str]] = defaultdict(list)
     for index, alias in enumerate(atlas["aliases"]):
         aliases[alias["id"]].append(_pointer("aliases", index))
@@ -178,8 +215,11 @@ def build_api_surface_contract(
             contract_signature_state = "signature-not-captured"
         signature_statuses[contract_signature_state] += 1
 
-        direct_delegation = candidate.get("starlette_delegation") == "direct_reexport"
-        implementation_owner = "starlette-rs" if direct_delegation else "fastapi-rs"
+        implementation_owner, owner_reason, owner_source_refs = _implementation_owner_plan(
+            candidate,
+            candidates_by_id=candidates_by_id,
+            candidate_indexes=candidate_indexes,
+        )
         owner_counts[implementation_owner] += 1
 
         documentation_refs: list[dict[str, Any]] = []
@@ -243,6 +283,10 @@ def build_api_surface_contract(
                     "target_profile": TARGET_PROFILE,
                     "public_python_path": symbol_id,
                     "implementation_owner": implementation_owner,
+                    "implementation_owner_evidence": {
+                        "kind": owner_reason,
+                        "source_candidate_refs": owner_source_refs,
+                    },
                     "status": "unimplemented",
                     "rust_binding": None,
                 },

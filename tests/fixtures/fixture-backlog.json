@@ -5,7 +5,7 @@
       "declared_pydantic_requirement": ">=2.9.0",
       "declared_starlette_requirement": ">=0.46.0",
       "inventory_path": "tests/fixtures/api-inventory.json",
-      "inventory_sha256": "16505668dbc0376e0d4a2f255daf25b578480746effb8d092dbab0a18aa3bc04",
+      "inventory_sha256": "311676f53a14f1f585060575152ea646198a21c2fabf5d693cb6182ad105aaba",
       "repository": "https://github.com/fastapi/fastapi",
       "version": "0.141.1",
       "working_tree": "pinned-source"
@@ -64,111 +64,12 @@
       "working_tree": "pinned-source"
     }
   },
-  "first_complete_slice": {
+  "first_end_to_end_request_response_slice": {
     "case_ids": [
       "fastapi.first-slice.create-item-valid",
       "fastapi.first-slice.create-item-invalid",
       "fastapi.first-slice.openapi"
     ],
-    "design_cases": [
-      {
-        "actions": [
-          {
-            "headers": [
-              [
-                "x-actor",
-                "reader"
-              ]
-            ],
-            "json": {
-              "name": "cable",
-              "quantity": 2
-            },
-            "kind": "http_request",
-            "method": "POST",
-            "path": "/items/41?color=blue"
-          }
-        ],
-        "case_id": "fastapi.first-slice.create-item.valid",
-        "observations": [
-          "response.status",
-          "response.headers.content-type",
-          "response.body.json"
-        ],
-        "source_paths": [
-          "tests/test_application.py",
-          "tests/test_query.py",
-          "tests/test_response_model_data_filter.py",
-          "tests/test_param_in_path_and_dependency.py",
-          "docs/en/docs/tutorial/first-steps.md",
-          "docs/en/docs/tutorial/response-model.md",
-          "docs/en/docs/tutorial/dependencies/index.md",
-          "docs/en/docs/tutorial/header-params.md"
-        ]
-      },
-      {
-        "actions": [
-          {
-            "headers": [
-              [
-                "x-actor",
-                "reader"
-              ]
-            ],
-            "json": {
-              "name": "cable",
-              "quantity": 0
-            },
-            "kind": "http_request",
-            "method": "POST",
-            "path": "/items/41?color=blue"
-          }
-        ],
-        "case_id": "fastapi.first-slice.create-item.invalid",
-        "observations": [
-          "response.status",
-          "response.headers.content-type",
-          "response.body.json"
-        ],
-        "source_paths": [
-          "docs/en/docs/tutorial/body.md",
-          "tests/test_tutorial/test_body_fields/test_tutorial001.py"
-        ]
-      },
-      {
-        "actions": [
-          {
-            "headers": [],
-            "json": null,
-            "kind": "http_request",
-            "method": "GET",
-            "path": "/openapi.json"
-          }
-        ],
-        "case_id": "fastapi.first-slice.openapi",
-        "observations": [
-          "response.status",
-          "response.headers.content-type",
-          "openapi.paths./items/{item_id}.post",
-          "openapi.operation_id",
-          "openapi.parameters",
-          "openapi.request_schema",
-          "openapi.response_schema"
-        ],
-        "source_paths": [
-          "tests/test_application.py",
-          "tests/test_param_in_path_and_dependency.py",
-          "docs/en/docs/tutorial/first-steps.md",
-          "docs/en/docs/tutorial/dependencies/index.md",
-          "docs/en/docs/tutorial/body.md",
-          "docs/en/docs/tutorial/response-model.md",
-          "docs/en/docs/tutorial/header-params.md",
-          "tests/test_tutorial/test_body_fields/test_tutorial001.py"
-        ]
-      }
-    ],
-    "design_path": "tests/fixtures/drafts/first-slice.json",
-    "design_schema": "fastapi-rs/parity-fixture-design@1",
     "expected_outputs": "absent",
     "input_path": "tests/fixtures/inputs/parity/first-asgi-request.json",
     "input_sha256": "b1c7e5c7c3c24bf3b0d8e44571ca0ef3b39ab740636013daf93c5a5d73b65d47",
@@ -176,7 +77,7 @@
     "schema_id": "https://fastapi-rs.dev/schemas/python-asgi-workflow/2",
     "schema_path": "tests/fixtures/schemas/python-asgi-workflow-v2.schema.json",
     "schema_sha256": "9cfd75ffcf755a82a38f81a51704a63621289629baf29f8e264fbbeb3013f54c",
-    "state": "input validated and executed by the pinned-source oracle; exact comparator present; target worker pending",
+    "state": "input validated by the pinned-source oracle; exact comparator and fail-closed target worker present; public fastapi facade pending",
     "workload": {
       "factory": "create_app",
       "path": "tests/fixtures/workloads/first_slice.py",

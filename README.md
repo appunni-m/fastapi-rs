@@ -60,10 +60,11 @@ behavior are not implemented. No compatibility or parity claim is made.
 - [Parity and benchmark plan](docs/PARITY_BENCHMARK_PLAN.md) and
   [license analysis](docs/LICENSING.md) define the next contract and release work.
 
-The public `fastapi` implementation, complete operation-level contract, and
-FastAPI-RS target worker are not implemented. An exact source/target comparator
-is present but has not been run against two live products. Author input-only
-workflow recipes in `tests/fixtures/input-recipes/parity/`; run
+The public `fastapi` implementation and complete operation-level contract are
+not implemented. The isolated target worker and exact comparator are present,
+but target execution stops until the public facade exists; no source/target
+comparison has run against two live products. Author input-only workflow
+recipes in `tests/fixtures/input-recipes/parity/`; run
 `make parity-inputs` to materialize ignored JSON before validation or execution.
 Recipes contain stimuli only, never expected output. Oracle artifacts under
 `parity-results/` are source observations rather than parity evidence.

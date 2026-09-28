@@ -20,9 +20,11 @@ manifest operations. Many targets expand into classes with multiple methods,
 many public names are aliases, and the `status`/OpenAPI-model targets expand to
 large value/model sets. The active manifest now indexes all 439
 source-supported symbols with source-inventory and runtime-reflection
-pointers. It records 215 runtime signatures, one unavailable Pydantic model
-constructor signature, one module object with no call signature, and 222
-non-callable values/fields. The remaining uncertain candidates and
+pointers. It records 215 runtime signatures, one unavailable constructor
+signature for `Example` (`TypedDict(total=False)`), one module object with no
+call signature, and 222 non-callable values/fields. The source inventory records
+its `total=False` class option; runtime reflection records its required and
+optional keys. The remaining uncertain candidates and
 operation-level behavior requirements still need review before the contract is
 complete.
 
@@ -125,13 +127,16 @@ appear elsewhere in examples or are used as supported extension points.
 `OAuthFlowAuthorizationCode`, `OAuthFlows`, `OAuth2`, `OpenIdConnect`,
 `SecurityScheme`, `Components`, `Tag`, and `OpenAPI`.
 
-These Pydantic models and enums define serialized OpenAPI input/output shapes,
-not merely implementation details. Preserve field aliases, optional/default
-semantics, enum values, extra-field behavior, schema serialization, and
-round-trip validation. The `SecurityScheme` and `SchemaOrBool` names are type
-aliases in source, not classes. Pydantic model fields are generated behavior;
-capture their field names, aliases and validation/serialization rules from the
-pinned source at manifest-generation time.
+Most names in this namespace are Pydantic models or enums that define
+serialized OpenAPI input/output shapes. `Example` is instead a
+`TypedDict(total=False)` with optional `summary`, `description`, `value`, and
+`externalValue` keys and Pydantic's `extra="allow"` configuration. Preserve
+field aliases, optional/default semantics, enum values, extra-field behavior,
+schema serialization, and round-trip validation. The `SecurityScheme` and
+`SchemaOrBool` names are type aliases in source, not classes. Pydantic model
+fields are generated behavior; capture their field names, aliases and
+validation/serialization rules from the pinned source at manifest-generation
+time.
 
 ## Callable and class-member families
 

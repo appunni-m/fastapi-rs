@@ -609,6 +609,22 @@ def class_record(
         node_source(module, decorator) or ast.unparse(decorator)
         for decorator in node.decorator_list
     ]
+    class_options = []
+    for keyword in node.keywords:
+        try:
+            literal_value = ast.literal_eval(keyword.value)
+            literal = True
+        except (ValueError, TypeError, SyntaxError):
+            literal_value = None
+            literal = False
+        class_options.append(
+            {
+                "name": keyword.arg,
+                "expression": node_source(module, keyword.value) or ast.unparse(keyword.value),
+                "literal": literal,
+                "literal_value": literal_value,
+            }
+        )
     starlette_bases = [
         base["resolved_path"]
         for base in bases
@@ -626,6 +642,7 @@ def class_record(
         "visibility": public_visibility(node.name),
         "bases": bases,
         "decorators": decorators,
+        "class_options": class_options,
         "members": members,
         "deprecations": deprecation_evidence(module, node),
         "starlette_delegation": {

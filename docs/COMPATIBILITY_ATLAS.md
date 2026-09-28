@@ -30,15 +30,15 @@ The single `tests/fixtures/manifest.yaml` now indexes 439 source-supported symbo
 
 ## Merged coverage matrix and fixture backlog
 
-| Source denominator | Total | Linked to candidate backlog | Needs evidence mapping | Explicitly excluded |
+| Source denominator | Total | Candidate/backlog links | Links pending behavior review | Explicitly excluded |
 |---|---:|---:|---:|---:|
-| Upstream `test_*.py` modules | 492 | 452 | 0 | 40 |
-| User-facing documentation pages | 155 | 104 | 0 | 51 |
-| Documentation Python files (examples + support initializers) | 461 | 355 | 0 | 106 |
+| Upstream `test_*.py` modules | 492 | 452 | 452 | 40 |
+| User-facing documentation pages | 155 | 104 | 104 | 51 |
+| Documentation Python files (examples + support initializers) | 461 | 355 | 355 | 106 |
 
 Python-source exclusions are one debugging/setup example and 91 package initializers; the remaining examples are grouped with their mapped documentation pages.
 
-Candidate/backlog links are not concrete independent input coverage. The materialized index has 452 distinct upstream test modules and 104 documentation pages linked to workflows; all 611 mapping rows are partial. That leaves 0 eligible test modules and 0 eligible documentation pages with backlog designs only, and no source module or documentation page fully covered by an input workflow.
+Candidate/backlog links are not concrete independent input coverage. The materialized index has 452 distinct upstream test modules and 104 documentation pages linked to workflows; all 611 mapping rows are partial. All 452 eligible test-module links and 104 documentation-page links remain behavior-review candidates, and no source module or documentation page is fully covered by an input workflow.
 
 Candidate rows carry source path/SHA evidence, exact whole-token signals, family IDs, and family-level selectors. Per-function mapping scope distinguishes reviewed source mappings, function-body signals, and filename candidates. Test modules index function names/lines without copying bodies. These are backlog leads, not independent executable parity cases: each behavior still needs a tailored stimulus and selector review. Rows without a signal remain `review_required`; exclusions include a reason. Benchmark modules are routed to correctness-gated benchmark work.
 
@@ -285,16 +285,16 @@ The sibling Starlette-RS manifest, API review, and coverage matrix remain the so
 - Optional FastAPI extras: standard, standard-no-fastapi-cloud-cli, all.
 - Python contract: >=3.10; project classifiers: 3.10, 3.11, 3.12, 3.13, 3.14; upstream test workflow versions: 3.10, 3.12, 3.13, 3.14.
 
-## First complete slice and next backlog
+## First end-to-end request/response slice and next backlog
 
-Priority 0 is a complete POST `/items/{item_id}` path: public app/route construction, path and query parsing, a header-backed dependency, Pydantic request validation, response-model filtering, exact HTTP observations, ordered ASGI send-message types, and the generated OpenAPI operation. Three input-only cases are in `tests/fixtures/input-recipes/parity/first-asgi-request.yaml` under the strict schema `tests/fixtures/schemas/python-asgi-workflow-v2.schema.json`; `make parity-inputs` materializes the ignored JSON input, and the independently authored workload is `tests/fixtures/workloads/first_slice.py`. The source oracle has executed all three cases and the exact comparator is implemented. The target package and worker are still pending, so no live parity comparison is available.
+Priority 0 is a scoped end-to-end POST `/items/{item_id}` slice: public app/route construction, path and query parsing, a header-backed dependency, Pydantic request validation, response-model filtering, exact HTTP observations, ordered ASGI send-message types, and selected generated OpenAPI fields. Three input-only cases are in `tests/fixtures/input-recipes/parity/first-asgi-request.yaml` under the strict schema `tests/fixtures/schemas/python-asgi-workflow-v2.schema.json`; `make parity-inputs` materializes the ignored JSON input, and the independently authored workload is `tests/fixtures/workloads/first_slice.py`. The source oracle and exact comparator are ready, and the fail-closed target worker is present. The public target package is not implemented, so no live parity comparison is available.
 
 Oracle environment check: FastAPI 0.141.1 imported and generated OpenAPI with only Starlette 1.6.0 and Pydantic 2.13.4 under CPython 3.12.13; `pip check` passed. The separate ASGI workflow run is source-only evidence, not a source/target parity result.
 
 1. Review the 1.6.0 Starlette-RS consumption crosswalk and its contract-area ownership.
 2. Review uncertain API candidates and runtime-generated Python/Pydantic surfaces, retaining explicit uncertainty where source evidence cannot decide.
 3. Materialize independent input-only scenarios from the mapped test/documentation backlog; do not copy upstream tests or expected outputs.
-4. Complete the operation-level contract, materialize the remaining independent inputs, implement the isolated target worker, and run the exact comparator before parity claims.
+4. Complete the operation-level contract, materialize the remaining independent inputs, implement the public `fastapi` facade, and run the exact comparator through the isolated target worker before parity claims.
 
 ## Unresolved points
 
@@ -304,7 +304,7 @@ Oracle environment check: FastAPI 0.141.1 imported and generated OpenAPI with on
 - **case-construction-input-contract** (workflow-v3-present; dependency-module-state-and-warning-controls-pending): Which controlled dependency-module states and warning observations are still required for setup-time errors beyond the v3 per-case factory input and construction-exception selectors?
 - **lifespan-input-and-observation-contract** (workflow-v3-expressible; fixture-and-warning-coverage-pending): Which FastAPI and APIRouter lifespan combinations still need independent input cases and exact deprecation-warning observations under the v3 lifecycle workflow?
 - **fastapi-cli-compatibility-boundary** (package-pin-and-process-workflow-required): Does FastAPI-RS replace FastAPI's `fastapi` console script, and if so which fastapi-cli package identity, optional environment, arguments, output streams, and exit behavior are in the compatibility contract?
-- **fixture-recipe-execution-contract** (source-oracle-and-comparator-present; target-worker-pending): Implement an identity-checked FastAPI-RS target worker and review an exact source/target comparison from both live products.
+- **fixture-recipe-execution-contract** (source-oracle-comparator-and-fail-closed-target-worker-present; public-target-pending): Implement the public `fastapi` facade, run it through the identity-checked target worker, and review an exact source/target comparison from both live products.
 - **starlette-rs-target-revision** (pending-commit): Pin a committed Starlette-RS source revision/profile for reproducible FastAPI-RS builds and parity runs.
 
 ## Machine-readable authority

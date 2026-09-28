@@ -27,6 +27,8 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
+import typing_extensions
+
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_FASTAPI_SOURCE = PROJECT_ROOT.parent / "fastapi"
 DEFAULT_STARLETTE_SOURCE = PROJECT_ROOT.parent / "starlette"
@@ -288,6 +290,23 @@ def _pydantic_inherited_members(value: Any) -> list[dict[str, str]]:
     return [{"name": name, "defined_by": owner} for name, owner in sorted(members.items())]
 
 
+def _typed_dict_shape(value: Any) -> dict[str, Any] | None:
+    if not typing_extensions.is_typeddict(value):
+        return None
+    annotations = getattr(value, "__annotations__", {})
+    pydantic_config = getattr(value, "__pydantic_config__", None)
+    return {
+        "total": getattr(value, "__total__", None),
+        "required_keys": sorted(getattr(value, "__required_keys__", ())),
+        "optional_keys": sorted(getattr(value, "__optional_keys__", ())),
+        "fields": [
+            {"name": name, "annotation": _annotation(annotation)}
+            for name, annotation in sorted(annotations.items())
+        ],
+        "pydantic_config": pydantic_config if isinstance(pydantic_config, dict) else None,
+    }
+
+
 def _module_candidates(inventory: dict[str, Any]) -> dict[str, dict[str, Any]]:
     result: dict[str, dict[str, Any]] = {}
     for row in inventory["modules"]:
@@ -343,6 +362,9 @@ def _runtime_symbol(
     signature = _signature(value)
     if signature is not None:
         symbol["signature"] = signature
+    typed_dict = _typed_dict_shape(value)
+    if typed_dict is not None:
+        symbol["typed_dict_shape"] = typed_dict
     fields = _model_fields(value)
     if fields:
         symbol["pydantic_model_fields"] = fields

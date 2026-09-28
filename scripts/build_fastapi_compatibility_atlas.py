@@ -48,80 +48,6 @@ REVIEWED_CALLABLE_KINDS = {
     "property_getter",
     "protocol_method",
 }
-FIRST_SLICE_CASES = [
-    {
-        "case_id": "fastapi.first-slice.create-item.valid",
-        "source_paths": [
-            "tests/test_application.py",
-            "tests/test_query.py",
-            "tests/test_response_model_data_filter.py",
-            "tests/test_param_in_path_and_dependency.py",
-            "docs/en/docs/tutorial/first-steps.md",
-            "docs/en/docs/tutorial/response-model.md",
-            "docs/en/docs/tutorial/dependencies/index.md",
-            "docs/en/docs/tutorial/header-params.md",
-        ],
-        "actions": [
-            {
-                "kind": "http_request",
-                "method": "POST",
-                "path": "/items/41?color=blue",
-                "headers": [["x-actor", "reader"]],
-                "json": {"name": "cable", "quantity": 2},
-            }
-        ],
-        "observations": ["response.status", "response.headers.content-type", "response.body.json"],
-    },
-    {
-        "case_id": "fastapi.first-slice.create-item.invalid",
-        "source_paths": [
-            "docs/en/docs/tutorial/body.md",
-            "tests/test_tutorial/test_body_fields/test_tutorial001.py",
-        ],
-        "actions": [
-            {
-                "kind": "http_request",
-                "method": "POST",
-                "path": "/items/41?color=blue",
-                "headers": [["x-actor", "reader"]],
-                "json": {"name": "cable", "quantity": 0},
-            }
-        ],
-        "observations": ["response.status", "response.headers.content-type", "response.body.json"],
-    },
-    {
-        "case_id": "fastapi.first-slice.openapi",
-        "source_paths": [
-            "tests/test_application.py",
-            "tests/test_param_in_path_and_dependency.py",
-            "docs/en/docs/tutorial/first-steps.md",
-            "docs/en/docs/tutorial/dependencies/index.md",
-            "docs/en/docs/tutorial/body.md",
-            "docs/en/docs/tutorial/response-model.md",
-            "docs/en/docs/tutorial/header-params.md",
-            "tests/test_tutorial/test_body_fields/test_tutorial001.py",
-        ],
-        "actions": [
-            {
-                "kind": "http_request",
-                "method": "GET",
-                "path": "/openapi.json",
-                "headers": [],
-                "json": None,
-            }
-        ],
-        "observations": [
-            "response.status",
-            "response.headers.content-type",
-            "openapi.paths./items/{item_id}.post",
-            "openapi.operation_id",
-            "openapi.parameters",
-            "openapi.request_schema",
-            "openapi.response_schema",
-        ],
-    },
-]
-
 # Curated mappings for sources that cannot be classified reliably from names
 # alone. These describe source evidence only; they never embed upstream test
 # bodies or expected results.
@@ -4724,7 +4650,7 @@ def read_first_asgi_workflow() -> dict[str, Any]:
             "factory": workflow["workload"].get("factory"),
             "sha256": sha256(PROJECT / workload_path),
         },
-        "state": "input validated and executed by the pinned-source oracle; exact comparator present; target worker pending",
+        "state": "input validated by the pinned-source oracle; exact comparator and fail-closed target worker present; public fastapi facade pending",
     }
 
 
@@ -6855,26 +6781,25 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         },
         {
             "id": "fixture-recipe-execution-contract",
-            "status": "source-oracle-and-comparator-present; target-worker-pending",
-            "question": "Implement an identity-checked FastAPI-RS target worker and review an exact source/target comparison from both live products.",
-            "evidence": "The strict input-only workflow has executed against the pinned FastAPI 0.141.1 and Starlette 1.6.0 oracle; the exact comparator and schemas exist, but FastAPI-RS has no public package or target worker yet.",
+            "status": "source-oracle-comparator-and-fail-closed-target-worker-present; public-target-pending",
+            "question": "Implement the public `fastapi` facade, run it through the identity-checked target worker, and review an exact source/target comparison from both live products.",
+            "evidence": "The strict input-only workflow has executed against the pinned FastAPI 0.141.1 and Starlette 1.6.0 oracle; the exact comparator and target worker exist. The worker verifies the isolated local FastAPI-RS and Starlette-RS packages and fails closed until the public `fastapi` facade exists.",
         },
         {
             "id": "starlette-rs-target-revision",
             "status": "pending-commit",
             "question": "Pin a committed Starlette-RS source revision/profile for reproducible FastAPI-RS builds and parity runs.",
-            "evidence": "FastAPI-RS already depends on the sibling ../starlette-rs/starlette-rs crate and the atlas reads its source manifest/catalog/review. That sibling checkout currently has no commit, so only its manifest and reviewed-catalog digests identify the local state.",
+            "evidence": "FastAPI-RS directly reuses the sibling ../starlette-rs/starlette-rs crate, and the atlas reads its source manifest/catalog/review. The sibling checkout has uncommitted changes, so its commit alone does not identify the current target; source-tree and contract digests identify the local state until a clean immutable revision is selected.",
         },
     ]
 
     priority_backlog = [
         {
             "priority": 0,
-            "id": "first-complete-request-response-slice",
+            "id": "first-end-to-end-request-response-slice",
             "status": "source-oracle-executed; comparator-present; target-implementation-pending",
             "schema_path": first_slice_workflow["schema_path"],
             "fixture_path": first_slice_workflow["input_path"],
-            "design_path": "tests/fixtures/drafts/first-slice.json",
             "workload_path": first_slice_workflow["workload"]["path"],
             "feature_ids": [
                 "app-routing",
@@ -7022,7 +6947,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         "feature_families": FEATURES,
         "starlette_integration_edges": starlette_edges,
         "coverage_matrix": coverage_items,
-        "first_complete_slice_workflow": first_slice_workflow,
+        "first_end_to_end_request_response_slice": first_slice_workflow,
         "fixture_backlog_ref": {
             "path": "tests/fixtures/fixture-backlog.json",
             "schema": "fastapi-rs/fixture-backlog@1",
@@ -7046,22 +6971,17 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                 for item in coverage_items
                 if item["kind"] == "upstream_test_module" and item["fixture_id"]
             ),
-            "test_modules_fully_mapped_to_parity_backlog": sum(
+            "test_modules_with_candidate_backlog_link": sum(
                 1
                 for item in coverage_items
-                if item["kind"] == "upstream_test_module" and item["mapping_status"] == "candidate"
+                if item["kind"] == "upstream_test_module" and item["fixture_id"]
             ),
-            "test_modules_partially_mapped": sum(
+            "test_modules_candidate_links_pending_behavior_review": sum(
                 1
                 for item in coverage_items
                 if item["kind"] == "upstream_test_module"
-                and item["mapping_status"] == "partially_mapped"
-            ),
-            "test_modules_needing_mapping_review": sum(
-                1
-                for item in coverage_items
-                if item["kind"] == "upstream_test_module"
-                and item["mapping_status"] in {"review_required", "partially_mapped"}
+                and item["fixture_id"]
+                and item["mapping_status"] == "candidate"
             ),
             "test_modules_excluded_from_parity": sum(
                 1
@@ -7076,11 +6996,12 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                 for item in coverage_items
                 if item["kind"] == "documented_feature_page" and item["fixture_id"]
             ),
-            "documentation_pages_needing_mapping_review": sum(
+            "documentation_pages_candidate_links_pending_behavior_review": sum(
                 1
                 for item in coverage_items
                 if item["kind"] == "documented_feature_page"
-                and item["mapping_status"] == "review_required"
+                and item["fixture_id"]
+                and item["mapping_status"] == "candidate"
             ),
             "documentation_pages_excluded": sum(
                 1
@@ -7102,11 +7023,11 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                 if item["kind"] == "documented_python_example_source"
                 and item["mapping_status"] == "supporting_source"
             ),
-            "documentation_python_examples_needing_mapping_review": sum(
+            "documentation_python_examples_pending_behavior_review": sum(
                 1
                 for item in coverage_items
                 if item["kind"] == "documented_python_example_source"
-                and item["mapping_status"] == "review_required"
+                and item["mapping_status"] == "supporting_source"
             ),
             "documentation_python_examples_excluded": sum(
                 1
@@ -7247,7 +7168,7 @@ def render_markdown(atlas: dict[str, Any]) -> str:
             "",
             "## Merged coverage matrix and fixture backlog",
             "",
-            "| Source denominator | Total | Linked to candidate backlog | Needs evidence mapping | Explicitly excluded |",
+            "| Source denominator | Total | Candidate/backlog links | Links pending behavior review | Explicitly excluded |",
             "|---|---:|---:|---:|---:|",
         ]
     )
@@ -7256,22 +7177,22 @@ def render_markdown(atlas: dict[str, Any]) -> str:
             "| Upstream `test_*.py` modules | %d | %d | %d | %d |"
             % (
                 counts["test_modules"],
-                counts["test_modules_fully_mapped_to_parity_backlog"],
-                counts["test_modules_needing_mapping_review"],
+                counts["test_modules_with_candidate_backlog_link"],
+                counts["test_modules_candidate_links_pending_behavior_review"],
                 counts["test_modules_excluded_from_parity"],
             ),
             "| User-facing documentation pages | %d | %d | %d | %d |"
             % (
                 counts["documentation_pages"],
                 counts["documentation_pages_mapped"],
-                counts["documentation_pages_needing_mapping_review"],
+                counts["documentation_pages_candidate_links_pending_behavior_review"],
                 counts["documentation_pages_excluded"],
             ),
             "| Documentation Python files (examples + support initializers) | %d | %d | %d | %d |"
             % (
                 counts["documentation_python_source_files"],
                 counts["documentation_python_examples_grouped_with_page"],
-                counts["documentation_python_examples_needing_mapping_review"],
+                counts["documentation_python_examples_pending_behavior_review"],
                 counts["documentation_python_examples_excluded"]
                 + counts["documentation_support_files_excluded"],
             ),
@@ -7279,14 +7200,13 @@ def render_markdown(atlas: dict[str, Any]) -> str:
             "Python-source exclusions are one debugging/setup example and %d package initializers; the remaining examples are grouped with their mapped documentation pages."
             % counts["documentation_support_files_excluded"],
             "",
-            "Candidate/backlog links are not concrete independent input coverage. The materialized index has %d distinct upstream test modules and %d documentation pages linked to workflows; all %d mapping rows are partial. That leaves %d eligible test modules and %d eligible documentation pages with backlog designs only, and no source module or documentation page fully covered by an input workflow."
+            "Candidate/backlog links are not concrete independent input coverage. The materialized index has %d distinct upstream test modules and %d documentation pages linked to workflows; all %d mapping rows are partial. All %d eligible test-module links and %d documentation-page links remain behavior-review candidates, and no source module or documentation page is fully covered by an input workflow."
             % (
                 len(materialized_test_sources),
                 len(materialized_documentation_sources),
                 materialized_partial_mappings,
-                counts["test_modules_fully_mapped_to_parity_backlog"]
-                - len(materialized_test_sources),
-                counts["documentation_pages_mapped"] - len(materialized_documentation_sources),
+                counts["test_modules_candidate_links_pending_behavior_review"],
+                counts["documentation_pages_candidate_links_pending_behavior_review"],
             ),
             "",
             "Candidate rows carry source path/SHA evidence, exact whole-token signals, family IDs, and family-level selectors. Per-function mapping scope distinguishes reviewed source mappings, function-body signals, and filename candidates. Test modules index function names/lines without copying bodies. These are backlog leads, not independent executable parity cases: each behavior still needs a tailored stimulus and selector review. Rows without a signal remain `review_required`; exclusions include a reason. Benchmark modules are routed to correctness-gated benchmark work.",
@@ -7362,16 +7282,16 @@ def render_markdown(atlas: dict[str, Any]) -> str:
                 ", ".join(atlas["authorities"]["python"]["test_workflow_versions"]),
             ),
             "",
-            "## First complete slice and next backlog",
+            "## First end-to-end request/response slice and next backlog",
             "",
-            "Priority 0 is a complete POST `/items/{item_id}` path: public app/route construction, path and query parsing, a header-backed dependency, Pydantic request validation, response-model filtering, exact HTTP observations, ordered ASGI send-message types, and the generated OpenAPI operation. Three input-only cases are in `tests/fixtures/input-recipes/parity/first-asgi-request.yaml` under the strict schema `tests/fixtures/schemas/python-asgi-workflow-v2.schema.json`; `make parity-inputs` materializes the ignored JSON input, and the independently authored workload is `tests/fixtures/workloads/first_slice.py`. The source oracle has executed all three cases and the exact comparator is implemented. The target package and worker are still pending, so no live parity comparison is available.",
+            "Priority 0 is a scoped end-to-end POST `/items/{item_id}` slice: public app/route construction, path and query parsing, a header-backed dependency, Pydantic request validation, response-model filtering, exact HTTP observations, ordered ASGI send-message types, and selected generated OpenAPI fields. Three input-only cases are in `tests/fixtures/input-recipes/parity/first-asgi-request.yaml` under the strict schema `tests/fixtures/schemas/python-asgi-workflow-v2.schema.json`; `make parity-inputs` materializes the ignored JSON input, and the independently authored workload is `tests/fixtures/workloads/first_slice.py`. The source oracle and exact comparator are ready, and the fail-closed target worker is present. The public target package is not implemented, so no live parity comparison is available.",
             "",
             "Oracle environment check: FastAPI 0.141.1 imported and generated OpenAPI with only Starlette 1.6.0 and Pydantic 2.13.4 under CPython 3.12.13; `pip check` passed. The separate ASGI workflow run is source-only evidence, not a source/target parity result.",
             "",
             "1. Review the 1.6.0 Starlette-RS consumption crosswalk and its contract-area ownership.",
             "2. Review uncertain API candidates and runtime-generated Python/Pydantic surfaces, retaining explicit uncertainty where source evidence cannot decide.",
             "3. Materialize independent input-only scenarios from the mapped test/documentation backlog; do not copy upstream tests or expected outputs.",
-            "4. Complete the operation-level contract, materialize the remaining independent inputs, implement the isolated target worker, and run the exact comparator before parity claims.",
+            "4. Complete the operation-level contract, materialize the remaining independent inputs, implement the public `fastapi` facade, and run the exact comparator through the isolated target worker before parity claims.",
             "",
             "## Unresolved points",
             "",
@@ -7467,6 +7387,24 @@ def _sync_manifest_artifact_metadata(
             ),
         },
     )
+    inventory_path = PROJECT / "tests/fixtures/api-inventory.json"
+    manifest_text = _replace_manifest_artifact_block(
+        manifest_text,
+        "api_inventory",
+        {"sha256": sha256(inventory_path)},
+    )
+    runtime_core_path = PROJECT / "tests/fixtures/runtime-api-surface-core.json"
+    manifest_text = _replace_manifest_artifact_block(
+        manifest_text,
+        "runtime_api_surface_core",
+        {"sha256": sha256(runtime_core_path)},
+    )
+    runtime_standard_path = PROJECT / "tests/fixtures/runtime-api-surface-standard.json"
+    manifest_text = _replace_manifest_artifact_block(
+        manifest_text,
+        "runtime_api_surface_standard",
+        {"sha256": sha256(runtime_standard_path)},
+    )
     manifest_path.write_text(manifest_text, encoding="utf-8")
 
 
@@ -7490,11 +7428,8 @@ def write_outputs(atlas: dict[str, Any], output: Path) -> None:
             "timings",
         ],
         "fixture_designs": fixture_designs,
-        "first_complete_slice": {
-            **atlas["first_complete_slice_workflow"],
-            "design_path": "tests/fixtures/drafts/first-slice.json",
-            "design_schema": "fastapi-rs/parity-fixture-design@1",
-            "design_cases": FIRST_SLICE_CASES,
+        "first_end_to_end_request_response_slice": {
+            **atlas["first_end_to_end_request_response_slice"],
         },
     }
     (PROJECT / "tests/fixtures/fixture-backlog.json").write_text(
@@ -7502,22 +7437,6 @@ def write_outputs(atlas: dict[str, Any], output: Path) -> None:
     )
     if output.resolve() == (PROJECT / "tests/fixtures/compatibility-atlas.json").resolve():
         _sync_manifest_artifact_metadata(atlas, fixture_designs)
-    draft_dir = PROJECT / "tests/fixtures/drafts"
-    draft_dir.mkdir(parents=True, exist_ok=True)
-    first_slice = {
-        "schema": "fastapi-rs/parity-fixture-design@1",
-        "state": "design-only; not migration-parity/parity-input@1 and not executable",
-        "workload": {
-            "path": "tests/fixtures/workloads/first_slice.py",
-            "factory": "create_app",
-            "instantiate_per_case": True,
-        },
-        "cases": FIRST_SLICE_CASES,
-    }
-    (draft_dir / "first-slice.json").write_text(
-        json.dumps(first_slice, indent=2, sort_keys=True, ensure_ascii=False) + "\n",
-        encoding="utf-8",
-    )
     (PROJECT / "docs/COMPATIBILITY_ATLAS.md").write_text(render_markdown(atlas), encoding="utf-8")
 
 

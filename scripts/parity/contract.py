@@ -284,13 +284,14 @@ def read_manifest() -> dict[str, Any]:
             api_workflow_contract.get(digest_key),
             label,
         )
-    design_inputs = manifest.get("design_only_inputs")
-    first_slice = (
-        design_inputs.get("first_request_response_slice")
-        if isinstance(design_inputs, dict)
+    asgi_workflow_contract = (
+        unresolved.get("python_asgi_workflow") if isinstance(unresolved, dict) else None
+    )
+    workload = (
+        asgi_workflow_contract.get("first_slice_workload")
+        if isinstance(asgi_workflow_contract, dict)
         else None
     )
-    workload = first_slice.get("workload") if isinstance(first_slice, dict) else None
     if not isinstance(workload, dict):
         raise ContractError("manifest first-slice workload reference is missing")
     _verify_digest_ref(workload.get("path"), workload.get("sha256"), "first-slice workload")
