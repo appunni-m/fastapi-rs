@@ -49,7 +49,9 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
         path = action["scope"]["path"]
         openapi_endpoint = path == "/openapi.json"
         for observation in action["observations"]:
-            if observation["kind"] == "websocket":
+            if observation["kind"] == "asgi_send":
+                selectors.add("asgi.send.message_types")
+            elif observation["kind"] == "websocket":
                 selectors.add(f"websocket.{observation['selector']}")
             elif observation["kind"] == "http_response":
                 if "status" in observation["selectors"]:
@@ -84,6 +86,22 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
                 elif observation["selector"] == "exception":
                     selectors.add("asgi.application_error.exception")
     return selectors
+
+
+def _source_selectors_for_case(
+    case: dict[str, Any],
+    source_selectors: set[str],
+    *,
+    workflow_schema: str | None = None,
+) -> set[str]:
+    """Pair feature selectors with generic protocol observations used by this case."""
+    selected = _selected_selectors(case, workflow_schema=workflow_schema)
+    candidates = set(source_selectors)
+    if "asgi.send.message_types" in selected and any(
+        action.get("kind") == "http_request" for action in case.get("actions", [])
+    ):
+        candidates.add("asgi.send.message_types")
+    return selected & candidates
 
 
 def validate_materialized_input_index(
@@ -213,6 +231,7 @@ def validate_materialized_input_index(
             else "upstream_test"
         )
         used_selectors: set[str] = set()
+        source_selectors: set[str] = set()
         for case_id in case_ids:
             case = cases[case_id]
             if not any(
@@ -220,14 +239,20 @@ def validate_materialized_input_index(
                 for evidence in case["source_evidence"]
             ):
                 _fail(f"workflow case lacks matching source evidence: {case_id} -> {source_id}")
-            used_selectors.update(
-                _selected_selectors(case, workflow_schema=workflow_schemas[workflow_id])
+            workflow_schema = workflow_schemas[workflow_id]
+            used_selectors.update(_selected_selectors(case, workflow_schema=workflow_schema))
+            source_selectors.update(
+                _source_selectors_for_case(
+                    case,
+                    set(coverage["observation_selectors"]),
+                    workflow_schema=workflow_schema,
+                )
             )
 
         declared_selectors = set(mapping["observation_selectors"])
         if not declared_selectors <= used_selectors:
             _fail(f"declared selectors do not map to workflow observations: {source_id}")
-        if not declared_selectors <= set(coverage["observation_selectors"]):
+        if not declared_selectors <= source_selectors:
             _fail(f"selectors exceed the mapped source candidate: {source_id}")
         for selector_id in declared_selectors:
             selector = selector_rows.get(selector_id)

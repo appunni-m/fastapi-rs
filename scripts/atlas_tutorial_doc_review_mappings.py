@@ -622,8 +622,9 @@ DOC_PAGE_REVIEW_MAPPINGS = {
             "documentation behavior. Import/re-export identity, Python encoder values, "
             "response validation/serialization bypass for arbitrary models, custom media-type "
             "edge cases, and error branches remain unsupported by these observations. The "
-            "recipe's asgi_send message_types field is not promoted to a selector because the "
-            "materialized observation index does not expose it."
+            "indexed ASGI message_types observation establishes emitted message-type order only; "
+            "it does not cover response chunk bodies, chunk boundaries, or the complete ASGI "
+            "state machine."
         ),
         "supporting_sources": [
             {

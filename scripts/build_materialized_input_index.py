@@ -17,7 +17,7 @@ from scripts.parity.contract import (
     read_json,
     sha256_file,
 )
-from scripts.parity.materialized import _selected_selectors
+from scripts.parity.materialized import _source_selectors_for_case
 
 INDEX_PATH = ROOT / "tests/fixtures/materialized-input-index.json"
 INPUT_DIR = ROOT / "tests/fixtures/inputs/parity"
@@ -144,14 +144,17 @@ def build_index() -> dict[str, Any]:
 
         new_mapping_cases: dict[str, dict[str, Any]] = {}
         for case in workflow["cases"]:
-            selected = _selected_selectors(case, workflow_schema=workflow["schema"])
             candidates: list[tuple[str, set[str]]] = []
             for evidence in case["source_evidence"]:
                 source_id = _source_item_id(evidence, coverage_by_path)
                 if source_id is None:
                     continue
                 coverage = next(row for row in atlas["coverage_matrix"] if row["id"] == source_id)
-                usable = selected & set(coverage["observation_selectors"])
+                usable = _source_selectors_for_case(
+                    case,
+                    set(coverage["observation_selectors"]),
+                    workflow_schema=workflow["schema"],
+                )
                 usable = {
                     selector
                     for selector in usable

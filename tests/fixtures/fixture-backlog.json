@@ -1141,9 +1141,10 @@
           "case_ids": [
             "fastapi.response.direct-json"
           ],
-          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
+            "asgi.send.message_types",
             "http.body.bytes",
             "http.status"
           ],
@@ -4341,9 +4342,10 @@
             "fastapi.root-path.openapi-server",
             "fastapi.root-path.scope-echo"
           ],
-          "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.send.message_types, http.body.bytes, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
+            "asgi.send.message_types",
             "http.body.bytes",
             "http.status",
             "openapi.document"
@@ -6044,9 +6046,10 @@
             "fastapi.response.direct-plain-text",
             "fastapi.response.openapi-status-and-media"
           ],
-          "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 3 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
+            "asgi.send.message_types",
             "http.body.bytes",
             "http.headers.ordered",
             "http.status",
@@ -13753,9 +13756,10 @@
             "fastapi.response.declared-status",
             "fastapi.response.openapi-status-and-media"
           ],
-          "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
+            "asgi.send.message_types",
             "http.body.bytes",
             "http.headers.ordered",
             "http.status"
@@ -14317,9 +14321,10 @@
           "case_ids": [
             "fastapi.response.cookie-header"
           ],
-          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
+            "asgi.send.message_types",
             "http.body.bytes",
             "http.headers.ordered",
             "http.status"
@@ -15314,9 +15319,10 @@
             "fastapi.response.direct-plain-text",
             "fastapi.response.openapi-status-and-media"
           ],
-          "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
+            "asgi.send.message_types",
             "http.body.bytes",
             "http.headers.ordered",
             "http.status",
@@ -15337,7 +15343,7 @@
       ],
       "related_usage_sources": [],
       "reviewed_source_mapping": {
-        "contract_gate": "Keep this page mapping partial. The current response-surface workload does not execute tutorial001's Pydantic Item/datetime plus jsonable_encoder flow or tutorial002's XML Response example, and it does not directly call jsonable_encoder. Its direct-plain-text route declares response_class, so it cannot prove the unconfigured direct-Response branch alone; the direct-json case is a separate workload sample. Existing OpenAPI pointers do not establish all automatic documentation behavior. Import/re-export identity, Python encoder values, response validation/serialization bypass for arbitrary models, custom media-type edge cases, and error branches remain unsupported by these observations. The recipe's asgi_send message_types field is not promoted to a selector because the materialized observation index does not expose it.",
+        "contract_gate": "Keep this page mapping partial. The current response-surface workload does not execute tutorial001's Pydantic Item/datetime plus jsonable_encoder flow or tutorial002's XML Response example, and it does not directly call jsonable_encoder. Its direct-plain-text route declares response_class, so it cannot prove the unconfigured direct-Response branch alone; the direct-json case is a separate workload sample. Existing OpenAPI pointers do not establish all automatic documentation behavior. Import/re-export identity, Python encoder values, response validation/serialization bypass for arbitrary models, custom media-type edge cases, and error branches remain unsupported by these observations. The indexed ASGI message_types observation establishes emitted message-type order only; it does not cover response chunk bodies, chunk boundaries, or the complete ASGI state machine.",
         "rationale": "FastAPI owns the path-operation decision at routing.py:711-750: a returned Starlette Response instance bypasses serialize_response and the configured response class; FastAPI adds solved background tasks only when the response has no background task already. A non-Response value goes through response serialization and response construction. FastAPI also excludes a Response return annotation from the inferred response model at routing.py:1081-1114. The classes exposed at fastapi.responses are Starlette re-exports; generic content rendering, media types, header defaults, JSON bytes, and ASGI response messages belong to the Starlette 1.6.0 response contract (and the sibling Starlette-RS contract). The selected recipe observations cover exact HTTP status, ordered headers, body bytes, and selected OpenAPI paths. They do not observe Python import identity, the jsonable_encoder return value, or response-model conversion.",
         "source_evidence": [
           {
@@ -15978,9 +15984,10 @@
           "case_ids": [
             "fastapi.response.injected-headers"
           ],
-          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
+            "asgi.send.message_types",
             "http.body.bytes",
             "http.headers.ordered",
             "http.status"
@@ -35667,9 +35674,10 @@
           "case_ids": [
             "fastapi.response.direct-plain-text"
           ],
-          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
+            "asgi.send.message_types",
             "http.body.bytes",
             "http.headers.ordered",
             "http.status"
@@ -36756,9 +36764,10 @@
           "case_ids": [
             "fastapi.docs.reference-wave.status-code-from-constant"
           ],
-          "coverage_scope": "Partial independent sample across 1 case(s); observes http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
+            "asgi.send.message_types",
             "http.status"
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/response-surface.yaml",
@@ -40417,9 +40426,10 @@
             "fastapi.routing.include-router-prefix",
             "fastapi.routing.openapi-paths"
           ],
-          "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
+            "asgi.send.message_types",
             "http.body.bytes",
             "http.headers.ordered",
             "http.status",
@@ -41456,9 +41466,10 @@
             "fastapi.body.embedded-scalar-valid",
             "fastapi.body.openapi-schemas"
           ],
-          "coverage_scope": "Partial independent sample across 4 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 4 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
+            "asgi.send.message_types",
             "http.body.bytes",
             "http.headers.ordered",
             "http.status",
@@ -41511,9 +41522,10 @@
             "fastapi.first-slice.create-item-invalid",
             "fastapi.first-slice.openapi"
           ],
-          "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
+            "asgi.send.message_types",
             "http.body.bytes",
             "http.headers.ordered",
             "http.status",
@@ -42908,9 +42920,10 @@
             "fastapi.body.optional-model-absent",
             "fastapi.body.optional-model-present"
           ],
-          "coverage_scope": "Partial independent sample across 5 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 5 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
+            "asgi.send.message_types",
             "http.body.bytes",
             "http.headers.ordered",
             "http.status",
@@ -51434,9 +51447,10 @@
             "fastapi.first-slice.create-item-valid",
             "fastapi.first-slice.openapi"
           ],
-          "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
+            "asgi.send.message_types",
             "http.body.bytes",
             "http.headers.ordered",
             "http.status",
@@ -55544,9 +55558,10 @@
             "fastapi.first-slice.create-item-valid",
             "fastapi.first-slice.openapi"
           ],
-          "coverage_scope": "Partial independent sample across 2 case(s); observes docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.send.message_types, docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
+            "asgi.send.message_types",
             "docs.response.body.bytes",
             "docs.response.headers",
             "docs.response.status",
@@ -59134,9 +59149,10 @@
             "fastapi.first-slice.create-item-valid",
             "fastapi.first-slice.openapi"
           ],
-          "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
+            "asgi.send.message_types",
             "http.body.bytes",
             "http.headers.ordered",
             "http.status"
@@ -62772,9 +62788,10 @@
             "fastapi.routing.path-converter",
             "fastapi.routing.path-parameter-invalid"
           ],
-          "coverage_scope": "Partial independent sample across 4 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 4 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
+            "asgi.send.message_types",
             "http.body.bytes",
             "http.headers.ordered",
             "http.status",
@@ -71393,9 +71410,10 @@
             "fastapi.first-slice.create-item-valid",
             "fastapi.first-slice.openapi"
           ],
-          "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
+            "asgi.send.message_types",
             "http.body.bytes",
             "http.headers.ordered",
             "http.status",
@@ -71965,9 +71983,10 @@
           "case_ids": [
             "fastapi.response.openapi-status-and-media"
           ],
-          "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
+            "asgi.send.message_types",
             "docs.response.body.bytes",
             "docs.response.headers",
             "docs.response.status",
@@ -82195,9 +82214,10 @@
             "fastapi.schema.map-values-valid",
             "fastapi.schema.openapi-components"
           ],
-          "coverage_scope": "Partial independent sample across 2 case(s); observes docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.send.message_types, docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
+            "asgi.send.message_types",
             "docs.response.body.bytes",
             "docs.response.headers",
             "docs.response.status",
@@ -82540,9 +82560,10 @@
             "fastapi.schema.strict-empty-valid",
             "fastapi.schema.strict-extra-invalid"
           ],
-          "coverage_scope": "Partial independent sample across 3 case(s); observes docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 3 case(s); observes asgi.send.message_types, docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
+            "asgi.send.message_types",
             "docs.response.body.bytes",
             "docs.response.headers",
             "docs.response.status",
@@ -86136,9 +86157,10 @@
             "fastapi.first-slice.create-item-valid",
             "fastapi.first-slice.openapi"
           ],
-          "coverage_scope": "Partial independent sample across 2 case(s); observes docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.send.message_types, docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
+            "asgi.send.message_types",
             "docs.response.body.bytes",
             "docs.response.headers",
             "docs.response.status",
@@ -86155,9 +86177,10 @@
           "case_ids": [
             "fastapi.routing.not-found"
           ],
-          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
+            "asgi.send.message_types",
             "http.body.bytes",
             "http.headers.ordered",
             "http.status"
@@ -88377,9 +88400,10 @@
             "fastapi.schema.custom-json-schema",
             "fastapi.schema.openapi-components"
           ],
-          "coverage_scope": "Partial independent sample across 2 case(s); observes docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.send.message_types, docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
+            "asgi.send.message_types",
             "docs.response.body.bytes",
             "docs.response.headers",
             "docs.response.status",
@@ -115418,9 +115442,10 @@
             "fastapi.routing.include-router-prefix",
             "fastapi.routing.openapi-paths"
           ],
-          "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
+            "asgi.send.message_types",
             "http.body.bytes",
             "http.headers.ordered",
             "http.status",
@@ -137307,9 +137332,10 @@
             "fastapi.first-slice.create-item-valid",
             "fastapi.first-slice.openapi"
           ],
-          "coverage_scope": "Partial independent sample across 2 case(s); observes docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.send.message_types, docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
+            "asgi.send.message_types",
             "docs.response.body.bytes",
             "docs.response.headers",
             "docs.response.status",
@@ -159522,9 +159548,10 @@
           "case_ids": [
             "fastapi.body.embedded-list-valid"
           ],
-          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
+            "asgi.send.message_types",
             "http.body.bytes",
             "http.headers.ordered",
             "http.status"
@@ -163673,9 +163700,10 @@
             "fastapi.body.embedded-scalar-missing",
             "fastapi.body.embedded-scalar-valid"
           ],
-          "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
+            "asgi.send.message_types",
             "http.body.bytes",
             "http.headers.ordered",
             "http.status"
@@ -188465,9 +188493,10 @@
             "fastapi.schema.openapi-components",
             "fastapi.schema.response-model-filter"
           ],
-          "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
+            "asgi.send.message_types",
             "http.body.bytes",
             "http.headers.ordered",
             "http.status"
@@ -190290,9 +190319,10 @@
             "fastapi.routing.include-router-prefix",
             "fastapi.routing.method-not-allowed"
           ],
-          "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
+            "asgi.send.message_types",
             "http.body.bytes",
             "http.headers.ordered",
             "http.status"
@@ -195644,9 +195674,10 @@
           "case_ids": [
             "fastapi.routing.redirect-trailing-slash"
           ],
-          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
+            "asgi.send.message_types",
             "http.body.bytes",
             "http.headers.ordered",
             "http.status"
@@ -255646,9 +255677,10 @@
             "fastapi.root-path.openapi-server",
             "fastapi.root-path.scope-echo"
           ],
-          "coverage_scope": "Partial independent sample across 2 case(s); observes docs.response.status, http.body.bytes, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.send.message_types, docs.response.status, http.body.bytes, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
+            "asgi.send.message_types",
             "docs.response.status",
             "http.body.bytes",
             "http.status",
@@ -263241,9 +263273,10 @@
             "fastapi.first-slice.create-item-invalid",
             "fastapi.first-slice.openapi"
           ],
-          "coverage_scope": "Partial independent sample across 2 case(s); observes docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.send.message_types, docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
+            "asgi.send.message_types",
             "docs.response.body.bytes",
             "docs.response.headers",
             "docs.response.status",
@@ -263616,9 +263649,10 @@
             "fastapi.body.optional-model-absent",
             "fastapi.body.optional-model-present"
           ],
-          "coverage_scope": "Partial independent sample across 5 case(s); observes docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 5 case(s); observes asgi.send.message_types, docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
+            "asgi.send.message_types",
             "docs.response.body.bytes",
             "docs.response.headers",
             "docs.response.status",
@@ -276043,9 +276077,10 @@
           "case_ids": [
             "fastapi.test.test-tutorial-test-custom-response-test-tutorial007.test-get"
           ],
-          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
+            "asgi.send.message_types",
             "http.body.bytes",
             "http.headers.ordered",
             "http.status"
@@ -276161,9 +276196,10 @@
           "case_ids": [
             "fastapi.test.test-tutorial-test-custom-response-test-tutorial008.test-get"
           ],
-          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
+            "asgi.send.message_types",
             "http.body.bytes",
             "http.headers.ordered",
             "http.status"
@@ -312267,9 +312303,10 @@
           "case_ids": [
             "fastapi.response.cookie-header"
           ],
-          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
+            "asgi.send.message_types",
             "http.body.bytes",
             "http.headers.ordered",
             "http.status"
@@ -313217,9 +313254,10 @@
             "fastapi.response.direct-plain-text",
             "fastapi.response.openapi-status-and-media"
           ],
-          "coverage_scope": "Partial independent sample across 2 case(s); observes docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.send.message_types, docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
+            "asgi.send.message_types",
             "docs.response.body.bytes",
             "docs.response.headers",
             "docs.response.status",
@@ -313639,9 +313677,10 @@
           "case_ids": [
             "fastapi.response.injected-headers"
           ],
-          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
+            "asgi.send.message_types",
             "http.body.bytes",
             "http.headers.ordered",
             "http.status"
@@ -316876,9 +316915,10 @@
             "fastapi.response.declared-status",
             "fastapi.response.openapi-status-and-media"
           ],
-          "coverage_scope": "Partial independent sample across 2 case(s); observes docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.send.message_types, docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
+            "asgi.send.message_types",
             "docs.response.body.bytes",
             "docs.response.headers",
             "docs.response.status",

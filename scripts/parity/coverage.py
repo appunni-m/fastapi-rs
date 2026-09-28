@@ -646,6 +646,10 @@ def validate_compatibility_artifacts(
                         and bool(workflow_mapping.get("observation_selectors")),
                         f"source {identifier} has an incomplete workflow mapping",
                     )
+                    register_selectors(
+                        workflow_mapping["observation_selectors"],
+                        f"source {identifier} workflow mapping",
+                    )
                 if review_status == "reviewed_partial":
                     _require(
                         bool(workflow_mappings),
