@@ -3130,6 +3130,15 @@ for test_path, source_review in REQUEST_PARAMETER_TEST_REVIEW_MAPPINGS.items():
     request_gate = source_review.get("contract_gate")
     if request_gate and request_gate not in (prior_gate or ""):
         reviewed["contract_gate"] = "; ".join(filter(None, [prior_gate, request_gate]))
+    workflow_links = reviewed.setdefault("workflow_cases", [])
+    for workflow in source_review["workflow_cases"]:
+        link = {
+            "recipe_path": workflow["recipe_path"],
+            "case_ids": [workflow["case_id"]],
+            "observation_selectors": workflow["observation_selectors"],
+        }
+        if link not in workflow_links:
+            workflow_links.append(link)
     reviewed["supporting_sources"] = _append_unique_review_sources(
         reviewed.get("supporting_sources", []),
         [
@@ -6268,6 +6277,31 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         )
     starlette_edges.sort(key=lambda x: x["id"])
 
+    materialized_index_path = PROJECT / "tests/fixtures/materialized-input-index.json"
+    if not materialized_index_path.is_file():
+        raise AtlasError("materialized input index is required to review source-to-workflow links")
+    materialized_index = json.loads(materialized_index_path.read_text(encoding="utf-8"))
+    indexed_workflows = {row["id"]: row for row in materialized_index["workflows"]}
+    indexed_workflow_mappings_by_source: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for mapping in materialized_index["mappings"]:
+        workflow = indexed_workflows.get(mapping["workflow_id"])
+        if workflow is None:
+            raise AtlasError(
+                "materialized input mapping references unknown workflow " + mapping["workflow_id"]
+            )
+        indexed_workflow_mappings_by_source[mapping["source_item_id"]].append(
+            {
+                "workflow_id": mapping["workflow_id"],
+                "recipe_path": workflow["recipe_path"],
+                "case_ids": mapping["case_ids"],
+                "observation_selectors": mapping["observation_selectors"],
+                "coverage_status": mapping["coverage_status"],
+                "coverage_scope": mapping["coverage_scope"],
+            }
+        )
+    for workflow_mappings in indexed_workflow_mappings_by_source.values():
+        workflow_mappings.sort(key=lambda row: row["workflow_id"])
+
     coverage_items = []
     fixture_backlog = []
     tests_root = fastapi_root / "tests"
@@ -6548,6 +6582,39 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                     )
                 ],
             }
+        independent_workflow_mappings = indexed_workflow_mappings_by_source.get(item_id, [])
+        reviewed_module_sources = reviewed_source_spans(
+            fastapi_root, reviewed_mapping.get("supporting_sources", []), starlette_root
+        )
+        reviewed_module_note = reviewed_mapping.get("stimulus_notes", "")
+        has_explicit_module_workflow_review = bool(
+            reviewed_mapping.get("rationale")
+            and reviewed_module_sources
+            and (
+                reviewed_mapping.get("workflow_cases")
+                or (
+                    "tests/fixtures/input-recipes/" in reviewed_module_note
+                    and "::" in reviewed_module_note
+                )
+            )
+        )
+        all_test_functions_reviewed = (
+            bool(test_functions)
+            and not unmatched_test_functions
+            and all(
+                test["mapping_status"]
+                in {"reviewed_source_candidate", "contract_gated_source_candidate", "excluded"}
+                for test in test_functions
+            )
+        )
+        review_status = (
+            "excluded"
+            if exclusion
+            else "reviewed_partial"
+            if independent_workflow_mappings
+            and (has_explicit_module_workflow_review or all_test_functions_reviewed)
+            else "pending"
+        )
         if exclusion:
             mapping_status = "excluded"
         elif case_designs and (
@@ -6590,6 +6657,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                 "starlette_rs_planning_areas": [] if exclusion else starlette_areas_for(features),
                 "exclusion_reason": exclusion,
                 "mapping_status": mapping_status,
+                "review_status": review_status,
                 "review_reason": (
                     "Some executable test functions still need an independent behavior mapping."
                     if not exclusion and unmatched_test_functions
@@ -6620,6 +6688,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                     ],
                     "unmatched_test_functions": unmatched_test_functions,
                     "excluded_test_functions": excluded_test_functions,
+                    "independent_workflow_mappings": independent_workflow_mappings,
                     **(
                         {"app_dependency_wave_scope_review": app_scope_review_record}
                         if app_scope_review_record
@@ -6627,11 +6696,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                     ),
                     "reviewed_module_mapping": {
                         "rationale": reviewed_mapping.get("rationale"),
-                        "supporting_sources": reviewed_source_spans(
-                            fastapi_root,
-                            reviewed_mapping.get("supporting_sources", []),
-                            starlette_root,
-                        ),
+                        "supporting_sources": reviewed_module_sources,
                         **(
                             {"contract_gate": reviewed_mapping["contract_gate"]}
                             if "contract_gate" in reviewed_mapping
@@ -6640,6 +6705,11 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                         **(
                             {"stimulus_notes": reviewed_mapping["stimulus_notes"]}
                             if "stimulus_notes" in reviewed_mapping
+                            else {}
+                        ),
+                        **(
+                            {"workflow_cases": reviewed_mapping["workflow_cases"]}
+                            if "workflow_cases" in reviewed_mapping
                             else {}
                         ),
                     }
@@ -6654,7 +6724,9 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                 {
                     "id": fixture_id,
                     "source_item_id": item_id,
-                    "stage": "partially mapped; remaining functions need review"
+                    "stage": "reviewed partial source-to-input mapping; remaining source behavior is not claimed"
+                    if review_status == "reviewed_partial"
+                    else "partially mapped; remaining functions need review"
                     if unmatched_test_functions
                     else "partially mapped; one or more behaviors remain contract-gated"
                     if any(
@@ -6674,6 +6746,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                     ),
                     "feature_ids": features,
                     "case_designs": case_designs,
+                    "independent_workflow_mappings": independent_workflow_mappings,
                     "starlette_rs_planning_areas": starlette_areas_for(features),
                     "source_evidence": {"path": rel, "sha256": sha256(path)},
                 }
@@ -6796,6 +6869,16 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         page_id = "documented-page:" + rel
         fixture_id = "fastapi.docs." + norm_id(rel.removesuffix(".md"))
         exclusion = docs_exclusion(rel)
+        independent_workflow_mappings = indexed_workflow_mappings_by_source.get(page_id, [])
+        review_status = (
+            "excluded"
+            if exclusion
+            else "reviewed_partial"
+            if independent_workflow_mappings
+            and reviewed_page_mapping.get("rationale")
+            and reviewed_page_spans
+            else "pending"
+        )
         mapping_status = "excluded" if exclusion else "candidate" if features else "review_required"
         page_selectors = selectors_with_exact_http_body(
             reviewed_page_mapping.get("observation_selectors", selectors_for(features))
@@ -6812,6 +6895,8 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             for metadata_key in ("contract_gate", "stimulus_notes", "exclusion_reason"):
                 if reviewed_page_mapping.get(metadata_key) is not None:
                     reviewed_page_record[metadata_key] = reviewed_page_mapping[metadata_key]
+            if reviewed_page_mapping.get("workflow_cases"):
+                reviewed_page_record["workflow_cases"] = reviewed_page_mapping["workflow_cases"]
         source_evidence = (
             [{"path": "docs/en/docs/" + rel, "sha256": sha256(path)}]
             + [{"path": item["path"], "sha256": item["sha256"]} for item in linked_examples]
@@ -6839,6 +6924,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                 "starlette_rs_planning_areas": [] if exclusion else starlette_areas_for(features),
                 "exclusion_reason": exclusion,
                 "mapping_status": mapping_status,
+                "review_status": review_status,
                 "review_reason": "No whole-token feature signal in page or linked example sources; manual mapping required."
                 if not exclusion and not features
                 else None,
@@ -6850,6 +6936,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                     "linked_example_sources": linked_examples,
                     "related_usage_sources": related_usage_evidence,
                     "reviewed_source_mapping": reviewed_page_record,
+                    "independent_workflow_mappings": independent_workflow_mappings,
                     "feature_evidence": feature_evidence,
                     "mapping_rule": "whole-token signals from page and explicitly included docs_src files; candidate only",
                 },
@@ -6860,7 +6947,9 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                 {
                     "id": fixture_id,
                     "source_item_id": page_id,
-                    "stage": "candidate; independent stimulus requires review/materialization",
+                    "stage": "reviewed partial source-to-input mapping; remaining documented behavior is not claimed"
+                    if review_status == "reviewed_partial"
+                    else "candidate; independent stimulus requires review/materialization",
                     "input_only": True,
                     "stimulus_design": stimulus_for(features),
                     "observation_selectors": page_selectors,
@@ -6874,6 +6963,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                     "starlette_rs_planning_areas": starlette_areas_for(features),
                     "documented_sections": documented_sections,
                     "source_evidence": source_evidence,
+                    "independent_workflow_mappings": independent_workflow_mappings,
                     "related_usage_sources": related_usage_evidence,
                     "reviewed_source_mapping": reviewed_page_record,
                 }
@@ -7266,17 +7356,24 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                 for item in coverage_items
                 if item["kind"] == "upstream_test_module" and item["fixture_id"]
             ),
-            "test_modules_with_candidate_backlog_link": sum(
+            "test_modules_with_independent_input_workflow_link": sum(
                 1
                 for item in coverage_items
-                if item["kind"] == "upstream_test_module" and item["fixture_id"]
+                if item["kind"] == "upstream_test_module"
+                and item["mapping_evidence"]["independent_workflow_mappings"]
             ),
             "test_modules_candidate_links_pending_behavior_review": sum(
                 1
                 for item in coverage_items
                 if item["kind"] == "upstream_test_module"
                 and item["fixture_id"]
-                and item["mapping_status"] == "candidate"
+                and item["review_status"] == "pending"
+            ),
+            "test_modules_with_reviewed_partial_mapping": sum(
+                1
+                for item in coverage_items
+                if item["kind"] == "upstream_test_module"
+                and item["review_status"] == "reviewed_partial"
             ),
             "test_modules_excluded_from_parity": sum(
                 1
@@ -7286,17 +7383,24 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             "documentation_pages": sum(
                 1 for item in coverage_items if item["kind"] == "documented_feature_page"
             ),
-            "documentation_pages_mapped": sum(
+            "documentation_pages_with_independent_input_workflow_link": sum(
                 1
                 for item in coverage_items
-                if item["kind"] == "documented_feature_page" and item["fixture_id"]
+                if item["kind"] == "documented_feature_page"
+                and item["mapping_evidence"]["independent_workflow_mappings"]
             ),
             "documentation_pages_candidate_links_pending_behavior_review": sum(
                 1
                 for item in coverage_items
                 if item["kind"] == "documented_feature_page"
                 and item["fixture_id"]
-                and item["mapping_status"] == "candidate"
+                and item["review_status"] == "pending"
+            ),
+            "documentation_pages_with_reviewed_partial_mapping": sum(
+                1
+                for item in coverage_items
+                if item["kind"] == "documented_feature_page"
+                and item["review_status"] == "reviewed_partial"
             ),
             "documentation_pages_excluded": sum(
                 1
@@ -7463,27 +7567,29 @@ def render_markdown(atlas: dict[str, Any]) -> str:
             "",
             "## Merged coverage matrix and fixture backlog",
             "",
-            "| Source denominator | Total | Candidate/backlog links | Links pending behavior review | Explicitly excluded |",
-            "|---|---:|---:|---:|---:|",
+            "| Source denominator | Total | Input workflow links | Reviewed partial | Pending behavior review | Explicitly excluded |",
+            "|---|---:|---:|---:|---:|---:|",
         ]
     )
     lines.extend(
         [
-            "| Upstream `test_*.py` modules | %d | %d | %d | %d |"
+            "| Upstream `test_*.py` modules | %d | %d | %d | %d | %d |"
             % (
                 counts["test_modules"],
-                counts["test_modules_with_candidate_backlog_link"],
+                counts["test_modules_with_independent_input_workflow_link"],
+                counts["test_modules_with_reviewed_partial_mapping"],
                 counts["test_modules_candidate_links_pending_behavior_review"],
                 counts["test_modules_excluded_from_parity"],
             ),
-            "| User-facing documentation pages | %d | %d | %d | %d |"
+            "| User-facing documentation pages | %d | %d | %d | %d | %d |"
             % (
                 counts["documentation_pages"],
-                counts["documentation_pages_mapped"],
+                counts["documentation_pages_with_independent_input_workflow_link"],
+                counts["documentation_pages_with_reviewed_partial_mapping"],
                 counts["documentation_pages_candidate_links_pending_behavior_review"],
                 counts["documentation_pages_excluded"],
             ),
-            "| Documentation Python files (examples + support initializers) | %d | %d | %d | %d |"
+            "| Documentation Python files (examples + support initializers) | %d | %d | — | %d | %d |"
             % (
                 counts["documentation_python_source_files"],
                 counts["documentation_python_examples_grouped_with_page"],
@@ -7495,13 +7601,11 @@ def render_markdown(atlas: dict[str, Any]) -> str:
             "Python-source exclusions are one debugging/setup example and %d package initializers; the remaining examples are grouped with their mapped documentation pages."
             % counts["documentation_support_files_excluded"],
             "",
-            "Candidate/backlog links are not concrete independent input coverage. The materialized index has %d distinct upstream test modules and %d documentation pages linked to workflows; all %d mapping rows are partial. All %d eligible test-module links and %d documentation-page links remain behavior-review candidates, and no source module or documentation page is fully covered by an input workflow."
+            "Review state is separate from coverage completeness. `reviewed_partial` means pinned source evidence and exact indexed workflows, cases, and selectors were reviewed for the linked behavior; it does not claim complete source behavior or parity. Pending counts identify links without that review. The materialized index has %d distinct upstream test modules and %d documentation pages linked to workflows; all %d mapping rows are partial. No source module or documentation page is fully covered by an input workflow."
             % (
                 len(materialized_test_sources),
                 len(materialized_documentation_sources),
                 materialized_partial_mappings,
-                counts["test_modules_candidate_links_pending_behavior_review"],
-                counts["documentation_pages_candidate_links_pending_behavior_review"],
             ),
             "",
             "Candidate rows carry source path/SHA evidence, exact whole-token signals, family IDs, and family-level selectors. Per-function mapping scope distinguishes reviewed source mappings, function-body signals, and filename candidates. Test modules index function names/lines without copying bodies. These are backlog leads, not independent executable parity cases: each behavior still needs a tailored stimulus and selector review. Rows without a signal remain `review_required`; exclusions include a reason. Benchmark modules are routed to correctness-gated benchmark work.",

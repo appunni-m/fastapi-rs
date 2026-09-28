@@ -611,6 +611,10 @@ def validate_compatibility_artifacts(
         if row.get("kind") in FIXTURE_KINDS:
             if row.get("mapping_status") == "excluded":
                 _require(
+                    row.get("review_status") == "excluded",
+                    f"excluded source {identifier} has an inconsistent review status",
+                )
+                _require(
                     bool(row.get("exclusion_reason")), f"excluded source {identifier} has no reason"
                 )
                 _require(
@@ -618,16 +622,75 @@ def validate_compatibility_artifacts(
                     f"excluded source {identifier} unexpectedly has a fixture",
                 )
             else:
+                review_status = row.get("review_status")
+                _require(
+                    review_status in {"pending", "reviewed_partial"},
+                    f"source {identifier} has no valid review status",
+                )
                 _require(bool(row.get("fixture_id")), f"source {identifier} has no fixture mapping")
                 _require(
                     bool(row.get("observation_selectors")),
                     f"source {identifier} has no observation selectors",
                 )
+                mapping = row.get("mapping_evidence", {})
+                workflow_mappings = mapping.get("independent_workflow_mappings", [])
+                _require(
+                    isinstance(workflow_mappings, list),
+                    f"source {identifier} workflow mappings are malformed",
+                )
+                for workflow_mapping in workflow_mappings:
+                    _require(
+                        isinstance(workflow_mapping, dict)
+                        and bool(workflow_mapping.get("recipe_path"))
+                        and bool(workflow_mapping.get("case_ids"))
+                        and bool(workflow_mapping.get("observation_selectors")),
+                        f"source {identifier} has an incomplete workflow mapping",
+                    )
+                if review_status == "reviewed_partial":
+                    _require(
+                        bool(workflow_mappings),
+                        f"source {identifier} marks review complete without an indexed workflow",
+                    )
                 if row["kind"] == "upstream_test_module":
-                    mapping = row.get("mapping_evidence", {})
                     _require(
                         not mapping.get("unmatched_test_functions"),
                         f"source {identifier} has unmapped test functions",
+                    )
+                    if review_status == "reviewed_partial":
+                        module_review = mapping.get("reviewed_module_mapping") or {}
+                        module_sources = module_review.get("supporting_sources", [])
+                        module_notes = module_review.get("stimulus_notes", "")
+                        explicit_module_review = bool(
+                            module_review.get("rationale")
+                            and module_sources
+                            and (
+                                module_review.get("workflow_cases")
+                                or (
+                                    "tests/fixtures/input-recipes/" in module_notes
+                                    and "::" in module_notes
+                                )
+                            )
+                        )
+                        functions = mapping.get("matched_test_functions", [])
+                        all_functions_reviewed = bool(functions) and all(
+                            function.get("mapping_status")
+                            in {
+                                "reviewed_source_candidate",
+                                "contract_gated_source_candidate",
+                                "excluded",
+                            }
+                            for function in functions
+                        )
+                        _require(
+                            explicit_module_review or all_functions_reviewed,
+                            f"source {identifier} has no source-backed function or module review",
+                        )
+                elif review_status == "reviewed_partial":
+                    page_review = mapping.get("reviewed_source_mapping") or {}
+                    _require(
+                        bool(page_review.get("rationale"))
+                        and bool(page_review.get("source_evidence")),
+                        f"documented source {identifier} has no reviewed source evidence",
                     )
 
     fixture_rows = backlog.get("fixture_designs")

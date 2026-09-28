@@ -238,6 +238,36 @@ def validate_materialized_input_index(
         if mapped_cases[workflow_id] != cases.keys():
             _fail(f"workflow contains cases without source mappings: {workflow_id}")
 
+    expected_mappings_by_source: dict[str, list[dict[str, Any]]] = {}
+    for mapping in sorted(
+        index["mappings"], key=lambda row: (row["source_item_id"], row["workflow_id"])
+    ):
+        workflow = workflow_by_id[mapping["workflow_id"]]
+        expected_mappings_by_source.setdefault(mapping["source_item_id"], []).append(
+            {
+                "workflow_id": mapping["workflow_id"],
+                "recipe_path": workflow["recipe_path"],
+                "case_ids": mapping["case_ids"],
+                "observation_selectors": mapping["observation_selectors"],
+                "coverage_status": mapping["coverage_status"],
+                "coverage_scope": mapping["coverage_scope"],
+            }
+        )
+
+    for source_id, coverage in coverage_rows.items():
+        if coverage.get("kind") not in {"upstream_test_module", "documented_feature_page"}:
+            continue
+        expected = expected_mappings_by_source.get(source_id, [])
+        actual = coverage.get("mapping_evidence", {}).get("independent_workflow_mappings", [])
+        if actual != expected:
+            _fail(f"coverage workflow crosswalk differs from the materialized index: {source_id}")
+        backlog_row = backlog_rows.get(source_id)
+        if (
+            backlog_row is not None
+            and backlog_row.get("independent_workflow_mappings", []) != expected
+        ):
+            _fail(f"backlog workflow crosswalk differs from the materialized index: {source_id}")
+
     return {
         "workflows": len(workflow_by_id),
         "cases": sum(len(cases) for cases in workflow_cases.values()),

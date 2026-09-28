@@ -30,15 +30,15 @@ The single `tests/fixtures/manifest.yaml` now indexes 439 source-supported symbo
 
 ## Merged coverage matrix and fixture backlog
 
-| Source denominator | Total | Candidate/backlog links | Links pending behavior review | Explicitly excluded |
-|---|---:|---:|---:|---:|
-| Upstream `test_*.py` modules | 492 | 453 | 336 | 39 |
-| User-facing documentation pages | 155 | 104 | 104 | 51 |
-| Documentation Python files (examples + support initializers) | 461 | 355 | 355 | 106 |
+| Source denominator | Total | Input workflow links | Reviewed partial | Pending behavior review | Explicitly excluded |
+|---|---:|---:|---:|---:|---:|
+| Upstream `test_*.py` modules | 492 | 453 | 194 | 259 | 39 |
+| User-facing documentation pages | 155 | 104 | 104 | 0 | 51 |
+| Documentation Python files (examples + support initializers) | 461 | 355 | — | 355 | 106 |
 
 Python-source exclusions are one debugging/setup example and 91 package initializers; the remaining examples are grouped with their mapped documentation pages.
 
-Candidate/backlog links are not concrete independent input coverage. The materialized index has 453 distinct upstream test modules and 104 documentation pages linked to workflows; all 652 mapping rows are partial. All 336 eligible test-module links and 104 documentation-page links remain behavior-review candidates, and no source module or documentation page is fully covered by an input workflow.
+Review state is separate from coverage completeness. `reviewed_partial` means pinned source evidence and exact indexed workflows, cases, and selectors were reviewed for the linked behavior; it does not claim complete source behavior or parity. Pending counts identify links without that review. The materialized index has 453 distinct upstream test modules and 104 documentation pages linked to workflows; all 652 mapping rows are partial. No source module or documentation page is fully covered by an input workflow.
 
 Candidate rows carry source path/SHA evidence, exact whole-token signals, family IDs, and family-level selectors. Per-function mapping scope distinguishes reviewed source mappings, function-body signals, and filename candidates. Test modules index function names/lines without copying bodies. These are backlog leads, not independent executable parity cases: each behavior still needs a tailored stimulus and selector review. Rows without a signal remain `review_required`; exclusions include a reason. Benchmark modules are routed to correctness-gated benchmark work.
 
