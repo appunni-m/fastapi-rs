@@ -12,13 +12,13 @@
   executable parity evidence. Track generic Starlette behavior through
   Starlette-RS's separate contract. The current manifest is foundation-only;
   finish operation review, identity checks, and the Python/ASGI runner first.
-- Ship distribution `fastapi-rs` with the public `fastapi` import namespace;
-  upstream FastAPI is source-oracle/dev-only, never a runtime dependency or
-  import. Python runtime files contain only native re-exports and literal
-  `__all__`; put all FastAPI behavior and control flow in Rust, including
-  routing, dependencies, validation, serialization, OpenAPI, middleware,
-  lifecycle, and protocols. Enforce this boundary with
-  `make python-facade-check`.
+- Ship `fastapi-rs` with the public `fastapi` import namespace; upstream
+  FastAPI is oracle/dev-only, never a runtime dependency or import. Python
+  runtime files contain only native re-exports and literal `__all__`: no
+  functions, branches, loops, or fallback behavior. Keep all FastAPI behavior
+  and control flow in Rust, including routing, dependencies, validation,
+  serialization, OpenAPI, middleware, lifecycle, and protocols. Enforce this
+  boundary with `make python-facade-check`.
 - Put Rust behavior in `fastapi-rs/` and PyO3 conversion in `fastapi-rs-py/`;
   keep the public import namespace `fastapi` free of Python fallback behavior.
 - Keep unsafe Rust forbidden and do not add blanket lint suppressions. Run
