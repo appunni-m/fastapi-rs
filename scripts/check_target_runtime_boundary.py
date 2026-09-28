@@ -15,6 +15,25 @@ PROJECT_DEPENDENCY_SECTION = "project"
 PROJECT_OPTIONAL_DEPENDENCY_SECTION = "project.optional-dependencies"
 
 
+def _configured_native_module() -> str:
+    """Read the extension module configured for the published wheel."""
+    pyproject = (PROJECT_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    section = None
+    for line in pyproject.splitlines():
+        section_match = re.fullmatch(r"\s*\[([^]]+)\]\s*", line)
+        if section_match:
+            section = section_match.group(1)
+            continue
+        if section != "tool.maturin":
+            continue
+        module_match = re.fullmatch(
+            r'\s*module-name\s*=\s*["\']([A-Za-z_][A-Za-z0-9_.]*)["\']\s*', line
+        )
+        if module_match:
+            return module_match.group(1)
+    raise SystemExit("pyproject.toml must configure tool.maturin.module-name")
+
+
 def _toml_array_is_complete(value: str) -> bool:
     quote = None
     escaped = False
@@ -119,15 +138,33 @@ def _is_static_all_assignment(node: ast.stmt) -> bool:
     )
 
 
+def _is_native_extension_import(path: Path, node: ast.stmt, module_name: str) -> bool:
+    """Accept an absolute or package-relative import from the configured extension."""
+    if not isinstance(node, ast.ImportFrom):
+        return False
+    if node.level == 0:
+        return node.module == module_name
+    if node.level != 1 or node.module is None:
+        return False
+
+    native_package = module_name.rpartition(".")[0]
+    source_package = ".".join(path.relative_to(PYTHON_PACKAGE_ROOT).parent.parts)
+    imported_module = f"{source_package}.{node.module}"
+    return imported_module == module_name and source_package == native_package
+
+
 def check_python_facade_pass_through() -> None:
-    """Allow only re-exports and a literal ``__all__`` in runtime Python modules."""
+    """Allow only native-extension re-exports and a matching literal ``__all__``."""
     python_files = sorted(PYTHON_PACKAGE_ROOT.rglob("*.py"))
     if not python_files:
         raise SystemExit(f"no Python facade sources found under {PYTHON_PACKAGE_ROOT}")
 
+    native_module = _configured_native_module()
     violations = []
     for path in python_files:
         tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        imported_names = []
+        all_assignments = []
         for index, node in enumerate(tree.body):
             is_docstring = (
                 index == 0
@@ -135,14 +172,54 @@ def check_python_facade_pass_through() -> None:
                 and isinstance(node.value, ast.Constant)
                 and isinstance(node.value.value, str)
             )
-            if is_docstring or isinstance(node, (ast.Import, ast.ImportFrom)):
+            if is_docstring:
                 continue
             if _is_static_all_assignment(node):
+                all_assignments.append(node)
+                continue
+            if isinstance(node, ast.ImportFrom):
+                if not _is_native_extension_import(path, node, native_module):
+                    violations.append(
+                        f"{path.relative_to(PROJECT_ROOT)}:{node.lineno}: imports must be "
+                        f"direct re-exports from the configured native module {native_module!r}"
+                    )
+                    continue
+                if any(alias.name == "*" for alias in node.names):
+                    violations.append(
+                        f"{path.relative_to(PROJECT_ROOT)}:{node.lineno}: wildcard native "
+                        "re-exports are not allowed"
+                    )
+                    continue
+                imported_names.extend(alias.asname or alias.name for alias in node.names)
                 continue
             violations.append(
                 f"{path.relative_to(PROJECT_ROOT)}:{node.lineno}: "
-                f"{type(node).__name__} is not a pass-through re-export; Python runtime "
-                "modules may contain only imports and a literal __all__"
+                f"{type(node).__name__} is not a native re-export; Python runtime modules "
+                "may contain only native imports and a literal __all__"
+            )
+
+        if len(all_assignments) != 1:
+            violations.append(
+                f"{path.relative_to(PROJECT_ROOT)}: Python runtime modules must define "
+                "exactly one literal __all__"
+            )
+        elif all_assignments[0].value.elts:
+            exported_names = [item.value for item in all_assignments[0].value.elts]
+            if len(exported_names) != len(set(exported_names)):
+                violations.append(
+                    f"{path.relative_to(PROJECT_ROOT)}:{all_assignments[0].lineno}: "
+                    "__all__ contains duplicate names"
+                )
+            if imported_names != exported_names:
+                violations.append(
+                    f"{path.relative_to(PROJECT_ROOT)}:{all_assignments[0].lineno}: "
+                    f"__all__ must exactly match native re-exports; imports={imported_names!r}, "
+                    f"__all__={exported_names!r}"
+                )
+        elif imported_names:
+            violations.append(
+                f"{path.relative_to(PROJECT_ROOT)}: native imports must be listed in "
+                "literal __all__"
             )
 
         for node in ast.walk(tree):
@@ -177,7 +254,8 @@ def main() -> int:
     if args.source_only:
         print(
             "Static target boundary valid: no original FastAPI runtime dependency or import, "
-            "and Python runtime modules contain only imports and literal __all__ exports"
+            "and Python runtime modules re-export only configured native symbols via "
+            "literal __all__"
         )
         return 0
 
@@ -214,7 +292,8 @@ def main() -> int:
 
     print(
         "target runtime boundary valid: fastapi-rs installed; upstream fastapi absent; "
-        "Python facade contains only imports/exports; runtime metadata has no upstream dependency"
+        "Python facade contains only configured native re-exports; runtime metadata has no "
+        "upstream dependency"
     )
     return 0
 
