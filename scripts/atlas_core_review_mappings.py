@@ -16,6 +16,58 @@ def _case(feature_ids, observation_selectors, rationale, **extra):
 
 
 CORE_TEST_REVIEW_MAPPINGS = {
+    "tests/test_dependency_after_yield_websockets.py": {
+        "supporting_sources": [
+            {
+                "path": "tests/test_dependency_after_yield_websockets.py",
+                "start_line": 37,
+                "end_line": 40,
+                "role": "yield dependency raises ValueError during cleanup-backed iteration",
+            },
+            {
+                "path": "tests/test_dependency_after_yield_websockets.py",
+                "start_line": 56,
+                "end_line": 60,
+                "role": "broken WebSocket route accepts and iterates the yielded session",
+            },
+            {
+                "path": "tests/test_dependency_after_yield_websockets.py",
+                "start_line": 76,
+                "end_line": 79,
+                "role": "source test asserts propagated exception type and message substring",
+            },
+        ],
+        "functions": {
+            "test_websocket_dependency_after_yield_broken": _case(
+                ["asgi-error-propagation", "websocket-lifecycle"],
+                ["asgi.application_error.exception"],
+                "The broken yielded dependency raises during WebSocket dispatch; the workflow observes the fully qualified exception class and exact message while retaining the source test's exception boundary.",
+            ),
+        },
+    },
+    "tests/test_response_model_as_return_annotation.py": {
+        "supporting_sources": [
+            {
+                "path": "tests/test_response_model_as_return_annotation.py",
+                "start_line": 50,
+                "end_line": 53,
+                "role": "response-model route returns a dictionary missing a required field",
+            },
+            {
+                "path": "tests/test_response_model_as_return_annotation.py",
+                "start_line": 278,
+                "end_line": 281,
+                "role": "source test asserts ResponseValidationError and a missing-field message",
+            },
+        ],
+        "functions": {
+            "test_response_model_no_annotation_return_invalid_dict": _case(
+                ["asgi-error-propagation", "response-serialization"],
+                ["asgi.application_error.exception", "validation.error_class"],
+                "An invalid response value raises FastAPI ResponseValidationError; the workflow observes its exact qualified exception and message alongside the source-backed validation class.",
+            ),
+        },
+    },
     "tests/test_request_param_model_by_alias.py": {
         "supporting_sources": [
             {

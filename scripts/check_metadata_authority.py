@@ -6,6 +6,7 @@ from __future__ import annotations
 import ast
 import hashlib
 import json
+import subprocess
 from collections import Counter
 from pathlib import Path
 from typing import Any
@@ -124,6 +125,84 @@ def validate_count_pointers(
     return values
 
 
+def canonical_repository(value: str) -> str:
+    value = value.strip()
+    if value.startswith("git@github.com:"):
+        value = "https://github.com/" + value.removeprefix("git@github.com:")
+    elif value.startswith("ssh://git@github.com/"):
+        value = "https://github.com/" + value.removeprefix("ssh://git@github.com/")
+    elif "//" not in value and value.count("/") == 1:
+        value = "https://github.com/" + value
+    if value.endswith(".git"):
+        value = value[:-4]
+    return value.rstrip("/")
+
+
+def git_value(root: Path, *arguments: str) -> str:
+    try:
+        return subprocess.check_output(
+            ["git", "-C", str(root), *arguments], text=True, stderr=subprocess.PIPE
+        ).strip()
+    except (OSError, subprocess.CalledProcessError) as exc:
+        detail = exc.stderr.strip() if isinstance(exc, subprocess.CalledProcessError) else str(exc)
+        raise MetadataError(f"cannot inspect pinned source checkout {root}: {detail}") from exc
+
+
+def validate_pinned_source_checkout(label: str, root: Path, expected: dict[str, str]) -> None:
+    require_equal(
+        f"{label} checkout commit",
+        git_value(root, "rev-parse", "HEAD"),
+        expected["commit"],
+    )
+    remote = git_value(root, "remote", "get-url", "origin")
+    require_equal(
+        f"{label} checkout repository",
+        canonical_repository(remote),
+        canonical_repository(expected["repository"]),
+    )
+
+
+def validate_ci_source_checkouts(metadata: dict[str, Any]) -> None:
+    workflow_path = ROOT / ".github/workflows/ci.yml"
+    workflow = load_yaml(workflow_path)
+    steps = workflow["jobs"]["verify"]["steps"]
+    checkouts: dict[str, dict[str, Any]] = {}
+    for step in steps:
+        settings = step.get("with", {})
+        path = settings.get("path")
+        if path:
+            checkouts[path] = settings
+
+    authority = metadata["authority"]
+    fastapi = authority["source"] if "source" in authority else authority
+    expected = {
+        "fastapi": {
+            "repository": fastapi["repository"],
+            "commit": fastapi["commit"],
+        },
+        "starlette": {
+            "repository": authority["starlette"]["repository"],
+            "commit": authority["starlette"]["commit"],
+        },
+        "starlette-rs": {
+            "repository": metadata["starlette_rs"]["repository"],
+            "commit": metadata["starlette_rs"]["commit"],
+        },
+    }
+    for path, identity in expected.items():
+        settings = checkouts.get(path)
+        if settings is None:
+            raise MetadataError(f"CI must checkout {path} for pinned source validation")
+        require_equal(
+            f"CI {path} repository",
+            canonical_repository(settings.get("repository", "")),
+            canonical_repository(identity["repository"]),
+        )
+        require_equal(f"CI {path} revision", settings.get("ref"), identity["commit"])
+    if checkouts.get("fastapi-rs", {}).get("path") != "fastapi-rs":
+        raise MetadataError("CI must checkout the project under fastapi-rs beside its sources")
+
+
 def validate() -> None:
     metadata = load_yaml(METADATA_PATH)
     require_equal("metadata schema", metadata.get("schema"), "fastapi-rs/api-source-authority@1")
@@ -133,6 +212,16 @@ def validate() -> None:
     manifest = load_yaml(manifest_path)
     authority = metadata["authority"]
     fastapi = authority["source"] if "source" in authority else authority
+    starlette = authority["starlette"]
+    starlette_rs = metadata["starlette_rs"]
+    validate_ci_source_checkouts(metadata)
+    validate_pinned_source_checkout("FastAPI", (ROOT / fastapi["checkout"]).resolve(), fastapi)
+    validate_pinned_source_checkout(
+        "Starlette", (ROOT / starlette["checkout"]).resolve(), starlette
+    )
+    validate_pinned_source_checkout(
+        "Starlette-RS", (ROOT / starlette_rs["owner"]).resolve(), starlette_rs
+    )
 
     selected_fastapi = pointer(
         manifest, manifest_meta["fastapi_identity_pointer"], "manifest FastAPI identity"
@@ -142,7 +231,6 @@ def validate() -> None:
     selected_starlette = pointer(
         manifest, manifest_meta["starlette_identity_pointer"], "manifest Starlette identity"
     )
-    starlette = authority["starlette"]
     for field in ("repository", "version", "commit"):
         require_equal(f"Starlette identity {field}", starlette[field], selected_starlette[field])
     require_equal(
@@ -322,10 +410,34 @@ def validate() -> None:
         )
 
     sibling = metadata["starlette_rs"]
+    require_equal(
+        "Starlette-RS distribution version",
+        manifest["target"]["starlette_rs_distribution"]["version"],
+        sibling["distribution_version"],
+    )
     sibling_manifest = load_yaml(artifact_path(sibling["manifest"]))
     sibling_metadata = load_yaml(artifact_path(sibling["metadata"]))
-    for name in ("api_catalog", "coverage_matrix"):
-        artifact_path(sibling[name])
+    sibling_atlas_authority = pointer(
+        atlas, "/authorities/starlette_rs", "atlas Starlette-RS authority"
+    )
+    require_equal(
+        "atlas Starlette-RS project revision",
+        sibling_atlas_authority["implementation_revision"],
+        sibling["commit"],
+    )
+    sibling_digest_fields = {
+        "manifest": "manifest_sha256",
+        "api_catalog": "api_surface_catalog_sha256",
+        "api_review": "api_review_sha256",
+        "coverage_matrix": "coverage_matrix_sha256",
+    }
+    for name, digest_field in sibling_digest_fields.items():
+        sibling_artifact = artifact_path(sibling[name])
+        require_equal(
+            f"atlas Starlette-RS {name} digest",
+            sibling_atlas_authority[digest_field],
+            hashlib.sha256(sibling_artifact.read_bytes()).hexdigest(),
+        )
     require_equal(
         "Starlette-RS contract id",
         pointer(sibling_manifest, sibling["manifest_contract_pointer"], "sibling contract id"),

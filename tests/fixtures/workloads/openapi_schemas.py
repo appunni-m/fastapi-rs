@@ -6,7 +6,7 @@ from enum import Enum
 from typing import Annotated, Any
 
 from fastapi import Body, Depends, FastAPI, Header
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, computed_field
 
 
 class PostalAddress(BaseModel):
@@ -27,6 +27,31 @@ class RecordOutput(BaseModel):
     id: int
     label: str
     revision: int
+
+
+class SplitSubItem(BaseModel):
+    name: str
+    description: str | None = None
+    tags: list[str] = []
+
+    model_config = {"json_schema_serialization_defaults_required": True}
+
+
+class SplitItem(BaseModel):
+    name: str
+    description: str | None = None
+    sub: SplitSubItem | None = None
+
+    model_config = {"json_schema_serialization_defaults_required": True}
+
+
+class SplitComputedRecord(BaseModel):
+    name: str
+
+    @computed_field
+    @property
+    def computed_name(self) -> str:
+        return f"computed {self.name}"
 
 
 class ExampleRecord(BaseModel):
@@ -71,6 +96,14 @@ class HeaderToken(BaseModel):
 
 
 def _configure_routes(app: FastAPI) -> None:
+    @app.post("/schema/items/", responses={402: {"model": SplitItem}})
+    def create_split_item(item: SplitItem) -> SplitItem:
+        return item
+
+    @app.post("/schema/computed-field/")
+    def create_split_computed_record(record: SplitComputedRecord) -> SplitComputedRecord:
+        return record
+
     @app.get("/shared/primary", response_model=SharedRecord)
     async def primary_record() -> dict[str, Any]:
         return {"name": "primary"}

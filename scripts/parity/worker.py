@@ -350,8 +350,10 @@ def _observe(
     messages: list[dict[str, Any]],
     *,
     validation_error_class: str | None = None,
+    application_error: dict[str, str | None] | None = None,
     event_trace: list[dict[str, Any]] | None = None,
     workload_trace: list[str] | None = None,
+    include_selectors: bool = False,
 ) -> list[dict[str, Any]]:
     starts = [message for message in messages if message.get("type") == "http.response.start"]
     start = starts[0] if starts else None
@@ -396,9 +398,20 @@ def _observe(
                 {"index": index, "kind": kind, "values": {"message_types": message_types}}
             )
         elif kind == "application_error":
-            result.append(
-                {"index": index, "kind": kind, "values": {"class": validation_error_class}}
-            )
+            selector = observation["selector"]
+            if selector == "validation_error_class":
+                values = {"class": validation_error_class}
+            elif selector == "exception":
+                values = application_error or {
+                    "exception_class": None,
+                    "exception_message": None,
+                }
+            else:
+                raise WorkerError(f"worker does not support application error selector: {selector}")
+            item = {"index": index, "kind": kind, "values": values}
+            if include_selectors:
+                item["selector"] = selector
+            result.append(item)
         elif kind == "websocket":
             selector = observation["selector"]
             trace = event_trace or []
@@ -599,10 +612,8 @@ async def _run_action_v3(
     event_trace: list[dict[str, Any]] = []
     receive = _make_receive(action["receive_events"], event_trace)
     messages: list[dict[str, Any]] = []
-    captures_validation_error_class = any(
-        observation["kind"] == "application_error"
-        and observation["selector"] == "validation_error_class"
-        for observation in action["observations"]
+    captures_application_error = any(
+        observation["kind"] == "application_error" for observation in action["observations"]
     )
 
     dispatch_error: Exception | None = None
@@ -611,7 +622,7 @@ async def _run_action_v3(
     except Exception as exc:
         dispatch_error = None if _is_expected_websocket_disconnect(exc, scope, event_trace) else exc
 
-    if dispatch_error is not None and not captures_validation_error_class:
+    if dispatch_error is not None and not captures_application_error:
         return {
             "action_id": action["action_id"],
             "status": "product_error",
@@ -624,12 +635,20 @@ async def _run_action_v3(
         if dispatch_error is not None:
             error_type = type(dispatch_error)
             qualified_error_class = f"{error_type.__module__}.{error_type.__qualname__}"
+            application_error = {
+                "exception_class": qualified_error_class,
+                "exception_message": str(dispatch_error),
+            }
+        else:
+            application_error = None
         observations = _observe(
             action["observations"],
             messages,
             validation_error_class=qualified_error_class,
+            application_error=application_error,
             event_trace=event_trace,
             workload_trace=workload_trace,
+            include_selectors=True,
         )
     except Exception as exc:
         return {

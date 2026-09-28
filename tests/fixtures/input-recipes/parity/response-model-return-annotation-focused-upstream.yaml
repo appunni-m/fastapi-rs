@@ -1,0 +1,231 @@
+# Focused independent subset of tests/test_response_model_as_return_annotation.py.
+# Exact source line ranges are recorded below each case because source_evidence
+# stores the pinned module path while this schema has no line-span field.
+# Partial: the rest of the module's annotation/no-annotation combinations,
+# submodel and forward-reference matrix, JSONResponse case, extra-field variants,
+# and invalid response-model field construction error are not represented here.
+schema: fastapi-rs/python-asgi-workflow@3
+workload:
+  file: tests/fixtures/workloads/response_model_return_annotation_focused_upstream.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.response-model-return-annotation.decorator-precedence
+  # Source: ../fastapi/tests/test_response_model_as_return_annotation.py:138-180, 412-425.
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: decorator-model-over-annotation
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /decorator-precedence
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_response_model_as_return_annotation.py, kind: upstream_test}
+- case_id: fastapi.response-model-return-annotation.explicit-none-override
+  # Source: ../fastapi/tests/test_response_model_as_return_annotation.py:124-136, 366-385.
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: annotation-model-with-response-model-none
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /annotation-none
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_response_model_as_return_annotation.py, kind: upstream_test}
+- case_id: fastapi.response-model-return-annotation.response-passthrough
+  # Source: ../fastapi/tests/test_response_model_as_return_annotation.py:241-248, 487-496.
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: annotated-response-instance
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /passthrough
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_response_model_as_return_annotation.py, kind: upstream_test}
+- case_id: fastapi.response-model-return-annotation.union-and-list
+  # Source: ../fastapi/tests/test_response_model_as_return_annotation.py:191-229, 436-484.
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: list-response-model
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /users
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: union-user-branch
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /union-user
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: union-item-branch
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /union-item
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_response_model_as_return_annotation.py, kind: upstream_test}
+- case_id: fastapi.response-model-return-annotation.openapi-shapes
+  # Source: ../fastapi/tests/test_response_model_as_return_annotation.py:511-514,
+  # plus the selected route schema assertions at lines 823-889, 783-805,
+  # 919-940, 985-1027, 1073-1095, and component schemas at lines 1098-1117.
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: selected-response-schema-pointers
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths/~1decorator-precedence/get/responses/200
+      - /paths/~1annotation-none/get/responses/200
+      - /paths/~1passthrough/get/responses/200
+      - /paths/~1users/get/responses/200
+      - /paths/~1union-user/get/responses/200
+      - /paths/~1union-item/get/responses/200
+      - /components/schemas/User
+      - /components/schemas/Item
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_response_model_as_return_annotation.py, kind: upstream_test}
+- case_id: fastapi.response-model-return-annotation.invalid-value
+  # Source: ../fastapi/tests/test_response_model_as_return_annotation.py:50-53, 278-282.
+  # The source asserts ResponseValidationError and a "missing" substring; the
+  # exact exception projection supplements the source-backed validation class.
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: invalid-output-required-field
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /invalid-output
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: application_error, selector: validation_error_class, comparison: exact}
+    - {kind: application_error, selector: exception, comparison: exact}
+  source_evidence:
+  - {path: tests/test_response_model_as_return_annotation.py, kind: upstream_test}

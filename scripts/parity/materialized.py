@@ -78,11 +78,11 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
                         selectors.add("openapi.paths")
                     else:
                         selectors.add("openapi.document")
-            elif (
-                observation["kind"] == "application_error"
-                and observation["selector"] == "validation_error_class"
-            ):
-                selectors.add("validation.error_class")
+            elif observation["kind"] == "application_error":
+                if observation["selector"] == "validation_error_class":
+                    selectors.add("validation.error_class")
+                elif observation["selector"] == "exception":
+                    selectors.add("asgi.application_error.exception")
     return selectors
 
 

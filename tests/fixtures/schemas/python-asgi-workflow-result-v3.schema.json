@@ -766,6 +766,7 @@
       "required": [
         "index",
         "kind",
+        "selector",
         "values"
       ],
       "properties": {
@@ -776,24 +777,74 @@
         "kind": {
           "const": "application_error"
         },
+        "selector": {
+          "enum": [
+            "validation_error_class",
+            "exception"
+          ]
+        },
         "values": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "class"
-          ],
+          "type": "object"
+        }
+      },
+      "oneOf": [
+        {
           "properties": {
-            "class": {
-              "type": [
-                "string",
-                "null"
+            "selector": {
+              "const": "validation_error_class"
+            },
+            "values": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "class"
               ],
-              "minLength": 1,
-              "description": "Fully qualified exception class for an ASGI-dispatch exception; null means dispatch returned without raising."
+              "properties": {
+                "class": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "minLength": 1,
+                  "description": "Fully qualified exception class for an ASGI-dispatch exception; null means dispatch returned without raising."
+                }
+              }
+            }
+          }
+        },
+        {
+          "properties": {
+            "selector": {
+              "const": "exception"
+            },
+            "values": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "exception_class",
+                "exception_message"
+              ],
+              "properties": {
+                "exception_class": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "minLength": 1,
+                  "description": "Fully qualified exception class for an ASGI-dispatch exception; null means dispatch returned without raising."
+                },
+                "exception_message": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "description": "Exact str(exception) for an ASGI-dispatch exception; null means dispatch returned without raising."
+                }
+              }
             }
           }
         }
-      }
+      ]
     },
     "infrastructureError": {
       "type": "object",

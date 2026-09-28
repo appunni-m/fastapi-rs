@@ -127,7 +127,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@2
-    sha256: 4655d91202eb0094f4fd0fd2f84369cc54064a0204de7ec8379d875662373d06
+    sha256: 8574186d883b606e488d0ccacf90e26d45429092346b889d7685502d786cf40a
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -156,7 +156,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 7709acfbacb3e02b70a0a124d119bf45fd5a3a5d4828fefd735584d420c44ccf
+    sha256: bb9613bfd0a8ce663aad9f9800bb68b0e93d42fda688dae2b37e3acde4bdc6c9
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 557
@@ -165,10 +165,10 @@ source_artifacts:
   observation_selector_catalog:
     path: tests/fixtures/observation-selectors.json
     schema: fastapi-rs/observation-selector-catalog@1
-    sha256: 94d7f4e802a83048794c064b6b840d395ea5027b377fc3d4c51bd730332a69b6
+    sha256: 282ccb1be0e876b5edf6937fda1cf83d8df932bf8c2f7e79d05d526d9fec5b79
     purpose: Exact projection semantics for the atlas and fixture selectors
     counts:
-      selectors: 49
+      selectors: 50
       parameterized_selectors: 1
   runtime_api_surface_core:
     path: tests/fixtures/runtime-api-surface-core.json
@@ -193,13 +193,13 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@1
-    sha256: 870ece2588779f39a63180293b14bfe3761ba8ac816d640a7d8f53b3ef961cde
+    sha256: c64860fa5e79458745cc7e953556c5c2a4b3bccc14aa5a4229d82c952c6688f1
     schema_path: tests/fixtures/schemas/materialized-input-index.schema.json
     schema_sha256: 467200b835dfd99ab16dfbd4ca4507145e070c73aa55d4425fd78e11141c3e86
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 223
-      cases: 1016
+      workflows: 229
+      cases: 1052
       partial_source_mappings: 616
 
 contract_metadata:
@@ -301,7 +301,7 @@ unresolved:
     input_state: HTTP and WebSocket workflows validated; source oracle executable
     oracle_environment: .venv-oracle prepared from FastAPI 0.141.1 lock with local Starlette 1.6.0 override
     recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-    recipe_sha256: 9fd7806eb4a0d1c54857dccf8ee90df0677b0da9c942d227d82ceaf165327072
+    recipe_sha256: 703c55fc25adc016591bf760313341549b9b7dfb76a36e7df8001df0805a096f
     first_slice_workload:
       path: tests/fixtures/workloads/first_slice.py
       sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
@@ -322,13 +322,13 @@ unresolved:
       oracle; the isolated target worker is present but stops until the public
       fastapi facade and its identity are available.
   python_asgi_workflow_v3:
-    state: schema-and-runner-present; 13 indexed v3 workflows include constructor, WebSocket, and lifecycle cases
+    state: schema-and-runner-present; 15 indexed v3 workflows include constructor, WebSocket, and lifecycle cases
     schema_id: fastapi-rs/python-asgi-workflow@3
     schema_path: tests/fixtures/schemas/python-asgi-workflow-v3.schema.json
-    schema_sha256: 09a3272cb193304bd8e1b0857993e7666fe04739b3792dbfaa5623b9f161fdba
+    schema_sha256: 3efea37569b65263c875f817ae27fce7eeb98e60671de68cc24a7ab72eb1fe76
     result_schema_id: fastapi-rs/python-asgi-workflow-result@3
     result_schema_path: tests/fixtures/schemas/python-asgi-workflow-result-v3.schema.json
-    result_schema_sha256: 6cff7e6ae1e5fe0e819d57bed98ca8d8ffeecb6829f7a91bb6092e99b44d2869
+    result_schema_sha256: e428e8e65fcab0552fc9d937668e1633fcac8cae8894cec30fde135e8c45491b
     comparison_schema_id: fastapi-rs/python-asgi-comparison@3
     comparison_schema_path: tests/fixtures/schemas/python-asgi-comparison-v3.schema.json
     comparison_schema_sha256: 26d107e919e8aa276ffc29c20d6d1f58df8e8b1a158a25d3e0e018901a0cc8bc

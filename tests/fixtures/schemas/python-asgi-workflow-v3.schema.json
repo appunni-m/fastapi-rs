@@ -333,13 +333,32 @@
           "const": "application_error"
         },
         "selector": {
-          "const": "validation_error_class",
-          "description": "Select the fully qualified exception class raised during ASGI dispatch; a completed dispatch with no exception is recorded as null."
+          "enum": [
+            "validation_error_class",
+            "exception"
+          ],
+          "description": "Select the fully qualified ASGI-dispatch exception class, or its class and exact message; a completed dispatch with no exception is recorded as null."
         },
         "comparison": {
           "const": "exact"
         }
       },
+      "oneOf": [
+        {
+          "properties": {
+            "selector": {
+              "const": "validation_error_class"
+            }
+          }
+        },
+        {
+          "properties": {
+            "selector": {
+              "const": "exception"
+            }
+          }
+        }
+      ],
       "additionalProperties": false
     },
     "observation": {

@@ -2878,8 +2878,9 @@ merge_test_review_mappings(
             "functions": {
                 "test_websocket_handle_disconnection": reviewed_case(
                     ["websocket-lifecycle"],
-                    ["websocket.messages", "websocket.event_order", "lifecycle.cleanup_effects"],
-                    "Two connected clients exchange and broadcast messages; after the second closes, the remaining client receives the departure broadcast.",
+                    ["websocket.messages", "websocket.event_order"],
+                    "Two connected clients exchange and broadcast messages; after the second closes, the remaining client receives the departure broadcast. The source observes message behavior, not the connection manager's private list.",
+                    contract_gate="The current WebSocket workflow cannot represent two concurrent clients; its materialized one-client session is only a subset and does not observe the second client's disconnect broadcast.",
                     supporting_sources=[
                         {
                             "path": "docs_src/websockets_/tutorial003_py310.py",
@@ -2901,7 +2902,7 @@ merge_test_review_mappings(
                         },
                     ],
                     constraints={"fresh_app_state_per_case": True},
-                    stimulus_notes="Connection-list mutation, broadcast order, and departure text are app logic. Preserve observable message order with deterministic sequencing; the source test's sleeps are not timing requirements. No close code or exception class is asserted.",
+                    stimulus_notes="Connection-list mutation, broadcast order, and departure text are app logic. Preserve observable message order with deterministic sequencing; the source test's sleeps are not timing requirements. No close code or exception class is asserted. The current materialized one-client session does not cover this multi-client function.",
                 ),
             },
         },
@@ -4473,6 +4474,16 @@ FEATURES = [
         "stimulus": "Create a WebSocket or lifespan workflow with ordered public actions and observe messages, close/error state, startup, shutdown, and cleanup.",
     },
     {
+        "id": "asgi-error-propagation",
+        "terms": ("ASGI application error", "ASGI exception propagation"),
+        "observations": ["asgi.application_error.exception"],
+        "starlette_areas": [
+            "asgi-http-websocket-lifespan",
+            "applications-requests-responses-background-concurrency",
+        ],
+        "stimulus": "Trigger an application exception during ASGI dispatch and observe its qualified class, exact message, and protocol events.",
+    },
+    {
         "id": "middleware-integrations",
         "terms": (
             "middleware",
@@ -4818,6 +4829,7 @@ def selector_evidence(
         ]
 
     namespace_owners = {
+        "asgi": ("asgi-error-propagation",),
         "dependency": ("dependency-security",),
         "docs": ("openapi-docs",),
         "error": ("public-api-errors", "websocket-lifecycle"),
@@ -5390,6 +5402,32 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
     fastapi_root = args.fastapi_source.resolve()
     starlette_root = args.starlette_source.resolve()
     starlette_rs_root = args.starlette_rs_root.resolve()
+    project_metadata = yaml.safe_load((PROJECT / "metadata.yaml").read_text(encoding="utf-8"))
+    starlette_rs_revision = project_metadata["starlette_rs"]["commit"]
+    try:
+        actual_starlette_rs_revision = subprocess.check_output(
+            ["git", "-C", str(starlette_rs_root), "rev-parse", "HEAD"],
+            text=True,
+            stderr=subprocess.PIPE,
+        ).strip()
+        starlette_rs_worktree_changes = subprocess.check_output(
+            ["git", "-C", str(starlette_rs_root), "status", "--porcelain"],
+            text=True,
+            stderr=subprocess.PIPE,
+        ).strip()
+    except (OSError, subprocess.CalledProcessError) as exc:
+        detail = exc.stderr.strip() if isinstance(exc, subprocess.CalledProcessError) else str(exc)
+        raise AtlasError(f"cannot identify the pinned Starlette-RS checkout: {detail}") from exc
+    if actual_starlette_rs_revision != starlette_rs_revision:
+        raise AtlasError(
+            "Starlette-RS checkout does not match metadata.yaml commit "
+            f"{starlette_rs_revision}: {actual_starlette_rs_revision}"
+        )
+    starlette_rs_revision_state = (
+        "pinned, clean sibling Git commit"
+        if not starlette_rs_worktree_changes
+        else "pinned sibling Git commit with local changes; artifact digests identify inspected contract files"
+    )
     fastapi_identity = verify_checkout(
         fastapi_root,
         FASTAPI_VERSION,
@@ -5409,9 +5447,10 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         fastapi_root=fastapi_root,
         fastapi_identity=fastapi_identity,
     )
-    if not (starlette_rs_root / "tests/fixtures/manifest.yaml").exists():
-        raise AtlasError("Starlette-RS manifest not found at " + str(starlette_rs_root))
-    starlette_rs_manifest_path = starlette_rs_root / "tests/fixtures/manifest.yaml"
+    starlette_rs_metadata = project_metadata["starlette_rs"]
+    starlette_rs_manifest_path = (PROJECT / starlette_rs_metadata["manifest"]).resolve()
+    if not starlette_rs_manifest_path.is_file():
+        raise AtlasError("Starlette-RS manifest not found: " + starlette_rs_metadata["manifest"])
     starlette_rs_manifest_text = starlette_rs_manifest_path.read_text(encoding="utf-8")
     try:
         starlette_rs_manifest = json.loads(starlette_rs_manifest_text)
@@ -5465,9 +5504,9 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         for surface in (starlette_rs_manifest or {}).get("surfaces", [])
         for operation in surface.get("operations", [])
     }
-    starlette_surface_catalog_path = starlette_rs_root / "docs/api-surface.csv"
-    starlette_review_path = starlette_rs_root / "docs/atlas/api-review.csv"
-    starlette_coverage_matrix_path = starlette_rs_root / "docs/atlas/coverage-matrix.csv"
+    starlette_surface_catalog_path = (PROJECT / starlette_rs_metadata["api_catalog"]).resolve()
+    starlette_review_path = (PROJECT / starlette_rs_metadata["api_review"]).resolve()
+    starlette_coverage_matrix_path = (PROJECT / starlette_rs_metadata["coverage_matrix"]).resolve()
     if not starlette_surface_catalog_path.exists() or not starlette_review_path.exists():
         raise AtlasError("Starlette-RS merged API catalog or review is missing")
     starlette_review_records: dict[str, list[dict[str, str]]] = defaultdict(list)
@@ -6295,7 +6334,12 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         ]
         if exclusion:
             mapping_status = "excluded"
-        elif case_designs and unmatched_test_functions:
+        elif case_designs and (
+            unmatched_test_functions
+            or any(
+                case["mapping_status"] == "contract_gated_source_candidate" for case in case_designs
+            )
+        ):
             mapping_status = "partially_mapped"
         elif case_designs:
             mapping_status = "candidate"
@@ -6328,6 +6372,12 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                 "review_reason": (
                     "Some executable test functions still need an independent behavior mapping."
                     if not exclusion and unmatched_test_functions
+                    else "At least one behavior mapping is contract-gated and is not represented by a complete independent workflow."
+                    if not exclusion
+                    and any(
+                        case["mapping_status"] == "contract_gated_source_candidate"
+                        for case in case_designs
+                    )
                     else "No executable test function has a behavior mapping; manual mapping required."
                     if not exclusion and not case_designs
                     else None
@@ -6380,6 +6430,11 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                     "source_item_id": item_id,
                     "stage": "partially mapped; remaining functions need review"
                     if unmatched_test_functions
+                    else "partially mapped; one or more behaviors remain contract-gated"
+                    if any(
+                        case["mapping_status"] == "contract_gated_source_candidate"
+                        for case in case_designs
+                    )
                     else "candidate; independent stimuli require review/materialization",
                     "input_only": True,
                     "stimulus_design": stimulus_for(features),
@@ -6891,8 +6946,8 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                 else None,
                 "fastapi_rs_planning_area_ids": sorted(starlette_areas),
                 "planning_area_owner": "FastAPI-RS taxonomy; not sibling contract operations or implementation coverage",
-                "implementation_revision": None,
-                "implementation_revision_state": "uncommitted sibling workspace; manifest/catalog/review digests identify the inspected local artifacts",
+                "implementation_revision": starlette_rs_revision,
+                "implementation_revision_state": starlette_rs_revision_state,
                 "state": "bounded Starlette-RS source contract and implementations exist; its manifest reports partial, supported, and unimplemented operations; FastAPI-RS integration remains unimplemented",
             },
             "python": {
@@ -7264,7 +7319,11 @@ def render_markdown(atlas: dict[str, Any]) -> str:
                 len(unique_starlette_operations),
             ),
             "",
-            "The sibling Starlette-RS manifest, API review, and coverage matrix remain the sole Starlette API inventory. FastAPI's atlas stores only relevant requirement references plus manifest/catalog/review/matrix SHA-256 digests. The local sibling checkout has no commit yet, so the inspected implementation revision still needs an immutable Git pin.",
+            "The sibling Starlette-RS manifest, API review, and coverage matrix remain the sole Starlette API inventory. FastAPI's atlas stores only relevant requirement references plus manifest/catalog/review/matrix SHA-256 digests. The inspected Starlette-RS implementation revision is "
+            + atlas["authorities"]["starlette_rs"]["implementation_revision"]
+            + " ("
+            + atlas["authorities"]["starlette_rs"]["implementation_revision_state"]
+            + ").",
             "",
             "## Errors, aliases, optional features, and deprecations",
             "",

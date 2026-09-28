@@ -1,0 +1,128 @@
+# FastAPI 0.141.1 source: tests/test_query_cookie_header_model_extra_params.py
+# query repeated extras: 38-51; repeated header extras: 70-84; duplicate
+# cookie last-value behavior: 129-140. Model and route declarations: 8-11, 18-30.
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/model_extra_request_parameters.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.request-parameters.extra-model.query-repeated-values
+  actions:
+  - action_id: query-repeated-extras
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /query
+      query_string: param=123&param2=456&param2=789
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_query_cookie_header_model_extra_params.py
+    kind: upstream_test
+- case_id: fastapi.request-parameters.extra-model.header-repeated-values
+  actions:
+  - action_id: header-repeated-extras
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /header
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - param
+        - '123'
+      - - param2
+        - '456'
+      - - param2
+        - '789'
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_query_cookie_header_model_extra_params.py
+    kind: upstream_test
+- case_id: fastapi.request-parameters.extra-model.cookie-duplicate-last-value
+  actions:
+  - action_id: cookie-duplicate-values
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /cookie
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - cookie
+        - param=123; param2=456; param2=789
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_query_cookie_header_model_extra_params.py
+    kind: upstream_test

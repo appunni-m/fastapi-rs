@@ -1,0 +1,38 @@
+# The broken yielded resource makes handler iteration raise after accepting
+# the WebSocket; exception and ASGI output selectors preserve that failure.
+schema: fastapi-rs/python-asgi-workflow@3
+workload:
+  file: tests/fixtures/workloads/dependency_after_yield_websocket_broken_upstream.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.test.test-dependency-after-yield-websockets.test-websocket-dependency-after-yield-broken
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: broken-session-websocket
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      scheme: ws
+      path: /ws-broken
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+      subprotocols: []
+    receive_events:
+    - {type: websocket.connect}
+    - {type: websocket.disconnect, code: 1000, reason: client cleanup}
+    observations:
+    - {kind: application_error, selector: exception, comparison: exact}
+    - {kind: websocket, selector: event_order, comparison: ordered}
+    - {kind: websocket, selector: messages, comparison: ordered}
+  source_evidence:
+  - {path: tests/test_dependency_after_yield_websockets.py, kind: upstream_test}

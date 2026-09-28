@@ -7,6 +7,12 @@
   "comparison_policy": "Compare each declared projection exactly; order-sensitive projections preserve event order. Apply no implicit normalization.",
   "selectors": [
     {
+      "id": "asgi.application_error.exception",
+      "projection": "Fully qualified ASGI-dispatch exception class and exact str(exception), or null values when dispatch returns without raising.",
+      "comparison": "exact",
+      "workflow_support": "supported"
+    },
+    {
       "id": "asgi.lifespan.application_errors",
       "projection": "Ordered lifespan application exceptions by stage, fully qualified class, and exact exception message.",
       "comparison": "ordered-exact",

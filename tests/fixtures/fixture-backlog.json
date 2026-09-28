@@ -72,7 +72,7 @@
     ],
     "expected_outputs": "absent",
     "input_path": "tests/fixtures/inputs/parity/first-asgi-request.json",
-    "input_sha256": "b1c7e5c7c3c24bf3b0d8e44571ca0ef3b39ab740636013daf93c5a5d73b65d47",
+    "input_sha256": "f99fee3abdd4e37b2cfa56ee61f7a30e5174ff241fa14d09e85275235b92f4a9",
     "schema": "fastapi-rs/python-asgi-workflow@2",
     "schema_id": "https://fastapi-rs.dev/schemas/python-asgi-workflow/2",
     "schema_path": "tests/fixtures/schemas/python-asgi-workflow-v2.schema.json",
@@ -79456,11 +79456,35 @@
         {
           "feature_evidence": [
             {
-              "feature_id": "dependency-security",
+              "feature_id": "asgi-error-propagation",
               "signals": [
                 {
-                  "source": "path",
-                  "term": "dependency"
+                  "end_line": 79,
+                  "line": 76,
+                  "path": "tests/test_dependency_after_yield_websockets.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 40,
+                  "line": 37,
+                  "path": "tests/test_dependency_after_yield_websockets.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 60,
+                  "line": 56,
+                  "path": "tests/test_dependency_after_yield_websockets.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 79,
+                  "line": 76,
+                  "path": "tests/test_dependency_after_yield_websockets.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 }
               ]
             },
@@ -79475,50 +79499,53 @@
             }
           ],
           "feature_ids": [
-            "dependency-security",
+            "asgi-error-propagation",
             "websocket-lifecycle"
           ],
           "id": "fastapi.test.test-dependency-after-yield-websockets.test-websocket-dependency-after-yield-broken",
-          "mapping_scope": "module_path_candidate",
-          "mapping_status": "candidate",
+          "mapping_scope": "reviewed_source_mapping",
+          "mapping_status": "reviewed_source_candidate",
           "observation_selectors": [
-            "dependency.call_order",
-            "dependency.cleanup_order",
-            "error.class",
-            "http.body.bytes",
-            "http.body.json",
-            "http.headers.ordered",
-            "http.status",
-            "lifecycle.cleanup_effects",
-            "lifecycle.event_order",
-            "openapi.security",
-            "websocket.close_code",
-            "websocket.event_order",
-            "websocket.messages"
+            "asgi.application_error.exception"
           ],
-          "reviewed_mapping": null,
+          "reviewed_mapping": {
+            "rationale": "The broken yielded dependency raises during WebSocket dispatch; the workflow observes the fully qualified exception class and exact message while retaining the source test's exception boundary.",
+            "source_evidence": [
+              {
+                "end_line": 79,
+                "path": "tests/test_dependency_after_yield_websockets.py",
+                "role": "upstream test function",
+                "sha256": "51879da104691021c03d87e4d7b4ac720b7e14a69bab45cf73fb04801bbd2add",
+                "start_line": 76
+              },
+              {
+                "end_line": 40,
+                "path": "tests/test_dependency_after_yield_websockets.py",
+                "role": "yield dependency raises ValueError during cleanup-backed iteration",
+                "sha256": "51879da104691021c03d87e4d7b4ac720b7e14a69bab45cf73fb04801bbd2add",
+                "start_line": 37
+              },
+              {
+                "end_line": 60,
+                "path": "tests/test_dependency_after_yield_websockets.py",
+                "role": "broken WebSocket route accepts and iterates the yielded session",
+                "sha256": "51879da104691021c03d87e4d7b4ac720b7e14a69bab45cf73fb04801bbd2add",
+                "start_line": 56
+              },
+              {
+                "end_line": 79,
+                "path": "tests/test_dependency_after_yield_websockets.py",
+                "role": "source test asserts propagated exception type and message substring",
+                "sha256": "51879da104691021c03d87e4d7b4ac720b7e14a69bab45cf73fb04801bbd2add",
+                "start_line": 76
+              }
+            ]
+          },
           "selector_evidence": [
             {
-              "feature_id": "dependency-security",
+              "feature_id": "asgi-error-propagation",
               "selectors": [
-                "http.status",
-                "http.headers.ordered",
-                "http.body.bytes",
-                "http.body.json",
-                "dependency.call_order",
-                "dependency.cleanup_order",
-                "openapi.security"
-              ]
-            },
-            {
-              "feature_id": "websocket-lifecycle",
-              "selectors": [
-                "websocket.event_order",
-                "websocket.messages",
-                "websocket.close_code",
-                "lifecycle.event_order",
-                "lifecycle.cleanup_effects",
-                "error.class"
+                "asgi.application_error.exception"
               ]
             }
           ],
@@ -79526,19 +79553,21 @@
           "source_function": "test_websocket_dependency_after_yield_broken",
           "source_line": 76,
           "stimulus_design": [
-            "Declare the dependency/security graph and credential inputs, invoke the public endpoint, and observe response, call order, cleanup, and schema effects.",
+            "Trigger an application exception during ASGI dispatch and observe its qualified class, exact message, and protocol events.",
             "Create a WebSocket or lifespan workflow with ordered public actions and observe messages, close/error state, startup, shutdown, and cleanup."
           ],
           "stimulus_design_notes": null
         }
       ],
       "feature_ids": [
+        "asgi-error-propagation",
         "dependency-security",
         "websocket-lifecycle"
       ],
       "id": "fastapi.test.test-dependency-after-yield-websockets",
       "input_only": true,
       "observation_selectors": [
+        "asgi.application_error.exception",
         "dependency.call_order",
         "dependency.cleanup_order",
         "error.class",
@@ -79554,6 +79583,12 @@
         "websocket.messages"
       ],
       "selector_evidence": [
+        {
+          "feature_id": "asgi-error-propagation",
+          "selectors": [
+            "asgi.application_error.exception"
+          ]
+        },
         {
           "feature_id": "dependency-security",
           "selectors": [
@@ -79590,6 +79625,7 @@
         "middleware-authentication-endpoints-datastructures-status"
       ],
       "stimulus_design": [
+        "Trigger an application exception during ASGI dispatch and observe its qualified class, exact message, and protocol events.",
         "Declare the dependency/security graph and credential inputs, invoke the public endpoint, and observe response, call order, cleanup, and schema effects.",
         "Create a WebSocket or lifespan workflow with ordered public actions and observe messages, close/error state, startup, shutdown, and cleanup."
       ],
@@ -89319,7 +89355,7 @@
         "sha256": "b2dccd1d844a4f7a944d4d34df5e30e8fa4222b8a02d3eea41798f0c084612e5"
       },
       "source_item_id": "upstream-test:tests/test_extra_routes.py",
-      "stage": "candidate; independent stimuli require review/materialization",
+      "stage": "partially mapped; one or more behaviors remain contract-gated",
       "starlette_rs_planning_areas": [
         "applications-requests-responses-background-concurrency",
         "middleware-authentication-endpoints-datastructures-status",
@@ -110583,7 +110619,7 @@
         "sha256": "5092566eb8e8e9480c35310360f061eb97cf6d28313e4b1b3537e132a596381f"
       },
       "source_item_id": "upstream-test:tests/test_openapi_schema_type.py",
-      "stage": "candidate; independent stimuli require review/materialization",
+      "stage": "partially mapped; one or more behaviors remain contract-gated",
       "starlette_rs_planning_areas": [
         "applications-requests-responses-background-concurrency",
         "wsgi-static-files-templates-schemas-configuration-testclient"
@@ -111290,7 +111326,7 @@
         "sha256": "f491a8f09ca5dfdfb4ce29c4448687014e7d81c5a01b2deb08982bc50ae03796"
       },
       "source_item_id": "upstream-test:tests/test_operations_signatures.py",
-      "stage": "candidate; independent stimuli require review/materialization",
+      "stage": "partially mapped; one or more behaviors remain contract-gated",
       "starlette_rs_planning_areas": [
         "applications-requests-responses-background-concurrency",
         "middleware-authentication-endpoints-datastructures-status"
@@ -114677,7 +114713,7 @@
         "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1"
       },
       "source_item_id": "upstream-test:tests/test_params_repr.py",
-      "stage": "candidate; independent stimuli require review/materialization",
+      "stage": "partially mapped; one or more behaviors remain contract-gated",
       "starlette_rs_planning_areas": [
         "applications-requests-responses-background-concurrency",
         "middleware-authentication-endpoints-datastructures-status"
@@ -119775,7 +119811,7 @@
         "sha256": "272652bc8d680b7c83ac947e593b1c2b139fcdf7e86eab6dd0219a215143b784"
       },
       "source_item_id": "upstream-test:tests/test_pydanticv2_dataclasses_uuid_stringified_annotations.py",
-      "stage": "candidate; independent stimuli require review/materialization",
+      "stage": "partially mapped; one or more behaviors remain contract-gated",
       "starlette_rs_planning_areas": [
         "applications-requests-responses-background-concurrency",
         "streaming-headers-cookies-errors-and-cleanup"
@@ -150814,6 +150850,32 @@
         {
           "feature_evidence": [
             {
+              "feature_id": "asgi-error-propagation",
+              "signals": [
+                {
+                  "end_line": 281,
+                  "line": 278,
+                  "path": "tests/test_response_model_as_return_annotation.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 53,
+                  "line": 50,
+                  "path": "tests/test_response_model_as_return_annotation.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 281,
+                  "line": 278,
+                  "path": "tests/test_response_model_as_return_annotation.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                }
+              ]
+            },
+            {
               "feature_id": "response-serialization",
               "signals": [
                 {
@@ -150833,31 +150895,52 @@
             }
           ],
           "feature_ids": [
+            "asgi-error-propagation",
             "response-serialization"
           ],
           "id": "fastapi.test.test-response-model-as-return-annotation.test-response-model-no-annotation-return-invalid-dict",
-          "mapping_scope": "module_path_candidate",
-          "mapping_status": "candidate",
+          "mapping_scope": "reviewed_source_mapping",
+          "mapping_status": "reviewed_source_candidate",
           "observation_selectors": [
-            "http.body.bytes",
-            "http.body.json",
-            "http.cookies",
-            "http.headers.ordered",
-            "http.status",
-            "response.background_effects",
+            "asgi.application_error.exception",
             "validation.error_class"
           ],
-          "reviewed_mapping": null,
+          "reviewed_mapping": {
+            "rationale": "An invalid response value raises FastAPI ResponseValidationError; the workflow observes its exact qualified exception and message alongside the source-backed validation class.",
+            "source_evidence": [
+              {
+                "end_line": 281,
+                "path": "tests/test_response_model_as_return_annotation.py",
+                "role": "upstream test function",
+                "sha256": "90447a67d5cf3cbb49909a753d37221d99a5704a31e88ecf20ea43fffcf964de",
+                "start_line": 278
+              },
+              {
+                "end_line": 53,
+                "path": "tests/test_response_model_as_return_annotation.py",
+                "role": "response-model route returns a dictionary missing a required field",
+                "sha256": "90447a67d5cf3cbb49909a753d37221d99a5704a31e88ecf20ea43fffcf964de",
+                "start_line": 50
+              },
+              {
+                "end_line": 281,
+                "path": "tests/test_response_model_as_return_annotation.py",
+                "role": "source test asserts ResponseValidationError and a missing-field message",
+                "sha256": "90447a67d5cf3cbb49909a753d37221d99a5704a31e88ecf20ea43fffcf964de",
+                "start_line": 278
+              }
+            ]
+          },
           "selector_evidence": [
+            {
+              "feature_id": "asgi-error-propagation",
+              "selectors": [
+                "asgi.application_error.exception"
+              ]
+            },
             {
               "feature_id": "response-serialization",
               "selectors": [
-                "http.status",
-                "http.headers.ordered",
-                "http.cookies",
-                "http.body.bytes",
-                "http.body.json",
-                "response.background_effects",
                 "validation.error_class"
               ]
             }
@@ -150866,6 +150949,7 @@
           "source_function": "test_response_model_no_annotation_return_invalid_dict",
           "source_line": 278,
           "stimulus_design": [
+            "Trigger an application exception during ASGI dispatch and observe its qualified class, exact message, and protocol events.",
             "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
           ],
           "stimulus_design_notes": null
@@ -152757,6 +152841,7 @@
       ],
       "feature_ids": [
         "app-routing",
+        "asgi-error-propagation",
         "openapi-docs",
         "request-validation",
         "response-serialization"
@@ -152764,6 +152849,7 @@
       "id": "fastapi.test.test-response-model-as-return-annotation",
       "input_only": true,
       "observation_selectors": [
+        "asgi.application_error.exception",
         "docs.response.body.bytes",
         "docs.response.headers",
         "docs.response.status",
@@ -152789,6 +152875,12 @@
             "http.body.bytes",
             "route.match",
             "openapi.paths"
+          ]
+        },
+        {
+          "feature_id": "asgi-error-propagation",
+          "selectors": [
+            "asgi.application_error.exception"
           ]
         },
         {
@@ -152834,6 +152926,7 @@
       "stage": "candidate; independent stimuli require review/materialization",
       "starlette_rs_planning_areas": [
         "applications-requests-responses-background-concurrency",
+        "asgi-http-websocket-lifespan",
         "middleware-authentication-endpoints-datastructures-status",
         "routing-converters-mounts-hosts-and-errors",
         "streaming-headers-cookies-errors-and-cleanup",
@@ -152841,6 +152934,7 @@
       ],
       "stimulus_design": [
         "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
+        "Trigger an application exception during ASGI dispatch and observe its qualified class, exact message, and protocol events.",
         "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response.",
         "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
         "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
@@ -176977,7 +177071,7 @@
         "sha256": "a1aa95fb6fd0b220621a8e41ca733852ffe75e4b5e29fcc94efc154f99d9ec49"
       },
       "source_item_id": "upstream-test:tests/test_sse.py",
-      "stage": "candidate; independent stimuli require review/materialization",
+      "stage": "partially mapped; one or more behaviors remain contract-gated",
       "starlette_rs_planning_areas": [
         "applications-requests-responses-background-concurrency",
         "streaming-headers-cookies-errors-and-cleanup",
@@ -177685,7 +177779,7 @@
         "sha256": "ea192e1bba7f9021555e8a886a916afb090bd14e453ade9fa8872b72b9accf7b"
       },
       "source_item_id": "upstream-test:tests/test_starlette_exception.py",
-      "stage": "candidate; independent stimuli require review/materialization",
+      "stage": "partially mapped; one or more behaviors remain contract-gated",
       "starlette_rs_planning_areas": [
         "applications-requests-responses-background-concurrency",
         "middleware-authentication-endpoints-datastructures-status",
@@ -178541,7 +178635,7 @@
         "sha256": "b67cea3e3d7bc3b51261e481689af933b4ac5dbffd4d33ce40eaa4f7e0efba36"
       },
       "source_item_id": "upstream-test:tests/test_stream_bare_type.py",
-      "stage": "candidate; independent stimuli require review/materialization",
+      "stage": "partially mapped; one or more behaviors remain contract-gated",
       "starlette_rs_planning_areas": [
         "applications-requests-responses-background-concurrency",
         "routing-converters-mounts-hosts-and-errors",
@@ -201783,7 +201877,7 @@
         "sha256": "6e1c34bde352159abefcca384a78cbfdacfe2dbd10ff33b67cad7edf2831f9a2"
       },
       "source_item_id": "upstream-test:tests/test_tutorial/test_custom_docs_ui/test_tutorial001.py",
-      "stage": "candidate; independent stimuli require review/materialization",
+      "stage": "partially mapped; one or more behaviors remain contract-gated",
       "starlette_rs_planning_areas": [
         "applications-requests-responses-background-concurrency",
         "routing-converters-mounts-hosts-and-errors",
@@ -202268,7 +202362,7 @@
         "sha256": "e504b2a982275b0f6fda4884d37e0706733bfc06e724c29774cb8f818bf0926b"
       },
       "source_item_id": "upstream-test:tests/test_tutorial/test_custom_docs_ui/test_tutorial002.py",
-      "stage": "candidate; independent stimuli require review/materialization",
+      "stage": "partially mapped; one or more behaviors remain contract-gated",
       "starlette_rs_planning_areas": [
         "applications-requests-responses-background-concurrency",
         "routing-converters-mounts-hosts-and-errors",
@@ -204151,7 +204245,7 @@
         "sha256": "15ddc6babae6c8593230918b1858162be2c1f1b38478fc8513945ea6d41583b4"
       },
       "source_item_id": "upstream-test:tests/test_tutorial/test_custom_response/test_tutorial006.py",
-      "stage": "candidate; independent stimuli require review/materialization",
+      "stage": "partially mapped; one or more behaviors remain contract-gated",
       "starlette_rs_planning_areas": [
         "applications-requests-responses-background-concurrency",
         "streaming-headers-cookies-errors-and-cleanup",
@@ -204457,7 +204551,7 @@
         "sha256": "1240c2052bccc72553b342ca725d55d323174ae5ed76f08cecb3a2f2383a0f33"
       },
       "source_item_id": "upstream-test:tests/test_tutorial/test_custom_response/test_tutorial006b.py",
-      "stage": "candidate; independent stimuli require review/materialization",
+      "stage": "partially mapped; one or more behaviors remain contract-gated",
       "starlette_rs_planning_areas": [
         "applications-requests-responses-background-concurrency",
         "streaming-headers-cookies-errors-and-cleanup",
@@ -216140,7 +216234,7 @@
         "sha256": "ac729a5e75154154add3e98aa486883d25ae8fcdb2b48900c585f38a2ed4ca15"
       },
       "source_item_id": "upstream-test:tests/test_tutorial/test_handling_errors/test_tutorial001.py",
-      "stage": "candidate; independent stimuli require review/materialization",
+      "stage": "partially mapped; one or more behaviors remain contract-gated",
       "starlette_rs_planning_areas": [
         "applications-requests-responses-background-concurrency",
         "middleware-authentication-endpoints-datastructures-status",
@@ -247210,7 +247304,7 @@
         "sha256": "8bba7067217dd10abe6044485edfee330e7704d4ffd87786faaab5a07c133117"
       },
       "source_item_id": "upstream-test:tests/test_tutorial/test_server_sent_events/test_tutorial002.py",
-      "stage": "candidate; independent stimuli require review/materialization",
+      "stage": "partially mapped; one or more behaviors remain contract-gated",
       "starlette_rs_planning_areas": [
         "applications-requests-responses-background-concurrency",
         "streaming-headers-cookies-errors-and-cleanup",
@@ -247409,7 +247503,7 @@
         "sha256": "8bbd00cdbfb180358e03817e40fa8981bfcefd9238324d09e4edc0e12940e5e6"
       },
       "source_item_id": "upstream-test:tests/test_tutorial/test_server_sent_events/test_tutorial003.py",
-      "stage": "candidate; independent stimuli require review/materialization",
+      "stage": "partially mapped; one or more behaviors remain contract-gated",
       "starlette_rs_planning_areas": [
         "applications-requests-responses-background-concurrency",
         "streaming-headers-cookies-errors-and-cleanup",
@@ -247841,7 +247935,7 @@
         "sha256": "70ab1aa7d05a795747cd2ab337f6b915ebc84f43cab9c9891d102af4c098f020"
       },
       "source_item_id": "upstream-test:tests/test_tutorial/test_server_sent_events/test_tutorial004.py",
-      "stage": "candidate; independent stimuli require review/materialization",
+      "stage": "partially mapped; one or more behaviors remain contract-gated",
       "starlette_rs_planning_areas": [
         "applications-requests-responses-background-concurrency",
         "middleware-authentication-endpoints-datastructures-status",
@@ -248121,7 +248215,7 @@
         "sha256": "f23b4dead61ebce16671acd1fd0ba7e9b22feef620e5ec4e6a8151dde0d55294"
       },
       "source_item_id": "upstream-test:tests/test_tutorial/test_server_sent_events/test_tutorial005.py",
-      "stage": "candidate; independent stimuli require review/materialization",
+      "stage": "partially mapped; one or more behaviors remain contract-gated",
       "starlette_rs_planning_areas": [
         "applications-requests-responses-background-concurrency",
         "middleware-authentication-endpoints-datastructures-status",
@@ -251559,7 +251653,7 @@
         "sha256": "0989a3123901ed6b2649149aea4eb22e5e41b2ee8b786dc31fa93eed8ef99725"
       },
       "source_item_id": "upstream-test:tests/test_tutorial/test_testing/test_tutorial003.py",
-      "stage": "candidate; independent stimuli require review/materialization",
+      "stage": "partially mapped; one or more behaviors remain contract-gated",
       "starlette_rs_planning_areas": [
         "applications-requests-responses-background-concurrency",
         "asgi-http-websocket-lifespan",
@@ -252125,7 +252219,7 @@
         "sha256": "bb5ca3b47209725d29d1032b3ee9ef3052ac9863f9498bce5659ecd00ffb7c0c"
       },
       "source_item_id": "upstream-test:tests/test_tutorial/test_websockets/test_tutorial001.py",
-      "stage": "candidate; independent stimuli require review/materialization",
+      "stage": "partially mapped; one or more behaviors remain contract-gated",
       "starlette_rs_planning_areas": [
         "applications-requests-responses-background-concurrency",
         "asgi-http-websocket-lifespan",
@@ -252652,7 +252746,7 @@
         "sha256": "452530258c71b188d031c945394e507ff79371350fdda7f3980c16cc8bb224d8"
       },
       "source_item_id": "upstream-test:tests/test_tutorial/test_websockets/test_tutorial002.py",
-      "stage": "candidate; independent stimuli require review/materialization",
+      "stage": "partially mapped; one or more behaviors remain contract-gated",
       "starlette_rs_planning_areas": [
         "applications-requests-responses-background-concurrency",
         "asgi-http-websocket-lifespan",
@@ -252765,17 +252859,17 @@
           ],
           "id": "fastapi.test.test-tutorial-test-websockets-test-tutorial003.test-websocket-handle-disconnection",
           "mapping_scope": "reviewed_source_mapping",
-          "mapping_status": "reviewed_source_candidate",
+          "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
             "websocket.messages",
-            "websocket.event_order",
-            "lifecycle.cleanup_effects"
+            "websocket.event_order"
           ],
           "reviewed_mapping": {
             "constraints": {
               "fresh_app_state_per_case": true
             },
-            "rationale": "Two connected clients exchange and broadcast messages; after the second closes, the remaining client receives the departure broadcast.",
+            "contract_gate": "The current WebSocket workflow cannot represent two concurrent clients; its materialized one-client session is only a subset and does not observe the second client's disconnect broadcast.",
+            "rationale": "Two connected clients exchange and broadcast messages; after the second closes, the remaining client receives the departure broadcast. The source observes message behavior, not the connection manager's private list.",
             "source_evidence": [
               {
                 "end_line": 55,
@@ -252808,15 +252902,14 @@
                 "start_line": 112
               }
             ],
-            "stimulus_notes": "Connection-list mutation, broadcast order, and departure text are app logic. Preserve observable message order with deterministic sequencing; the source test's sleeps are not timing requirements. No close code or exception class is asserted."
+            "stimulus_notes": "Connection-list mutation, broadcast order, and departure text are app logic. Preserve observable message order with deterministic sequencing; the source test's sleeps are not timing requirements. No close code or exception class is asserted. The current materialized one-client session does not cover this multi-client function."
           },
           "selector_evidence": [
             {
               "feature_id": "websocket-lifecycle",
               "selectors": [
                 "websocket.messages",
-                "websocket.event_order",
-                "lifecycle.cleanup_effects"
+                "websocket.event_order"
               ]
             }
           ],
@@ -252826,7 +252919,7 @@
           "stimulus_design": [
             "Create a WebSocket or lifespan workflow with ordered public actions and observe messages, close/error state, startup, shutdown, and cleanup."
           ],
-          "stimulus_design_notes": "Connection-list mutation, broadcast order, and departure text are app logic. Preserve observable message order with deterministic sequencing; the source test's sleeps are not timing requirements. No close code or exception class is asserted."
+          "stimulus_design_notes": "Connection-list mutation, broadcast order, and departure text are app logic. Preserve observable message order with deterministic sequencing; the source test's sleeps are not timing requirements. No close code or exception class is asserted. The current materialized one-client session does not cover this multi-client function."
         }
       ],
       "feature_ids": [
@@ -252880,7 +252973,7 @@
         "sha256": "244d962499d8558bb7b5b7ff8a9c5aaa77e45a797d67e1f336deaf2214b78895"
       },
       "source_item_id": "upstream-test:tests/test_tutorial/test_websockets/test_tutorial003.py",
-      "stage": "candidate; independent stimuli require review/materialization",
+      "stage": "partially mapped; one or more behaviors remain contract-gated",
       "starlette_rs_planning_areas": [
         "applications-requests-responses-background-concurrency",
         "asgi-http-websocket-lifespan",
