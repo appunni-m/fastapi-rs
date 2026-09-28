@@ -6,13 +6,13 @@ Authority is FastAPI **0.141.1**, tag commit `95f8322ee1dcda7ceace7b1c4f6c9915b3
 
 This describes the pinned **source-oracle** environment. FastAPI 0.141.1 itself
 must never be installed or imported by the FastAPI-RS target at runtime; its
-framework behavior belongs in Rust, with Python bindings acting as pass-through
-glue. FastAPI-RS may separately select Pydantic and Starlette-RS as pinned
-runtime components; this oracle graph does not make the remaining upstream
-packages target dependencies. FastAPI-specific routing, dependency resolution,
-validation orchestration, serialization/OpenAPI, middleware, lifecycle, and
-protocol control flow stay in Rust. The Python `fastapi` package only forwards
-arguments/results and preserves Python object, exception, and awaitable identity.
+framework behavior belongs in Rust. Python runtime modules contain only direct
+native re-exports and literal `__all__`, with no functions, branches, loops, or
+fallback behavior. FastAPI-RS may separately select Pydantic and Starlette-RS
+as pinned runtime components; this oracle graph does not make the remaining
+upstream packages target dependencies. FastAPI-specific routing, dependency
+resolution, validation orchestration, serialization/OpenAPI, middleware,
+lifecycle, and protocol control flow stay in Rust.
 
 The lock resolves the following core packages for CPython 3.11. For this interpreter, the normal Python runtime closure is **nine packages**. On Python 3.10, add `exceptiongroup` (ten total). The lock is multi-Python and does not pin the interpreter itself.
 
@@ -37,7 +37,7 @@ AnyIO 4.12.1's exact runtime edges are `idna>=2.8`, `typing_extensions>=4.5; pyt
 
 ### Pydantic's native subtree
 
-Pydantic is **not all Rust**. Its Python package defines models, inspects annotations, and generates core schemas; `pydantic-core` executes validation and serialization in Rust. FastAPI uses both layers and imports Pydantic internals as well as `pydantic_core` symbols. FastAPI-RS keeps Pydantic as the model/schema dependency rather than reimplementing arbitrary user-defined Python model behavior; FastAPI-specific orchestration remains Rust-owned behind the pass-through facade. FastAPI 0.141.1's compatibility helpers explicitly reject Pydantic v1 models.
+Pydantic is **not all Rust**. Its Python package defines user models, inspects annotations, and generates core schemas; `pydantic-core` executes validation and serialization in Rust. FastAPI-RS keeps Pydantic as a separate model/schema dependency for arbitrary user-defined Python model classes. FastAPI-specific orchestration remains in the `fastapi-rs` Rust crate, exposed through direct native re-exports. FastAPI 0.141.1's compatibility helpers explicitly reject Pydantic v1 models.
 
 The separately versioned `pydantic-core 2.46.4` Cargo manifest resolves these direct native dependencies in its own Rust graph. This is **not** an extra Python runtime requirement of FastAPI-RS if it consumes the published Pydantic wheel; it becomes part of the Rust SBOM if the project vendors or rebuilds that engine.
 

@@ -24,9 +24,10 @@ behavior are not implemented. No compatibility or parity claim is made.
 - Public package: install as `fastapi-rs`, expose `import fastapi`, and keep
   implementation bindings private. The package/distribution naming will be
   checked before release.
-- Runtime boundary: upstream FastAPI is source-oracle-only. The Python facade
-  only re-exports or mechanically forwards calls; all FastAPI control flow is
-  implemented in Rust.
+- Runtime boundary: upstream FastAPI is source-oracle-only and never a runtime
+  dependency or import. Python runtime modules contain only native re-exports
+  and literal `__all__`, with no functions, branches, loops, or fallback
+  behavior. All FastAPI behavior and control flow lives in Rust.
 
 ## Project rules and research
 

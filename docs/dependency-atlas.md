@@ -3,15 +3,14 @@
 This atlas records the dependencies FastAPI declares and locks, their source-backed roles, implementation languages/native parts, and what lies outside an ordinary ASGI request. It is dependency evidence, not a support declaration for fastapi-rs.
 
 FastAPI 0.141.1 is the source oracle only: the FastAPI-RS target must not
-install or import the original package. Implement framework behavior in Rust
-and keep Python bindings as pass-through glue. The Python dependency graph here
-describes the oracle environment, not the FastAPI-RS runtime manifest. The
-target may separately select pinned Pydantic and Starlette-RS runtime
-components; this graph does not carry over every upstream package. Keep
-FastAPI-specific routing, dependency resolution, validation orchestration,
-serialization/OpenAPI, middleware, lifecycle, and protocol control flow in
-Rust. The Python `fastapi` package only forwards arguments/results and preserves
-Python object, exception, and awaitable identity.
+install or import the original package. The Python runtime facade contains only
+direct native re-exports and literal `__all__`, with no functions, branches,
+loops, or fallback behavior. FastAPI-specific routing, dependency resolution,
+validation orchestration, serialization/OpenAPI, middleware, lifecycle, and
+protocol control flow belong in Rust. The Python dependency graph here describes
+the oracle environment, not the FastAPI-RS runtime manifest. The target may
+separately select pinned Pydantic and Starlette-RS runtime components; this graph
+does not carry over every upstream package.
 
 ## Fixed identities and provenance
 

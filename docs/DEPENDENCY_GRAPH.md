@@ -3,11 +3,11 @@
 > Source: the official FastAPI checkout at tag `0.141.1` (commit `95f8322ee1dcda7ceace7b1c4f6c9915b36d748f`), its `pyproject.toml` and `uv.lock` (`version = 1`, `revision = 3`), plus exact-version PyPI release metadata. FastAPI is Python >=3.10. The lock contains 204 third-party distributions and one editable local FastAPI root; this is a locked development universe, not an installed runtime set. That FastAPI root is source-oracle provenance only and must never be installed or imported by the FastAPI-RS target.
 
 FastAPI-RS may separately declare Pydantic and Starlette-RS as pinned runtime
-components; the oracle graph does not carry over all upstream packages. Keep
-FastAPI-specific routing, dependency resolution, validation orchestration,
-serialization/OpenAPI, middleware, lifecycle, and protocol control flow in
-Rust. The Python `fastapi` package only forwards arguments/results and preserves
-Python object, exception, and awaitable identity.
+components; the oracle graph does not carry over all upstream packages. Python
+runtime modules contain only direct native re-exports and literal `__all__`,
+with no functions, branches, loops, or fallback behavior. FastAPI-specific
+routing, dependency resolution, validation orchestration, serialization/OpenAPI,
+middleware, lifecycle, and protocol control flow belongs in Rust.
 
 The graph faithfully reports FastAPI's source-lock dependency versions for
 dependency analysis. Compatibility and parity use Starlette 1.6.0 at
