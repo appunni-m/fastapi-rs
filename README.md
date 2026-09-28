@@ -1,8 +1,8 @@
 # FastAPI-RS
 
-A Rust and Python reimplementation of FastAPI, intended to provide the existing
-`fastapi` Python import surface as a drop-in replacement. The Rust workspace
-and private PyO3 binding now build, but the public `fastapi` package and its
+A Rust reimplementation of FastAPI, intended to provide the existing `fastapi`
+Python import surface through a pass-through facade. The Rust workspace and
+private PyO3 binding now build, but the public `fastapi` package and its
 behavior are not implemented. No compatibility or parity claim is made.
 
 ## Compatibility target
@@ -24,6 +24,9 @@ behavior are not implemented. No compatibility or parity claim is made.
 - Public package: install as `fastapi-rs`, expose `import fastapi`, and keep
   implementation bindings private. The package/distribution naming will be
   checked before release.
+- Runtime boundary: upstream FastAPI is source-oracle-only. The Python facade
+  only re-exports or mechanically forwards calls; all FastAPI control flow is
+  implemented in Rust.
 
 ## Project rules and research
 
