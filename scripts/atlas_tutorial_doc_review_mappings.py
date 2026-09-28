@@ -6,6 +6,516 @@ against the selected Starlette 1.6.0 contract.
 """
 
 DOC_PAGE_REVIEW_MAPPINGS = {
+    "reference/websockets.md": {
+        "replace_features": True,
+        "feature_ids": [
+            "app-routing",
+            "public-api-errors",
+            "websocket-lifecycle",
+        ],
+        "observation_selectors": [
+            "websocket.close_code",
+            "websocket.event_order",
+            "websocket.messages",
+        ],
+        "rationale": (
+            "FastAPI 0.141.1 exposes Starlette's WebSocket and WebSocketDisconnect through "
+            "fastapi.websockets and re-exports those two names at the fastapi root; "
+            "WebSocketState is available from fastapi.websockets, not the root. FastAPI owns "
+            "@app.websocket registration, APIWebSocketRoute construction, and typed "
+            "WebSocket/HTTPConnection dependency injection. Starlette 1.6.0 owns the "
+            "WebSocket class, its state machine and helper methods, WebSocketDisconnect and "
+            "WebSocketState, inherited HTTPConnection properties, and generic WebSocket route "
+            "dispatch. The page-linked input samples one endpoint session, not the referenced "
+            "class API as a whole."
+        ),
+        "stimulus_notes": (
+            "The materialized documented-page mapping links this page to only "
+            "fastapi.docs.reference-wave.asgi.websocket-endpoint-session in "
+            "tests/fixtures/input-recipes/parity/docs-reference-asgi.yaml. The workload imports "
+            "WebSocket from fastapi, routes /echo, accepts without options, receives one text "
+            "frame, sends one prefixed text frame, and closes without options. Its selectors "
+            "record the final close code, ordered ASGI WebSocket message types, and ordered "
+            "text/binary payloads with message types. The recipe's separate HTTPConnection "
+            "case is indexed to reference/httpconnection.md and its upstream test instead. "
+            "These are input observations selected for future comparison, not parity results."
+        ),
+        "contract_gate": (
+            "Keep the page mapping partial. Importing WebSocket from fastapi to run the "
+            "workload does not assert import-path or object identity, and none of these "
+            "selectors records Python signatures. The case does not exercise the listed scope, "
+            "connection-property, or state members; WebSocketDisconnect raising/catching on a "
+            "client disconnect; WebSocketState values or transitions; bytes or JSON helpers; "
+            "iterators; raw receive/send; accept subprotocol/headers; close reasons; denial "
+            "responses; or invalid state transitions. The client disconnect supplied by the "
+            "recipe is not consumed by the endpoint after it closes, so it is not evidence for "
+            "WebSocketDisconnect behavior. The documented HTTPConnection tip has a separate "
+            "reference-page mapping and is not counted as this page's linked case."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs/en/docs/reference/websockets.md",
+                "start_line": 1,
+                "end_line": 17,
+                "role": "WebSocket parameter/import guidance and shared HTTPConnection dependency tip",
+            },
+            {
+                "path": "docs/en/docs/reference/websockets.md",
+                "start_line": 19,
+                "end_line": 47,
+                "role": "documented WebSocket properties and method names",
+            },
+            {
+                "path": "docs/en/docs/reference/websockets.md",
+                "start_line": 49,
+                "end_line": 73,
+                "role": "documented WebSocketDisconnect and WebSocketState imports and descriptions",
+            },
+            {
+                "path": "fastapi/__init__.py",
+                "start_line": 24,
+                "end_line": 25,
+                "role": "FastAPI root re-exports WebSocket and WebSocketDisconnect",
+            },
+            {
+                "path": "fastapi/websockets.py",
+                "start_line": 1,
+                "end_line": 3,
+                "role": "identity-preserving Starlette WebSocket, disconnect, and state aliases",
+            },
+            {
+                "path": "fastapi/requests.py",
+                "start_line": 1,
+                "end_line": 1,
+                "role": "identity-preserving HTTPConnection import path used by the page tip",
+            },
+            {
+                "path": "fastapi/applications.py",
+                "start_line": 1361,
+                "end_line": 1439,
+                "role": "FastAPI app.websocket decorator forwards registered endpoints to its router",
+            },
+            {
+                "path": "fastapi/routing.py",
+                "start_line": 764,
+                "end_line": 836,
+                "role": "FastAPI dependency solving, WebSocket endpoint dispatch, APIWebSocketRoute construction, and Starlette route matching",
+            },
+            {
+                "path": "fastapi/dependencies/utils.py",
+                "start_line": 350,
+                "end_line": 370,
+                "role": "FastAPI recognizes WebSocket and HTTPConnection as injected connection parameters",
+            },
+            {
+                "path": "fastapi/dependencies/utils.py",
+                "start_line": 709,
+                "end_line": 714,
+                "role": "FastAPI supplies HTTPConnection or WebSocket values to endpoint parameters",
+            },
+        ],
+        "starlette_contract_sources": [
+            {
+                "path": "starlette/websockets.py",
+                "start_line": 13,
+                "end_line": 187,
+                "role": "Starlette 1.6.0 WebSocketState, WebSocketDisconnect, constructor, state transitions, and documented helper methods/signatures",
+            },
+            {
+                "path": "starlette/requests.py",
+                "start_line": 80,
+                "end_line": 159,
+                "role": "Starlette 1.6.0 shared HTTPConnection scope, URL, headers, query, path, cookie, and client properties inherited by WebSocket",
+            },
+            {
+                "path": "starlette/requests.py",
+                "start_line": 188,
+                "end_line": 203,
+                "role": "Starlette 1.6.0 inherited state and url_for properties documented on WebSocket",
+            },
+            {
+                "path": "starlette/routing.py",
+                "start_line": 70,
+                "end_line": 84,
+                "role": "Starlette 1.6.0 generic WebSocket ASGI session adapter",
+            },
+            {
+                "path": "starlette/routing.py",
+                "start_line": 297,
+                "end_line": 355,
+                "role": "Starlette 1.6.0 generic WebSocketRoute construction, matching, and dispatch",
+            },
+        ],
+    },
+    "advanced/websockets.md": {
+        "heading": "WebSockets { #websockets }",
+        "replace_features": True,
+        "feature_ids": [
+            "app-routing",
+            "dependency-security",
+            "public-api-errors",
+            "request-validation",
+            "websocket-lifecycle",
+        ],
+        "observation_selectors": [
+            "http.body.bytes",
+            "http.headers.ordered",
+            "http.status",
+            "websocket.close_code",
+            "websocket.event_order",
+            "websocket.messages",
+        ],
+        "rationale": (
+            "The page covers FastAPI WebSocket route registration, Depends/Security and "
+            "path/query/cookie inputs, a WebSocketException policy close, and disconnect "
+            "handling. FastAPI owns APIWebSocketRoute construction, WebSocket dependency and "
+            "parameter binding, and the WebSocket validation-error handler. Starlette 1.6.0 "
+            "owns the WebSocket connection state machine, accept/receive/send helpers, "
+            "WebSocketDisconnect, generic WebSocketRoute dispatch, and default "
+            "WebSocketException close handling. The selectors are limited to the HTTP demo "
+            "response and supported WebSocket close/message/event observations. The FastAPI "
+            "WebSocket re-export is a static identity contract; the existing ASGI recipes do "
+            "not observe Python import or alias identity. Security scopes, OpenAPI, and HTTP "
+            "validation projections are not behaviors of the WebSocket examples."
+        ),
+        "stimulus_notes": (
+            "The current documented-page mapping fastapi.docs.advanced-websockets links to "
+            "workflow websocket-echo in tests/fixtures/input-recipes/parity/websocket-echo.yaml, "
+            "case fastapi.websocket.echo-text (websocket.event_order and "
+            "websocket.messages; two text exchanges in one session). Reusable existing input "
+            "workflow websockets-upstream in "
+            "tests/fixtures/input-recipes/parity/websockets-upstream.yaml has cases "
+            "fastapi.test.test-tutorial-test-websockets-test-tutorial001.test-websocket, "
+            "fastapi.test.test-tutorial-test-websockets-test-tutorial002.test-websocket-with-cookie, "
+            "fastapi.test.test-tutorial-test-websockets-test-tutorial002.test-websocket-with-header-and-query, "
+            "fastapi.test.test-tutorial-test-websockets-test-tutorial002.test-websocket-no-credentials, "
+            "and fastapi.test.test-tutorial-test-websockets-test-tutorial002.test-websocket-invalid-data "
+            "(messages/event order, with close-code checks on the latter two). Its case "
+            "fastapi.test.test-tutorial-test-websockets-test-tutorial001.test-main observes the "
+            "demo HTTP response. "
+            "tests/fixtures/input-recipes/parity/websockets-tutorial003-upstream-subset.yaml "
+            "has cases fastapi.websockets.tutorial003.home and "
+            "fastapi.websockets.tutorial003.single-client-session (HTTP body and one-client "
+            "messages only). These are input recipes and partial samples, not parity results."
+        ),
+        "contract_gate": (
+            "Keep the mapping partial. The tutorial003 subset does not exercise two concurrent "
+            "clients, broadcast delivery, or the disconnect announcement described by the page. "
+            "The page's binary/JSON statement has no corresponding example input here; current "
+            "tutorial cases exercise text only. The page's Header and Security entries have no "
+            "matching parameter examples here; the upstream case named test-websocket-with-header "
+            "supplies its token in the query string. The selected recipes do not cover all "
+            "parameter combinations, Security scopes, dependency cleanup, Python import/alias "
+            "identity, or WebSocket API signatures. Do not claim those branches from the existing "
+            "inputs. The class-based WebSocket handling link is Starlette reference material, "
+            "not a FastAPI example in this page."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs/en/docs/advanced/websockets.md",
+                "start_line": 43,
+                "end_line": 63,
+                "role": "route creation, direct Starlette WebSocket note, and text/binary/JSON surface",
+            },
+            {
+                "path": "docs/en/docs/advanced/websockets.md",
+                "start_line": 99,
+                "end_line": 120,
+                "role": "documented dependency and parameter classes, plus policy close guidance",
+            },
+            {
+                "path": "docs/en/docs/advanced/websockets.md",
+                "start_line": 153,
+                "end_line": 177,
+                "role": "disconnect handling, multi-client broadcast description, and in-memory limit",
+            },
+            {
+                "path": "docs/en/docs/advanced/websockets.md",
+                "start_line": 93,
+                "end_line": 97,
+                "role": "multiple messages share one WebSocket connection",
+            },
+            {
+                "path": "docs/en/docs/advanced/websockets.md",
+                "start_line": 181,
+                "end_line": 185,
+                "role": "Starlette references, including its class-based WebSocket handling link",
+            },
+            {
+                "path": "docs_src/websockets_/tutorial001_py310.py",
+                "start_line": 1,
+                "end_line": 4,
+                "role": "FastAPI/WebSocket imports and app construction",
+            },
+            {
+                "path": "docs_src/websockets_/tutorial001_py310.py",
+                "start_line": 41,
+                "end_line": 51,
+                "role": "demo HTTP response and accepted text echo WebSocket route",
+            },
+            {
+                "path": "docs_src/websockets_/tutorial002_an_py310.py",
+                "start_line": 1,
+                "end_line": 13,
+                "role": "FastAPI WebSocket dependency/parameter/exception imports",
+            },
+            {
+                "path": "docs_src/websockets_/tutorial002_an_py310.py",
+                "start_line": 66,
+                "end_line": 92,
+                "role": "Cookie and Query dependency inputs, WebSocketException, and endpoint outputs",
+            },
+            {
+                "path": "docs_src/websockets_/tutorial003_py310.py",
+                "start_line": 44,
+                "end_line": 61,
+                "role": "connection manager accept, connection storage, personal send, and broadcast",
+            },
+            {
+                "path": "docs_src/websockets_/tutorial003_py310.py",
+                "start_line": 71,
+                "end_line": 81,
+                "role": "typed path parameter, receive loop, disconnect catch, and leave broadcast",
+            },
+            {
+                "path": "fastapi/applications.py",
+                "start_line": 1361,
+                "end_line": 1439,
+                "role": "FastAPI.websocket registration and forwarding to APIRouter",
+            },
+            {
+                "path": "fastapi/routing.py",
+                "start_line": 764,
+                "end_line": 837,
+                "role": "FastAPI WebSocket dependency execution and APIWebSocketRoute construction/matching",
+            },
+            {
+                "path": "fastapi/routing.py",
+                "start_line": 163,
+                "end_line": 186,
+                "role": "FastAPI WebSocket ASGI wrapper adds dependency exit stacks around endpoint dispatch",
+            },
+            {
+                "path": "fastapi/dependencies/utils.py",
+                "start_line": 619,
+                "end_line": 714,
+                "role": "FastAPI dependency recursion, path/query/header/cookie binding, and WebSocket injection",
+            },
+            {
+                "path": "fastapi/exception_handlers.py",
+                "start_line": 29,
+                "end_line": 34,
+                "role": "WebSocket parameter validation mapped to a policy-violation close",
+            },
+            {
+                "path": "fastapi/applications.py",
+                "start_line": 1000,
+                "end_line": 1012,
+                "role": "FastAPI registers its WebSocket request-validation exception handler",
+            },
+            {
+                "path": "fastapi/exceptions.py",
+                "start_line": 86,
+                "end_line": 155,
+                "role": "FastAPI WebSocketException subclass and public constructor",
+            },
+            {
+                "path": "fastapi/websockets.py",
+                "start_line": 1,
+                "end_line": 3,
+                "role": "direct Starlette WebSocket/Disconnect/State re-exports",
+            },
+        ],
+        "starlette_contract_sources": [
+            {
+                "path": "starlette/requests.py",
+                "start_line": 80,
+                "end_line": 159,
+                "role": "Starlette 1.6.0 HTTPConnection headers, query, path, and cookie access used by WebSocket",
+            },
+            {
+                "path": "starlette/websockets.py",
+                "start_line": 13,
+                "end_line": 57,
+                "role": "Starlette 1.6.0 WebSocket states, disconnect exception, and receive transitions",
+            },
+            {
+                "path": "starlette/websockets.py",
+                "start_line": 59,
+                "end_line": 128,
+                "role": "Starlette 1.6.0 send/accept transitions and text/bytes receive helpers",
+            },
+            {
+                "path": "starlette/websockets.py",
+                "start_line": 130,
+                "end_line": 187,
+                "role": "Starlette 1.6.0 JSON/iterator/send/close helpers and denial-response behavior",
+            },
+            {
+                "path": "starlette/routing.py",
+                "start_line": 70,
+                "end_line": 86,
+                "role": "Starlette 1.6.0 generic websocket_session ASGI adapter",
+            },
+            {
+                "path": "starlette/routing.py",
+                "start_line": 297,
+                "end_line": 355,
+                "role": "Starlette 1.6.0 generic WebSocketRoute matching and dispatch",
+            },
+            {
+                "path": "starlette/middleware/exceptions.py",
+                "start_line": 18,
+                "end_line": 33,
+                "role": "Starlette 1.6.0 default WebSocketException handler registration",
+            },
+            {
+                "path": "starlette/middleware/exceptions.py",
+                "start_line": 47,
+                "end_line": 73,
+                "role": "Starlette 1.6.0 WebSocket exception dispatch and close response",
+            },
+            {
+                "path": "starlette/exceptions.py",
+                "start_line": 23,
+                "end_line": 33,
+                "role": "Starlette 1.6.0 WebSocketException code/reason attributes",
+            },
+        ],
+    },
+    "advanced/response-directly.md": {
+        "heading": "Return a Response Directly { #return-a-response-directly }",
+        "replace_features": True,
+        "feature_ids": ["openapi-docs", "response-serialization"],
+        "observation_selectors": [
+            "http.status",
+            "http.headers.ordered",
+            "http.body.bytes",
+            "openapi.document",
+            "openapi.paths",
+        ],
+        "rationale": (
+            "FastAPI owns the path-operation decision at routing.py:711-750: a returned "
+            "Starlette Response instance bypasses serialize_response and the configured "
+            "response class; FastAPI adds solved background tasks only when the response has "
+            "no background task already. A non-Response value goes through response "
+            "serialization and response construction. FastAPI also excludes a Response return "
+            "annotation from the inferred response model at routing.py:1081-1114. The classes exposed at "
+            "fastapi.responses are Starlette re-exports; generic content rendering, media "
+            "types, header defaults, JSON bytes, and ASGI response messages belong to the "
+            "Starlette 1.6.0 response contract (and the sibling Starlette-RS contract). "
+            "The selected recipe observations cover exact HTTP status, ordered headers, body "
+            "bytes, and selected OpenAPI paths. They do not observe Python import identity, "
+            "the jsonable_encoder return value, or response-model conversion."
+        ),
+        "stimulus_notes": (
+            "In tests/fixtures/input-recipes/parity/response-surface.yaml, "
+            "fastapi.response.direct-json is a direct JSONResponse return with status, "
+            "headers, and body-byte observations; it is an independent compatible sample, "
+            "not an execution of docs_src/response_directly/tutorial001_py310.py. The page-linked "
+            "case fastapi.response.direct-plain-text returns a PlainTextResponse while also "
+            "declaring response_class=PlainTextResponse, so it samples a Response subclass "
+            "return but cannot isolate the default response-class path. "
+            "fastapi.response.openapi-status-and-media observes selected /openapi.json path "
+            "pointers, including /raw-json and /documents; it is not the tutorial examples' "
+            "OpenAPI document. These recipes contain stimuli, not expected outputs or parity results."
+        ),
+        "contract_gate": (
+            "Keep this page mapping partial. The current response-surface workload does not "
+            "execute tutorial001's Pydantic Item/datetime plus jsonable_encoder flow or "
+            "tutorial002's XML Response example, and it does not directly call jsonable_encoder. "
+            "Its direct-plain-text route declares response_class, so it cannot prove the "
+            "unconfigured direct-Response branch alone; the direct-json case is a separate "
+            "workload sample. Existing OpenAPI pointers do not establish all automatic "
+            "documentation behavior. Import/re-export identity, Python encoder values, "
+            "response validation/serialization bypass for arbitrary models, custom media-type "
+            "edge cases, and error branches remain unsupported by these observations. The "
+            "recipe's asgi_send message_types field is not promoted to a selector because the "
+            "materialized observation index does not expose it."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs/en/docs/advanced/response-directly.md",
+                "start_line": 3,
+                "end_line": 13,
+                "role": "default FastAPI response serialization and JSONResponse guidance",
+            },
+            {
+                "path": "docs/en/docs/advanced/response-directly.md",
+                "start_line": 17,
+                "end_line": 33,
+                "role": "direct Response subclass return and FastAPI pass-through claim",
+            },
+            {
+                "path": "docs/en/docs/advanced/response-directly.md",
+                "start_line": 35,
+                "end_line": 49,
+                "role": "jsonable_encoder example context and FastAPI/Starlette response import note",
+            },
+            {
+                "path": "docs/en/docs/advanced/response-directly.md",
+                "start_line": 53,
+                "end_line": 63,
+                "role": "custom Response example and XML content guidance",
+            },
+            {
+                "path": "docs/en/docs/advanced/response-directly.md",
+                "start_line": 65,
+                "end_line": 81,
+                "role": "response-model serialization versus direct-response validation, conversion, and documentation",
+            },
+            {
+                "path": "docs_src/response_directly/tutorial001_py310.py",
+                "start_line": 1,
+                "end_line": 21,
+                "role": "Pydantic model, explicit jsonable_encoder call, and direct JSONResponse return",
+            },
+            {
+                "path": "docs_src/response_directly/tutorial002_py310.py",
+                "start_line": 1,
+                "end_line": 18,
+                "role": "FastAPI Response import and directly returned application/xml body",
+            },
+            {
+                "path": "fastapi/routing.py",
+                "start_line": 706,
+                "end_line": 750,
+                "role": "FastAPI reuses returned Response instances; non-Response values go through serialization and response construction",
+            },
+            {
+                "path": "fastapi/routing.py",
+                "start_line": 1081,
+                "end_line": 1114,
+                "role": "FastAPI does not infer a response model from a Response subclass return annotation",
+            },
+            {
+                "path": "fastapi/responses.py",
+                "start_line": 1,
+                "end_line": 12,
+                "role": "FastAPI response-module aliases for Starlette response classes",
+            },
+            {
+                "path": "fastapi/__init__.py",
+                "start_line": 21,
+                "end_line": 23,
+                "role": "FastAPI root Request/Response/APIRouter exports",
+            },
+        ],
+        "starlette_contract_sources": [
+            {
+                "path": "starlette/responses.py",
+                "start_line": 29,
+                "end_line": 81,
+                "role": "Starlette 1.6.0 Response construction/rendering and default content headers",
+            },
+            {
+                "path": "starlette/responses.py",
+                "start_line": 163,
+                "end_line": 201,
+                "role": "Starlette 1.6.0 ASGI response sending and PlainTextResponse/JSONResponse body behavior",
+            },
+        ],
+    },
     "tutorial/body-fields.md": {
         "heading": "Body - Fields { #body-fields }",
         "replace_features": True,

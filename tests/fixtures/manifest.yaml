@@ -127,7 +127,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@2
-    sha256: ef78f019578ddc1bf8eecf013115af7748f054d4483a8bc3787cb7d86176f99b
+    sha256: 0d7614ca3af060c82a756c42755a6b5e734bbd34cdfbe080602836a31f03ef33
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -156,7 +156,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: e170674fe5dc1851bb387ba95353d509c57eba30eefbc185c34219c5525f7b5f
+    sha256: f45688601ce9a1a5508cde9ee2e1a9bd427dfc8f910aa740aae214c684f36ebf
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 557
@@ -193,14 +193,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@1
-    sha256: 700915fb315bed4bfb2c6426a1ef8b2646c53e5f23acf2bba40bd58f500fc245
+    sha256: ad7d82aad8ddae7a168101f18c4008f1538f57a5bdb80a973e1e33cab86378ff
     schema_path: tests/fixtures/schemas/materialized-input-index.schema.json
     schema_sha256: 467200b835dfd99ab16dfbd4ca4507145e070c73aa55d4425fd78e11141c3e86
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 230
-      cases: 1056
-      partial_source_mappings: 618
+      workflows: 234
+      cases: 1066
+      partial_source_mappings: 623
 
 contract_metadata:
   aliases:
@@ -1655,40 +1655,14 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-websockets
       fixture_design_ref: /fixture_designs/55
       observation_selectors: &id004
-      - dependency.call_order
-      - dependency.cleanup_order
-      - error.class
-      - http.body.bytes
-      - http.body.json
-      - http.headers.ordered
-      - http.status
-      - lifecycle.cleanup_effects
-      - lifecycle.event_order
-      - openapi.request_schema
-      - openapi.security
-      - validation.error_class
-      - validation.error_details
       - websocket.close_code
       - websocket.event_order
       - websocket.messages
     feature_ids:
-    - dependency-security
-    - request-validation
+    - app-routing
+    - public-api-errors
     - websocket-lifecycle
     observation_selectors:
-    - dependency.call_order
-    - dependency.cleanup_order
-    - error.class
-    - http.body.bytes
-    - http.body.json
-    - http.headers.ordered
-    - http.status
-    - lifecycle.cleanup_effects
-    - lifecycle.event_order
-    - openapi.request_schema
-    - openapi.security
-    - validation.error_class
-    - validation.error_details
     - websocket.close_code
     - websocket.event_order
     - websocket.messages
@@ -1737,12 +1711,10 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/55
       observation_selectors: *id004
     feature_ids:
-    - dependency-security
-    - request-validation
+    - app-routing
+    - public-api-errors
     - websocket-lifecycle
     observation_selectors:
-    - dependency.call_order
-    - dependency.cleanup_order
     - error.args
     - error.class
     - error.public_attributes
@@ -1750,12 +1722,6 @@ api_surface_contract:
     - http.body.json
     - http.headers.ordered
     - http.status
-    - lifecycle.cleanup_effects
-    - lifecycle.event_order
-    - openapi.request_schema
-    - openapi.security
-    - validation.error_class
-    - validation.error_details
     - websocket.close_code
     - websocket.event_order
     - websocket.messages
@@ -23611,23 +23577,10 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/55
       observation_selectors: *id004
     feature_ids:
-    - dependency-security
-    - request-validation
+    - app-routing
+    - public-api-errors
     - websocket-lifecycle
     observation_selectors:
-    - dependency.call_order
-    - dependency.cleanup_order
-    - error.class
-    - http.body.bytes
-    - http.body.json
-    - http.headers.ordered
-    - http.status
-    - lifecycle.cleanup_effects
-    - lifecycle.event_order
-    - openapi.request_schema
-    - openapi.security
-    - validation.error_class
-    - validation.error_details
     - websocket.close_code
     - websocket.event_order
     - websocket.messages
@@ -23675,12 +23628,10 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/55
       observation_selectors: *id004
     feature_ids:
-    - dependency-security
-    - request-validation
+    - app-routing
+    - public-api-errors
     - websocket-lifecycle
     observation_selectors:
-    - dependency.call_order
-    - dependency.cleanup_order
     - error.args
     - error.class
     - error.public_attributes
@@ -23688,12 +23639,6 @@ api_surface_contract:
     - http.body.json
     - http.headers.ordered
     - http.status
-    - lifecycle.cleanup_effects
-    - lifecycle.event_order
-    - openapi.request_schema
-    - openapi.security
-    - validation.error_class
-    - validation.error_details
     - websocket.close_code
     - websocket.event_order
     - websocket.messages
@@ -23740,23 +23685,10 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/55
       observation_selectors: *id004
     feature_ids:
-    - dependency-security
-    - request-validation
+    - app-routing
+    - public-api-errors
     - websocket-lifecycle
     observation_selectors:
-    - dependency.call_order
-    - dependency.cleanup_order
-    - error.class
-    - http.body.bytes
-    - http.body.json
-    - http.headers.ordered
-    - http.status
-    - lifecycle.cleanup_effects
-    - lifecycle.event_order
-    - openapi.request_schema
-    - openapi.security
-    - validation.error_class
-    - validation.error_details
     - websocket.close_code
     - websocket.event_order
     - websocket.messages

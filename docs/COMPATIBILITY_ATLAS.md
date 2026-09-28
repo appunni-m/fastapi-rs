@@ -32,17 +32,17 @@ The single `tests/fixtures/manifest.yaml` now indexes 439 source-supported symbo
 
 | Source denominator | Total | Candidate/backlog links | Links pending behavior review | Explicitly excluded |
 |---|---:|---:|---:|---:|
-| Upstream `test_*.py` modules | 492 | 453 | 431 | 39 |
+| Upstream `test_*.py` modules | 492 | 453 | 426 | 39 |
 | User-facing documentation pages | 155 | 104 | 104 | 51 |
 | Documentation Python files (examples + support initializers) | 461 | 355 | 355 | 106 |
 
 Python-source exclusions are one debugging/setup example and 91 package initializers; the remaining examples are grouped with their mapped documentation pages.
 
-Candidate/backlog links are not concrete independent input coverage. The materialized index has 453 distinct upstream test modules and 104 documentation pages linked to workflows; all 618 mapping rows are partial. All 431 eligible test-module links and 104 documentation-page links remain behavior-review candidates, and no source module or documentation page is fully covered by an input workflow.
+Candidate/backlog links are not concrete independent input coverage. The materialized index has 453 distinct upstream test modules and 104 documentation pages linked to workflows; all 623 mapping rows are partial. All 426 eligible test-module links and 104 documentation-page links remain behavior-review candidates, and no source module or documentation page is fully covered by an input workflow.
 
 Candidate rows carry source path/SHA evidence, exact whole-token signals, family IDs, and family-level selectors. Per-function mapping scope distinguishes reviewed source mappings, function-body signals, and filename candidates. Test modules index function names/lines without copying bodies. These are backlog leads, not independent executable parity cases: each behavior still needs a tailored stimulus and selector review. Rows without a signal remain `review_required`; exclusions include a reason. Benchmark modules are routed to correctness-gated benchmark work.
 
-`make parity-validate` checks 1593 API classifications against pinned FastAPI source evidence, every source digest in the coverage matrix, fixture links or exclusion reasons for all 492 test modules and 155 documentation pages, direct Starlette 1.6.0 dependency edges, and all 50 declared observation selectors. It also validates 557 input-only design records, including 2165 per-function test designs, selector evidence, source digests, and the absence of expected result fields. The current materialized-input index contains 230 input-only workflows, 1056 cases, and 618 partial source mappings. These are oracle inputs, not target parity results; the remaining design candidates still need review and materialization. Selectors marked `planned` in `observation-selectors.json` still need runner support.
+`make parity-validate` checks 1593 API classifications against pinned FastAPI source evidence, every source digest in the coverage matrix, fixture links or exclusion reasons for all 492 test modules and 155 documentation pages, direct Starlette 1.6.0 dependency edges, and all 50 declared observation selectors. It also validates 557 input-only design records, including 2165 per-function test designs, selector evidence, source digests, and the absence of expected result fields. The current materialized-input index contains 234 input-only workflows, 1066 cases, and 623 partial source mappings. These are oracle inputs, not target parity results; the remaining design candidates still need review and materialization. Selectors marked `planned` in `observation-selectors.json` still need runner support.
 
 ## Independently authored input workflows
 
@@ -52,6 +52,7 @@ Reviewed workflow recipes live in `tests/fixtures/input-recipes/parity/*.yaml`. 
 |---|---:|---:|---|---|
 | `additional-response-openapi-wave` | 4 | 4 | [`tests/fixtures/input-recipes/parity/additional-response-openapi-wave.yaml`](../tests/fixtures/input-recipes/parity/additional-response-openapi-wave.yaml) | [`tests/fixtures/workloads/additional_response_openapi_wave.py`](../tests/fixtures/workloads/additional_response_openapi_wave.py) |
 | `additional-responses` | 3 | 3 | [`tests/fixtures/input-recipes/parity/additional-responses.yaml`](../tests/fixtures/input-recipes/parity/additional-responses.yaml) | [`tests/fixtures/workloads/additional_responses.py`](../tests/fixtures/workloads/additional_responses.py) |
+| `additional-responses-response-class` | 1 | 1 | [`tests/fixtures/input-recipes/parity/additional-responses-response-class.yaml`](../tests/fixtures/input-recipes/parity/additional-responses-response-class.yaml) | [`tests/fixtures/workloads/additional_responses_response_class.py`](../tests/fixtures/workloads/additional_responses_response_class.py) |
 | `additional-status-codes-tutorial-upstream` | 2 | 2 | [`tests/fixtures/input-recipes/parity/additional-status-codes-tutorial-upstream.yaml`](../tests/fixtures/input-recipes/parity/additional-status-codes-tutorial-upstream.yaml) | [`tests/fixtures/workloads/additional_status_codes_tutorial_upstream.py`](../tests/fixtures/workloads/additional_status_codes_tutorial_upstream.py) |
 | `advanced-dependencies` | 2 | 2 | [`tests/fixtures/input-recipes/parity/advanced_dependencies.yaml`](../tests/fixtures/input-recipes/parity/advanced_dependencies.yaml) | [`tests/fixtures/workloads/advanced_dependencies.py`](../tests/fixtures/workloads/advanced_dependencies.py) |
 | `ambiguous-query-annotations-wave` | 3 | 1 | [`tests/fixtures/input-recipes/parity/ambiguous-query-annotations-wave.yaml`](../tests/fixtures/input-recipes/parity/ambiguous-query-annotations-wave.yaml) | [`tests/fixtures/workloads/ambiguous_query_annotations_wave.py`](../tests/fixtures/workloads/ambiguous_query_annotations_wave.py) |
@@ -196,7 +197,10 @@ Reviewed workflow recipes live in `tests/fixtures/input-recipes/parity/*.yaml`. 
 | `request-validation-parameters` | 16 | 12 | [`tests/fixtures/input-recipes/parity/request-validation-parameters.yaml`](../tests/fixtures/input-recipes/parity/request-validation-parameters.yaml) | [`tests/fixtures/workloads/request_validation_parameters.py`](../tests/fixtures/workloads/request_validation_parameters.py) |
 | `request-validation-wave` | 10 | 10 | [`tests/fixtures/input-recipes/parity/request-validation-wave.yaml`](../tests/fixtures/input-recipes/parity/request-validation-wave.yaml) | [`tests/fixtures/workloads/request_validation_wave.py`](../tests/fixtures/workloads/request_validation_wave.py) |
 | `response-change-status-code-exact-upstream` | 1 | 1 | [`tests/fixtures/input-recipes/parity/response-change-status-code-exact-upstream.yaml`](../tests/fixtures/input-recipes/parity/response-change-status-code-exact-upstream.yaml) | [`tests/fixtures/workloads/response_change_status_code_exact_upstream.py`](../tests/fixtures/workloads/response_change_status_code_exact_upstream.py) |
+| `response-class-no-mediatype` | 1 | 1 | [`tests/fixtures/input-recipes/parity/response-class-no-mediatype.yaml`](../tests/fixtures/input-recipes/parity/response-class-no-mediatype.yaml) | [`tests/fixtures/workloads/response_class_no_mediatype.py`](../tests/fixtures/workloads/response_class_no_mediatype.py) |
+| `response-directly-tutorial001-wave` | 2 | 2 | [`tests/fixtures/input-recipes/parity/response-directly-tutorial001-wave.yaml`](../tests/fixtures/input-recipes/parity/response-directly-tutorial001-wave.yaml) | [`tests/fixtures/workloads/response_directly_tutorial001_wave.py`](../tests/fixtures/workloads/response_directly_tutorial001_wave.py) |
 | `response-model-data-filter-upstream` | 3 | 1 | [`tests/fixtures/input-recipes/parity/response-model-data-filter-upstream.yaml`](../tests/fixtures/input-recipes/parity/response-model-data-filter-upstream.yaml) | [`tests/fixtures/workloads/response_model_data_filter_upstream.py`](../tests/fixtures/workloads/response_model_data_filter_upstream.py) |
+| `response-model-include-exclude-source-review` | 6 | 1 | [`tests/fixtures/input-recipes/parity/response-model-include-exclude-source-review.yaml`](../tests/fixtures/input-recipes/parity/response-model-include-exclude-source-review.yaml) | [`tests/fixtures/workloads/response_model_include_exclude_source_review.py`](../tests/fixtures/workloads/response_model_include_exclude_source_review.py) |
 | `response-model-orm-dataclass-upstream` | 2 | 2 | [`tests/fixtures/input-recipes/parity/response-model-orm-dataclass-upstream.yaml`](../tests/fixtures/input-recipes/parity/response-model-orm-dataclass-upstream.yaml) | [`tests/fixtures/workloads/response_model_orm_and_dataclass.py`](../tests/fixtures/workloads/response_model_orm_and_dataclass.py) |
 | `response-model-return-annotation-focused-upstream` | 6 | 1 | [`tests/fixtures/input-recipes/parity/response-model-return-annotation-focused-upstream.yaml`](../tests/fixtures/input-recipes/parity/response-model-return-annotation-focused-upstream.yaml) | [`tests/fixtures/workloads/response_model_return_annotation_focused_upstream.py`](../tests/fixtures/workloads/response_model_return_annotation_focused_upstream.py) |
 | `response-model-serialization` | 7 | 6 | [`tests/fixtures/input-recipes/parity/response-model-serialization.yaml`](../tests/fixtures/input-recipes/parity/response-model-serialization.yaml) | [`tests/fixtures/workloads/response_model_serialization.py`](../tests/fixtures/workloads/response_model_serialization.py) |
@@ -287,9 +291,9 @@ The merged coverage matrix links each FastAPI test, documented feature, or examp
 
 | FastAPI source rows with feature links | Feature links to sibling operations | Feature links outside current sibling slice | Distinct sibling operations referenced |
 |---:|---:|---:|---:|
-| 973 | 2414 | 406 | 6 |
+| 973 | 2413 | 402 | 6 |
 
-The sibling Starlette-RS manifest, API review, and coverage matrix remain the sole Starlette API inventory. FastAPI's atlas stores only relevant requirement references plus manifest/catalog/review/matrix SHA-256 digests. The inspected Starlette-RS implementation revision is f328b6181f8866cedff5bb85c7da2b9fe1608a85 (pinned sibling Git commit with local changes; artifact digests identify inspected contract files).
+The sibling Starlette-RS manifest, API review, and coverage matrix remain the sole Starlette API inventory. FastAPI's atlas stores only relevant requirement references plus manifest/catalog/review/matrix SHA-256 digests. The inspected Starlette-RS implementation revision is 89941aa25f1cc93ce903129c102095d9d61d175d (pinned, clean sibling Git commit).
 
 ## Errors, aliases, optional features, and deprecations
 
@@ -319,7 +323,7 @@ Oracle environment check: FastAPI 0.141.1 imported and generated OpenAPI with on
 - **lifespan-input-and-observation-contract** (workflow-v3-expressible; fixture-and-warning-coverage-pending): Which FastAPI and APIRouter lifespan combinations still need independent input cases and exact deprecation-warning observations under the v3 lifecycle workflow?
 - **fastapi-cli-compatibility-boundary** (package-pin-and-process-workflow-required): Does FastAPI-RS replace FastAPI's `fastapi` console script, and if so which fastapi-cli package identity, optional environment, arguments, output streams, and exit behavior are in the compatibility contract?
 - **fixture-recipe-execution-contract** (source-oracle-comparator-and-fail-closed-target-worker-present; public-target-pending): Implement the public `fastapi` facade, run it through the identity-checked target worker, and review an exact source/target comparison from both live products.
-- **starlette-rs-target-revision** (pinned sibling Git commit with local changes; artifact digests identify inspected contract files): Do the local path dependency, metadata, and CI continue to resolve to the same committed Starlette-RS target profile?
+- **starlette-rs-target-revision** (pinned, clean sibling Git commit): Do the local path dependency, metadata, and CI continue to resolve to the same committed Starlette-RS target profile?
 
 ## Machine-readable authority
 

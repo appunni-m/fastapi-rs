@@ -1,0 +1,94 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/response_directly_tutorial001_wave.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.response-directly.tutorial001.path-response
+  actions:
+  - action_id: update-inventory-item
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: PUT
+      scheme: http
+      path: /inventory/sku-91
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"name":"Compact tripod","added_at":"2024-05-03T09:15:00","note":"boxed"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_response_directly/test_tutorial001.py
+    kind: upstream_test
+  - path: docs/en/docs/advanced/response-directly.md
+    kind: upstream_documentation
+  - path: docs_src/response_directly/tutorial001_py310.py
+    kind: upstream_documentation
+- case_id: fastapi.response-directly.tutorial001.openapi-document
+  actions:
+  - action_id: inspect-entire-openapi-document
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - ''
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_response_directly/test_tutorial001.py
+    kind: upstream_test
+  - path: docs/en/docs/advanced/response-directly.md
+    kind: upstream_documentation
+  - path: docs_src/response_directly/tutorial001_py310.py
+    kind: upstream_documentation

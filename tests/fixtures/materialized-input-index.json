@@ -35,6 +35,18 @@
       ]
     },
     {
+      "id": "additional-responses-response-class",
+      "input_path": "tests/fixtures/inputs/parity/additional-responses-response-class.json",
+      "input_sha256": "284a1191b16cd273a6c95b04aa7a83eddee8237f30f04285e0be6e5b111bba88",
+      "recipe_path": "tests/fixtures/input-recipes/parity/additional-responses-response-class.yaml",
+      "recipe_sha256": "d98ebce4aa63954e5eea5e564bfc7aebb5870bf74608e8c40cd8d7745bec811f",
+      "workload_path": "tests/fixtures/workloads/additional_responses_response_class.py",
+      "workload_sha256": "45061b6667e35518386c8c8ca2aa255f92635c5970c8f7baf5b4e13b774fa7c6",
+      "case_ids": [
+        "fastapi.additional-responses-response-class.openapi"
+      ]
+    },
+    {
       "id": "additional-status-codes-tutorial-upstream",
       "input_path": "tests/fixtures/inputs/parity/additional-status-codes-tutorial-upstream.json",
       "input_sha256": "6bb9ef7b66b6ac4945a49f7a68de27e298d07c156f8fdc91d65671301fd58a92",
@@ -2277,6 +2289,31 @@
       ]
     },
     {
+      "id": "response-class-no-mediatype",
+      "input_path": "tests/fixtures/inputs/parity/response-class-no-mediatype.json",
+      "input_sha256": "6cc6fe5d0f99e83a47d8c29abb4987c4e5ac28fe1c41b09b4ccc3818f1686a4f",
+      "recipe_path": "tests/fixtures/input-recipes/parity/response-class-no-mediatype.yaml",
+      "recipe_sha256": "b198e7a7214450c62d9008a5f90c0a396413304aec6ee0cc9338c0f1e8383ecb",
+      "workload_path": "tests/fixtures/workloads/response_class_no_mediatype.py",
+      "workload_sha256": "5e24f879ba930e2de771df500a5d30725ca41f2845836e1752139e759500d00a",
+      "case_ids": [
+        "fastapi.response-class-no-mediatype.openapi"
+      ]
+    },
+    {
+      "id": "response-directly-tutorial001-wave",
+      "input_path": "tests/fixtures/inputs/parity/response-directly-tutorial001-wave.json",
+      "input_sha256": "466e5dca66f49ded9c1fda603346cee76b82b5dfba7408f5c36ec8123a37b36e",
+      "recipe_path": "tests/fixtures/input-recipes/parity/response-directly-tutorial001-wave.yaml",
+      "recipe_sha256": "6974032bcac7a890b8e78fba771f4c31a48631876e950873d00154f6701f5423",
+      "workload_path": "tests/fixtures/workloads/response_directly_tutorial001_wave.py",
+      "workload_sha256": "cfc13aad2ba57db5d4d730a5834636808270dbff162fc2f5ea4da8ca58edc290",
+      "case_ids": [
+        "fastapi.response-directly.tutorial001.path-response",
+        "fastapi.response-directly.tutorial001.openapi-document"
+      ]
+    },
+    {
       "id": "response-model-data-filter-upstream",
       "input_path": "tests/fixtures/inputs/parity/response-model-data-filter-upstream.json",
       "input_sha256": "3467fe5a9bd6166eecfba4210adda795a0331cc3f4955a73983a41f177c5f119",
@@ -2288,6 +2325,23 @@
         "fastapi.response-model-data-filter.subclass-input",
         "fastapi.response-model-data-filter.nested-subclass",
         "fastapi.response-model-data-filter.list-of-nested-subclasses"
+      ]
+    },
+    {
+      "id": "response-model-include-exclude-source-review",
+      "input_path": "tests/fixtures/inputs/parity/response-model-include-exclude-source-review.json",
+      "input_sha256": "6640611cce714874b816a571ba8e9108638fbf7cd4e240ba9af8586b44046725",
+      "recipe_path": "tests/fixtures/input-recipes/parity/response-model-include-exclude-source-review.yaml",
+      "recipe_sha256": "220acd8c7d6a6ef512c758c67099b683fe4818decea35c19f38354bad01e31f7",
+      "workload_path": "tests/fixtures/workloads/response_model_include_exclude_source_review.py",
+      "workload_sha256": "db2032ab2224141c4d0ed676bb27ea3f93d9d84911bb2048499f6a356d20ea31",
+      "case_ids": [
+        "fastapi.response-model.include.nested.model",
+        "fastapi.response-model.include.nested.dict",
+        "fastapi.response-model.exclude.nested.model",
+        "fastapi.response-model.exclude.nested.dict",
+        "fastapi.response-model.mixed-include-exclude.model",
+        "fastapi.response-model.mixed-include-exclude.dict"
       ]
     },
     {
@@ -3687,16 +3741,14 @@
       "fixture_id": "fastapi.test.test-additional-responses-response-class",
       "workflow_id": "additional-responses",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 3 case(s); observes docs.response.headers, docs.response.status, http.body.bytes, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.docs.additional-responses.found",
         "fastapi.docs.additional-responses.not-found",
         "fastapi.docs.additional-responses.openapi"
       ],
       "observation_selectors": [
-        "docs.response.headers",
-        "docs.response.status",
-        "http.body.bytes",
+        "http.status",
         "openapi.document"
       ]
     },
@@ -3719,6 +3771,20 @@
         "http.status",
         "openapi.document",
         "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_additional_responses_response_class.py",
+      "fixture_id": "fastapi.test.test-additional-responses-response-class",
+      "workflow_id": "additional-responses-response-class",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.additional-responses-response-class.openapi"
+      ],
+      "observation_selectors": [
+        "http.status",
+        "openapi.document"
       ]
     },
     {
@@ -4310,7 +4376,7 @@
       "fixture_id": "fastapi.test.test-response-model-invalid",
       "workflow_id": "construction-errors-upstream",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 4 case(s); observes construction.exception_class, construction.exception_message, construction.outcome. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 4 case(s); observes construction.outcome. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.construction.invalid-additional-response-model-direct",
         "fastapi.construction.invalid-additional-response-model-sequence",
@@ -4318,8 +4384,6 @@
         "fastapi.construction.invalid-response-model-sequence"
       ],
       "observation_selectors": [
-        "construction.exception_class",
-        "construction.exception_message",
         "construction.outcome"
       ]
     },
@@ -10091,6 +10155,54 @@
       ]
     },
     {
+      "source_item_id": "upstream-test:tests/test_response_class_no_mediatype.py",
+      "fixture_id": "fastapi.test.test-response-class-no-mediatype",
+      "workflow_id": "response-class-no-mediatype",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.response-class-no-mediatype.openapi"
+      ],
+      "observation_selectors": [
+        "http.status",
+        "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:advanced/response-directly.md",
+      "fixture_id": "fastapi.docs.advanced-response-directly",
+      "workflow_id": "response-directly-tutorial001-wave",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.response-directly.tutorial001.openapi-document",
+        "fastapi.response-directly.tutorial001.path-response"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status",
+        "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_response_directly/test_tutorial001.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-response-directly-test-tutorial001",
+      "workflow_id": "response-directly-tutorial001-wave",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.response-directly.tutorial001.openapi-document",
+        "fastapi.response-directly.tutorial001.path-response"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status",
+        "openapi.document"
+      ]
+    },
+    {
       "source_item_id": "upstream-test:tests/test_response_model_data_filter.py",
       "fixture_id": "fastapi.test.test-response-model-data-filter",
       "workflow_id": "response-model-data-filter-upstream",
@@ -10103,6 +10215,25 @@
       ],
       "observation_selectors": [
         "http.body.bytes"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_response_model_include_exclude.py",
+      "fixture_id": "fastapi.test.test-response-model-include-exclude",
+      "workflow_id": "response-model-include-exclude-source-review",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 6 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.response-model.exclude.nested.dict",
+        "fastapi.response-model.exclude.nested.model",
+        "fastapi.response-model.include.nested.dict",
+        "fastapi.response-model.include.nested.model",
+        "fastapi.response-model.mixed-include-exclude.dict",
+        "fastapi.response-model.mixed-include-exclude.model"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
       ]
     },
     {
@@ -10213,14 +10344,13 @@
       "fixture_id": "fastapi.test.test-response-model-include-exclude",
       "workflow_id": "response-model-serialization",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.response-model.exclude.nested",
         "fastapi.response-model.include.nested"
       ],
       "observation_selectors": [
         "http.body.bytes",
-        "http.headers.ordered",
         "http.status"
       ]
     },
@@ -10473,12 +10603,12 @@
       "fixture_id": "fastapi.test.test-response-class-no-mediatype",
       "workflow_id": "response-policy-matrix",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.response.openapi-content-and-models"
       ],
       "observation_selectors": [
-        "docs.response.status",
+        "http.status",
         "openapi.document"
       ]
     },
@@ -10637,15 +10767,12 @@
       "fixture_id": "fastapi.docs.advanced-response-directly",
       "workflow_id": "response-surface",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 2 case(s); observes docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.response.direct-plain-text",
         "fastapi.response.openapi-status-and-media"
       ],
       "observation_selectors": [
-        "docs.response.body.bytes",
-        "docs.response.headers",
-        "docs.response.status",
         "http.body.bytes",
         "http.headers.ordered",
         "http.status",
@@ -10720,13 +10847,12 @@
       "fixture_id": "fastapi.test.test-tutorial-test-response-cookies-test-tutorial001",
       "workflow_id": "response-surface",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.response.cookie-header"
       ],
       "observation_selectors": [
         "http.body.bytes",
-        "http.headers.ordered",
         "http.status"
       ]
     },
@@ -10735,20 +10861,16 @@
       "fixture_id": "fastapi.test.test-tutorial-test-response-directly-test-tutorial001",
       "workflow_id": "response-surface",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 2 case(s); observes docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.response.direct-plain-text",
         "fastapi.response.openapi-status-and-media"
       ],
       "observation_selectors": [
-        "docs.response.body.bytes",
-        "docs.response.headers",
-        "docs.response.status",
         "http.body.bytes",
         "http.headers.ordered",
         "http.status",
-        "openapi.document",
-        "openapi.paths"
+        "openapi.document"
       ]
     },
     {
@@ -11476,14 +11598,13 @@
       "fixture_id": "fastapi.test.test-response-model-include-exclude",
       "workflow_id": "schema-extensions",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.schema.openapi-components",
         "fastapi.schema.response-model-filter"
       ],
       "observation_selectors": [
         "http.body.bytes",
-        "http.headers.ordered",
         "http.status"
       ]
     },
@@ -13697,14 +13818,13 @@
       "fixture_id": "fastapi.test.test-tutorial-test-websockets-test-tutorial001",
       "workflow_id": "websockets-upstream",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status, websocket.event_order, websocket.messages. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status, websocket.event_order, websocket.messages. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.test.test-tutorial-test-websockets-test-tutorial001.test-main",
         "fastapi.test.test-tutorial-test-websockets-test-tutorial001.test-websocket"
       ],
       "observation_selectors": [
         "http.body.bytes",
-        "http.headers.ordered",
         "http.status",
         "websocket.event_order",
         "websocket.messages"

@@ -16,6 +16,75 @@ def _case(feature_ids, observation_selectors, rationale, **extra):
 
 
 CORE_TEST_REVIEW_MAPPINGS = {
+    "tests/test_response_class_no_mediatype.py": {
+        "feature_ids": ["openapi-docs", "response-serialization"],
+        "module_observation_selectors": ["http.status", "openapi.document"],
+        "rationale": "The source checks a successful OpenAPI request and exact parsed document output for an explicit Starlette Response with no media type and a default JSON response class.",
+        "stimulus_notes": "The dedicated input uses the same two route declarations and observes the entire parsed OpenAPI document with the root JSON pointer. The declared JsonApiResponse subclass is unused by either route and is not treated as exercised. The source uses TestClient; direct ASGI input observes FastAPI's response while generic TestClient behavior remains in the Starlette-RS contract.",
+        "supporting_sources": [
+            {
+                "path": "tests/test_response_class_no_mediatype.py",
+                "start_line": 7,
+                "end_line": 34,
+                "role": "FastAPI app, unused custom JSON response subclass, response models, and the two route declarations",
+            },
+            {
+                "path": "tests/test_response_class_no_mediatype.py",
+                "start_line": 40,
+                "end_line": 114,
+                "role": "OpenAPI request, asserted success status, and exact parsed-document snapshot",
+            },
+            {
+                "path": "fastapi/applications.py",
+                "start_line": 1176,
+                "end_line": 1217,
+                "role": "FastAPI path-operation decorator defaults to JSONResponse and forwards the selected response class",
+            },
+            {
+                "path": "fastapi/responses.py",
+                "start_line": 6,
+                "end_line": 11,
+                "role": "FastAPI re-exports Starlette response classes, including Response and JSONResponse",
+            },
+            {
+                "path": "fastapi/openapi/utils.py",
+                "start_line": 325,
+                "end_line": 330,
+                "role": "OpenAPI generation resolves the current response class and its media_type",
+            },
+            {
+                "path": "fastapi/openapi/utils.py",
+                "start_line": 456,
+                "end_line": 472,
+                "role": "The ordinary success response content is emitted only when the class has a media type",
+            },
+            {
+                "path": "fastapi/openapi/utils.py",
+                "start_line": 473,
+                "end_line": 505,
+                "role": "Additional response models use the response class media type or application/json when it is absent",
+            },
+            {
+                "path": "starlette/responses.py",
+                "start_line": 29,
+                "end_line": 43,
+                "role": "Pinned Starlette Response has no default media_type unless a caller supplies one",
+            },
+            {
+                "path": "starlette/responses.py",
+                "start_line": 181,
+                "end_line": 192,
+                "role": "Pinned Starlette JSONResponse declares application/json",
+            },
+        ],
+        "functions": {
+            "test_openapi_schema": _case(
+                ["openapi-docs", "response-serialization"],
+                ["http.status", "openapi.document"],
+                "The dedicated app preserves both source routes; the HTTP status selector and root OpenAPI JSON pointer independently cover the asserted 200 status and complete parsed JSON snapshot.",
+            ),
+        },
+    },
     "tests/test_dependency_after_yield_websockets.py": {
         "supporting_sources": [
             {
@@ -65,6 +134,239 @@ CORE_TEST_REVIEW_MAPPINGS = {
                 ["asgi-error-propagation", "response-serialization"],
                 ["asgi.application_error.exception", "validation.error_class"],
                 "An invalid response value raises FastAPI ResponseValidationError; the workflow observes its exact qualified exception and message alongside the source-backed validation class.",
+            ),
+        },
+    },
+    "tests/test_response_model_invalid.py": {
+        "feature_ids": ["response-serialization", "public-api-errors"],
+        "module_observation_selectors": ["construction.outcome"],
+        "rationale": "Each function registers a route with an invalid direct or generic response model and asserts that registration raises FastAPIError.",
+        "stimulus_notes": "The four existing construction-errors-upstream cases independently cover direct and list response_model declarations plus direct and list models in responses. Each fails during FastAPI route construction, before an ASGI request or Starlette dispatch; no Starlette behavior is delegated. The recipe also records exception class and message, but only the error outcome is selected for this source mapping.",
+        "contract_gate": "The source uses pytest.raises(FastAPIError), which accepts subclasses. The available construction.exception_class selector compares exact fully qualified class names and cannot express this superclass predicate, so the asserted exception type is gated. The source does not assert exception text; construction.exception_message is diagnostic input evidence only.",
+        "supporting_sources": [
+            {
+                "path": "tests/test_response_model_invalid.py",
+                "start_line": 1,
+                "end_line": 4,
+                "role": "the source imports pytest and FastAPIError for its raises assertions",
+            },
+            {
+                "path": "tests/test_response_model_invalid.py",
+                "start_line": 6,
+                "end_line": 7,
+                "role": "non-Pydantic model class used by all four cases",
+            },
+            {
+                "path": "fastapi/applications.py",
+                "start_line": 1993,
+                "end_line": 2017,
+                "role": "FastAPI GET decorator forwards response_model and responses to its router",
+            },
+            {
+                "path": "fastapi/routing.py",
+                "start_line": 2889,
+                "end_line": 2965,
+                "role": "FastAPI router constructs the API route with the declared response model and responses",
+            },
+            {
+                "path": "fastapi/routing.py",
+                "start_line": 1038,
+                "end_line": 1054,
+                "role": "FastAPI creates fields for additional response models during route construction",
+            },
+            {
+                "path": "fastapi/routing.py",
+                "start_line": 1101,
+                "end_line": 1113,
+                "role": "FastAPI creates the primary response field during route construction",
+            },
+            {
+                "path": "fastapi/utils.py",
+                "start_line": 47,
+                "end_line": 77,
+                "role": "FastAPI converts invalid Pydantic response-field schema construction into FastAPIError",
+            },
+            {
+                "path": "fastapi/exceptions.py",
+                "start_line": 161,
+                "end_line": 162,
+                "role": "FastAPIError is the public RuntimeError subclass caught by the upstream assertions",
+            },
+        ],
+        "functions": {
+            "test_invalid_response_model_raises": _case(
+                ["response-serialization", "public-api-errors"],
+                ["construction.outcome"],
+                "The direct response_model case is represented by the existing direct-invalid-response-model construction input; the source asserts that route registration raises.",
+            ),
+            "test_invalid_response_model_sub_type_raises": _case(
+                ["response-serialization", "public-api-errors"],
+                ["construction.outcome"],
+                "The list[NonPydanticModel] response_model case is represented by the existing sequence-invalid-response-model construction input; the source asserts that route registration raises.",
+            ),
+            "test_invalid_response_model_in_responses_raises": _case(
+                ["response-serialization", "public-api-errors"],
+                ["construction.outcome"],
+                "The additional response with a direct NonPydanticModel is represented by the existing direct-invalid-additional-response construction input; the source asserts that route registration raises.",
+            ),
+            "test_invalid_response_model_sub_type_in_responses_raises": _case(
+                ["response-serialization", "public-api-errors"],
+                ["construction.outcome"],
+                "The additional response with list[NonPydanticModel] is represented by the existing sequence-invalid-additional-response construction input; the source asserts that route registration raises.",
+            ),
+        },
+    },
+    "tests/test_response_model_include_exclude.py": {
+        "feature_ids": ["response-serialization"],
+        "module_observation_selectors": ["http.status", "http.body.bytes"],
+        "contract_gate": "Each source function asserts response.json() equality as well as status 200. The six independent cases observe supported `http.status` and exact `http.body.bytes`; exact wire bytes and key order can be stricter than the source's parsed-JSON equality. Keep the function mappings partial until a semantic JSON-value selector can represent that source assertion. The source does not assert headers.",
+        "stimulus_notes": "response-model-include-exclude-source-review.yaml adds one independently authored ASGI case for each of the six source route variants: nested include and nested exclude with model-instance and dict returns, plus combined include/exclude with both return forms. The workload uses new class/field names and input values while preserving the source-backed nesting and filter shapes; it embeds no expected outputs. The older response-model-serialization.yaml and schema-extensions.yaml cases remain related inputs, not substitutes for these per-function cases. The source uses FastAPI's TestClient re-export, which delegates its HTTP-to-ASGI client mechanics to Starlette 1.6.0; these workflows drive FastAPI directly through ASGI.",
+        "supporting_sources": [
+            {
+                "path": "tests/test_response_model_include_exclude.py",
+                "start_line": 6,
+                "end_line": 19,
+                "role": "nested response model declarations used by the six test routes",
+            },
+            {
+                "path": "fastapi/applications.py",
+                "start_line": 1812,
+                "end_line": 1835,
+                "role": "FastAPI GET decorator declares include and exclude as response-serialization options passed to Pydantic",
+            },
+            {
+                "path": "fastapi/applications.py",
+                "start_line": 1993,
+                "end_line": 2017,
+                "role": "FastAPI forwards response-model include and exclude options to its router",
+            },
+            {
+                "path": "fastapi/routing.py",
+                "start_line": 978,
+                "end_line": 1007,
+                "role": "FastAPI stores the route's response-model include and exclude configuration",
+            },
+            {
+                "path": "fastapi/routing.py",
+                "start_line": 727,
+                "end_line": 739,
+                "role": "FastAPI passes route include and exclude configuration to response serialization",
+            },
+            {
+                "path": "fastapi/routing.py",
+                "start_line": 301,
+                "end_line": 338,
+                "role": "FastAPI validates the response and delegates the include/exclude projection to the response field serializer",
+            },
+            {
+                "path": "fastapi/testclient.py",
+                "start_line": 1,
+                "end_line": 1,
+                "role": "FastAPI re-exports Starlette TestClient used by the source tests",
+            },
+            {
+                "path": "starlette/testclient.py",
+                "start_line": 377,
+                "end_line": 420,
+                "role": "Starlette 1.6.0 TestClient installs its ASGI transport and client defaults; this client boundary is delegated behavior",
+            },
+            {
+                "path": "starlette/testclient.py",
+                "start_line": 277,
+                "end_line": 291,
+                "role": "Starlette 1.6.0 TestClient constructs the HTTP ASGI scope for each client request",
+            },
+        ],
+        "functions": {
+            "test_nested_include_simple": _case(
+                ["response-serialization"],
+                ["http.status", "http.body.bytes"],
+                "response-model-include-exclude-source-review.yaml case fastapi.response-model.include.nested.model independently exercises the nested include shape with a model-instance return and observes status plus raw response bytes.",
+                contract_gate="The exact body-byte comparison is stricter than this source function's parsed response.json() equality; retain partial source coverage until a semantic JSON-value selector is available.",
+                stimulus_notes="The case uses independent model and field names and fresh values; its route configuration and model-instance return form match this source variant.",
+                supporting_sources=[
+                    {
+                        "path": "tests/test_response_model_include_exclude.py",
+                        "start_line": 25,
+                        "end_line": 34,
+                        "role": "nested-include route declaration and model-instance endpoint",
+                    }
+                ],
+            ),
+            "test_nested_include_simple_dict": _case(
+                ["response-serialization"],
+                ["http.status", "http.body.bytes"],
+                "response-model-include-exclude-source-review.yaml case fastapi.response-model.include.nested.dict independently exercises the nested include shape with a dict return and observes status plus raw response bytes.",
+                contract_gate="The exact body-byte comparison is stricter than this source function's parsed response.json() equality; retain partial source coverage until a semantic JSON-value selector is available.",
+                stimulus_notes="The case uses independent model and field names and fresh values; its route configuration and dict return form match this source variant.",
+                supporting_sources=[
+                    {
+                        "path": "tests/test_response_model_include_exclude.py",
+                        "start_line": 37,
+                        "end_line": 49,
+                        "role": "nested-include route declaration and dict-returning endpoint",
+                    }
+                ],
+            ),
+            "test_nested_exclude_simple": _case(
+                ["response-serialization"],
+                ["http.status", "http.body.bytes"],
+                "response-model-include-exclude-source-review.yaml case fastapi.response-model.exclude.nested.model independently exercises the nested exclude shape with a model-instance return and observes status plus raw response bytes.",
+                contract_gate="The exact body-byte comparison is stricter than this source function's parsed response.json() equality; retain partial source coverage until a semantic JSON-value selector is available.",
+                stimulus_notes="The case uses independent model and field names and fresh values; its route configuration and model-instance return form match this source variant.",
+                supporting_sources=[
+                    {
+                        "path": "tests/test_response_model_include_exclude.py",
+                        "start_line": 52,
+                        "end_line": 61,
+                        "role": "nested-exclude route declaration and model-instance endpoint",
+                    }
+                ],
+            ),
+            "test_nested_exclude_simple_dict": _case(
+                ["response-serialization"],
+                ["http.status", "http.body.bytes"],
+                "response-model-include-exclude-source-review.yaml case fastapi.response-model.exclude.nested.dict independently exercises the nested exclude shape with a dict return and observes status plus raw response bytes.",
+                contract_gate="The exact body-byte comparison is stricter than this source function's parsed response.json() equality; retain partial source coverage until a semantic JSON-value selector is available.",
+                stimulus_notes="The case uses independent model and field names and fresh values; its route configuration and dict return form match this source variant.",
+                supporting_sources=[
+                    {
+                        "path": "tests/test_response_model_include_exclude.py",
+                        "start_line": 64,
+                        "end_line": 76,
+                        "role": "nested-exclude route declaration and dict-returning endpoint",
+                    }
+                ],
+            ),
+            "test_nested_include_mixed": _case(
+                ["response-serialization"],
+                ["http.status", "http.body.bytes"],
+                "response-model-include-exclude-source-review.yaml case fastapi.response-model.mixed-include-exclude.model independently exercises root-level include plus nested exclude with a model-instance return and observes status plus raw response bytes.",
+                contract_gate="The exact body-byte comparison is stricter than this source function's parsed response.json() equality; retain partial source coverage until a semantic JSON-value selector is available.",
+                stimulus_notes="The case independently authors the nested response model and values while preserving the source route's simultaneous include/exclude shape and model-instance return form.",
+                supporting_sources=[
+                    {
+                        "path": "tests/test_response_model_include_exclude.py",
+                        "start_line": 79,
+                        "end_line": 93,
+                        "role": "route declaration combines root-level include and nested exclude for a model-instance endpoint",
+                    }
+                ],
+            ),
+            "test_nested_include_mixed_dict": _case(
+                ["response-serialization"],
+                ["http.status", "http.body.bytes"],
+                "response-model-include-exclude-source-review.yaml case fastapi.response-model.mixed-include-exclude.dict independently exercises root-level include plus nested exclude with a dict return and observes status plus raw response bytes.",
+                contract_gate="The exact body-byte comparison is stricter than this source function's parsed response.json() equality; retain partial source coverage until a semantic JSON-value selector is available.",
+                stimulus_notes="The case independently authors the nested response model and values while preserving the source route's simultaneous include/exclude shape and dict return form.",
+                supporting_sources=[
+                    {
+                        "path": "tests/test_response_model_include_exclude.py",
+                        "start_line": 96,
+                        "end_line": 110,
+                        "role": "route declaration combines root-level include and nested exclude for a dict-returning endpoint",
+                    }
+                ],
             ),
         },
     },
@@ -320,6 +622,96 @@ CORE_TEST_REVIEW_MAPPINGS = {
             ),
         },
         "module_observation_selectors": ["validation.error_class"],
+    },
+    "tests/test_additional_responses_response_class.py": {
+        "feature_ids": ["openapi-docs", "response-serialization"],
+        "module_observation_selectors": ["http.status", "openapi.document"],
+        "rationale": "The source checks a successful OpenAPI request and an exact parsed-document snapshot for additional response models under a custom JSON media type and the default JSON response class.",
+        "stimulus_notes": "The dedicated input-only recipe additional-responses-response-class.yaml independently reproduces the source's paired /a and /b route/model declarations, custom/default response classes, and observes the complete live OpenAPI document. The source uses TestClient while the recipe invokes FastAPI through direct ASGI; generic TestClient behavior remains Starlette-RS-owned.",
+        "contract_gate": "This recipe covers the FastAPI route construction and generated OpenAPI assertions. It does not claim behavior of the TestClient/HTTPX client API itself, which is delegated to the separate Starlette-RS contract.",
+        "supporting_sources": [
+            {
+                "path": "tests/test_additional_responses_response_class.py",
+                "start_line": 7,
+                "end_line": 37,
+                "role": "FastAPI app, custom JSONResponse subclass, additional-response models, both route declarations, and TestClient setup",
+            },
+            {
+                "path": "tests/test_additional_responses_response_class.py",
+                "start_line": 40,
+                "end_line": 117,
+                "role": "OpenAPI request, asserted 200 status, and exact parsed-document snapshot",
+            },
+            {
+                "path": "fastapi/applications.py",
+                "start_line": 1188,
+                "end_line": 1217,
+                "role": "FastAPI path-operation decorator defaults to JSONResponse and forwards the selected response class and additional responses",
+            },
+            {
+                "path": "fastapi/responses.py",
+                "start_line": 8,
+                "end_line": 8,
+                "role": "FastAPI re-exports Starlette JSONResponse for the test's custom response subclass",
+            },
+            {
+                "path": "fastapi/routing.py",
+                "start_line": 1038,
+                "end_line": 1054,
+                "role": "FastAPI creates response fields for declared additional-response models during route setup",
+            },
+            {
+                "path": "fastapi/openapi/utils.py",
+                "start_line": 325,
+                "end_line": 330,
+                "role": "OpenAPI generation resolves the route response class and reads its media_type",
+            },
+            {
+                "path": "fastapi/openapi/utils.py",
+                "start_line": 403,
+                "end_line": 418,
+                "role": "FastAPI determines the success status from the response-class signature and adds its response description",
+            },
+            {
+                "path": "fastapi/openapi/utils.py",
+                "start_line": 456,
+                "end_line": 472,
+                "role": "FastAPI emits the success response content under the selected media type and uses an empty schema for JSONResponse without a response model",
+            },
+            {
+                "path": "fastapi/openapi/utils.py",
+                "start_line": 473,
+                "end_line": 516,
+                "role": "FastAPI combines additional response models with the selected response media type and emits their OpenAPI response entries",
+            },
+            {
+                "path": "fastapi/openapi/utils.py",
+                "start_line": 551,
+                "end_line": 582,
+                "role": "FastAPI collects primary and additional response fields for the document's component schemas",
+            },
+            {
+                "path": "fastapi/openapi/utils.py",
+                "start_line": 613,
+                "end_line": 672,
+                "role": "FastAPI assembles route paths and component schemas in the generated OpenAPI document",
+            },
+            {
+                "path": "starlette/responses.py",
+                "start_line": 181,
+                "end_line": 192,
+                "role": "Pinned Starlette JSONResponse class identity, default application/json media type, and constructor inheritance boundary",
+            },
+        ],
+        "functions": {
+            "test_openapi_schema": _case(
+                ["openapi-docs", "response-serialization"],
+                ["http.status", "openapi.document"],
+                "The source asserts status 200 and compares the complete parsed OpenAPI JSON document, including both routes, their success and additional responses, media types, operation metadata, and model schemas.",
+                contract_gate="The dedicated input observes the source route/model configuration and complete OpenAPI output through direct ASGI; it does not assert the generic TestClient/HTTPX client API.",
+                stimulus_notes="Use tests/fixtures/input-recipes/parity/additional-responses-response-class.yaml case fastapi.additional-responses-response-class.openapi. It observes the full parsed document as live source/target output and embeds no expected snapshot.",
+            ),
+        },
     },
     "tests/test_additional_properties.py": {
         "supporting_sources": [
