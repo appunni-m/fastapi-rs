@@ -850,6 +850,81 @@ TUTORIAL_TEST_REVIEW_MAPPINGS = {
             ),
         },
     ),
+    "tests/test_tutorial/test_cors/test_tutorial001.py": _module(
+        [
+            {
+                "path": "docs_src/cors/tutorial001_py310.py",
+                "start_line": 1,
+                "end_line": 24,
+                "role": "FastAPI CORS import, finite allowed-origin list, middleware registration, and route",
+            },
+            {
+                "path": "docs/en/docs/tutorial/cors.md",
+                "start_line": 35,
+                "end_line": 77,
+                "role": "documented FastAPI middleware setup and Starlette preflight/simple-request behavior",
+            },
+            {
+                "path": "docs/en/docs/tutorial/cors.md",
+                "start_line": 83,
+                "end_line": 88,
+                "role": "explicit boundary note that FastAPI re-exports CORS middleware from Starlette",
+            },
+            {
+                "path": "fastapi/middleware/cors.py",
+                "start_line": 1,
+                "end_line": 1,
+                "role": "FastAPI convenience import re-exports Starlette CORSMiddleware",
+            },
+            {
+                "path": "fastapi/applications.py",
+                "start_line": 42,
+                "end_line": 42,
+                "role": "FastAPI subclasses Starlette and inherits add_middleware",
+            },
+            {
+                "path": "fastapi/applications.py",
+                "start_line": 1033,
+                "end_line": 1068,
+                "role": "FastAPI places the inherited user middleware registrations in its middleware stack",
+            },
+            {
+                "path": "starlette/applications.py",
+                "start_line": 104,
+                "end_line": 107,
+                "role": "Starlette implementation inherited by FastAPI for add_middleware registration",
+            },
+            {
+                "path": "starlette/middleware/cors.py",
+                "start_line": 78,
+                "end_line": 96,
+                "role": "Starlette CORS dispatch for non-HTTP, origin-free, preflight, and simple requests",
+            },
+            {
+                "path": "starlette/middleware/cors.py",
+                "start_line": 107,
+                "end_line": 150,
+                "role": "Starlette CORS preflight allow checks and 200/400 response selection",
+            },
+            {
+                "path": "starlette/middleware/cors.py",
+                "start_line": 152,
+                "end_line": 179,
+                "role": "Starlette CORS response-header handling for simple requests",
+            },
+        ],
+        {
+            "test_cors": _case(
+                "tests/test_tutorial/test_cors/test_tutorial001.py",
+                6,
+                37,
+                ["middleware-integrations"],
+                ["http.status", "http.headers.ordered", "http.body.bytes"],
+                "The test observes an allowed preflight, an allowed simple request, and a request without Origin. FastAPI supplies the middleware import and app registration surface; add_middleware is inherited from Starlette, which owns the CORS request and response decisions. The independent recipe also probes the documented disallowed-origin and rejected-method paths without asserting the upstream test's expected outputs.",
+                stimulus_notes="The workload independently recreates the documented app configuration. Its ASGI inputs are based on the assertions plus separate source-cited probes for disallowed origins and a non-standard preflight method.",
+            ),
+        },
+    ),
     "tests/test_tutorial/test_dataclasses/test_tutorial001.py": _module(
         [
             {

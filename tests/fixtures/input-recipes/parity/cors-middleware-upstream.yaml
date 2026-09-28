@@ -116,3 +116,141 @@ cases:
   source_evidence:
   - path: tests/test_tutorial/test_cors/test_tutorial001.py
     kind: upstream_test
+  - path: docs/en/docs/tutorial/cors.md
+    kind: upstream_documentation
+  - path: docs_src/cors/tutorial001_py310.py
+    kind: upstream_documentation
+- case_id: fastapi.test.test-tutorial-test-cors-test-tutorial001.cors-preflight-disallowed-origin
+  actions:
+  - action_id: reject-unlisted-origin
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: OPTIONS
+      scheme: http
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - origin
+        - https://outside.example
+      - - access-control-request-method
+        - GET
+      - - access-control-request-headers
+        - X-Example
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/cors.md
+    kind: upstream_documentation
+  - path: docs_src/cors/tutorial001_py310.py
+    kind: upstream_documentation
+- case_id: fastapi.test.test-tutorial-test-cors-test-tutorial001.cors-preflight-disallowed-method
+  actions:
+  - action_id: reject-non-standard-method
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: OPTIONS
+      scheme: http
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - origin
+        - https://localhost.tiangolo.com
+      - - access-control-request-method
+        - TRACE
+      - - access-control-request-headers
+        - X-Example
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/cors.md
+    kind: upstream_documentation
+  - path: docs_src/cors/tutorial001_py310.py
+    kind: upstream_documentation
+- case_id: fastapi.test.test-tutorial-test-cors-test-tutorial001.cors-simple-disallowed-origin
+  actions:
+  - action_id: omit-cors-allow-origin-for-unlisted-origin
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - origin
+        - https://outside.example
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/cors.md
+    kind: upstream_documentation
+  - path: docs_src/cors/tutorial001_py310.py
+    kind: upstream_documentation

@@ -6801,7 +6801,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             "id": "starlette-rs-surface-review",
             "status": "crosswalk-generated; support-and-revision-review-pending",
             "question": "For each FastAPI behavior that delegates to Starlette, does the sibling Starlette-RS contract provide the required surface and exact target support, without importing or duplicating unrelated Starlette APIs?",
-            "evidence": "The merged FastAPI coverage matrix assigns Starlette-RS ownership areas, and direct re-export/subclass/helper edges reference the sibling catalog and reviewed dispositions. The sibling manifest is slice-scoped and reports partial, supported, and unimplemented operations; its checkout has no committed revision yet.",
+            "evidence": f"The merged FastAPI coverage matrix assigns Starlette-RS ownership areas, and direct re-export/subclass/helper edges reference the sibling catalog and reviewed dispositions. FastAPI-RS metadata and CI pin the local sibling at {starlette_rs_revision[:12]}; its manifest is slice-scoped and reports partial, supported, and unimplemented operations. The cross-project behavior review remains open.",
         },
         {
             "id": "pydantic-runtime-generated-api",
@@ -6841,9 +6841,9 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         },
         {
             "id": "starlette-rs-target-revision",
-            "status": "pending-commit",
-            "question": "Pin a committed Starlette-RS source revision/profile for reproducible FastAPI-RS builds and parity runs.",
-            "evidence": "FastAPI-RS directly reuses the sibling ../starlette-rs/starlette-rs crate, and the atlas reads its source manifest/catalog/review. The sibling checkout has uncommitted changes, so its commit alone does not identify the current target; source-tree and contract digests identify the local state until a clean immutable revision is selected.",
+            "status": starlette_rs_revision_state,
+            "question": "Do the local path dependency, metadata, and CI continue to resolve to the same committed Starlette-RS target profile?",
+            "evidence": f"FastAPI-RS directly reuses ../starlette-rs/starlette-rs; metadata.yaml and CI pin {starlette_rs_revision}. The atlas reads the sibling manifest/catalog/review and records the checkout state. Keep the local checkout clean at the pin for reproducible builds and parity runs.",
         },
     ]
 
@@ -6873,8 +6873,15 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         {
             "priority": 1,
             "id": "resolve-source-and-cross-project-identities",
-            "status": "oracle verified; target revision pending",
-            "acceptance": "Keep FastAPI 0.141.1 + only Starlette 1.6.0 + Pydantic 2.13.4; retain the sibling Starlette-RS contract links; commit and pin the sibling target revision before reproducible builds or parity claims.",
+            "status": (
+                f"FastAPI and Starlette identities verified; Starlette-RS {starlette_rs_revision[:12]} pinned; "
+                + (
+                    "sibling checkout has uncommitted edits outside the pin"
+                    if starlette_rs_worktree_changes
+                    else "sibling checkout is clean"
+                )
+            ),
+            "acceptance": "Keep FastAPI 0.141.1 + only Starlette 1.6.0 + Pydantic 2.13.4 and the pinned Starlette-RS commit; commit target changes before moving the pin and do not claim parity until the selected target passes the input workflows.",
         },
         {
             "priority": 2,

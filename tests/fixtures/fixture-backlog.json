@@ -44923,61 +44923,75 @@
         }
       ],
       "feature_ids": [
-        "app-routing",
-        "dependency-security",
-        "request-validation"
+        "dependency-security"
       ],
       "id": "fastapi.docs.tutorial-dependencies-sub-dependencies",
       "input_only": true,
       "observation_selectors": [
-        "dependency.call_order",
-        "dependency.cleanup_order",
         "http.body.bytes",
-        "http.body.json",
-        "http.headers.ordered",
         "http.status",
-        "openapi.paths",
-        "openapi.request_schema",
-        "openapi.security",
-        "route.match",
-        "validation.error_class",
-        "validation.error_details"
+        "openapi.paths"
       ],
       "related_usage_sources": [],
-      "reviewed_source_mapping": null,
+      "reviewed_source_mapping": {
+        "rationale": "The page documents nested dependency resolution, query/cookie fallback, and per-request dependency caching. The independent fixture mappings cover query/cookie responses and selected OpenAPI paths, plus cache reuse and use_cache=False through HTTP responses; they do not observe dependency call/cleanup order, security scopes, validation failures, route matching, or request-object internals. FastAPI owns the dependency graph, parameter binding, and cache decision. Generic Request query/cookie access remains Starlette 1.6.0-owned; the fixture's route dispatch is only the entry point for these dependency observations.",
+        "source_evidence": [
+          {
+            "end_line": 54,
+            "path": "docs/en/docs/tutorial/dependencies/sub-dependencies.md",
+            "role": "nested dependency graph and query/cookie fallback example",
+            "sha256": "fea74611e9d88f9d96a75f56925ffa5d8af0c90e0a2834f095736bbca066cdb1",
+            "start_line": 9
+          },
+          {
+            "end_line": 85,
+            "path": "docs/en/docs/tutorial/dependencies/sub-dependencies.md",
+            "role": "per-request dependency cache and use_cache=False contract",
+            "sha256": "fea74611e9d88f9d96a75f56925ffa5d8af0c90e0a2834f095736bbca066cdb1",
+            "start_line": 57
+          },
+          {
+            "end_line": 20,
+            "path": "docs_src/dependencies/tutorial005_py310.py",
+            "role": "pinned query/cookie dependency example used by the page",
+            "sha256": "2c471ec1ca637c2641e05f80b00050b6a73fc8cd663fdeddd350d989079f2715",
+            "start_line": 1
+          },
+          {
+            "end_line": 697,
+            "path": "fastapi/dependencies/utils.py",
+            "role": "FastAPI recursive solve/cache and query/cookie parameter binding",
+            "sha256": "13693375ab95e32424e5434c21f928463634af5ee1261cf3e04031381bdf47d9",
+            "start_line": 619
+          }
+        ],
+        "starlette_contract_authority": "1.6.0",
+        "starlette_source_evidence": [
+          {
+            "end_line": 159,
+            "path": "starlette/requests.py",
+            "role": "generic Starlette 1.6.0 Request query-parameter and cookie access",
+            "sha256": "8691b01ae49ecfa085fe6419343678f73b77c92fc63a411106a77d8e9bf0ac44",
+            "source_authority": "Starlette 1.6.0",
+            "start_line": 138
+          }
+        ]
+      },
       "selector_evidence": [
-        {
-          "feature_id": "app-routing",
-          "selectors": [
-            "http.status",
-            "http.headers.ordered",
-            "http.body.bytes",
-            "route.match",
-            "openapi.paths"
-          ]
-        },
         {
           "feature_id": "dependency-security",
           "selectors": [
-            "http.status",
-            "http.headers.ordered",
             "http.body.bytes",
-            "http.body.json",
-            "dependency.call_order",
-            "dependency.cleanup_order",
-            "openapi.security"
+            "http.status"
           ]
         },
         {
-          "feature_id": "request-validation",
+          "feature_id": null,
+          "schema_extension_required": [
+            "openapi.paths"
+          ],
           "selectors": [
-            "http.status",
-            "http.headers.ordered",
-            "http.body.bytes",
-            "http.body.json",
-            "validation.error_class",
-            "validation.error_details",
-            "openapi.request_schema"
+            "openapi.paths"
           ]
         }
       ],
@@ -44993,6 +45007,42 @@
         {
           "path": "docs_src/dependencies/tutorial005_py310.py",
           "sha256": "2c471ec1ca637c2641e05f80b00050b6a73fc8cd663fdeddd350d989079f2715"
+        },
+        {
+          "end_line": 54,
+          "path": "docs/en/docs/tutorial/dependencies/sub-dependencies.md",
+          "role": "nested dependency graph and query/cookie fallback example",
+          "sha256": "fea74611e9d88f9d96a75f56925ffa5d8af0c90e0a2834f095736bbca066cdb1",
+          "start_line": 9
+        },
+        {
+          "end_line": 85,
+          "path": "docs/en/docs/tutorial/dependencies/sub-dependencies.md",
+          "role": "per-request dependency cache and use_cache=False contract",
+          "sha256": "fea74611e9d88f9d96a75f56925ffa5d8af0c90e0a2834f095736bbca066cdb1",
+          "start_line": 57
+        },
+        {
+          "end_line": 20,
+          "path": "docs_src/dependencies/tutorial005_py310.py",
+          "role": "pinned query/cookie dependency example used by the page",
+          "sha256": "2c471ec1ca637c2641e05f80b00050b6a73fc8cd663fdeddd350d989079f2715",
+          "start_line": 1
+        },
+        {
+          "end_line": 697,
+          "path": "fastapi/dependencies/utils.py",
+          "role": "FastAPI recursive solve/cache and query/cookie parameter binding",
+          "sha256": "13693375ab95e32424e5434c21f928463634af5ee1261cf3e04031381bdf47d9",
+          "start_line": 619
+        },
+        {
+          "end_line": 159,
+          "path": "starlette/requests.py",
+          "role": "generic Starlette 1.6.0 Request query-parameter and cookie access",
+          "sha256": "8691b01ae49ecfa085fe6419343678f73b77c92fc63a411106a77d8e9bf0ac44",
+          "source_authority": "Starlette 1.6.0",
+          "start_line": 138
         }
       ],
       "source_item_id": "documented-page:tutorial/dependencies/sub-dependencies.md",
@@ -45000,14 +45050,10 @@
       "starlette_rs_planning_areas": [
         "applications-requests-responses-background-concurrency",
         "asgi-http-websocket-lifespan",
-        "middleware-authentication-endpoints-datastructures-status",
-        "routing-converters-mounts-hosts-and-errors",
-        "streaming-headers-cookies-errors-and-cleanup"
+        "middleware-authentication-endpoints-datastructures-status"
       ],
       "stimulus_design": [
-        "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
-        "Declare the dependency/security graph and credential inputs, invoke the public endpoint, and observe response, call order, cleanup, and schema effects.",
-        "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs."
+        "Declare the dependency/security graph and credential inputs, invoke the public endpoint, and observe response, call order, cleanup, and schema effects."
       ]
     },
     {
@@ -162748,35 +162794,209 @@
                   "term": "api key"
                 }
               ]
+            },
+            {
+              "feature_id": "response-serialization",
+              "signals": [
+                {
+                  "end_line": 32,
+                  "line": 29,
+                  "path": "tests/test_security_api_key_header.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 26,
+                  "line": 7,
+                  "path": "tests/test_security_api_key_header.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 52,
+                  "line": 11,
+                  "path": "fastapi/security/api_key.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 233,
+                  "line": 179,
+                  "path": "fastapi/security/api_key.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 347,
+                  "line": 271,
+                  "path": "fastapi/dependencies/utils.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 680,
+                  "line": 656,
+                  "path": "fastapi/dependencies/utils.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 17,
+                  "line": 11,
+                  "path": "fastapi/exception_handlers.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 341,
+                  "line": 301,
+                  "path": "fastapi/routing.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 156,
+                  "line": 99,
+                  "path": "fastapi/openapi/utils.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 356,
+                  "line": 311,
+                  "path": "fastapi/openapi/utils.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 1120,
+                  "line": 1070,
+                  "path": "fastapi/applications.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 32,
+                  "line": 29,
+                  "path": "tests/test_security_api_key_header.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                }
+              ]
             }
           ],
           "feature_ids": [
-            "dependency-security"
+            "dependency-security",
+            "response-serialization"
           ],
           "id": "fastapi.test.test-security-api-key-header.test-security-api-key",
-          "mapping_scope": "module_path_candidate",
-          "mapping_status": "candidate",
+          "mapping_scope": "reviewed_source_mapping",
+          "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
-            "dependency.call_order",
-            "dependency.cleanup_order",
-            "http.body.bytes",
-            "http.body.json",
-            "http.headers.ordered",
-            "http.status",
-            "openapi.security"
+            "http.status"
           ],
-          "reviewed_mapping": null,
+          "reviewed_mapping": {
+            "contract_gate": "The test also asserts the parsed JSON value. The `http.body.json` selector is not workflow-supported, and selecting raw body bytes would require wire-format equality beyond response.json() equality.",
+            "rationale": "The required-key workflow case exercises a supplied APIKeyHeader through FastAPI dependency resolution; only the asserted success status is safely selected because parsed-JSON equality is not workflow-supported.",
+            "source_evidence": [
+              {
+                "end_line": 32,
+                "path": "tests/test_security_api_key_header.py",
+                "role": "upstream test function",
+                "sha256": "698c146197364fda7454587ca5c805e69d0113a85fc0edb043e433b96b7da38c",
+                "start_line": 29
+              },
+              {
+                "end_line": 26,
+                "path": "tests/test_security_api_key_header.py",
+                "role": "APIKeyHeader security dependency, nested current-user dependency, User model, and route setup",
+                "sha256": "698c146197364fda7454587ca5c805e69d0113a85fc0edb043e433b96b7da38c",
+                "start_line": 7
+              },
+              {
+                "end_line": 52,
+                "path": "fastapi/security/api_key.py",
+                "role": "required API-key behavior, including the 401 challenge and missing-key branch",
+                "sha256": "e0234b355012b4eb0c872b47f42e4439410e66bb4b83f2293104bf1dc4433f83",
+                "start_line": 11
+              },
+              {
+                "end_line": 233,
+                "path": "fastapi/security/api_key.py",
+                "role": "APIKeyHeader construction, default scheme name, and request-header extraction",
+                "sha256": "e0234b355012b4eb0c872b47f42e4439410e66bb4b83f2293104bf1dc4433f83",
+                "start_line": 179
+              },
+              {
+                "end_line": 347,
+                "path": "fastapi/dependencies/utils.py",
+                "role": "FastAPI constructs recursive dependency nodes from endpoint signatures",
+                "sha256": "13693375ab95e32424e5434c21f928463634af5ee1261cf3e04031381bdf47d9",
+                "start_line": 271
+              },
+              {
+                "end_line": 680,
+                "path": "fastapi/dependencies/utils.py",
+                "role": "FastAPI invokes and caches resolved sub-dependencies",
+                "sha256": "13693375ab95e32424e5434c21f928463634af5ee1261cf3e04031381bdf47d9",
+                "start_line": 656
+              },
+              {
+                "end_line": 17,
+                "path": "fastapi/exception_handlers.py",
+                "role": "FastAPI renders Starlette HTTPException status, detail, and explicit headers as JSON",
+                "sha256": "615713f19cb4db555861e79c81dca1e581148c420729c2eca5b9127f839f6c92",
+                "start_line": 11
+              },
+              {
+                "end_line": 341,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI serializes endpoint values and response-model values",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 301
+              },
+              {
+                "end_line": 156,
+                "path": "fastapi/openapi/utils.py",
+                "role": "FastAPI discovers security dependencies and emits their named OpenAPI schemes and requirements",
+                "sha256": "81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527",
+                "start_line": 99
+              },
+              {
+                "end_line": 356,
+                "path": "fastapi/openapi/utils.py",
+                "role": "FastAPI attaches dependency-derived security metadata to each OpenAPI operation",
+                "sha256": "81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527",
+                "start_line": 311
+              },
+              {
+                "end_line": 1120,
+                "path": "fastapi/applications.py",
+                "role": "FastAPI generates and serves the complete OpenAPI document at its configured endpoint",
+                "sha256": "38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c",
+                "start_line": 1070
+              },
+              {
+                "end_line": 32,
+                "path": "tests/test_security_api_key_header.py",
+                "role": "successful required-key assertion checks status and parsed JSON value",
+                "sha256": "698c146197364fda7454587ca5c805e69d0113a85fc0edb043e433b96b7da38c",
+                "start_line": 29
+              }
+            ],
+            "stimulus_notes": "The existing independent case exercises required-header extraction but uses a separate route and direct Security parameter; it does not reproduce this module's nested Depends(get_current_user) and User response value."
+          },
           "selector_evidence": [
             {
               "feature_id": "dependency-security",
               "selectors": [
-                "http.status",
-                "http.headers.ordered",
-                "http.body.bytes",
-                "http.body.json",
-                "dependency.call_order",
-                "dependency.cleanup_order",
-                "openapi.security"
+                "http.status"
+              ]
+            },
+            {
+              "feature_id": "response-serialization",
+              "selectors": [
+                "http.status"
               ]
             }
           ],
@@ -162784,9 +163004,10 @@
           "source_function": "test_security_api_key",
           "source_line": 29,
           "stimulus_design": [
-            "Declare the dependency/security graph and credential inputs, invoke the public endpoint, and observe response, call order, cleanup, and schema effects."
+            "Declare the dependency/security graph and credential inputs, invoke the public endpoint, and observe response, call order, cleanup, and schema effects.",
+            "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
           ],
-          "stimulus_design_notes": null
+          "stimulus_design_notes": "The existing independent case exercises required-header extraction but uses a separate route and direct Security parameter; it does not reproduce this module's nested Depends(get_current_user) and User response value."
         },
         {
           "feature_evidence": [
@@ -162802,35 +163023,209 @@
                   "term": "api key"
                 }
               ]
+            },
+            {
+              "feature_id": "response-serialization",
+              "signals": [
+                {
+                  "end_line": 39,
+                  "line": 35,
+                  "path": "tests/test_security_api_key_header.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 26,
+                  "line": 7,
+                  "path": "tests/test_security_api_key_header.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 52,
+                  "line": 11,
+                  "path": "fastapi/security/api_key.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 233,
+                  "line": 179,
+                  "path": "fastapi/security/api_key.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 347,
+                  "line": 271,
+                  "path": "fastapi/dependencies/utils.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 680,
+                  "line": 656,
+                  "path": "fastapi/dependencies/utils.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 17,
+                  "line": 11,
+                  "path": "fastapi/exception_handlers.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 341,
+                  "line": 301,
+                  "path": "fastapi/routing.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 156,
+                  "line": 99,
+                  "path": "fastapi/openapi/utils.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 356,
+                  "line": 311,
+                  "path": "fastapi/openapi/utils.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 1120,
+                  "line": 1070,
+                  "path": "fastapi/applications.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 39,
+                  "line": 35,
+                  "path": "tests/test_security_api_key_header.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                }
+              ]
             }
           ],
           "feature_ids": [
-            "dependency-security"
+            "dependency-security",
+            "response-serialization"
           ],
           "id": "fastapi.test.test-security-api-key-header.test-security-api-key-no-key",
-          "mapping_scope": "module_path_candidate",
-          "mapping_status": "candidate",
+          "mapping_scope": "reviewed_source_mapping",
+          "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
-            "dependency.call_order",
-            "dependency.cleanup_order",
-            "http.body.bytes",
-            "http.body.json",
-            "http.headers.ordered",
-            "http.status",
-            "openapi.security"
+            "http.status"
           ],
-          "reviewed_mapping": null,
+          "reviewed_mapping": {
+            "contract_gate": "The test also asserts the parsed JSON detail and exact WWW-Authenticate value. The parsed-JSON selector is not workflow-supported, while the available ordered-header selector would assert unrelated headers too.",
+            "rationale": "The required-key missing case exercises APIKeyHeader rejection; only the asserted 401 status is selected because the body JSON and individual challenge-header selectors are unavailable.",
+            "source_evidence": [
+              {
+                "end_line": 39,
+                "path": "tests/test_security_api_key_header.py",
+                "role": "upstream test function",
+                "sha256": "698c146197364fda7454587ca5c805e69d0113a85fc0edb043e433b96b7da38c",
+                "start_line": 35
+              },
+              {
+                "end_line": 26,
+                "path": "tests/test_security_api_key_header.py",
+                "role": "APIKeyHeader security dependency, nested current-user dependency, User model, and route setup",
+                "sha256": "698c146197364fda7454587ca5c805e69d0113a85fc0edb043e433b96b7da38c",
+                "start_line": 7
+              },
+              {
+                "end_line": 52,
+                "path": "fastapi/security/api_key.py",
+                "role": "required API-key behavior, including the 401 challenge and missing-key branch",
+                "sha256": "e0234b355012b4eb0c872b47f42e4439410e66bb4b83f2293104bf1dc4433f83",
+                "start_line": 11
+              },
+              {
+                "end_line": 233,
+                "path": "fastapi/security/api_key.py",
+                "role": "APIKeyHeader construction, default scheme name, and request-header extraction",
+                "sha256": "e0234b355012b4eb0c872b47f42e4439410e66bb4b83f2293104bf1dc4433f83",
+                "start_line": 179
+              },
+              {
+                "end_line": 347,
+                "path": "fastapi/dependencies/utils.py",
+                "role": "FastAPI constructs recursive dependency nodes from endpoint signatures",
+                "sha256": "13693375ab95e32424e5434c21f928463634af5ee1261cf3e04031381bdf47d9",
+                "start_line": 271
+              },
+              {
+                "end_line": 680,
+                "path": "fastapi/dependencies/utils.py",
+                "role": "FastAPI invokes and caches resolved sub-dependencies",
+                "sha256": "13693375ab95e32424e5434c21f928463634af5ee1261cf3e04031381bdf47d9",
+                "start_line": 656
+              },
+              {
+                "end_line": 17,
+                "path": "fastapi/exception_handlers.py",
+                "role": "FastAPI renders Starlette HTTPException status, detail, and explicit headers as JSON",
+                "sha256": "615713f19cb4db555861e79c81dca1e581148c420729c2eca5b9127f839f6c92",
+                "start_line": 11
+              },
+              {
+                "end_line": 341,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI serializes endpoint values and response-model values",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 301
+              },
+              {
+                "end_line": 156,
+                "path": "fastapi/openapi/utils.py",
+                "role": "FastAPI discovers security dependencies and emits their named OpenAPI schemes and requirements",
+                "sha256": "81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527",
+                "start_line": 99
+              },
+              {
+                "end_line": 356,
+                "path": "fastapi/openapi/utils.py",
+                "role": "FastAPI attaches dependency-derived security metadata to each OpenAPI operation",
+                "sha256": "81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527",
+                "start_line": 311
+              },
+              {
+                "end_line": 1120,
+                "path": "fastapi/applications.py",
+                "role": "FastAPI generates and serves the complete OpenAPI document at its configured endpoint",
+                "sha256": "38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c",
+                "start_line": 1070
+              },
+              {
+                "end_line": 39,
+                "path": "tests/test_security_api_key_header.py",
+                "role": "missing-key assertions check 401, parsed detail, and WWW-Authenticate challenge",
+                "sha256": "698c146197364fda7454587ca5c805e69d0113a85fc0edb043e433b96b7da38c",
+                "start_line": 35
+              }
+            ],
+            "stimulus_notes": "The independent required-key missing case exercises the same FastAPI APIKeyHeader failure branch; response detail and challenge value remain outside the selected observation contract."
+          },
           "selector_evidence": [
             {
               "feature_id": "dependency-security",
               "selectors": [
-                "http.status",
-                "http.headers.ordered",
-                "http.body.bytes",
-                "http.body.json",
-                "dependency.call_order",
-                "dependency.cleanup_order",
-                "openapi.security"
+                "http.status"
+              ]
+            },
+            {
+              "feature_id": "response-serialization",
+              "selectors": [
+                "http.status"
               ]
             }
           ],
@@ -162838,22 +163233,13 @@
           "source_function": "test_security_api_key_no_key",
           "source_line": 35,
           "stimulus_design": [
-            "Declare the dependency/security graph and credential inputs, invoke the public endpoint, and observe response, call order, cleanup, and schema effects."
+            "Declare the dependency/security graph and credential inputs, invoke the public endpoint, and observe response, call order, cleanup, and schema effects.",
+            "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
           ],
-          "stimulus_design_notes": null
+          "stimulus_design_notes": "The independent required-key missing case exercises the same FastAPI APIKeyHeader failure branch; response detail and challenge value remain outside the selected observation contract."
         },
         {
           "feature_evidence": [
-            {
-              "feature_id": "request-validation",
-              "signals": [
-                {
-                  "line": 25,
-                  "source": "content",
-                  "term": "header("
-                }
-              ]
-            },
             {
               "feature_id": "dependency-security",
               "signals": [
@@ -162875,63 +163261,116 @@
             }
           ],
           "feature_ids": [
-            "request-validation",
             "dependency-security",
             "openapi-docs"
           ],
           "id": "fastapi.test.test-security-api-key-header.test-openapi-schema",
-          "mapping_scope": "module_path_candidate",
-          "mapping_status": "candidate",
+          "mapping_scope": "reviewed_source_mapping",
+          "mapping_status": "reviewed_source_candidate",
           "observation_selectors": [
-            "dependency.call_order",
-            "dependency.cleanup_order",
-            "docs.response.body.bytes",
-            "docs.response.headers",
-            "docs.response.status",
-            "http.body.bytes",
-            "http.body.json",
-            "http.headers.ordered",
             "http.status",
-            "openapi.document",
-            "openapi.request_schema",
-            "openapi.security",
-            "validation.error_class",
-            "validation.error_details"
+            "openapi.document"
           ],
-          "reviewed_mapping": null,
+          "reviewed_mapping": {
+            "rationale": "The source asserts a successful OpenAPI response and its complete parsed JSON snapshot; the dedicated independent case selects the whole parsed document with the root JSON pointer and exercises APIKeyHeader's default scheme name.",
+            "source_evidence": [
+              {
+                "end_line": 70,
+                "path": "tests/test_security_api_key_header.py",
+                "role": "upstream test function",
+                "sha256": "698c146197364fda7454587ca5c805e69d0113a85fc0edb043e433b96b7da38c",
+                "start_line": 42
+              },
+              {
+                "end_line": 26,
+                "path": "tests/test_security_api_key_header.py",
+                "role": "APIKeyHeader security dependency, nested current-user dependency, User model, and route setup",
+                "sha256": "698c146197364fda7454587ca5c805e69d0113a85fc0edb043e433b96b7da38c",
+                "start_line": 7
+              },
+              {
+                "end_line": 52,
+                "path": "fastapi/security/api_key.py",
+                "role": "required API-key behavior, including the 401 challenge and missing-key branch",
+                "sha256": "e0234b355012b4eb0c872b47f42e4439410e66bb4b83f2293104bf1dc4433f83",
+                "start_line": 11
+              },
+              {
+                "end_line": 233,
+                "path": "fastapi/security/api_key.py",
+                "role": "APIKeyHeader construction, default scheme name, and request-header extraction",
+                "sha256": "e0234b355012b4eb0c872b47f42e4439410e66bb4b83f2293104bf1dc4433f83",
+                "start_line": 179
+              },
+              {
+                "end_line": 347,
+                "path": "fastapi/dependencies/utils.py",
+                "role": "FastAPI constructs recursive dependency nodes from endpoint signatures",
+                "sha256": "13693375ab95e32424e5434c21f928463634af5ee1261cf3e04031381bdf47d9",
+                "start_line": 271
+              },
+              {
+                "end_line": 680,
+                "path": "fastapi/dependencies/utils.py",
+                "role": "FastAPI invokes and caches resolved sub-dependencies",
+                "sha256": "13693375ab95e32424e5434c21f928463634af5ee1261cf3e04031381bdf47d9",
+                "start_line": 656
+              },
+              {
+                "end_line": 17,
+                "path": "fastapi/exception_handlers.py",
+                "role": "FastAPI renders Starlette HTTPException status, detail, and explicit headers as JSON",
+                "sha256": "615713f19cb4db555861e79c81dca1e581148c420729c2eca5b9127f839f6c92",
+                "start_line": 11
+              },
+              {
+                "end_line": 341,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI serializes endpoint values and response-model values",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 301
+              },
+              {
+                "end_line": 156,
+                "path": "fastapi/openapi/utils.py",
+                "role": "FastAPI discovers security dependencies and emits their named OpenAPI schemes and requirements",
+                "sha256": "81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527",
+                "start_line": 99
+              },
+              {
+                "end_line": 356,
+                "path": "fastapi/openapi/utils.py",
+                "role": "FastAPI attaches dependency-derived security metadata to each OpenAPI operation",
+                "sha256": "81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527",
+                "start_line": 311
+              },
+              {
+                "end_line": 1120,
+                "path": "fastapi/applications.py",
+                "role": "FastAPI generates and serves the complete OpenAPI document at its configured endpoint",
+                "sha256": "38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c",
+                "start_line": 1070
+              },
+              {
+                "end_line": 70,
+                "path": "tests/test_security_api_key_header.py",
+                "role": "OpenAPI test asserts status and the complete security scheme and operation snapshot",
+                "sha256": "698c146197364fda7454587ca5c805e69d0113a85fc0edb043e433b96b7da38c",
+                "start_line": 42
+              }
+            ]
+          },
           "selector_evidence": [
-            {
-              "feature_id": "request-validation",
-              "selectors": [
-                "http.status",
-                "http.headers.ordered",
-                "http.body.bytes",
-                "http.body.json",
-                "validation.error_class",
-                "validation.error_details",
-                "openapi.request_schema"
-              ]
-            },
             {
               "feature_id": "dependency-security",
               "selectors": [
-                "http.status",
-                "http.headers.ordered",
-                "http.body.bytes",
-                "http.body.json",
-                "dependency.call_order",
-                "dependency.cleanup_order",
-                "openapi.security"
+                "http.status"
               ]
             },
             {
               "feature_id": "openapi-docs",
               "selectors": [
-                "openapi.document",
-                "docs.response.status",
-                "docs.response.headers",
-                "docs.response.body.bytes",
-                "http.body.bytes"
+                "openapi.document"
               ]
             }
           ],
@@ -162939,7 +163378,6 @@
           "source_function": "test_openapi_schema",
           "source_line": 42,
           "stimulus_design": [
-            "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
             "Declare the dependency/security graph and credential inputs, invoke the public endpoint, and observe response, call order, cleanup, and schema effects.",
             "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response."
           ],
@@ -162949,59 +163387,38 @@
       "feature_ids": [
         "dependency-security",
         "openapi-docs",
-        "request-validation"
+        "request-validation",
+        "response-serialization"
       ],
       "id": "fastapi.test.test-security-api-key-header",
       "input_only": true,
       "observation_selectors": [
-        "dependency.call_order",
-        "dependency.cleanup_order",
-        "docs.response.body.bytes",
-        "docs.response.headers",
-        "docs.response.status",
-        "http.body.bytes",
-        "http.body.json",
-        "http.headers.ordered",
         "http.status",
-        "openapi.document",
-        "openapi.request_schema",
-        "openapi.security",
-        "validation.error_class",
-        "validation.error_details"
+        "openapi.document"
       ],
       "selector_evidence": [
         {
           "feature_id": "dependency-security",
           "selectors": [
-            "http.status",
-            "http.headers.ordered",
-            "http.body.bytes",
-            "http.body.json",
-            "dependency.call_order",
-            "dependency.cleanup_order",
-            "openapi.security"
+            "http.status"
           ]
         },
         {
           "feature_id": "openapi-docs",
           "selectors": [
-            "openapi.document",
-            "docs.response.status",
-            "docs.response.headers",
-            "docs.response.body.bytes",
-            "http.body.bytes"
+            "openapi.document"
           ]
         },
         {
           "feature_id": "request-validation",
           "selectors": [
-            "http.status",
-            "http.headers.ordered",
-            "http.body.bytes",
-            "http.body.json",
-            "validation.error_class",
-            "validation.error_details",
-            "openapi.request_schema"
+            "http.status"
+          ]
+        },
+        {
+          "feature_id": "response-serialization",
+          "selectors": [
+            "http.status"
           ]
         }
       ],
@@ -163010,7 +163427,7 @@
         "sha256": "698c146197364fda7454587ca5c805e69d0113a85fc0edb043e433b96b7da38c"
       },
       "source_item_id": "upstream-test:tests/test_security_api_key_header.py",
-      "stage": "candidate; independent stimuli require review/materialization",
+      "stage": "partially mapped; one or more behaviors remain contract-gated",
       "starlette_rs_planning_areas": [
         "applications-requests-responses-background-concurrency",
         "asgi-http-websocket-lifespan",
@@ -163021,7 +163438,8 @@
       "stimulus_design": [
         "Declare the dependency/security graph and credential inputs, invoke the public endpoint, and observe response, call order, cleanup, and schema effects.",
         "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response.",
-        "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs."
+        "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
+        "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
       ],
       "stimulus_design_notes": null
     },
@@ -201340,6 +201758,76 @@
                   "path": "docs_src/cors/tutorial001_py310.py",
                   "source": "reviewed-source-span",
                   "term": "curated source review"
+                },
+                {
+                  "end_line": 77,
+                  "line": 35,
+                  "path": "docs/en/docs/tutorial/cors.md",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 88,
+                  "line": 83,
+                  "path": "docs/en/docs/tutorial/cors.md",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 1,
+                  "line": 1,
+                  "path": "fastapi/middleware/cors.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 42,
+                  "line": 42,
+                  "path": "fastapi/applications.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 1068,
+                  "line": 1033,
+                  "path": "fastapi/applications.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 107,
+                  "line": 104,
+                  "path": "starlette/applications.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 96,
+                  "line": 78,
+                  "path": "starlette/middleware/cors.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 150,
+                  "line": 107,
+                  "path": "starlette/middleware/cors.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 179,
+                  "line": 152,
+                  "path": "starlette/middleware/cors.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 37,
+                  "line": 6,
+                  "path": "tests/test_tutorial/test_cors/test_tutorial001.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 }
               ]
             }
@@ -201353,11 +201841,10 @@
           "observation_selectors": [
             "http.status",
             "http.headers.ordered",
-            "http.body.bytes",
-            "http.body.json"
+            "http.body.bytes"
           ],
           "reviewed_mapping": {
-            "rationale": "The app registers CORSMiddleware and the test observes preflight, CORS-enabled, and ordinary responses; generic middleware behavior is Starlette-owned.",
+            "rationale": "The test observes an allowed preflight, an allowed simple request, and a request without Origin. FastAPI supplies the middleware import and app registration surface; add_middleware is inherited from Starlette, which owns the CORS request and response decisions. The independent recipe also probes the documented disallowed-origin and rejected-method paths without asserting the upstream test's expected outputs.",
             "source_evidence": [
               {
                 "end_line": 37,
@@ -201369,11 +201856,86 @@
               {
                 "end_line": 24,
                 "path": "docs_src/cors/tutorial001_py310.py",
-                "role": "FastAPI app with registered CORSMiddleware",
+                "role": "FastAPI CORS import, finite allowed-origin list, middleware registration, and route",
                 "sha256": "145cde24734c8bb5e11184c97596449162e234f5cd770f79e959976bd61877b2",
                 "start_line": 1
+              },
+              {
+                "end_line": 77,
+                "path": "docs/en/docs/tutorial/cors.md",
+                "role": "documented FastAPI middleware setup and Starlette preflight/simple-request behavior",
+                "sha256": "da167c442cc3a73a776782a3e45936165c713e63cc40a9f0117d490a51a60b17",
+                "start_line": 35
+              },
+              {
+                "end_line": 88,
+                "path": "docs/en/docs/tutorial/cors.md",
+                "role": "explicit boundary note that FastAPI re-exports CORS middleware from Starlette",
+                "sha256": "da167c442cc3a73a776782a3e45936165c713e63cc40a9f0117d490a51a60b17",
+                "start_line": 83
+              },
+              {
+                "end_line": 1,
+                "path": "fastapi/middleware/cors.py",
+                "role": "FastAPI convenience import re-exports Starlette CORSMiddleware",
+                "sha256": "ca7c2359066873fbdb873677fd95dc7a8692aec9471473dda0ce76ad7af45945",
+                "start_line": 1
+              },
+              {
+                "end_line": 42,
+                "path": "fastapi/applications.py",
+                "role": "FastAPI subclasses Starlette and inherits add_middleware",
+                "sha256": "38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c",
+                "start_line": 42
+              },
+              {
+                "end_line": 1068,
+                "path": "fastapi/applications.py",
+                "role": "FastAPI places the inherited user middleware registrations in its middleware stack",
+                "sha256": "38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c",
+                "start_line": 1033
+              },
+              {
+                "end_line": 107,
+                "path": "starlette/applications.py",
+                "role": "Starlette implementation inherited by FastAPI for add_middleware registration",
+                "sha256": "1119714f44c8f5a39cbb5c9d0209e6fc13e7d5c18015dff3234adb5c52fa84a1",
+                "source_authority": "Starlette 1.6.0",
+                "start_line": 104
+              },
+              {
+                "end_line": 96,
+                "path": "starlette/middleware/cors.py",
+                "role": "Starlette CORS dispatch for non-HTTP, origin-free, preflight, and simple requests",
+                "sha256": "8813a95a62b8dc4367c91ef5b78bc7d96c1f096cda24d25d13bb61df1e4283cd",
+                "source_authority": "Starlette 1.6.0",
+                "start_line": 78
+              },
+              {
+                "end_line": 150,
+                "path": "starlette/middleware/cors.py",
+                "role": "Starlette CORS preflight allow checks and 200/400 response selection",
+                "sha256": "8813a95a62b8dc4367c91ef5b78bc7d96c1f096cda24d25d13bb61df1e4283cd",
+                "source_authority": "Starlette 1.6.0",
+                "start_line": 107
+              },
+              {
+                "end_line": 179,
+                "path": "starlette/middleware/cors.py",
+                "role": "Starlette CORS response-header handling for simple requests",
+                "sha256": "8813a95a62b8dc4367c91ef5b78bc7d96c1f096cda24d25d13bb61df1e4283cd",
+                "source_authority": "Starlette 1.6.0",
+                "start_line": 152
+              },
+              {
+                "end_line": 37,
+                "path": "tests/test_tutorial/test_cors/test_tutorial001.py",
+                "role": "test stimulus and asserted observations",
+                "sha256": "e188a76ca6d6c1149c4bab31849a2e24d4a8401fab9b6a6d6f30b636d0ddf152",
+                "start_line": 6
               }
-            ]
+            ],
+            "stimulus_notes": "The workload independently recreates the documented app configuration. Its ASGI inputs are based on the assertions plus separate source-cited probes for disallowed origins and a non-standard preflight method."
           },
           "selector_evidence": [
             {
@@ -201381,8 +201943,7 @@
               "selectors": [
                 "http.status",
                 "http.headers.ordered",
-                "http.body.bytes",
-                "http.body.json"
+                "http.body.bytes"
               ]
             }
           ],
@@ -201392,7 +201953,7 @@
           "stimulus_design": [
             "Enable the named optional integration or middleware, provide deterministic request/filesystem/configuration inputs, and observe its public effect."
           ],
-          "stimulus_design_notes": null
+          "stimulus_design_notes": "The workload independently recreates the documented app configuration. Its ASGI inputs are based on the assertions plus separate source-cited probes for disallowed origins and a non-standard preflight method."
         }
       ],
       "feature_ids": [

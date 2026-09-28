@@ -94,6 +94,60 @@ DOC_PAGE_REVIEW_MAPPINGS = {
             }
         ],
     },
+    "tutorial/dependencies/sub-dependencies.md": {
+        "heading": "Sub-dependencies { #sub-dependencies }",
+        "replace_features": True,
+        "feature_ids": ["dependency-security"],
+        "observation_selectors": [
+            "http.body.bytes",
+            "http.status",
+            "openapi.paths",
+        ],
+        "rationale": (
+            "The page documents nested dependency resolution, query/cookie fallback, and "
+            "per-request dependency caching. The independent fixture mappings cover query/cookie "
+            "responses and selected OpenAPI paths, plus cache reuse and use_cache=False through "
+            "HTTP responses; they do not observe dependency call/cleanup order, security scopes, "
+            "validation failures, route matching, or request-object internals. FastAPI owns the "
+            "dependency graph, parameter binding, and cache decision. Generic Request "
+            "query/cookie access remains Starlette 1.6.0-owned; the fixture's route dispatch is "
+            "only the entry point for these dependency observations."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs/en/docs/tutorial/dependencies/sub-dependencies.md",
+                "start_line": 9,
+                "end_line": 54,
+                "role": "nested dependency graph and query/cookie fallback example",
+            },
+            {
+                "path": "docs/en/docs/tutorial/dependencies/sub-dependencies.md",
+                "start_line": 57,
+                "end_line": 85,
+                "role": "per-request dependency cache and use_cache=False contract",
+            },
+            {
+                "path": "docs_src/dependencies/tutorial005_py310.py",
+                "start_line": 1,
+                "end_line": 20,
+                "role": "pinned query/cookie dependency example used by the page",
+            },
+            {
+                "path": "fastapi/dependencies/utils.py",
+                "start_line": 619,
+                "end_line": 697,
+                "role": "FastAPI recursive solve/cache and query/cookie parameter binding",
+            },
+        ],
+        "starlette_contract_sources": [
+            {
+                "path": "starlette/requests.py",
+                "start_line": 138,
+                "end_line": 159,
+                "role": "generic Starlette 1.6.0 Request query-parameter and cookie access",
+            }
+        ],
+    },
     "tutorial/path-params-numeric-validations.md": {
         "heading": "Path Parameters and Numeric Validations { #path-parameters-and-numeric-validations }",
         "replace_features": True,

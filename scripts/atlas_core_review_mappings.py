@@ -744,6 +744,116 @@ CORE_TEST_REVIEW_MAPPINGS = {
             ),
         },
     },
+    "tests/test_security_api_key_header.py": {
+        "module_observation_selectors": ["http.status", "openapi.document"],
+        "supporting_sources": [
+            {
+                "path": "tests/test_security_api_key_header.py",
+                "start_line": 7,
+                "end_line": 26,
+                "role": "APIKeyHeader security dependency, nested current-user dependency, User model, and route setup",
+            },
+            {
+                "path": "fastapi/security/api_key.py",
+                "start_line": 11,
+                "end_line": 52,
+                "role": "required API-key behavior, including the 401 challenge and missing-key branch",
+            },
+            {
+                "path": "fastapi/security/api_key.py",
+                "start_line": 179,
+                "end_line": 233,
+                "role": "APIKeyHeader construction, default scheme name, and request-header extraction",
+            },
+            {
+                "path": "fastapi/dependencies/utils.py",
+                "start_line": 271,
+                "end_line": 347,
+                "role": "FastAPI constructs recursive dependency nodes from endpoint signatures",
+            },
+            {
+                "path": "fastapi/dependencies/utils.py",
+                "start_line": 656,
+                "end_line": 680,
+                "role": "FastAPI invokes and caches resolved sub-dependencies",
+            },
+            {
+                "path": "fastapi/exception_handlers.py",
+                "start_line": 11,
+                "end_line": 17,
+                "role": "FastAPI renders Starlette HTTPException status, detail, and explicit headers as JSON",
+            },
+            {
+                "path": "fastapi/routing.py",
+                "start_line": 301,
+                "end_line": 341,
+                "role": "FastAPI serializes endpoint values and response-model values",
+            },
+            {
+                "path": "fastapi/openapi/utils.py",
+                "start_line": 99,
+                "end_line": 156,
+                "role": "FastAPI discovers security dependencies and emits their named OpenAPI schemes and requirements",
+            },
+            {
+                "path": "fastapi/openapi/utils.py",
+                "start_line": 311,
+                "end_line": 356,
+                "role": "FastAPI attaches dependency-derived security metadata to each OpenAPI operation",
+            },
+            {
+                "path": "fastapi/applications.py",
+                "start_line": 1070,
+                "end_line": 1120,
+                "role": "FastAPI generates and serves the complete OpenAPI document at its configured endpoint",
+            },
+        ],
+        "functions": {
+            "test_security_api_key": _case(
+                ["dependency-security", "response-serialization"],
+                ["http.status"],
+                "The required-key workflow case exercises a supplied APIKeyHeader through FastAPI dependency resolution; only the asserted success status is safely selected because parsed-JSON equality is not workflow-supported.",
+                contract_gate="The test also asserts the parsed JSON value. The `http.body.json` selector is not workflow-supported, and selecting raw body bytes would require wire-format equality beyond response.json() equality.",
+                stimulus_notes="The existing independent case exercises required-header extraction but uses a separate route and direct Security parameter; it does not reproduce this module's nested Depends(get_current_user) and User response value.",
+                supporting_sources=[
+                    {
+                        "path": "tests/test_security_api_key_header.py",
+                        "start_line": 29,
+                        "end_line": 32,
+                        "role": "successful required-key assertion checks status and parsed JSON value",
+                    },
+                ],
+            ),
+            "test_security_api_key_no_key": _case(
+                ["dependency-security", "response-serialization"],
+                ["http.status"],
+                "The required-key missing case exercises APIKeyHeader rejection; only the asserted 401 status is selected because the body JSON and individual challenge-header selectors are unavailable.",
+                contract_gate="The test also asserts the parsed JSON detail and exact WWW-Authenticate value. The parsed-JSON selector is not workflow-supported, while the available ordered-header selector would assert unrelated headers too.",
+                stimulus_notes="The independent required-key missing case exercises the same FastAPI APIKeyHeader failure branch; response detail and challenge value remain outside the selected observation contract.",
+                supporting_sources=[
+                    {
+                        "path": "tests/test_security_api_key_header.py",
+                        "start_line": 35,
+                        "end_line": 39,
+                        "role": "missing-key assertions check 401, parsed detail, and WWW-Authenticate challenge",
+                    },
+                ],
+            ),
+            "test_openapi_schema": _case(
+                ["dependency-security", "openapi-docs"],
+                ["http.status", "openapi.document"],
+                "The source asserts a successful OpenAPI response and its complete parsed JSON snapshot; the dedicated independent case selects the whole parsed document with the root JSON pointer and exercises APIKeyHeader's default scheme name.",
+                supporting_sources=[
+                    {
+                        "path": "tests/test_security_api_key_header.py",
+                        "start_line": 42,
+                        "end_line": 70,
+                        "role": "OpenAPI test asserts status and the complete security scheme and operation snapshot",
+                    },
+                ],
+            ),
+        },
+    },
     "tests/test_starlette_exception.py": {
         "supporting_sources": [
             {
