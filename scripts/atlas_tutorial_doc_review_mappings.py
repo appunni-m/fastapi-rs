@@ -383,6 +383,198 @@ DOC_PAGE_REVIEW_MAPPINGS = {
             },
         ],
     },
+    "advanced/response-cookies.md": {
+        "replace_features": True,
+        "feature_ids": ["app-routing", "dependency-security", "response-serialization"],
+        "observation_selectors": [
+            "http.status",
+            "http.headers.ordered",
+            "http.body.bytes",
+        ],
+        "rationale": (
+            "This page documents two distinct paths. FastAPI owns recognizing and injecting "
+            "the temporary Response parameter, carrying its status and headers (including "
+            "Set-Cookie) into a response serialized from the returned object, and returning an "
+            "endpoint-returned Response directly without response-model filtering. Starlette "
+            "1.6.0 owns Response/JSONResponse construction, set_cookie formatting, and ASGI "
+            "status/header/body emission. FastAPI requires Python >=3.10; Starlette's "
+            "partitioned-cookie option is Python >=3.14 and is outside these examples."
+        ),
+        "stimulus_notes": (
+            "The existing input "
+            "tests/fixtures/input-recipes/parity/responses-background-upstream.yaml::"
+            "fastapi.test.test-tutorial-test-response-cookies-test-tutorial002.test-path-operation "
+            "uses the tutorial002 Response-parameter route and observes raw ASGI status, "
+            "headers, and body. "
+            "tests/fixtures/input-recipes/parity/response-surface.yaml::"
+            "fastapi.response.cookie-header is another Response-parameter case with cookie "
+            "attributes. The independent "
+            "tests/fixtures/input-recipes/parity/response-cookie-direct-wave.yaml::"
+            "fastapi.response.cookies.direct-jsonresponse-set-cookie case covers the direct "
+            "JSONResponse.set_cookie branch with raw ASGI Set-Cookie headers and body bytes. "
+            "The existing response-directly-tutorial001-wave.yaml direct-response case has no "
+            "cookie and is only a dispatch baseline. The upstream TestClient assertions read "
+            "response.cookies; these direct-ASGI inputs do not exercise that client jar."
+        ),
+        "contract_gate": (
+            "Keep the page mapping partial. The existing and new inputs set cookies "
+            "through a path-operation Response parameter or a direct JSONResponse; none sets "
+            "one from a dependency, tests response-model filtering on the temporary-response "
+            "path, or tests response-model bypass on the direct path. Raw ASGI headers and body "
+            "bytes capture emitted cookie text but do not exercise TestClient/HTTPX cookie-jar "
+            "extraction, persistence, or later request sending. No selected input has cookie "
+            "middleware, so middleware-added or rewritten cookies remain unexercised. The "
+            "catalog's http.cookies selector is a planned parsed Set-Cookie projection, not "
+            "the upstream response.cookies jar assertion; this mapping selects raw ordered "
+            "headers instead. The re-export/import conveniences cited below are source-verified, "
+            "but no selected case compares import paths or object identity. The examples are "
+            "within FastAPI's Python >=3.10 package floor; "
+            "Starlette 1.6.0's partitioned cookie flag is available only on Python >=3.14 and "
+            "is not covered here."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs/en/docs/advanced/response-cookies.md",
+                "start_line": 3,
+                "end_line": 17,
+                "role": "temporary Response parameter, returned-object serialization, and dependency usage",
+            },
+            {
+                "path": "docs/en/docs/advanced/response-cookies.md",
+                "start_line": 19,
+                "end_line": 35,
+                "role": "direct Response return bypasses ordinary response-model filtering",
+            },
+            {
+                "path": "docs/en/docs/advanced/response-cookies.md",
+                "start_line": 41,
+                "end_line": 51,
+                "role": "FastAPI Response re-exports and Starlette set_cookie ownership boundary",
+            },
+            {
+                "path": "docs_src/response_cookies/tutorial001_py310.py",
+                "start_line": 1,
+                "end_line": 12,
+                "role": "documented direct JSONResponse cookie construction and return",
+            },
+            {
+                "path": "docs_src/response_cookies/tutorial002_py310.py",
+                "start_line": 1,
+                "end_line": 9,
+                "role": "documented temporary Response parameter and ordinary returned object",
+            },
+            {
+                "path": "fastapi/dependencies/utils.py",
+                "start_line": 350,
+                "end_line": 365,
+                "role": "FastAPI classifies Response as a special injected dependency parameter",
+            },
+            {
+                "path": "fastapi/dependencies/utils.py",
+                "start_line": 611,
+                "end_line": 614,
+                "role": "FastAPI creates the temporary response shared by dependency solving",
+            },
+            {
+                "path": "fastapi/dependencies/utils.py",
+                "start_line": 719,
+                "end_line": 720,
+                "role": "FastAPI passes the temporary response into the endpoint parameter",
+            },
+            {
+                "path": "fastapi/routing.py",
+                "start_line": 357,
+                "end_line": 372,
+                "role": "FastAPI takes the temporary response status into account",
+            },
+            {
+                "path": "fastapi/routing.py",
+                "start_line": 706,
+                "end_line": 715,
+                "role": "FastAPI returns an endpoint-provided Response directly",
+            },
+            {
+                "path": "fastapi/routing.py",
+                "start_line": 716,
+                "end_line": 750,
+                "role": "FastAPI serializes ordinary endpoint values and copies temporary response headers to the final response",
+            },
+            {
+                "path": "fastapi/responses.py",
+                "start_line": 6,
+                "end_line": 12,
+                "role": "FastAPI response classes, including Response and JSONResponse, are Starlette re-exports",
+            },
+            {
+                "path": "fastapi/__init__.py",
+                "start_line": 21,
+                "end_line": 22,
+                "role": "FastAPI root Request and Response exports",
+            },
+            {
+                "path": "fastapi/testclient.py",
+                "start_line": 1,
+                "end_line": 1,
+                "role": "FastAPI TestClient is a Starlette TestClient re-export",
+            },
+            {
+                "path": "pyproject.toml",
+                "start_line": 5,
+                "end_line": 12,
+                "role": "FastAPI package requires Python 3.10 or newer",
+            },
+        ],
+        "starlette_contract_sources": [
+            {
+                "path": "starlette/responses.py",
+                "start_line": 29,
+                "end_line": 46,
+                "role": "Starlette 1.6.0 generic Response construction",
+            },
+            {
+                "path": "starlette/responses.py",
+                "start_line": 89,
+                "end_line": 132,
+                "role": "Starlette 1.6.0 set_cookie options, serialization, and raw Set-Cookie header append",
+            },
+            {
+                "path": "starlette/responses.py",
+                "start_line": 163,
+                "end_line": 168,
+                "role": "Starlette 1.6.0 emits status, raw headers, and body as ASGI messages",
+            },
+            {
+                "path": "starlette/responses.py",
+                "start_line": 181,
+                "end_line": 201,
+                "role": "Starlette 1.6.0 JSONResponse rendering over the generic Response contract",
+            },
+            {
+                "path": "docs/responses.md",
+                "start_line": 30,
+                "end_line": 51,
+                "role": "Starlette 1.6.0 documented cookie setter options and Python 3.14 partitioned-cookie floor",
+            },
+            {
+                "path": "starlette/testclient.py",
+                "start_line": 327,
+                "end_line": 374,
+                "role": "Starlette TestClient converts ASGI status, headers, and body into an HTTPX Response",
+            },
+            {
+                "path": "starlette/testclient.py",
+                "start_line": 377,
+                "end_line": 420,
+                "role": "Starlette TestClient subclasses httpx.Client and delegates cookie state to it",
+            },
+            {
+                "path": "starlette/testclient.py",
+                "start_line": 430,
+                "end_line": 469,
+                "role": "Starlette TestClient request delegates to the underlying HTTPX client",
+            },
+        ],
+    },
     "advanced/response-directly.md": {
         "heading": "Return a Response Directly { #return-a-response-directly }",
         "replace_features": True,

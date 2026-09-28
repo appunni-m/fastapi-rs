@@ -2301,6 +2301,18 @@
       ]
     },
     {
+      "id": "response-cookie-direct-wave",
+      "input_path": "tests/fixtures/inputs/parity/response-cookie-direct-wave.json",
+      "input_sha256": "7c185b46c915ab8fafd5dc3a53d777a2bf0207990ea7687cc5632e0a91f2950c",
+      "recipe_path": "tests/fixtures/input-recipes/parity/response-cookie-direct-wave.yaml",
+      "recipe_sha256": "b20516e46cca6cac4f8f2e60b82735c956031d3446b1506a12f30159d13b8519",
+      "workload_path": "tests/fixtures/workloads/response_cookie_direct_wave.py",
+      "workload_sha256": "41f417481db34c28e27300e59846b66aa371d12318143e27a7226d2b02101ca7",
+      "case_ids": [
+        "fastapi.response.cookies.direct-jsonresponse-set-cookie"
+      ]
+    },
+    {
       "id": "response-directly-tutorial001-wave",
       "input_path": "tests/fixtures/inputs/parity/response-directly-tutorial001-wave.json",
       "input_sha256": "466e5dca66f49ded9c1fda603346cee76b82b5dfba7408f5c36ec8123a37b36e",
@@ -10169,6 +10181,21 @@
       ]
     },
     {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_response_cookies/test_tutorial001.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-response-cookies-test-tutorial001",
+      "workflow_id": "response-cookie-direct-wave",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.response.cookies.direct-jsonresponse-set-cookie"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
       "source_item_id": "documented-page:advanced/response-directly.md",
       "fixture_id": "fastapi.docs.advanced-response-directly",
       "workflow_id": "response-directly-tutorial001-wave",
@@ -10847,12 +10874,13 @@
       "fixture_id": "fastapi.test.test-tutorial-test-response-cookies-test-tutorial001",
       "workflow_id": "response-surface",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.response.cookie-header"
       ],
       "observation_selectors": [
         "http.body.bytes",
+        "http.headers.ordered",
         "http.status"
       ]
     },
