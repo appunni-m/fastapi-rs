@@ -852,14 +852,6 @@ TEST_FUNCTION_EXCLUSIONS = {
         "test_get_password_hash": "Direct application password-helper behavior is outside FastAPI; the neighboring HTTP auth-flow case covers FastAPI integration.",
         "test_create_access_token": "Direct PyJWT token-helper behavior is outside FastAPI; the neighboring HTTP auth-flow case covers FastAPI integration.",
     },
-    "tests/test_tutorial/test_response_model/test_tutorial003_04.py": {
-        "test_invalid_response_model": (
-            "This route-registration failure is FastAPI-owned but the current workflow schema "
-            "cannot declare a per-case endpoint return annotation or observe app-construction "
-            "errors. Keep it as a visible schema-v3 gap rather than fabricating a request-time "
-            "stimulus."
-        ),
-    },
 }
 
 TEST_FUNCTION_EXCLUSION_EVIDENCE = {
@@ -1031,16 +1023,6 @@ TEST_FUNCTION_EXCLUSION_EVIDENCE = {
                 "end_line": 104,
                 "role": "application token helper",
             }
-        ],
-    },
-    "tests/test_tutorial/test_response_model/test_tutorial003_04.py": {
-        "test_invalid_response_model": [
-            {
-                "path": "fastapi/utils.py",
-                "start_line": 47,
-                "end_line": 75,
-                "role": "FastAPI converts Pydantic schema generation failure to FastAPIError",
-            },
         ],
     },
 }

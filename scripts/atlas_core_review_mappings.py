@@ -16,6 +16,93 @@ def _case(feature_ids, observation_selectors, rationale, **extra):
 
 
 CORE_TEST_REVIEW_MAPPINGS = {
+    "tests/test_request_param_model_by_alias.py": {
+        "supporting_sources": [
+            {
+                "path": "tests/test_request_param_model_by_alias.py",
+                "start_line": 9,
+                "end_line": 25,
+                "role": "Pydantic alias model and Query/Header/Cookie route setup",
+            },
+            {
+                "path": "fastapi/dependencies/utils.py",
+                "start_line": 790,
+                "end_line": 835,
+                "role": "FastAPI extracts request-parameter model members by validation alias",
+            },
+        ],
+        "functions": {
+            "test_query_model_with_alias": _case(
+                ["request-validation", "response-serialization"],
+                ["http.status", "http.body.bytes"],
+                "A query model accepts the declared field alias and returns the endpoint value; the workflow also records the exact HTTP body bytes.",
+            ),
+            "test_header_model_with_alias": _case(
+                ["request-validation", "response-serialization"],
+                ["http.status", "http.body.bytes"],
+                "A header model accepts the declared field alias and returns the endpoint value; the workflow also records the exact HTTP body bytes.",
+            ),
+            "test_cookie_model_with_alias": _case(
+                ["request-validation", "response-serialization"],
+                ["http.status", "http.body.bytes"],
+                "A cookie model accepts the declared field alias and returns the endpoint value; the workflow also records the exact HTTP body bytes.",
+            ),
+            "test_query_model_with_alias_by_name": _case(
+                ["request-validation"],
+                ["http.status", "http.body.bytes"],
+                "The field name is rejected when the model declares a distinct validation alias; the workflow records the full validation response.",
+            ),
+            "test_header_model_with_alias_by_name": _case(
+                ["request-validation"],
+                ["http.status", "http.body.bytes"],
+                "The field name is rejected when the header model declares a distinct validation alias; the workflow records the full validation response.",
+            ),
+            "test_cookie_model_with_alias_by_name": _case(
+                ["request-validation"],
+                ["http.status", "http.body.bytes"],
+                "The field name is rejected when the cookie model declares a distinct validation alias; the workflow records the full validation response.",
+            ),
+        },
+    },
+    "tests/test_ws_router.py": {
+        "module_observation_selectors": [
+            "websocket.close_code",
+            "websocket.event_order",
+            "websocket.messages",
+        ],
+        "supporting_sources": [
+            {
+                "path": "tests/test_ws_router.py",
+                "start_line": 58,
+                "end_line": 69,
+                "role": "router WebSocket dependency and endpoint behavior",
+            },
+            {
+                "path": "fastapi/routing.py",
+                "start_line": 764,
+                "end_line": 831,
+                "role": "FastAPI resolves dependencies for APIWebSocketRoute",
+            },
+            {
+                "path": "fastapi/dependencies/utils.py",
+                "start_line": 619,
+                "end_line": 647,
+                "role": "FastAPI applies app-level dependency overrides during resolution",
+            },
+        ],
+        "functions": {
+            "test_router_ws_depends": _case(
+                ["app-routing", "dependency-security"],
+                ["websocket.close_code", "websocket.event_order", "websocket.messages"],
+                "An APIRouter WebSocket endpoint receives a FastAPI-resolved dependency; the workflow records its message and the full handshake/event sequence.",
+            ),
+            "test_router_ws_depends_with_override": _case(
+                ["app-routing", "dependency-security"],
+                ["websocket.close_code", "websocket.event_order", "websocket.messages"],
+                "FastAPI's app-level dependency override changes the APIRouter WebSocket dependency result; the workflow records the full handshake/event sequence.",
+            ),
+        },
+    },
     "tests/test_additional_responses_bad.py": {
         "supporting_sources": [
             {

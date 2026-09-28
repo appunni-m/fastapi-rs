@@ -123207,35 +123207,84 @@
                   "term": "query("
                 }
               ]
+            },
+            {
+              "feature_id": "response-serialization",
+              "signals": [
+                {
+                  "end_line": 32,
+                  "line": 28,
+                  "path": "tests/test_request_param_model_by_alias.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 25,
+                  "line": 9,
+                  "path": "tests/test_request_param_model_by_alias.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 835,
+                  "line": 790,
+                  "path": "fastapi/dependencies/utils.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                }
+              ]
             }
           ],
           "feature_ids": [
-            "request-validation"
+            "request-validation",
+            "response-serialization"
           ],
           "id": "fastapi.test.test-request-param-model-by-alias.test-query-model-with-alias",
-          "mapping_scope": "module_path_candidate",
-          "mapping_status": "candidate",
+          "mapping_scope": "reviewed_source_mapping",
+          "mapping_status": "reviewed_source_candidate",
           "observation_selectors": [
-            "http.body.bytes",
-            "http.body.json",
-            "http.headers.ordered",
             "http.status",
-            "openapi.request_schema",
-            "validation.error_class",
-            "validation.error_details"
+            "http.body.bytes"
           ],
-          "reviewed_mapping": null,
+          "reviewed_mapping": {
+            "rationale": "A query model accepts the declared field alias and returns the endpoint value; the workflow also records the exact HTTP body bytes.",
+            "source_evidence": [
+              {
+                "end_line": 32,
+                "path": "tests/test_request_param_model_by_alias.py",
+                "role": "upstream test function",
+                "sha256": "970534d38c8058ecc0a0152fc1879509f599a8769b92e7deca97acf2bb660903",
+                "start_line": 28
+              },
+              {
+                "end_line": 25,
+                "path": "tests/test_request_param_model_by_alias.py",
+                "role": "Pydantic alias model and Query/Header/Cookie route setup",
+                "sha256": "970534d38c8058ecc0a0152fc1879509f599a8769b92e7deca97acf2bb660903",
+                "start_line": 9
+              },
+              {
+                "end_line": 835,
+                "path": "fastapi/dependencies/utils.py",
+                "role": "FastAPI extracts request-parameter model members by validation alias",
+                "sha256": "13693375ab95e32424e5434c21f928463634af5ee1261cf3e04031381bdf47d9",
+                "start_line": 790
+              }
+            ]
+          },
           "selector_evidence": [
             {
               "feature_id": "request-validation",
               "selectors": [
                 "http.status",
-                "http.headers.ordered",
-                "http.body.bytes",
-                "http.body.json",
-                "validation.error_class",
-                "validation.error_details",
-                "openapi.request_schema"
+                "http.body.bytes"
+              ]
+            },
+            {
+              "feature_id": "response-serialization",
+              "selectors": [
+                "http.status",
+                "http.body.bytes"
               ]
             }
           ],
@@ -123243,7 +123292,8 @@
           "source_function": "test_query_model_with_alias",
           "source_line": 28,
           "stimulus_design": [
-            "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs."
+            "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
+            "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
           ],
           "stimulus_design_notes": null
         },
@@ -123257,35 +123307,84 @@
                   "term": "header("
                 }
               ]
+            },
+            {
+              "feature_id": "response-serialization",
+              "signals": [
+                {
+                  "end_line": 39,
+                  "line": 35,
+                  "path": "tests/test_request_param_model_by_alias.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 25,
+                  "line": 9,
+                  "path": "tests/test_request_param_model_by_alias.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 835,
+                  "line": 790,
+                  "path": "fastapi/dependencies/utils.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                }
+              ]
             }
           ],
           "feature_ids": [
-            "request-validation"
+            "request-validation",
+            "response-serialization"
           ],
           "id": "fastapi.test.test-request-param-model-by-alias.test-header-model-with-alias",
-          "mapping_scope": "module_path_candidate",
-          "mapping_status": "candidate",
+          "mapping_scope": "reviewed_source_mapping",
+          "mapping_status": "reviewed_source_candidate",
           "observation_selectors": [
-            "http.body.bytes",
-            "http.body.json",
-            "http.headers.ordered",
             "http.status",
-            "openapi.request_schema",
-            "validation.error_class",
-            "validation.error_details"
+            "http.body.bytes"
           ],
-          "reviewed_mapping": null,
+          "reviewed_mapping": {
+            "rationale": "A header model accepts the declared field alias and returns the endpoint value; the workflow also records the exact HTTP body bytes.",
+            "source_evidence": [
+              {
+                "end_line": 39,
+                "path": "tests/test_request_param_model_by_alias.py",
+                "role": "upstream test function",
+                "sha256": "970534d38c8058ecc0a0152fc1879509f599a8769b92e7deca97acf2bb660903",
+                "start_line": 35
+              },
+              {
+                "end_line": 25,
+                "path": "tests/test_request_param_model_by_alias.py",
+                "role": "Pydantic alias model and Query/Header/Cookie route setup",
+                "sha256": "970534d38c8058ecc0a0152fc1879509f599a8769b92e7deca97acf2bb660903",
+                "start_line": 9
+              },
+              {
+                "end_line": 835,
+                "path": "fastapi/dependencies/utils.py",
+                "role": "FastAPI extracts request-parameter model members by validation alias",
+                "sha256": "13693375ab95e32424e5434c21f928463634af5ee1261cf3e04031381bdf47d9",
+                "start_line": 790
+              }
+            ]
+          },
           "selector_evidence": [
             {
               "feature_id": "request-validation",
               "selectors": [
                 "http.status",
-                "http.headers.ordered",
-                "http.body.bytes",
-                "http.body.json",
-                "validation.error_class",
-                "validation.error_details",
-                "openapi.request_schema"
+                "http.body.bytes"
+              ]
+            },
+            {
+              "feature_id": "response-serialization",
+              "selectors": [
+                "http.status",
+                "http.body.bytes"
               ]
             }
           ],
@@ -123293,7 +123392,8 @@
           "source_function": "test_header_model_with_alias",
           "source_line": 35,
           "stimulus_design": [
-            "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs."
+            "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
+            "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
           ],
           "stimulus_design_notes": null
         },
@@ -123307,35 +123407,84 @@
                   "term": "cookie("
                 }
               ]
+            },
+            {
+              "feature_id": "response-serialization",
+              "signals": [
+                {
+                  "end_line": 47,
+                  "line": 42,
+                  "path": "tests/test_request_param_model_by_alias.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 25,
+                  "line": 9,
+                  "path": "tests/test_request_param_model_by_alias.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 835,
+                  "line": 790,
+                  "path": "fastapi/dependencies/utils.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                }
+              ]
             }
           ],
           "feature_ids": [
-            "request-validation"
+            "request-validation",
+            "response-serialization"
           ],
           "id": "fastapi.test.test-request-param-model-by-alias.test-cookie-model-with-alias",
-          "mapping_scope": "module_path_candidate",
-          "mapping_status": "candidate",
+          "mapping_scope": "reviewed_source_mapping",
+          "mapping_status": "reviewed_source_candidate",
           "observation_selectors": [
-            "http.body.bytes",
-            "http.body.json",
-            "http.headers.ordered",
             "http.status",
-            "openapi.request_schema",
-            "validation.error_class",
-            "validation.error_details"
+            "http.body.bytes"
           ],
-          "reviewed_mapping": null,
+          "reviewed_mapping": {
+            "rationale": "A cookie model accepts the declared field alias and returns the endpoint value; the workflow also records the exact HTTP body bytes.",
+            "source_evidence": [
+              {
+                "end_line": 47,
+                "path": "tests/test_request_param_model_by_alias.py",
+                "role": "upstream test function",
+                "sha256": "970534d38c8058ecc0a0152fc1879509f599a8769b92e7deca97acf2bb660903",
+                "start_line": 42
+              },
+              {
+                "end_line": 25,
+                "path": "tests/test_request_param_model_by_alias.py",
+                "role": "Pydantic alias model and Query/Header/Cookie route setup",
+                "sha256": "970534d38c8058ecc0a0152fc1879509f599a8769b92e7deca97acf2bb660903",
+                "start_line": 9
+              },
+              {
+                "end_line": 835,
+                "path": "fastapi/dependencies/utils.py",
+                "role": "FastAPI extracts request-parameter model members by validation alias",
+                "sha256": "13693375ab95e32424e5434c21f928463634af5ee1261cf3e04031381bdf47d9",
+                "start_line": 790
+              }
+            ]
+          },
           "selector_evidence": [
             {
               "feature_id": "request-validation",
               "selectors": [
                 "http.status",
-                "http.headers.ordered",
-                "http.body.bytes",
-                "http.body.json",
-                "validation.error_class",
-                "validation.error_details",
-                "openapi.request_schema"
+                "http.body.bytes"
+              ]
+            },
+            {
+              "feature_id": "response-serialization",
+              "selectors": [
+                "http.status",
+                "http.body.bytes"
               ]
             }
           ],
@@ -123343,7 +123492,8 @@
           "source_function": "test_cookie_model_with_alias",
           "source_line": 42,
           "stimulus_design": [
-            "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs."
+            "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
+            "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
           ],
           "stimulus_design_notes": null
         },
@@ -123363,29 +123513,44 @@
             "request-validation"
           ],
           "id": "fastapi.test.test-request-param-model-by-alias.test-query-model-with-alias-by-name",
-          "mapping_scope": "module_path_candidate",
-          "mapping_status": "candidate",
+          "mapping_scope": "reviewed_source_mapping",
+          "mapping_status": "reviewed_source_candidate",
           "observation_selectors": [
-            "http.body.bytes",
-            "http.body.json",
-            "http.headers.ordered",
             "http.status",
-            "openapi.request_schema",
-            "validation.error_class",
-            "validation.error_details"
+            "http.body.bytes"
           ],
-          "reviewed_mapping": null,
+          "reviewed_mapping": {
+            "rationale": "The field name is rejected when the model declares a distinct validation alias; the workflow records the full validation response.",
+            "source_evidence": [
+              {
+                "end_line": 55,
+                "path": "tests/test_request_param_model_by_alias.py",
+                "role": "upstream test function",
+                "sha256": "970534d38c8058ecc0a0152fc1879509f599a8769b92e7deca97acf2bb660903",
+                "start_line": 50
+              },
+              {
+                "end_line": 25,
+                "path": "tests/test_request_param_model_by_alias.py",
+                "role": "Pydantic alias model and Query/Header/Cookie route setup",
+                "sha256": "970534d38c8058ecc0a0152fc1879509f599a8769b92e7deca97acf2bb660903",
+                "start_line": 9
+              },
+              {
+                "end_line": 835,
+                "path": "fastapi/dependencies/utils.py",
+                "role": "FastAPI extracts request-parameter model members by validation alias",
+                "sha256": "13693375ab95e32424e5434c21f928463634af5ee1261cf3e04031381bdf47d9",
+                "start_line": 790
+              }
+            ]
+          },
           "selector_evidence": [
             {
               "feature_id": "request-validation",
               "selectors": [
                 "http.status",
-                "http.headers.ordered",
-                "http.body.bytes",
-                "http.body.json",
-                "validation.error_class",
-                "validation.error_details",
-                "openapi.request_schema"
+                "http.body.bytes"
               ]
             }
           ],
@@ -123413,29 +123578,44 @@
             "request-validation"
           ],
           "id": "fastapi.test.test-request-param-model-by-alias.test-header-model-with-alias-by-name",
-          "mapping_scope": "module_path_candidate",
-          "mapping_status": "candidate",
+          "mapping_scope": "reviewed_source_mapping",
+          "mapping_status": "reviewed_source_candidate",
           "observation_selectors": [
-            "http.body.bytes",
-            "http.body.json",
-            "http.headers.ordered",
             "http.status",
-            "openapi.request_schema",
-            "validation.error_class",
-            "validation.error_details"
+            "http.body.bytes"
           ],
-          "reviewed_mapping": null,
+          "reviewed_mapping": {
+            "rationale": "The field name is rejected when the header model declares a distinct validation alias; the workflow records the full validation response.",
+            "source_evidence": [
+              {
+                "end_line": 63,
+                "path": "tests/test_request_param_model_by_alias.py",
+                "role": "upstream test function",
+                "sha256": "970534d38c8058ecc0a0152fc1879509f599a8769b92e7deca97acf2bb660903",
+                "start_line": 58
+              },
+              {
+                "end_line": 25,
+                "path": "tests/test_request_param_model_by_alias.py",
+                "role": "Pydantic alias model and Query/Header/Cookie route setup",
+                "sha256": "970534d38c8058ecc0a0152fc1879509f599a8769b92e7deca97acf2bb660903",
+                "start_line": 9
+              },
+              {
+                "end_line": 835,
+                "path": "fastapi/dependencies/utils.py",
+                "role": "FastAPI extracts request-parameter model members by validation alias",
+                "sha256": "13693375ab95e32424e5434c21f928463634af5ee1261cf3e04031381bdf47d9",
+                "start_line": 790
+              }
+            ]
+          },
           "selector_evidence": [
             {
               "feature_id": "request-validation",
               "selectors": [
                 "http.status",
-                "http.headers.ordered",
-                "http.body.bytes",
-                "http.body.json",
-                "validation.error_class",
-                "validation.error_details",
-                "openapi.request_schema"
+                "http.body.bytes"
               ]
             }
           ],
@@ -123463,29 +123643,44 @@
             "request-validation"
           ],
           "id": "fastapi.test.test-request-param-model-by-alias.test-cookie-model-with-alias-by-name",
-          "mapping_scope": "module_path_candidate",
-          "mapping_status": "candidate",
+          "mapping_scope": "reviewed_source_mapping",
+          "mapping_status": "reviewed_source_candidate",
           "observation_selectors": [
-            "http.body.bytes",
-            "http.body.json",
-            "http.headers.ordered",
             "http.status",
-            "openapi.request_schema",
-            "validation.error_class",
-            "validation.error_details"
+            "http.body.bytes"
           ],
-          "reviewed_mapping": null,
+          "reviewed_mapping": {
+            "rationale": "The field name is rejected when the cookie model declares a distinct validation alias; the workflow records the full validation response.",
+            "source_evidence": [
+              {
+                "end_line": 72,
+                "path": "tests/test_request_param_model_by_alias.py",
+                "role": "upstream test function",
+                "sha256": "970534d38c8058ecc0a0152fc1879509f599a8769b92e7deca97acf2bb660903",
+                "start_line": 66
+              },
+              {
+                "end_line": 25,
+                "path": "tests/test_request_param_model_by_alias.py",
+                "role": "Pydantic alias model and Query/Header/Cookie route setup",
+                "sha256": "970534d38c8058ecc0a0152fc1879509f599a8769b92e7deca97acf2bb660903",
+                "start_line": 9
+              },
+              {
+                "end_line": 835,
+                "path": "fastapi/dependencies/utils.py",
+                "role": "FastAPI extracts request-parameter model members by validation alias",
+                "sha256": "13693375ab95e32424e5434c21f928463634af5ee1261cf3e04031381bdf47d9",
+                "start_line": 790
+              }
+            ]
+          },
           "selector_evidence": [
             {
               "feature_id": "request-validation",
               "selectors": [
                 "http.status",
-                "http.headers.ordered",
-                "http.body.bytes",
-                "http.body.json",
-                "validation.error_class",
-                "validation.error_details",
-                "openapi.request_schema"
+                "http.body.bytes"
               ]
             }
           ],
@@ -123499,16 +123694,19 @@
         }
       ],
       "feature_ids": [
-        "request-validation"
+        "request-validation",
+        "response-serialization"
       ],
       "id": "fastapi.test.test-request-param-model-by-alias",
       "input_only": true,
       "observation_selectors": [
         "http.body.bytes",
         "http.body.json",
+        "http.cookies",
         "http.headers.ordered",
         "http.status",
         "openapi.request_schema",
+        "response.background_effects",
         "validation.error_class",
         "validation.error_details"
       ],
@@ -123524,6 +123722,18 @@
             "validation.error_details",
             "openapi.request_schema"
           ]
+        },
+        {
+          "feature_id": "response-serialization",
+          "selectors": [
+            "http.status",
+            "http.headers.ordered",
+            "http.cookies",
+            "http.body.bytes",
+            "http.body.json",
+            "response.background_effects",
+            "validation.error_class"
+          ]
         }
       ],
       "source_evidence": {
@@ -123538,7 +123748,8 @@
         "streaming-headers-cookies-errors-and-cleanup"
       ],
       "stimulus_design": [
-        "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs."
+        "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
+        "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
       ],
       "stimulus_design_notes": null
     },
@@ -240660,6 +240871,185 @@
         {
           "feature_evidence": [
             {
+              "feature_id": "public-api-errors",
+              "signals": [
+                {
+                  "end_line": 17,
+                  "line": 15,
+                  "path": "tests/test_tutorial/test_response_model/test_tutorial003_04.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 17,
+                  "line": 15,
+                  "path": "tests/test_tutorial/test_response_model/test_tutorial003_04.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 11,
+                  "line": 1,
+                  "path": "docs_src/response_model/tutorial003_04_py310.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 77,
+                  "line": 58,
+                  "path": "fastapi/utils.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 17,
+                  "line": 15,
+                  "path": "tests/test_tutorial/test_response_model/test_tutorial003_04.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                }
+              ]
+            },
+            {
+              "feature_id": "response-serialization",
+              "signals": [
+                {
+                  "source": "path",
+                  "term": "response_model"
+                },
+                {
+                  "source": "path",
+                  "term": "response model"
+                }
+              ]
+            }
+          ],
+          "feature_ids": [
+            "public-api-errors",
+            "response-serialization"
+          ],
+          "id": "fastapi.test.test-tutorial-test-response-model-test-tutorial003-04.test-invalid-response-model",
+          "mapping_scope": "reviewed_source_mapping",
+          "mapping_status": "reviewed_source_candidate",
+          "observation_selectors": [
+            "construction.outcome",
+            "construction.exception_class",
+            "construction.exception_message"
+          ],
+          "reviewed_mapping": {
+            "rationale": "Importing the documented Response | dict route fails during registration with FastAPIError; a schema-v3 construction workflow now observes its outcome, class, and message.",
+            "source_evidence": [
+              {
+                "end_line": 17,
+                "path": "tests/test_tutorial/test_response_model/test_tutorial003_04.py",
+                "role": "upstream test function",
+                "sha256": "cfe30222241057ef18b291635019027f1dde8ccb6755f36f03b5c63c4cb41c0f",
+                "start_line": 15
+              },
+              {
+                "end_line": 17,
+                "path": "tests/test_tutorial/test_response_model/test_tutorial003_04.py",
+                "role": "invalid inferred response-model import and expected FastAPIError",
+                "sha256": "cfe30222241057ef18b291635019027f1dde8ccb6755f36f03b5c63c4cb41c0f",
+                "start_line": 15
+              },
+              {
+                "end_line": 11,
+                "path": "docs_src/response_model/tutorial003_04_py310.py",
+                "role": "route annotated as Response | dict",
+                "sha256": "b2ef95cbeda4aa9e48bfe1e980c3fb0d3329090a72b8dc4865abd38be4b6f05c",
+                "start_line": 1
+              },
+              {
+                "end_line": 77,
+                "path": "fastapi/utils.py",
+                "role": "FastAPI converts Pydantic schema-generation failure to FastAPIError",
+                "sha256": "0d7d15ae73307d5b19c51cfc222b50e36736fbef9f0f398566479131947650ca",
+                "start_line": 58
+              },
+              {
+                "end_line": 17,
+                "path": "tests/test_tutorial/test_response_model/test_tutorial003_04.py",
+                "role": "test stimulus and asserted observations",
+                "sha256": "cfe30222241057ef18b291635019027f1dde8ccb6755f36f03b5c63c4cb41c0f",
+                "start_line": 15
+              }
+            ],
+            "stimulus_notes": "The fixture executes an equivalent independently authored workload rather than importing or copying upstream tests."
+          },
+          "selector_evidence": [
+            {
+              "feature_id": null,
+              "schema_extension_required": [
+                "construction.outcome",
+                "construction.exception_class",
+                "construction.exception_message"
+              ],
+              "selectors": [
+                "construction.outcome",
+                "construction.exception_class",
+                "construction.exception_message"
+              ]
+            }
+          ],
+          "source_end_line": 17,
+          "source_function": "test_invalid_response_model",
+          "source_line": 15,
+          "stimulus_design": [
+            "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable.",
+            "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
+          ],
+          "stimulus_design_notes": "The fixture executes an equivalent independently authored workload rather than importing or copying upstream tests."
+        }
+      ],
+      "feature_ids": [
+        "public-api-errors",
+        "response-serialization"
+      ],
+      "id": "fastapi.test.test-tutorial-test-response-model-test-tutorial003-04",
+      "input_only": true,
+      "observation_selectors": [
+        "construction.outcome",
+        "construction.exception_class",
+        "construction.exception_message"
+      ],
+      "selector_evidence": [
+        {
+          "feature_id": null,
+          "schema_extension_required": [
+            "construction.outcome",
+            "construction.exception_class",
+            "construction.exception_message"
+          ],
+          "selectors": [
+            "construction.outcome",
+            "construction.exception_class",
+            "construction.exception_message"
+          ]
+        }
+      ],
+      "source_evidence": {
+        "path": "tests/test_tutorial/test_response_model/test_tutorial003_04.py",
+        "sha256": "cfe30222241057ef18b291635019027f1dde8ccb6755f36f03b5c63c4cb41c0f"
+      },
+      "source_item_id": "upstream-test:tests/test_tutorial/test_response_model/test_tutorial003_04.py",
+      "stage": "candidate; independent stimuli require review/materialization",
+      "starlette_rs_planning_areas": [
+        "applications-requests-responses-background-concurrency",
+        "middleware-authentication-endpoints-datastructures-status",
+        "streaming-headers-cookies-errors-and-cleanup"
+      ],
+      "stimulus_design": [
+        "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable.",
+        "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
+      ],
+      "stimulus_design_notes": null
+    },
+    {
+      "case_designs": [
+        {
+          "feature_evidence": [
+            {
               "feature_id": "response-serialization",
               "signals": [
                 {
@@ -255821,9 +256211,6 @@
           "mapping_scope": "module_path_candidate",
           "mapping_status": "candidate",
           "observation_selectors": [
-            "error.class",
-            "lifecycle.cleanup_effects",
-            "lifecycle.event_order",
             "websocket.close_code",
             "websocket.event_order",
             "websocket.messages"
@@ -255833,12 +256220,9 @@
             {
               "feature_id": "websocket-lifecycle",
               "selectors": [
-                "websocket.event_order",
-                "websocket.messages",
                 "websocket.close_code",
-                "lifecycle.event_order",
-                "lifecycle.cleanup_effects",
-                "error.class"
+                "websocket.event_order",
+                "websocket.messages"
               ]
             }
           ],
@@ -255880,14 +256264,6 @@
           "mapping_scope": "module_path_candidate",
           "mapping_status": "candidate",
           "observation_selectors": [
-            "error.class",
-            "http.body.bytes",
-            "http.headers.ordered",
-            "http.status",
-            "lifecycle.cleanup_effects",
-            "lifecycle.event_order",
-            "openapi.paths",
-            "route.match",
             "websocket.close_code",
             "websocket.event_order",
             "websocket.messages"
@@ -255895,24 +256271,11 @@
           "reviewed_mapping": null,
           "selector_evidence": [
             {
-              "feature_id": "app-routing",
-              "selectors": [
-                "http.status",
-                "http.headers.ordered",
-                "http.body.bytes",
-                "route.match",
-                "openapi.paths"
-              ]
-            },
-            {
               "feature_id": "websocket-lifecycle",
               "selectors": [
-                "websocket.event_order",
-                "websocket.messages",
                 "websocket.close_code",
-                "lifecycle.event_order",
-                "lifecycle.cleanup_effects",
-                "error.class"
+                "websocket.event_order",
+                "websocket.messages"
               ]
             }
           ],
@@ -255955,14 +256318,6 @@
           "mapping_scope": "module_path_candidate",
           "mapping_status": "candidate",
           "observation_selectors": [
-            "error.class",
-            "http.body.bytes",
-            "http.headers.ordered",
-            "http.status",
-            "lifecycle.cleanup_effects",
-            "lifecycle.event_order",
-            "openapi.paths",
-            "route.match",
             "websocket.close_code",
             "websocket.event_order",
             "websocket.messages"
@@ -255970,24 +256325,11 @@
           "reviewed_mapping": null,
           "selector_evidence": [
             {
-              "feature_id": "app-routing",
-              "selectors": [
-                "http.status",
-                "http.headers.ordered",
-                "http.body.bytes",
-                "route.match",
-                "openapi.paths"
-              ]
-            },
-            {
               "feature_id": "websocket-lifecycle",
               "selectors": [
-                "websocket.event_order",
-                "websocket.messages",
                 "websocket.close_code",
-                "lifecycle.event_order",
-                "lifecycle.cleanup_effects",
-                "error.class"
+                "websocket.event_order",
+                "websocket.messages"
               ]
             }
           ],
@@ -256030,14 +256372,6 @@
           "mapping_scope": "module_path_candidate",
           "mapping_status": "candidate",
           "observation_selectors": [
-            "error.class",
-            "http.body.bytes",
-            "http.headers.ordered",
-            "http.status",
-            "lifecycle.cleanup_effects",
-            "lifecycle.event_order",
-            "openapi.paths",
-            "route.match",
             "websocket.close_code",
             "websocket.event_order",
             "websocket.messages"
@@ -256045,24 +256379,11 @@
           "reviewed_mapping": null,
           "selector_evidence": [
             {
-              "feature_id": "app-routing",
-              "selectors": [
-                "http.status",
-                "http.headers.ordered",
-                "http.body.bytes",
-                "route.match",
-                "openapi.paths"
-              ]
-            },
-            {
               "feature_id": "websocket-lifecycle",
               "selectors": [
-                "websocket.event_order",
-                "websocket.messages",
                 "websocket.close_code",
-                "lifecycle.event_order",
-                "lifecycle.cleanup_effects",
-                "error.class"
+                "websocket.event_order",
+                "websocket.messages"
               ]
             }
           ],
@@ -256106,14 +256427,6 @@
           "mapping_scope": "module_path_candidate",
           "mapping_status": "candidate",
           "observation_selectors": [
-            "error.class",
-            "http.body.bytes",
-            "http.headers.ordered",
-            "http.status",
-            "lifecycle.cleanup_effects",
-            "lifecycle.event_order",
-            "openapi.paths",
-            "route.match",
             "websocket.close_code",
             "websocket.event_order",
             "websocket.messages"
@@ -256121,24 +256434,11 @@
           "reviewed_mapping": null,
           "selector_evidence": [
             {
-              "feature_id": "app-routing",
-              "selectors": [
-                "http.status",
-                "http.headers.ordered",
-                "http.body.bytes",
-                "route.match",
-                "openapi.paths"
-              ]
-            },
-            {
               "feature_id": "websocket-lifecycle",
               "selectors": [
-                "websocket.event_order",
-                "websocket.messages",
                 "websocket.close_code",
-                "lifecycle.event_order",
-                "lifecycle.cleanup_effects",
-                "error.class"
+                "websocket.event_order",
+                "websocket.messages"
               ]
             }
           ],
@@ -256175,76 +256475,65 @@
                   "term": "dependency"
                 }
               ]
-            },
-            {
-              "feature_id": "websocket-lifecycle",
-              "signals": [
-                {
-                  "line": 3,
-                  "source": "content",
-                  "term": "websocket"
-                }
-              ]
             }
           ],
           "feature_ids": [
             "app-routing",
-            "dependency-security",
-            "websocket-lifecycle"
+            "dependency-security"
           ],
           "id": "fastapi.test.test-ws-router.test-router-ws-depends",
-          "mapping_scope": "module_path_candidate",
-          "mapping_status": "candidate",
+          "mapping_scope": "reviewed_source_mapping",
+          "mapping_status": "reviewed_source_candidate",
           "observation_selectors": [
-            "dependency.call_order",
-            "dependency.cleanup_order",
-            "error.class",
-            "http.body.bytes",
-            "http.body.json",
-            "http.headers.ordered",
-            "http.status",
-            "lifecycle.cleanup_effects",
-            "lifecycle.event_order",
-            "openapi.paths",
-            "openapi.security",
-            "route.match",
             "websocket.close_code",
             "websocket.event_order",
             "websocket.messages"
           ],
-          "reviewed_mapping": null,
+          "reviewed_mapping": {
+            "rationale": "An APIRouter WebSocket endpoint receives a FastAPI-resolved dependency; the workflow records its message and the full handshake/event sequence.",
+            "source_evidence": [
+              {
+                "end_line": 156,
+                "path": "tests/test_ws_router.py",
+                "role": "upstream test function",
+                "sha256": "b5673afbf8ba1d8891045555856571400091ac627aba4e88b2ec8ce1c8004ab9",
+                "start_line": 153
+              },
+              {
+                "end_line": 69,
+                "path": "tests/test_ws_router.py",
+                "role": "router WebSocket dependency and endpoint behavior",
+                "sha256": "b5673afbf8ba1d8891045555856571400091ac627aba4e88b2ec8ce1c8004ab9",
+                "start_line": 58
+              },
+              {
+                "end_line": 831,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI resolves dependencies for APIWebSocketRoute",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 764
+              },
+              {
+                "end_line": 647,
+                "path": "fastapi/dependencies/utils.py",
+                "role": "FastAPI applies app-level dependency overrides during resolution",
+                "sha256": "13693375ab95e32424e5434c21f928463634af5ee1261cf3e04031381bdf47d9",
+                "start_line": 619
+              }
+            ]
+          },
           "selector_evidence": [
             {
-              "feature_id": "app-routing",
-              "selectors": [
-                "http.status",
-                "http.headers.ordered",
-                "http.body.bytes",
-                "route.match",
-                "openapi.paths"
-              ]
-            },
-            {
-              "feature_id": "dependency-security",
-              "selectors": [
-                "http.status",
-                "http.headers.ordered",
-                "http.body.bytes",
-                "http.body.json",
-                "dependency.call_order",
-                "dependency.cleanup_order",
-                "openapi.security"
-              ]
-            },
-            {
-              "feature_id": "websocket-lifecycle",
-              "selectors": [
-                "websocket.event_order",
-                "websocket.messages",
+              "feature_id": null,
+              "schema_extension_required": [
                 "websocket.close_code",
-                "lifecycle.event_order",
-                "lifecycle.cleanup_effects",
-                "error.class"
+                "websocket.event_order",
+                "websocket.messages"
+              ],
+              "selectors": [
+                "websocket.close_code",
+                "websocket.event_order",
+                "websocket.messages"
               ]
             }
           ],
@@ -256253,8 +256542,7 @@
           "source_line": 153,
           "stimulus_design": [
             "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
-            "Declare the dependency/security graph and credential inputs, invoke the public endpoint, and observe response, call order, cleanup, and schema effects.",
-            "Create a WebSocket or lifespan workflow with ordered public actions and observe messages, close/error state, startup, shutdown, and cleanup."
+            "Declare the dependency/security graph and credential inputs, invoke the public endpoint, and observe response, call order, cleanup, and schema effects."
           ],
           "stimulus_design_notes": null
         },
@@ -256282,76 +256570,65 @@
                   "term": "dependency"
                 }
               ]
-            },
-            {
-              "feature_id": "websocket-lifecycle",
-              "signals": [
-                {
-                  "line": 4,
-                  "source": "content",
-                  "term": "websocket"
-                }
-              ]
             }
           ],
           "feature_ids": [
             "app-routing",
-            "dependency-security",
-            "websocket-lifecycle"
+            "dependency-security"
           ],
           "id": "fastapi.test.test-ws-router.test-router-ws-depends-with-override",
-          "mapping_scope": "module_path_candidate",
-          "mapping_status": "candidate",
+          "mapping_scope": "reviewed_source_mapping",
+          "mapping_status": "reviewed_source_candidate",
           "observation_selectors": [
-            "dependency.call_order",
-            "dependency.cleanup_order",
-            "error.class",
-            "http.body.bytes",
-            "http.body.json",
-            "http.headers.ordered",
-            "http.status",
-            "lifecycle.cleanup_effects",
-            "lifecycle.event_order",
-            "openapi.paths",
-            "openapi.security",
-            "route.match",
             "websocket.close_code",
             "websocket.event_order",
             "websocket.messages"
           ],
-          "reviewed_mapping": null,
+          "reviewed_mapping": {
+            "rationale": "FastAPI's app-level dependency override changes the APIRouter WebSocket dependency result; the workflow records the full handshake/event sequence.",
+            "source_evidence": [
+              {
+                "end_line": 163,
+                "path": "tests/test_ws_router.py",
+                "role": "upstream test function",
+                "sha256": "b5673afbf8ba1d8891045555856571400091ac627aba4e88b2ec8ce1c8004ab9",
+                "start_line": 159
+              },
+              {
+                "end_line": 69,
+                "path": "tests/test_ws_router.py",
+                "role": "router WebSocket dependency and endpoint behavior",
+                "sha256": "b5673afbf8ba1d8891045555856571400091ac627aba4e88b2ec8ce1c8004ab9",
+                "start_line": 58
+              },
+              {
+                "end_line": 831,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI resolves dependencies for APIWebSocketRoute",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 764
+              },
+              {
+                "end_line": 647,
+                "path": "fastapi/dependencies/utils.py",
+                "role": "FastAPI applies app-level dependency overrides during resolution",
+                "sha256": "13693375ab95e32424e5434c21f928463634af5ee1261cf3e04031381bdf47d9",
+                "start_line": 619
+              }
+            ]
+          },
           "selector_evidence": [
             {
-              "feature_id": "app-routing",
-              "selectors": [
-                "http.status",
-                "http.headers.ordered",
-                "http.body.bytes",
-                "route.match",
-                "openapi.paths"
-              ]
-            },
-            {
-              "feature_id": "dependency-security",
-              "selectors": [
-                "http.status",
-                "http.headers.ordered",
-                "http.body.bytes",
-                "http.body.json",
-                "dependency.call_order",
-                "dependency.cleanup_order",
-                "openapi.security"
-              ]
-            },
-            {
-              "feature_id": "websocket-lifecycle",
-              "selectors": [
-                "websocket.event_order",
-                "websocket.messages",
+              "feature_id": null,
+              "schema_extension_required": [
                 "websocket.close_code",
-                "lifecycle.event_order",
-                "lifecycle.cleanup_effects",
-                "error.class"
+                "websocket.event_order",
+                "websocket.messages"
+              ],
+              "selectors": [
+                "websocket.close_code",
+                "websocket.event_order",
+                "websocket.messages"
               ]
             }
           ],
@@ -256360,8 +256637,7 @@
           "source_line": 159,
           "stimulus_design": [
             "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
-            "Declare the dependency/security graph and credential inputs, invoke the public endpoint, and observe response, call order, cleanup, and schema effects.",
-            "Create a WebSocket or lifespan workflow with ordered public actions and observe messages, close/error state, startup, shutdown, and cleanup."
+            "Declare the dependency/security graph and credential inputs, invoke the public endpoint, and observe response, call order, cleanup, and schema effects."
           ],
           "stimulus_design_notes": null
         },
@@ -256416,18 +256692,6 @@
           "mapping_scope": "module_path_candidate",
           "mapping_status": "candidate",
           "observation_selectors": [
-            "error.class",
-            "http.body.bytes",
-            "http.body.json",
-            "http.headers.ordered",
-            "http.status",
-            "lifecycle.cleanup_effects",
-            "lifecycle.event_order",
-            "openapi.paths",
-            "openapi.request_schema",
-            "route.match",
-            "validation.error_class",
-            "validation.error_details",
             "websocket.close_code",
             "websocket.event_order",
             "websocket.messages"
@@ -256435,36 +256699,11 @@
           "reviewed_mapping": null,
           "selector_evidence": [
             {
-              "feature_id": "app-routing",
-              "selectors": [
-                "http.status",
-                "http.headers.ordered",
-                "http.body.bytes",
-                "route.match",
-                "openapi.paths"
-              ]
-            },
-            {
-              "feature_id": "request-validation",
-              "selectors": [
-                "http.status",
-                "http.headers.ordered",
-                "http.body.bytes",
-                "http.body.json",
-                "validation.error_class",
-                "validation.error_details",
-                "openapi.request_schema"
-              ]
-            },
-            {
               "feature_id": "websocket-lifecycle",
               "selectors": [
-                "websocket.event_order",
-                "websocket.messages",
                 "websocket.close_code",
-                "lifecycle.event_order",
-                "lifecycle.cleanup_effects",
-                "error.class"
+                "websocket.event_order",
+                "websocket.messages"
               ]
             }
           ],
@@ -256509,14 +256748,6 @@
           "mapping_scope": "module_path_candidate",
           "mapping_status": "candidate",
           "observation_selectors": [
-            "error.class",
-            "http.body.bytes",
-            "http.headers.ordered",
-            "http.status",
-            "lifecycle.cleanup_effects",
-            "lifecycle.event_order",
-            "openapi.paths",
-            "route.match",
             "websocket.close_code",
             "websocket.event_order",
             "websocket.messages"
@@ -256524,24 +256755,11 @@
           "reviewed_mapping": null,
           "selector_evidence": [
             {
-              "feature_id": "app-routing",
-              "selectors": [
-                "http.status",
-                "http.headers.ordered",
-                "http.body.bytes",
-                "route.match",
-                "openapi.paths"
-              ]
-            },
-            {
               "feature_id": "websocket-lifecycle",
               "selectors": [
-                "websocket.event_order",
-                "websocket.messages",
                 "websocket.close_code",
-                "lifecycle.event_order",
-                "lifecycle.cleanup_effects",
-                "error.class"
+                "websocket.event_order",
+                "websocket.messages"
               ]
             }
           ],
@@ -256622,28 +256840,6 @@
           "mapping_scope": "module_path_candidate",
           "mapping_status": "candidate",
           "observation_selectors": [
-            "dependency.call_order",
-            "dependency.cleanup_order",
-            "error.class",
-            "error.public_attributes",
-            "http.body.bytes",
-            "http.body.json",
-            "http.headers.ordered",
-            "http.status",
-            "lifecycle.cleanup_effects",
-            "lifecycle.event_order",
-            "openapi.request_schema",
-            "openapi.security",
-            "process.exit_code",
-            "process.stderr",
-            "process.stdout",
-            "python.attribute_value",
-            "python.import_path",
-            "python.object_identity",
-            "python.signature",
-            "validation.error_class",
-            "validation.error_details",
-            "warnings.category_message",
             "websocket.close_code",
             "websocket.event_order",
             "websocket.messages"
@@ -256651,62 +256847,11 @@
           "reviewed_mapping": null,
           "selector_evidence": [
             {
-              "feature_id": "request-validation",
-              "selectors": [
-                "http.status",
-                "http.headers.ordered",
-                "http.body.bytes",
-                "http.body.json",
-                "validation.error_class",
-                "validation.error_details",
-                "openapi.request_schema"
-              ]
-            },
-            {
-              "feature_id": "dependency-security",
-              "selectors": [
-                "http.status",
-                "http.headers.ordered",
-                "http.body.bytes",
-                "http.body.json",
-                "dependency.call_order",
-                "dependency.cleanup_order",
-                "openapi.security"
-              ]
-            },
-            {
               "feature_id": "websocket-lifecycle",
               "selectors": [
-                "websocket.event_order",
-                "websocket.messages",
                 "websocket.close_code",
-                "lifecycle.event_order",
-                "lifecycle.cleanup_effects",
-                "error.class"
-              ]
-            },
-            {
-              "feature_id": "middleware-integrations",
-              "selectors": [
-                "http.status",
-                "http.headers.ordered",
-                "http.body.bytes",
-                "http.body.json",
-                "process.exit_code",
-                "process.stdout",
-                "process.stderr"
-              ]
-            },
-            {
-              "feature_id": "public-api-errors",
-              "selectors": [
-                "python.import_path",
-                "python.object_identity",
-                "python.signature",
-                "python.attribute_value",
-                "warnings.category_message",
-                "error.class",
-                "error.public_attributes"
+                "websocket.event_order",
+                "websocket.messages"
               ]
             }
           ],
@@ -256763,19 +256908,6 @@
           "mapping_scope": "module_path_candidate",
           "mapping_status": "candidate",
           "observation_selectors": [
-            "dependency.call_order",
-            "dependency.cleanup_order",
-            "error.class",
-            "http.body.bytes",
-            "http.body.json",
-            "http.headers.ordered",
-            "http.status",
-            "lifecycle.cleanup_effects",
-            "lifecycle.event_order",
-            "openapi.security",
-            "process.exit_code",
-            "process.stderr",
-            "process.stdout",
             "websocket.close_code",
             "websocket.event_order",
             "websocket.messages"
@@ -256783,38 +256915,11 @@
           "reviewed_mapping": null,
           "selector_evidence": [
             {
-              "feature_id": "dependency-security",
-              "selectors": [
-                "http.status",
-                "http.headers.ordered",
-                "http.body.bytes",
-                "http.body.json",
-                "dependency.call_order",
-                "dependency.cleanup_order",
-                "openapi.security"
-              ]
-            },
-            {
               "feature_id": "websocket-lifecycle",
               "selectors": [
-                "websocket.event_order",
-                "websocket.messages",
                 "websocket.close_code",
-                "lifecycle.event_order",
-                "lifecycle.cleanup_effects",
-                "error.class"
-              ]
-            },
-            {
-              "feature_id": "middleware-integrations",
-              "selectors": [
-                "http.status",
-                "http.headers.ordered",
-                "http.body.bytes",
-                "http.body.json",
-                "process.exit_code",
-                "process.stdout",
-                "process.stderr"
+                "websocket.event_order",
+                "websocket.messages"
               ]
             }
           ],
@@ -256859,16 +256964,6 @@
           "mapping_scope": "module_path_candidate",
           "mapping_status": "candidate",
           "observation_selectors": [
-            "error.class",
-            "http.body.bytes",
-            "http.body.json",
-            "http.headers.ordered",
-            "http.status",
-            "lifecycle.cleanup_effects",
-            "lifecycle.event_order",
-            "process.exit_code",
-            "process.stderr",
-            "process.stdout",
             "websocket.close_code",
             "websocket.event_order",
             "websocket.messages"
@@ -256878,24 +256973,9 @@
             {
               "feature_id": "websocket-lifecycle",
               "selectors": [
-                "websocket.event_order",
-                "websocket.messages",
                 "websocket.close_code",
-                "lifecycle.event_order",
-                "lifecycle.cleanup_effects",
-                "error.class"
-              ]
-            },
-            {
-              "feature_id": "middleware-integrations",
-              "selectors": [
-                "http.status",
-                "http.headers.ordered",
-                "http.body.bytes",
-                "http.body.json",
-                "process.exit_code",
-                "process.stdout",
-                "process.stderr"
+                "websocket.event_order",
+                "websocket.messages"
               ]
             }
           ],
@@ -256920,102 +257000,17 @@
       "id": "fastapi.test.test-ws-router",
       "input_only": true,
       "observation_selectors": [
-        "dependency.call_order",
-        "dependency.cleanup_order",
-        "error.class",
-        "error.public_attributes",
-        "http.body.bytes",
-        "http.body.json",
-        "http.headers.ordered",
-        "http.status",
-        "lifecycle.cleanup_effects",
-        "lifecycle.event_order",
-        "openapi.paths",
-        "openapi.request_schema",
-        "openapi.security",
-        "process.exit_code",
-        "process.stderr",
-        "process.stdout",
-        "python.attribute_value",
-        "python.import_path",
-        "python.object_identity",
-        "python.signature",
-        "route.match",
-        "validation.error_class",
-        "validation.error_details",
-        "warnings.category_message",
         "websocket.close_code",
         "websocket.event_order",
         "websocket.messages"
       ],
       "selector_evidence": [
         {
-          "feature_id": "app-routing",
-          "selectors": [
-            "http.status",
-            "http.headers.ordered",
-            "http.body.bytes",
-            "route.match",
-            "openapi.paths"
-          ]
-        },
-        {
-          "feature_id": "dependency-security",
-          "selectors": [
-            "http.status",
-            "http.headers.ordered",
-            "http.body.bytes",
-            "http.body.json",
-            "dependency.call_order",
-            "dependency.cleanup_order",
-            "openapi.security"
-          ]
-        },
-        {
-          "feature_id": "middleware-integrations",
-          "selectors": [
-            "http.status",
-            "http.headers.ordered",
-            "http.body.bytes",
-            "http.body.json",
-            "process.exit_code",
-            "process.stdout",
-            "process.stderr"
-          ]
-        },
-        {
-          "feature_id": "public-api-errors",
-          "selectors": [
-            "python.import_path",
-            "python.object_identity",
-            "python.signature",
-            "python.attribute_value",
-            "warnings.category_message",
-            "error.class",
-            "error.public_attributes"
-          ]
-        },
-        {
-          "feature_id": "request-validation",
-          "selectors": [
-            "http.status",
-            "http.headers.ordered",
-            "http.body.bytes",
-            "http.body.json",
-            "validation.error_class",
-            "validation.error_details",
-            "openapi.request_schema"
-          ]
-        },
-        {
           "feature_id": "websocket-lifecycle",
           "selectors": [
-            "websocket.event_order",
-            "websocket.messages",
             "websocket.close_code",
-            "lifecycle.event_order",
-            "lifecycle.cleanup_effects",
-            "error.class"
+            "websocket.event_order",
+            "websocket.messages"
           ]
         }
       ],

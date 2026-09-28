@@ -36,11 +36,53 @@ def _openapi(
     return _case(test_path, start, end, feature_ids, observation_selectors, rationale, **extra)
 
 
-def _module(supporting_sources, functions):
-    return {"supporting_sources": supporting_sources, "functions": functions}
+def _module(supporting_sources, functions, **extra):
+    return {"supporting_sources": supporting_sources, "functions": functions, **extra}
 
 
 TUTORIAL_TEST_REVIEW_MAPPINGS = {
+    "tests/test_tutorial/test_response_model/test_tutorial003_04.py": _module(
+        [
+            {
+                "path": "tests/test_tutorial/test_response_model/test_tutorial003_04.py",
+                "start_line": 15,
+                "end_line": 17,
+                "role": "invalid inferred response-model import and expected FastAPIError",
+            },
+            {
+                "path": "docs_src/response_model/tutorial003_04_py310.py",
+                "start_line": 1,
+                "end_line": 11,
+                "role": "route annotated as Response | dict",
+            },
+            {
+                "path": "fastapi/utils.py",
+                "start_line": 58,
+                "end_line": 77,
+                "role": "FastAPI converts Pydantic schema-generation failure to FastAPIError",
+            },
+        ],
+        {
+            "test_invalid_response_model": _case(
+                "tests/test_tutorial/test_response_model/test_tutorial003_04.py",
+                15,
+                17,
+                ["public-api-errors", "response-serialization"],
+                [
+                    "construction.outcome",
+                    "construction.exception_class",
+                    "construction.exception_message",
+                ],
+                "Importing the documented Response | dict route fails during registration with FastAPIError; a schema-v3 construction workflow now observes its outcome, class, and message.",
+                stimulus_notes="The fixture executes an equivalent independently authored workload rather than importing or copying upstream tests.",
+            ),
+        },
+        module_observation_selectors=[
+            "construction.outcome",
+            "construction.exception_class",
+            "construction.exception_message",
+        ],
+    ),
     "tests/test_tutorial/test_authentication_error_status_code/test_tutorial001.py": _module(
         [
             {

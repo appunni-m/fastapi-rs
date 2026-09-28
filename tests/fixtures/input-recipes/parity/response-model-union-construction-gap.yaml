@@ -1,0 +1,28 @@
+schema: fastapi-rs/python-asgi-workflow@3
+workload:
+  file: tests/fixtures/workloads/response_model_union_construction_gap.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.response-model.union-inferred-construction-error
+  factory_input:
+    route:
+      method: get
+      path: /portal
+      endpoint_name: get_portal
+      return_annotation_members:
+      - response
+      - dict
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions: []
+  source_evidence:
+  - path: tests/test_tutorial/test_response_model/test_tutorial003_04.py
+    kind: upstream_test
+  - path: docs_src/response_model/tutorial003_04_py310.py
+    kind: upstream_documentation

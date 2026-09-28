@@ -100,6 +100,18 @@
       ]
     },
     {
+      "id": "application-enum-status-code-upstream",
+      "input_path": "tests/fixtures/inputs/parity/application-enum-status-code-upstream.json",
+      "input_sha256": "99cf761ad99c60bb89147ebbade900297d92172c02d383e3a11862bee109bc30",
+      "recipe_path": "tests/fixtures/input-recipes/parity/application-enum-status-code-upstream.yaml",
+      "recipe_sha256": "51f4b81a2d62ade9b61ce83df193f7fe999c5bbc99968bb3bb3678941f32750b",
+      "workload_path": "tests/fixtures/workloads/application_enum_status_code_upstream.py",
+      "workload_sha256": "3819f276fd93336a7986dcd5e3ae9079dd44971f013238bdc6f005e092d9c8f4",
+      "case_ids": [
+        "fastapi.test.test-application.test-enum-status-code-response"
+      ]
+    },
+    {
       "id": "arbitrary-types-public-api-upstream",
       "input_path": "tests/fixtures/inputs/parity/arbitrary-types-public-api-upstream.json",
       "input_sha256": "244e085b79c610fd649aa067cb4e3049dd4ee8de962e48a47c63194d60c258e5",
@@ -1967,6 +1979,22 @@
       "oracle_profile_extension": "standard-multipart"
     },
     {
+      "id": "request-param-model-field-aliases-wave",
+      "input_path": "tests/fixtures/inputs/parity/request-param-model-field-aliases-wave.json",
+      "input_sha256": "66b604d3b0fd020a41ec95587055dcb73303cf2fcffec44b65750e27f5127aca",
+      "recipe_path": "tests/fixtures/input-recipes/parity/request-param-model-field-aliases-wave.yaml",
+      "recipe_sha256": "23c91f7a56d36212be1649b3feabf837a6129943e5599d93ff08512417a7ab4e",
+      "workload_path": "tests/fixtures/workloads/request_param_model_aliases.py",
+      "workload_sha256": "3e4f664f44250cbd27569de4f7973dab7ac1f23479e9ea83c508bfffc7b716d3",
+      "case_ids": [
+        "fastapi.request-param-model-alias.header-alias-valid",
+        "fastapi.request-param-model-alias.cookie-alias-valid",
+        "fastapi.request-param-model-alias.query-field-name-rejected",
+        "fastapi.request-param-model-alias.header-field-name-rejected",
+        "fastapi.request-param-model-alias.cookie-field-name-rejected"
+      ]
+    },
+    {
       "id": "request-parameter-edges-wave",
       "input_path": "tests/fixtures/inputs/parity/request-parameter-edges-wave.json",
       "input_sha256": "131edf58140dfb46649bc9f5b6cd1b238700ff63bedf012ce16983f4c058782e",
@@ -2199,6 +2227,18 @@
         "fastapi.response-model.tutorial003-05-explicitly-disabled-response-model",
         "fastapi.response-model.tutorial004-exclude-unset-preserves-explicit-fields",
         "fastapi.response-model.tutorial006-include-and-exclude-top-level-fields"
+      ]
+    },
+    {
+      "id": "response-model-union-construction-gap",
+      "input_path": "tests/fixtures/inputs/parity/response-model-union-construction-gap.json",
+      "input_sha256": "6751085963910c1019125918b5f29226db9f6e084ad574ce969afdc8ce6aa80c",
+      "recipe_path": "tests/fixtures/input-recipes/parity/response-model-union-construction-gap.yaml",
+      "recipe_sha256": "719d44195928f1a2331036050823b0fb898643802ac6ad78bda8248b9abffeb7",
+      "workload_path": "tests/fixtures/workloads/response_model_union_construction_gap.py",
+      "workload_sha256": "bfd85196eb6ba3a33e3dd8f089b4416fe0dc8a19c50b98f627ae6bbd77df09c2",
+      "case_ids": [
+        "fastapi.response-model.union-inferred-construction-error"
       ]
     },
     {
@@ -3346,6 +3386,19 @@
       ]
     },
     {
+      "id": "websocket-router-dependencies-upstream",
+      "input_path": "tests/fixtures/inputs/parity/websocket-router-dependencies-upstream.json",
+      "input_sha256": "e17ff49158b9cb434f5eff56d75b70001798d5ffa9ce9b6b964f2c6e6f7be0d0",
+      "recipe_path": "tests/fixtures/input-recipes/parity/websocket-router-dependencies-upstream.yaml",
+      "recipe_sha256": "eb9fe1dfc41904845f139dbea54803ed40ccab5cf3459d67ff9af106a1b1d9a4",
+      "workload_path": "tests/fixtures/workloads/websocket_router_dependencies_upstream.py",
+      "workload_sha256": "c36c690dff07c38950ca274006820478f7e2f76090ec5574a4056cf95923facd",
+      "case_ids": [
+        "fastapi.test.test-ws-router.test-router-ws-depends",
+        "fastapi.test.test-ws-router.test-router-ws-depends-with-override"
+      ]
+    },
+    {
       "id": "websockets-tutorial003-upstream-subset",
       "input_path": "tests/fixtures/inputs/parity/websockets-tutorial003-upstream-subset.json",
       "input_sha256": "5c4168e0653afba4d3aa6aed8203c4d7ac992faf3fb4e0e71493991344e9614c",
@@ -3611,6 +3664,20 @@
       "case_ids": [
         "fastapi.app-testing.main-b-annotated-header",
         "fastapi.app-testing.main-b-default-header"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_application.py",
+      "fixture_id": "fastapi.test.test-application",
+      "workflow_id": "application-enum-status-code-upstream",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.test.test-application.test-enum-status-code-response"
       ],
       "observation_selectors": [
         "http.body.bytes",
@@ -8987,6 +9054,24 @@
       ]
     },
     {
+      "source_item_id": "upstream-test:tests/test_request_param_model_by_alias.py",
+      "fixture_id": "fastapi.test.test-request-param-model-by-alias",
+      "workflow_id": "request-param-model-field-aliases-wave",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 5 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.request-param-model-alias.cookie-alias-valid",
+        "fastapi.request-param-model-alias.cookie-field-name-rejected",
+        "fastapi.request-param-model-alias.header-alias-valid",
+        "fastapi.request-param-model-alias.header-field-name-rejected",
+        "fastapi.request-param-model-alias.query-field-name-rejected"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
       "source_item_id": "upstream-test:tests/test_tutorial/test_header_params/test_tutorial002.py",
       "fixture_id": "fastapi.test.test-tutorial-test-header-params-test-tutorial002",
       "workflow_id": "request-parameter-edges-wave",
@@ -10061,6 +10146,21 @@
         "http.body.bytes",
         "http.status",
         "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_response_model/test_tutorial003_04.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-response-model-test-tutorial003-04",
+      "workflow_id": "response-model-union-construction-gap",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes construction.exception_class, construction.exception_message, construction.outcome. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.response-model.union-inferred-construction-error"
+      ],
+      "observation_selectors": [
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome"
       ]
     },
     {
@@ -13314,6 +13414,22 @@
       "case_ids": [
         "fastapi.websocket.echo-binary",
         "fastapi.websocket.echo-text"
+      ],
+      "observation_selectors": [
+        "websocket.close_code",
+        "websocket.event_order",
+        "websocket.messages"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_ws_router.py",
+      "fixture_id": "fastapi.test.test-ws-router",
+      "workflow_id": "websocket-router-dependencies-upstream",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes websocket.close_code, websocket.event_order, websocket.messages. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.test.test-ws-router.test-router-ws-depends",
+        "fastapi.test.test-ws-router.test-router-ws-depends-with-override"
       ],
       "observation_selectors": [
         "websocket.close_code",
