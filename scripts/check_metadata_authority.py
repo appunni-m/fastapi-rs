@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import argparse
 import ast
 import hashlib
 import json
@@ -15,6 +16,7 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 METADATA_PATH = ROOT / "metadata.yaml"
+STARLETTE_RS_ROOT_OVERRIDE: Path | None = None
 
 
 class MetadataError(ValueError):
@@ -69,7 +71,11 @@ def pointer(document: Any, location: str, label: str) -> Any:
 
 
 def artifact_path(path_text: str) -> Path:
-    path = (ROOT / path_text).resolve()
+    relative_path = Path(path_text)
+    if STARLETTE_RS_ROOT_OVERRIDE is not None and relative_path.parts[:2] == ("..", "starlette-rs"):
+        path = STARLETTE_RS_ROOT_OVERRIDE.joinpath(*relative_path.parts[2:]).resolve()
+    else:
+        path = (ROOT / relative_path).resolve()
     if not path.is_file():
         raise MetadataError(f"referenced artifact is missing: {path_text}")
     return path
@@ -219,9 +225,8 @@ def validate() -> None:
     validate_pinned_source_checkout(
         "Starlette", (ROOT / starlette["checkout"]).resolve(), starlette
     )
-    validate_pinned_source_checkout(
-        "Starlette-RS", (ROOT / starlette_rs["owner"]).resolve(), starlette_rs
-    )
+    starlette_rs_root = STARLETTE_RS_ROOT_OVERRIDE or (ROOT / starlette_rs["owner"]).resolve()
+    validate_pinned_source_checkout("Starlette-RS", starlette_rs_root, starlette_rs)
 
     selected_fastapi = pointer(
         manifest, manifest_meta["fastapi_identity_pointer"], "manifest FastAPI identity"
@@ -472,6 +477,16 @@ def validate() -> None:
 
 
 def main() -> int:
+    global STARLETTE_RS_ROOT_OVERRIDE
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--starlette-rs-source",
+        type=Path,
+        help="use a clean Starlette-RS checkout, such as the contract-pinned source clone",
+    )
+    args = parser.parse_args()
+    if args.starlette_rs_source is not None:
+        STARLETTE_RS_ROOT_OVERRIDE = args.starlette_rs_source.resolve()
     try:
         validate()
     except (KeyError, TypeError, MetadataError) as exc:

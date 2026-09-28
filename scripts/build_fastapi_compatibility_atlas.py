@@ -3047,6 +3047,130 @@ for test_path, exclusions in SECURITY_TEST_FUNCTION_EXCLUSIONS.items():
 for test_path, evidence in SECURITY_TEST_FUNCTION_EXCLUSION_EVIDENCE.items():
     TEST_FUNCTION_EXCLUSION_EVIDENCE.setdefault(test_path, {}).update(evidence)
 
+# App, dependency, lifecycle, routing, exception, and WebSocket review.
+from atlas_app_dependency_wave_mappings import (  # noqa: E402
+    APP_DEPENDENCY_TEST_FUNCTION_EXCLUSIONS,
+    APP_DEPENDENCY_TEST_MODULE_EXCLUSIONS,
+    APP_DEPENDENCY_TEST_REVIEW_MAPPINGS,
+    APP_DEPENDENCY_WAVE_GAPS,
+)
+
+merge_test_review_mappings(APP_DEPENDENCY_TEST_REVIEW_MAPPINGS)
+APP_DEPENDENCY_SCOPE_REVIEW_BY_MODULE = {
+    test_path: {
+        "module": APP_DEPENDENCY_TEST_MODULE_EXCLUSIONS.get(test_path),
+        "functions": APP_DEPENDENCY_TEST_FUNCTION_EXCLUSIONS.get(test_path, {}),
+    }
+    for test_path in set(APP_DEPENDENCY_TEST_MODULE_EXCLUSIONS)
+    | set(APP_DEPENDENCY_TEST_FUNCTION_EXCLUSIONS)
+}
+
+# Request-parameter module review carries exact source-to-workflow links at
+# module scope; the six alias-specific function rows are normalized below to
+# the generator's existing per-function review contract.
+from atlas_request_parameter_wave_mappings import (  # noqa: E402
+    REQUEST_PARAMETER_FUNCTION_MAPPINGS,
+    REQUEST_PARAMETER_TEST_REVIEW_MAPPINGS,
+)
+
+REQUEST_PARAMETER_SOURCE_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {}
+
+
+def _append_unique_review_sources(
+    existing: Sequence[dict[str, Any]], additions: Sequence[dict[str, Any]]
+) -> list[dict[str, Any]]:
+    rows = []
+    seen = set()
+    for row in [*existing, *additions]:
+        identity = tuple(row.get(key) for key in ("path", "start_line", "end_line", "role"))
+        if identity not in seen:
+            seen.add(identity)
+            rows.append(row)
+    return rows
+
+
+for test_path, source_review in REQUEST_PARAMETER_TEST_REVIEW_MAPPINGS.items():
+    if not test_path.startswith("tests/test_"):
+        continue
+    reviewed = TEST_REVIEW_MAPPINGS.setdefault(test_path, {})
+    if source_review.get("mapping_status") == "source-backed-exclusion":
+        reason = source_review["exclusion_reason"]
+        TEST_EXCLUSIONS[test_path] = reason
+        reviewed["rationale"] = reason
+        reviewed["supporting_sources"] = _append_unique_review_sources(
+            reviewed.get("supporting_sources", []),
+            source_review.get("supporting_sources", []),
+        )
+        continue
+
+    REQUEST_PARAMETER_SOURCE_REVIEW_MAPPINGS[test_path] = source_review
+    workflow_notes = [
+        "%s::%s (actions: %s; selectors: %s)"
+        % (
+            workflow["recipe_path"],
+            workflow["case_id"],
+            ", ".join(workflow.get("action_ids", [])),
+            ", ".join(workflow["observation_selectors"]),
+        )
+        for workflow in source_review["workflow_cases"]
+    ]
+    request_note = (
+        "Request-parameter source review links these partial input cases: "
+        + "; ".join(workflow_notes)
+        + ". Inputs contain no expected results."
+    )
+    reviewed["rationale"] = reviewed.get(
+        "rationale",
+        "Source-reviewed request-parameter module with explicitly linked partial input cases.",
+    )
+    prior_notes = reviewed.get("stimulus_notes")
+    if request_note not in (prior_notes or ""):
+        reviewed["stimulus_notes"] = "; ".join(filter(None, [prior_notes, request_note]))
+    prior_gate = reviewed.get("contract_gate")
+    request_gate = source_review.get("contract_gate")
+    if request_gate and request_gate not in (prior_gate or ""):
+        reviewed["contract_gate"] = "; ".join(filter(None, [prior_gate, request_gate]))
+    reviewed["supporting_sources"] = _append_unique_review_sources(
+        reviewed.get("supporting_sources", []),
+        [
+            *source_review.get("fastapi_implementation_sources", []),
+            *source_review.get("starlette_contract_sources", []),
+        ],
+    )
+    reviewed["module_observation_selectors"] = sorted(
+        set(reviewed.get("module_observation_selectors", []))
+        | set(source_review["observation_selectors"])
+    )
+
+for test_path, function_rows in REQUEST_PARAMETER_FUNCTION_MAPPINGS.items():
+    module_review = REQUEST_PARAMETER_SOURCE_REVIEW_MAPPINGS[test_path]
+    reviewed_functions = TEST_REVIEW_MAPPINGS.setdefault(test_path, {}).setdefault("functions", {})
+    for function_name, function_row in function_rows.items():
+        workflow = function_row["workflow_case"]
+        function_note = "Use %s::%s actions %s; the workflow is input-only and observes %s." % (
+            workflow["recipe_path"],
+            workflow["case_id"],
+            ", ".join(workflow["action_ids"]),
+            ", ".join(workflow["observation_selectors"]),
+        )
+        function_review = {
+            "feature_ids": ["request-validation"],
+            "observation_selectors": workflow["observation_selectors"],
+            "rationale": function_row["rationale"],
+            "replace_features": True,
+            "supporting_sources": _append_unique_review_sources(
+                [],
+                [
+                    function_row["source_span"],
+                    *module_review.get("fastapi_implementation_sources", []),
+                    *module_review.get("starlette_contract_sources", []),
+                ],
+            ),
+            "stimulus_notes": function_note,
+            "contract_gate": function_row["contract_gate"],
+        }
+        reviewed_functions.setdefault(function_name, {}).update(function_review)
+
 DOC_EXCLUSION_OVERRIDES = {
     "contributing.md": "Contribution guidance links out to project contribution instructions; no FastAPI runtime behavior is specified.",
     "external-links.md": "Community-link generation produces documentation-site links, not FastAPI runtime behavior.",
@@ -4313,6 +4437,22 @@ from atlas_advanced_howto_wave_mappings import (  # noqa: E402
 
 DOC_PAGE_REVIEW_MAPPINGS.update(ADVANCED_HOWTO_DOC_PAGE_REVIEW_MAPPINGS)
 
+# Remaining docs pages were reviewed independently. Feature pages link to
+# existing input cases; explicit exclusions retain exact page source spans.
+import atlas_remaining_docs_wave_mappings as remaining_docs_wave  # noqa: E402
+
+DOC_PAGE_REVIEW_MAPPINGS.update(remaining_docs_wave.DOC_PAGE_REVIEW_MAPPINGS)
+for doc_path, exclusion in remaining_docs_wave.DOC_PAGE_EXCLUSION_MAPPINGS.items():
+    reason = exclusion["exclusion_reason"]
+    DOC_EXCLUSION_OVERRIDES[doc_path] = reason
+    DOC_PAGE_REVIEW_MAPPINGS[doc_path] = {
+        "rationale": reason,
+        "replace_features": True,
+        "feature_ids": [],
+        "exclusion_reason": reason,
+        "supporting_sources": exclusion["supporting_sources"],
+    }
+
 FEATURES = [
     {
         "id": "app-routing",
@@ -5477,7 +5617,17 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         fastapi_identity=fastapi_identity,
     )
     starlette_rs_metadata = project_metadata["starlette_rs"]
-    starlette_rs_manifest_path = (PROJECT / starlette_rs_metadata["manifest"]).resolve()
+
+    def starlette_rs_artifact_path(path_text: str) -> Path:
+        owner_path = Path(starlette_rs_metadata["owner"])
+        artifact_path = Path(path_text)
+        try:
+            relative_path = artifact_path.relative_to(owner_path)
+        except ValueError:
+            return (PROJECT / artifact_path).resolve()
+        return (starlette_rs_root / relative_path).resolve()
+
+    starlette_rs_manifest_path = starlette_rs_artifact_path(starlette_rs_metadata["manifest"])
     if not starlette_rs_manifest_path.is_file():
         raise AtlasError("Starlette-RS manifest not found: " + starlette_rs_metadata["manifest"])
     starlette_rs_manifest_text = starlette_rs_manifest_path.read_text(encoding="utf-8")
@@ -5533,9 +5683,13 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         for surface in (starlette_rs_manifest or {}).get("surfaces", [])
         for operation in surface.get("operations", [])
     }
-    starlette_surface_catalog_path = (PROJECT / starlette_rs_metadata["api_catalog"]).resolve()
-    starlette_review_path = (PROJECT / starlette_rs_metadata["api_review"]).resolve()
-    starlette_coverage_matrix_path = (PROJECT / starlette_rs_metadata["coverage_matrix"]).resolve()
+    starlette_surface_catalog_path = starlette_rs_artifact_path(
+        starlette_rs_metadata["api_catalog"]
+    )
+    starlette_review_path = starlette_rs_artifact_path(starlette_rs_metadata["api_review"])
+    starlette_coverage_matrix_path = starlette_rs_artifact_path(
+        starlette_rs_metadata["coverage_matrix"]
+    )
     if not starlette_surface_catalog_path.exists() or not starlette_review_path.exists():
         raise AtlasError("Starlette-RS merged API catalog or review is missing")
     starlette_review_records: dict[str, list[dict[str, str]]] = defaultdict(list)
@@ -6361,6 +6515,39 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             for item in test_functions
             if item["mapping_status"] == "excluded"
         ]
+        app_scope_review = APP_DEPENDENCY_SCOPE_REVIEW_BY_MODULE.get(rel)
+        app_scope_review_record = None
+        if app_scope_review:
+            module_review = app_scope_review.get("module")
+            app_scope_review_record = {
+                "scope": "app/dependency wave disposition; does not exclude behavior from the merged FastAPI contract",
+                "module": (
+                    {
+                        "reason": module_review["reason"],
+                        "source_evidence": reviewed_source_spans(
+                            fastapi_root,
+                            module_review.get("supporting_sources", []),
+                            starlette_root,
+                        ),
+                    }
+                    if module_review
+                    else None
+                ),
+                "functions": [
+                    {
+                        "name": function_name,
+                        "reason": function_review["reason"],
+                        "source_evidence": reviewed_source_spans(
+                            fastapi_root,
+                            function_review.get("supporting_sources", []),
+                            starlette_root,
+                        ),
+                    }
+                    for function_name, function_review in sorted(
+                        app_scope_review.get("functions", {}).items()
+                    )
+                ],
+            }
         if exclusion:
             mapping_status = "excluded"
         elif case_designs and (
@@ -6374,9 +6561,14 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             mapping_status = "candidate"
         else:
             mapping_status = "review_required"
-        module_selectors = selectors_with_exact_http_body(
-            reviewed_mapping.get("module_observation_selectors", selectors)
+        module_selector_set = set(selectors)
+        module_selector_set.update(reviewed_mapping.get("module_observation_selectors", []))
+        module_selector_set.update(
+            selector
+            for function_mapping in reviewed_function_mappings.values()
+            for selector in function_mapping.get("observation_selectors", [])
         )
+        module_selectors = selectors_with_exact_http_body(sorted(module_selector_set))
         coverage_items.append(
             {
                 "id": item_id,
@@ -6428,6 +6620,11 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                     ],
                     "unmatched_test_functions": unmatched_test_functions,
                     "excluded_test_functions": excluded_test_functions,
+                    **(
+                        {"app_dependency_wave_scope_review": app_scope_review_record}
+                        if app_scope_review_record
+                        else {}
+                    ),
                     "reviewed_module_mapping": {
                         "rationale": reviewed_mapping.get("rationale"),
                         "supporting_sources": reviewed_source_spans(
@@ -6612,7 +6809,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             if reviewed_starlette_spans:
                 reviewed_page_record["starlette_source_evidence"] = reviewed_starlette_spans
                 reviewed_page_record["starlette_contract_authority"] = STARLETTE_VERSION
-            for metadata_key in ("contract_gate", "stimulus_notes"):
+            for metadata_key in ("contract_gate", "stimulus_notes", "exclusion_reason"):
                 if reviewed_page_mapping.get(metadata_key) is not None:
                     reviewed_page_record[metadata_key] = reviewed_page_mapping[metadata_key]
         source_evidence = (
@@ -6875,6 +7072,14 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             "evidence": f"FastAPI-RS directly reuses ../starlette-rs/starlette-rs; metadata.yaml and CI pin {starlette_rs_revision}. The atlas reads the sibling manifest/catalog/review and records the checkout state. Keep the local checkout clean at the pin for reproducible builds and parity runs.",
         },
     ]
+    unresolved.append(
+        {
+            "id": "app-dependency-wave-residual-gaps",
+            "status": "source-reviewed; partial-input-gates-remain",
+            "question": "Which app, dependency, lifecycle, exception, and WebSocket cases still need independent inputs or target observations?",
+            "evidence": " ".join(APP_DEPENDENCY_WAVE_GAPS.values()),
+        }
+    )
 
     priority_backlog = [
         {

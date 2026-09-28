@@ -1,0 +1,19 @@
+schema: fastapi-rs/python-asgi-workflow@3
+workload:
+  file: tests/fixtures/workloads/empty_router_include_construction_upstream.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.routing.empty-router-include-construction
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions: []
+  source_evidence:
+  - path: tests/test_empty_router.py
+    kind: upstream_test

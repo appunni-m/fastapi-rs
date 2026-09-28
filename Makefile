@@ -87,7 +87,7 @@ api-contract-check: ## Check per-symbol API links are current
 	$(PYTHON) -m scripts.build_api_surface_contract --check
 
 metadata-check: ## Check API-source metadata against generated contract artifacts
-	$(PYTHON) scripts/check_metadata_authority.py
+	$(PYTHON) scripts/check_metadata_authority.py --starlette-rs-source "$(STARLETTE_RS_SOURCE)"
 
 parity-prepare-oracle: ## Create the locked source oracle and select local Starlette 1.6.0
 	UV_PROJECT_ENVIRONMENT="$(CURDIR)/.venv-oracle" $(UV) sync --project "$(FASTAPI_SOURCE)" --locked --no-dev --no-install-package starlette --python "$(PYTHON)"
