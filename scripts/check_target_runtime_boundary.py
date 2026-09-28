@@ -11,24 +11,6 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 PYTHON_PACKAGE_ROOT = PROJECT_ROOT / "fastapi-rs-py" / "python"
-FORBIDDEN_PYTHON_CONTROL_FLOW = (
-    ast.AsyncFor,
-    ast.AsyncWith,
-    ast.BoolOp,
-    ast.DictComp,
-    ast.For,
-    ast.If,
-    ast.IfExp,
-    ast.ListComp,
-    ast.Match,
-    ast.SetComp,
-    ast.Try,
-    getattr(ast, "TryStar", ast.Try),
-    ast.While,
-    ast.With,
-    ast.comprehension,
-    ast.GeneratorExp,
-)
 PROJECT_DEPENDENCY_SECTION = "project"
 PROJECT_OPTIONAL_DEPENDENCY_SECTION = "project.optional-dependencies"
 
@@ -123,7 +105,22 @@ def check_declared_runtime_dependency_boundary() -> None:
         raise SystemExit("\n".join(forbidden))
 
 
-def check_python_facade_control_flow() -> None:
+def _is_static_all_assignment(node: ast.stmt) -> bool:
+    return (
+        isinstance(node, ast.Assign)
+        and len(node.targets) == 1
+        and isinstance(node.targets[0], ast.Name)
+        and node.targets[0].id == "__all__"
+        and isinstance(node.value, (ast.List, ast.Tuple))
+        and all(
+            isinstance(item, ast.Constant) and isinstance(item.value, str)
+            for item in node.value.elts
+        )
+    )
+
+
+def check_python_facade_pass_through() -> None:
+    """Allow only re-exports and a literal ``__all__`` in runtime Python modules."""
     python_files = sorted(PYTHON_PACKAGE_ROOT.rglob("*.py"))
     if not python_files:
         raise SystemExit(f"no Python facade sources found under {PYTHON_PACKAGE_ROOT}")
@@ -131,12 +128,24 @@ def check_python_facade_control_flow() -> None:
     violations = []
     for path in python_files:
         tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        for index, node in enumerate(tree.body):
+            is_docstring = (
+                index == 0
+                and isinstance(node, ast.Expr)
+                and isinstance(node.value, ast.Constant)
+                and isinstance(node.value.value, str)
+            )
+            if is_docstring or isinstance(node, (ast.Import, ast.ImportFrom)):
+                continue
+            if _is_static_all_assignment(node):
+                continue
+            violations.append(
+                f"{path.relative_to(PROJECT_ROOT)}:{node.lineno}: "
+                f"{type(node).__name__} is not a pass-through re-export; Python runtime "
+                "modules may contain only imports and a literal __all__"
+            )
+
         for node in ast.walk(tree):
-            if isinstance(node, FORBIDDEN_PYTHON_CONTROL_FLOW):
-                violations.append(
-                    f"{path.relative_to(PROJECT_ROOT)}:{node.lineno}: "
-                    f"{type(node).__name__} is forbidden in the Python pass-through layer"
-                )
             if isinstance(node, ast.Import) and any(
                 alias.name == "fastapi" or alias.name.startswith("fastapi.") for alias in node.names
             ):
@@ -157,7 +166,7 @@ def check_python_facade_control_flow() -> None:
 
 def main() -> int:
     check_declared_runtime_dependency_boundary()
-    check_python_facade_control_flow()
+    check_python_facade_pass_through()
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--source-only",
@@ -168,7 +177,7 @@ def main() -> int:
     if args.source_only:
         print(
             "Static target boundary valid: no original FastAPI runtime dependency or import, "
-            "and no Python facade branches, loops, or handlers"
+            "and Python runtime modules contain only imports and literal __all__ exports"
         )
         return 0
 
@@ -205,7 +214,7 @@ def main() -> int:
 
     print(
         "target runtime boundary valid: fastapi-rs installed; upstream fastapi absent; "
-        "Python facade has no branches or loops; runtime metadata has no upstream dependency"
+        "Python facade contains only imports/exports; runtime metadata has no upstream dependency"
     )
     return 0
 

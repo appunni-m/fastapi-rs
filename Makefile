@@ -24,7 +24,7 @@ help: ## Show common development commands
 	@printf '%s\n' \
 	  'FastAPI-RS — Rust-backed FastAPI compatibility project' '' \
 	  '  make fmt            Check Rust formatting and Python lint' \
-	  '  make python-facade-check Reject control flow in the Python pass-through package' \
+	  '  make python-facade-check Enforce import/re-export-only Python runtime modules' \
 	  '  make format         Apply Rust formatting' \
 	  '  make clippy         Run strict workspace Clippy' \
 	  '  make build          Build the Rust crates and Python wheel' \
@@ -56,7 +56,7 @@ fmt: ## Check Rust formatting and Python lint
 	$(PYTHON) -m ruff check fastapi-rs-py/python scripts tests/fixtures/workloads
 	$(MAKE) python-facade-check
 
-python-facade-check: ## Reject control flow in the Python pass-through package
+python-facade-check: ## Require imports/re-exports only in the Python runtime package
 	$(PYTHON) scripts/check_target_runtime_boundary.py --source-only
 
 format: ## Apply Rust formatting
