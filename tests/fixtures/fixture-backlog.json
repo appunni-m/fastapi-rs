@@ -53112,7 +53112,6 @@
         "app-routing",
         "dependency-security",
         "middleware-integrations",
-        "public-api-errors",
         "response-serialization"
       ],
       "id": "fastapi.docs.tutorial-middleware",
@@ -53130,8 +53129,8 @@
       ],
       "related_usage_sources": [],
       "reviewed_source_mapping": {
-        "contract_gate": "The ordered request/response middleware trace is not representable by current FEATURES selectors; add a reviewed middleware.execution_order observation before treating nesting order as an executable schema case.",
-        "rationale": "The request-validation match is only path/header wording. The page explicitly covers middleware nesting plus yield-dependency cleanup and background-task ordering, so response-serialization is missing from the lexical map. Request and response middleware execution order has no dedicated selector in FEATURES. The Request import is a direct Starlette re-export.",
+        "contract_gate": "The new order case observes only the documented two-wrapper HTTP nesting and uses its independently returned event trace as exact body bytes. The separate decorator workflow observes middleware headers but not decorator-registration ordering. These cases do not establish ordering for arbitrary middleware or WebSocket/lifespan scopes. The page's yield-dependency-exit and background-task-after-middleware statements are not compared against middleware events by these cases. Existing dependency/background fixtures observe those lifecycles separately, so do not infer their cross-order from this page mapping.",
+        "rationale": "The page specifies HTTP middleware wrapping, response mutation, stack order, yield-dependency cleanup, and background-task ordering. FastAPI exposes the decorator and inherits generic add_middleware stack construction from Starlette. The Request import convenience is a direct Starlette re-export.",
         "source_evidence": [
           {
             "end_line": 89,
@@ -53158,6 +53157,22 @@
         "starlette_contract_authority": "1.6.0",
         "starlette_source_evidence": [
           {
+            "end_line": 83,
+            "path": "starlette/applications.py",
+            "role": "Starlette 1.6.0 builds its middleware stack by wrapping the router in reverse order",
+            "sha256": "1119714f44c8f5a39cbb5c9d0209e6fc13e7d5c18015dff3234adb5c52fa84a1",
+            "source_authority": "Starlette 1.6.0",
+            "start_line": 63
+          },
+          {
+            "end_line": 107,
+            "path": "starlette/applications.py",
+            "role": "Starlette 1.6.0 prepends each added middleware, making the newest wrapper outermost",
+            "sha256": "1119714f44c8f5a39cbb5c9d0209e6fc13e7d5c18015dff3234adb5c52fa84a1",
+            "source_authority": "Starlette 1.6.0",
+            "start_line": 104
+          },
+          {
             "end_line": 226,
             "path": "starlette/requests.py",
             "role": "selected Starlette Request implementation",
@@ -53165,7 +53180,8 @@
             "source_authority": "Starlette 1.6.0",
             "start_line": 214
           }
-        ]
+        ],
+        "stimulus_notes": "tests/fixtures/input-recipes/parity/middleware-execution-order-wave.yaml::fastapi.docs.middleware.request-and-response-order records an independent trace from two `add_middleware` wrappers: the last-added wrapper enters first on the request path, and the first-added wrapper observes the response first. The trace is returned by a second request and compared through exact HTTP body bytes. middleware.yaml::fastapi.middleware.decorator-openapi covers the HTTP decorator and response headers; middleware.yaml's HTTPS redirect, trusted-host, and custom body-limit cases cover separate middleware behaviors. dependency-wave-lifecycle.yaml::fastapi.dependencies.contextvars-through-middleware covers context propagation across HTTP middleware. These are independent samples, not complete coverage of arbitrary middleware implementations."
       },
       "selector_evidence": [
         {
@@ -53196,19 +53212,23 @@
           ]
         },
         {
-          "feature_id": "public-api-errors",
-          "selectors": [
-            "python.import_path",
-            "python.object_identity"
-          ]
-        },
-        {
           "feature_id": "response-serialization",
           "selectors": [
             "http.status",
             "http.headers.ordered",
             "http.body.bytes",
             "response.background_effects"
+          ]
+        },
+        {
+          "feature_id": null,
+          "schema_extension_required": [
+            "python.import_path",
+            "python.object_identity"
+          ],
+          "selectors": [
+            "python.import_path",
+            "python.object_identity"
           ]
         }
       ],
@@ -53243,6 +53263,22 @@
           "start_line": 1
         },
         {
+          "end_line": 83,
+          "path": "starlette/applications.py",
+          "role": "Starlette 1.6.0 builds its middleware stack by wrapping the router in reverse order",
+          "sha256": "1119714f44c8f5a39cbb5c9d0209e6fc13e7d5c18015dff3234adb5c52fa84a1",
+          "source_authority": "Starlette 1.6.0",
+          "start_line": 63
+        },
+        {
+          "end_line": 107,
+          "path": "starlette/applications.py",
+          "role": "Starlette 1.6.0 prepends each added middleware, making the newest wrapper outermost",
+          "sha256": "1119714f44c8f5a39cbb5c9d0209e6fc13e7d5c18015dff3234adb5c52fa84a1",
+          "source_authority": "Starlette 1.6.0",
+          "start_line": 104
+        },
+        {
           "end_line": 226,
           "path": "starlette/requests.py",
           "role": "selected Starlette Request implementation",
@@ -53265,7 +53301,6 @@
         "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
         "Declare the dependency/security graph and credential inputs, invoke the public endpoint, and observe response, call order, cleanup, and schema effects.",
         "Enable the named optional integration or middleware, provide deterministic request/filesystem/configuration inputs, and observe its public effect.",
-        "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable.",
         "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
       ]
     },
@@ -101052,6 +101087,20 @@
                   "term": "curated source review"
                 },
                 {
+                  "end_line": 25,
+                  "line": 19,
+                  "path": "tests/test_http_connection_injection.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 39,
+                  "line": 31,
+                  "path": "tests/test_http_connection_injection.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
                   "end_line": 1,
                   "line": 1,
                   "path": "fastapi/requests.py",
@@ -101062,6 +101111,34 @@
                   "end_line": 371,
                   "line": 350,
                   "path": "fastapi/dependencies/utils.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 714,
+                  "line": 709,
+                  "path": "fastapi/dependencies/utils.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 107,
+                  "line": 80,
+                  "path": "starlette/requests.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 57,
+                  "line": 54,
+                  "path": "starlette/applications.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 686,
+                  "line": 664,
+                  "path": "starlette/datastructures.py",
                   "source": "reviewed-source-span",
                   "term": "curated source review"
                 }
@@ -101085,6 +101162,20 @@
                   "term": "curated source review"
                 },
                 {
+                  "end_line": 25,
+                  "line": 19,
+                  "path": "tests/test_http_connection_injection.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 39,
+                  "line": 31,
+                  "path": "tests/test_http_connection_injection.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
                   "end_line": 1,
                   "line": 1,
                   "path": "fastapi/requests.py",
@@ -101097,6 +101188,34 @@
                   "path": "fastapi/dependencies/utils.py",
                   "source": "reviewed-source-span",
                   "term": "curated source review"
+                },
+                {
+                  "end_line": 714,
+                  "line": 709,
+                  "path": "fastapi/dependencies/utils.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 107,
+                  "line": 80,
+                  "path": "starlette/requests.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 57,
+                  "line": 54,
+                  "path": "starlette/applications.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 686,
+                  "line": 664,
+                  "path": "starlette/datastructures.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 }
               ]
             }
@@ -101107,13 +101226,13 @@
           ],
           "id": "fastapi.test.test-http-connection-injection.test-value-extracting-by-http",
           "mapping_scope": "reviewed_source_mapping",
-          "mapping_status": "reviewed_source_candidate",
+          "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
-            "http.status",
-            "http.body.bytes"
+            "http.status"
           ],
           "reviewed_mapping": {
-            "rationale": "FastAPI injects HTTPConnection into a dependency, which reads the app-state value for the response.",
+            "contract_gate": "The source also asserts response.json() == 42. The workflow exposes raw body bytes but no semantic JSON-value selector, so body equality is gated rather than treating wire-byte equality as the source assertion.",
+            "rationale": "The dependency-wave ASGI case injects HTTPConnection, reads app.state.marker, and returns that value; the supported status selector covers the asserted successful response.",
             "source_evidence": [
               {
                 "end_line": 34,
@@ -101125,9 +101244,23 @@
               {
                 "end_line": 16,
                 "path": "tests/test_http_connection_injection.py",
-                "role": "HTTPConnection dependency and app-state setup",
+                "role": "HTTPConnection dependency, app-state read, and HTTP route setup",
                 "sha256": "f7037ecf1911c5eecd3b222ec055eaaf9fa6123a57a9528e9ded33a76258f3f4",
                 "start_line": 6
+              },
+              {
+                "end_line": 25,
+                "path": "tests/test_http_connection_injection.py",
+                "role": "WebSocket route injects the same HTTPConnection dependency and sends its value",
+                "sha256": "f7037ecf1911c5eecd3b222ec055eaaf9fa6123a57a9528e9ded33a76258f3f4",
+                "start_line": 19
+              },
+              {
+                "end_line": 39,
+                "path": "tests/test_http_connection_injection.py",
+                "role": "TestClient assertions for the HTTP response and WebSocket JSON message",
+                "sha256": "f7037ecf1911c5eecd3b222ec055eaaf9fa6123a57a9528e9ded33a76258f3f4",
+                "start_line": 31
               },
               {
                 "end_line": 1,
@@ -101139,26 +101272,55 @@
               {
                 "end_line": 371,
                 "path": "fastapi/dependencies/utils.py",
-                "role": "FastAPI special dependency injection for connection types",
+                "role": "FastAPI classifies HTTPConnection as a special dependency parameter",
                 "sha256": "13693375ab95e32424e5434c21f928463634af5ee1261cf3e04031381bdf47d9",
                 "start_line": 350
+              },
+              {
+                "end_line": 714,
+                "path": "fastapi/dependencies/utils.py",
+                "role": "FastAPI supplies the HTTP request or WebSocket object to the HTTPConnection dependency",
+                "sha256": "13693375ab95e32424e5434c21f928463634af5ee1261cf3e04031381bdf47d9",
+                "start_line": 709
+              },
+              {
+                "end_line": 107,
+                "path": "starlette/requests.py",
+                "role": "Starlette HTTPConnection accepts HTTP and WebSocket scopes and exposes the owning app",
+                "sha256": "8691b01ae49ecfa085fe6419343678f73b77c92fc63a411106a77d8e9bf0ac44",
+                "source_authority": "Starlette 1.6.0",
+                "start_line": 80
+              },
+              {
+                "end_line": 57,
+                "path": "starlette/applications.py",
+                "role": "Starlette creates the application state object",
+                "sha256": "1119714f44c8f5a39cbb5c9d0209e6fc13e7d5c18015dff3234adb5c52fa84a1",
+                "source_authority": "Starlette 1.6.0",
+                "start_line": 54
+              },
+              {
+                "end_line": 686,
+                "path": "starlette/datastructures.py",
+                "role": "Starlette app.state attribute storage and lookup",
+                "sha256": "f9e310036299d6a427443ca96ba118e58486e5927cd4c3bac0ffb815626e52cd",
+                "source_authority": "Starlette 1.6.0",
+                "start_line": 664
               }
             ],
-            "stimulus_notes": "The injected connection object and app-state behavior are Starlette-owned; the special dependency classification is FastAPI integration."
+            "stimulus_notes": "Use fastapi.dependency-wave.http-connection-injection.test-value-extracting-by-http in tests/fixtures/input-recipes/parity/dependency-wave.yaml. The docs-reference-asgi candidate uses /http, but its associated workload registers /connection, so it does not exercise this function. The source's TestClient.get call is only a transport harness; direct ASGI input covers FastAPI behavior, while generic TestClient behavior remains in the Starlette-RS contract. HTTPConnection.app and app.state are Starlette-owned; special dependency classification and binding are FastAPI integration."
           },
           "selector_evidence": [
             {
               "feature_id": "dependency-security",
               "selectors": [
-                "http.status",
-                "http.body.bytes"
+                "http.status"
               ]
             },
             {
               "feature_id": "response-serialization",
               "selectors": [
-                "http.status",
-                "http.body.bytes"
+                "http.status"
               ]
             }
           ],
@@ -101169,7 +101331,7 @@
             "Declare the dependency/security graph and credential inputs, invoke the public endpoint, and observe response, call order, cleanup, and schema effects.",
             "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
           ],
-          "stimulus_design_notes": "The injected connection object and app-state behavior are Starlette-owned; the special dependency classification is FastAPI integration."
+          "stimulus_design_notes": "Use fastapi.dependency-wave.http-connection-injection.test-value-extracting-by-http in tests/fixtures/input-recipes/parity/dependency-wave.yaml. The docs-reference-asgi candidate uses /http, but its associated workload registers /connection, so it does not exercise this function. The source's TestClient.get call is only a transport harness; direct ASGI input covers FastAPI behavior, while generic TestClient behavior remains in the Starlette-RS contract. HTTPConnection.app and app.state are Starlette-owned; special dependency classification and binding are FastAPI integration."
         },
         {
           "feature_evidence": [
@@ -101191,6 +101353,20 @@
                   "term": "curated source review"
                 },
                 {
+                  "end_line": 25,
+                  "line": 19,
+                  "path": "tests/test_http_connection_injection.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 39,
+                  "line": 31,
+                  "path": "tests/test_http_connection_injection.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
                   "end_line": 1,
                   "line": 1,
                   "path": "fastapi/requests.py",
@@ -101203,6 +101379,34 @@
                   "path": "fastapi/dependencies/utils.py",
                   "source": "reviewed-source-span",
                   "term": "curated source review"
+                },
+                {
+                  "end_line": 714,
+                  "line": 709,
+                  "path": "fastapi/dependencies/utils.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 107,
+                  "line": 80,
+                  "path": "starlette/requests.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 57,
+                  "line": 54,
+                  "path": "starlette/applications.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 686,
+                  "line": 664,
+                  "path": "starlette/datastructures.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 }
               ]
             }
@@ -101212,12 +101416,13 @@
           ],
           "id": "fastapi.test.test-http-connection-injection.test-value-extracting-by-ws",
           "mapping_scope": "reviewed_source_mapping",
-          "mapping_status": "reviewed_source_candidate",
+          "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
             "websocket.messages"
           ],
           "reviewed_mapping": {
-            "rationale": "FastAPI injects HTTPConnection into a dependency used by a WebSocket route, which sends the app-state value.",
+            "contract_gate": "The source asserts receive_json() == 42, while the workflow selector exposes WebSocket text frames without decoding JSON. The decoded value assertion remains gated; TestClient websocket_connect/receive_json and context-manager behavior belong to the separate Starlette-RS contract.",
+            "rationale": "A dedicated WebSocket ASGI case injects HTTPConnection into a dependency, reads app.state.marker, and observes the route's outgoing text message.",
             "source_evidence": [
               {
                 "end_line": 39,
@@ -101229,9 +101434,23 @@
               {
                 "end_line": 16,
                 "path": "tests/test_http_connection_injection.py",
-                "role": "HTTPConnection dependency and app-state setup",
+                "role": "HTTPConnection dependency, app-state read, and HTTP route setup",
                 "sha256": "f7037ecf1911c5eecd3b222ec055eaaf9fa6123a57a9528e9ded33a76258f3f4",
                 "start_line": 6
+              },
+              {
+                "end_line": 25,
+                "path": "tests/test_http_connection_injection.py",
+                "role": "WebSocket route injects the same HTTPConnection dependency and sends its value",
+                "sha256": "f7037ecf1911c5eecd3b222ec055eaaf9fa6123a57a9528e9ded33a76258f3f4",
+                "start_line": 19
+              },
+              {
+                "end_line": 39,
+                "path": "tests/test_http_connection_injection.py",
+                "role": "TestClient assertions for the HTTP response and WebSocket JSON message",
+                "sha256": "f7037ecf1911c5eecd3b222ec055eaaf9fa6123a57a9528e9ded33a76258f3f4",
+                "start_line": 31
               },
               {
                 "end_line": 1,
@@ -101243,12 +101462,43 @@
               {
                 "end_line": 371,
                 "path": "fastapi/dependencies/utils.py",
-                "role": "FastAPI special dependency injection for connection types",
+                "role": "FastAPI classifies HTTPConnection as a special dependency parameter",
                 "sha256": "13693375ab95e32424e5434c21f928463634af5ee1261cf3e04031381bdf47d9",
                 "start_line": 350
+              },
+              {
+                "end_line": 714,
+                "path": "fastapi/dependencies/utils.py",
+                "role": "FastAPI supplies the HTTP request or WebSocket object to the HTTPConnection dependency",
+                "sha256": "13693375ab95e32424e5434c21f928463634af5ee1261cf3e04031381bdf47d9",
+                "start_line": 709
+              },
+              {
+                "end_line": 107,
+                "path": "starlette/requests.py",
+                "role": "Starlette HTTPConnection accepts HTTP and WebSocket scopes and exposes the owning app",
+                "sha256": "8691b01ae49ecfa085fe6419343678f73b77c92fc63a411106a77d8e9bf0ac44",
+                "source_authority": "Starlette 1.6.0",
+                "start_line": 80
+              },
+              {
+                "end_line": 57,
+                "path": "starlette/applications.py",
+                "role": "Starlette creates the application state object",
+                "sha256": "1119714f44c8f5a39cbb5c9d0209e6fc13e7d5c18015dff3234adb5c52fa84a1",
+                "source_authority": "Starlette 1.6.0",
+                "start_line": 54
+              },
+              {
+                "end_line": 686,
+                "path": "starlette/datastructures.py",
+                "role": "Starlette app.state attribute storage and lookup",
+                "sha256": "f9e310036299d6a427443ca96ba118e58486e5927cd4c3bac0ffb815626e52cd",
+                "source_authority": "Starlette 1.6.0",
+                "start_line": 664
               }
             ],
-            "stimulus_notes": "FastAPI classifies HTTPConnection for dependency injection; WebSocket message transport is Starlette-owned."
+            "stimulus_notes": "Use fastapi.http-connection-injection.websocket-app-state in tests/fixtures/input-recipes/parity/http-connection-injection-websocket.yaml. The docs-reference-asgi candidate requests /ws, but its associated workload registers /connection/ws, so it does not exercise this function. The dedicated case observes only application messages, not TestClient handshake or close behavior. HTTPConnection.app and app.state are Starlette-owned; special dependency classification and binding are FastAPI integration."
           },
           "selector_evidence": [
             {
@@ -101267,7 +101517,7 @@
           "stimulus_design": [
             "Declare the dependency/security graph and credential inputs, invoke the public endpoint, and observe response, call order, cleanup, and schema effects."
           ],
-          "stimulus_design_notes": "FastAPI classifies HTTPConnection for dependency injection; WebSocket message transport is Starlette-owned."
+          "stimulus_design_notes": "Use fastapi.http-connection-injection.websocket-app-state in tests/fixtures/input-recipes/parity/http-connection-injection-websocket.yaml. The docs-reference-asgi candidate requests /ws, but its associated workload registers /connection/ws, so it does not exercise this function. The dedicated case observes only application messages, not TestClient handshake or close behavior. HTTPConnection.app and app.state are Starlette-owned; special dependency classification and binding are FastAPI integration."
         }
       ],
       "feature_ids": [
@@ -101277,40 +101527,32 @@
       "id": "fastapi.test.test-http-connection-injection",
       "input_only": true,
       "observation_selectors": [
-        "dependency.call_order",
-        "dependency.cleanup_order",
-        "http.body.bytes",
-        "http.body.json",
-        "http.cookies",
-        "http.headers.ordered",
         "http.status",
-        "openapi.security",
-        "response.background_effects",
-        "validation.error_class"
+        "http.body.bytes",
+        "websocket.messages"
       ],
       "selector_evidence": [
         {
           "feature_id": "dependency-security",
           "selectors": [
             "http.status",
-            "http.headers.ordered",
-            "http.body.bytes",
-            "http.body.json",
-            "dependency.call_order",
-            "dependency.cleanup_order",
-            "openapi.security"
+            "http.body.bytes"
           ]
         },
         {
           "feature_id": "response-serialization",
           "selectors": [
             "http.status",
-            "http.headers.ordered",
-            "http.cookies",
-            "http.body.bytes",
-            "http.body.json",
-            "response.background_effects",
-            "validation.error_class"
+            "http.body.bytes"
+          ]
+        },
+        {
+          "feature_id": null,
+          "schema_extension_required": [
+            "websocket.messages"
+          ],
+          "selectors": [
+            "websocket.messages"
           ]
         }
       ],
@@ -101319,7 +101561,7 @@
         "sha256": "f7037ecf1911c5eecd3b222ec055eaaf9fa6123a57a9528e9ded33a76258f3f4"
       },
       "source_item_id": "upstream-test:tests/test_http_connection_injection.py",
-      "stage": "candidate; independent stimuli require review/materialization",
+      "stage": "partially mapped; one or more behaviors remain contract-gated",
       "starlette_rs_planning_areas": [
         "applications-requests-responses-background-concurrency",
         "asgi-http-websocket-lifespan",
@@ -213341,19 +213583,83 @@
                   "term": "openapi"
                 }
               ]
+            },
+            {
+              "feature_id": "public-api-errors",
+              "signals": [
+                {
+                  "end_line": 100,
+                  "line": 21,
+                  "path": "tests/test_tutorial/test_events/test_tutorial001.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 11,
+                  "line": 7,
+                  "path": "tests/test_tutorial/test_events/test_tutorial001.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 16,
+                  "line": 1,
+                  "path": "docs_src/events/tutorial001_py310.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 269,
+                  "line": 251,
+                  "path": "fastapi/routing.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 2537,
+                  "line": 2520,
+                  "path": "fastapi/routing.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 6445,
+                  "line": 6363,
+                  "path": "fastapi/routing.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 647,
+                  "line": 585,
+                  "path": "fastapi/openapi/utils.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 100,
+                  "line": 21,
+                  "path": "tests/test_tutorial/test_events/test_tutorial001.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                }
+              ]
             }
           ],
           "feature_ids": [
-            "openapi-docs"
+            "openapi-docs",
+            "public-api-errors"
           ],
           "id": "fastapi.test.test-tutorial-test-events-test-tutorial001.test-openapi-schema",
           "mapping_scope": "reviewed_source_mapping",
-          "mapping_status": "reviewed_source_candidate",
+          "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
             "http.status",
-            "openapi.document"
+            "openapi.document",
+            "warnings.category_message"
           ],
           "reviewed_mapping": {
+            "contract_gate": "The shared fixture requires a DeprecationWarning while importing the example (lines 7-11), but pytest.warns checks only its category, not the message; the v3 workflow has no warning selector or category-only warning projection. The OpenAPI snapshot is otherwise observed as a full document.",
             "rationale": "The function compares only the generated OpenAPI snapshot; entering TestClient also invokes lifespan, but no lifecycle effect is asserted.",
             "source_evidence": [
               {
@@ -213364,11 +213670,25 @@
                 "start_line": 21
               },
               {
+                "end_line": 11,
+                "path": "tests/test_tutorial/test_events/test_tutorial001.py",
+                "role": "module-scoped fixture requires a DeprecationWarning while importing the example",
+                "sha256": "dcad1d9f8c2d9e3f62d8940b8ff01b87b687c074c82af31e64dbfa2eb6035b01",
+                "start_line": 7
+              },
+              {
                 "end_line": 16,
                 "path": "docs_src/events/tutorial001_py310.py",
                 "role": "startup handler populates app data and route reads it",
                 "sha256": "604cbccedd27a9b4923c143b21df0d2bcf7e74635ee76af610c555c7244cc9c0",
                 "start_line": 1
+              },
+              {
+                "end_line": 269,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI default lifespan dispatches registered startup and shutdown handlers",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 251
               },
               {
                 "end_line": 2537,
@@ -213380,9 +213700,9 @@
               {
                 "end_line": 6445,
                 "path": "fastapi/routing.py",
-                "role": "FastAPI deprecated on_event registration",
+                "role": "FastAPI legacy handler dispatch, registration, and deprecated on_event decorator",
                 "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
-                "start_line": 6415
+                "start_line": 6363
               },
               {
                 "end_line": 647,
@@ -213405,6 +213725,12 @@
               "feature_id": "openapi-docs",
               "selectors": [
                 "openapi.document"
+              ]
+            },
+            {
+              "feature_id": "public-api-errors",
+              "selectors": [
+                "warnings.category_message"
               ]
             },
             {
@@ -213421,13 +213747,15 @@
           "source_function": "test_openapi_schema",
           "source_line": 21,
           "stimulus_design": [
-            "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response."
+            "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response.",
+            "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable."
           ],
           "stimulus_design_notes": null
         }
       ],
       "feature_ids": [
-        "openapi-docs"
+        "openapi-docs",
+        "public-api-errors"
       ],
       "id": "fastapi.test.test-tutorial-test-events-test-tutorial001",
       "input_only": true,
@@ -213435,8 +213763,15 @@
         "docs.response.body.bytes",
         "docs.response.headers",
         "docs.response.status",
+        "error.class",
+        "error.public_attributes",
         "http.body.bytes",
-        "openapi.document"
+        "openapi.document",
+        "python.attribute_value",
+        "python.import_path",
+        "python.object_identity",
+        "python.signature",
+        "warnings.category_message"
       ],
       "selector_evidence": [
         {
@@ -213448,6 +213783,18 @@
             "docs.response.body.bytes",
             "http.body.bytes"
           ]
+        },
+        {
+          "feature_id": "public-api-errors",
+          "selectors": [
+            "python.import_path",
+            "python.object_identity",
+            "python.signature",
+            "python.attribute_value",
+            "warnings.category_message",
+            "error.class",
+            "error.public_attributes"
+          ]
         }
       ],
       "source_evidence": {
@@ -213455,13 +213802,15 @@
         "sha256": "dcad1d9f8c2d9e3f62d8940b8ff01b87b687c074c82af31e64dbfa2eb6035b01"
       },
       "source_item_id": "upstream-test:tests/test_tutorial/test_events/test_tutorial001.py",
-      "stage": "candidate; independent stimuli require review/materialization",
+      "stage": "partially mapped; one or more behaviors remain contract-gated",
       "starlette_rs_planning_areas": [
         "applications-requests-responses-background-concurrency",
+        "middleware-authentication-endpoints-datastructures-status",
         "wsgi-static-files-templates-schemas-configuration-testclient"
       ],
       "stimulus_design": [
-        "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response."
+        "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response.",
+        "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable."
       ],
       "stimulus_design_notes": null
     },
@@ -213477,19 +213826,83 @@
                   "term": "openapi"
                 }
               ]
+            },
+            {
+              "feature_id": "public-api-errors",
+              "signals": [
+                {
+                  "end_line": 50,
+                  "line": 27,
+                  "path": "tests/test_tutorial/test_events/test_tutorial002.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 13,
+                  "line": 9,
+                  "path": "tests/test_tutorial/test_events/test_tutorial002.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 14,
+                  "line": 1,
+                  "path": "docs_src/events/tutorial002_py310.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 269,
+                  "line": 251,
+                  "path": "fastapi/routing.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 2537,
+                  "line": 2520,
+                  "path": "fastapi/routing.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 6445,
+                  "line": 6363,
+                  "path": "fastapi/routing.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 647,
+                  "line": 585,
+                  "path": "fastapi/openapi/utils.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 50,
+                  "line": 27,
+                  "path": "tests/test_tutorial/test_events/test_tutorial002.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                }
+              ]
             }
           ],
           "feature_ids": [
-            "openapi-docs"
+            "openapi-docs",
+            "public-api-errors"
           ],
           "id": "fastapi.test.test-tutorial-test-events-test-tutorial002.test-openapi-schema",
           "mapping_scope": "reviewed_source_mapping",
-          "mapping_status": "reviewed_source_candidate",
+          "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
             "http.status",
-            "openapi.document"
+            "openapi.document",
+            "warnings.category_message"
           ],
           "reviewed_mapping": {
+            "contract_gate": "The shared fixture requires a DeprecationWarning while importing the example (lines 9-13), but pytest.warns checks only its category, not the message; the v3 workflow has no warning selector or category-only warning projection. The OpenAPI snapshot is otherwise observed as a full document.",
             "rationale": "The function compares only the generated OpenAPI snapshot; the TestClient context's shutdown file side effect is not asserted here.",
             "source_evidence": [
               {
@@ -213500,11 +213913,25 @@
                 "start_line": 27
               },
               {
+                "end_line": 13,
+                "path": "tests/test_tutorial/test_events/test_tutorial002.py",
+                "role": "module-scoped fixture requires a DeprecationWarning while importing the example",
+                "sha256": "c29e7dd9d4c15221fb6bf1beb7b417336c05be1ee7c2388625690989eb4ca7d9",
+                "start_line": 9
+              },
+              {
                 "end_line": 14,
                 "path": "docs_src/events/tutorial002_py310.py",
                 "role": "shutdown handler writes app-owned log output and route",
                 "sha256": "2fcaf57d6821142045a7e66ced2591164d83983286e5339ee30d51efc0dc7386",
                 "start_line": 1
+              },
+              {
+                "end_line": 269,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI default lifespan dispatches registered startup and shutdown handlers",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 251
               },
               {
                 "end_line": 2537,
@@ -213516,9 +213943,9 @@
               {
                 "end_line": 6445,
                 "path": "fastapi/routing.py",
-                "role": "FastAPI deprecated on_event registration",
+                "role": "FastAPI legacy handler dispatch, registration, and deprecated on_event decorator",
                 "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
-                "start_line": 6415
+                "start_line": 6363
               },
               {
                 "end_line": 647,
@@ -213544,6 +213971,12 @@
               ]
             },
             {
+              "feature_id": "public-api-errors",
+              "selectors": [
+                "warnings.category_message"
+              ]
+            },
+            {
               "feature_id": null,
               "schema_extension_required": [
                 "http.status"
@@ -213557,13 +213990,15 @@
           "source_function": "test_openapi_schema",
           "source_line": 27,
           "stimulus_design": [
-            "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response."
+            "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response.",
+            "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable."
           ],
           "stimulus_design_notes": null
         }
       ],
       "feature_ids": [
-        "openapi-docs"
+        "openapi-docs",
+        "public-api-errors"
       ],
       "id": "fastapi.test.test-tutorial-test-events-test-tutorial002",
       "input_only": true,
@@ -213571,8 +214006,15 @@
         "docs.response.body.bytes",
         "docs.response.headers",
         "docs.response.status",
+        "error.class",
+        "error.public_attributes",
         "http.body.bytes",
-        "openapi.document"
+        "openapi.document",
+        "python.attribute_value",
+        "python.import_path",
+        "python.object_identity",
+        "python.signature",
+        "warnings.category_message"
       ],
       "selector_evidence": [
         {
@@ -213584,6 +214026,18 @@
             "docs.response.body.bytes",
             "http.body.bytes"
           ]
+        },
+        {
+          "feature_id": "public-api-errors",
+          "selectors": [
+            "python.import_path",
+            "python.object_identity",
+            "python.signature",
+            "python.attribute_value",
+            "warnings.category_message",
+            "error.class",
+            "error.public_attributes"
+          ]
         }
       ],
       "source_evidence": {
@@ -213591,13 +214045,15 @@
         "sha256": "c29e7dd9d4c15221fb6bf1beb7b417336c05be1ee7c2388625690989eb4ca7d9"
       },
       "source_item_id": "upstream-test:tests/test_tutorial/test_events/test_tutorial002.py",
-      "stage": "candidate; independent stimuli require review/materialization",
+      "stage": "partially mapped; one or more behaviors remain contract-gated",
       "starlette_rs_planning_areas": [
         "applications-requests-responses-background-concurrency",
+        "middleware-authentication-endpoints-datastructures-status",
         "wsgi-static-files-templates-schemas-configuration-testclient"
       ],
       "stimulus_design": [
-        "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response."
+        "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response.",
+        "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable."
       ],
       "stimulus_design_notes": null
     },

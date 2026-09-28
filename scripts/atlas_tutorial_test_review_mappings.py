@@ -1380,10 +1380,22 @@ TUTORIAL_TEST_REVIEW_MAPPINGS = {
     "tests/test_tutorial/test_events/test_tutorial001.py": _module(
         [
             {
+                "path": "tests/test_tutorial/test_events/test_tutorial001.py",
+                "start_line": 7,
+                "end_line": 11,
+                "role": "module-scoped fixture requires a DeprecationWarning while importing the example",
+            },
+            {
                 "path": "docs_src/events/tutorial001_py310.py",
                 "start_line": 1,
                 "end_line": 16,
                 "role": "startup handler populates app data and route reads it",
+            },
+            {
+                "path": "fastapi/routing.py",
+                "start_line": 251,
+                "end_line": 269,
+                "role": "FastAPI default lifespan dispatches registered startup and shutdown handlers",
             },
             {
                 "path": "fastapi/routing.py",
@@ -1393,9 +1405,9 @@ TUTORIAL_TEST_REVIEW_MAPPINGS = {
             },
             {
                 "path": "fastapi/routing.py",
-                "start_line": 6415,
+                "start_line": 6363,
                 "end_line": 6445,
-                "role": "FastAPI deprecated on_event registration",
+                "role": "FastAPI legacy handler dispatch, registration, and deprecated on_event decorator",
             },
             {
                 "path": "fastapi/openapi/utils.py",
@@ -1409,26 +1421,46 @@ TUTORIAL_TEST_REVIEW_MAPPINGS = {
                 "tests/test_tutorial/test_events/test_tutorial001.py",
                 14,
                 18,
-                ["app-routing", "websocket-lifecycle"],
-                ["http.status", "http.body.json", "lifecycle.event_order"],
-                "The TestClient context invokes FastAPI's registered startup event before the route reads app-owned data. Generic TestClient/lifespan transport is Starlette-owned; returned item data is app logic.",
-                stimulus_notes="The test does not assert cleanup state or event ordering beyond startup-before-request.",
+                ["app-routing", "public-api-errors", "websocket-lifecycle"],
+                ["http.status", "http.body.json", "warnings.category_message"],
+                "The returned JSON shows that FastAPI's registered startup handler populated the app-owned item before the route read it. The source does not assert a separate lifecycle event trace; TestClient context driving is Starlette-owned.",
+                contract_gate="The shared fixture requires a DeprecationWarning while importing the example (lines 7-11), but pytest.warns checks only its category, not the message; the v3 workflow has no warning selector or category-only warning projection. The source compares response.json(); semantic JSON observation is not currently workflow-supported, and exact body bytes would be stricter than that parsed-value assertion.",
+                stimulus_notes="The legacy startup path is sampled by tests/fixtures/input-recipes/parity/testing-tutorial003-lifecycle-upstream.yaml case fastapi.test.test-tutorial-test-testing-test-tutorial003.startup-items-lifecycle. Its workload records startup and observes the request result; it does not capture the fixture warning or claim a TestClient event trace.",
             ),
             "test_openapi_schema": _openapi(
                 "tests/test_tutorial/test_events/test_tutorial001.py",
                 21,
                 100,
                 "The function compares only the generated OpenAPI snapshot; entering TestClient also invokes lifespan, but no lifecycle effect is asserted.",
+                feature_ids=["openapi-docs", "public-api-errors"],
+                observation_selectors=[
+                    "http.status",
+                    "openapi.document",
+                    "warnings.category_message",
+                ],
+                contract_gate="The shared fixture requires a DeprecationWarning while importing the example (lines 7-11), but pytest.warns checks only its category, not the message; the v3 workflow has no warning selector or category-only warning projection. The OpenAPI snapshot is otherwise observed as a full document.",
             ),
         },
     ),
     "tests/test_tutorial/test_events/test_tutorial002.py": _module(
         [
             {
+                "path": "tests/test_tutorial/test_events/test_tutorial002.py",
+                "start_line": 9,
+                "end_line": 13,
+                "role": "module-scoped fixture requires a DeprecationWarning while importing the example",
+            },
+            {
                 "path": "docs_src/events/tutorial002_py310.py",
                 "start_line": 1,
                 "end_line": 14,
                 "role": "shutdown handler writes app-owned log output and route",
+            },
+            {
+                "path": "fastapi/routing.py",
+                "start_line": 251,
+                "end_line": 269,
+                "role": "FastAPI default lifespan dispatches registered startup and shutdown handlers",
             },
             {
                 "path": "fastapi/routing.py",
@@ -1438,9 +1470,9 @@ TUTORIAL_TEST_REVIEW_MAPPINGS = {
             },
             {
                 "path": "fastapi/routing.py",
-                "start_line": 6415,
+                "start_line": 6363,
                 "end_line": 6445,
-                "role": "FastAPI deprecated on_event registration",
+                "role": "FastAPI legacy handler dispatch, registration, and deprecated on_event decorator",
             },
             {
                 "path": "fastapi/openapi/utils.py",
@@ -1454,16 +1486,29 @@ TUTORIAL_TEST_REVIEW_MAPPINGS = {
                 "tests/test_tutorial/test_events/test_tutorial002.py",
                 17,
                 23,
-                ["app-routing", "websocket-lifecycle"],
-                ["http.status", "http.body.json", "lifecycle.cleanup_effects"],
-                "The route returns example data, and leaving the TestClient context runs the FastAPI shutdown handler. The log file content is application-owned; Starlette owns context-manager lifespan driving.",
-                contract_gate="The shutdown assertion searches for a substring in file contents; exact file-byte comparison would overstate it, so parity needs a file-content contains projection.",
+                ["app-routing", "public-api-errors", "websocket-lifecycle"],
+                [
+                    "http.status",
+                    "http.body.json",
+                    "lifecycle.cleanup_effects",
+                    "warnings.category_message",
+                ],
+                "The route returns example data, and the post-context log assertion shows the shutdown handler's application-owned effect. Starlette owns TestClient context driving; FastAPI owns registering and invoking the legacy shutdown handler.",
+                contract_gate="The source requires a DeprecationWarning from the shared fixture import (lines 9-13), but pytest.warns checks only category, not message. It also checks parsed JSON and searches log.txt for a substring after context exit. The v3 workflow has no warning selector or category-only warning projection, semantic JSON selector, or file-content selector; exact response bytes would be stricter than response.json(), and the router-events workload's trace proves callback invocation/order but not the example's file append. Keep these source assertions as gaps.",
+                stimulus_notes="tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml case fastapi.lifecycle.router-events-legacy samples app-level legacy startup/shutdown registration and callback trace. It does not model log.txt; that append is example code, and the current workflow cannot observe arbitrary file contents.",
             ),
             "test_openapi_schema": _openapi(
                 "tests/test_tutorial/test_events/test_tutorial002.py",
                 27,
                 50,
                 "The function compares only the generated OpenAPI snapshot; the TestClient context's shutdown file side effect is not asserted here.",
+                feature_ids=["openapi-docs", "public-api-errors"],
+                observation_selectors=[
+                    "http.status",
+                    "openapi.document",
+                    "warnings.category_message",
+                ],
+                contract_gate="The shared fixture requires a DeprecationWarning while importing the example (lines 9-13), but pytest.warns checks only its category, not the message; the v3 workflow has no warning selector or category-only warning projection. The OpenAPI snapshot is otherwise observed as a full document.",
             ),
         },
     ),
@@ -1497,11 +1542,11 @@ TUTORIAL_TEST_REVIEW_MAPPINGS = {
                 [
                     "http.status",
                     "http.body.json",
-                    "lifecycle.event_order",
                     "lifecycle.cleanup_effects",
                 ],
-                "The TestClient context causes the FastAPI lifespan context to load then clear the example's ml_models state; the prediction result and model function are application-owned. Starlette owns the client context driver.",
-                stimulus_notes="The observed global model mapping is app state, not FastAPI-owned state; preserve the before/inside/after lifecycle boundary.",
+                "The assertions observe the app-owned model mapping before context entry, after lifespan startup inside the context, and after cleanup on context exit; the request result confirms the loaded model is usable. They assert these before/inside/after boundaries, not a standalone callback-order trace. Starlette owns TestClient driving.",
+                contract_gate="The source compares response.json() and inspects the app-owned ml_models mapping before, inside, and after the context. Semantic JSON observation and direct app-global state observation are not currently workflow-supported; exact body bytes would be stricter than the parsed-value assertion. The reused application-testing case reaches a clear-on-exit callback and records its lifecycle trace, but does not compare this global mapping's values.",
+                stimulus_notes="tests/fixtures/input-recipes/parity/first-steps-application-testing-upstream.yaml case fastapi.application-testing.lifespan-items independently exercises load, an in-lifespan request, and clear-on-exit with ordered startup/shutdown observations. The state is workload-owned and the sample uses a different route and data; it is lifecycle evidence, not an exact replay of ml_models assertions.",
             ),
             "test_openapi_schema": _openapi(
                 "tests/test_tutorial/test_events/test_tutorial003.py",

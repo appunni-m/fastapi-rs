@@ -1074,6 +1074,18 @@
       ]
     },
     {
+      "id": "http-connection-injection-websocket",
+      "input_path": "tests/fixtures/inputs/parity/http-connection-injection-websocket.json",
+      "input_sha256": "7654f75d7d31ea275b79eff5d51c4eef5f3d2c56b3b52e4e9f6b466e06e0d26d",
+      "recipe_path": "tests/fixtures/input-recipes/parity/http-connection-injection-websocket.yaml",
+      "recipe_sha256": "6d359bd38560c968951033796eeb72abf94329981b2e42c0f9e90cc3b2895f51",
+      "workload_path": "tests/fixtures/workloads/http_connection_injection_websocket.py",
+      "workload_sha256": "b742c3afaee6a76c4cb877fb3883362eb6fd6e8364876bdccba108f18a419b50",
+      "case_ids": [
+        "fastapi.http-connection-injection.websocket-app-state"
+      ]
+    },
+    {
       "id": "http-digest-auth-upstream",
       "input_path": "tests/fixtures/inputs/parity/http-digest-auth-upstream.json",
       "input_sha256": "42e0837d0419589be26f406b465c6a4747512d15279214bdd837b43325c3f18d",
@@ -1206,6 +1218,18 @@
         "fastapi.test.test-tutorial-test-advanced-middleware-test-tutorial003.test-middleware",
         "fastapi.test.test-tutorial-test-custom-request-and-route-test-tutorial002.test-endpoint-works",
         "fastapi.test.test-tutorial-test-custom-request-and-route-test-tutorial002.test-exception-handler-body-access"
+      ]
+    },
+    {
+      "id": "middleware-execution-order-wave",
+      "input_path": "tests/fixtures/inputs/parity/middleware-execution-order-wave.json",
+      "input_sha256": "4938539257776c523a956ad4ad05ab1831aebfbc6f3fa1639e00fe09a5eccf8a",
+      "recipe_path": "tests/fixtures/input-recipes/parity/middleware-execution-order-wave.yaml",
+      "recipe_sha256": "ea67fa014d4f101550cee84d38c96d4432a279eaa621d2c728664fc202ea87f6",
+      "workload_path": "tests/fixtures/workloads/middleware_execution_order_wave.py",
+      "workload_sha256": "1babfeb66207924966af73e5c65c3fc83a45304d609175c6ce1ebbbeb94c2bb6",
+      "case_ids": [
+        "fastapi.docs.middleware.request-and-response-order"
       ]
     },
     {
@@ -5827,14 +5851,15 @@
       "fixture_id": "fastapi.test.test-http-connection-injection",
       "workflow_id": "docs-reference-asgi",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status, websocket.messages. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
-        "fastapi.test.test-http-connection-injection.test-value-extracting-by-http"
+        "fastapi.test.test-http-connection-injection.test-value-extracting-by-http",
+        "fastapi.test.test-http-connection-injection.test-value-extracting-by-ws"
       ],
       "observation_selectors": [
         "http.body.bytes",
-        "http.headers.ordered",
-        "http.status"
+        "http.status",
+        "websocket.messages"
       ]
     },
     {
@@ -6879,6 +6904,19 @@
       ]
     },
     {
+      "source_item_id": "upstream-test:tests/test_http_connection_injection.py",
+      "fixture_id": "fastapi.test.test-http-connection-injection",
+      "workflow_id": "http-connection-injection-websocket",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes websocket.messages. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.http-connection-injection.websocket-app-state"
+      ],
+      "observation_selectors": [
+        "websocket.messages"
+      ]
+    },
+    {
       "source_item_id": "upstream-test:tests/test_security_http_digest_description.py",
       "fixture_id": "fastapi.test.test-security-http-digest-description",
       "workflow_id": "http-digest-auth-upstream",
@@ -7169,6 +7207,21 @@
       "case_ids": [
         "fastapi.test.test-tutorial-test-custom-request-and-route-test-tutorial002.test-endpoint-works",
         "fastapi.test.test-tutorial-test-custom-request-and-route-test-tutorial002.test-exception-handler-body-access"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/middleware.md",
+      "fixture_id": "fastapi.docs.tutorial-middleware",
+      "workflow_id": "middleware-execution-order-wave",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.docs.middleware.request-and-response-order"
       ],
       "observation_selectors": [
         "http.body.bytes",

@@ -1254,7 +1254,6 @@ DOC_PAGE_REVIEW_MAPPINGS = {
             "app-routing",
             "dependency-security",
             "middleware-integrations",
-            "public-api-errors",
             "response-serialization",
         ],
         "observation_selectors": [
@@ -1269,11 +1268,23 @@ DOC_PAGE_REVIEW_MAPPINGS = {
             "python.object_identity",
         ],
         "rationale": (
-            "The request-validation match is only path/header wording. The page explicitly "
-            "covers middleware nesting plus yield-dependency cleanup and background-task "
-            "ordering, so response-serialization is missing from the lexical map. Request "
-            "and response middleware execution order has no dedicated selector in FEATURES. "
-            "The Request import is a direct Starlette re-export."
+            "The page specifies HTTP middleware wrapping, response mutation, stack order, "
+            "yield-dependency cleanup, and background-task ordering. FastAPI exposes the "
+            "decorator and inherits generic add_middleware stack construction from Starlette. "
+            "The Request import convenience is a direct Starlette re-export."
+        ),
+        "stimulus_notes": (
+            "tests/fixtures/input-recipes/parity/middleware-execution-order-wave.yaml::"
+            "fastapi.docs.middleware.request-and-response-order records an independent trace "
+            "from two `add_middleware` wrappers: the last-added wrapper enters first on the "
+            "request path, and the first-added wrapper observes the response first. The trace "
+            "is returned by a second request and compared through exact HTTP body bytes. "
+            "middleware.yaml::fastapi.middleware.decorator-openapi covers the HTTP decorator "
+            "and response headers; middleware.yaml's HTTPS redirect, trusted-host, and custom "
+            "body-limit cases cover separate middleware behaviors. "
+            "dependency-wave-lifecycle.yaml::fastapi.dependencies.contextvars-through-middleware "
+            "covers context propagation across HTTP middleware. These are independent samples, "
+            "not complete coverage of arbitrary middleware implementations."
         ),
         "supporting_sources": [
             {
@@ -1297,16 +1308,33 @@ DOC_PAGE_REVIEW_MAPPINGS = {
         ],
         "starlette_contract_sources": [
             {
+                "path": "starlette/applications.py",
+                "start_line": 63,
+                "end_line": 83,
+                "role": "Starlette 1.6.0 builds its middleware stack by wrapping the router in reverse order",
+            },
+            {
+                "path": "starlette/applications.py",
+                "start_line": 104,
+                "end_line": 107,
+                "role": "Starlette 1.6.0 prepends each added middleware, making the newest wrapper outermost",
+            },
+            {
                 "path": "starlette/requests.py",
                 "start_line": 214,
                 "end_line": 226,
                 "role": "selected Starlette Request implementation",
-            }
+            },
         ],
         "contract_gate": (
-            "The ordered request/response middleware trace is not representable by current "
-            "FEATURES selectors; add a reviewed middleware.execution_order observation before "
-            "treating nesting order as an executable schema case."
+            "The new order case observes only the documented two-wrapper HTTP nesting and uses "
+            "its independently returned event trace as exact body bytes. The separate decorator "
+            "workflow observes middleware headers but not decorator-registration ordering. These "
+            "cases do not establish ordering for arbitrary middleware or WebSocket/lifespan scopes. The page's yield-"
+            "dependency-exit and background-task-after-middleware statements are not compared "
+            "against middleware events by these cases. Existing dependency/background fixtures "
+            "observe those lifecycles separately, so do not infer their cross-order from this "
+            "page mapping."
         ),
     },
     "tutorial/path-operation-configuration.md": {
