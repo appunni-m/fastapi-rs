@@ -120,7 +120,7 @@ parity-prepare-target: ## Prepare .venv-target with FastAPI-RS and sibling Starl
 	  "typing-extensions==4.16.0" "typing-inspection==0.4.2"
 	PYO3_PYTHON="$(TARGET_PYTHON)" $(UV) pip install --python "$(TARGET_PYTHON)" --no-deps --editable "$(STARLETTE_RS_SOURCE)"
 	PYO3_PYTHON="$(TARGET_PYTHON)" $(UV) pip install --python "$(TARGET_PYTHON)" --no-deps --editable "$(CURDIR)"
-	PYO3_PYTHON="$(TARGET_PYTHON)" $(MATURIN) develop --release --skip-install --manifest-path fastapi-rs-py/Cargo.toml --locked --features pyo3/extension-module
+	VIRTUAL_ENV="$(TARGET_ENV)" PYO3_PYTHON="$(TARGET_PYTHON)" $(MATURIN) develop --release --skip-install --manifest-path fastapi-rs-py/Cargo.toml --locked --features pyo3/extension-module
 	$(UV) pip check --python "$(TARGET_PYTHON)"
 	$(TARGET_PYTHON) scripts/check_target_runtime_boundary.py
 
