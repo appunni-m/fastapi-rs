@@ -18,6 +18,7 @@ pub(crate) struct OpenApiOperation {
     pub(crate) path: String,
     pub(crate) method: String,
     pub(crate) summary: String,
+    pub(crate) response_description: String,
     pub(crate) operation_id: String,
     pub(crate) deprecated: Option<bool>,
     pub(crate) tags: Option<Vec<String>>,
@@ -124,7 +125,7 @@ pub(crate) fn openapi_document(
 
         let responses = PyDict::new(py);
         let success_response = PyDict::new(py);
-        success_response.set_item("description", "Successful Response")?;
+        success_response.set_item("description", &operation.response_description)?;
         if body_allowed_for_status_code(operation.status) {
             let response_schema = match (
                 operation.response_model_name.as_deref(),

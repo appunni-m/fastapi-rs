@@ -16,6 +16,8 @@ use crate::{
     FastApiInputLocation, FastApiInputParameter, FastApiOperationMatch, FastApiOperationRouter,
 };
 
+const DEFAULT_RESPONSE_DESCRIPTION: &str = "Successful Response";
+
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum InputSource {
     Path,
@@ -127,6 +129,7 @@ struct FastApiRoute {
     path: String,
     method: String,
     summary: Option<String>,
+    response_description: String,
     operation_id: Option<String>,
     deprecated: Option<bool>,
     tags: Option<Vec<String>>,
@@ -151,6 +154,7 @@ struct ResponseModelOptions {
     exclude_defaults: bool,
     exclude_none: bool,
     include_in_schema: bool,
+    response_description: Option<String>,
     summary: Option<String>,
     operation_id: Option<String>,
     deprecated: Option<bool>,
@@ -232,7 +236,7 @@ impl PyFastApi {
         clippy::too_many_arguments,
         reason = "preserve the Python route decorator keyword signature"
     )]
-    #[pyo3(signature = (path, *, response_model = None, status_code = 200, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, summary = None, include_in_schema = true, operation_id = None))]
+    #[pyo3(signature = (path, *, response_model = None, status_code = 200, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, summary = None, response_description = "Successful Response", include_in_schema = true, operation_id = None))]
     fn post(
         slf: Py<Self>,
         py: Python<'_>,
@@ -247,6 +251,7 @@ impl PyFastApi {
         response_model_exclude_none: bool,
         tags: Option<Vec<String>>,
         summary: Option<String>,
+        response_description: &str,
         include_in_schema: bool,
         operation_id: Option<String>,
     ) -> PyResult<Py<PyOperationDecorator>> {
@@ -265,6 +270,7 @@ impl PyFastApi {
                 exclude_defaults: response_model_exclude_defaults,
                 exclude_none: response_model_exclude_none,
                 include_in_schema,
+                response_description: Some(response_description.to_owned()),
                 summary,
                 operation_id,
                 deprecated: None,
@@ -312,6 +318,7 @@ impl PyFastApi {
                 exclude_defaults: response_model_exclude_defaults,
                 exclude_none: response_model_exclude_none,
                 include_in_schema,
+                response_description: None,
                 summary,
                 operation_id,
                 deprecated,
@@ -357,6 +364,7 @@ impl PyFastApi {
                 exclude_defaults: response_model_exclude_defaults,
                 exclude_none: response_model_exclude_none,
                 include_in_schema,
+                response_description: None,
                 summary,
                 operation_id: None,
                 deprecated: None,
@@ -402,6 +410,7 @@ impl PyFastApi {
                 exclude_defaults: response_model_exclude_defaults,
                 exclude_none: response_model_exclude_none,
                 include_in_schema,
+                response_description: None,
                 summary,
                 operation_id: None,
                 deprecated: None,
@@ -447,6 +456,7 @@ impl PyFastApi {
                 exclude_defaults: response_model_exclude_defaults,
                 exclude_none: response_model_exclude_none,
                 include_in_schema,
+                response_description: None,
                 summary,
                 operation_id: None,
                 deprecated: None,
@@ -492,6 +502,7 @@ impl PyFastApi {
                 exclude_defaults: response_model_exclude_defaults,
                 exclude_none: response_model_exclude_none,
                 include_in_schema,
+                response_description: None,
                 summary,
                 operation_id: None,
                 deprecated: None,
@@ -537,6 +548,7 @@ impl PyFastApi {
                 exclude_defaults: response_model_exclude_defaults,
                 exclude_none: response_model_exclude_none,
                 include_in_schema,
+                response_description: None,
                 summary,
                 operation_id: None,
                 deprecated: None,
@@ -582,6 +594,7 @@ impl PyFastApi {
                 exclude_defaults: response_model_exclude_defaults,
                 exclude_none: response_model_exclude_none,
                 include_in_schema,
+                response_description: None,
                 summary,
                 operation_id: None,
                 deprecated: None,
@@ -749,6 +762,7 @@ impl PyFastApi {
             path: route.path.clone(),
             method: route.method.to_ascii_lowercase(),
             summary,
+            response_description: route.response_description.clone(),
             operation_id,
             status: route.status_code,
             parameters,
@@ -770,6 +784,7 @@ struct PyOperationDecorator {
     path: String,
     method: String,
     summary: Option<String>,
+    response_description: String,
     operation_id: Option<String>,
     deprecated: Option<bool>,
     tags: Option<Vec<String>>,
@@ -800,6 +815,9 @@ fn operation_decorator(
             path: path.to_owned(),
             method: method.to_owned(),
             summary: response_model_options.summary,
+            response_description: response_model_options
+                .response_description
+                .unwrap_or_else(|| DEFAULT_RESPONSE_DESCRIPTION.to_owned()),
             operation_id: response_model_options.operation_id,
             deprecated: response_model_options.deprecated,
             tags: response_model_options.tags,
@@ -834,6 +852,7 @@ impl PyOperationDecorator {
             path: self.path.clone(),
             method: self.method.clone(),
             summary: self.summary.clone(),
+            response_description: self.response_description.clone(),
             operation_id: self.operation_id.clone(),
             deprecated: self.deprecated,
             tags: self.tags.clone(),

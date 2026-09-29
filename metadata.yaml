@@ -558,6 +558,9 @@ reviewed_api_contract_overlay:
         - {path: tests/test_tutorial/test_path_operation_advanced_configurations/test_tutorial001.py, symbol: test_openapi_schema}
         - {path: docs_src/path_operation_advanced_configuration/tutorial001_py310.py}
         - {path: docs/en/docs/advanced/path-operation-advanced-configuration.md}
+        - {path: tests/test_tutorial/test_path_operation_configurations/test_tutorial005.py, symbol: test_openapi_schema}
+        - {path: docs_src/path_operation_configuration/tutorial005_py310.py}
+        - {path: docs/en/docs/tutorial/path-operation-configuration.md}
       feature_ids: [app-routing, openapi-docs, response-serialization]
       observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths]
       supported_slice: >-
@@ -566,13 +569,17 @@ reviewed_api_contract_overlay:
         while omitting it from OpenAPI. An explicit non-empty `summary` is
         emitted as the operation summary in OpenAPI, as sampled by
         `path-operation-post-summary-isolated`. Generated summaries, response
-        customization, and other hooks remain outside this reviewed slice. An
-        explicit non-empty `operation_id` is emitted at
+        customization beyond `response_description`, and other hooks remain
+        outside this reviewed slice. An explicit non-empty `operation_id` is
+        emitted at
         `/paths/~1items/post/operationId`, as sampled by
         `path-operation-post-operation-id-isolated`.
         A non-empty list of string `tags` is emitted as the
         operation's tags, as sampled by `path-operation-post-tags-isolated`;
-        enum and empty tag values remain outside this slice.
+        enum and empty tag values remain outside this slice. An explicit string
+        `response_description`, including an empty string, is emitted as the
+        success response description; omission uses `Successful Response`, as
+        sampled by `path-operation-post-response-description-isolated`.
     fastapi.applications.FastAPI.put:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::put
       source_evidence:
