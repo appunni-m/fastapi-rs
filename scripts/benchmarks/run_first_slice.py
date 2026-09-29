@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import importlib
 import json
 import platform
 import subprocess
@@ -61,6 +62,9 @@ def _version(command: list[str]) -> str:
 
 
 def main() -> int:
+    if str(ROOT) not in sys.path:
+        sys.path.insert(0, str(ROOT))
+    parity_driver = importlib.import_module("scripts.parity.run_first_slice")
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--workload", type=Path, default=ROOT / "benchmarks/workloads/first-slice-valid-asgi.yaml"
@@ -99,25 +103,53 @@ def main() -> int:
         },
     }
 
-    parity = _run(
-        "fresh parity gate",
+    oracle = parity_driver._run_cli(
+        "oracle run",
         [
-            sys.executable,
-            str(ROOT / "scripts/parity/run_first_slice.py"),
+            "oracle",
             "--input",
             str(input_path),
+            "--python",
+            str(args.oracle_python.resolve()),
             "--fastapi-source",
             str(args.fastapi_source.resolve()),
             "--starlette-source",
             str(args.starlette_source.resolve()),
-            "--starlette-rs-source",
-            str(args.starlette_rs_source.resolve()),
-            "--oracle-python",
-            str(args.oracle_python.resolve()),
-            "--target-python",
-            str(args.target_python.resolve()),
         ],
     )
+    target = parity_driver._run_cli(
+        "target run",
+        [
+            "target",
+            "--input",
+            str(input_path),
+            "--python",
+            str(args.target_python.resolve()),
+            "--target-source",
+            str(ROOT),
+            "--starlette-rs-source",
+            str(args.starlette_rs_source.resolve()),
+        ],
+    )
+    comparison = parity_driver._run_cli(
+        "comparison",
+        [
+            "compare",
+            "--input",
+            str(input_path),
+            "--fastapi-source",
+            str(args.fastapi_source.resolve()),
+            "--source-result",
+            parity_driver._artifact(oracle, "oracle run"),
+            "--target-result",
+            parity_driver._artifact(target, "target run"),
+        ],
+    )
+    parity = {
+        "status": comparison.get("status"),
+        "summary": comparison.get("summary"),
+        "comparison_result": parity_driver._artifact(comparison, "comparison"),
+    }
     summary = parity.get("summary", {})
     if (
         summary.get("failed") != 0
