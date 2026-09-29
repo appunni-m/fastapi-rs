@@ -89,6 +89,7 @@ def main() -> int:
     oracle_profile = manifest["oracle_profile"]
     target_contract = manifest["target"]
     expected_identity = {
+        "python": workload["python_identity"],
         "fastapi_source": oracle_profile["source_commits"]["fastapi"],
         "fastapi_version": oracle_profile["packages"]["fastapi"],
         "starlette_source": oracle_profile["source_commits"]["starlette"],
@@ -102,6 +103,10 @@ def main() -> int:
             if name not in {"fastapi", "starlette"}
         },
     }
+    if expected_identity["python"] != oracle_profile["python"]:
+        raise BenchmarkError(
+            "benchmark workload Python identity differs from the pinned oracle/target profile"
+        )
 
     oracle = parity_driver._run_cli(
         "oracle run",
@@ -204,6 +209,15 @@ def main() -> int:
     }
     if len(observations) != 1:
         raise BenchmarkError("untimed live observations differ across benchmark subjects")
+    python_identities = {
+        json.dumps(value["python"], sort_keys=True) for value in measurements.values()
+    }
+    expected_python = json.dumps(expected_identity["python"], sort_keys=True)
+    if python_identities != {expected_python}:
+        raise BenchmarkError(
+            "benchmark subjects did not all use the pinned Python identity: "
+            f"{sorted(python_identities)}"
+        )
 
     oracle = measurements["fastapi"]["latency_ns"]
     target = measurements["fastapi-rs"]["latency_ns"]

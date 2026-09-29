@@ -306,6 +306,15 @@ def main() -> int:
 
     workload = json.loads(args.input.read_text(encoding="utf-8"))
     expected = json.loads(args.identities_json)
+    python_identity = {
+        "implementation": platform.python_implementation(),
+        "version": platform.python_version(),
+    }
+    if python_identity != expected["python"]:
+        raise BenchmarkError(
+            "benchmark Python identity mismatch: "
+            f"expected {expected['python']}, got {python_identity}"
+        )
     selected = [case for case in workload["cases"] if case["case_id"] == args.case_id]
     if len(selected) != 1 or len(selected[0]["actions"]) != 1:
         raise BenchmarkError(f"expected one action for benchmark case {args.case_id}")
@@ -336,10 +345,7 @@ def main() -> int:
         {
             "subject": args.kind,
             "identity": identity,
-            "python": {
-                "implementation": platform.python_implementation(),
-                "version": platform.python_version(),
-            },
+            "python": python_identity,
             "host": {
                 "platform": platform.platform(),
                 "machine": platform.machine(),
