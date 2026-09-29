@@ -140,7 +140,7 @@ fn query(
 ) -> PyResult<Py<ParameterMetadata>> {
     let ellipsis = py.Ellipsis();
     let undefined = py.import("pydantic_core")?.getattr("PydanticUndefined")?;
-    let default = if default.bind(py).is(&ellipsis.bind(py)) || default.bind(py).is(&undefined) {
+    let default = if default.bind(py).is(ellipsis.bind(py)) || default.bind(py).is(&undefined) {
         None
     } else {
         Some(default)
