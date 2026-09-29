@@ -539,6 +539,16 @@ reviewed_api_contract_overlay:
           start_line: 74
           end_line: 81
         - path: tests/test_dependency_overrides.py
+          symbol: common_parameters
+          kind: source-definition
+          start_line: 10
+          end_line: 11
+        - path: tests/test_dependency_overrides.py
+          symbol: main_depends
+          kind: source-definition
+          start_line: 15
+          end_line: 16
+        - path: tests/test_dependency_overrides.py
           symbol: overrider_sub_dependency
           kind: source-definition
           start_line: 43
@@ -598,10 +608,12 @@ reviewed_api_contract_overlay:
         introduces exactly one required scalar query field `k`: omitting it
         produces 422 required-query validation, while `?k=bar` supplies the
         value and succeeds. Newly introduced body, header, cookie, or path
-        fields remain unsupported. Flat, no-input Python coroutine-function
-        app-level replacements with no nested dependencies are also supported
-        when every direct endpoint dependency edge uses default caching and is
-        replaced by a coroutine function. The endpoint must be synchronous.
+        fields remain unsupported. On synchronous endpoints, flat Python
+        coroutine-function app-level replacements with no nested dependencies
+        are also supported when every direct endpoint dependency edge uses
+        default caching and is replaced by a coroutine function. The async-
+        endpoint coroutine override shape is limited to the separate sample
+        below.
         Rust awaits replacements sequentially in declaration order, then caches
         each resolved value under the original callable for the request;
         repeated edges share that value, distinct original callables keep
@@ -654,6 +666,16 @@ reviewed_api_contract_overlay:
         order; the sample does not assert worker thread identity:
         tests/fixtures/input-recipes/parity/dependency-override-mixed-sync-async-direct-order-request-local.yaml,
         case fastapi.dependencies.override-mixed-sync-async-direct-order-request-local.
+        A narrow async-endpoint sample follows the main endpoint from
+        `test_override_simple`: its original async dependency requires `q`,
+        while the flat async override accepts only optional scalar `q` and
+        returns the reviewed fixed `skip` and `limit` values. Omitted `q` and
+        `?q=foo` are observed in independent requests. This is an independent
+        two-case sample and does not establish other async-endpoint edge,
+        cache, or parameter layouts:
+        tests/fixtures/input-recipes/parity/dependency-override-async-endpoint-request-local.yaml,
+        cases fastapi.dependencies.override-async-endpoint-omitted-query and
+        fastapi.dependencies.override-async-endpoint-supplied-query.
         `Query(...)` used as the Python default, validation aliases, constraints,
         validators, required or non-scalar parameters, other query-bearing
         multi-key shapes, and newly introduced body, header, cookie, or path
@@ -662,8 +684,8 @@ reviewed_api_contract_overlay:
         reviewed unoverridden-sync-then-coroutine shape, uncached-edge layouts
         other than the reviewed repeated-callable cache-fill and cache-retention
         orderings, nested dependencies of coroutine overrides, async endpoints
-        with coroutine overrides, async callable-instance overrides, async
-        generators, and generator dependencies. None-based dependency
+        outside the reviewed one-edge optional-query sample, async callable-
+        instance endpoints and overrides, async generators, and generator dependencies. None-based dependency
         inference, Security scopes, request/function scopes, and the rest of
         the Depends constructor contract also remain unsupported.
     fastapi.exceptions.RequestValidationError:

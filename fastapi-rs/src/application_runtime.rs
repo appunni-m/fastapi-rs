@@ -909,12 +909,11 @@ impl CallablePlan {
         if !has_direct_dependency
             || matches!(
                 dependency_override_callable(context.py, self.callable.bind(context.py))?,
-                DependencyOverrideCallable::CoroutineFunction
-                    | DependencyOverrideCallable::AsyncCallableInstance
+                DependencyOverrideCallable::AsyncCallableInstance
             )
         {
             return Err(PyNotImplementedError::new_err(
-                "async dependency overrides require flat direct dependencies on a synchronous endpoint",
+                "async dependency overrides require flat direct dependencies; async callable-instance endpoints are not supported",
             ));
         }
 

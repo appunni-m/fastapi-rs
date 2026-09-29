@@ -1,0 +1,59 @@
+# Pinned FastAPI 0.141.1 source evidence (commit
+# 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f):
+# tests/test_dependency_overrides.py:10-16 defines an async dependency and
+# async endpoint; :39-40 defines the async optional-query override; and
+# :171-213 installs that override and checks /main-depends/ plus
+# /main-depends/?q=foo. This input-only pair reproduces those two route inputs
+# with the same public API shape. FastAPI dependencies/utils.py:623-638
+# resolves and rebuilds the overridden dependency, then :673-680 awaits and
+# caches its result. No expected outputs are recorded here.
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/dependency_override_async_endpoint_request_local.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.dependencies.override-async-endpoint-omitted-query
+  actions:
+  - action_id: omitted-query
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /main-depends/
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_dependency_overrides.py, kind: upstream_test}
+- case_id: fastapi.dependencies.override-async-endpoint-supplied-query
+  actions:
+  - action_id: supplied-query
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /main-depends/
+      query_string: q=foo
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_dependency_overrides.py, kind: upstream_test}
