@@ -421,6 +421,11 @@ def validate() -> None:
         manifest["target"]["starlette_rs_distribution"]["version"],
         sibling["distribution_version"],
     )
+    require_equal(
+        "Starlette-RS pinned source commit",
+        manifest["target"]["starlette_rs_distribution"]["commit"],
+        sibling["commit"],
+    )
     sibling_manifest = load_yaml(artifact_path(sibling["manifest"]))
     sibling_metadata = load_yaml(artifact_path(sibling["metadata"]))
     sibling_atlas_authority = pointer(

@@ -89,6 +89,8 @@ def _validate_identity_pair(
         raise ComparisonError(
             "target Starlette-RS version differs from the selected target profile"
         )
+    if target_identity["repositories"]["starlette_rs"] != starlette_rs["commit"]:
+        raise ComparisonError("target Starlette-RS commit differs from the selected target profile")
     expected_target_packages = SHARED_ORACLE_PACKAGES | {"fastapi-rs", "starlette-rs-py"}
     if set(target_identity["packages"]) != expected_target_packages:
         raise ComparisonError("target runtime package set differs from its declared fixed profile")

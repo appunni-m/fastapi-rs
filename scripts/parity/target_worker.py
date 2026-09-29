@@ -27,6 +27,7 @@ from scripts.parity.worker import (
     WORKFLOW_SCHEMA_ID,
     WORKFLOW_SCHEMA_V3_ID,
     WorkerError,
+    _assert_clean_source_tree,
     _git_commit,
     _is_under,
     _load_workload,
@@ -226,6 +227,7 @@ def _target_identity(
         distribution_profile.get("public_surface") != "import fastapi"
         or not isinstance(starlette_profile, dict)
         or starlette_profile.get("starlette_contract") != "1.6.0"
+        or not isinstance(starlette_profile.get("commit"), str)
     ):
         raise WorkerError(
             "target profile does not select the pinned public and Starlette contracts"
@@ -234,10 +236,17 @@ def _target_identity(
     starlette_rs_source = starlette_rs_source.resolve()
     if target_source != ROOT.resolve():
         raise WorkerError(f"target worker must identify this FastAPI-RS checkout: {ROOT}")
-    expected_starlette_source = (ROOT / "../starlette-rs").resolve()
-    if starlette_rs_source != expected_starlette_source:
+    _assert_clean_source_tree(
+        starlette_rs_source,
+        "Starlette-RS",
+        allowed_untracked=frozenset({".DS_Store"}),
+    )
+    starlette_rs_revision = _git_commit(starlette_rs_source, "Starlette-RS")
+    expected_starlette_rs_revision = starlette_profile["commit"]
+    if starlette_rs_revision != expected_starlette_rs_revision:
         raise WorkerError(
-            "target worker must use the sibling Starlette-RS checkout selected by the workspace"
+            "Starlette-RS source commit differs from the selected target profile: "
+            f"expected {expected_starlette_rs_revision}, got {starlette_rs_revision}"
         )
 
     if set(shared_runtime_packages) != SHARED_ORACLE_PACKAGES:
@@ -305,8 +314,7 @@ def _target_identity(
         fastapi = importlib.import_module("fastapi")
     except ImportError as exc:
         raise WorkerError(
-            "FastAPI-RS has no importable public `fastapi` package in the selected source; "
-            "target execution is unavailable until that facade is implemented"
+            "FastAPI-RS has no importable public `fastapi` package in the selected target"
         ) from exc
     _assert_module_source(fastapi, TARGET_PACKAGE_ROOT, "FastAPI-RS public `fastapi`")
     required_public_exports = {
@@ -340,7 +348,6 @@ def _target_identity(
         raise WorkerError(f"FastAPI-RS compiled extension identity mismatch: {reported_identity}")
 
     fastapi_rs_revision = _git_commit(target_source, "FastAPI-RS")
-    starlette_rs_revision = _git_commit(starlette_rs_source, "Starlette-RS")
     source_tree_sha256 = _combine_digests(
         {
             "fastapi-rs": _source_tree_sha256(target_source, "FastAPI-RS"),

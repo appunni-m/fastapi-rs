@@ -18,7 +18,7 @@ TARGET_RESULT ?=
 PARITY_INPUT ?= tests/fixtures/inputs/parity/first-asgi-request.json
 
 .DEFAULT_GOAL := help
-.PHONY: help fmt format clippy build build-rust build-python python-facade-check rust-policy-check compatibility-atlas-update api-contract-update api-contract-check metadata-check dependency-inventory-update dependency-inventory-check parity-inputs parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-target parity-api-runtime parity-validate parity-index-update parity-index-check parity-oracle parity-oracle-standard parity-target parity-compare verify clean
+.PHONY: help fmt format clippy build build-rust build-python python-facade-check rust-policy-check compatibility-atlas-update api-contract-update api-contract-check metadata-check dependency-inventory-update dependency-inventory-check parity-inputs parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-target parity-api-runtime parity-validate parity-index-update parity-index-check parity-oracle parity-oracle-standard parity-target parity-compare parity-first-slice verify clean
 
 help: ## Show common development commands
 	@printf '%s\n' \
@@ -49,6 +49,7 @@ help: ## Show common development commands
 	  '  make parity-oracle-standard Run PARITY_INPUT with locked standard extras' \
 	  '  make parity-target   Run PARITY_INPUT against the isolated FastAPI-RS target' \
 	  '  make parity-compare  Compare live source/target result artifacts exactly' \
+	  '  make parity-first-slice Run and compare the pinned first HTTP slice end to end' \
 	  '  make verify         Run formatting, lint, static contracts, and wheel build' \
 	  '  make clean          Remove Cargo outputs under target/' '' \
 	  'PYTHON defaults to the pinned 3.12 development baseline; override PYTHON, CARGO, or MATURIN as needed.'
@@ -112,7 +113,7 @@ parity-prepare-oracle-standard: ## Prepare standard FastAPI extras and TestClien
 	$(UV) pip check --python "$(ORACLE_STANDARD_PYTHON)"
 
 parity-prepare-target: ## Prepare .venv-target with FastAPI-RS and sibling Starlette-RS only
-	$(UV) venv --python "$(PYTHON)" "$(TARGET_ENV)"
+	test -x "$(TARGET_PYTHON)" || $(UV) venv --python "$(PYTHON)" "$(TARGET_ENV)"
 	$(UV) pip install --python "$(TARGET_PYTHON)" \
 	  "annotated-doc==0.0.4" "annotated-types==0.7.0" "anyio==4.12.1" \
 	  "idna==3.18" "pydantic==2.13.4" "pydantic-core==2.46.4" \
@@ -151,6 +152,15 @@ parity-target: parity-inputs ## Execute PARITY_INPUT against the isolated FastAP
 
 parity-compare: ## Compare live source/target result artifacts exactly
 	$(PYTHON) -m scripts.parity.cli compare --source-result "$(SOURCE_RESULT)" --target-result "$(TARGET_RESULT)"
+
+parity-first-slice: parity-validate ## Run and exactly compare the pinned first HTTP slice
+	$(PYTHON) scripts/parity/run_first_slice.py \
+	  --input "$(PARITY_INPUT)" \
+	  --fastapi-source "$(FASTAPI_SOURCE)" \
+	  --starlette-source "$(STARLETTE_SOURCE)" \
+	  --starlette-rs-source "$(STARLETTE_RS_SOURCE)" \
+	  --oracle-python "$(ORACLE_PYTHON)" \
+	  --target-python "$(TARGET_PYTHON)"
 
 build: build-rust build-python ## Build the Rust crates and Python wheel
 

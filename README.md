@@ -84,6 +84,11 @@ Use `make parity-oracle PARITY_INPUT=...` for core-profile workflows. Do not
 interpret the source atlas or foundation manifest as a full support declaration
 or parity result.
 
+After `make parity-prepare-oracle` and `make parity-prepare-target`, run
+`make parity-first-slice` for the current ten-case HTTP parity gate. CI runs
+this same identity-checked oracle/target/comparator path; per-run results stay
+under ignored `parity-results/`.
+
 ## Workspace layout
 
 - `fastapi-rs/` owns Rust implementation behavior and integrates the separate

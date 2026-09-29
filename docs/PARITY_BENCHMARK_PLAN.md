@@ -50,6 +50,12 @@ Python-facade or FastAPI parity results.
 
 ## Parity suite
 
+The first ten-case HTTP request/response slice now has a Rust-owned target,
+pass-through `fastapi` facade, isolated workers, and an exact comparator. The
+`make parity-first-slice` command runs both pinned products and stores the
+comparison in ignored `parity-results/`; CI runs this gate. This only validates
+the current first slice. It does not establish broader API or feature parity.
+
 Keep the complete FastAPI public inventory in the one project manifest and
 make every parity case reference a public operation and semantic requirement.
 Use input files as executable stimuli only: app/route setup, ordered public
@@ -181,11 +187,11 @@ mark evidence incompatible when it differs.
    structural validation for signatures, parameters, operations, requirements,
    input references, and public-surface-to-case mapping before creating a
    large fixture corpus.
-3. Define one result protocol, identity handshake, process runner, public API
-   adapters, and generic comparator. Start with a vertical slice spanning a
-   simple HTTP route and validation error, dependency resolution, response
-   model serialization, OpenAPI generation, plus representative WebSocket and
-   lifespan workflows.
+3. Extend the current result protocol, identity handshake, process runner,
+   public API adapters, and generic comparator to the reviewed manifest. The
+   first HTTP vertical slice is already in place; add request construction,
+   WebSocket, lifespan, and the remaining public behaviors as independently
+   reviewed workflows.
 4. Convert the pinned upstream request and OpenAPI benchmarks into
    input-described workloads, but do not record performance claims until a
    target exists, its relevant parity passes, and the measurement environment

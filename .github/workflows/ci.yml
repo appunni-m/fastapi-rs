@@ -19,7 +19,7 @@ env:
 jobs:
   verify:
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -60,4 +60,13 @@ jobs:
         working-directory: fastapi-rs
       - name: Verify formatting, lints, static contracts, and wheel build
         run: make verify
+        working-directory: fastapi-rs
+      - name: Prepare pinned FastAPI oracle
+        run: make parity-prepare-oracle
+        working-directory: fastapi-rs
+      - name: Prepare FastAPI-RS target
+        run: make parity-prepare-target
+        working-directory: fastapi-rs
+      - name: Compare the pinned first HTTP slice
+        run: make parity-first-slice
         working-directory: fastapi-rs
