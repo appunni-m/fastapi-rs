@@ -61,6 +61,15 @@ struct CallableParameter {
 struct CallablePlan {
     callable: Py<PyAny>,
     parameters: Vec<CallableParameter>,
+    path_parameters: Vec<String>,
+}
+
+struct InvocationContext<'context, 'py> {
+    py: Python<'py>,
+    inputs: &'context Bound<'py, PyDict>,
+    failures: &'context mut Vec<ValidationIssue>,
+    dependency_overrides: &'context Bound<'py, PyDict>,
+    dependency_cache: &'context mut HashMap<usize, Py<PyAny>>,
 }
 
 struct FastApiRoute {
@@ -101,6 +110,7 @@ pub(crate) struct PyFastApi {
     title: String,
     version: String,
     openapi_url: String,
+    dependency_overrides: Py<PyDict>,
     router: FastApiOperationRouter,
     routes: Vec<FastApiRoute>,
 }
@@ -109,14 +119,25 @@ pub(crate) struct PyFastApi {
 impl PyFastApi {
     #[new]
     #[pyo3(signature = (*, title = "FastAPI", version = "0.1.0", openapi_url = "/openapi.json"))]
-    fn new(title: &str, version: &str, openapi_url: &str) -> Self {
+    fn new(py: Python<'_>, title: &str, version: &str, openapi_url: &str) -> Self {
         Self {
             title: title.to_owned(),
             version: version.to_owned(),
             openapi_url: openapi_url.to_owned(),
+            dependency_overrides: PyDict::new(py).unbind(),
             router: FastApiOperationRouter::new(),
             routes: Vec::new(),
         }
+    }
+
+    #[getter]
+    fn dependency_overrides(&self, py: Python<'_>) -> Py<PyDict> {
+        self.dependency_overrides.clone_ref(py)
+    }
+
+    #[setter]
+    fn set_dependency_overrides(&mut self, dependency_overrides: Py<PyDict>) {
+        self.dependency_overrides = dependency_overrides;
     }
 
     // lint-exception: PyO3 needs one Rust argument per FastAPI-compatible keyword.
@@ -719,6 +740,7 @@ impl CallablePlan {
         Ok(Self {
             callable,
             parameters,
+            path_parameters: path_parameters.to_vec(),
         })
     }
 
@@ -789,14 +811,12 @@ impl CallablePlan {
 
     fn invoke(
         &self,
-        py: Python<'_>,
-        inputs: &Bound<'_, PyDict>,
-        failures: &mut Vec<ValidationIssue>,
-        dependency_cache: &mut HashMap<usize, Py<PyAny>>,
+        context: &mut InvocationContext<'_, '_>,
         cache_result: Option<bool>,
+        cache_key_override: Option<usize>,
     ) -> PyResult<Option<Py<PyAny>>> {
-        let initial_failure_count = failures.len();
-        let kwargs = PyDict::new(py);
+        let initial_failure_count = context.failures.len();
+        let kwargs = PyDict::new(context.py);
         let aggregate_body = self
             .input_parameters()
             .iter()
@@ -805,10 +825,26 @@ impl CallablePlan {
             > 1;
         for parameter in &self.parameters {
             if let ParameterSource::Dependency { plan, use_cache } = &parameter.source {
-                if let Some(value) =
-                    plan.invoke(py, inputs, failures, dependency_cache, Some(*use_cache))?
-                {
-                    kwargs.set_item(&parameter.name, value.bind(py))?;
+                let original_cache_key = plan.callable.as_ptr() as usize;
+                let original_callable = plan.callable.bind(context.py);
+                let replacement = context.dependency_overrides.get_item(original_callable)?;
+                let value = match replacement {
+                    Some(replacement) if !replacement.is(original_callable) => {
+                        let replacement_plan = CallablePlan::build(
+                            context.py,
+                            replacement.unbind(),
+                            &plan.path_parameters,
+                        )?;
+                        replacement_plan.invoke(
+                            context,
+                            Some(*use_cache),
+                            Some(original_cache_key),
+                        )?
+                    }
+                    _ => plan.invoke(context, Some(*use_cache), Some(original_cache_key))?,
+                };
+                if let Some(value) = value {
+                    kwargs.set_item(&parameter.name, value.bind(context.py))?;
                 }
             }
         }
@@ -830,7 +866,7 @@ impl CallablePlan {
                 if *parameter_source != source {
                     continue;
                 }
-                let value = inputs.get_item(&parameter.name)?;
+                let value = context.inputs.get_item(&parameter.name)?;
                 let value = if *parameter_source == InputSource::Body && aggregate_body {
                     match value {
                         Some(body) if body.is_instance_of::<PyDict>() => {
@@ -843,9 +879,9 @@ impl CallablePlan {
                 };
                 let Some(value) = value else {
                     if let Some(default) = parameter.default.as_ref() {
-                        kwargs.set_item(&parameter.name, default.bind(py))?;
+                        kwargs.set_item(&parameter.name, default.bind(context.py))?;
                     } else {
-                        failures.push(ValidationIssue::Missing {
+                        context.failures.push(ValidationIssue::Missing {
                             location: source.as_str().to_owned(),
                             alias: alias.clone(),
                             body_field: *parameter_source == InputSource::Body && aggregate_body,
@@ -853,36 +889,45 @@ impl CallablePlan {
                     }
                     continue;
                 };
-                match validate_python_value(py, parameter.annotation.bind(py), &value) {
+                match validate_python_value(
+                    context.py,
+                    parameter.annotation.bind(context.py),
+                    &value,
+                ) {
                     Ok(value) => kwargs.set_item(&parameter.name, value)?,
-                    Err(error) if is_pydantic_validation_error(py, &error) => {
-                        failures.push(ValidationIssue::Input(Box::new(InputValidationFailure {
-                            error,
-                            location: source.as_str().to_owned(),
-                            alias: alias.clone(),
-                            body_field: *parameter_source == InputSource::Body && aggregate_body,
-                        })));
+                    Err(error) if is_pydantic_validation_error(context.py, &error) => {
+                        context.failures.push(ValidationIssue::Input(Box::new(
+                            InputValidationFailure {
+                                error,
+                                location: source.as_str().to_owned(),
+                                alias: alias.clone(),
+                                body_field: *parameter_source == InputSource::Body
+                                    && aggregate_body,
+                            },
+                        )));
                     }
                     Err(error) => return Err(error),
                 }
             }
         }
-        if failures.len() != initial_failure_count {
+        if context.failures.len() != initial_failure_count {
             return Ok(None);
         }
-        let cache_key = self.callable.as_ptr() as usize;
+        let cache_key = cache_key_override.unwrap_or_else(|| self.callable.as_ptr() as usize);
         if cache_result == Some(true) {
-            if let Some(value) = dependency_cache.get(&cache_key) {
-                return Ok(Some(value.clone_ref(py)));
+            if let Some(value) = context.dependency_cache.get(&cache_key) {
+                return Ok(Some(value.clone_ref(context.py)));
             }
         }
         let result = self
             .callable
-            .bind(py)
+            .bind(context.py)
             .call((), Some(&kwargs))
             .map(Bound::unbind)?;
-        if cache_result.is_some() && !dependency_cache.contains_key(&cache_key) {
-            dependency_cache.insert(cache_key, result.clone_ref(py));
+        if cache_result.is_some() && !context.dependency_cache.contains_key(&cache_key) {
+            context
+                .dependency_cache
+                .insert(cache_key, result.clone_ref(context.py));
         }
         Ok(Some(result))
     }
@@ -1702,13 +1747,15 @@ impl FastApiCall {
                 .routes
                 .get(route_index)
                 .ok_or_else(|| PyRuntimeError::new_err("selected FastAPI route was lost"))?;
-            route.plan.invoke(
+            let dependency_overrides = app.dependency_overrides.bind(py);
+            let mut context = InvocationContext {
                 py,
-                values.bind(py),
-                &mut validation_issues,
-                &mut dependency_cache,
-                None,
-            )
+                inputs: values.bind(py),
+                failures: &mut validation_issues,
+                dependency_overrides,
+                dependency_cache: &mut dependency_cache,
+            };
+            route.plan.invoke(&mut context, None, None)
         };
         match invocation {
             Ok(Some(endpoint_result)) => {

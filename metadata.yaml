@@ -365,6 +365,20 @@ reviewed_api_contract_overlay:
         - {path: fastapi/encoders.py, symbol: jsonable_encoder}
       feature_ids: [python-data-encoding]
       observation_selectors: [python.attribute_value, python.signature, python.call_outcome]
+    fastapi.applications.FastAPI.__init__:
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::new
+      source_evidence:
+        - {path: fastapi/applications.py, symbol: __init__}
+        - {path: tests/test_dependency_overrides.py, symbol: test_override_simple}
+        - {path: tests/test_tutorial/test_testing_dependencies/test_tutorial001.py, symbol: test_override_in_users_with_params}
+        - {path: docs_src/dependency_testing/tutorial001_py310.py}
+      feature_ids: [app-routing, dependency-security]
+      observation_selectors: [http.status, http.body.bytes]
+      supported_slice: >-
+        Partial native constructor slice: the application exposes a mutable
+        dependency_overrides mapping used by the reviewed synchronous Depends
+        override workflow. This does not establish parity for the remaining
+        FastAPI constructor options or override cache behavior.
     fastapi.applications.FastAPI.__call__:
       rust_binding: fastapi-rs/src/application_runtime.rs::FastApiCall::finish_endpoint
       source_evidence:
@@ -499,10 +513,13 @@ reviewed_api_contract_overlay:
         dependency level share cached results for repeated dependencies during a
         request; use_cache=False bypasses cache lookup for that dependency edge,
         while its result can populate an empty cache entry. The cache resets for
-        each request. Async and generator dependencies, None-based dependency
-        inference, Security scopes, overrides, request/function scopes, and the
-        rest of the Depends constructor contract remain outside this reviewed
-        slice.
+        each request. Synchronous app-level overrides rebuild the replacement
+        dependency from its signature when the replacement only uses fields
+        already registered by the original dependency. Override cache-key
+        behavior, async and generator dependencies, None-based dependency
+        inference, Security scopes, replacements requiring new input fields,
+        request/function scopes, and the rest of the Depends constructor
+        contract remain outside this reviewed slice.
     fastapi.exceptions.RequestValidationError:
       rust_binding: fastapi-rs/src/errors.rs::RequestValidationError
       source_evidence:
