@@ -10,8 +10,8 @@ from enum import Enum
 from pathlib import PurePath, PurePosixPath, PureWindowsPath
 from typing import TypedDict
 
-from fastapi._compat import Undefined
 from pydantic import BaseModel, Field, field_serializer
+from pydantic_core import PydanticUndefined as Undefined
 
 
 class Person:

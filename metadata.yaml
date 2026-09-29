@@ -268,6 +268,12 @@ reviewed_api_contract_overlay:
         - validation.error_class
         - validation.error_details
       error_contract_ids: [fastapi.exceptions.ResponseValidationError]
+    fastapi.encoders.jsonable_encoder:
+      rust_binding: fastapi-rs-py/src/lib.rs::PyJsonableEncoder::__call__
+      source_evidence:
+        - {path: fastapi/encoders.py, symbol: jsonable_encoder}
+      feature_ids: [python-data-encoding]
+      observation_selectors: [python.attribute_value, python.signature]
   warning_classification_reviews:
     fastapi.exceptions.FastAPIDeprecationWarning:
       classification: uncertain

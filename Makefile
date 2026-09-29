@@ -166,7 +166,13 @@ parity-api-oracle: parity-inputs ## Execute a direct public API workflow against
 
 parity-api-target: parity-inputs ## Execute a direct public API workflow against FastAPI-RS
 	$(TARGET_PYTHON) scripts/check_target_runtime_boundary.py
-	$(PYTHON) -m scripts.parity.cli api-target --input "$(PARITY_API_INPUT)"
+	$(PYTHON) -m scripts.parity.cli api-target \
+	  --input "$(PARITY_API_INPUT)" \
+	  --python "$(TARGET_PYTHON)" \
+	  --fastapi-source "$(FASTAPI_SOURCE)" \
+	  --starlette-source "$(STARLETTE_SOURCE)" \
+	  --target-source "$(CURDIR)" \
+	  --starlette-rs-source "$(STARLETTE_RS_SOURCE)"
 
 parity-api-compare: ## Compare direct public API source and target result artifacts exactly
 	$(PYTHON) -m scripts.parity.cli api-compare --input "$(PARITY_API_INPUT)" --source-result "$(SOURCE_RESULT)" --target-result "$(TARGET_RESULT)"

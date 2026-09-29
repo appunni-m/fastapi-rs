@@ -511,6 +511,13 @@ def build_api_surface_contract(
 
         feature_ids.update(reviewed_operation.get("feature_ids", []))
         selectors.update(reviewed_operation.get("observation_selectors", []))
+        rust_binding = reviewed_operation.get("rust_binding")
+        if rust_binding is not None and (
+            not isinstance(rust_binding, str) or not rust_binding.strip()
+        ):
+            raise ContractError(
+                f"reviewed Rust binding for {symbol_id} must be a nonempty source path"
+            )
         for documentation_ref in reviewed_operation.get("documentation_contract_refs", []):
             coverage_pointer, coverage_row = coverage_by_doc_path[documentation_ref["source_path"]]
             fixture_id = coverage_row.get("fixture_id")
@@ -577,7 +584,7 @@ def build_api_surface_contract(
                         "source_candidate_refs": owner_source_refs,
                     },
                     "status": "full-contract-not-established",
-                    "rust_binding": None,
+                    "rust_binding": rust_binding,
                 },
             }
         )

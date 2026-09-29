@@ -3,10 +3,124 @@
 use fastapi_rs::asgi::{AsgiScopeKind, classify_scope};
 use fastapi_rs::{
     FastApiInputLocation, FastApiInputParameter, FastApiOperationMatch, FastApiOperationRouter,
+    JsonableEncoderInput, JsonableEncoderOptions,
 };
+use pyo3::IntoPyObjectExt;
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 use pyo3::types::{PyBytes, PyDict, PyList, PyModule};
+
+#[pyclass(name = "jsonable_encoder", module = "fastapi.encoders", dict)]
+struct PyJsonableEncoder;
+
+#[pymethods]
+impl PyJsonableEncoder {
+    #[pyo3(signature = (obj, include=None, exclude=None, by_alias=true, exclude_unset=false, exclude_defaults=false, exclude_none=false, custom_encoder=None, sqlalchemy_safe=true))]
+    // lint-exception: Preserve every ordered FastAPI parameter at the native call boundary.
+    #[allow(
+        clippy::too_many_arguments,
+        reason = "the reviewed public Python signature has nine named parameters"
+    )]
+    fn __call__<'py>(
+        &self,
+        py: Python<'py>,
+        obj: Bound<'py, PyAny>,
+        include: Option<Bound<'py, PyAny>>,
+        exclude: Option<Bound<'py, PyAny>>,
+        by_alias: bool,
+        exclude_unset: bool,
+        exclude_defaults: bool,
+        exclude_none: bool,
+        custom_encoder: Option<Bound<'py, PyAny>>,
+        sqlalchemy_safe: bool,
+    ) -> PyResult<Bound<'py, PyAny>> {
+        let options = JsonableEncoderOptions::new(JsonableEncoderInput {
+            include,
+            exclude,
+            by_alias,
+            exclude_unset,
+            exclude_defaults,
+            exclude_none,
+            custom_encoder,
+            sqlalchemy_safe,
+        });
+        fastapi_rs::jsonable_encoder(py, &obj, &options)
+    }
+}
+
+fn install_encoder_signature(py: Python<'_>, callable: &Bound<'_, PyAny>) -> PyResult<()> {
+    let inspect = py.import("inspect")?;
+    let parameter_type = inspect.getattr("Parameter")?;
+    let kind = parameter_type.getattr("POSITIONAL_OR_KEYWORD")?;
+    let parameters = PyList::empty(py);
+    let parameter_specs = [
+        (
+            "obj",
+            None,
+            "typing.Annotated[typing.Any, Doc('\\n            The input object to convert to JSON.\\n            ')]",
+        ),
+        (
+            "include",
+            Some(None),
+            "typing.Annotated[typing.Union[set[int], set[str], collections.abc.Mapping[int, typing.Union[ForwardRef('IncEx'), bool]], collections.abc.Mapping[str, typing.Union[ForwardRef('IncEx'), bool]], NoneType], Doc(\"\\n            Pydantic's `include` parameter, passed to Pydantic models to set the\\n            fields to include.\\n            \")]",
+        ),
+        (
+            "exclude",
+            Some(None),
+            "typing.Annotated[typing.Union[set[int], set[str], collections.abc.Mapping[int, typing.Union[ForwardRef('IncEx'), bool]], collections.abc.Mapping[str, typing.Union[ForwardRef('IncEx'), bool]], NoneType], Doc(\"\\n            Pydantic's `exclude` parameter, passed to Pydantic models to set the\\n            fields to exclude.\\n            \")]",
+        ),
+        (
+            "by_alias",
+            Some(Some(true)),
+            "typing.Annotated[bool, Doc(\"\\n            Pydantic's `by_alias` parameter, passed to Pydantic models to define if\\n            the output should use the alias names (when provided) or the Python\\n            attribute names. In an API, if you set an alias, it's probably because you\\n            want to use it in the result, so you probably want to leave this set to\\n            `True`.\\n            \")]",
+        ),
+        (
+            "exclude_unset",
+            Some(Some(false)),
+            "typing.Annotated[bool, Doc(\"\\n            Pydantic's `exclude_unset` parameter, passed to Pydantic models to define\\n            if it should exclude from the output the fields that were not explicitly\\n            set (and that only had their default values).\\n            \")]",
+        ),
+        (
+            "exclude_defaults",
+            Some(Some(false)),
+            "typing.Annotated[bool, Doc(\"\\n            Pydantic's `exclude_defaults` parameter, passed to Pydantic models to define\\n            if it should exclude from the output the fields that had the same default\\n            value, even when they were explicitly set.\\n            \")]",
+        ),
+        (
+            "exclude_none",
+            Some(Some(false)),
+            "typing.Annotated[bool, Doc(\"\\n            Pydantic's `exclude_none` parameter, passed to Pydantic models to define\\n            if it should exclude from the output any fields that have a `None` value.\\n            \")]",
+        ),
+        (
+            "custom_encoder",
+            Some(None),
+            "typing.Annotated[dict[typing.Any, collections.abc.Callable[[typing.Any], typing.Any]] | None, Doc(\"\\n            Pydantic's `custom_encoder` parameter, passed to Pydantic models to define\\n            a custom encoder.\\n            \")]",
+        ),
+        (
+            "sqlalchemy_safe",
+            Some(Some(true)),
+            "typing.Annotated[bool, Doc(\"\\n            Exclude from the output any fields that start with the name `_sa`.\\n\\n            This is mainly a hack for compatibility with SQLAlchemy objects, they\\n            store internal SQLAlchemy-specific state in attributes named with `_sa`,\\n            and those objects can't (and shouldn't be) serialized to JSON.\\n            \")]",
+        ),
+    ];
+
+    for (name, default, annotation) in parameter_specs {
+        let kwargs = PyDict::new(py);
+        if let Some(default) = default {
+            let value = match default {
+                None => py.None().into_bound(py),
+                Some(value) => value.into_bound_py_any(py)?,
+            };
+            kwargs.set_item("default", value)?;
+        }
+        kwargs.set_item("annotation", annotation)?;
+        parameters.append(parameter_type.call((name, &kind), Some(&kwargs))?)?;
+    }
+
+    let signature_kwargs = PyDict::new(py);
+    signature_kwargs.set_item("return_annotation", "typing.Any")?;
+    let signature = inspect
+        .getattr("Signature")?
+        .call((parameters,), Some(&signature_kwargs))?;
+    callable.setattr("__signature__", signature)
+}
 
 #[pyclass(name = "_OperationRouter")]
 struct PyOperationRouter {
@@ -205,5 +319,9 @@ fn _core(module: &Bound<'_, PyModule>) -> PyResult<()> {
     module.add_function(wrap_pyfunction!(identity, module)?)?;
     module.add_function(wrap_pyfunction!(scope_kind, module)?)?;
     module.add_function(wrap_pyfunction!(require_supported_scope, module)?)?;
+    module.add_class::<PyJsonableEncoder>()?;
+    let encoder = Py::new(module.py(), PyJsonableEncoder)?;
+    install_encoder_signature(module.py(), encoder.bind(module.py()))?;
+    module.add("jsonable_encoder", encoder)?;
     Ok(())
 }
