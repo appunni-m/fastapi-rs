@@ -40,9 +40,11 @@ def _pointer(*parts: str | int) -> str:
 
 def _inventory_rows(inventory: dict[str, Any]) -> dict[str, list[str]]:
     pointers: dict[str, list[str]] = defaultdict(list)
+    definition_pointers: dict[str, list[str]] = defaultdict(list)
 
     def add_definition(row: dict[str, Any], pointer: str) -> None:
         pointers[row["id"]].append(pointer)
+        definition_pointers[row["id"]].append(pointer)
         for index, member in enumerate(row.get("members", [])):
             add_definition(member, f"{pointer}/members/{index}")
 
@@ -53,8 +55,12 @@ def _inventory_rows(inventory: dict[str, Any]) -> dict[str, list[str]]:
                 _pointer("modules", module_index, "definitions", definition_index),
             )
     for binding_index, binding in enumerate(inventory["import_bindings"]):
-        pointers[binding["id"]].append(_pointer("import_bindings", binding_index))
-    return dict(pointers)
+        binding_id = binding["id"]
+        pointers[binding_id].append(_pointer("import_bindings", binding_index))
+        target_path = binding.get("target_path")
+        if isinstance(target_path, str):
+            pointers[binding_id].extend(definition_pointers.get(target_path, []))
+    return {symbol_id: list(dict.fromkeys(refs)) for symbol_id, refs in pointers.items()}
 
 
 def _runtime_rows(surface: dict[str, Any]) -> dict[str, tuple[str, dict[str, Any]]]:

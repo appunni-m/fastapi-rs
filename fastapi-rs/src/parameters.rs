@@ -10,6 +10,7 @@ pub(crate) struct ParameterMetadata {
     alias: Option<String>,
     dependency: Option<Py<PyAny>>,
     default: Option<Py<PyAny>>,
+    gt: Option<Py<PyAny>>,
 }
 
 #[pymethods]
@@ -35,6 +36,11 @@ impl ParameterMetadata {
     fn default(&self, py: Python<'_>) -> Option<Py<PyAny>> {
         self.default.as_ref().map(|default| default.clone_ref(py))
     }
+
+    #[getter]
+    fn gt(&self, py: Python<'_>) -> Option<Py<PyAny>> {
+        self.gt.as_ref().map(|gt| gt.clone_ref(py))
+    }
 }
 
 #[pyfunction(name = "Depends")]
@@ -46,6 +52,7 @@ fn depends(py: Python<'_>, dependency: Py<PyAny>) -> PyResult<Py<ParameterMetada
             alias: None,
             dependency: Some(dependency),
             default: None,
+            gt: None,
         },
     )
 }
@@ -63,6 +70,7 @@ fn header(
             alias,
             dependency: None,
             default,
+            gt: None,
         },
     )
 }
@@ -80,6 +88,7 @@ fn cookie(
             alias,
             dependency: None,
             default,
+            gt: None,
         },
     )
 }
@@ -97,6 +106,21 @@ fn query(
             alias,
             dependency: None,
             default,
+            gt: None,
+        },
+    )
+}
+
+#[pyfunction(name = "Body", signature = (*, gt = None))]
+fn body(py: Python<'_>, gt: Option<Py<PyAny>>) -> PyResult<Py<ParameterMetadata>> {
+    Py::new(
+        py,
+        ParameterMetadata {
+            kind: "body".to_owned(),
+            alias: None,
+            dependency: None,
+            default: None,
+            gt,
         },
     )
 }
@@ -109,6 +133,7 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     module.add_function(wrap_pyfunction!(header, module)?)?;
     module.add_function(wrap_pyfunction!(cookie, module)?)?;
     module.add_function(wrap_pyfunction!(query, module)?)?;
+    module.add_function(wrap_pyfunction!(body, module)?)?;
 
     let status = PyModule::new(py, "status")?;
     status.add("HTTP_200_OK", 200)?;

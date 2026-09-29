@@ -123,7 +123,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@2
-    sha256: 2763d5e9471c9b73896f313be14a293b0fcf00f81749b20792f2356240fad99e
+    sha256: 4a7a45642e4f7e75973dccd25abf4d00eb0a6d0f745066ba7b03d7f32d2fe96a
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -152,7 +152,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: bb4ef8f65388b240559e88286647379d55d92be8cf40fb402ca131c029318184
+    sha256: 195226fc825e8fd29e599256782ce8df31b9f16a3de0274755612651a083d807
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 554
@@ -189,14 +189,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@1
-    sha256: 239fee9c2c7ec8183a47e17256da693970609650f96df603e5f72b225348d68c
+    sha256: cba0a0fbfc5ca7a883d4cded94f4036401aa9a300259ee1dff7cce3639ac05bc
     schema_path: tests/fixtures/schemas/materialized-input-index.schema.json
     schema_sha256: 467200b835dfd99ab16dfbd4ca4507145e070c73aa55d4425fd78e11141c3e86
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 396
-      cases: 1677
-      partial_source_mappings: 913
+      workflows: 397
+      cases: 1681
+      partial_source_mappings: 914
 
 contract_metadata:
   aliases:
@@ -441,6 +441,7 @@ api_surface_contract:
     source_candidate_ref: /api_candidates/0
     source_inventory_refs:
     - /import_bindings/17
+    - /modules/33/definitions/51
     source_signature_state: not-recorded
     source_signature_refs: []
     runtime_reflections:
@@ -524,6 +525,7 @@ api_surface_contract:
     source_candidate_ref: /api_candidates/1
     source_inventory_refs:
     - /import_bindings/2
+    - /modules/6/definitions/1
     source_signature_state: not-recorded
     source_signature_refs: []
     runtime_reflections:
@@ -586,8 +588,10 @@ api_surface_contract:
     source_candidate_ref: /api_candidates/2
     source_inventory_refs:
     - /import_bindings/6
-    source_signature_state: not-recorded
-    source_signature_refs: []
+    - /modules/29/definitions/4
+    source_signature_state: recorded
+    source_signature_refs:
+    - /modules/29/definitions/4
     runtime_reflections:
       core:
         ref: /symbols/2
@@ -626,7 +630,7 @@ api_surface_contract:
     - http.headers.ordered
     - http.status
     - openapi.paths
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.Body
@@ -637,14 +641,16 @@ api_surface_contract:
         - /api_candidates/2
         - /api_candidates/926
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/parameters.rs::body
   - id: fastapi.Cookie
     kind: import_binding
     source_candidate_ref: /api_candidates/3
     source_inventory_refs:
     - /import_bindings/7
-    source_signature_state: not-recorded
-    source_signature_refs: []
+    - /modules/29/definitions/3
+    source_signature_state: recorded
+    source_signature_refs:
+    - /modules/29/definitions/3
     runtime_reflections:
       core:
         ref: /symbols/3
@@ -703,8 +709,10 @@ api_surface_contract:
     source_candidate_ref: /api_candidates/4
     source_inventory_refs:
     - /import_bindings/8
-    source_signature_state: not-recorded
-    source_signature_refs: []
+    - /modules/29/definitions/7
+    source_signature_state: recorded
+    source_signature_refs:
+    - /modules/29/definitions/7
     runtime_reflections:
       core:
         ref: /symbols/4
@@ -769,6 +777,7 @@ api_surface_contract:
     source_candidate_ref: /api_candidates/5
     source_inventory_refs:
     - /import_bindings/1
+    - /modules/5/definitions/1
     source_signature_state: not-recorded
     source_signature_refs: []
     runtime_reflections:
@@ -907,8 +916,10 @@ api_surface_contract:
     source_candidate_ref: /api_candidates/6
     source_inventory_refs:
     - /import_bindings/9
-    source_signature_state: not-recorded
-    source_signature_refs: []
+    - /modules/29/definitions/6
+    source_signature_state: recorded
+    source_signature_refs:
+    - /modules/29/definitions/6
     runtime_reflections:
       core:
         ref: /symbols/6
@@ -960,8 +971,10 @@ api_surface_contract:
     source_candidate_ref: /api_candidates/7
     source_inventory_refs:
     - /import_bindings/10
-    source_signature_state: not-recorded
-    source_signature_refs: []
+    - /modules/29/definitions/5
+    source_signature_state: recorded
+    source_signature_refs:
+    - /modules/29/definitions/5
     runtime_reflections:
       core:
         ref: /symbols/7
@@ -1019,6 +1032,7 @@ api_surface_contract:
     source_candidate_ref: /api_candidates/8
     source_inventory_refs:
     - /import_bindings/4
+    - /modules/15/definitions/1
     source_signature_state: not-recorded
     source_signature_refs: []
     runtime_reflections:
@@ -1091,8 +1105,10 @@ api_surface_contract:
     source_candidate_ref: /api_candidates/9
     source_inventory_refs:
     - /import_bindings/11
-    source_signature_state: not-recorded
-    source_signature_refs: []
+    - /modules/29/definitions/2
+    source_signature_state: recorded
+    source_signature_refs:
+    - /modules/29/definitions/2
     runtime_reflections:
       core:
         ref: /symbols/9
@@ -1150,8 +1166,10 @@ api_surface_contract:
     source_candidate_ref: /api_candidates/10
     source_inventory_refs:
     - /import_bindings/12
-    source_signature_state: not-recorded
-    source_signature_refs: []
+    - /modules/29/definitions/0
+    source_signature_state: recorded
+    source_signature_refs:
+    - /modules/29/definitions/0
     runtime_reflections:
       core:
         ref: /symbols/10
@@ -1209,8 +1227,10 @@ api_surface_contract:
     source_candidate_ref: /api_candidates/11
     source_inventory_refs:
     - /import_bindings/13
-    source_signature_state: not-recorded
-    source_signature_refs: []
+    - /modules/29/definitions/1
+    source_signature_state: recorded
+    source_signature_refs:
+    - /modules/29/definitions/1
     runtime_reflections:
       core:
         ref: /symbols/11
@@ -1395,8 +1415,10 @@ api_surface_contract:
     source_candidate_ref: /api_candidates/14
     source_inventory_refs:
     - /import_bindings/14
-    source_signature_state: not-recorded
-    source_signature_refs: []
+    - /modules/29/definitions/8
+    source_signature_state: recorded
+    source_signature_refs:
+    - /modules/29/definitions/8
     runtime_reflections:
       core:
         ref: /symbols/14
@@ -1449,6 +1471,7 @@ api_surface_contract:
     source_candidate_ref: /api_candidates/15
     source_inventory_refs:
     - /import_bindings/3
+    - /modules/9/definitions/0
     source_signature_state: not-recorded
     source_signature_refs: []
     runtime_reflections:
@@ -1616,6 +1639,7 @@ api_surface_contract:
     source_candidate_ref: /api_candidates/18
     source_inventory_refs:
     - /import_bindings/5
+    - /modules/15/definitions/2
     source_signature_state: not-recorded
     source_signature_refs: []
     runtime_reflections:
@@ -19604,6 +19628,7 @@ api_surface_contract:
     source_candidate_ref: /api_candidates/1409
     source_inventory_refs:
     - /import_bindings/558
+    - /modules/35/definitions/3
     source_signature_state: not-recorded
     source_signature_refs: []
     runtime_reflections:
@@ -19671,6 +19696,7 @@ api_surface_contract:
     source_candidate_ref: /api_candidates/1410
     source_inventory_refs:
     - /import_bindings/559
+    - /modules/35/definitions/2
     source_signature_state: not-recorded
     source_signature_refs: []
     runtime_reflections:
@@ -19728,6 +19754,7 @@ api_surface_contract:
     source_candidate_ref: /api_candidates/1411
     source_inventory_refs:
     - /import_bindings/560
+    - /modules/35/definitions/1
     source_signature_state: not-recorded
     source_signature_refs: []
     runtime_reflections:
@@ -19785,6 +19812,7 @@ api_surface_contract:
     source_candidate_ref: /api_candidates/1412
     source_inventory_refs:
     - /import_bindings/561
+    - /modules/37/definitions/1
     source_signature_state: not-recorded
     source_signature_refs: []
     runtime_reflections:
@@ -19842,6 +19870,7 @@ api_surface_contract:
     source_candidate_ref: /api_candidates/1413
     source_inventory_refs:
     - /import_bindings/562
+    - /modules/37/definitions/3
     source_signature_state: not-recorded
     source_signature_refs: []
     runtime_reflections:
@@ -19899,6 +19928,7 @@ api_surface_contract:
     source_candidate_ref: /api_candidates/1414
     source_inventory_refs:
     - /import_bindings/563
+    - /modules/37/definitions/0
     source_signature_state: not-recorded
     source_signature_refs: []
     runtime_reflections:
@@ -19956,6 +19986,7 @@ api_surface_contract:
     source_candidate_ref: /api_candidates/1415
     source_inventory_refs:
     - /import_bindings/564
+    - /modules/37/definitions/4
     source_signature_state: not-recorded
     source_signature_refs: []
     runtime_reflections:
@@ -20013,6 +20044,7 @@ api_surface_contract:
     source_candidate_ref: /api_candidates/1416
     source_inventory_refs:
     - /import_bindings/565
+    - /modules/37/definitions/5
     source_signature_state: not-recorded
     source_signature_refs: []
     runtime_reflections:
@@ -20070,6 +20102,7 @@ api_surface_contract:
     source_candidate_ref: /api_candidates/1417
     source_inventory_refs:
     - /import_bindings/566
+    - /modules/38/definitions/2
     source_signature_state: not-recorded
     source_signature_refs: []
     runtime_reflections:
@@ -20127,6 +20160,7 @@ api_surface_contract:
     source_candidate_ref: /api_candidates/1418
     source_inventory_refs:
     - /import_bindings/567
+    - /modules/38/definitions/4
     source_signature_state: not-recorded
     source_signature_refs: []
     runtime_reflections:
@@ -20184,6 +20218,7 @@ api_surface_contract:
     source_candidate_ref: /api_candidates/1419
     source_inventory_refs:
     - /import_bindings/568
+    - /modules/38/definitions/3
     source_signature_state: not-recorded
     source_signature_refs: []
     runtime_reflections:
@@ -20241,6 +20276,7 @@ api_surface_contract:
     source_candidate_ref: /api_candidates/1420
     source_inventory_refs:
     - /import_bindings/569
+    - /modules/38/definitions/0
     source_signature_state: not-recorded
     source_signature_refs: []
     runtime_reflections:
@@ -20298,6 +20334,7 @@ api_surface_contract:
     source_candidate_ref: /api_candidates/1421
     source_inventory_refs:
     - /import_bindings/570
+    - /modules/38/definitions/1
     source_signature_state: not-recorded
     source_signature_refs: []
     runtime_reflections:
@@ -20355,6 +20392,7 @@ api_surface_contract:
     source_candidate_ref: /api_candidates/1422
     source_inventory_refs:
     - /import_bindings/572
+    - /modules/39/definitions/0
     source_signature_state: not-recorded
     source_signature_refs: []
     runtime_reflections:
@@ -20412,6 +20450,7 @@ api_surface_contract:
     source_candidate_ref: /api_candidates/1423
     source_inventory_refs:
     - /import_bindings/571
+    - /modules/38/definitions/5
     source_signature_state: not-recorded
     source_signature_refs: []
     runtime_reflections:

@@ -518,18 +518,26 @@ impl CallablePlan {
                 let annotation = hints
                     .call_method1("get", (&name, &raw_annotation))?
                     .unbind();
-                let default = item.getattr("default")?;
-                let (annotation, metadata) = annotation_parts(py, annotation)?;
-                let default = if default.is(&empty) {
+                let raw_default = item.getattr("default")?;
+                let (annotation, mut metadata) = annotation_parts(py, annotation)?;
+                let default_is_body_marker = !raw_default.is(&empty)
+                    && raw_default.hasattr("kind")?
+                    && raw_default.getattr("kind")?.extract::<String>()? == "body";
+                if default_is_body_marker {
+                    metadata.push(raw_default.clone().unbind());
+                }
+                let default = if raw_default.is(&empty) || default_is_body_marker {
                     marker_default(py, &metadata)?
                 } else {
-                    Some(default.unbind())
+                    Some(raw_default.unbind())
                 };
+                let validated_annotation =
+                    constrained_body_annotation(py, annotation.bind(py), &metadata)?;
                 let source =
                     parameter_source(py, &name, annotation.bind(py), &metadata, path_parameters)?;
                 Ok(CallableParameter {
                     name,
-                    annotation,
+                    annotation: validated_annotation,
                     default,
                     source,
                 })
@@ -599,6 +607,12 @@ impl CallablePlan {
     ) -> PyResult<Option<Py<PyAny>>> {
         let initial_failure_count = failures.len();
         let kwargs = PyDict::new(py);
+        let aggregate_body = self
+            .input_parameters()
+            .iter()
+            .filter(|parameter| parameter.location == FastApiInputLocation::Body)
+            .count()
+            > 1;
         for parameter in &self.parameters {
             if let ParameterSource::Dependency(dependency) = &parameter.source {
                 if let Some(value) = dependency.invoke(py, inputs, failures)? {
@@ -625,6 +639,16 @@ impl CallablePlan {
                     continue;
                 }
                 let value = inputs.get_item(&parameter.name)?;
+                let value = if *parameter_source == InputSource::Body && aggregate_body {
+                    match value {
+                        Some(body) if body.is_instance_of::<PyDict>() => {
+                            body.cast::<PyDict>()?.get_item(alias)?
+                        }
+                        value => value,
+                    }
+                } else {
+                    value
+                };
                 let Some(value) = value else {
                     if let Some(default) = parameter.default.as_ref() {
                         kwargs.set_item(&parameter.name, default.bind(py))?;
@@ -632,6 +656,7 @@ impl CallablePlan {
                         failures.push(ValidationIssue::Missing {
                             location: source.as_str().to_owned(),
                             alias: alias.clone(),
+                            body_field: *parameter_source == InputSource::Body && aggregate_body,
                         });
                     }
                     continue;
@@ -643,6 +668,7 @@ impl CallablePlan {
                             error,
                             location: source.as_str().to_owned(),
                             alias: alias.clone(),
+                            body_field: *parameter_source == InputSource::Body && aggregate_body,
                         })));
                     }
                     Err(error) => return Err(error),
@@ -667,7 +693,7 @@ fn marker_default(py: Python<'_>, metadata: &[Py<PyAny>]) -> PyResult<Option<Py<
             continue;
         }
         let kind = marker.getattr("kind")?.extract::<String>()?;
-        if kind == "header" || kind == "query" || kind == "cookie" {
+        if kind == "header" || kind == "query" || kind == "cookie" || kind == "body" {
             let default = marker.getattr("default")?;
             if !default.is_none() {
                 return Ok(Some(default.unbind()));
@@ -693,13 +719,18 @@ impl CallableParameter {
 
 enum ValidationIssue {
     Input(Box<InputValidationFailure>),
-    Missing { location: String, alias: String },
+    Missing {
+        location: String,
+        alias: String,
+        body_field: bool,
+    },
 }
 
 struct InputValidationFailure {
     error: PyErr,
     location: String,
     alias: String,
+    body_field: bool,
 }
 
 fn annotation_parts(
@@ -743,6 +774,12 @@ fn parameter_source(
                 .map(Box::new)
                 .map(ParameterSource::Dependency);
         }
+        if kind == "body" {
+            return Ok(ParameterSource::Input {
+                source: InputSource::Body,
+                alias: name.to_owned(),
+            });
+        }
         if kind == "header" || kind == "query" || kind == "cookie" {
             let alias = marker
                 .getattr("alias")?
@@ -783,6 +820,35 @@ fn parameter_source(
         source: InputSource::Query,
         alias: name.to_owned(),
     })
+}
+
+fn constrained_body_annotation(
+    py: Python<'_>,
+    annotation: &Bound<'_, PyAny>,
+    metadata: &[Py<PyAny>],
+) -> PyResult<Py<PyAny>> {
+    for marker in metadata {
+        let marker = marker.bind(py);
+        if !marker.hasattr("kind")? || marker.getattr("kind")?.extract::<String>()? != "body" {
+            continue;
+        }
+        let gt = marker.getattr("gt")?;
+        if gt.is_none() {
+            continue;
+        }
+        let kwargs = PyDict::new(py);
+        kwargs.set_item("gt", gt)?;
+        let field = py
+            .import("pydantic")?
+            .getattr("Field")?
+            .call((), Some(&kwargs))?;
+        return py
+            .import("typing")?
+            .getattr("Annotated")?
+            .get_item((annotation, field))
+            .map(Bound::unbind);
+    }
+    Ok(annotation.clone().unbind())
 }
 
 fn is_pydantic_model(py: Python<'_>, annotation: &Bound<'_, PyAny>) -> bool {
@@ -904,8 +970,12 @@ fn validation_response_body(py: Python<'_>, failures: &[ValidationIssue]) -> PyR
             ValidationIssue::Input(failure) => {
                 append_input_validation_details(py, &details, failure)?;
             }
-            ValidationIssue::Missing { location, alias } => {
-                append_missing_validation_detail(py, &details, location, alias)?;
+            ValidationIssue::Missing {
+                location,
+                alias,
+                body_field,
+            } => {
+                append_missing_validation_detail(py, &details, location, alias, *body_field)?;
             }
         }
     }
@@ -932,6 +1002,9 @@ fn append_input_validation_details(
         let loc = PyList::empty(py);
         loc.append(failure.location.as_str())?;
         if failure.location == "body" {
+            if failure.body_field {
+                loc.append(failure.alias.as_str())?;
+            }
             let field_loc = entry.get_item("loc")?.ok_or_else(|| {
                 PyValueError::new_err("Pydantic validation error is missing its location")
             })?;
@@ -970,12 +1043,13 @@ fn append_missing_validation_detail(
     details: &Bound<'_, PyList>,
     location: &str,
     alias: &str,
+    body_field: bool,
 ) -> PyResult<()> {
     let detail = PyDict::new(py);
     detail.set_item("type", "missing")?;
     let loc = PyList::empty(py);
     loc.append(location)?;
-    if location != "body" {
+    if location != "body" || body_field {
         loc.append(alias)?;
     }
     detail.set_item("loc", loc)?;

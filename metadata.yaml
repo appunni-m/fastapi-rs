@@ -193,6 +193,17 @@ reviewed_api_contract_overlay:
         - validation.error_class
         - validation.error_details
   operations:
+    fastapi.Body:
+      rust_binding: fastapi-rs/src/parameters.rs::body
+      source_evidence:
+        - {path: fastapi/param_functions.py, symbol: Body}
+        - {path: fastapi/params.py, symbol: Body}
+      feature_ids: [request-validation]
+      observation_selectors: [http.status, http.body.bytes]
+      supported_slice: >-
+        Partial native slice: Body(gt=...) marks a request-body input and applies
+        the numeric strict-greater-than constraint. Other Body constructor
+        parameters and FieldInfo options remain outside this reviewed slice.
     fastapi.exception_handlers.http_exception_handler:
       source_evidence:
         - {path: fastapi/exception_handlers.py, symbol: http_exception_handler}

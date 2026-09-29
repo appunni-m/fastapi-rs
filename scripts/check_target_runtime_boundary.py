@@ -24,7 +24,7 @@ DYNAMIC_PYTHON_EXECUTION = re.compile(
     r"\b(?:py|python)\s*\.\s*(?:run|eval)\s*\(|"
     r"\bPyModule\s*::\s*from_code(?:_bound)?\s*\("
 )
-PUBLIC_FASTAPI_EXPORTS = ["Cookie", "Depends", "FastAPI", "Header", "Query", "status"]
+PUBLIC_FASTAPI_EXPORTS = ["Body", "Cookie", "Depends", "FastAPI", "Header", "Query", "status"]
 FORBIDDEN_CONTROL_FLOW = tuple(
     node_type
     for node_type in (
