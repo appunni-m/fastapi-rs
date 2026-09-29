@@ -2379,7 +2379,11 @@ fn field_annotation_is_sequence(py: Python<'_>, annotation: &Bound<'_, PyAny>) -
     if is_sequence_class(py, annotation)? {
         return Ok(true);
     }
-    !origin.is_none() && is_sequence_class(py, &origin)
+    if origin.is_none() {
+        Ok(false)
+    } else {
+        is_sequence_class(py, &origin)
+    }
 }
 
 fn is_sequence_class(py: Python<'_>, annotation: &Bound<'_, PyAny>) -> PyResult<bool> {
