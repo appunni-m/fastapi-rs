@@ -117,6 +117,7 @@ struct FastApiRoute {
     summary: Option<String>,
     operation_id: Option<String>,
     deprecated: Option<bool>,
+    tags: Option<Vec<String>>,
     status_code: u16,
     include_in_schema: bool,
     endpoint: Py<PyAny>,
@@ -141,6 +142,7 @@ struct ResponseModelOptions {
     summary: Option<String>,
     operation_id: Option<String>,
     deprecated: Option<bool>,
+    tags: Option<Vec<String>>,
 }
 
 struct ParameterOpenApiPlan {
@@ -251,6 +253,7 @@ impl PyFastApi {
                 summary: None,
                 operation_id: None,
                 deprecated: None,
+                tags: None,
             },
         )
     }
@@ -260,7 +263,7 @@ impl PyFastApi {
         clippy::too_many_arguments,
         reason = "preserve the Python route decorator keyword signature"
     )]
-    #[pyo3(signature = (path, *, response_model = None, status_code = 200, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, summary = None, include_in_schema = true, deprecated = None, operation_id = None))]
+    #[pyo3(signature = (path, *, response_model = None, status_code = 200, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, summary = None, include_in_schema = true, deprecated = None, operation_id = None))]
     fn get(
         slf: Py<Self>,
         py: Python<'_>,
@@ -273,6 +276,7 @@ impl PyFastApi {
         response_model_exclude_unset: bool,
         response_model_exclude_defaults: bool,
         response_model_exclude_none: bool,
+        tags: Option<Vec<String>>,
         summary: Option<String>,
         include_in_schema: bool,
         deprecated: Option<bool>,
@@ -296,6 +300,7 @@ impl PyFastApi {
                 summary,
                 operation_id,
                 deprecated,
+                tags,
             },
         )
     }
@@ -338,6 +343,7 @@ impl PyFastApi {
                 summary: None,
                 operation_id: None,
                 deprecated: None,
+                tags: None,
             },
         )
     }
@@ -380,6 +386,7 @@ impl PyFastApi {
                 summary: None,
                 operation_id: None,
                 deprecated: None,
+                tags: None,
             },
         )
     }
@@ -422,6 +429,7 @@ impl PyFastApi {
                 summary: None,
                 operation_id: None,
                 deprecated: None,
+                tags: None,
             },
         )
     }
@@ -464,6 +472,7 @@ impl PyFastApi {
                 summary: None,
                 operation_id: None,
                 deprecated: None,
+                tags: None,
             },
         )
     }
@@ -506,6 +515,7 @@ impl PyFastApi {
                 summary: None,
                 operation_id: None,
                 deprecated: None,
+                tags: None,
             },
         )
     }
@@ -548,6 +558,7 @@ impl PyFastApi {
                 summary: None,
                 operation_id: None,
                 deprecated: None,
+                tags: None,
             },
         )
     }
@@ -721,6 +732,7 @@ impl PyFastApi {
             response_schema,
             response_schema_title: response_field_schema_title(&name, &route.path, &route.method),
             deprecated: route.deprecated,
+            tags: route.tags.clone(),
         })
     }
 }
@@ -733,6 +745,7 @@ struct PyOperationDecorator {
     summary: Option<String>,
     operation_id: Option<String>,
     deprecated: Option<bool>,
+    tags: Option<Vec<String>>,
     response_model: Option<Py<PyAny>>,
     status_code: u16,
     include_in_schema: bool,
@@ -762,6 +775,7 @@ fn operation_decorator(
             summary: response_model_options.summary,
             operation_id: response_model_options.operation_id,
             deprecated: response_model_options.deprecated,
+            tags: response_model_options.tags,
             response_model,
             status_code,
             include_in_schema: response_model_options.include_in_schema,
@@ -795,6 +809,7 @@ impl PyOperationDecorator {
             summary: self.summary.clone(),
             operation_id: self.operation_id.clone(),
             deprecated: self.deprecated,
+            tags: self.tags.clone(),
             status_code: self.status_code,
             include_in_schema: self.include_in_schema,
             endpoint: endpoint.clone_ref(py),

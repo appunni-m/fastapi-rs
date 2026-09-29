@@ -20,6 +20,7 @@ pub(crate) struct OpenApiOperation {
     pub(crate) summary: String,
     pub(crate) operation_id: String,
     pub(crate) deprecated: Option<bool>,
+    pub(crate) tags: Option<Vec<String>>,
     pub(crate) status: u16,
     pub(crate) parameters: Vec<OpenApiParameter>,
     pub(crate) request_model_name: Option<String>,
@@ -86,6 +87,13 @@ pub(crate) fn openapi_document(
         operation_document.set_item("operationId", &operation.operation_id)?;
         if operation.deprecated == Some(true) {
             operation_document.set_item("deprecated", true)?;
+        }
+        if let Some(tags) = operation.tags.as_ref().filter(|tags| !tags.is_empty()) {
+            let tag_values = PyList::empty(py);
+            for tag in tags {
+                tag_values.append(tag)?;
+            }
+            operation_document.set_item("tags", tag_values)?;
         }
 
         if !operation.parameters.is_empty() {
