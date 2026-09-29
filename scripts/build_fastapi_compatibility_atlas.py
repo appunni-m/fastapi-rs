@@ -8589,8 +8589,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         )
         independent_workflow_mappings = indexed_workflow_mappings_by_source.get(item_id, [])
         example_fixture_id = (
-            "fastapi.docs-example."
-            + norm_id(rel.removeprefix("docs_src/").removesuffix(".py"))
+            "fastapi.docs-example." + norm_id(rel.removeprefix("docs_src/").removesuffix(".py"))
             if reviewed_example_mapping and not example_exclusion
             else None
         )

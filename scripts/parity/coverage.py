@@ -881,8 +881,7 @@ def validate_compatibility_artifacts(
                 ),
             )
             _require(
-                fixture.get("selector_evidence")
-                == source_mapping.get("example_selector_evidence"),
+                fixture.get("selector_evidence") == source_mapping.get("example_selector_evidence"),
                 (
                     f"documentation example {fixture_id} selector evidence differs "
                     "from its direct case mappings"
@@ -931,8 +930,7 @@ def validate_compatibility_artifacts(
         )
         if example.get("fixture_id") is None:
             _require(
-                not independent_workflow_mappings
-                and example.get("review_status") == "pending",
+                not independent_workflow_mappings and example.get("review_status") == "pending",
                 f"unmapped documentation example {example_id} claims reviewed independent coverage",
             )
         else:
@@ -944,9 +942,7 @@ def validate_compatibility_artifacts(
                 and example_design.get("id") == example.get("fixture_id"),
                 f"documentation example {example_id} has an incomplete independent mapping",
             )
-            review_mapping = example.get("mapping_evidence", {}).get(
-                "reviewed_example_mapping"
-            )
+            review_mapping = example.get("mapping_evidence", {}).get("reviewed_example_mapping")
             _require(
                 isinstance(review_mapping, dict)
                 and bool(review_mapping.get("rationale"))
