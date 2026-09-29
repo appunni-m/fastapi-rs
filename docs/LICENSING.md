@@ -2,12 +2,13 @@
 
 ## Project license
 
-FastAPI-RS has selected **MIT** for its independently written code. The license
-text is in [`LICENSE.md`](../LICENSE.md), and MIT is declared in the Cargo
-workspace and Python package metadata. Both Cargo crates package that file via
-`license-file`. The notice identifies FastAPI-RS contributors and 2026. This
-license does not relicense FastAPI, Starlette, Pydantic, or third-party
-material.
+FastAPI-RS currently declares **MIT** for its independently written code. The
+license text is in [`LICENSE.md`](../LICENSE.md), and MIT is declared in the
+Cargo workspace and Python package metadata. Both Cargo crates package that
+file via `license-file`. Before publication, maintainers must confirm that the
+copyright holders can license the code and that contributor terms authorize
+the contributions. The declaration does not relicense FastAPI, Starlette,
+Pydantic, or third-party material.
 
 ## Upstream and dependency material
 
@@ -22,16 +23,19 @@ material.
   and dependency edges are inventoried in
   [`RUST_TARGET_DEPENDENCIES.md`](RUST_TARGET_DEPENDENCIES.md). The FastAPI
   source dependency graph is documented separately in
-  [`DEPENDENCIES.md`](DEPENDENCIES.md).
+  [`DEPENDENCY_GRAPH.md`](DEPENDENCY_GRAPH.md).
 
 ## Release gate
 
 Before publishing, record whether each component is independently authored,
 copied, generated, or bundled; resolve and review the Cargo and Python
 distribution dependency graphs; and include the applicable notices and license
-texts in source and binary distributions. Upstream tests, docs, examples, and
-branding must be reviewed separately. Verify licenses for the versions that
-are actually shipped, rather than relying on current branch metadata.
+texts in source and binary distributions. Starlette-RS is statically linked;
+the current notice summary does not include its full BSD-3-Clause text or
+identify the selected zlib backend notice. Verify wheel and sdist contents,
+and verify licenses for the versions actually shipped, rather than relying on
+current branch metadata. Upstream tests, docs, examples, and branding must be
+reviewed separately.
 
 The project should identify itself as an independent implementation and avoid
 implying endorsement by FastAPI, Starlette, or Pydantic. This is an engineering

@@ -78,6 +78,25 @@ The root reexports do **not** include `HTTPConnection`, `WebSocketState`,
 types, `APIRoute`, `get_openapi`, or `jsonable_encoder`; their module paths
 remain significant.
 
+### Current target facade availability
+
+At FastAPI-RS revision `04cec28`, the root facade exposes 10 of the 21 source
+bindings: `APIRouter`, `Body`, `Cookie`, `Depends`, `FastAPI`, `Header`,
+`Path`, `Query`, `Response`, and `status`. The missing exports are
+`__version__`, `BackgroundTasks`, `UploadFile`, `HTTPException`,
+`WebSocketException`, `File`, `Form`, `Security`, `Request`, `WebSocket`, and
+`WebSocketDisconnect`. The generated manifest's
+`target_binding.public_python_path` records the required import spelling; it
+does not assert that the current target exports it. Target status remains
+`full-contract-not-established` until live interface and behavior parity are
+recorded.
+
+`fastapi.status` is a Starlette module reexport in the oracle. The current
+target builds a smaller status module in FastAPI-RS, so module presence alone
+does not establish the required object identity or full constant set. Treat
+that as a target gap until it reexports the Starlette-RS-owned namespace and
+passes identity-checked comparison.
+
 ## Documented reference targets
 
 The following are all 61 distinct `fastapi.*` autodoc targets discovered under

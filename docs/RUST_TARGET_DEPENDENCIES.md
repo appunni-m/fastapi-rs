@@ -107,6 +107,19 @@ either license, while `AND` requires both.
 | version_check 0.9.5 | MIT/Apache-2.0 | Rust; Cargo targets: library | build, optional build | No Cargo links declaration or reviewed boundary annotation | registry | — | Tiny crate to check the version of the installed/running rustc. | — |
 | zmij 1.0.23 | MIT | Rust; Cargo targets: bench, build script, library, test target | runtime | No Cargo links declaration or reviewed boundary annotation | registry | — | A double-to-string conversion algorithm based on Schubfach and xjb | — |
 
+### Native C zlib backend
+
+The pinned Starlette-RS workspace enables `flate2` 1.1.10's `zlib` feature
+with default features disabled. That selects `libz-sys` 1.1.29, whose license
+expression is MIT OR Apache-2.0 and whose native interface is C. Its build
+script can link a host-provided zlib (discovered with `pkg-config` or vcpkg)
+or compile the bundled stock zlib C source, version 1.3.2, as a fallback. The
+bundled zlib source has its own zlib license, separate from `libz-sys`'s Cargo
+license expression. Cargo.lock pins `libz-sys`, not the host library selected
+for each platform build; record the actual linked backend and preserve its
+applicable notices for every release artifact. `cc`, `pkg-config`, and `vcpkg`
+are build-time support for this discovery/fallback path.
+
 ## Python package dependencies
 
 The Python distribution declares `pydantic==2.13.4` and
@@ -119,6 +132,34 @@ dependency. The target pins its direct Python runtime packages but does not yet
 have a lockfile for their full resolved closure; the FastAPI 0.141.1 oracle
 closure is separately locked and documented in
 [`DEPENDENCY_GRAPH.md`](DEPENDENCY_GRAPH.md).
+
+### Narrow Pydantic Core encoder bridge
+
+FastAPI 0.141.1's public `jsonable_encoder` imports
+`PydanticUndefinedType` from `pydantic_core` and encodes its instances as
+`None` (`fastapi/encoders.py:27,279–280`). It registers `Url` and `AnyUrl` as
+string encoders (`fastapi/encoders.py:103–111`); `AnyUrl` comes from
+`pydantic.networks`, while the FastAPI compatibility layer imports `Url` from
+Pydantic Core (`fastapi/_compat/v2.py:32–34`). The Rust target does not import
+these classes at module load: its encoder performs runtime instance checks for
+`PydanticUndefinedType` and resolves the URL classes dynamically
+(`fastapi-rs/src/encoding.rs:223–225,407–415`).
+
+Pinned implementation evidence is FastAPI 0.141.1 commit
+`95f8322ee1dcda7ceace7b1c4f6c9915b36d748f`: `fastapi/encoders.py`
+SHA-256 `4cc09230eca6435892f6bc25a2185e214dbedfe994d5103feb63ad269137caad`
+and `fastapi/_compat/v2.py` SHA-256
+`b031b28b588a4855bd2ee27b9f807ad7ed72ad0235347452c2c15144bb8527c9`.
+The input-only encoder review is
+`tests/fixtures/input-recipes/parity/pydantic-core-encoder-compatibility.yaml`.
+
+These runtime checks are an internal compatibility bridge, not a FastAPI-RS
+public API or an independently declared Python/Cargo dependency. Pydantic
+2.13.4 pins `pydantic-core==2.46.4` transitively, matching the selected
+manifest identity. The public Pydantic `AnyUrl` type does not replace the raw
+Core `Url` check, and Pydantic does not export the undefined sentinel type as
+a public API. Keep the behavior tied to these encoder classifications and
+revisit it when the Pydantic pin changes.
 
 Pydantic's public model/schema API and user-supplied endpoints or validators
 remain Python objects. Rust owns FastAPI-specific orchestration and framework

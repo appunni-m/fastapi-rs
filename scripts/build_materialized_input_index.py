@@ -10,6 +10,9 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
+from scripts.atlas_documentation_example_review_mappings import (
+    DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS,
+)
 from scripts.parity.contract import (
     ROOT,
     ContractError,
@@ -31,13 +34,61 @@ def _source_item_id(
     expected_kind = {
         "upstream_test": "upstream_test_module",
         "upstream_documentation": "documented_feature_page",
+        "upstream_documentation_example": "documented_python_example_source",
     }.get(evidence["kind"])
     if expected_kind is None:
         return None
+    if evidence["kind"] == "upstream_documentation_example":
+        source_path = evidence["path"]
+        if (
+            not source_path.startswith("docs_src/")
+            or not source_path.endswith(".py")
+            or source_path not in DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS
+        ):
+            raise ContractError(
+                "upstream_documentation_example must name a reviewed docs_src Python example: "
+                f"{source_path}"
+            )
     for row in coverage_by_path.get(evidence["path"], []):
         if row["kind"] == expected_kind:
             return row["id"]
+    if evidence["kind"] == "upstream_documentation_example":
+        raise ContractError(
+            "reviewed documentation example is absent from the compatibility atlas: "
+            f"{evidence['path']}"
+        )
     return None
+
+
+def _validate_reviewed_documentation_example_mappings(index: dict[str, Any]) -> None:
+    workflows_by_id = {row["id"]: row for row in index["workflows"]}
+    mappings_by_source: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for mapping in index["mappings"]:
+        mappings_by_source[mapping["source_item_id"]].append(mapping)
+
+    for source_path, review in DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.items():
+        source_id = "documented-example:" + source_path
+        expected = sorted(
+            (
+                workflow_case["recipe_path"],
+                tuple(sorted(workflow_case["case_ids"])),
+                tuple(sorted(workflow_case["observation_selectors"])),
+            )
+            for workflow_case in review["workflow_cases"]
+        )
+        actual = sorted(
+            (
+                workflows_by_id[mapping["workflow_id"]]["recipe_path"],
+                tuple(mapping["case_ids"]),
+                tuple(mapping["observation_selectors"]),
+            )
+            for mapping in mappings_by_source.get(source_id, [])
+        )
+        if actual != expected:
+            raise ContractError(
+                "indexed documentation-example cases/selectors differ from reviewed mapping: "
+                f"{source_path}; expected {expected!r}, found {actual!r}"
+            )
 
 
 def _scope(case_count: int, selectors: set[str]) -> str:
@@ -192,7 +243,7 @@ def build_index() -> dict[str, Any]:
                 "observation_selectors": sorted(all_selectors),
             }
 
-    return {
+    generated = {
         "schema": current["schema"],
         "authority": current["authority"],
         "workflows": sorted(workflow_rows.values(), key=lambda row: row["id"]),
@@ -200,6 +251,8 @@ def build_index() -> dict[str, Any]:
             mappings.values(), key=lambda row: (row["workflow_id"], row["source_item_id"])
         ),
     }
+    _validate_reviewed_documentation_example_mappings(generated)
+    return generated
 
 
 def main() -> int:

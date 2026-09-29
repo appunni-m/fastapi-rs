@@ -4,6 +4,132 @@ workload:
   factory: create_app
   instantiate_per_case: true
 cases:
+- case_id: fastapi.dependencies.tutorial008b.default-parameter-exception-translation
+  actions:
+  - action_id: missing-item-passes-through-dependency
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /translate/default/items/foo
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: owner-error-translated-by-yield-dependency
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /translate/default/items/plumbus
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: valid-item-return
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /translate/default/items/portal-gun
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - path: tests/test_tutorial/test_dependencies/test_tutorial008b.py
+    kind: upstream_test
+  - path: docs_src/dependencies/tutorial008b_py310.py
+    kind: upstream_documentation
+  - path: docs/en/docs/tutorial/dependencies/dependencies-with-yield.md
+    kind: upstream_documentation
+- case_id: fastapi.dependencies.tutorial008b.annotated-parameter-exception-translation
+  actions:
+  - action_id: missing-item-passes-through-dependency
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /translate/annotated/items/foo
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: owner-error-translated-by-yield-dependency
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /translate/annotated/items/plumbus
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: valid-item-return
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /translate/annotated/items/portal-gun
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - path: tests/test_tutorial/test_dependencies/test_tutorial008b.py
+    kind: upstream_test
+  - path: docs_src/dependencies/tutorial008b_an_py310.py
+    kind: upstream_documentation
+  - path: docs/en/docs/tutorial/dependencies/dependencies-with-yield.md
+    kind: upstream_documentation
 - case_id: fastapi.dependencies.tutorial008c.suppressed-yield-exception
   actions:
   - action_id: not-found
@@ -179,6 +305,8 @@ cases:
     kind: upstream_documentation
   - path: docs_src/dependencies/tutorial008c_an_py310.py
     kind: upstream_documentation
+  - path: docs/en/docs/tutorial/dependencies/dependencies-with-yield.md
+    kind: upstream_documentation
 - case_id: fastapi.dependencies.tutorial008d.reraised-yield-exception
   actions:
   - action_id: not-found
@@ -353,4 +481,6 @@ cases:
   - path: docs_src/dependencies/tutorial008d_py310.py
     kind: upstream_documentation
   - path: docs_src/dependencies/tutorial008d_an_py310.py
+    kind: upstream_documentation
+  - path: docs/en/docs/tutorial/dependencies/dependencies-with-yield.md
     kind: upstream_documentation

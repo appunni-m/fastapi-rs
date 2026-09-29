@@ -4,7 +4,7 @@ from contextlib import contextmanager
 from contextvars import ContextVar
 from typing import Annotated
 
-from fastapi import Depends, FastAPI, HTTPException, Request, WebSocket
+from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException, Request, WebSocket
 from fastapi.responses import StreamingResponse
 
 _request_marker: ContextVar[str | None] = ContextVar("dependency_wave_marker", default=None)
@@ -38,6 +38,32 @@ def create_app() -> FastAPI:
             "outer": resources["outer"]["ready"],
             "inner": resources["inner"]["ready"],
         }
+
+    async def background_outer():
+        events.append("outer-enter")
+        try:
+            yield {"name": "outer"}
+        finally:
+            events.append("outer-exit")
+
+    async def background_inner(outer: Annotated[dict, Depends(background_outer)]):
+        events.append("inner-enter")
+        try:
+            yield {"outer": outer}
+        finally:
+            events.append("inner-exit")
+
+    @app.get("/yield/background-order")
+    async def background_order(
+        background_tasks: BackgroundTasks,
+        resources: Annotated[dict, Depends(background_inner)],
+    ) -> dict[str, object]:
+        background_tasks.add_task(events.append, "background-task")
+        return {"outer": resources["outer"]["name"], "events": list(events)}
+
+    @app.get("/yield/background-events")
+    def read_background_events() -> dict[str, list[str]]:
+        return {"events": list(events)}
 
     def mapped_failure():
         try:

@@ -4023,6 +4023,11 @@ DOC_EXAMPLE_EXCLUSION_OVERRIDES = {
         "This example uses fastapi.temp_pydantic_v1_params for temporary Pydantic v1 support "
         "removed in FastAPI 0.128.0; it is not part of the 0.141.1 contract."
     ),
+    "docs_src/settings/app02_py310/config.py": (
+        "This file only defines a pydantic_settings.BaseSettings subclass. Environment parsing, "
+        "defaults, and settings construction are Pydantic Settings behavior; the linked FastAPI "
+        "dependency-override input does not exercise this file's behavior."
+    ),
     "docs_src/templates/tutorial001_py310.py": (
         "This example exercises Starlette 1.6.0 StaticFiles and Jinja2Templates with Jinja2. "
         "FastAPI's import paths remain in the API manifest; generic static and template "
@@ -5468,6 +5473,10 @@ for doc_path, exclusion in remaining_docs_wave.DOC_PAGE_EXCLUSION_MAPPINGS.items
         "exclusion_reason": reason,
         "supporting_sources": exclusion["supporting_sources"],
     }
+
+from atlas_documentation_example_review_mappings import (  # noqa: E402
+    DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS,
+)
 
 # The final pending test-source wave is reviewed in independent sidecars. Keep
 # each function mapping and its scoped exclusions in the merged fixture atlas.
@@ -8546,6 +8555,9 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             {selector for item in mapped_page_items for selector in item["observation_selectors"]}
         )
         example_exclusion = DOC_EXAMPLE_EXCLUSION_OVERRIDES.get(rel)
+        reviewed_example_mapping = DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.get(rel)
+        if example_exclusion and reviewed_example_mapping:
+            raise AtlasError(f"documentation example is both mapped and excluded: {rel}")
         features = (
             []
             if example_exclusion
@@ -8575,51 +8587,147 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             if mapped_pages
             else selector_evidence(features, example_selectors)
         )
-        coverage_items.append(
+        independent_workflow_mappings = indexed_workflow_mappings_by_source.get(item_id, [])
+        example_fixture_id = (
+            "fastapi.docs-example."
+            + norm_id(rel.removeprefix("docs_src/").removesuffix(".py"))
+            if reviewed_example_mapping and not example_exclusion
+            else None
+        )
+        direct_example_selectors = sorted(
             {
-                "id": item_id,
-                "kind": "documented_python_example_source",
-                "source_path": rel,
-                "source_sha256": record["sha256"],
-                "document_pages": ["docs/en/docs/" + page for page in record["pages"]],
-                "feature_ids": features,
-                "fixture_id": None,
-                "mapped_fixture_ids": mapped_pages,
-                "observation_selectors": example_selectors,
-                "selector_evidence": example_selector_evidence,
-                "starlette_rs_planning_areas": starlette_areas_for(features),
-                "exclusion_reason": example_exclusion,
-                "mapping_status": "excluded"
-                if example_exclusion
-                else "supporting_source"
-                if mapped_pages
-                else "review_required",
-                "review_reason": None
-                if example_exclusion or mapped_pages
-                else "No linked feature-page fixture; map this source to a documented behavior or explain exclusion.",
-                "mapping_evidence": {
-                    "example_source_path": rel,
-                    "page_match": "matched" if record["pages"] else "unresolved",
-                    "page_paths": record["pages"],
-                    "feature_evidence": record["feature_evidence"],
-                    "mapped_documented_pages": [
-                        {
-                            "source_path": item["source_path"],
-                            "fixture_id": item["fixture_id"],
-                            "feature_ids": item["feature_ids"],
-                            "observation_selectors": item["observation_selectors"],
-                            "selector_evidence": item["selector_evidence"],
-                        }
-                        for item in mapped_page_items
-                    ],
-                    "mapping_rule": "supporting source inherits selectors from its mapped page fixture; this links the source to page-level observations and does not claim independent per-example behavior coverage"
-                    if mapped_pages and not example_exclusion
-                    else "source is excluded by the recorded exclusion reason"
-                    if example_exclusion
-                    else "source has no active page fixture mapping and requires review",
-                },
+                selector
+                for mapping in (reviewed_example_mapping or {}).get("workflow_cases", [])
+                for selector in mapping["observation_selectors"]
             }
         )
+        direct_example_selector_evidence = (
+            selector_evidence(features, direct_example_selectors)
+            if reviewed_example_mapping and not example_exclusion
+            else []
+        )
+        reviewed_example_sources = (
+            reviewed_source_spans(
+                fastapi_root,
+                reviewed_example_mapping.get("supporting_sources", []),
+                starlette_root,
+            )
+            if reviewed_example_mapping and not example_exclusion
+            else []
+        )
+        if reviewed_example_mapping and independent_workflow_mappings:
+            expected_mappings = sorted(
+                (
+                    mapping["recipe_path"],
+                    tuple(sorted(mapping["case_ids"])),
+                    tuple(sorted(mapping["observation_selectors"])),
+                )
+                for mapping in reviewed_example_mapping["workflow_cases"]
+            )
+            actual_mappings = sorted(
+                (
+                    mapping["recipe_path"],
+                    tuple(mapping["case_ids"]),
+                    tuple(mapping["observation_selectors"]),
+                )
+                for mapping in independent_workflow_mappings
+            )
+            if actual_mappings != expected_mappings:
+                raise AtlasError(
+                    "indexed documentation-example cases/selectors differ from reviewed mapping: "
+                    f"{rel}; expected {expected_mappings!r}, found {actual_mappings!r}"
+                )
+        example_review_status = (
+            "excluded"
+            if example_exclusion
+            else "reviewed_partial"
+            if reviewed_example_mapping and independent_workflow_mappings
+            else "pending"
+        )
+        reviewed_example_record = (
+            {
+                "rationale": reviewed_example_mapping["rationale"],
+                "source_evidence": reviewed_example_sources,
+                "workflow_cases": reviewed_example_mapping["workflow_cases"],
+            }
+            if reviewed_example_mapping and not example_exclusion
+            else None
+        )
+        mapping_rule = (
+            "distinct upstream_documentation_example evidence maps this exact docs_src file to "
+            "the listed independent cases and selectors; inherited page selectors remain "
+            "separate and do not widen this example-level scope"
+            if reviewed_example_mapping and independent_workflow_mappings and not example_exclusion
+            else "reviewed exact docs_src mapping awaits materialization in the independent input index; inherited selectors remain page-level"
+            if reviewed_example_mapping and not example_exclusion
+            else "supporting source inherits selectors from its mapped page fixture; this links the source to page-level observations and does not claim independent per-example behavior coverage"
+            if mapped_pages and not example_exclusion
+            else "source is excluded by the recorded exclusion reason"
+            if example_exclusion
+            else "source has no active page fixture mapping and requires review"
+        )
+        example_item = {
+            "id": item_id,
+            "kind": "documented_python_example_source",
+            "source_path": rel,
+            "source_sha256": record["sha256"],
+            "document_pages": ["docs/en/docs/" + page for page in record["pages"]],
+            "feature_ids": features,
+            "fixture_id": example_fixture_id,
+            "mapped_fixture_ids": mapped_pages,
+            "observation_selectors": example_selectors,
+            "selector_evidence": example_selector_evidence,
+            "starlette_rs_planning_areas": starlette_areas_for(features),
+            "exclusion_reason": example_exclusion,
+            "mapping_status": "excluded"
+            if example_exclusion
+            else "supporting_source"
+            if mapped_pages
+            else "review_required",
+            "review_status": example_review_status,
+            "review_reason": None
+            if example_exclusion or example_review_status == "reviewed_partial"
+            else "Exact example-level case/selectors or a source-backed exclusion reason remain to be reviewed.",
+            "mapping_evidence": {
+                "example_source_path": rel,
+                "page_match": "matched" if record["pages"] else "unresolved",
+                "page_paths": record["pages"],
+                "feature_evidence": record["feature_evidence"],
+                "mapped_documented_pages": [
+                    {
+                        "source_path": item["source_path"],
+                        "fixture_id": item["fixture_id"],
+                        "feature_ids": item["feature_ids"],
+                        "observation_selectors": item["observation_selectors"],
+                        "selector_evidence": item["selector_evidence"],
+                    }
+                    for item in mapped_page_items
+                ],
+                "independent_workflow_mappings": independent_workflow_mappings,
+                "example_observation_selectors": direct_example_selectors,
+                "example_selector_evidence": direct_example_selector_evidence,
+                "reviewed_example_mapping": reviewed_example_record,
+                "mapping_rule": mapping_rule,
+            },
+        }
+        coverage_items.append(example_item)
+        if reviewed_example_mapping and not example_exclusion:
+            fixture_backlog.append(
+                {
+                    "id": example_fixture_id,
+                    "source_item_id": item_id,
+                    "stage": "reviewed partial example-to-input mapping; only the listed cases and selectors are claimed",
+                    "input_only": True,
+                    "stimulus_design": stimulus_for(features),
+                    "stimulus_design_notes": reviewed_example_mapping["rationale"],
+                    "observation_selectors": direct_example_selectors,
+                    "selector_evidence": direct_example_selector_evidence,
+                    "feature_ids": features,
+                    "starlette_rs_planning_areas": starlette_areas_for(features),
+                    "source_evidence": reviewed_example_sources,
+                    "independent_workflow_mappings": independent_workflow_mappings,
+                }
+            )
     coverage_items.sort(key=lambda x: x["id"])
     fixture_backlog.sort(key=lambda x: x["id"])
 
@@ -9010,11 +9118,23 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                 if item["kind"] == "documented_python_example_source"
                 and item["mapping_status"] == "supporting_source"
             ),
+            "documentation_python_examples_with_independent_input_workflow_link": sum(
+                1
+                for item in coverage_items
+                if item["kind"] == "documented_python_example_source"
+                and item["mapping_evidence"]["independent_workflow_mappings"]
+            ),
+            "documentation_python_examples_with_reviewed_partial_mapping": sum(
+                1
+                for item in coverage_items
+                if item["kind"] == "documented_python_example_source"
+                and item["review_status"] == "reviewed_partial"
+            ),
             "documentation_python_examples_pending_behavior_review": sum(
                 1
                 for item in coverage_items
                 if item["kind"] == "documented_python_example_source"
-                and item["mapping_status"] == "supporting_source"
+                and item["review_status"] == "pending"
             ),
             "documentation_python_examples_excluded": sum(
                 1
@@ -9079,6 +9199,11 @@ def render_markdown(atlas: dict[str, Any]) -> str:
         mapping["source_item_id"]
         for mapping in materialized_index["mappings"]
         if mapping["source_item_id"].startswith("documented-page:")
+    }
+    materialized_documentation_example_sources = {
+        mapping["source_item_id"]
+        for mapping in materialized_index["mappings"]
+        if mapping["source_item_id"].startswith("documented-example:")
     }
     selector_catalog = json.loads(
         (PROJECT / "tests/fixtures/observation-selectors.json").read_text(encoding="utf-8")
@@ -9182,22 +9307,27 @@ def render_markdown(atlas: dict[str, Any]) -> str:
                 counts["documentation_pages_candidate_links_pending_behavior_review"],
                 counts["documentation_pages_excluded"],
             ),
-            "| Documentation Python files (examples + support initializers) | %d | %d | — | %d | %d |"
+            "| Documentation Python files (examples + support initializers) | %d | %d | %d | %d | %d |"
             % (
                 counts["documentation_python_source_files"],
-                counts["documentation_python_examples_grouped_with_page"],
+                counts["documentation_python_examples_with_independent_input_workflow_link"],
+                counts["documentation_python_examples_with_reviewed_partial_mapping"],
                 counts["documentation_python_examples_pending_behavior_review"],
                 counts["documentation_python_examples_excluded"]
                 + counts["documentation_support_files_excluded"],
             ),
             "",
-            "Python-source exclusions are one debugging/setup example and %d package initializers; the remaining examples are grouped with their mapped documentation pages. Inherited selectors identify page-level observations and do not claim that each example's behavior was exercised."
-            % counts["documentation_support_files_excluded"],
+            "Python-source exclusions include the documented Pydantic Settings configuration file, one debugging/setup example, and %d package initializers. Of the remaining examples, %d have a reviewed direct input-workflow link; examples grouped with a documentation page inherit only page-level selectors, which do not claim that each example's behavior was exercised."
+            % (
+                counts["documentation_support_files_excluded"],
+                counts["documentation_python_examples_with_reviewed_partial_mapping"],
+            ),
             "",
-            "Review state is separate from coverage completeness. `reviewed_partial` means pinned source evidence and exact indexed workflows, cases, and selectors were reviewed for the linked behavior; it does not claim complete source behavior or parity. Pending counts identify links without that review. The materialized index has %d distinct upstream test modules and %d documentation pages linked to workflows; all %d mapping rows are partial. No source module or documentation page is fully covered by an input workflow."
+            "Review state is separate from coverage completeness. `reviewed_partial` means pinned source evidence and exact indexed workflows, cases, and selectors were reviewed for the linked behavior; it does not claim complete source behavior or parity. Pending counts identify examples without that direct review. The materialized index has %d distinct upstream test modules, %d documentation pages, and %d exact documentation Python examples linked to workflows; all %d mapping rows are partial. No source module, documentation page, or Python example is fully covered by an input workflow."
             % (
                 len(materialized_test_sources),
                 len(materialized_documentation_sources),
+                len(materialized_documentation_example_sources),
                 materialized_partial_mappings,
             ),
             "",

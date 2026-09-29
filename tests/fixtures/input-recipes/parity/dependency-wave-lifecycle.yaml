@@ -73,6 +73,77 @@ cases:
   source_evidence:
   - path: tests/test_dependency_contextmanager.py
     kind: upstream_test
+- case_id: fastapi.dependencies.yield-background-cleanup-order
+  actions:
+  - action_id: response-with-background-task
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /yield/background-order
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: observe-background-and-cleanup-completion
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /yield/background-events
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_dependency_contextmanager.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/dependencies/dependencies-with-yield.md
+    kind: upstream_documentation
 - case_id: fastapi.dependencies.yield-caught-error
   actions:
   - kind: http_request
@@ -142,6 +213,8 @@ cases:
   source_evidence:
   - path: tests/test_dependency_after_yield_raise.py
     kind: upstream_test
+  - path: docs/en/docs/tutorial/dependencies/dependencies-with-yield.md
+    kind: upstream_documentation
 - case_id: fastapi.dependencies.after-yield-cleanup-error
   actions:
   - kind: http_request
@@ -285,6 +358,8 @@ cases:
   source_evidence:
   - path: tests/test_dependency_after_yield_streaming.py
     kind: upstream_test
+  - path: docs/en/docs/tutorial/dependencies/dependencies-with-yield.md
+    kind: upstream_documentation
 - case_id: fastapi.dependencies.streaming-closed-resource-error
   actions:
   - kind: http_request

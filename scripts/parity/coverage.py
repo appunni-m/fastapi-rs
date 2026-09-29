@@ -846,7 +846,7 @@ def validate_compatibility_artifacts(
                 design_ids == matched_ids,
                 f"test module {fixture_id} case designs disagree with its function map",
             )
-        else:
+        elif source_row.get("kind") == "documented_feature_page":
             sections = fixture.get("documented_sections")
             _require(isinstance(sections, list), f"documented page {fixture_id} has no section map")
             for section in sections:
@@ -862,6 +862,40 @@ def validate_compatibility_artifacts(
                     section["observation_selectors"], f"documented section in {fixture_id}"
                 )
                 _reject_output_values(section, f"documented section in {fixture_id}")
+        elif source_row.get("kind") == "documented_python_example_source":
+            source_mapping = source_row.get("mapping_evidence", {})
+            _require(
+                fixture.get("independent_workflow_mappings")
+                == source_mapping.get("independent_workflow_mappings"),
+                (
+                    f"documentation example {fixture_id} workflow mappings differ "
+                    "from its coverage row"
+                ),
+            )
+            _require(
+                fixture.get("observation_selectors")
+                == source_mapping.get("example_observation_selectors"),
+                (
+                    f"documentation example {fixture_id} selectors differ from "
+                    "its direct case mappings"
+                ),
+            )
+            _require(
+                fixture.get("selector_evidence")
+                == source_mapping.get("example_selector_evidence"),
+                (
+                    f"documentation example {fixture_id} selector evidence differs "
+                    "from its direct case mappings"
+                ),
+            )
+            _require(
+                bool(fixture.get("independent_workflow_mappings")),
+                f"documentation example {fixture_id} has no exact workflow cases",
+            )
+            _require(
+                source_row.get("review_status") == "reviewed_partial",
+                f"documentation example {fixture_id} is not reviewed partial",
+            )
 
     active_page_rows_by_fixture = {
         row["fixture_id"]: row
@@ -882,15 +916,65 @@ def validate_compatibility_artifacts(
                 isinstance(reason, str) and bool(reason.strip()),
                 f"excluded documentation example {example_id} has no reason",
             )
+            _require(
+                example.get("review_status") == "excluded",
+                f"excluded documentation example {example_id} has an inconsistent review status",
+            )
             continue
 
         _require(
             status == "supporting_source",
             f"documentation example {example_id} is neither mapped nor explicitly excluded",
         )
+        independent_workflow_mappings = example.get("mapping_evidence", {}).get(
+            "independent_workflow_mappings", []
+        )
+        if example.get("fixture_id") is None:
+            _require(
+                not independent_workflow_mappings
+                and example.get("review_status") == "pending",
+                f"unmapped documentation example {example_id} claims reviewed independent coverage",
+            )
+        else:
+            example_design = fixture_by_source.get(example_id)
+            _require(
+                example.get("review_status") == "reviewed_partial"
+                and bool(independent_workflow_mappings)
+                and example_design is not None
+                and example_design.get("id") == example.get("fixture_id"),
+                f"documentation example {example_id} has an incomplete independent mapping",
+            )
+            review_mapping = example.get("mapping_evidence", {}).get(
+                "reviewed_example_mapping"
+            )
+            _require(
+                isinstance(review_mapping, dict)
+                and bool(review_mapping.get("rationale"))
+                and any(
+                    evidence.get("path") == example.get("source_path")
+                    and evidence.get("sha256") == example.get("source_sha256")
+                    for evidence in review_mapping.get("source_evidence", [])
+                ),
+                f"documentation example {example_id} has no source-backed mapping review",
+            )
+            direct_selectors = sorted(
+                {
+                    selector
+                    for mapping in independent_workflow_mappings
+                    for selector in mapping.get("observation_selectors", [])
+                }
+            )
+            _require(
+                example.get("mapping_evidence", {}).get("example_observation_selectors")
+                == direct_selectors,
+                (
+                    f"documentation example {example_id} direct selectors differ "
+                    "from its case mappings"
+                ),
+            )
         _require(
-            example.get("fixture_id") is None,
-            f"supporting documentation example {example_id} is incorrectly an independent fixture",
+            example.get("review_status") in {"pending", "reviewed_partial"},
+            f"supporting documentation example {example_id} has no valid review status",
         )
         mapped_fixture_ids = example.get("mapped_fixture_ids")
         _require(
@@ -1119,6 +1203,13 @@ def validate_compatibility_artifacts(
         "documentation_python_examples": len(documentation_examples),
         "documentation_python_examples_grouped_with_page": sum(
             row.get("mapping_status") == "supporting_source" for row in documentation_examples
+        ),
+        "documentation_python_examples_with_independent_input_workflow_link": sum(
+            bool(row.get("mapping_evidence", {}).get("independent_workflow_mappings"))
+            for row in documentation_examples
+        ),
+        "documentation_python_examples_with_reviewed_partial_mapping": sum(
+            row.get("review_status") == "reviewed_partial" for row in documentation_examples
         ),
         "documentation_python_examples_excluded": sum(
             row.get("mapping_status") == "excluded" for row in documentation_examples

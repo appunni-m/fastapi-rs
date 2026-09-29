@@ -45,49 +45,55 @@ class _SessionContext:
         self.db.close()
 
 
+_events: list[str] = []
+
+
+async def dependency_a():
+    resource = _Resource("a", _events)
+    _events.append("open:a")
+    try:
+        yield resource
+    finally:
+        resource.close()
+
+
+dependency_a_parameter = Depends(dependency_a)
+
+
+async def dependency_b_default(dep_a=dependency_a_parameter):
+    resource = _Resource("b", _events)
+    _events.append("open:b")
+    try:
+        yield resource
+    finally:
+        resource.close(dep_a)
+
+
+dependency_b_parameter = Depends(dependency_b_default)
+
+
+async def dependency_c_default(dep_b=dependency_b_parameter):
+    resource = _Resource("c", _events)
+    _events.append("open:c")
+    try:
+        yield resource
+    finally:
+        resource.close(dep_b)
+
+
+async def get_db():
+    with _SessionContext(_events) as db:
+        yield db
+
+
 def create_app() -> FastAPI:
+    global _events
+    _events = []
     app = FastAPI()
-    events: list[str] = []
-
-    async def dependency_a():
-        resource = _Resource("a", events)
-        events.append("open:a")
-        try:
-            yield resource
-        finally:
-            resource.close()
-
-    dependency_a_parameter = Depends(dependency_a)
-
-    async def dependency_b_default(
-        dep_a=dependency_a_parameter,
-    ):
-        resource = _Resource("b", events)
-        events.append("open:b")
-        try:
-            yield resource
-        finally:
-            resource.close(dep_a)
-
-    dependency_b_parameter = Depends(dependency_b_default)
-
-    async def dependency_c_default(
-        dep_b=dependency_b_parameter,
-    ):
-        resource = _Resource("c", events)
-        events.append("open:c")
-        try:
-            yield resource
-        finally:
-            resource.close(dep_b)
 
     @app.get("/yield-chain/default")
     def read_default(c: Annotated[Any, Depends(dependency_c_default)]):
         return {"c": str(c)}
-
-    async def get_db():
-        with _SessionContext(events) as db:
-            yield db
 
     @app.get("/context-manager")
     def read_context_manager(c: Annotated[Any, Depends(get_db)]):
@@ -95,6 +101,6 @@ def create_app() -> FastAPI:
 
     @app.get("/events")
     def read_events():
-        return {"events": list(events)}
+        return {"events": list(_events)}
 
     return app

@@ -1094,7 +1094,9 @@ DOC_PAGE_REVIEW_MAPPINGS = {
         "rationale": (
             "This is a direct jsonable_encoder call and conversion tutorial. Its generic "
             "'data structure' wording and Pydantic input examples do not document FastAPI "
-            "request validation or an error/deprecation surface."
+            "request validation or an error/deprecation surface. Exact Url and AnyUrl "
+            "conversion behavior is sourced to the pinned encoder registrations below, "
+            "not inferred from the tutorial text."
         ),
         "supporting_sources": [
             {
@@ -1102,6 +1104,12 @@ DOC_PAGE_REVIEW_MAPPINGS = {
                 "start_line": 1,
                 "end_line": 35,
                 "role": "jsonable_encoder conversion behavior and public call example",
+            },
+            {
+                "path": "fastapi/encoders.py",
+                "start_line": 103,
+                "end_line": 111,
+                "role": "Url and AnyUrl are registered as string encoders",
             },
             {
                 "path": "fastapi/encoders.py",

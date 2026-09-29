@@ -1,0 +1,45 @@
+schema: fastapi-rs/python-api-workflow@2
+workload:
+  file: tests/fixtures/workloads/pydantic_core_encoder_compatibility.py
+  factory: create_argument_bundles
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.jsonable-encoder.pydantic-undefined
+  probes:
+  - probe_id: undefined-sentinel
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: undefined.value
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  source_evidence:
+  - path: tests/test_jsonable_encoder.py
+    kind: upstream_test
+    sha256: cea093a4d8b99f5e2728b05b172378582f8add4b7199390bb47058dfe532b8a5
+- case_id: fastapi.jsonable-encoder.pydantic-core-urls
+  probes:
+  - probe_id: raw-core-url
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: url.raw-core
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  - probe_id: public-any-url
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: url.public-any
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/encoder.md
+    kind: upstream_documentation
+    sha256: a7116cae1b44f5ac5841475b533b2df621875c41047d70cb02841ada13e3a486

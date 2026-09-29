@@ -22,7 +22,15 @@ compatibility authorities, not code included in this distribution.
 The locked Cargo inventory includes each resolved crate's license expression,
 version, enabled features, purpose, and dependency edges. The Python project
 has no target lockfile yet, so its resolved distribution closure must be
-recorded from the release environment. Preserve the applicable upstream
-license texts and copyright notices for every dependency actually included in
-a source or binary distribution. The project license does not replace or
-relicense dependency material; see [`docs/LICENSING.md`](docs/LICENSING.md).
+recorded from the release environment. Starlette-RS is statically linked into
+the extension and carries Starlette-derived BSD-3-Clause material; this
+summary does not reproduce its full license notice. The selected zlib backend
+uses the pinned `flate2` zlib feature and `libz-sys` 1.1.29. Its build may link
+system zlib or compile the bundled stock zlib C 1.3.2 fallback, which carries
+a separate zlib license. Cargo.lock does not identify the host zlib version
+selected for each platform. Before publishing, record the backend used by
+each build and include the applicable full license texts and copyright
+notices for every dependency actually included in a source or binary
+distribution, then inspect the wheel and sdist. The project license does not
+replace or relicense dependency material; see
+[`docs/LICENSING.md`](docs/LICENSING.md).

@@ -256,6 +256,113 @@ DOC_PAGE_REVIEW_MAPPINGS = {
             },
         ],
     },
+    "advanced/behind-a-proxy.md": {
+        "replace_features": True,
+        "feature_ids": ["root-path"],
+        "observation_selectors": [
+            "http.body.bytes",
+            "http.headers.ordered",
+            "http.status",
+            "openapi.document",
+        ],
+        "rationale": "FastAPI applies its configured root_path to the request scope and projects that prefix into OpenAPI servers, with root_path_in_servers controlling automatic insertion. Proxy forwarding and server startup are external inputs, while generic ASGI transport belongs to Starlette 1.6.0.",
+        "stimulus_notes": "Reuses input-only tutorial002, tutorial003, and tutorial004 recipes whose source_evidence cites this exact page and the corresponding pinned docs_src example. The case IDs and selector unions are listed per recipe; these are stimuli, not parity results.",
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/behind-proxy-tutorial002-upstream.yaml",
+                "case_ids": [
+                    "fastapi.behind-proxy.tutorial002.app-root-path",
+                    "fastapi.behind-proxy.tutorial002.openapi-servers",
+                ],
+                "observation_selectors": [
+                    "http.body.bytes",
+                    "http.headers.ordered",
+                    "http.status",
+                    "openapi.document",
+                ],
+                "coverage": "The exact route response body reflects configured root_path; the OpenAPI observation selects /servers.",
+            },
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/behind-proxy-tutorial003-upstream.yaml",
+                "case_ids": [
+                    "fastapi.behind-proxy.tutorial003.app-root-path",
+                    "fastapi.behind-proxy.tutorial003.openapi-servers",
+                ],
+                "observation_selectors": [
+                    "http.body.bytes",
+                    "http.headers.ordered",
+                    "http.status",
+                    "openapi.document",
+                ],
+                "coverage": "The exact route response body reflects configured root_path; the OpenAPI observation selects the automatic and configured /servers entries.",
+            },
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/behind-proxy-tutorial004-upstream.yaml",
+                "case_ids": [
+                    "fastapi.behind-proxy.tutorial004.app-root-path",
+                    "fastapi.behind-proxy.tutorial004.openapi-servers",
+                ],
+                "observation_selectors": [
+                    "http.body.bytes",
+                    "http.headers.ordered",
+                    "http.status",
+                    "openapi.document",
+                ],
+                "coverage": "The exact route response body reflects configured root_path; the OpenAPI observation selects configured servers with automatic insertion disabled.",
+            },
+        ],
+        "contract_gate": "These selected cases cover FastAPI's configured root_path policy and the selected OpenAPI /servers projection, not the full document. They do not cover a server-supplied incoming root_path, forwarded-header trust, Uvicorn/CLI startup, the proxy or sub-application workflows, or TestClient's scope construction. The mapping remains partial pending broader source and identity/signature review; generic ASGI transport remains assigned to Starlette 1.6.0 and Starlette-RS.",
+        "supporting_sources": [
+            {
+                "path": "docs/en/docs/advanced/behind-a-proxy.md",
+                "start_line": 190,
+                "end_line": 225,
+                "role": "Pinned FastAPI documentation for reading request root_path and configuring FastAPI.root_path.",
+            },
+            {
+                "path": "docs/en/docs/advanced/behind-a-proxy.md",
+                "start_line": 395,
+                "end_line": 460,
+                "role": "Pinned FastAPI documentation for root_path OpenAPI server insertion and root_path_in_servers=False.",
+            },
+            {
+                "path": "docs_src/behind_a_proxy/tutorial002_py310.py",
+                "start_line": 1,
+                "end_line": 8,
+                "role": "Documented app-level root_path and request-scope example.",
+            },
+            {
+                "path": "docs_src/behind_a_proxy/tutorial003_py310.py",
+                "start_line": 1,
+                "end_line": 14,
+                "role": "Documented configured-server and automatic root_path server example.",
+            },
+            {
+                "path": "docs_src/behind_a_proxy/tutorial004_py310.py",
+                "start_line": 1,
+                "end_line": 14,
+                "role": "Documented root_path_in_servers=False example.",
+            },
+            {
+                "path": "fastapi/applications.py",
+                "start_line": 640,
+                "end_line": 679,
+                "role": "FastAPI declares root_path and root_path_in_servers application options.",
+            },
+            {
+                "path": "fastapi/applications.py",
+                "start_line": 1105,
+                "end_line": 1118,
+                "role": "FastAPI projects request root_path into the generated OpenAPI servers list when enabled.",
+            },
+            {
+                "path": "fastapi/applications.py",
+                "start_line": 1160,
+                "end_line": 1163,
+                "role": "FastAPI applies configured root_path to the ASGI scope before Starlette dispatch.",
+            },
+        ],
+    },
     "advanced/security/oauth2-scopes.md": {
         "replace_features": True,
         "feature_ids": ["app-routing", "dependency-security", "openapi-docs", "request-validation"],
@@ -407,6 +514,54 @@ DOC_PAGE_REVIEW_MAPPINGS = {
                 "start_line": 163,
                 "end_line": 168,
                 "role": "Starlette 1.6.0 ASGI response emission.",
+            },
+        ],
+    },
+    "advanced/settings.md": {
+        "replace_features": True,
+        "feature_ids": ["dependency-overrides"],
+        "observation_selectors": ["http.body.bytes", "http.status"],
+        "rationale": "FastAPI resolves the get_settings dependency through app.dependency_overrides and supplies the replacement value to the route. Pydantic Settings construction, environment parsing, and dotenv handling are outside this FastAPI-owned mapping.",
+        "stimulus_notes": "Reuses the input-only docs-settings-injection case, whose source_evidence cites this exact page, its documented app/test examples, and the upstream test. The case observes the exact route response as a fresh output; it does not encode an expected result.",
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/docs-settings-injection.yaml",
+                "case_ids": ["fastapi.docs.settings.dependency-override"],
+                "observation_selectors": ["http.body.bytes", "http.status"],
+                "coverage": "The exact /info response body exposes values from the replacement settings dependency.",
+            }
+        ],
+        "contract_gate": "One route response covers the documented dependency override and selected replacement values. It does not cover Pydantic Settings validation or environment/dotenv loading, lru_cache behavior, nested or cached override graphs, async replacements, or Python callable identity. The mapping remains partial pending broader source and identity/signature review.",
+        "supporting_sources": [
+            {
+                "path": "docs/en/docs/advanced/settings.md",
+                "start_line": 143,
+                "end_line": 183,
+                "role": "Pinned FastAPI documentation for injecting Settings through a dependency and overriding that dependency in tests.",
+            },
+            {
+                "path": "docs_src/settings/app02_an_py310/main.py",
+                "start_line": 1,
+                "end_line": 22,
+                "role": "Documented FastAPI route and get_settings dependency used by the test override.",
+            },
+            {
+                "path": "docs_src/settings/app02_an_py310/test_main.py",
+                "start_line": 1,
+                "end_line": 22,
+                "role": "Documented get_settings replacement and route response assertion.",
+            },
+            {
+                "path": "fastapi/applications.py",
+                "start_line": 967,
+                "end_line": 988,
+                "role": "FastAPI exposes dependency_overrides and provides the app as the router's override provider.",
+            },
+            {
+                "path": "fastapi/dependencies/utils.py",
+                "start_line": 619,
+                "end_line": 651,
+                "role": "FastAPI looks up a replacement dependency and builds its request-scoped dependant before solving it.",
             },
         ],
     },
@@ -2457,19 +2612,14 @@ DOC_PAGE_REVIEW_MAPPINGS = {
         "feature_ids": ["dependency-security"],
         "observation_selectors": ["http.body.bytes", "http.status"],
         "rationale": "FastAPI enters generator "
-        "dependencies during graph "
-        "resolution and exits them at "
-        "the configured scope; generic "
-        "streaming/HTTP transport is "
-        "Starlette 1.6.0 behavior.",
+        "dependencies during graph resolution, injects endpoint exceptions "
+        "back into them, and closes their context managers through separate "
+        "function/request exit stacks. Starlette 1.6.0 owns generic response "
+        "and background-task transport.",
         "stimulus_notes": "Reuses input-only recipe "
-        "cases whose "
-        "source_evidence cites "
-        "this exact page. The case "
-        "IDs and selector unions "
-        "are listed per recipe; "
-        "these are stimuli, not "
-        "parity results.",
+        "cases whose source_evidence cites this page. Each mapping names "
+        "the exact recipe cases and observed selectors; they are stimuli, "
+        "not stored outputs.",
         "workflow_cases": [
             {
                 "recipe_path": "tests/fixtures/input-recipes/parity/dependency-lifecycle.yaml",
@@ -2478,25 +2628,50 @@ DOC_PAGE_REVIEW_MAPPINGS = {
                     "fastapi.dependencies.yield-cleanup-error",
                 ],
                 "observation_selectors": ["http.body.bytes", "http.status"],
-                "coverage": "Selected cases observe http.body.bytes, http.status.",
-            }
+                "coverage": "Samples default request-scope cleanup and one cleanup error through exact response status/body observations.",
+            },
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/dependency-yield-tutorials-upstream.yaml",
+                "case_ids": [
+                    "fastapi.dependencies.tutorial008.async-yield-chain-default",
+                    "fastapi.dependencies.tutorial010.context-manager-in-yield-dependency",
+                ],
+                "observation_selectors": ["http.body.bytes", "http.status"],
+                "coverage": "Samples nested async-yield cleanup order and a context manager used inside a yielded dependency; each case observes exact response status/body.",
+            },
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/dependency-yield-errors-tutorials-upstream.yaml",
+                "case_ids": [
+                    "fastapi.dependencies.tutorial008b.default-parameter-exception-translation",
+                    "fastapi.dependencies.tutorial008b.annotated-parameter-exception-translation",
+                    "fastapi.dependencies.tutorial008c.suppressed-yield-exception",
+                    "fastapi.dependencies.tutorial008d.reraised-yield-exception",
+                ],
+                "observation_selectors": [
+                    "asgi.application_error.exception",
+                    "http.body.bytes",
+                    "http.status",
+                ],
+                "coverage": "Samples two parameter declaration styles, translation of an endpoint exception to HTTPException, suppression, and re-raise. The internal application-error class observation supplements the exact response observations for the suppressed/re-raised cases.",
+            },
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/dependency-lifecycle-security-review.yaml",
+                "case_ids": ["fastapi.dependencies.nested-yield-scopes-http"],
+                "observation_selectors": ["http.body.bytes", "http.status"],
+                "coverage": "Samples nested request/function scope combinations and cleanup visibility through exact HTTP status/body observations.",
+            },
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/dependency-wave-lifecycle.yaml",
+                "case_ids": [
+                    "fastapi.dependencies.yield-background-cleanup-order",
+                    "fastapi.dependencies.yield-caught-error",
+                    "fastapi.dependencies.streaming-resource-lifetime",
+                ],
+                "observation_selectors": ["http.body.bytes", "http.status"],
+                "coverage": "Samples dependency cleanup around a background task, exception translation from a yielded dependency, and request-scope resource use through streaming completion.",
+            },
         ],
-        "contract_gate": "Linked cases sample "
-        "cleanup and cleanup-error "
-        "paths. Missing: all "
-        "scopes, nested order, "
-        "suppression/re-raise, "
-        "streaming/background "
-        "ordering and WebSocket "
-        "cleanup. The mapping "
-        "remains partial pending "
-        "the full FastAPI manifest "
-        "and identity/signature "
-        "checks. Generic HTTP "
-        "behavior is assigned to "
-        "Starlette 1.6.0 and the "
-        "separate Starlette-RS "
-        "contract.",
+        "contract_gate": "The linked inputs sample nested yield order, request/function scopes, context-manager use, translated/suppressed/re-raised exceptions, streaming resource lifetime, and background-task cleanup order. This is not exhaustive coverage of yield dependencies: invalid scope graphs, all sync/async and Python-version combinations, cancellation, background-task failure, and WebSocket cleanup remain outside this page mapping. The mapping remains partial pending complete FastAPI identity/signature review. Starlette 1.6.0 and Starlette-RS own generic HTTP, response, streaming, and WebSocket transport.",
         "supporting_sources": [
             {
                 "path": "docs/en/docs/tutorial/dependencies/dependencies-with-yield.md",
@@ -2538,6 +2713,24 @@ DOC_PAGE_REVIEW_MAPPINGS = {
                 "end_line": 714,
                 "role": "FastAPI resolves dependency callables, overrides, and injected values.",
             },
+            {
+                "path": "fastapi/dependencies/utils.py",
+                "start_line": 566,
+                "end_line": 585,
+                "role": "FastAPI enters generator and async-generator dependencies as context managers on the selected exit stack.",
+            },
+            {
+                "path": "fastapi/dependencies/utils.py",
+                "start_line": 586,
+                "end_line": 679,
+                "role": "FastAPI resolves sub-dependencies and routes yielded dependencies to the request or function exit stack according to scope.",
+            },
+            {
+                "path": "fastapi/routing.py",
+                "start_line": 120,
+                "end_line": 158,
+                "role": "FastAPI keeps request-scoped dependencies alive through response emission and closes function-scoped dependencies before it.",
+            },
         ],
         "starlette_contract_sources": [
             {
@@ -2567,8 +2760,14 @@ DOC_PAGE_REVIEW_MAPPINGS = {
             {
                 "path": "starlette/responses.py",
                 "start_line": 163,
-                "end_line": 168,
-                "role": "Starlette 1.6.0 ASGI response emission.",
+                "end_line": 170,
+                "role": "Starlette 1.6.0 sends the response body and then runs its background task before response execution returns to FastAPI cleanup.",
+            },
+            {
+                "path": "starlette/responses.py",
+                "start_line": 222,
+                "end_line": 283,
+                "role": "Starlette 1.6.0 streams response chunks and runs any background task after the stream completes.",
             },
         ],
     },

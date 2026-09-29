@@ -28,9 +28,11 @@ the manifest establishes a separate Rust public API.
 ## What the size means
 
 The pinned release contains 48 Python package source files, 492 test files,
-about 461 Python documentation examples, and about 155 English documentation
-pages. FastAPI's runtime metadata declares five direct dependencies; its lock
-file covers a much larger optional, documentation, and development tool graph.
+461 Python files under `docs_src` (370 inventoried as documentation-example
+candidates; the larger count also includes support or unlinked source files),
+and 155 English documentation pages. FastAPI's runtime metadata declares five
+direct dependencies; its lock file covers a much larger optional,
+documentation, and development tool graph.
 The framework's observable contract includes more than exported names:
 
 - application and router configuration, path-operation decorators, dependency

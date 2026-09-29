@@ -231,11 +231,13 @@ def validate_materialized_input_index(
             _fail(f"mapping references unknown workflow cases: {source_id}")
         mapped_cases[workflow_id].update(case_ids)
 
-        expected_evidence_kind = (
-            "upstream_documentation"
-            if coverage["kind"] == "documented_feature_page"
-            else "upstream_test"
-        )
+        expected_evidence_kind = {
+            "upstream_test_module": "upstream_test",
+            "documented_feature_page": "upstream_documentation",
+            "documented_python_example_source": "upstream_documentation_example",
+        }.get(coverage["kind"])
+        if expected_evidence_kind is None:
+            _fail(f"unsupported materialized source kind: {coverage['kind']}")
         used_selectors: set[str] = set()
         source_selectors: set[str] = set()
         for case_id in case_ids:
@@ -286,7 +288,11 @@ def validate_materialized_input_index(
         )
 
     for source_id, coverage in coverage_rows.items():
-        if coverage.get("kind") not in {"upstream_test_module", "documented_feature_page"}:
+        if coverage.get("kind") not in {
+            "upstream_test_module",
+            "documented_feature_page",
+            "documented_python_example_source",
+        }:
             continue
         expected = expected_mappings_by_source.get(source_id, [])
         actual = coverage.get("mapping_evidence", {}).get("independent_workflow_mappings", [])

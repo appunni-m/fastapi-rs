@@ -68,10 +68,26 @@
         "kind": {
           "enum": [
             "upstream_test",
-            "upstream_documentation"
+            "upstream_documentation",
+            "upstream_documentation_example"
           ]
         }
       },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {"const": "upstream_documentation_example"}
+            },
+            "required": ["kind"]
+          },
+          "then": {
+            "properties": {
+              "path": {"pattern": "^docs_src/.+\\.py$"}
+            }
+          }
+        }
+      ],
       "additionalProperties": false
     },
     "httpScope": {
