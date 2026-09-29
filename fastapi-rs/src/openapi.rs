@@ -106,6 +106,12 @@ pub(crate) fn openapi_document(
             media_type.set_item("schema", reference_schema(py, model_name)?)?;
             content.set_item("application/json", media_type)?;
             success_response.set_item("content", content)?;
+        } else {
+            let content = PyDict::new(py);
+            let media_type = PyDict::new(py);
+            media_type.set_item("schema", PyDict::new(py))?;
+            content.set_item("application/json", media_type)?;
+            success_response.set_item("content", content)?;
         }
         let status_key = operation.status.to_string();
         responses.set_item(status_key, success_response)?;

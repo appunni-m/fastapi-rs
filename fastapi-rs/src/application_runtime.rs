@@ -183,6 +183,43 @@ impl PyFastApi {
         )
     }
 
+    // lint-exception: PyO3 needs one Rust argument per FastAPI-compatible keyword.
+    #[allow(
+        clippy::too_many_arguments,
+        reason = "preserve the Python route decorator keyword signature"
+    )]
+    #[pyo3(signature = (path, *, response_model = None, status_code = 200, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false))]
+    fn put(
+        slf: Py<Self>,
+        py: Python<'_>,
+        path: &str,
+        response_model: Option<Py<PyAny>>,
+        status_code: u16,
+        response_model_include: Option<Py<PyAny>>,
+        response_model_exclude: Option<Py<PyAny>>,
+        response_model_by_alias: bool,
+        response_model_exclude_unset: bool,
+        response_model_exclude_defaults: bool,
+        response_model_exclude_none: bool,
+    ) -> PyResult<Py<PyOperationDecorator>> {
+        operation_decorator(
+            slf,
+            py,
+            path,
+            "PUT",
+            response_model,
+            status_code,
+            ResponseModelOptions {
+                include: response_model_include,
+                exclude: response_model_exclude,
+                by_alias: response_model_by_alias,
+                exclude_unset: response_model_exclude_unset,
+                exclude_defaults: response_model_exclude_defaults,
+                exclude_none: response_model_exclude_none,
+            },
+        )
+    }
+
     fn openapi(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
         self.openapi_document(py)
     }

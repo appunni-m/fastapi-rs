@@ -302,6 +302,14 @@ reviewed_api_contract_overlay:
         - {path: fastapi/_compat/v2.py, symbol: serialize}
       feature_ids: [app-routing, response-serialization]
       observation_selectors: [http.status, http.body.bytes]
+    fastapi.applications.FastAPI.put:
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::put
+      source_evidence:
+        - {path: fastapi/applications.py, symbol: put}
+        - {path: fastapi/routing.py, symbol: put}
+        - {path: fastapi/routing.py, symbol: api_route}
+      feature_ids: [app-routing, response-serialization, openapi-docs]
+      observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths]
     fastapi.Cookie:
       rust_binding: fastapi-rs/src/parameters.rs::cookie
       source_evidence:
