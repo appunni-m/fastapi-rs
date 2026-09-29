@@ -527,6 +527,8 @@ reviewed_api_contract_overlay:
         - {path: fastapi/openapi/utils.py, symbol: get_openapi_path}
         - {path: tests/test_tutorial/test_path_operation_advanced_configurations/test_tutorial004.py, symbol: test_openapi_schema}
         - {path: docs_src/path_operation_advanced_configuration/tutorial004_py310.py}
+        - {path: tests/test_tutorial/test_path_operation_configurations/test_tutorial002.py, symbol: test_openapi_schema}
+        - {path: docs_src/path_operation_configuration/tutorial002_py310.py}
       feature_ids: [app-routing, openapi-docs, response-serialization]
       observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths]
       supported_slice: >-
@@ -536,7 +538,9 @@ reviewed_api_contract_overlay:
         emitted as the operation summary in OpenAPI, as sampled by
         `path-operation-post-summary-isolated`. Other decorator options,
         generated summaries, and customization hooks remain outside this
-        reviewed slice.
+        reviewed slice. A non-empty list of string `tags` is emitted as the
+        operation's tags, as sampled by `path-operation-post-tags-isolated`;
+        enum and empty tag values remain outside this slice.
     fastapi.applications.FastAPI.put:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::put
       source_evidence:
