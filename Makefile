@@ -40,7 +40,7 @@ help: ## Show common development commands
 	  '  make parity-inputs    Materialize ignored JSON workflows from YAML recipes' \
 	  '  make parity-prepare-oracle Prepare pinned FastAPI 0.141.1 / Starlette 1.6.0 Python env' \
 	  '  make parity-prepare-oracle-standard Prepare the locked optional-feature reflection profile' \
-	  '  make parity-prepare-target Prepare .venv-target with pinned shared deps and editable local FastAPI-RS / ../starlette-rs' \
+	  '  make parity-prepare-target Prepare .venv-target with pinned shared deps and release FastAPI-RS / ../starlette-rs' \
 	  '  make parity-api-runtime Reflect and verify the pinned FastAPI Python API surface' \
 	  '  make parity-validate Validate workflows, source atlas, and fixture mappings' \
 	  '  make parity-index-update Rebuild source mappings for current fixture workflows' \
@@ -120,6 +120,7 @@ parity-prepare-target: ## Prepare .venv-target with FastAPI-RS and sibling Starl
 	  "typing-extensions==4.16.0" "typing-inspection==0.4.2"
 	PYO3_PYTHON="$(TARGET_PYTHON)" $(UV) pip install --python "$(TARGET_PYTHON)" --no-deps --editable "$(STARLETTE_RS_SOURCE)"
 	PYO3_PYTHON="$(TARGET_PYTHON)" $(UV) pip install --python "$(TARGET_PYTHON)" --no-deps --editable "$(CURDIR)"
+	PYO3_PYTHON="$(TARGET_PYTHON)" $(MATURIN) develop --release --skip-install --manifest-path fastapi-rs-py/Cargo.toml --locked --features pyo3/extension-module
 	$(UV) pip check --python "$(TARGET_PYTHON)"
 	$(TARGET_PYTHON) scripts/check_target_runtime_boundary.py
 

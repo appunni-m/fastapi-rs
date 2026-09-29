@@ -34,7 +34,9 @@ process/environment from upstream FastAPI because both use the `fastapi`
 import namespace and must not share imported modules or mutable application
 state. Verify the target revision, build, Python ABI, feature set,
 Pydantic/pydantic-core versions, and exact Starlette-RS revision before running
-a case.
+a case. `make parity-prepare-target` builds the extension with Cargo's release
+profile; the target worker verifies that Cargo's resolved Starlette-RS crate
+and the editable Python distribution point to the same clean pinned checkout.
 
 The FastAPI contract owns FastAPI exports and behavior: route registration and
 dependency interpretation, parameter extraction, validation/serialization

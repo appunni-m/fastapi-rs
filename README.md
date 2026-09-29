@@ -86,8 +86,10 @@ or parity result.
 
 After `make parity-prepare-oracle` and `make parity-prepare-target`, run
 `make parity-first-slice` for the current ten-case HTTP parity gate. CI runs
-this same identity-checked oracle/target/comparator path; per-run results stay
-under ignored `parity-results/`.
+this same identity-checked oracle/target/comparator path. Target preparation
+builds the PyO3 extension in Cargo release mode and verifies that the Python
+and Rust Starlette-RS dependencies resolve to the same clean pinned checkout.
+Per-run results stay under ignored `parity-results/`.
 
 ## Workspace layout
 

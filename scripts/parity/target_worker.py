@@ -205,6 +205,57 @@ def _combine_digests(entries: dict[str, str]) -> str:
     return digest.hexdigest()
 
 
+def _cargo_starlette_rs_source(target_source: Path) -> Path:
+    """Resolve the Starlette-RS crate Cargo actually links into FastAPI-RS."""
+    completed = subprocess.run(
+        ["cargo", "metadata", "--locked", "--format-version", "1", "--offline"],
+        cwd=target_source,
+        check=False,
+        capture_output=True,
+        text=True,
+        timeout=120,
+    )
+    if completed.returncode != 0:
+        raise WorkerError(
+            "cannot resolve target Cargo dependencies: "
+            + (completed.stderr.strip() or "cargo metadata failed")
+        )
+    try:
+        metadata = json.loads(completed.stdout)
+    except json.JSONDecodeError as exc:
+        raise WorkerError(f"Cargo returned malformed dependency metadata: {exc}") from exc
+
+    packages = {package["id"]: package for package in metadata.get("packages", [])}
+    root_manifest = (target_source / "fastapi-rs/Cargo.toml").resolve()
+    root_packages = [
+        package
+        for package in packages.values()
+        if package.get("name") == "fastapi-rs"
+        and Path(package.get("manifest_path", "")).resolve() == root_manifest
+    ]
+    if len(root_packages) != 1:
+        raise WorkerError("Cargo metadata does not identify one FastAPI-RS implementation crate")
+    root_node = next(
+        (
+            node
+            for node in metadata.get("resolve", {}).get("nodes", [])
+            if node["id"] == root_packages[0]["id"]
+        ),
+        None,
+    )
+    if root_node is None:
+        raise WorkerError("Cargo metadata omitted the FastAPI-RS dependency node")
+    starlette_packages = [
+        packages[dependency["pkg"]]
+        for dependency in root_node.get("deps", [])
+        if packages.get(dependency.get("pkg"), {}).get("name") == "starlette-rs"
+    ]
+    if len(starlette_packages) != 1:
+        raise WorkerError("FastAPI-RS must resolve exactly one Starlette-RS Cargo dependency")
+    manifest_path = Path(starlette_packages[0]["manifest_path"]).resolve()
+    return manifest_path.parent.parent.resolve()
+
+
 def _target_identity(
     target_source: Path,
     starlette_rs_source: Path,
@@ -236,6 +287,12 @@ def _target_identity(
     starlette_rs_source = starlette_rs_source.resolve()
     if target_source != ROOT.resolve():
         raise WorkerError(f"target worker must identify this FastAPI-RS checkout: {ROOT}")
+    cargo_starlette_rs_source = _cargo_starlette_rs_source(target_source)
+    if cargo_starlette_rs_source != starlette_rs_source:
+        raise WorkerError(
+            "FastAPI-RS Cargo links a different Starlette-RS source than the target Python "
+            f"environment: Cargo={cargo_starlette_rs_source}, Python={starlette_rs_source}"
+        )
     _assert_clean_source_tree(
         starlette_rs_source,
         "Starlette-RS",
