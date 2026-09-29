@@ -1,0 +1,42 @@
+schema: fastapi-rs/python-asgi-workflow@3
+workload:
+  file: tests/fixtures/workloads/response_validation_error_focused.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.response-validation-error.missing-response-field
+  # Source asserts the public ResponseValidationError type and a missing-field
+  # message; ordered details and .body are added exact observations of the
+  # same source-selected endpoint behavior.
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: invalid-output-required-field
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /invalid-output
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: application_error, selector: validation_error_class, comparison: exact}
+    - {kind: application_error, selector: exception, comparison: exact}
+    - {kind: application_error, selector: validation_error_details, comparison: exact}
+    - kind: application_error
+      selector: error_public_attributes
+      attributes: [body]
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_response_model_as_return_annotation.py, kind: upstream_test}

@@ -335,9 +335,21 @@
         "selector": {
           "enum": [
             "validation_error_class",
-            "exception"
+            "exception",
+            "validation_error_details",
+            "error_public_attributes"
           ],
-          "description": "Select the fully qualified ASGI-dispatch exception class, or its class and exact message; a completed dispatch with no exception is recorded as null."
+          "description": "Select the fully qualified ASGI-dispatch exception class, its class and exact message, Pydantic validation error details from errors(), or explicitly selected public exception attributes. Missing exceptions produce null values for the selected error data."
+        },
+        "attributes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "description": "Public exception attribute name to capture."
+          }
         },
         "comparison": {
           "const": "exact"
@@ -355,6 +367,39 @@
           "properties": {
             "selector": {
               "const": "exception"
+            }
+          }
+        },
+        {
+          "properties": {
+            "selector": {
+              "const": "validation_error_details"
+            }
+          }
+        },
+        {
+          "required": [
+            "attributes"
+          ],
+          "properties": {
+            "selector": {
+              "const": "error_public_attributes"
+            }
+          }
+        }
+      ],
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "attributes"
+            ]
+          },
+          "then": {
+            "properties": {
+              "selector": {
+                "const": "error_public_attributes"
+              }
             }
           }
         }

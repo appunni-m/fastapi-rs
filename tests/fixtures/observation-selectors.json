@@ -112,9 +112,9 @@
     },
     {
       "id": "error.public_attributes",
-      "projection": "Explicitly selected public exception attributes and their values.",
+      "projection": "Explicitly selected public exception attribute names and their recursively JSON-safe values captured during an ASGI dispatch.",
       "comparison": "exact",
-      "workflow_support": "planned"
+      "workflow_support": "partial"
     },
     {
       "id": "http.body.bytes",
@@ -267,9 +267,9 @@
     },
     {
       "id": "validation.error_details",
-      "projection": "Ordered Pydantic validation error records, including location, type, message, and input/context when present.",
+      "projection": "Ordered Pydantic validation error records returned by exception.errors(), including location, type, message, and input/context when present; tuples become arrays, bytes use base64 objects, nested exceptions use qualified class/message objects, and non-finite floats use tagged objects.",
       "comparison": "ordered-exact",
-      "workflow_support": "planned"
+      "workflow_support": "partial"
     },
     {
       "id": "warnings.category_message",

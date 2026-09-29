@@ -780,7 +780,9 @@
         "selector": {
           "enum": [
             "validation_error_class",
-            "exception"
+            "exception",
+            "validation_error_details",
+            "error_public_attributes"
           ]
         },
         "values": {
@@ -842,6 +844,120 @@
                 }
               }
             }
+          }
+        },
+        {
+          "properties": {
+            "selector": {
+              "const": "validation_error_details"
+            },
+            "values": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "error_details"
+              ],
+              "properties": {
+                "error_details": {
+                  "oneOf": [
+                    {
+                      "type": "null"
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/$defs/validationErrorDetail"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          "properties": {
+            "selector": {
+              "const": "error_public_attributes"
+            },
+            "values": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "attributes"
+              ],
+              "properties": {
+                "attributes": {
+                  "type": "object",
+                  "minProperties": 1,
+                  "additionalProperties": {
+                    "$ref": "#/$defs/jsonValue"
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "validationErrorDetail": {
+      "type": "object",
+      "required": [
+        "loc",
+        "msg",
+        "type"
+      ],
+      "properties": {
+        "loc": {
+          "type": "array",
+          "items": {
+            "type": [
+              "integer",
+              "string"
+            ]
+          }
+        },
+        "msg": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "input": {
+          "$ref": "#/$defs/jsonValue"
+        },
+        "ctx": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/jsonValue"
+          }
+        },
+        "url": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "jsonValue": {
+      "oneOf": [
+        {
+          "type": [
+            "null",
+            "boolean",
+            "number",
+            "string"
+          ]
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/jsonValue"
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/jsonValue"
           }
         }
       ]

@@ -87,6 +87,10 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
                     selectors.add("validation.error_class")
                 elif observation["selector"] == "exception":
                     selectors.add("asgi.application_error.exception")
+                elif observation["selector"] == "validation_error_details":
+                    selectors.add("validation.error_details")
+                elif observation["selector"] == "error_public_attributes":
+                    selectors.add("error.public_attributes")
     return selectors
 
 

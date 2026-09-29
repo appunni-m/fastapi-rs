@@ -297,6 +297,31 @@ def _encoded_bytes(value: bytes) -> dict[str, str]:
     return {"encoding": "base64", "data": base64.b64encode(value).decode("ascii")}
 
 
+def _json_safe(value: Any) -> Any:
+    """Project exception data into deterministic JSON values."""
+    if value is None or isinstance(value, (bool, int, str)):
+        return value
+    if isinstance(value, float):
+        if value == value and value not in (float("inf"), float("-inf")):
+            return value
+        return {"nonfinite_float": str(value)}
+    if isinstance(value, bytes):
+        return _encoded_bytes(value)
+    if isinstance(value, BaseException):
+        error_type = type(value)
+        return {
+            "exception_class": f"{error_type.__module__}.{error_type.__qualname__}",
+            "exception_message": str(value),
+        }
+    if isinstance(value, (list, tuple)):
+        return [_json_safe(item) for item in value]
+    if isinstance(value, dict):
+        if any(not isinstance(key, str) for key in value):
+            raise TypeError("exception data mappings must use string keys")
+        return {key: _json_safe(item) for key, item in value.items()}
+    raise TypeError(f"exception data is not JSON-compatible: {type(value).__name__}")
+
+
 def _header_pairs(headers: Any) -> list[list[str]]:
     if not isinstance(headers, (list, tuple)):
         raise TypeError("ASGI response headers are not a sequence")
@@ -351,6 +376,7 @@ def _observe(
     *,
     validation_error_class: str | None = None,
     application_error: dict[str, str | None] | None = None,
+    application_exception: Exception | None = None,
     event_trace: list[dict[str, Any]] | None = None,
     workload_trace: list[str] | None = None,
     include_selectors: bool = False,
@@ -406,6 +432,23 @@ def _observe(
                     "exception_class": None,
                     "exception_message": None,
                 }
+            elif selector == "validation_error_details":
+                details = None
+                if application_exception is not None:
+                    errors_method = getattr(application_exception, "errors", None)
+                    if callable(errors_method):
+                        details = _json_safe(errors_method())
+                values = {"error_details": details}
+            elif selector == "error_public_attributes":
+                selected_attributes = {}
+                for name in observation["attributes"]:
+                    attribute = (
+                        getattr(application_exception, name, None)
+                        if application_exception is not None
+                        else None
+                    )
+                    selected_attributes[name] = _json_safe(attribute)
+                values = {"attributes": selected_attributes}
             else:
                 raise WorkerError(f"worker does not support application error selector: {selector}")
             item = {"index": index, "kind": kind, "values": values}
@@ -646,6 +689,7 @@ async def _run_action_v3(
             messages,
             validation_error_class=qualified_error_class,
             application_error=application_error,
+            application_exception=dispatch_error,
             event_trace=event_trace,
             workload_trace=workload_trace,
             include_selectors=True,

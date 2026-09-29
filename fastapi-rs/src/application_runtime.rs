@@ -1015,6 +1015,44 @@ fn parse_scope_string(scope: &Bound<'_, PyAny>, key: &str, default: &str) -> PyR
         .extract::<String>()
 }
 
+fn response_endpoint_context<'py>(
+    py: Python<'py>,
+    endpoint: &Bound<'py, PyAny>,
+    method: &str,
+    path: &str,
+    root_path: &str,
+) -> PyResult<Bound<'py, PyDict>> {
+    let context = PyDict::new(py);
+    let inspect = py.import("inspect")?;
+    let endpoint_details = (|| -> PyResult<()> {
+        let source_file = inspect.getattr("getsourcefile")?.call1((endpoint,))?;
+        if !source_file.is_none() {
+            context.set_item("file", source_file)?;
+        }
+        let source_lines = inspect.getattr("getsourcelines")?.call1((endpoint,))?;
+        let line = source_lines.get_item(1)?;
+        if !line.is_none() {
+            context.set_item("line", line)?;
+        }
+        let function =
+            py.import("builtins")?
+                .getattr("getattr")?
+                .call1((endpoint, "__name__", py.None()))?;
+        if !function.is_none() {
+            context.set_item("function", function)?;
+        }
+        Ok(())
+    })();
+    if endpoint_details.is_err() {
+        context.clear();
+    }
+    context.set_item(
+        "path",
+        format!("{method} {}{path}", root_path.trim_end_matches('/')),
+    )?;
+    Ok(context)
+}
+
 enum PendingAction {
     Receive,
     LifespanReceive,
@@ -1257,11 +1295,30 @@ impl FastApiCall {
                 .call1((response_model.bind(py),))?;
             let validation_kwargs = PyDict::new(py);
             validation_kwargs.set_item("from_attributes", true)?;
-            let validated = adapter.call_method(
+            let validated = match adapter.call_method(
                 "validate_python",
                 (result.bind(py),),
                 Some(&validation_kwargs),
-            )?;
+            ) {
+                Ok(validated) => validated,
+                Err(error) if is_pydantic_validation_error(py, &error) => {
+                    let root_path = parse_scope_string(self.scope.bind(py), "root_path", "")?;
+                    let endpoint_ctx = response_endpoint_context(
+                        py,
+                        route.endpoint.bind(py),
+                        &route.method,
+                        &route.path,
+                        &root_path,
+                    )?;
+                    return Err(crate::errors::response_validation_error(
+                        py,
+                        &error,
+                        result.bind(py),
+                        &endpoint_ctx,
+                    )?);
+                }
+                Err(error) => return Err(error),
+            };
             let kwargs = PyDict::new(py);
             kwargs.set_item("mode", "json")?;
             kwargs.set_item("by_alias", route.response_model_by_alias)?;

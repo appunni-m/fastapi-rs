@@ -23,6 +23,7 @@ pub use operation::{
 
 /// Registers FastAPI's public Python API from the Rust-owned implementation.
 pub fn register_python_api(module: &Bound<'_, PyModule>) -> PyResult<()> {
+    errors::register(module)?;
     parameters::register(module)?;
     application_runtime::register(module)
 }

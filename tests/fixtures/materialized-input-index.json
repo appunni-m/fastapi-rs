@@ -4348,9 +4348,9 @@
     {
       "id": "response-model-return-annotation-focused-upstream",
       "input_path": "tests/fixtures/inputs/parity/response-model-return-annotation-focused-upstream.json",
-      "input_sha256": "8164d119f406b93aa5f39dd90404ffda44996a99c72634cd567ed815603ed5fa",
+      "input_sha256": "16371b2cfc29bf88eaa05cffaffb4ba063e8d883746bd3a214b09d2d4581f6e2",
       "recipe_path": "tests/fixtures/input-recipes/parity/response-model-return-annotation-focused-upstream.yaml",
-      "recipe_sha256": "a3030163b04d7c01d85f0e2c041b97372283a0280a7d0e2f6f98fa3a3c8b350a",
+      "recipe_sha256": "b4d489dec04f6790b155435de38cd657ab4c84e0eb5ee8b296669a44d5bf5868",
       "workload_path": "tests/fixtures/workloads/response_model_return_annotation_focused_upstream.py",
       "workload_sha256": "7028aea784d029b98a68106131ba397fc21296256af38a504d706dab65c2f63a",
       "case_ids": [
@@ -4498,6 +4498,18 @@
         "fastapi.response.direct-plain-text",
         "fastapi.response.direct-json",
         "fastapi.response.openapi-status-and-media"
+      ]
+    },
+    {
+      "id": "response-validation-error-focused",
+      "input_path": "tests/fixtures/inputs/parity/response-validation-error-focused.json",
+      "input_sha256": "8d8467a5b5cf7d996e1ade792a4894b290a64a1020685bb99277f5cf6df6367d",
+      "recipe_path": "tests/fixtures/input-recipes/parity/response-validation-error-focused.yaml",
+      "recipe_sha256": "22d5780db90d88aa4175cf5c846990e69eb7d842ee5ed948093bc58a458b54ab",
+      "workload_path": "tests/fixtures/workloads/response_validation_error_focused.py",
+      "workload_sha256": "51613fd8c70a58140f7646cc5bbabb44d008dbcff11fd4b8e4288b6d942f561c",
+      "case_ids": [
+        "fastapi.response-validation-error.missing-response-field"
       ]
     },
     {
@@ -16592,7 +16604,7 @@
       "fixture_id": "fastapi.test.test-response-model-as-return-annotation",
       "workflow_id": "response-model-return-annotation-focused-upstream",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 6 case(s); observes asgi.application_error.exception, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths, validation.error_class. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 6 case(s); observes asgi.application_error.exception, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths, validation.error_class, validation.error_details. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.response-model-return-annotation.decorator-precedence",
         "fastapi.response-model-return-annotation.explicit-none-override",
@@ -16608,7 +16620,8 @@
         "http.status",
         "openapi.document",
         "openapi.paths",
-        "validation.error_class"
+        "validation.error_class",
+        "validation.error_details"
       ]
     },
     {
@@ -17432,6 +17445,21 @@
         "http.status",
         "openapi.document",
         "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_response_model_as_return_annotation.py",
+      "fixture_id": "fastapi.test.test-response-model-as-return-annotation",
+      "workflow_id": "response-validation-error-focused",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.application_error.exception, validation.error_class, validation.error_details. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.response-validation-error.missing-response-field"
+      ],
+      "observation_selectors": [
+        "asgi.application_error.exception",
+        "validation.error_class",
+        "validation.error_details"
       ]
     },
     {
