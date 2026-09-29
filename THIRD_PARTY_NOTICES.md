@@ -2,8 +2,9 @@
 
 FastAPI-RS's original code is licensed under MIT; see [`LICENSE.md`](LICENSE.md).
 This repository does not copy or vendor the upstream FastAPI or Starlette
-source. Their versioned source trees are compatibility authorities, not code
-included in this distribution.
+source. FastAPI 0.141.1 is the source oracle only; the target runtime must not
+install or import the original FastAPI package. The versioned source trees are
+compatibility authorities, not code included in this distribution.
 
 ## Dependencies
 
@@ -12,9 +13,10 @@ included in this distribution.
 - PyO3 0.29.2 and its Cargo dependency closure declare MIT OR Apache-2.0 or the
   package-specific expressions recorded in
   [`docs/RUST_TARGET_DEPENDENCIES.md`](docs/RUST_TARGET_DEPENDENCIES.md).
-- The Python package declares Pydantic `>=2.9,<3`; the selected oracle uses
-  Pydantic 2.13.4. Pydantic and `pydantic-core` are MIT-licensed in that pinned
-  source. `starlette-rs-py==0.1.0` is separately licensed under BSD-3-Clause
+- The Python package pins Pydantic `==2.13.4`; Pydantic and
+  `pydantic-core==2.46.4` are MIT-licensed. Pydantic's public model API is
+  Python, while `pydantic-core` provides its Rust validation/serialization
+  engine. `starlette-rs-py==0.1.0` is separately licensed under BSD-3-Clause
   and brings its own Python runtime dependencies.
 
 The locked Cargo inventory includes each resolved crate's license expression,

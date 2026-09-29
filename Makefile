@@ -18,7 +18,7 @@ TARGET_RESULT ?=
 PARITY_INPUT ?= tests/fixtures/inputs/parity/first-asgi-request.json
 
 .DEFAULT_GOAL := help
-.PHONY: help fmt format clippy build build-rust build-python python-facade-check rust-policy-check compatibility-atlas-update api-contract-update api-contract-check metadata-check parity-inputs parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-target parity-api-runtime parity-validate parity-index-update parity-index-check parity-oracle parity-oracle-standard parity-target parity-compare verify clean
+.PHONY: help fmt format clippy build build-rust build-python python-facade-check rust-policy-check compatibility-atlas-update api-contract-update api-contract-check metadata-check dependency-inventory-update dependency-inventory-check parity-inputs parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-target parity-api-runtime parity-validate parity-index-update parity-index-check parity-oracle parity-oracle-standard parity-target parity-compare verify clean
 
 help: ## Show common development commands
 	@printf '%s\n' \
@@ -35,6 +35,8 @@ help: ## Show common development commands
 	  '  make api-contract-update Refresh per-symbol source/runtime API links in manifest.yaml' \
 	  '  make api-contract-check Check per-symbol API links are current' \
 	  '  make metadata-check   Check the human-maintained API source authority' \
+	  '  make dependency-inventory-update Regenerate the pinned target dependency/license report' \
+	  '  make dependency-inventory-check Check the pinned target dependency/license report' \
 	  '  make parity-inputs    Materialize ignored JSON workflows from YAML recipes' \
 	  '  make parity-prepare-oracle Prepare pinned FastAPI 0.141.1 / Starlette 1.6.0 Python env' \
 	  '  make parity-prepare-oracle-standard Prepare the locked optional-feature reflection profile' \
@@ -93,6 +95,12 @@ api-contract-check: ## Check per-symbol API links are current
 metadata-check: ## Check API-source metadata against generated contract artifacts
 	$(PYTHON) scripts/check_metadata_authority.py --starlette-rs-source "$(STARLETTE_RS_SOURCE)"
 
+dependency-inventory-update: ## Regenerate the pinned Cargo/Python target dependency inventory
+	$(PYTHON) scripts/render_rust_target_dependency_inventory.py --offline
+
+dependency-inventory-check: ## Check the pinned Cargo/Python target dependency inventory
+	$(PYTHON) scripts/render_rust_target_dependency_inventory.py --offline --check
+
 parity-prepare-oracle: ## Create the locked source oracle and select local Starlette 1.6.0
 	UV_PROJECT_ENVIRONMENT="$(CURDIR)/.venv-oracle" $(UV) sync --project "$(FASTAPI_SOURCE)" --locked --no-dev --no-install-package starlette --python "$(PYTHON)"
 	$(UV) pip install --python "$(ORACLE_PYTHON)" --no-deps --editable "$(STARLETTE_SOURCE)"
@@ -146,7 +154,7 @@ parity-compare: ## Compare live source/target result artifacts exactly
 
 build: build-rust build-python ## Build the Rust crates and Python wheel
 
-verify: fmt clippy parity-index-check api-contract-check metadata-check parity-validate build-python ## Run formatting, lint, static contracts, and package checks
+verify: fmt clippy parity-index-check api-contract-check metadata-check dependency-inventory-check parity-validate build-python ## Run formatting, lint, static contracts, and package checks
 
 clean: ## Remove Cargo outputs under target/
 	$(CARGO) clean
