@@ -1,0 +1,55 @@
+# Input-only app-level override and request-cache sequence based on the pinned
+# FastAPI 0.141.1 source (tag 0.141.1, commit 95f8322ee1dc). In
+# fastapi/dependencies/utils.py, solve_dependencies applies dependency_overrides
+# at lines 623-638, resolves sync callables in a threadpool at lines 673-676,
+# and checks/stores the original dependency's cache key at lines 656-680. The
+# dependency cache is initialized for each top-level solve at lines 615-618;
+# fastapi/dependencies/models.py:82-94 defines its key. The two source tests
+# below independently cover dependency caching and app-level overrides.
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/dependency_override_cache_request_local.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.dependencies.override-cache-request-local
+  actions:
+  - action_id: first-request
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /override-cache
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: second-request
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /override-cache
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_dependency_cache.py, kind: upstream_test}
+  - {path: tests/test_dependency_overrides.py, kind: upstream_test}

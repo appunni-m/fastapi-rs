@@ -1005,6 +1005,18 @@
       ]
     },
     {
+      "id": "dependency-override-cache-request-local",
+      "input_path": "tests/fixtures/inputs/parity/dependency-override-cache-request-local.json",
+      "input_sha256": "5069cf65eb332a12e1774c90e86c322d68e4739334f91354b3daa2f8ee7cfe03",
+      "recipe_path": "tests/fixtures/input-recipes/parity/dependency-override-cache-request-local.yaml",
+      "recipe_sha256": "68a3da29df19cde6525e142d67c1bb87810c9212bb2aa1f1407a5d1dbd8de8ca",
+      "workload_path": "tests/fixtures/workloads/dependency_override_cache_request_local.py",
+      "workload_sha256": "4d474e593bfa0d3466475190849c4a6756b7c9ca7e09d668095573b5ce2fc57f",
+      "case_ids": [
+        "fastapi.dependencies.override-cache-request-local"
+      ]
+    },
+    {
       "id": "dependency-override-sync-defaults-upstream",
       "input_path": "tests/fixtures/inputs/parity/dependency-override-sync-defaults-upstream.json",
       "input_sha256": "55cf5a43e7abaa8dd4fad830bf804db8a0d93888dc4ed0eb0d111a07ffd497e1",
@@ -8290,6 +8302,34 @@
         "websocket.close_code",
         "websocket.event_order",
         "websocket.messages"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_dependency_cache.py",
+      "fixture_id": "fastapi.test.test-dependency-cache",
+      "workflow_id": "dependency-override-cache-request-local",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.dependencies.override-cache-request-local"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_dependency_overrides.py",
+      "fixture_id": "fastapi.test.test-dependency-overrides",
+      "workflow_id": "dependency-override-cache-request-local",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.dependencies.override-cache-request-local"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
       ]
     },
     {

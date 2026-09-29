@@ -391,8 +391,8 @@ reviewed_api_contract_overlay:
         callable whose nested dependency introduces exactly one required
         scalar query field `k`. Missing `k` fails request validation; supplying
         `?k=bar` succeeds.
-        Other constructor options and override cache behavior remain outside
-        this reviewed slice.
+        Other constructor options and override cache behavior beyond the
+        reviewed Depends slice remain outside this reviewed slice.
     fastapi.applications.FastAPI.__call__:
       rust_binding: fastapi-rs/src/application_runtime.rs::FastApiCall::finish_endpoint
       source_evidence:
@@ -517,9 +517,26 @@ reviewed_api_contract_overlay:
       source_evidence:
         - {path: fastapi/param_functions.py, symbol: Depends}
         - {path: fastapi/params.py, symbol: Depends}
-        - {path: fastapi/dependencies/utils.py, symbol: solve_dependencies}
-        - {path: tests/test_dependency_cache.py, symbol: test_sub_counter}
-        - {path: tests/test_dependency_cache.py, symbol: test_sub_counter_no_cache}
+        - path: fastapi/dependencies/models.py
+          symbol: _get_cache_key
+          kind: source-definition
+          start_line: 82
+          end_line: 96
+        - path: fastapi/dependencies/utils.py
+          symbol: solve_dependencies
+          kind: source-definition
+          start_line: 586
+          end_line: 731
+        - path: tests/test_dependency_cache.py
+          symbol: test_sub_counter
+          kind: source-definition
+          start_line: 64
+          end_line: 71
+        - path: tests/test_dependency_cache.py
+          symbol: test_sub_counter_no_cache
+          kind: source-definition
+          start_line: 74
+          end_line: 81
         - path: tests/test_dependency_overrides.py
           symbol: overrider_sub_dependency
           kind: source-definition
@@ -545,17 +562,25 @@ reviewed_api_contract_overlay:
       supported_slice: >-
         Partial native slice: synchronous callable dependencies with one nested
         dependency level share cached results for repeated dependencies during a
-        request; use_cache=False bypasses cache lookup for that dependency edge,
-        while its result can populate an empty cache entry. The cache resets for
-        each request. Synchronous app-level overrides rebuild the replacement
-        dependency from its signature. This slice includes a replacement with
-        one nested dependency that introduces exactly one required scalar query
-        field `k`: omitting it produces 422 required-query validation, while
-        `?k=bar` supplies the value and succeeds. Newly introduced body,
-        header, cookie, or path fields remain unsupported. Override cache-key
-        behavior, async and generator dependencies, None-based dependency
-        inference, Security scopes, request/function scopes, and the rest of
-        the Depends constructor contract remain outside this reviewed slice.
+        request. For unoverridden dependency edges, use_cache=False bypasses
+        cache lookup while the result can populate an empty cache entry. For a
+        synchronous app-level override, lookup and storage use the original
+        dependency edge's cache key, including the original callable identity;
+        repeated edges to the same original callable therefore invoke the
+        replacement once within a request. A new request starts with an empty
+        cache, so the replacement runs once again. This behavior is exercised by
+        tests/fixtures/input-recipes/parity/dependency-override-cache-request-local.yaml,
+        case fastapi.dependencies.override-cache-request-local. `use_cache=False`
+        semantics on override edges remain outside this slice. Synchronous
+        app-level overrides also rebuild the replacement dependency from its
+        signature. This includes a replacement with one nested dependency that
+        introduces exactly one required scalar query field `k`: omitting it
+        produces 422 required-query validation, while `?k=bar` supplies the
+        value and succeeds. Newly introduced body, header, cookie, or path
+        fields remain unsupported. Async and generator dependencies,
+        None-based dependency inference, Security scopes, request/function
+        scopes, and the rest of the Depends constructor contract remain outside
+        this reviewed slice.
     fastapi.exceptions.RequestValidationError:
       rust_binding: fastapi-rs/src/errors.rs::RequestValidationError
       source_evidence:
