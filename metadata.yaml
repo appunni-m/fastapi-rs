@@ -600,13 +600,26 @@ reviewed_api_contract_overlay:
         tests/fixtures/input-recipes/parity/dependency-override-async-cache-request-local.yaml,
         case fastapi.dependencies.override-async-cache-request-local, and
         tests/fixtures/input-recipes/parity/dependency-override-async-two-keys-request-local.yaml,
-        case fastapi.dependencies.override-async-two-keys-request-local. Mixed
-        synchronous, unoverridden, or uncached direct edges; nested override
-        dependencies; async endpoints; async callable instances; `use_cache=False`;
-        async generators; and generator dependencies remain outside this
-        reviewed slice. None-based dependency inference, Security scopes,
-        request/function scopes, and the rest of the Depends constructor
-        contract also remain unsupported.
+        case fastapi.dependencies.override-async-two-keys-request-local. A
+        narrower query-bearing slice also supports a flat coroutine-function
+        override declared with exactly one optional plain scalar parameter
+        `q: str | None = None`, when repeated direct endpoint edges reference
+        the same original callable, use default caching, and the endpoint is
+        synchronous. The omitted query supplies None; `?q=foo` supplies "foo".
+        The override runs once for those repeated edges per request and runs
+        again on the next request. This exact shape is covered by
+        tests/fixtures/input-recipes/parity/dependency-override-async-query-cache-request-local.yaml,
+        case fastapi.dependencies.override-async-query-cache-request-local.
+        Explicit `Query(...)` markers, aliases, validators, required or
+        non-scalar parameters, other query-bearing multi-key shapes, and newly
+        introduced body, header, cookie, or path inputs remain outside the
+        query-bearing slice. Outside these coroutine-override slices are mixed
+        synchronous or unoverridden direct edges, `use_cache=False` override
+        edges, nested dependencies of coroutine overrides, async endpoints with
+        coroutine overrides, async callable-instance overrides, async
+        generators, and generator dependencies. None-based dependency
+        inference, Security scopes, request/function scopes, and the rest of
+        the Depends constructor contract also remain unsupported.
     fastapi.exceptions.RequestValidationError:
       rust_binding: fastapi-rs/src/errors.rs::RequestValidationError
       source_evidence:

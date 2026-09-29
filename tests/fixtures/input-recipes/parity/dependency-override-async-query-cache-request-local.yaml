@@ -1,0 +1,58 @@
+# Pinned FastAPI 0.141.1 source evidence: in
+# fastapi/tests/test_dependency_overrides.py:39-40,
+# overrider_dependency_simple accepts q: str | None = None; test_override_simple
+# at lines 208-213 installs it in app.dependency_overrides and issues a request.
+# fastapi/dependencies/utils.py:615-616 initializes the dependency cache for a
+# solve, lines 623-638 rebuild the dependant for the override, lines 656-661
+# check the original edge's use_cache key, lines 673-674 await async callables,
+# and lines 679-680 store the solved value. fastapi/params.py:746-748 sets
+# Depends.use_cache=True by default. The workload repeats one original direct
+# edge and serves an omitted-q request followed by q=foo on the same app; its
+# cumulative call count makes per-request cache reset observable.
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/dependency_override_async_query_cache_request_local.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.dependencies.override-async-query-cache-request-local
+  actions:
+  - action_id: omitted-query
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /override-async-query-cache
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: supplied-query
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /override-async-query-cache
+      query_string: q=foo
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_dependency_overrides.py, kind: upstream_test}
+  - {path: tests/test_dependency_cache.py, kind: upstream_test}
