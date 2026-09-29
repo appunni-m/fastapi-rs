@@ -286,6 +286,13 @@ reviewed_api_contract_overlay:
         - http.headers.ordered
         - http.body.bytes
         - asgi.send.message_types
+    fastapi.applications.FastAPI.get:
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::get
+      source_evidence:
+        - {path: fastapi/applications.py, symbol: get}
+        - {path: fastapi/routing.py, symbol: serialize_response}
+      feature_ids: [app-routing, request-validation, response-serialization]
+      observation_selectors: [http.status, http.body.bytes]
   warning_classification_reviews:
     fastapi.exceptions.FastAPIDeprecationWarning:
       classification: uncertain

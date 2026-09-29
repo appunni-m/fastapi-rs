@@ -123,7 +123,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@2
-    sha256: 8c64bd7ccb752d8d6132c7f78f3bde4733d952388e0edcb6b0a43c909c3016c1
+    sha256: a24b67515239af56c5a57bddd435480230ac283bb182666bbbed4dc196e04f95
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -152,7 +152,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 9dbf0206234e2755d3854f2d058cd023a081762daf64d91aa632d8d7ddb378c8
+    sha256: 60b8c2ff9c86b7d38b620dba2e03fdc22bf2f094211de3bce1e2a4f50bcba2b2
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 554
@@ -189,14 +189,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@1
-    sha256: 3fb97c806e5917cd79229dceac9971b04fdccb40b496e1cc357d8136bb41f165
+    sha256: 321d3d8c4dcda383e4e6e2a4a4c4e46812d218e747431ce7000c464cd85ba577
     schema_path: tests/fixtures/schemas/materialized-input-index.schema.json
     schema_sha256: 467200b835dfd99ab16dfbd4ca4507145e070c73aa55d4425fd78e11141c3e86
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 389
-      cases: 1657
-      partial_source_mappings: 896
+      workflows: 391
+      cases: 1662
+      partial_source_mappings: 901
 
 contract_metadata:
   aliases:
@@ -2195,7 +2195,7 @@ api_surface_contract:
     - warnings.category_message
     - websocket.event_order
     - websocket.messages
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.applications.FastAPI.get
@@ -2205,7 +2205,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/196
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::get
   - id: fastapi.applications.FastAPI.head
     kind: method
     source_candidate_ref: /api_candidates/197

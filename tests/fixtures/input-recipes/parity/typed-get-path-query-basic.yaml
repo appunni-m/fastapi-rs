@@ -1,0 +1,172 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/typed_get_path_query_basic.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.typed-get-path-query.explicit-integers
+  actions:
+  - action_id: coerce-path-and-query-integers
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/42
+      query_string: revision=7
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_path_params/test_tutorial002.py
+    kind: upstream_test
+  - path: docs_src/path_params/tutorial002_py310.py
+    kind: upstream_documentation
+  - path: tests/test_tutorial/test_query_params/test_tutorial001.py
+    kind: upstream_test
+  - path: docs_src/query_params/tutorial001_py310.py
+    kind: upstream_documentation
+- case_id: fastapi.typed-get-path-query.omitted-query-default
+  actions:
+  - action_id: use-integer-query-default
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/42
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_path_params/test_tutorial002.py
+    kind: upstream_test
+  - path: docs_src/path_params/tutorial002_py310.py
+    kind: upstream_documentation
+  - path: tests/test_tutorial/test_query_params/test_tutorial001.py
+    kind: upstream_test
+  - path: docs_src/query_params/tutorial001_py310.py
+    kind: upstream_documentation
+- case_id: fastapi.typed-get-path-query.invalid-path-integer
+  actions:
+  - action_id: reject-invalid-path-integer
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/not-an-int
+      query_string: revision=7
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_path_params/test_tutorial002.py
+    kind: upstream_test
+  - path: docs_src/path_params/tutorial002_py310.py
+    kind: upstream_documentation
+- case_id: fastapi.typed-get-path-query.invalid-query-integer
+  actions:
+  - action_id: reject-invalid-query-integer
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/42
+      query_string: revision=not-an-int
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_query_params/test_tutorial001.py
+    kind: upstream_test
+  - path: docs_src/query_params/tutorial001_py310.py
+    kind: upstream_documentation
+  - path: tests/test_tutorial/test_query_params/test_tutorial006.py
+    kind: upstream_test

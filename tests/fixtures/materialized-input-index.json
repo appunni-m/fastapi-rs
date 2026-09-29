@@ -4270,6 +4270,18 @@
       ]
     },
     {
+      "id": "response-model-default-alias-post",
+      "input_path": "tests/fixtures/inputs/parity/response-model-default-alias-post.json",
+      "input_sha256": "db4b24bd108a6694042148b979adeaacf530013635557a5941639d7a754c0f64",
+      "recipe_path": "tests/fixtures/input-recipes/parity/response-model-default-alias-post.yaml",
+      "recipe_sha256": "3287f0f0e4abe667a36ef0dbf619270478b7c5250489d52bd6c67a4f39d7baf9",
+      "workload_path": "tests/fixtures/workloads/response_model_default_alias_post.py",
+      "workload_sha256": "c33852594b48fdfb4a23959bbf73f9e5a0ae8731edf82028944e1b1e280ff666",
+      "case_ids": [
+        "fastapi.response-model.alias.post-default"
+      ]
+    },
+    {
       "id": "response-model-include-exclude-source-review",
       "input_path": "tests/fixtures/inputs/parity/response-model-include-exclude-source-review.json",
       "input_sha256": "6640611cce714874b816a571ba8e9108638fbf7cd4e240ba9af8586b44046725",
@@ -5698,6 +5710,21 @@
       "case_ids": [
         "fastapi.tutorial-response-status-code001.created-item",
         "fastapi.tutorial-response-status-code001.openapi"
+      ]
+    },
+    {
+      "id": "typed-get-path-query-basic",
+      "input_path": "tests/fixtures/inputs/parity/typed-get-path-query-basic.json",
+      "input_sha256": "5a5f18ce147227249909fcbad1192bfd8e5803f922fba9d7db173769babc8767",
+      "recipe_path": "tests/fixtures/input-recipes/parity/typed-get-path-query-basic.yaml",
+      "recipe_sha256": "62e3d7151e1102f316b286813cd37f5278113f1599fd5b5b3585a9246d065232",
+      "workload_path": "tests/fixtures/workloads/typed_get_path_query_basic.py",
+      "workload_sha256": "56ffc1b54978d682ddba7c204fe33c80be5ffddf9adb4c57c3522721b5afb4b1",
+      "case_ids": [
+        "fastapi.typed-get-path-query.explicit-integers",
+        "fastapi.typed-get-path-query.omitted-query-default",
+        "fastapi.typed-get-path-query.invalid-path-integer",
+        "fastapi.typed-get-path-query.invalid-query-integer"
       ]
     },
     {
@@ -16320,6 +16347,34 @@
       ]
     },
     {
+      "source_item_id": "documented-page:tutorial/response-model.md",
+      "fixture_id": "fastapi.docs.tutorial-response-model",
+      "workflow_id": "response-model-default-alias-post",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.response-model.alias.post-default"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_response_by_alias.py",
+      "fixture_id": "fastapi.test.test-response-by-alias",
+      "workflow_id": "response-model-default-alias-post",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.response-model.alias.post-default"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
       "source_item_id": "upstream-test:tests/test_response_model_include_exclude.py",
       "fixture_id": "fastapi.test.test-response-model-include-exclude",
       "workflow_id": "response-model-include-exclude-source-review",
@@ -20444,6 +20499,52 @@
         "http.status",
         "openapi.document",
         "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_path_params/test_tutorial002.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-path-params-test-tutorial002",
+      "workflow_id": "typed-get-path-query-basic",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.typed-get-path-query.explicit-integers",
+        "fastapi.typed-get-path-query.invalid-path-integer",
+        "fastapi.typed-get-path-query.omitted-query-default"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_query_params/test_tutorial001.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-query-params-test-tutorial001",
+      "workflow_id": "typed-get-path-query-basic",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.typed-get-path-query.explicit-integers",
+        "fastapi.typed-get-path-query.invalid-query-integer",
+        "fastapi.typed-get-path-query.omitted-query-default"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_query_params/test_tutorial006.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-query-params-test-tutorial006",
+      "workflow_id": "typed-get-path-query-basic",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.typed-get-path-query.invalid-query-integer"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
       ]
     },
     {

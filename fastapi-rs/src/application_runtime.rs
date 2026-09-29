@@ -100,16 +100,18 @@ impl PyFastApi {
         response_model: Option<Py<PyAny>>,
         status_code: u16,
     ) -> PyResult<Py<PyOperationDecorator>> {
-        Py::new(
-            py,
-            PyOperationDecorator {
-                app: slf,
-                path: path.to_owned(),
-                method: "POST".to_owned(),
-                response_model,
-                status_code,
-            },
-        )
+        operation_decorator(slf, py, path, "POST", response_model, status_code)
+    }
+
+    #[pyo3(signature = (path, *, response_model = None, status_code = 200))]
+    fn get(
+        slf: Py<Self>,
+        py: Python<'_>,
+        path: &str,
+        response_model: Option<Py<PyAny>>,
+        status_code: u16,
+    ) -> PyResult<Py<PyOperationDecorator>> {
+        operation_decorator(slf, py, path, "GET", response_model, status_code)
     }
 
     fn openapi(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
@@ -238,6 +240,26 @@ struct PyOperationDecorator {
     method: String,
     response_model: Option<Py<PyAny>>,
     status_code: u16,
+}
+
+fn operation_decorator(
+    app: Py<PyFastApi>,
+    py: Python<'_>,
+    path: &str,
+    method: &str,
+    response_model: Option<Py<PyAny>>,
+    status_code: u16,
+) -> PyResult<Py<PyOperationDecorator>> {
+    Py::new(
+        py,
+        PyOperationDecorator {
+            app,
+            path: path.to_owned(),
+            method: method.to_owned(),
+            response_model,
+            status_code,
+        },
+    )
 }
 
 #[pymethods]
@@ -1134,6 +1156,7 @@ impl FastApiCall {
             let validated = adapter.call_method1("validate_python", (result.bind(py),))?;
             let kwargs = PyDict::new(py);
             kwargs.set_item("mode", "json")?;
+            kwargs.set_item("by_alias", true)?;
             adapter.call_method("dump_python", (validated,), Some(&kwargs))?
         } else {
             jsonable_encoder_default(py, result.bind(py))?
