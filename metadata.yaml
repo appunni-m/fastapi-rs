@@ -524,13 +524,19 @@ reviewed_api_contract_overlay:
         - {path: fastapi/applications.py, symbol: post}
         - {path: fastapi/routing.py, symbol: serialize_response}
         - {path: fastapi/_compat/v2.py, symbol: serialize}
-      feature_ids: [app-routing, response-serialization]
-      observation_selectors: [http.status, http.body.bytes]
+        - {path: fastapi/openapi/utils.py, symbol: get_openapi_path}
+        - {path: tests/test_tutorial/test_path_operation_advanced_configurations/test_tutorial004.py, symbol: test_openapi_schema}
+        - {path: docs_src/path_operation_advanced_configuration/tutorial004_py310.py}
+      feature_ids: [app-routing, openapi-docs, response-serialization]
+      observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths]
       supported_slice: >-
         Partial native slice: registers a POST operation using the shared FastAPI
         response pipeline. include_in_schema=False keeps the route dispatchable
-        while omitting it from OpenAPI. Other decorator options and customization
-        hooks remain outside this reviewed slice.
+        while omitting it from OpenAPI. An explicit non-empty `summary` is
+        emitted as the operation summary in OpenAPI, as sampled by
+        `path-operation-post-summary-isolated`. Other decorator options,
+        generated summaries, and customization hooks remain outside this
+        reviewed slice.
     fastapi.applications.FastAPI.put:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::put
       source_evidence:

@@ -232,7 +232,7 @@ impl PyFastApi {
         clippy::too_many_arguments,
         reason = "preserve the Python route decorator keyword signature"
     )]
-    #[pyo3(signature = (path, *, response_model = None, status_code = 200, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, include_in_schema = true))]
+    #[pyo3(signature = (path, *, response_model = None, status_code = 200, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, summary = None, include_in_schema = true))]
     fn post(
         slf: Py<Self>,
         py: Python<'_>,
@@ -245,6 +245,7 @@ impl PyFastApi {
         response_model_exclude_unset: bool,
         response_model_exclude_defaults: bool,
         response_model_exclude_none: bool,
+        summary: Option<String>,
         include_in_schema: bool,
     ) -> PyResult<Py<PyOperationDecorator>> {
         operation_decorator(
@@ -262,7 +263,7 @@ impl PyFastApi {
                 exclude_defaults: response_model_exclude_defaults,
                 exclude_none: response_model_exclude_none,
                 include_in_schema,
-                summary: None,
+                summary,
                 operation_id: None,
                 deprecated: None,
                 tags: None,
