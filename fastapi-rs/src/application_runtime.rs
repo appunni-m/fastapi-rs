@@ -2,7 +2,7 @@
 
 use std::collections::{BTreeSet, HashMap};
 
-use pyo3::exceptions::{PyRuntimeError, PyValueError};
+use pyo3::exceptions::{PyNotImplementedError, PyRuntimeError, PyValueError};
 use pyo3::prelude::*;
 use pyo3::types::{PyBytes, PyDict, PyList, PyModule, PyString, PyTuple, PyType};
 use starlette_rs::QueryParams;
@@ -72,6 +72,38 @@ struct InvocationContext<'context, 'py> {
     failures: &'context mut Vec<ValidationIssue>,
     dependency_overrides: &'context Bound<'py, PyDict>,
     dependency_cache: &'context mut HashMap<usize, Py<PyAny>>,
+    prepared_dependency_overrides: &'context mut BTreeSet<usize>,
+}
+
+struct RequestInvocation {
+    inputs: Py<PyDict>,
+    query_params: QueryParams,
+    failures: Vec<ValidationIssue>,
+    dependency_cache: HashMap<usize, Py<PyAny>>,
+    prepared_dependency_overrides: BTreeSet<usize>,
+}
+
+enum RouteInvocation {
+    Ready(Option<Py<PyAny>>),
+    AwaitDependency {
+        awaitable: Py<PyAny>,
+        cache_key: usize,
+    },
+}
+
+enum OverridePreparation {
+    Ready,
+    Invalid,
+    Await {
+        awaitable: Py<PyAny>,
+        cache_key: usize,
+    },
+}
+
+enum DependencyOverrideCallable {
+    Sync,
+    CoroutineFunction,
+    AsyncCallableInstance,
 }
 
 struct FastApiRoute {
@@ -478,6 +510,7 @@ impl PyFastApi {
                 body: Vec::new(),
                 response_status: 200,
                 response_body: Vec::new(),
+                invocation: None,
             },
         )
     }
@@ -811,6 +844,102 @@ impl CallablePlan {
         Ok(parameters)
     }
 
+    fn prepare_direct_dependency_overrides(
+        &self,
+        context: &mut InvocationContext<'_, '_>,
+    ) -> PyResult<OverridePreparation> {
+        let mut repeated_cache_key = None;
+        let mut has_direct_dependency = false;
+        let mut cacheable_repeated_edges = true;
+        for parameter in &self.parameters {
+            if let ParameterSource::Dependency { plan, use_cache } = &parameter.source {
+                has_direct_dependency = true;
+                if !use_cache {
+                    cacheable_repeated_edges = false;
+                }
+                let cache_key = plan.callable.as_ptr() as usize;
+                if repeated_cache_key.is_some_and(|previous| previous != cache_key) {
+                    cacheable_repeated_edges = false;
+                }
+                repeated_cache_key = Some(cache_key);
+            }
+        }
+        let supports_async_override = has_direct_dependency && cacheable_repeated_edges;
+        let mut async_overrides = Vec::new();
+
+        for parameter in &self.parameters {
+            let ParameterSource::Dependency { plan, .. } = &parameter.source else {
+                continue;
+            };
+            let cache_key = plan.callable.as_ptr() as usize;
+            let original_callable = plan.callable.bind(context.py);
+            let Some(replacement) = context.dependency_overrides.get_item(original_callable)?
+            else {
+                continue;
+            };
+            if replacement.is(original_callable) {
+                continue;
+            }
+            match dependency_override_callable(context.py, &replacement)? {
+                DependencyOverrideCallable::Sync => continue,
+                DependencyOverrideCallable::AsyncCallableInstance => {
+                    return Err(PyNotImplementedError::new_err(
+                        "async callable-instance dependency overrides are not supported",
+                    ));
+                }
+                DependencyOverrideCallable::CoroutineFunction if !supports_async_override => {
+                    return Err(PyNotImplementedError::new_err(
+                        "async dependency overrides currently support only repeated cached direct endpoint edges",
+                    ));
+                }
+                DependencyOverrideCallable::CoroutineFunction => {}
+            }
+            async_overrides.push((
+                cache_key,
+                replacement.unbind(),
+                plan.path_parameters.clone(),
+            ));
+        }
+
+        if !supports_async_override || async_overrides.is_empty() {
+            return Ok(OverridePreparation::Ready);
+        }
+
+        for (cache_key, replacement, path_parameters) in async_overrides {
+            if context.prepared_dependency_overrides.contains(&cache_key)
+                || context.dependency_cache.contains_key(&cache_key)
+            {
+                continue;
+            }
+            let replacement_plan = CallablePlan::build(context.py, replacement, &path_parameters)?;
+            if replacement_plan
+                .parameters
+                .iter()
+                .any(|parameter| matches!(parameter.source, ParameterSource::Dependency { .. }))
+            {
+                return Err(PyNotImplementedError::new_err(
+                    "nested dependency override replacements are not supported",
+                ));
+            }
+
+            let initial_failure_count = context.failures.len();
+            let Some(value) = replacement_plan.invoke(context, Some(true), Some(cache_key))? else {
+                if context.failures.len() != initial_failure_count {
+                    return Ok(OverridePreparation::Invalid);
+                }
+                continue;
+            };
+            if is_awaitable(context.py, value.bind(context.py))? {
+                context.dependency_cache.remove(&cache_key);
+                return Ok(OverridePreparation::Await {
+                    awaitable: value,
+                    cache_key,
+                });
+            }
+        }
+        Ok(OverridePreparation::Ready)
+    }
+
     fn invoke(
         &self,
         context: &mut InvocationContext<'_, '_>,
@@ -940,6 +1069,43 @@ impl CallablePlan {
         }
         Ok(Some(result))
     }
+}
+
+fn is_awaitable(py: Python<'_>, value: &Bound<'_, PyAny>) -> PyResult<bool> {
+    py.import("inspect")?
+        .getattr("isawaitable")?
+        .call1((value,))?
+        .extract()
+}
+
+fn dependency_override_callable(
+    py: Python<'_>,
+    value: &Bound<'_, PyAny>,
+) -> PyResult<DependencyOverrideCallable> {
+    let inspect = py.import("inspect")?;
+    if inspect
+        .getattr("isclass")?
+        .call1((value,))?
+        .extract::<bool>()?
+    {
+        return Ok(DependencyOverrideCallable::Sync);
+    }
+    if inspect
+        .getattr("iscoroutinefunction")?
+        .call1((value,))?
+        .extract::<bool>()?
+    {
+        return Ok(DependencyOverrideCallable::CoroutineFunction);
+    }
+    let call_method = value.getattr("__call__")?;
+    if inspect
+        .getattr("iscoroutinefunction")?
+        .call1((call_method,))?
+        .extract::<bool>()?
+    {
+        return Ok(DependencyOverrideCallable::AsyncCallableInstance);
+    }
+    Ok(DependencyOverrideCallable::Sync)
 }
 
 fn marker_default(py: Python<'_>, metadata: &[Py<PyAny>]) -> PyResult<Option<Py<PyAny>>> {
@@ -1564,6 +1730,7 @@ enum PendingAction {
     LifespanStartupSend,
     LifespanShutdownSend,
     Endpoint,
+    Dependency { cache_key: usize },
     ReturnedResponse,
     SendStart,
     SendBody,
@@ -1580,6 +1747,7 @@ struct FastApiCall {
     body: Vec<u8>,
     response_status: u16,
     response_body: Vec<u8>,
+    invocation: Option<RequestInvocation>,
 }
 
 impl FastApiCall {
@@ -1746,12 +1914,25 @@ impl FastApiCall {
             }
             Err(InputDecodeError::Other(error)) => return Err(error),
         };
+        self.invocation = Some(RequestInvocation {
+            inputs: values,
+            query_params,
+            failures: Vec::new(),
+            dependency_cache: HashMap::new(),
+            prepared_dependency_overrides: BTreeSet::new(),
+        });
+        self.invoke_route(py)
+    }
+
+    fn invoke_route(&mut self, py: Python<'_>) -> PyResult<MachineAction> {
         let route_index = self
             .route_index
             .ok_or_else(|| PyRuntimeError::new_err("ASGI dispatch has no selected route"))?;
-        let mut validation_issues = Vec::new();
-        let mut dependency_cache = HashMap::new();
-        let invocation = {
+        let invocation = self
+            .invocation
+            .as_mut()
+            .ok_or_else(|| PyRuntimeError::new_err("request invocation state was lost"))?;
+        let route_invocation = {
             let app = self.app.bind(py).borrow();
             let route = app
                 .routes
@@ -1760,41 +1941,80 @@ impl FastApiCall {
             let dependency_overrides = app.dependency_overrides.bind(py);
             let mut context = InvocationContext {
                 py,
-                inputs: values.bind(py),
-                query_params: &query_params,
-                failures: &mut validation_issues,
+                inputs: invocation.inputs.bind(py),
+                query_params: &invocation.query_params,
+                failures: &mut invocation.failures,
                 dependency_overrides,
-                dependency_cache: &mut dependency_cache,
+                dependency_cache: &mut invocation.dependency_cache,
+                prepared_dependency_overrides: &mut invocation.prepared_dependency_overrides,
             };
-            route.plan.invoke(&mut context, None, None)
+            match route
+                .plan
+                .prepare_direct_dependency_overrides(&mut context)?
+            {
+                OverridePreparation::Await {
+                    awaitable,
+                    cache_key,
+                } => RouteInvocation::AwaitDependency {
+                    awaitable,
+                    cache_key,
+                },
+                OverridePreparation::Invalid => RouteInvocation::Ready(None),
+                OverridePreparation::Ready => {
+                    RouteInvocation::Ready(route.plan.invoke(&mut context, None, None)?)
+                }
+            }
         };
-        match invocation {
-            Ok(Some(endpoint_result)) => {
+        match route_invocation {
+            RouteInvocation::AwaitDependency {
+                awaitable,
+                cache_key,
+            } => {
+                self.pending = Some(PendingAction::Dependency { cache_key });
+                Ok(MachineAction::Await(awaitable))
+            }
+            RouteInvocation::Ready(Some(endpoint_result)) => {
                 self.pending = Some(PendingAction::Endpoint);
-                if py
-                    .import("inspect")?
-                    .getattr("isawaitable")?
-                    .call1((endpoint_result.bind(py),))?
-                    .extract::<bool>()?
-                {
+                if is_awaitable(py, endpoint_result.bind(py))? {
                     Ok(MachineAction::Await(endpoint_result))
                 } else {
                     self.finish_endpoint(py, endpoint_result)
                 }
             }
-            Ok(None) if !validation_issues.is_empty() => {
-                self.response_status = 422;
-                self.response_body = json_bytes(
-                    py,
-                    validation_response_body(py, &validation_issues)?.bind(py),
-                )?;
-                self.send_start(py)
+            RouteInvocation::Ready(None) => {
+                let invocation = self
+                    .invocation
+                    .as_ref()
+                    .ok_or_else(|| PyRuntimeError::new_err("request invocation state was lost"))?;
+                if !invocation.failures.is_empty() {
+                    self.response_status = 422;
+                    self.response_body = json_bytes(
+                        py,
+                        validation_response_body(py, &invocation.failures)?.bind(py),
+                    )?;
+                    self.send_start(py)
+                } else {
+                    Err(PyRuntimeError::new_err(
+                        "request invocation completed without a callable result or validation failure",
+                    ))
+                }
             }
-            Ok(None) => Err(PyRuntimeError::new_err(
-                "request invocation completed without a callable result or validation failure",
-            )),
-            Err(error) => Err(error),
         }
+    }
+
+    fn dependency_resumed(
+        &mut self,
+        py: Python<'_>,
+        cache_key: usize,
+        value: Py<PyAny>,
+    ) -> PyResult<MachineAction> {
+        let invocation = self
+            .invocation
+            .as_mut()
+            .ok_or_else(|| PyRuntimeError::new_err("request invocation state was lost"))?;
+        invocation.dependency_cache.insert(cache_key, value);
+        invocation.prepared_dependency_overrides.insert(cache_key);
+        self.invoke_route(py)
     }
 
     fn finish_endpoint(&mut self, py: Python<'_>, result: Py<PyAny>) -> PyResult<MachineAction> {
@@ -1899,6 +2119,9 @@ impl AwaitableStateMachine for FastApiCall {
                 Some(PendingAction::LifespanStartupSend) => self.receive_lifespan(py),
                 Some(PendingAction::LifespanShutdownSend) => Ok(MachineAction::Complete(py.None())),
                 Some(PendingAction::Endpoint) => self.finish_endpoint(py, value),
+                Some(PendingAction::Dependency { cache_key }) => {
+                    self.dependency_resumed(py, cache_key, value)
+                }
                 Some(PendingAction::ReturnedResponse) => Ok(MachineAction::Complete(py.None())),
                 Some(PendingAction::SendStart) => self.send_body(py),
                 Some(PendingAction::SendBody) => Ok(MachineAction::Complete(py.None())),
