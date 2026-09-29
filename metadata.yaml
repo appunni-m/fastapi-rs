@@ -384,6 +384,10 @@ reviewed_api_contract_overlay:
         - {path: docs_src/dependency_testing/tutorial001_py310.py}
         - {path: tests/test_tutorial/test_metadata/test_tutorial001.py, symbol: test_openapi_schema}
         - {path: docs_src/metadata/tutorial001_py310.py}
+        - {path: fastapi/openapi/utils.py, symbol: get_openapi}
+        - {path: fastapi/applications.py, symbol: openapi}
+        - {path: tests/test_application.py, symbol: test_openapi_schema}
+        - {path: tests/main.py}
       feature_ids: [app-routing, dependency-security, openapi-docs]
       observation_selectors: [http.status, http.body.bytes, openapi.document]
       supported_slice: >-
@@ -397,6 +401,9 @@ reviewed_api_contract_overlay:
         tutorial's non-empty `summary`, `description`, and
         `terms_of_service`, plus truthy `contact` and `license_info`, in
         OpenAPI info through `metadata-summary-description-upstream`.
+        That workflow also verifies a truthy constructor-provided
+        `openapi_external_docs` mapping at `/externalDocs`; empty, omitted, and
+        invalid values are not part of this slice.
         Other constructor options and override cache behavior beyond the
         reviewed Depends slice remain outside this reviewed slice.
     fastapi.applications.FastAPI.__call__:

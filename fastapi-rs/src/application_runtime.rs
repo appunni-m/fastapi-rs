@@ -160,6 +160,7 @@ pub(crate) struct PyFastApi {
     terms_of_service: Option<String>,
     contact: Option<Py<PyAny>>,
     license_info: Option<Py<PyAny>>,
+    openapi_external_docs: Option<Py<PyAny>>,
     dependency_overrides: Py<PyDict>,
     router: FastApiOperationRouter,
     routes: Vec<FastApiRoute>,
@@ -168,7 +169,7 @@ pub(crate) struct PyFastApi {
 #[pymethods]
 impl PyFastApi {
     #[new]
-    #[pyo3(signature = (*, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", terms_of_service = None, contact = None, license_info = None))]
+    #[pyo3(signature = (*, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", terms_of_service = None, contact = None, license_info = None, openapi_external_docs = None))]
     // lint-exception: PyO3 needs one Rust argument per Python constructor keyword.
     #[allow(
         clippy::too_many_arguments,
@@ -184,6 +185,7 @@ impl PyFastApi {
         terms_of_service: Option<String>,
         contact: Option<Py<PyAny>>,
         license_info: Option<Py<PyAny>>,
+        openapi_external_docs: Option<Py<PyAny>>,
     ) -> Self {
         Self {
             title: title.to_owned(),
@@ -194,6 +196,7 @@ impl PyFastApi {
             terms_of_service,
             contact,
             license_info,
+            openapi_external_docs,
             dependency_overrides: PyDict::new(py).unbind(),
             router: FastApiOperationRouter::new(),
             routes: Vec::new(),
@@ -596,6 +599,7 @@ impl PyFastApi {
                 terms_of_service: self.terms_of_service.as_deref(),
                 contact: self.contact.as_ref(),
                 license_info: self.license_info.as_ref(),
+                openapi_external_docs: self.openapi_external_docs.as_ref(),
                 version: &self.version,
             },
             &operations,

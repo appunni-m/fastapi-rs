@@ -38,6 +38,7 @@ pub(crate) struct OpenApiInfo<'a> {
     pub(crate) terms_of_service: Option<&'a str>,
     pub(crate) contact: Option<&'a Py<PyAny>>,
     pub(crate) license_info: Option<&'a Py<PyAny>>,
+    pub(crate) openapi_external_docs: Option<&'a Py<PyAny>>,
     pub(crate) version: &'a str,
 }
 
@@ -186,6 +187,12 @@ pub(crate) fn openapi_document(
     info.set_item("version", app_info.version)?;
     document.set_item("info", info)?;
     document.set_item("paths", paths)?;
+    if let Some(external_docs) = app_info.openapi_external_docs {
+        let external_docs = external_docs.bind(py);
+        if external_docs.is_truthy()? {
+            document.set_item("externalDocs", external_docs)?;
+        }
+    }
 
     let components = PyDict::new(py);
     let component_schemas = PyDict::new(py);

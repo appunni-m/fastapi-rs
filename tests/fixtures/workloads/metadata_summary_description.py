@@ -20,4 +20,8 @@ def create_app() -> FastAPI:
             "name": "MIT",
             "url": "https://opensource.org/licenses/MIT",
         },
+        openapi_external_docs={
+            "description": "External API documentation.",
+            "url": "https://docs.example.com/api-general",
+        },
     )
