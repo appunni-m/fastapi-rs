@@ -80,10 +80,10 @@ remain significant.
 
 ### Current target facade availability
 
-At FastAPI-RS revision `04cec28`, the root facade exposes 10 of the 21 source
-bindings: `APIRouter`, `Body`, `Cookie`, `Depends`, `FastAPI`, `Header`,
-`Path`, `Query`, `Response`, and `status`. The missing exports are
-`__version__`, `BackgroundTasks`, `UploadFile`, `HTTPException`,
+The root facade exposes 11 of the 21 source bindings: `__version__`,
+`APIRouter`, `Body`, `Cookie`, `Depends`, `FastAPI`, `Header`, `Path`,
+`Query`, `Response`, and `status`. The missing exports are
+`BackgroundTasks`, `UploadFile`, `HTTPException`,
 `WebSocketException`, `File`, `Form`, `Security`, `Request`, `WebSocket`, and
 `WebSocketDisconnect`. The generated manifest's
 `target_binding.public_python_path` records the required import spelling; it
