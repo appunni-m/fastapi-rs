@@ -848,51 +848,41 @@ impl CallablePlan {
         &self,
         context: &mut InvocationContext<'_, '_>,
     ) -> PyResult<OverridePreparation> {
-        let mut repeated_cache_key = None;
         let mut has_direct_dependency = false;
-        let mut cacheable_repeated_edges = true;
-        for parameter in &self.parameters {
-            if let ParameterSource::Dependency { plan, use_cache } = &parameter.source {
-                has_direct_dependency = true;
-                if !use_cache {
-                    cacheable_repeated_edges = false;
-                }
-                let cache_key = plan.callable.as_ptr() as usize;
-                if repeated_cache_key.is_some_and(|previous| previous != cache_key) {
-                    cacheable_repeated_edges = false;
-                }
-                repeated_cache_key = Some(cache_key);
-            }
-        }
-        let supports_async_override = has_direct_dependency && cacheable_repeated_edges;
+        let mut every_edge_uses_cache = true;
+        let mut every_edge_has_async_override = true;
+        let mut has_async_override = false;
         let mut async_overrides = Vec::new();
 
         for parameter in &self.parameters {
-            let ParameterSource::Dependency { plan, .. } = &parameter.source else {
+            let ParameterSource::Dependency { plan, use_cache } = &parameter.source else {
                 continue;
             };
+            has_direct_dependency = true;
+            every_edge_uses_cache &= *use_cache;
+
             let cache_key = plan.callable.as_ptr() as usize;
             let original_callable = plan.callable.bind(context.py);
             let Some(replacement) = context.dependency_overrides.get_item(original_callable)?
             else {
+                every_edge_has_async_override = false;
                 continue;
             };
             if replacement.is(original_callable) {
+                every_edge_has_async_override = false;
                 continue;
             }
             match dependency_override_callable(context.py, &replacement)? {
-                DependencyOverrideCallable::Sync => continue,
+                DependencyOverrideCallable::Sync => {
+                    every_edge_has_async_override = false;
+                    continue;
+                }
                 DependencyOverrideCallable::AsyncCallableInstance => {
                     return Err(PyNotImplementedError::new_err(
                         "async callable-instance dependency overrides are not supported",
                     ));
                 }
-                DependencyOverrideCallable::CoroutineFunction if !supports_async_override => {
-                    return Err(PyNotImplementedError::new_err(
-                        "async dependency overrides currently support only repeated cached direct endpoint edges",
-                    ));
-                }
-                DependencyOverrideCallable::CoroutineFunction => {}
+                DependencyOverrideCallable::CoroutineFunction => has_async_override = true,
             }
             async_overrides.push((
                 cache_key,
@@ -901,16 +891,29 @@ impl CallablePlan {
             ));
         }
 
-        if !supports_async_override || async_overrides.is_empty() {
+        if !has_async_override {
             return Ok(OverridePreparation::Ready);
         }
 
+        if !has_direct_dependency
+            || !every_edge_uses_cache
+            || !every_edge_has_async_override
+            || matches!(
+                dependency_override_callable(context.py, self.callable.bind(context.py))?,
+                DependencyOverrideCallable::CoroutineFunction
+                    | DependencyOverrideCallable::AsyncCallableInstance
+            )
+        {
+            return Err(PyNotImplementedError::new_err(
+                "async dependency overrides require cached direct endpoint edges replaced by flat coroutine functions on a synchronous endpoint",
+            ));
+        }
+
+        // Validate the complete override graph before invoking any replacement. This
+        // keeps unsupported mixed or nested graphs from passing coroutine objects to
+        // the endpoint or performing earlier replacement work before rejection.
+        let mut replacement_plans = Vec::with_capacity(async_overrides.len());
         for (cache_key, replacement, path_parameters) in async_overrides {
-            if context.prepared_dependency_overrides.contains(&cache_key)
-                || context.dependency_cache.contains_key(&cache_key)
-            {
-                continue;
-            }
             let replacement_plan = CallablePlan::build(context.py, replacement, &path_parameters)?;
             if replacement_plan
                 .parameters
@@ -921,7 +924,15 @@ impl CallablePlan {
                     "nested dependency override replacements are not supported",
                 ));
             }
+            replacement_plans.push((cache_key, replacement_plan));
+        }
 
+        for (cache_key, replacement_plan) in replacement_plans {
+            if context.prepared_dependency_overrides.contains(&cache_key)
+                || context.dependency_cache.contains_key(&cache_key)
+            {
+                continue;
+            }
             let initial_failure_count = context.failures.len();
             let Some(value) = replacement_plan.invoke(context, Some(true), Some(cache_key))? else {
                 if context.failures.len() != initial_failure_count {

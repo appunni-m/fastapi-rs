@@ -587,20 +587,26 @@ reviewed_api_contract_overlay:
         introduces exactly one required scalar query field `k`: omitting it
         produces 422 required-query validation, while `?k=bar` supplies the
         value and succeeds. Newly introduced body, header, cookie, or path
-        fields remain unsupported. A flat Python coroutine-function
-        app-level replacement with no nested dependencies is also supported
-        when all direct dependency edges use default caching and refer to the
-        same original callable. Rust awaits the replacement through its ASGI
-        continuation, then caches the resolved value under that original
-        callable for the request; a later request resolves it again. The
-        input-only fixture exercises two repeated edges and two requests:
+        fields remain unsupported. Flat, no-input Python coroutine-function
+        app-level replacements with no nested dependencies are also supported
+        when every direct endpoint dependency edge uses default caching and is
+        replaced by a coroutine function. The endpoint must be synchronous.
+        Rust awaits replacements sequentially in declaration order, then caches
+        each resolved value under the original callable for the request;
+        repeated edges share that value, distinct original callables keep
+        separate values, and a later request resolves them again. Input-only
+        fixtures exercise repeated edges with one original callable and four
+        edges across two originals, each over two requests:
         tests/fixtures/input-recipes/parity/dependency-override-async-cache-request-local.yaml,
-        case fastapi.dependencies.override-async-cache-request-local. Async
-        replacements with nested dependencies, async callable instances,
-        mixed direct dependency keys, `use_cache=False`, async generators, and
-        generator dependencies remain outside this reviewed slice. None-based
-        dependency inference, Security scopes, request/function scopes, and the
-        rest of the Depends constructor contract also remain unsupported.
+        case fastapi.dependencies.override-async-cache-request-local, and
+        tests/fixtures/input-recipes/parity/dependency-override-async-two-keys-request-local.yaml,
+        case fastapi.dependencies.override-async-two-keys-request-local. Mixed
+        synchronous, unoverridden, or uncached direct edges; nested override
+        dependencies; async endpoints; async callable instances; `use_cache=False`;
+        async generators; and generator dependencies remain outside this
+        reviewed slice. None-based dependency inference, Security scopes,
+        request/function scopes, and the rest of the Depends constructor
+        contract also remain unsupported.
     fastapi.exceptions.RequestValidationError:
       rust_binding: fastapi-rs/src/errors.rs::RequestValidationError
       source_evidence:

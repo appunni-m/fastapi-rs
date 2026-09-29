@@ -1,0 +1,61 @@
+# Pinned FastAPI source oracle: ../fastapi is tag 0.141.1 at
+# 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f. In
+# fastapi/dependencies/utils.py, solve_dependencies iterates dependency edges
+# in order and awaits each recursive solve at lines 619-651; it maps each
+# original callable through app.dependency_overrides and rebuilds the
+# dependant at lines 623-638; it checks use_cache at lines 656-661, awaits
+# coroutine overrides at lines 673-674, and stores results at lines 679-680.
+# fastapi/dependencies/models.py:82-96 includes the callable in each cache
+# key. fastapi/params.py:746-748 sets Depends.use_cache=true by default. The
+# route repeats each of two distinct direct dependencies, exposing
+# one cache hit per key in each request. The same app serves a second request
+# so the counters and ordered resolution show that cached values are request
+# local. Both replacement callables are flat async functions with no inputs
+# or nested dependencies and each suspends at asyncio.sleep(0).
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/dependency_override_async_two_keys_request_local.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.dependencies.override-async-two-keys-request-local
+  actions:
+  - action_id: first-request
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /override-async-two-keys
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: second-request
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /override-async-two-keys
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_dependency_cache.py, kind: upstream_test}
+  - {path: tests/test_dependency_overrides.py, kind: upstream_test}
