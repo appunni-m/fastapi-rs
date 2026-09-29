@@ -137,7 +137,7 @@ parity-inputs: ## Materialize ignored JSON workflows from input-only YAML recipe
 	$(PYTHON) scripts/build_parity_inputs.py
 
 parity-validate: parity-inputs ## Validate workflows, source atlas, fixture mappings, and pinned source references
-	$(PYTHON) -m scripts.parity.cli validate
+	$(PYTHON) -m scripts.parity.cli validate --input "$(PARITY_INPUT)"
 
 parity-index-update: parity-inputs ## Rebuild source mappings for current fixture workflows
 	$(PYTHON) -m scripts.build_materialized_input_index
@@ -156,7 +156,7 @@ parity-target: parity-inputs ## Execute PARITY_INPUT against the isolated FastAP
 	$(PYTHON) -m scripts.parity.cli target --input "$(PARITY_INPUT)" --python "$(TARGET_PYTHON)" --starlette-rs-source "$(STARLETTE_RS_SOURCE)"
 
 parity-compare: ## Compare live source/target result artifacts exactly
-	$(PYTHON) -m scripts.parity.cli compare --source-result "$(SOURCE_RESULT)" --target-result "$(TARGET_RESULT)"
+	$(PYTHON) -m scripts.parity.cli compare --input "$(PARITY_INPUT)" --source-result "$(SOURCE_RESULT)" --target-result "$(TARGET_RESULT)"
 
 parity-api-validate: parity-inputs ## Validate a direct public Python API workflow
 	$(PYTHON) -m scripts.parity.cli api-validate --input "$(PARITY_API_INPUT)"

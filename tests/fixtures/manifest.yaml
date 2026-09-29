@@ -123,7 +123,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@2
-    sha256: 6377057109c3d3459ba4e9995307763c3c8fa9b6849212c3ef4f2d631a64125a
+    sha256: 8c64bd7ccb752d8d6132c7f78f3bde4733d952388e0edcb6b0a43c909c3016c1
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -152,7 +152,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 0a31698f42cfe9790d3f049c2fe27cf7fd32efdf58717dd481a6e30331bad50b
+    sha256: 9dbf0206234e2755d3854f2d058cd023a081762daf64d91aa632d8d7ddb378c8
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 554
@@ -189,14 +189,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@1
-    sha256: 2abc4cb54d09572affa738b10842c1166da62e4d4e9b244d056ad0e70ed7a5de
+    sha256: 3fb97c806e5917cd79229dceac9971b04fdccb40b496e1cc357d8136bb41f165
     schema_path: tests/fixtures/schemas/materialized-input-index.schema.json
     schema_sha256: 467200b835dfd99ab16dfbd4ca4507145e070c73aa55d4425fd78e11141c3e86
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 388
-      cases: 1656
-      partial_source_mappings: 894
+      workflows: 389
+      cases: 1657
+      partial_source_mappings: 896
 
 contract_metadata:
   aliases:
@@ -1812,9 +1812,15 @@ api_surface_contract:
       fixture_id: null
       fixture_design_ref: null
       observation_selectors: []
-    feature_ids: []
-    observation_selectors: []
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    feature_ids:
+    - python-data-encoding
+    - response-serialization
+    observation_selectors:
+    - asgi.send.message_types
+    - http.body.bytes
+    - http.headers.ordered
+    - http.status
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.applications.FastAPI.__call__
@@ -1824,7 +1830,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/187
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/application_runtime.rs::FastApiCall::finish_endpoint
   - id: fastapi.applications.FastAPI.__init__
     kind: protocol_method
     source_candidate_ref: /api_candidates/188

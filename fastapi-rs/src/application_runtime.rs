@@ -7,6 +7,7 @@ use pyo3::types::{PyBytes, PyDict, PyList, PyModule, PyTuple};
 use crate::awaitable::{
     AwaitableStateMachine, MachineAction, MachineResume, into_python_awaitable,
 };
+use crate::encoding::jsonable_encoder_default;
 use crate::openapi::{OpenApiOperation, OpenApiParameter, openapi_document};
 use crate::{
     FastApiInputLocation, FastApiInputParameter, FastApiOperationMatch, FastApiOperationRouter,
@@ -1135,7 +1136,7 @@ impl FastApiCall {
             kwargs.set_item("mode", "json")?;
             adapter.call_method("dump_python", (validated,), Some(&kwargs))?
         } else {
-            result.bind(py).clone()
+            jsonable_encoder_default(py, result.bind(py))?
         };
         self.response_status = route.status_code;
         self.response_body = json_bytes(py, &response_value)?;

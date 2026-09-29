@@ -1728,6 +1728,18 @@
       ]
     },
     {
+      "id": "jsonable-encoder-asgi-response",
+      "input_path": "tests/fixtures/inputs/parity/jsonable-encoder-asgi-response.json",
+      "input_sha256": "7efe55143ecf00342b3944f29822c2b1030850a14266089b325f192a47b74d98",
+      "recipe_path": "tests/fixtures/input-recipes/parity/jsonable-encoder-asgi-response.yaml",
+      "recipe_sha256": "3763b8c140a313663521953187b7a722c2da13dd8096eeebf4ad8c9213abac6f",
+      "workload_path": "tests/fixtures/workloads/jsonable_encoder_asgi_response.py",
+      "workload_sha256": "7ff6c7ab6f1372fa6cb363734055968489b62f3a30d5dc85b42f728cd01768bf",
+      "case_ids": [
+        "fastapi.response-serialization.no-response-model-date"
+      ]
+    },
+    {
       "id": "jsonable-encoder-atlas-wave",
       "input_path": "tests/fixtures/inputs/parity/jsonable-encoder-atlas-wave.json",
       "input_sha256": "e3d26004b8868ec820fbbb3b0b9f1cc968837a6878cba2b49433c53e5b2bca6a",
@@ -10436,6 +10448,35 @@
       ],
       "observation_selectors": [
         "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_jsonable_encoder.py",
+      "fixture_id": "fastapi.test.test-jsonable-encoder",
+      "workflow_id": "jsonable-encoder-asgi-response",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.response-serialization.no-response-model-date"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_serialize_response_dataclass.py",
+      "fixture_id": "fastapi.test.test-serialize-response-dataclass",
+      "workflow_id": "jsonable-encoder-asgi-response",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.response-serialization.no-response-model-date"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.headers.ordered",
         "http.status"
       ]
     },

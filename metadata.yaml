@@ -274,6 +274,18 @@ reviewed_api_contract_overlay:
         - {path: fastapi/encoders.py, symbol: jsonable_encoder}
       feature_ids: [python-data-encoding]
       observation_selectors: [python.attribute_value, python.signature, python.call_outcome]
+    fastapi.applications.FastAPI.__call__:
+      rust_binding: fastapi-rs/src/application_runtime.rs::FastApiCall::finish_endpoint
+      source_evidence:
+        - {path: fastapi/applications.py, symbol: __call__}
+        - {path: fastapi/routing.py, symbol: serialize_response}
+        - {path: fastapi/encoders.py, symbol: jsonable_encoder}
+      feature_ids: [response-serialization, python-data-encoding]
+      observation_selectors:
+        - http.status
+        - http.headers.ordered
+        - http.body.bytes
+        - asgi.send.message_types
   warning_classification_reviews:
     fastapi.exceptions.FastAPIDeprecationWarning:
       classification: uncertain

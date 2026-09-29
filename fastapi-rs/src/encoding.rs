@@ -102,6 +102,24 @@ pub(crate) fn jsonable_encoder<'py>(
     encode_value(py, obj, options)
 }
 
+/// Convert a route result with the same defaults as `jsonable_encoder`.
+pub(crate) fn jsonable_encoder_default<'py>(
+    py: Python<'py>,
+    obj: &Bound<'py, PyAny>,
+) -> PyResult<Bound<'py, PyAny>> {
+    let options = JsonableEncoderOptions::new(JsonableEncoderInput {
+        include: None,
+        exclude: None,
+        by_alias: true,
+        exclude_unset: false,
+        exclude_defaults: false,
+        exclude_none: false,
+        custom_encoder: None,
+        sqlalchemy_safe: true,
+    });
+    jsonable_encoder(py, obj, &options)
+}
+
 fn normalize_filter<'py>(
     py: Python<'py>,
     filter: Option<&Bound<'py, PyAny>>,
