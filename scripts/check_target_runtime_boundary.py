@@ -34,6 +34,7 @@ PUBLIC_FASTAPI_EXPORTS = [
     "Path",
     "Query",
     "Response",
+    "__version__",
     "status",
 ]
 FORBIDDEN_CONTROL_FLOW = tuple(
@@ -316,7 +317,7 @@ def check_python_facade_pass_through() -> None:
 
 
 def check_public_fastapi_facade() -> None:
-    """Require the public package to re-export only the initial native symbols."""
+    """Require the public package to re-export only the native API symbols."""
     path = PYTHON_PACKAGE_ROOT / "fastapi" / "__init__.py"
     if not path.is_file():
         raise SystemExit(f"public FastAPI facade source is missing: {path}")

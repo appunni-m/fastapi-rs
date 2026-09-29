@@ -8,6 +8,7 @@ from fastapi_rs._core import (
     Path,
     Query,
     Response,
+    __version__,
     status,
 )
 
@@ -21,5 +22,6 @@ __all__ = [
     "Path",
     "Query",
     "Response",
+    "__version__",
     "status",
 ]
