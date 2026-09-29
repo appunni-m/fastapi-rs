@@ -233,42 +233,57 @@ reviewed_api_contract_overlay:
       source_evidence:
         - {path: fastapi/applications.py, symbol: options}
         - {path: fastapi/routing.py, symbol: options}
+        - {path: fastapi/openapi/utils.py, symbol: get_openapi_operation_metadata}
         - {path: tests/test_extra_routes.py, symbol: test_options}
-      feature_ids: [app-routing]
-      observation_selectors: [http.status, http.body.bytes]
+        - {path: tests/test_tutorial/test_path_operation_advanced_configurations/test_tutorial004.py, symbol: test_openapi_schema}
+        - {path: docs_src/path_operation_advanced_configuration/tutorial004_py310.py}
+      feature_ids: [app-routing, openapi-docs]
+      observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths]
       supported_slice: >-
         Partial native slice: registers an OPTIONS operation using the shared
         FastAPI response pipeline. include_in_schema=False keeps the route
         dispatchable while omitting it from OpenAPI. Other route decorator
-        options and customization hooks remain outside this reviewed slice.
+        options and customization hooks remain outside this reviewed slice. An
+        explicit non-empty `summary` is emitted in OpenAPI, as sampled by
+        `path-operation-other-verb-summaries-isolated`.
     fastapi.applications.FastAPI.trace:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::trace
       source_evidence:
         - {path: fastapi/applications.py, symbol: trace}
         - {path: fastapi/routing.py, symbol: trace}
+        - {path: fastapi/openapi/utils.py, symbol: get_openapi_operation_metadata}
         - {path: tests/test_extra_routes.py, symbol: test_trace}
-      feature_ids: [app-routing]
-      observation_selectors: [http.status, http.body.bytes]
+        - {path: tests/test_tutorial/test_path_operation_advanced_configurations/test_tutorial004.py, symbol: test_openapi_schema}
+        - {path: docs_src/path_operation_advanced_configuration/tutorial004_py310.py}
+      feature_ids: [app-routing, openapi-docs]
+      observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths]
       supported_slice: >-
         Partial native slice: registers a TRACE operation using the shared
         FastAPI response pipeline. include_in_schema=False keeps the route
         dispatchable while omitting it from OpenAPI. Other route decorator
-        options and customization hooks remain outside this reviewed slice.
+        options and customization hooks remain outside this reviewed slice. An
+        explicit non-empty `summary` is emitted in OpenAPI, as sampled by
+        `path-operation-other-verb-summaries-isolated`.
     fastapi.applications.FastAPI.head:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::head
       source_evidence:
         - {path: fastapi/applications.py, symbol: head}
         - {path: fastapi/routing.py, symbol: head}
+        - {path: fastapi/openapi/utils.py, symbol: get_openapi_operation_metadata}
         - {path: tests/test_extra_routes.py, symbol: test_head}
         - {path: tests/test_extra_routes.py, symbol: test_get_api_route}
-      feature_ids: [app-routing]
-      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+        - {path: tests/test_tutorial/test_path_operation_advanced_configurations/test_tutorial004.py, symbol: test_openapi_schema}
+        - {path: docs_src/path_operation_advanced_configuration/tutorial004_py310.py}
+      feature_ids: [app-routing, openapi-docs]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.paths]
       supported_slice: >-
         Partial native slice: registers exact HEAD operations, lets an explicit
         HEAD route win after a same-path GET route, and does not treat a GET-only
         route as HEAD. include_in_schema=False keeps the route dispatchable while
         omitting it from OpenAPI. Other route decorator options and customization
-        hooks remain outside this reviewed slice.
+        hooks remain outside this reviewed slice. An explicit non-empty
+        `summary` is emitted in OpenAPI, as sampled by
+        `path-operation-other-verb-summaries-isolated`.
     fastapi.Body:
       rust_binding: fastapi-rs/src/parameters.rs::body
       source_evidence:
@@ -547,41 +562,56 @@ reviewed_api_contract_overlay:
         - {path: fastapi/applications.py, symbol: put}
         - {path: fastapi/routing.py, symbol: put}
         - {path: fastapi/routing.py, symbol: api_route}
+        - {path: fastapi/openapi/utils.py, symbol: get_openapi_operation_metadata}
+        - {path: tests/test_tutorial/test_path_operation_advanced_configurations/test_tutorial004.py, symbol: test_openapi_schema}
+        - {path: docs_src/path_operation_advanced_configuration/tutorial004_py310.py}
       feature_ids: [app-routing, response-serialization, openapi-docs]
       observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths]
       supported_slice: >-
         Partial native slice: registers a PUT operation using the shared FastAPI
         response pipeline. include_in_schema=False keeps the route dispatchable
         while omitting it from OpenAPI. Other decorator options and customization
-        hooks remain outside this reviewed slice.
+        hooks remain outside this reviewed slice. An explicit non-empty
+        `summary` is emitted in OpenAPI, as sampled by
+        `path-operation-other-verb-summaries-isolated`.
     fastapi.applications.FastAPI.delete:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::delete
       source_evidence:
         - {path: fastapi/applications.py, symbol: delete}
         - {path: fastapi/routing.py, symbol: delete}
         - {path: fastapi/routing.py, symbol: api_route}
+        - {path: fastapi/openapi/utils.py, symbol: get_openapi_operation_metadata}
         - {path: tests/test_extra_routes.py, symbol: test_delete}
-      feature_ids: [app-routing]
-      observation_selectors: [http.status, http.body.bytes]
+        - {path: tests/test_tutorial/test_path_operation_advanced_configurations/test_tutorial004.py, symbol: test_openapi_schema}
+        - {path: docs_src/path_operation_advanced_configuration/tutorial004_py310.py}
+      feature_ids: [app-routing, openapi-docs]
+      observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths]
       supported_slice: >-
         Partial native slice: registers a DELETE operation using the shared FastAPI
         response pipeline. include_in_schema=False keeps the route dispatchable
         while omitting it from OpenAPI. Other decorator options and customization
-        hooks remain outside this reviewed slice.
+        hooks remain outside this reviewed slice. An explicit non-empty
+        `summary` is emitted in OpenAPI, as sampled by
+        `path-operation-other-verb-summaries-isolated`.
     fastapi.applications.FastAPI.patch:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::patch
       source_evidence:
         - {path: fastapi/applications.py, symbol: patch}
         - {path: fastapi/routing.py, symbol: patch}
         - {path: fastapi/routing.py, symbol: api_route}
+        - {path: fastapi/openapi/utils.py, symbol: get_openapi_operation_metadata}
         - {path: tests/test_tutorial/test_body_updates/test_tutorial002.py, symbol: test_patch_name}
-      feature_ids: [app-routing, request-validation, response-serialization]
-      observation_selectors: [http.status, http.body.bytes]
+        - {path: tests/test_tutorial/test_path_operation_advanced_configurations/test_tutorial004.py, symbol: test_openapi_schema}
+        - {path: docs_src/path_operation_advanced_configuration/tutorial004_py310.py}
+      feature_ids: [app-routing, openapi-docs, request-validation, response-serialization]
+      observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths]
       supported_slice: >-
         Partial native slice: registers a PATCH operation using the shared FastAPI
         response pipeline. include_in_schema=False keeps the route dispatchable
         while omitting it from OpenAPI. Other decorator options and customization
-        hooks remain outside this reviewed slice.
+        hooks remain outside this reviewed slice. An explicit non-empty
+        `summary` is emitted in OpenAPI, as sampled by
+        `path-operation-other-verb-summaries-isolated`.
     fastapi.Cookie:
       rust_binding: fastapi-rs/src/parameters.rs::cookie
       source_evidence:
