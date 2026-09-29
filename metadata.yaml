@@ -502,12 +502,15 @@ reviewed_api_contract_overlay:
         - {path: docs/en/docs/reference/apirouter.md}
         - {path: docs/en/docs/tutorial/bigger-applications.md}
         - {path: docs_src/bigger_applications/app_an_py310/main.py}
+        - {path: tests/test_router_include_context.py, symbol: test_router_and_include_prefix_path_params_reach_endpoint_and_openapi}
+        - {path: tests/test_router_include_context.py, symbol: test_repeated_deep_inclusions_handle_all_concrete_paths}
       feature_ids: [app-routing]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
       supported_slice: >-
-        Partial native router: construction with the default prefix, GET route
-        decorators, and inclusion into FastAPI with a path prefix are covered
-        by router-composition-upstream. Router tags,
+        Partial native router: default and non-empty path prefixes, GET route
+        decorators, and nested inclusion with repeated prefixes are covered by
+        router-composition-upstream and router-prefix-and-nested-composition-upstream.
+        Router tags,
         router-level dependencies, responses, callbacks, lifespan, WebSockets,
         and the other APIRouter constructor or inclusion options remain outside
         this slice.
@@ -516,6 +519,8 @@ reviewed_api_contract_overlay:
       source_evidence:
         - {path: fastapi/applications.py, symbol: include_router}
         - {path: fastapi/routing.py, symbol: include_router}
+        - {path: tests/test_router_include_context.py, symbol: test_router_and_include_prefix_path_params_reach_endpoint_and_openapi}
+        - {path: tests/test_router_include_context.py, symbol: test_repeated_deep_inclusions_handle_all_concrete_paths}
         - {path: tests/test_tutorial/test_bigger_applications/test_main.py, symbol: test_users_token_jessica}
         - {path: tests/test_tutorial/test_bigger_applications/test_main.py, symbol: test_users_with_no_token}
         - {path: tests/test_tutorial/test_bigger_applications/test_main.py, symbol: test_users_foo_token_jessica}
@@ -525,9 +530,11 @@ reviewed_api_contract_overlay:
       feature_ids: [app-routing, request-validation]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
       supported_slice: >-
-        Includes routes registered on APIRouter, applies the optional route
-        prefix, and preserves their endpoint dependency plans for the sampled
-        users router. Tags, inclusion-level dependencies, responses, callbacks,
+        Includes routes registered on APIRouter, combines route, nested-router,
+        and inclusion prefixes, and preserves endpoint dependency plans. The
+        reviewed fixtures cover path parameters, repeated nested inclusions,
+        and the users router's scalar query dependency. Tags, inclusion-level
+        dependencies, responses, callbacks,
         deprecation, schema policy, custom response classes, and ID policies
         remain outside this slice.
     fastapi.routing.APIRouter.include_router:
@@ -535,35 +542,39 @@ reviewed_api_contract_overlay:
       source_evidence:
         - {path: fastapi/routing.py, symbol: include_router}
         - {path: fastapi/routing.py, symbol: APIRouter}
+        - {path: tests/test_router_include_context.py, symbol: test_repeated_deep_inclusions_handle_all_concrete_paths}
       feature_ids: [app-routing]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
       supported_slice: >-
-        The native binding flattens nested routes with their router and include
-        prefixes. A live source/target fixture for nested inclusion is pending,
-        so this records implementation ownership rather than a compatibility
-        claim. Router-level options remain outside the sampled direct-include
-        slice.
+        Nested route sets can be included repeatedly with distinct prefixes;
+        the reviewed input observes four concrete routes after two nested
+        inclusions and two app-level inclusions. Router-level options remain
+        outside this slice.
     fastapi.routing.APIRouter.__init__:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::new
       source_evidence:
         - {path: fastapi/routing.py, symbol: APIRouter}
+        - {path: tests/test_router_include_context.py, symbol: test_router_and_include_prefix_path_params_reach_endpoint_and_openapi}
       feature_ids: [app-routing]
       supported_slice: >-
         The native constructor accepts the default or a keyword-only prefix.
-        The existing route-composition fixture covers the default prefix;
-        behavior for a non-empty router prefix is not yet sampled.
+        A non-empty `/tenants/{tenant_id}` prefix combines with an app-level
+        `/{version}` prefix and delivers all three path parameters to the
+        endpoint in router-prefix-and-nested-composition-upstream.
     fastapi.routing.APIRouter.get:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::__getattr__
       source_evidence:
         - {path: fastapi/routing.py, symbol: APIRouter}
         - {path: fastapi/routing.py, symbol: get}
         - {path: tests/test_tutorial/test_bigger_applications/test_main.py, symbol: test_users_token_jessica}
+        - {path: tests/test_router_include_context.py, symbol: test_router_and_include_prefix_path_params_reach_endpoint_and_openapi}
         - {path: docs_src/bigger_applications/app_an_py310/routers/users.py, symbol: read_users}
       feature_ids: [app-routing, request-validation]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
       supported_slice: >-
         Registers a GET endpoint on a router for inclusion, including the
-        sampled scalar query dependency and path parameter behavior.
+        sampled scalar query dependency, path parameter behavior, and route
+        parameters contributed by router and app inclusion prefixes.
     fastapi.routing.APIRouter.post:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::__getattr__
       source_evidence:

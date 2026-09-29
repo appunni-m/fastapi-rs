@@ -5127,6 +5127,19 @@
       ]
     },
     {
+      "id": "router-prefix-and-nested-composition-upstream",
+      "input_path": "tests/fixtures/inputs/parity/router-prefix-and-nested-composition-upstream.json",
+      "input_sha256": "3556dd45f1b10958fde2e1132af3990cd15640fe6cd9bd6eb8901591687cb38e",
+      "recipe_path": "tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml",
+      "recipe_sha256": "77c699cb0cde1b74c6ff6ca2321b4ccf78b4a86cae2c4229737de59f6658feb2",
+      "workload_path": "tests/fixtures/workloads/router_prefix_and_nested_composition_upstream.py",
+      "workload_sha256": "fd5f0ad38e8bd9ea69e14c1d96e551228b23562d04f6225a1365ba6bf2a2ee0f",
+      "case_ids": [
+        "fastapi.test.test-router-include-context.test-router-and-include-prefix-path-params-native-prefix-slice",
+        "fastapi.test.test-router-include-context.test-repeated-deep-inclusions-handle-all-concrete-paths"
+      ]
+    },
+    {
       "id": "routing-surface",
       "input_path": "tests/fixtures/inputs/parity/routing-surface.json",
       "input_sha256": "9dd6591f848a713802cb0d1d77768778cb53fa2fb95a437a50a5c10292f50a73",
@@ -19081,6 +19094,22 @@
         "fastapi.routing.include-router.nested-include-defaults",
         "fastapi.routing.include-router.root-defaults",
         "fastapi.routing.include-router.router-default-response-class"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_router_include_context.py",
+      "fixture_id": "fastapi.test.test-router-include-context",
+      "workflow_id": "router-prefix-and-nested-composition-upstream",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.test.test-router-include-context.test-repeated-deep-inclusions-handle-all-concrete-paths",
+        "fastapi.test.test-router-include-context.test-router-and-include-prefix-path-params-native-prefix-slice"
       ],
       "observation_selectors": [
         "http.body.bytes",

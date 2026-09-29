@@ -1,0 +1,116 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/router_prefix_and_nested_composition_upstream.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+  - case_id: fastapi.test.test-router-include-context.test-router-and-include-prefix-path-params-native-prefix-slice
+    actions:
+      - action_id: tenant-item
+        kind: http_request
+        scope:
+          type: http
+          asgi: {version: '3.0', spec_version: '2.4'}
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /api/1/tenants/2/items/3
+          query_string: ''
+          root_path: ''
+          headers: [[host, testserver]]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events:
+          - {type: http.request, body: '', more_body: false}
+        observations:
+          - kind: http_response
+            selectors: [status, headers, body]
+            comparison: exact
+    source_evidence:
+      - path: tests/test_router_include_context.py
+        kind: upstream_test
+  - case_id: fastapi.test.test-router-include-context.test-repeated-deep-inclusions-handle-all-concrete-paths
+    actions:
+      - action_id: repeated-v1-a
+        kind: http_request
+        scope:
+          type: http
+          asgi: {version: '3.0', spec_version: '2.4'}
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /v1/a/items
+          query_string: ''
+          root_path: ''
+          headers: [[host, testserver]]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events:
+          - {type: http.request, body: '', more_body: false}
+        observations:
+          - kind: http_response
+            selectors: [status, headers, body]
+            comparison: exact
+      - action_id: repeated-v1-b
+        kind: http_request
+        scope:
+          type: http
+          asgi: {version: '3.0', spec_version: '2.4'}
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /v1/b/items
+          query_string: ''
+          root_path: ''
+          headers: [[host, testserver]]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events:
+          - {type: http.request, body: '', more_body: false}
+        observations:
+          - kind: http_response
+            selectors: [status, headers, body]
+            comparison: exact
+      - action_id: repeated-v2-a
+        kind: http_request
+        scope:
+          type: http
+          asgi: {version: '3.0', spec_version: '2.4'}
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /v2/a/items
+          query_string: ''
+          root_path: ''
+          headers: [[host, testserver]]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events:
+          - {type: http.request, body: '', more_body: false}
+        observations:
+          - kind: http_response
+            selectors: [status, headers, body]
+            comparison: exact
+      - action_id: repeated-v2-b
+        kind: http_request
+        scope:
+          type: http
+          asgi: {version: '3.0', spec_version: '2.4'}
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /v2/b/items
+          query_string: ''
+          root_path: ''
+          headers: [[host, testserver]]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events:
+          - {type: http.request, body: '', more_body: false}
+        observations:
+          - kind: http_response
+            selectors: [status, headers, body]
+            comparison: exact
+    source_evidence:
+      - path: tests/test_router_include_context.py
+        kind: upstream_test
