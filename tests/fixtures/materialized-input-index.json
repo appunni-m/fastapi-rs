@@ -1971,6 +1971,18 @@
       ]
     },
     {
+      "id": "metadata-summary-description-upstream",
+      "input_path": "tests/fixtures/inputs/parity/metadata-summary-description-upstream.json",
+      "input_sha256": "059ed56837dcdb3e6fcad1a23dbb147ad16940e2e7a2436d12afeff860a2f490",
+      "recipe_path": "tests/fixtures/input-recipes/parity/metadata-summary-description-upstream.yaml",
+      "recipe_sha256": "5e9a1060513532096e36cabe2055bde212a32d47f55e12b74b940782344238aa",
+      "workload_path": "tests/fixtures/workloads/metadata_summary_description.py",
+      "workload_sha256": "85425539db83b5fb82e1d6297b73dd083979b9a468ba7b4cd1102e25c5d02b78",
+      "case_ids": [
+        "fastapi.metadata.summary-description.openapi-info"
+      ]
+    },
+    {
       "id": "metadata-tutorial-items-upstream",
       "input_path": "tests/fixtures/inputs/parity/metadata-tutorial-items-upstream.json",
       "input_sha256": "2b1ad291d609d0d0fdc5f751dcdb2a47517aaecbae555524d658c84dd123812f",
@@ -11249,6 +11261,21 @@
       "observation_selectors": [
         "http.body.bytes",
         "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_metadata/test_tutorial001.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-metadata-test-tutorial001",
+      "workflow_id": "metadata-summary-description-upstream",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.metadata.summary-description.openapi-info"
+      ],
+      "observation_selectors": [
+        "docs.response.status",
+        "http.status",
+        "openapi.document"
       ]
     },
     {

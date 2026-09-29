@@ -34,6 +34,8 @@ pub(crate) struct OpenApiOperation {
 pub(crate) fn openapi_document(
     py: Python<'_>,
     title: &str,
+    summary: Option<&str>,
+    description: &str,
     version: &str,
     operations: &[OpenApiOperation],
 ) -> PyResult<Py<PyAny>> {
@@ -148,6 +150,12 @@ pub(crate) fn openapi_document(
     document.set_item("openapi", "3.1.0")?;
     let info = PyDict::new(py);
     info.set_item("title", title)?;
+    if let Some(summary) = summary.filter(|summary| !summary.is_empty()) {
+        info.set_item("summary", summary)?;
+    }
+    if !description.is_empty() {
+        info.set_item("description", description)?;
+    }
     info.set_item("version", version)?;
     document.set_item("info", info)?;
     document.set_item("paths", paths)?;

@@ -382,8 +382,10 @@ reviewed_api_contract_overlay:
           end_line: 257
         - {path: tests/test_tutorial/test_testing_dependencies/test_tutorial001.py, symbol: test_override_in_users_with_params}
         - {path: docs_src/dependency_testing/tutorial001_py310.py}
-      feature_ids: [app-routing, dependency-security]
-      observation_selectors: [http.status, http.body.bytes]
+        - {path: tests/test_tutorial/test_metadata/test_tutorial001.py, symbol: test_openapi_schema}
+        - {path: docs_src/metadata/tutorial001_py310.py}
+      feature_ids: [app-routing, dependency-security, openapi-docs]
+      observation_selectors: [http.status, http.body.bytes, openapi.document]
       supported_slice: >-
         Partial native constructor slice: the application exposes a mutable
         dependency_overrides mapping used by the reviewed synchronous and
@@ -391,7 +393,9 @@ reviewed_api_contract_overlay:
         an app-level dependency with a callable whose nested dependency
         introduces exactly one required scalar query field `k`. Missing `k`
         fails request validation; supplying `?k=bar` succeeds. The async slice
-        is constrained below.
+        is constrained below. The constructor also supports reviewed non-empty
+        `summary` and `description` values in OpenAPI info at `/info/summary`
+        and `/info/description` through `metadata-summary-description-upstream`.
         Other constructor options and override cache behavior beyond the
         reviewed Depends slice remain outside this reviewed slice.
     fastapi.applications.FastAPI.__call__:

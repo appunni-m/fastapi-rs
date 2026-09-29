@@ -90,6 +90,12 @@ _METADATA001_ITEMS = _workflow(
     ("http.status", "http.body.bytes"),
     ("items",),
 )
+_METADATA001_SUMMARY_DESCRIPTION = _workflow(
+    "tests/fixtures/input-recipes/parity/metadata-summary-description-upstream.yaml",
+    "fastapi.metadata.summary-description.openapi-info",
+    ("http.status", "openapi.document"),
+    ("openapi",),
+)
 _METADATA001_1_OPENAPI = _workflow(
     "tests/fixtures/input-recipes/parity/metadata-tutorial001-1-upstream.yaml",
     "fastapi.test.test-tutorial-test-metadata-test-tutorial001-1.test-openapi-schema",
@@ -316,8 +322,8 @@ METADATA_TUTORIAL_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                     *_OPENAPI_SOURCES,
                     *_HTTP_AND_OPENAPI_SOURCES,
                 ),
-                workflow_cases=(_GUIDE_METADATA_OPENAPI,),
-                stimulus_notes="Reuse docs-openapi-interface.yaml::fastapi.docs.openapi-interface.tutorial-metadata.openapi-metadata (openapi action; http.status and openapi.document). It observes /info, /tags, and /paths with an independently authored metadata app; the concrete values differ from this snapshot.",
+                workflow_cases=(_GUIDE_METADATA_OPENAPI, _METADATA001_SUMMARY_DESCRIPTION),
+                stimulus_notes="The docs-openapi-interface workflow observes broad metadata behavior; metadata-summary-description-upstream independently isolates non-empty app summary and description at /info/summary and /info/description.",
                 contract_gate="Partial candidate: the linked independent case checks /info, /tags, and /paths, not every field in this test's full snapshot, and uses different metadata values. FastAPI owns schema assembly; FastAPI's OpenAPI Pydantic model and Pydantic 2.13.4 encode that schema; Starlette 1.6.0 supplies JSONResponse and the generic ASGI transport.",
             ),
         },

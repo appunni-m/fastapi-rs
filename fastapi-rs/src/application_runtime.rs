@@ -149,6 +149,8 @@ struct ParameterOpenApiPlan {
 #[pyclass(name = "FastAPI", module = "fastapi_rs._core")]
 pub(crate) struct PyFastApi {
     title: String,
+    summary: Option<String>,
+    description: String,
     version: String,
     openapi_url: String,
     dependency_overrides: Py<PyDict>,
@@ -159,10 +161,19 @@ pub(crate) struct PyFastApi {
 #[pymethods]
 impl PyFastApi {
     #[new]
-    #[pyo3(signature = (*, title = "FastAPI", version = "0.1.0", openapi_url = "/openapi.json"))]
-    fn new(py: Python<'_>, title: &str, version: &str, openapi_url: &str) -> Self {
+    #[pyo3(signature = (*, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json"))]
+    fn new(
+        py: Python<'_>,
+        title: &str,
+        summary: Option<String>,
+        description: &str,
+        version: &str,
+        openapi_url: &str,
+    ) -> Self {
         Self {
             title: title.to_owned(),
+            summary,
+            description: description.to_owned(),
             version: version.to_owned(),
             openapi_url: openapi_url.to_owned(),
             dependency_overrides: PyDict::new(py).unbind(),
@@ -540,7 +551,14 @@ impl PyFastApi {
             .filter(|route| route.include_in_schema)
             .map(|route| self.openapi_operation(py, route))
             .collect::<PyResult<Vec<_>>>()?;
-        openapi_document(py, &self.title, &self.version, &operations)
+        openapi_document(
+            py,
+            &self.title,
+            self.summary.as_deref(),
+            &self.description,
+            &self.version,
+            &operations,
+        )
     }
 
     fn openapi_operation(
