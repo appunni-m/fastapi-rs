@@ -121,6 +121,30 @@ target internals to manufacture compatibility.
 
 ## Benchmark plan
 
+### First executable lane
+
+`benchmarks/workloads/first-slice-valid-asgi.yaml` defines the first runnable
+measurement. `make benchmark-first-slice` first runs the complete ten-case
+identity-checked parity gate, then measures the valid item request in three
+isolated processes: FastAPI 0.141.1 with Starlette 1.6.0, the FastAPI-RS release
+extension with the pinned Starlette-RS source, and a plain Starlette 1.6.0
+route/response control. The untimed output must match exactly across all three
+subjects before timing proceeds.
+
+This lane measures one direct ASGI application invocation. App construction,
+scope/event setup, interpreter startup, HTTP client, and network are outside
+per-request timing; the Python facade, PyO3/native dispatch, application,
+validation, response serialization, and ASGI send capture are inside. It uses
+50 warmups and 1,000 sequential samples in five rounds, retains every sample,
+and reports min/median/p95/p99/max/mean plus sequential loop throughput. The
+Starlette control is contextual and its time is never subtracted from FastAPI.
+Each artifact stores workload/input digests, fresh parity evidence, source
+revisions, Python/host identity, Cargo profile/features, and Rust/Cargo versions
+under ignored `benchmark-results/`.
+
+This is a first-slice baseline only. It does not replace the upstream TestClient
+benchmark suite or establish performance parity beyond the measured request.
+
 Start with FastAPI's own workloads in `tests/benchmarks/` and
 `tests/memory_benchmarks/` at the pinned tag. This preserves comparisons to
 FastAPI's established work while the additional workloads isolate costs that

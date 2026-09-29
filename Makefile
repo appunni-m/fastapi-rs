@@ -16,9 +16,10 @@ STARLETTE_RS_SOURCE ?= $(abspath ../starlette-rs)
 SOURCE_RESULT ?=
 TARGET_RESULT ?=
 PARITY_INPUT ?= tests/fixtures/inputs/parity/first-asgi-request.json
+BENCHMARK_WORKLOAD ?= benchmarks/workloads/first-slice-valid-asgi.yaml
 
 .DEFAULT_GOAL := help
-.PHONY: help fmt format clippy build build-rust build-python python-facade-check rust-policy-check compatibility-atlas-update api-contract-update api-contract-check metadata-check dependency-inventory-update dependency-inventory-check parity-inputs parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-target parity-api-runtime parity-validate parity-index-update parity-index-check parity-oracle parity-oracle-standard parity-target parity-compare parity-first-slice verify clean
+.PHONY: help fmt format clippy build build-rust build-python python-facade-check rust-policy-check compatibility-atlas-update api-contract-update api-contract-check metadata-check dependency-inventory-update dependency-inventory-check parity-inputs parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-target parity-api-runtime parity-validate parity-index-update parity-index-check parity-oracle parity-oracle-standard parity-target parity-compare parity-first-slice benchmark-first-slice verify clean
 
 help: ## Show common development commands
 	@printf '%s\n' \
@@ -50,6 +51,7 @@ help: ## Show common development commands
 	  '  make parity-target   Run PARITY_INPUT against the isolated FastAPI-RS target' \
 	  '  make parity-compare  Compare live source/target result artifacts exactly' \
 	  '  make parity-first-slice Run and compare the pinned first HTTP slice end to end' \
+	  '  make benchmark-first-slice Gate and measure the valid direct-ASGI request path' \
 	  '  make verify         Run formatting, lint, static contracts, and wheel build' \
 	  '  make clean          Remove Cargo outputs under target/' '' \
 	  'PYTHON defaults to the pinned 3.12 development baseline; override PYTHON, CARGO, or MATURIN as needed.'
@@ -156,6 +158,16 @@ parity-compare: ## Compare live source/target result artifacts exactly
 
 parity-first-slice: parity-validate ## Run and exactly compare the pinned first HTTP slice
 	$(PYTHON) scripts/parity/run_first_slice.py \
+	  --input "$(PARITY_INPUT)" \
+	  --fastapi-source "$(FASTAPI_SOURCE)" \
+	  --starlette-source "$(STARLETTE_SOURCE)" \
+	  --starlette-rs-source "$(STARLETTE_RS_SOURCE)" \
+	  --oracle-python "$(ORACLE_PYTHON)" \
+	  --target-python "$(TARGET_PYTHON)"
+
+benchmark-first-slice: parity-validate ## Gate and measure a valid request across FastAPI, FastAPI-RS, and Starlette
+	$(PYTHON) scripts/benchmarks/run_first_slice.py \
+	  --workload "$(BENCHMARK_WORKLOAD)" \
 	  --input "$(PARITY_INPUT)" \
 	  --fastapi-source "$(FASTAPI_SOURCE)" \
 	  --starlette-source "$(STARLETTE_SOURCE)" \

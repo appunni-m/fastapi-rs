@@ -91,6 +91,13 @@ builds the PyO3 extension in Cargo release mode and verifies that the Python
 and Rust Starlette-RS dependencies resolve to the same clean pinned checkout.
 Per-run results stay under ignored `parity-results/`.
 
+The first correctness-gated performance lane is `make benchmark-first-slice`.
+It runs the pinned ten-case parity gate, then compares one valid request through
+the FastAPI 0.141.1 oracle, release FastAPI-RS facade, and Starlette 1.6.0 plain
+route control. It measures direct ASGI dispatch without network/client startup
+and stores raw, identity-stamped samples under ignored `benchmark-results/`.
+This narrow baseline is not a full FastAPI performance claim.
+
 ## Workspace layout
 
 - `fastapi-rs/` owns Rust implementation behavior and integrates the separate
