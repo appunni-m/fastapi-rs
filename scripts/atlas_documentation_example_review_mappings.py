@@ -459,4 +459,455 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
             }
         ],
     },
+    "docs_src/query_params/tutorial002_py310.py": {
+        "rationale": (
+            "FastAPI 0.141.1 declares GET /items/{item_id} with optional q and returns q only "
+            "when it is truthy. The linked cases request the route with q absent and present, "
+            "and observe the HTTP response. This partial mapping does not cover other query "
+            "types, empty q, or broader routing behavior."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/query_params/tutorial002_py310.py",
+                "start_line": 6,
+                "end_line": 10,
+                "role": "documented optional q route and response",
+            }
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/query-params-tutorial002-upstream.yaml",
+                "case_ids": [
+                    "fastapi.query-params.tutorial002.item-without-query",
+                    "fastapi.query-params.tutorial002.item-with-query",
+                ],
+                "observation_selectors": [
+                    "http.body.bytes",
+                    "http.status",
+                ],
+            }
+        ],
+    },
+    "docs_src/query_params/tutorial003_py310.py": {
+        "rationale": (
+            "The listed requests sample the documented optional q and short parameters: q "
+            "absent, q present, and short=true, observing the HTTP responses. This partial "
+            "mapping does not claim other values, validation errors, or general query-parameter "
+            "behavior."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/query_params/tutorial003_py310.py",
+                "start_line": 6,
+                "end_line": 15,
+                "role": "documented optional q and short parameters with conditional response fields",
+            }
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/query-params-tutorial003-upstream.yaml",
+                "case_ids": [
+                    "fastapi.query-params.tutorial003.item-default-detail",
+                    "fastapi.query-params.tutorial003.item-query-detail",
+                    "fastapi.query-params.tutorial003.item-short",
+                ],
+                "observation_selectors": [
+                    "http.body.bytes",
+                    "http.status",
+                ],
+            }
+        ],
+    },
+    "docs_src/query_params/tutorial004_py310.py": {
+        "rationale": (
+            "The selected cases exercise GET /users/{user_id}/items/{item_id} with the "
+            "documented integer user_id, optional q, and short flag: defaults, q present, and "
+            "short=true. This mapping is limited to those inputs and observations."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/query_params/tutorial004_py310.py",
+                "start_line": 6,
+                "end_line": 17,
+                "role": "documented typed user path parameter and optional query parameters",
+            }
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/query-params-tutorial004-upstream.yaml",
+                "case_ids": [
+                    "fastapi.query-params.tutorial004.user-item-default-detail",
+                    "fastapi.query-params.tutorial004.user-item-query-detail",
+                    "fastapi.query-params.tutorial004.user-item-short",
+                ],
+                "observation_selectors": [
+                    "http.body.bytes",
+                    "http.status",
+                ],
+            }
+        ],
+    },
+    "docs_src/query_params/tutorial005_py310.py": {
+        "rationale": (
+            "The documented route declares needy without a default. The linked cases supply "
+            "needy and omit it, then observe the route responses. "
+            "This partial mapping covers only this required query parameter and these cases."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/query_params/tutorial005_py310.py",
+                "start_line": 6,
+                "end_line": 9,
+                "role": "documented required needy query parameter and response",
+            }
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/query-params-tutorial005-upstream.yaml",
+                "case_ids": [
+                    "fastapi.query-params.tutorial005.required-query-present",
+                    "fastapi.query-params.tutorial005.required-query-missing",
+                ],
+                "observation_selectors": [
+                    "http.body.bytes",
+                    "http.status",
+                ],
+            }
+        ],
+    },
+    "docs_src/query_params/tutorial006_py310.py": {
+        "rationale": (
+            "The selected successful request supplies the documented required needy value "
+            "while omitting skip and limit, exercising their defaults. The mixed "
+            "invalid-integers-and-missing-required-query case is not linked because that combined "
+            "error scenario is not shown by this example."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/query_params/tutorial006_py310.py",
+                "start_line": 6,
+                "end_line": 11,
+                "role": "documented required needy parameter and optional defaults",
+            }
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/query-params-tutorial006-upstream.yaml",
+                "case_ids": [
+                    "fastapi.query-params.tutorial006.required-query-present",
+                ],
+                "observation_selectors": [
+                    "http.body.bytes",
+                    "http.status",
+                ],
+            }
+        ],
+    },
+    "docs_src/path_params/tutorial001_py310.py": {
+        "rationale": (
+            "The documented untyped item_id route is sampled with numeric-looking and "
+            "alphabetic path segments, plus the selected route paths in OpenAPI. This partial "
+            "mapping covers only these two values and observations."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/path_params/tutorial001_py310.py",
+                "start_line": 6,
+                "end_line": 8,
+                "role": "documented untyped item_id path parameter and response",
+            }
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/path-params-tutorial001-upstream.yaml",
+                "case_ids": [
+                    "fastapi.path-params.tutorial001-untyped-item-id",
+                    "fastapi.path-params.tutorial001-openapi",
+                ],
+                "observation_selectors": [
+                    "http.body.bytes",
+                    "http.status",
+                    "openapi.paths",
+                ],
+            }
+        ],
+    },
+    "docs_src/path_params/tutorial002_py310.py": {
+        "rationale": (
+            "The documented item_id: int route is sampled with a valid integer and a "
+            "non-integer segment, plus the selected route paths in OpenAPI. This mapping is "
+            "limited to integer path parsing and the listed response observations."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/path_params/tutorial002_py310.py",
+                "start_line": 6,
+                "end_line": 8,
+                "role": "documented integer item_id path parameter and response",
+            }
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/path-params-tutorial002-upstream.yaml",
+                "case_ids": [
+                    "fastapi.path-params.tutorial002-integer-item-id",
+                    "fastapi.path-params.tutorial002-openapi",
+                ],
+                "observation_selectors": [
+                    "http.body.bytes",
+                    "http.status",
+                    "openapi.paths",
+                ],
+            }
+        ],
+    },
+    "docs_src/path_params/tutorial003_py310.py": {
+        "rationale": (
+            "The documented app registers the literal /users/me route before the dynamic "
+            "/users/{user_id} route. The linked case requests both paths and observes their "
+            "responses plus the selected OpenAPI paths. This partial mapping does not claim "
+            "other route-order conflicts."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/path_params/tutorial003_py310.py",
+                "start_line": 6,
+                "end_line": 13,
+                "role": "documented static and dynamic user routes in registration order",
+            }
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/path-params-tutorial003-upstream.yaml",
+                "case_ids": [
+                    "fastapi.path-params.tutorial003-static-route-precedence",
+                    "fastapi.path-params.tutorial003-openapi",
+                ],
+                "observation_selectors": [
+                    "http.body.bytes",
+                    "http.status",
+                    "openapi.paths",
+                ],
+            }
+        ],
+    },
+    "docs_src/response_model/tutorial002_py310.py": {
+        "rationale": (
+            "The pinned example deliberately uses UserIn for both the request and response, "
+            "so the linked case observes the sensitive password field retained in the response "
+            "and the selected OpenAPI paths. The source explicitly warns not to use this in "
+            "production; this mapping records that negative example and does not endorse it."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/response_model/tutorial002_py310.py",
+                "start_line": 7,
+                "end_line": 17,
+                "role": "documented shared input/output model with production warning",
+            }
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/response-model-tutorials-upstream.yaml",
+                "case_ids": [
+                    "fastapi.response-model.tutorial002-same-model-retains-sensitive-field"
+                ],
+                "observation_selectors": [
+                    "http.body.bytes",
+                    "http.status",
+                    "openapi.paths",
+                ],
+            }
+        ],
+    },
+    "docs_src/response_model/tutorial003_py310.py": {
+        "rationale": (
+            "The documented handler accepts UserIn and declares response_model=UserOut, whose "
+            "fields omit password. The linked case observes the filtered response and selected "
+            "OpenAPI paths; this mapping is limited to that explicit model pair."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/response_model/tutorial003_py310.py",
+                "start_line": 9,
+                "end_line": 24,
+                "role": "documented input and explicit output response models",
+            }
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/response-model-tutorials-upstream.yaml",
+                "case_ids": [
+                    "fastapi.response-model.tutorial003-explicit-output-model-filters-input"
+                ],
+                "observation_selectors": [
+                    "http.body.bytes",
+                    "http.status",
+                    "openapi.paths",
+                ],
+            }
+        ],
+    },
+    "docs_src/response_model/tutorial003_01_py310.py": {
+        "rationale": (
+            "The documented handler returns UserIn while annotating its return as BaseUser, "
+            "which omits the subclass password field. The linked case observes that inferred "
+            "response filtering and selected OpenAPI paths only; it does not claim other "
+            "return-annotation forms."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/response_model/tutorial003_01_py310.py",
+                "start_line": 7,
+                "end_line": 19,
+                "role": "documented base return annotation and derived input model",
+            }
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/response-model-tutorials-upstream.yaml",
+                "case_ids": [
+                    "fastapi.response-model.tutorial003-01-return-annotation-filters-derived-input"
+                ],
+                "observation_selectors": [
+                    "http.body.bytes",
+                    "http.status",
+                    "openapi.paths",
+                ],
+            }
+        ],
+    },
+    "docs_src/response_model/tutorial004_py310.py": {
+        "rationale": (
+            "The example sets response_model_exclude_unset=True and provides records with "
+            "omitted, explicitly provided, and explicit-null fields. The linked cases observe "
+            "the resulting response bodies and selected OpenAPI paths; the mapping does not cover "
+            "exclude_defaults or exclude_none."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/response_model/tutorial004_py310.py",
+                "start_line": 7,
+                "end_line": 24,
+                "role": "documented model, contrasting records, and exclude_unset route",
+            }
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/response-model-tutorials-upstream.yaml",
+                "case_ids": [
+                    "fastapi.response-model.tutorial004-exclude-unset-preserves-explicit-fields"
+                ],
+                "observation_selectors": [
+                    "http.body.bytes",
+                    "http.status",
+                    "openapi.paths",
+                ],
+            }
+        ],
+    },
+    "docs_src/response_model/tutorial006_py310.py": {
+        "rationale": (
+            "The documented routes exercise response_model_include for name and description "
+            "and response_model_exclude for tax. The linked cases observe both response bodies "
+            "and selected OpenAPI paths; this mapping covers only these top-level field "
+            "selections."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/response_model/tutorial006_py310.py",
+                "start_line": 7,
+                "end_line": 37,
+                "role": "documented top-level response include and exclude routes",
+            }
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/response-model-tutorials-upstream.yaml",
+                "case_ids": [
+                    "fastapi.response-model.tutorial006-include-and-exclude-top-level-fields"
+                ],
+                "observation_selectors": [
+                    "http.body.bytes",
+                    "http.status",
+                    "openapi.paths",
+                ],
+            }
+        ],
+    },
+    "docs_src/response_model/tutorial003_05_py310.py": {
+        "rationale": (
+            "The example explicitly sets response_model=None for a handler annotated as "
+            "Response | dict and shows JSON and RedirectResponse branches. The linked cases "
+            "observe those responses and selected OpenAPI paths; this mapping preserves "
+            "that union-return scope."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/response_model/tutorial003_05_py310.py",
+                "start_line": 7,
+                "end_line": 11,
+                "role": "documented response_model=None union return and branches",
+            }
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/response-model-tutorials-upstream.yaml",
+                "case_ids": [
+                    "fastapi.response-model.tutorial003-05-explicitly-disabled-response-model"
+                ],
+                "observation_selectors": [
+                    "http.body.bytes",
+                    "http.headers.ordered",
+                    "http.status",
+                    "openapi.paths",
+                ],
+            }
+        ],
+    },
+    "docs_src/custom_response/tutorial003_py310.py": {
+        "rationale": (
+            "The documented GET /items/ handler directly returns HTMLResponse with the "
+            "declared HTML content and status code. The linked case observes response status "
+            "and body only; it does not claim broader custom-response or OpenAPI behavior."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/custom_response/tutorial003_py310.py",
+                "start_line": 7,
+                "end_line": 19,
+                "role": "documented direct HTMLResponse return",
+            }
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/custom-response-tutorial003-upstream.yaml",
+                "case_ids": ["fastapi.custom-response.tutorial003.items-response"],
+                "observation_selectors": ["http.body.bytes", "http.status"],
+            }
+        ],
+    },
+    "docs_src/body/tutorial003_py310.py": {
+        "rationale": (
+            "The documented model requires name and price, permits optional description and "
+            "tax, and the PUT handler returns the submitted model fields. The linked complete "
+            "record case exercises that documented request and response; boundary probes are "
+            "not mapped as direct examples."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/body/tutorial003_py310.py",
+                "start_line": 5,
+                "end_line": 17,
+                "role": "documented Pydantic body model and PUT handler",
+            }
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/body-tutorial003-model-upstream.yaml",
+                "case_ids": ["fastapi.body.tutorial003.complete-model"],
+                "observation_selectors": ["http.body.bytes", "http.status"],
+            }
+        ],
+    },
 }
