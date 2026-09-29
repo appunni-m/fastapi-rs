@@ -14,6 +14,11 @@ from pathlib import Path
 from typing import Any
 
 import yaml
+from source_api_review_schema import (
+    SourceApiReviewSchemaError,
+    validate_source_api_review_schema,
+    validate_source_api_selection,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 METADATA_PATH = ROOT / "metadata.yaml"
@@ -537,6 +542,191 @@ def validate() -> None:
         "Starlette import-binding review exact denominator",
         reviewed_starlette_import_ids,
         reviewed_import_binding_ids,
+    )
+
+    source_api_meta = metadata["source_api_classification_review"]
+    source_api_path = artifact_path(source_api_meta["artifact"])
+    source_api_review = load_json(source_api_path)
+    manifest_source_api = manifest["source_artifacts"]["api_source_classification_review"]
+    require_equal(
+        "source API review artifact path", source_api_meta["artifact"], manifest_source_api["path"]
+    )
+    require_equal(
+        "source API review schema", source_api_meta["schema"], manifest_source_api["schema"]
+    )
+    require_equal(
+        "source API review schema", source_api_review.get("schema"), source_api_meta["schema"]
+    )
+    validate_digest(source_api_path, manifest_source_api, "source API classification review")
+    require_equal(
+        "metadata source API review digest",
+        source_api_meta["sha256"],
+        hashlib.sha256(source_api_path.read_bytes()).hexdigest(),
+    )
+    expected_source_api_identity = {
+        "package": "FastAPI",
+        "version": fastapi["version"],
+        "source_commit": fastapi["commit"],
+    }
+    try:
+        source_api_selection = validate_source_api_selection(source_api_meta["selection"])
+        validate_source_api_review_schema(
+            source_api_review,
+            expected_identity=expected_source_api_identity,
+            expected_selection=source_api_selection,
+        )
+    except (KeyError, SourceApiReviewSchemaError) as exc:
+        raise MetadataError(f"source API review schema is invalid: {exc}") from exc
+    require_equal(
+        "source API review identity",
+        source_api_review.get("source_identity"),
+        expected_source_api_identity,
+    )
+    require_equal(
+        "metadata source API review identity",
+        source_api_meta["source_identity"],
+        expected_source_api_identity,
+    )
+    require_equal(
+        "manifest source API review identity",
+        manifest_source_api["source_identity"],
+        expected_source_api_identity,
+    )
+    source_api_scope = source_api_review.get("scope", {})
+    source_api_rows = source_api_review.get("rows", [])
+    source_api_ids = [row.get("id") for row in source_api_rows if isinstance(row, dict)]
+    if len(source_api_ids) != len(source_api_rows) or len(source_api_ids) != len(
+        set(source_api_ids)
+    ):
+        raise MetadataError("source API review candidate IDs are missing or not unique")
+    source_api_id_digest = hashlib.sha256(
+        ("\n".join(sorted(source_api_ids)) + "\n").encode()
+    ).hexdigest()
+    require_equal(
+        "source API review candidate ID digest",
+        source_api_scope.get("candidate_ids_sha256"),
+        source_api_id_digest,
+    )
+    require_equal(
+        "metadata source API review candidate ID digest",
+        source_api_meta["candidate_ids_sha256"],
+        source_api_id_digest,
+    )
+    require_equal(
+        "manifest source API review candidate ID digest",
+        manifest_source_api["candidate_ids_sha256"],
+        source_api_id_digest,
+    )
+    require_equal(
+        "metadata source API review selection",
+        source_api_meta["selection"],
+        source_api_scope.get("selection"),
+    )
+    require_equal(
+        "manifest source API review selection",
+        manifest_source_api["selection"],
+        source_api_scope.get("selection"),
+    )
+    source_api_recommendations = Counter(row.get("recommendation") for row in source_api_rows)
+    expected_source_api_counts = {
+        "candidates": len(source_api_rows),
+        "supported": source_api_recommendations.get("supported", 0),
+        "private_or_internal": source_api_recommendations.get("private/internal", 0),
+        "uncertain": source_api_recommendations.get("uncertain", 0),
+    }
+    require_equal(
+        "source API review scope count",
+        source_api_scope.get("candidate_count"),
+        len(source_api_rows),
+    )
+    require_equal(
+        "source API review recommendation counts",
+        source_api_scope.get("recommendation_counts"),
+        {key: count for key, count in source_api_recommendations.items()},
+    )
+    require_equal(
+        "metadata source API review counts", source_api_meta["counts"], expected_source_api_counts
+    )
+    require_equal(
+        "manifest source API review counts",
+        manifest_source_api["counts"],
+        expected_source_api_counts,
+    )
+    source_api_link = atlas.get("api_source_classification_review")
+    for atlas_key, review_key in (("path", "path"), ("schema", "schema"), ("sha256", "sha256")):
+        require_equal(
+            f"atlas source API review {atlas_key}",
+            source_api_link.get(atlas_key) if isinstance(source_api_link, dict) else None,
+            manifest_source_api[review_key],
+        )
+    require_equal(
+        "atlas source API review identity",
+        source_api_link.get("source_identity") if isinstance(source_api_link, dict) else None,
+        expected_source_api_identity,
+    )
+    require_equal(
+        "atlas source API review scope",
+        source_api_link.get("scope") if isinstance(source_api_link, dict) else None,
+        source_api_scope,
+    )
+    reviewed_source_api_ids = set(source_api_ids)
+    for row in source_api_rows:
+        identifier = row["id"]
+        candidate = candidates_by_id.get(identifier)
+        if candidate is None:
+            raise MetadataError(
+                "source API review candidate is absent from the atlas: " + identifier
+            )
+        require_equal(
+            f"atlas source API classification {identifier}",
+            candidate.get("classification"),
+            row.get("recommendation"),
+        )
+        require_equal(
+            f"atlas source API candidate kind {identifier}",
+            candidate.get("kind"),
+            row.get("candidate_kind"),
+        )
+        require_equal(
+            f"atlas source API review evidence {identifier}",
+            candidate.get("classification_review"),
+            {
+                "source": row.get("source"),
+                "candidate_kind": row.get("candidate_kind"),
+                "binding": row.get("binding"),
+                "evidence_basis": row.get("evidence_basis"),
+                "evidence": row.get("evidence"),
+                "reason": row.get("reason"),
+            },
+        )
+        if row.get("binding") is not None:
+            require_equal(
+                f"atlas source API binding identity {identifier}",
+                {
+                    "module": candidate.get("imported_module"),
+                    "name": candidate.get("imported_name"),
+                    "target": candidate.get("target_path"),
+                },
+                row["binding"],
+            )
+    source_selection = source_api_scope.get("selection", {})
+    selected_modules = set(source_selection.get("uncertain_imported_modules", []))
+    selected_prefixes = tuple(source_selection.get("uncertain_candidate_id_prefixes", []))
+    unreviewed_selected_uncertain = {
+        candidate.get("id")
+        for candidate in candidates
+        if candidate.get("classification") == "uncertain"
+        and (
+            (
+                candidate.get("kind") == "import_binding"
+                and candidate.get("imported_module") in selected_modules
+            )
+            or candidate.get("id", "").startswith(selected_prefixes)
+        )
+        and candidate.get("id") not in reviewed_source_api_ids
+    }
+    require_equal(
+        "unreviewed selected source API uncertainty", unreviewed_selected_uncertain, set()
     )
 
     callable_review_artifact = manifest["source_artifacts"]["api_classification_review"]

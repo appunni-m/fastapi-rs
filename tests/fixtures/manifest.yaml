@@ -146,18 +146,37 @@ source_artifacts:
       manifest_sha256: e4c311ef937ce41c10baf0a26b8592b265079322dc30bcc54a86a5abf449e315
       api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
       api_review_sha256: b91b53688fe8a45daac10b4a1e6f15f97cf750453161ceddb8e04eaf198937e3
+  api_source_classification_review:
+    path: tests/fixtures/api-source-classification-review.json
+    schema: fastapi-rs/source-api-classification-review@1
+    sha256: b5e9d810a994e0fb9a39f1438cfb97c1c148eba56c0e1a90f7ad05251a6e50e1
+    purpose: Reviewed source-only classification of selected import bindings and SSE API candidates; not a FastAPI-RS support or parity claim
+    source_identity:
+      package: FastAPI
+      version: 0.141.1
+      source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
+    counts:
+      candidates: 154
+      supported: 6
+      private_or_internal: 147
+      uncertain: 1
+    candidate_ids_sha256: 293940327e85349574d3033dabe2767fa97597e4fb533bead82664f2bc2f3805
+    selection:
+      uncertain_imported_modules: [collections.abc, fastapi._compat, typing]
+      uncertain_candidate_id_prefixes: [fastapi.sse.]
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@2
-    sha256: 2b322d6c1122324f89ae2f134c83b9969df43754d40d911143e32c8d23254b4e
+    sha256: d8a3d086ae121f0983181b99ec9b734d7a2d5920820b8854e6f7e8e0d17e87ce
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
       reviewed_import_binding_candidates: 97
+      reviewed_source_api_candidates: 154
       source_classifications:
-        supported: 446
-        private_or_internal: 595
-        uncertain: 552
+        supported: 452
+        private_or_internal: 742
+        uncertain: 399
       alias_records: 69
       source_deprecations: 19
       error_candidates: 42
@@ -179,10 +198,10 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: ce322fd65f4132b57fa653983b209807c67d8f50c8590d4e91e2c5b62432dda8
+    sha256: 246651d4725f845fe24d16450dd1c8d09d89605994411330818cf716f0a6de53
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
-      designs: 570
+      designs: 572
       test_case_designs: 2108
     source_artifact_pointer: /fixture_backlog_ref
   observation_selector_catalog:
@@ -216,14 +235,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@1
-    sha256: be462a22a4fdf0917001b3f41bfe5dc55c257647a1dda94be7a4ae2e737594ea
+    sha256: a69837fc719a7483c2f13df773aad595465b15f53973dbad965fa23f73695704
     schema_path: tests/fixtures/schemas/materialized-input-index.schema.json
     schema_sha256: b0a2ec32c63dc82ec43cb4c5ffaf41590e951526de305865a24301ea42e947d2
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
       workflows: 440
       cases: 1748
-      partial_source_mappings: 1010
+      partial_source_mappings: 1012
 
 contract_metadata:
   aliases:
@@ -449,16 +468,16 @@ api_surface_contract:
   - source_artifacts.compatibility_atlas.coverage_matrix
   - source_artifacts.fixture_backlog
   counts:
-    required_public_symbols: 446
+    required_public_symbols: 452
     signature_contract_states:
       module-object-no-call-signature: 1
-      non-callable-surface: 222
+      non-callable-surface: 228
       runtime-signature-reflected: 222
       runtime-signature-unavailable: 1
     implementation_owner_plans:
-      fastapi-rs: 415
+      fastapi-rs: 421
       starlette-rs: 31
-    symbols_with_documented_feature_refs: 439
+    symbols_with_documented_feature_refs: 445
     symbols_with_alias_refs: 46
     symbols_with_deprecation_refs: 11
     symbols_with_error_contract_refs: 12
@@ -493,7 +512,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/apirouter.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-apirouter
-      fixture_design_ref: /fixture_designs/54
+      fixture_design_ref: /fixture_designs/56
       observation_selectors: &id016
       - http.status
       - http.headers.ordered
@@ -578,7 +597,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/background.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-background
-      fixture_design_ref: /fixture_designs/55
+      fixture_design_ref: /fixture_designs/57
       observation_selectors: &id007
       - http.status
       - http.headers.ordered
@@ -642,7 +661,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/parameters.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-parameters
-      fixture_design_ref: /fixture_designs/63
+      fixture_design_ref: /fixture_designs/65
       observation_selectors: &id001
       - http.body.bytes
       - http.headers.ordered
@@ -702,7 +721,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/parameters.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-parameters
-      fixture_design_ref: /fixture_designs/63
+      fixture_design_ref: /fixture_designs/65
       observation_selectors: *id001
     - coverage_matrix_ref: /coverage_matrix/560
       source_path: docs/en/docs/release-notes.md
@@ -764,7 +783,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/dependencies.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-dependencies
-      fixture_design_ref: /fixture_designs/56
+      fixture_design_ref: /fixture_designs/58
       observation_selectors: &id003
       - http.body.bytes
       - http.headers.ordered
@@ -832,7 +851,7 @@ api_surface_contract:
       source_path: docs/en/docs/advanced/middleware.md
       mapping_status: candidate
       fixture_id: fastapi.docs.advanced-middleware
-      fixture_design_ref: /fixture_designs/26
+      fixture_design_ref: /fixture_designs/28
       observation_selectors:
       - http.body.bytes
       - http.headers.ordered
@@ -853,7 +872,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/fastapi.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-fastapi
-      fixture_design_ref: /fixture_designs/59
+      fixture_design_ref: /fixture_designs/61
       observation_selectors: &id006
       - python.import_path
       - python.signature
@@ -882,8 +901,8 @@ api_surface_contract:
       source_path: docs/en/docs/reference/status.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-status
-      fixture_design_ref: /fixture_designs/69
-      observation_selectors: &id020
+      fixture_design_ref: /fixture_designs/71
+      observation_selectors: &id021
       - python.import_path
       - python.object_identity
       - python.attribute_value
@@ -972,7 +991,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/parameters.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-parameters
-      fixture_design_ref: /fixture_designs/63
+      fixture_design_ref: /fixture_designs/65
       observation_selectors: *id001
     feature_ids:
     - app-routing
@@ -1027,7 +1046,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/parameters.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-parameters
-      fixture_design_ref: /fixture_designs/63
+      fixture_design_ref: /fixture_designs/65
       observation_selectors: *id001
     - coverage_matrix_ref: /coverage_matrix/560
       source_path: docs/en/docs/release-notes.md
@@ -1088,7 +1107,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/exceptions.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-exceptions
-      fixture_design_ref: /fixture_designs/58
+      fixture_design_ref: /fixture_designs/60
       observation_selectors: &id005
       - http.status
       - http.headers.ordered
@@ -1161,7 +1180,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/parameters.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-parameters
-      fixture_design_ref: /fixture_designs/63
+      fixture_design_ref: /fixture_designs/65
       observation_selectors: *id001
     - coverage_matrix_ref: /coverage_matrix/560
       source_path: docs/en/docs/release-notes.md
@@ -1222,7 +1241,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/parameters.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-parameters
-      fixture_design_ref: /fixture_designs/63
+      fixture_design_ref: /fixture_designs/65
       observation_selectors: *id001
     - coverage_matrix_ref: /coverage_matrix/560
       source_path: docs/en/docs/release-notes.md
@@ -1283,7 +1302,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/parameters.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-parameters
-      fixture_design_ref: /fixture_designs/63
+      fixture_design_ref: /fixture_designs/65
       observation_selectors: *id001
     - coverage_matrix_ref: /coverage_matrix/560
       source_path: docs/en/docs/release-notes.md
@@ -1343,7 +1362,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/request.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-request
-      fixture_design_ref: /fixture_designs/64
+      fixture_design_ref: /fixture_designs/66
       observation_selectors: &id013
       - python.import_path
       - python.object_identity
@@ -1403,7 +1422,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/response.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-response
-      fixture_design_ref: /fixture_designs/65
+      fixture_design_ref: /fixture_designs/67
       observation_selectors: &id015
       - python.import_path
       - python.object_identity
@@ -1472,7 +1491,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/dependencies.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-dependencies
-      fixture_design_ref: /fixture_designs/56
+      fixture_design_ref: /fixture_designs/58
       observation_selectors: *id003
     feature_ids:
     - app-routing
@@ -1527,7 +1546,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/uploadfile.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-uploadfile
-      fixture_design_ref: /fixture_designs/70
+      fixture_design_ref: /fixture_designs/72
       observation_selectors: &id008
       - http.body.bytes
       - http.headers.ordered
@@ -1585,7 +1604,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/websockets.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-websockets
-      fixture_design_ref: /fixture_designs/71
+      fixture_design_ref: /fixture_designs/73
       observation_selectors: &id004
       - websocket.close_code
       - websocket.event_order
@@ -1640,7 +1659,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/websockets.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-websockets
-      fixture_design_ref: /fixture_designs/71
+      fixture_design_ref: /fixture_designs/73
       observation_selectors: *id004
     feature_ids:
     - app-routing
@@ -1696,7 +1715,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/exceptions.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-exceptions
-      fixture_design_ref: /fixture_designs/58
+      fixture_design_ref: /fixture_designs/60
       observation_selectors: *id005
     feature_ids:
     - public-api-errors
@@ -1791,7 +1810,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/fastapi.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-fastapi
-      fixture_design_ref: /fixture_designs/59
+      fixture_design_ref: /fixture_designs/61
       observation_selectors: *id006
     feature_ids:
     - app-routing
@@ -1916,7 +1935,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/fastapi.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-fastapi
-      fixture_design_ref: /fixture_designs/59
+      fixture_design_ref: /fixture_designs/61
       observation_selectors: *id006
     feature_ids:
     - app-routing
@@ -1991,7 +2010,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/fastapi.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-fastapi
-      fixture_design_ref: /fixture_designs/59
+      fixture_design_ref: /fixture_designs/61
       observation_selectors: *id006
     feature_ids:
     - app-routing
@@ -2066,7 +2085,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/fastapi.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-fastapi
-      fixture_design_ref: /fixture_designs/59
+      fixture_design_ref: /fixture_designs/61
       observation_selectors: *id006
     feature_ids:
     - app-routing
@@ -2141,7 +2160,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/fastapi.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-fastapi
-      fixture_design_ref: /fixture_designs/59
+      fixture_design_ref: /fixture_designs/61
       observation_selectors: *id006
     feature_ids:
     - app-routing
@@ -2216,7 +2235,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/fastapi.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-fastapi
-      fixture_design_ref: /fixture_designs/59
+      fixture_design_ref: /fixture_designs/61
       observation_selectors: *id006
     feature_ids:
     - app-routing
@@ -2291,7 +2310,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/fastapi.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-fastapi
-      fixture_design_ref: /fixture_designs/59
+      fixture_design_ref: /fixture_designs/61
       observation_selectors: *id006
     feature_ids:
     - app-routing
@@ -2366,7 +2385,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/fastapi.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-fastapi
-      fixture_design_ref: /fixture_designs/59
+      fixture_design_ref: /fixture_designs/61
       observation_selectors: *id006
     feature_ids:
     - app-routing
@@ -2441,7 +2460,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/fastapi.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-fastapi
-      fixture_design_ref: /fixture_designs/59
+      fixture_design_ref: /fixture_designs/61
       observation_selectors: *id006
     feature_ids:
     - app-routing
@@ -2516,7 +2535,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/fastapi.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-fastapi
-      fixture_design_ref: /fixture_designs/59
+      fixture_design_ref: /fixture_designs/61
       observation_selectors: *id006
     feature_ids:
     - app-routing
@@ -2591,7 +2610,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/fastapi.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-fastapi
-      fixture_design_ref: /fixture_designs/59
+      fixture_design_ref: /fixture_designs/61
       observation_selectors: *id006
     feature_ids:
     - app-routing
@@ -2666,7 +2685,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/fastapi.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-fastapi
-      fixture_design_ref: /fixture_designs/59
+      fixture_design_ref: /fixture_designs/61
       observation_selectors: *id006
     feature_ids:
     - app-routing
@@ -2741,7 +2760,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/fastapi.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-fastapi
-      fixture_design_ref: /fixture_designs/59
+      fixture_design_ref: /fixture_designs/61
       observation_selectors: *id006
     feature_ids:
     - app-routing
@@ -2816,7 +2835,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/fastapi.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-fastapi
-      fixture_design_ref: /fixture_designs/59
+      fixture_design_ref: /fixture_designs/61
       observation_selectors: *id006
     feature_ids:
     - app-routing
@@ -2891,7 +2910,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/fastapi.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-fastapi
-      fixture_design_ref: /fixture_designs/59
+      fixture_design_ref: /fixture_designs/61
       observation_selectors: *id006
     feature_ids:
     - app-routing
@@ -2966,7 +2985,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/fastapi.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-fastapi
-      fixture_design_ref: /fixture_designs/59
+      fixture_design_ref: /fixture_designs/61
       observation_selectors: *id006
     feature_ids:
     - app-routing
@@ -3042,7 +3061,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/fastapi.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-fastapi
-      fixture_design_ref: /fixture_designs/59
+      fixture_design_ref: /fixture_designs/61
       observation_selectors: *id006
     feature_ids:
     - app-routing
@@ -3121,7 +3140,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/background.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-background
-      fixture_design_ref: /fixture_designs/55
+      fixture_design_ref: /fixture_designs/57
       observation_selectors: *id007
     feature_ids:
     - app-routing
@@ -3175,13 +3194,13 @@ api_surface_contract:
       source_path: docs/en/docs/reference/background.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-background
-      fixture_design_ref: /fixture_designs/55
+      fixture_design_ref: /fixture_designs/57
       observation_selectors: *id007
     - coverage_matrix_ref: /coverage_matrix/564
       source_path: docs/en/docs/tutorial/background-tasks.md
       mapping_status: candidate
       fixture_id: fastapi.docs.tutorial-background-tasks
-      fixture_design_ref: /fixture_designs/72
+      fixture_design_ref: /fixture_designs/74
       observation_selectors:
       - http.status
       - http.headers.ordered
@@ -3511,7 +3530,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/uploadfile.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-uploadfile
-      fixture_design_ref: /fixture_designs/70
+      fixture_design_ref: /fixture_designs/72
       observation_selectors: *id008
     feature_ids:
     - app-routing
@@ -3563,7 +3582,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/uploadfile.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-uploadfile
-      fixture_design_ref: /fixture_designs/70
+      fixture_design_ref: /fixture_designs/72
       observation_selectors: *id008
     feature_ids:
     - app-routing
@@ -3614,7 +3633,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/uploadfile.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-uploadfile
-      fixture_design_ref: /fixture_designs/70
+      fixture_design_ref: /fixture_designs/72
       observation_selectors: *id008
     feature_ids:
     - app-routing
@@ -3665,7 +3684,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/uploadfile.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-uploadfile
-      fixture_design_ref: /fixture_designs/70
+      fixture_design_ref: /fixture_designs/72
       observation_selectors: *id008
     feature_ids:
     - app-routing
@@ -3716,7 +3735,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/uploadfile.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-uploadfile
-      fixture_design_ref: /fixture_designs/70
+      fixture_design_ref: /fixture_designs/72
       observation_selectors: *id008
     feature_ids:
     - app-routing
@@ -3767,7 +3786,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/uploadfile.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-uploadfile
-      fixture_design_ref: /fixture_designs/70
+      fixture_design_ref: /fixture_designs/72
       observation_selectors: *id008
     feature_ids:
     - app-routing
@@ -3819,7 +3838,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/uploadfile.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-uploadfile
-      fixture_design_ref: /fixture_designs/70
+      fixture_design_ref: /fixture_designs/72
       observation_selectors: *id008
     feature_ids:
     - app-routing
@@ -3871,7 +3890,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/uploadfile.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-uploadfile
-      fixture_design_ref: /fixture_designs/70
+      fixture_design_ref: /fixture_designs/72
       observation_selectors: *id008
     feature_ids:
     - app-routing
@@ -3922,7 +3941,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/uploadfile.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-uploadfile
-      fixture_design_ref: /fixture_designs/70
+      fixture_design_ref: /fixture_designs/72
       observation_selectors: *id008
     feature_ids:
     - app-routing
@@ -3974,7 +3993,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/uploadfile.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-uploadfile
-      fixture_design_ref: /fixture_designs/70
+      fixture_design_ref: /fixture_designs/72
       observation_selectors: *id008
     feature_ids:
     - app-routing
@@ -4026,7 +4045,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/encoders.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-encoders
-      fixture_design_ref: /fixture_designs/57
+      fixture_design_ref: /fixture_designs/59
       observation_selectors:
       - python.attribute_value
       - python.signature
@@ -4078,7 +4097,7 @@ api_surface_contract:
       source_path: docs/en/docs/tutorial/handling-errors.md
       mapping_status: candidate
       fixture_id: fastapi.docs.tutorial-handling-errors
-      fixture_design_ref: /fixture_designs/93
+      fixture_design_ref: /fixture_designs/95
       observation_selectors:
       - http.body.bytes
       - http.body.json
@@ -4135,7 +4154,7 @@ api_surface_contract:
       source_path: docs/en/docs/tutorial/handling-errors.md
       mapping_status: candidate
       fixture_id: fastapi.docs.tutorial-handling-errors
-      fixture_design_ref: /fixture_designs/93
+      fixture_design_ref: /fixture_designs/95
       observation_selectors:
       - http.body.bytes
       - http.body.json
@@ -4195,7 +4214,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/exceptions.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-exceptions
-      fixture_design_ref: /fixture_designs/58
+      fixture_design_ref: /fixture_designs/60
       observation_selectors: *id005
     feature_ids:
     - public-api-errors
@@ -4251,13 +4270,13 @@ api_surface_contract:
       source_path: docs/en/docs/reference/exceptions.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-exceptions
-      fixture_design_ref: /fixture_designs/58
+      fixture_design_ref: /fixture_designs/60
       observation_selectors: *id005
     - coverage_matrix_ref: /coverage_matrix/586
       source_path: docs/en/docs/tutorial/handling-errors.md
       mapping_status: candidate
       fixture_id: fastapi.docs.tutorial-handling-errors
-      fixture_design_ref: /fixture_designs/93
+      fixture_design_ref: /fixture_designs/95
       observation_selectors: &id009
       - http.status
       - http.headers.ordered
@@ -4382,13 +4401,13 @@ api_surface_contract:
       source_path: docs/en/docs/reference/exceptions.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-exceptions
-      fixture_design_ref: /fixture_designs/58
+      fixture_design_ref: /fixture_designs/60
       observation_selectors: *id005
     - coverage_matrix_ref: /coverage_matrix/586
       source_path: docs/en/docs/tutorial/handling-errors.md
       mapping_status: candidate
       fixture_id: fastapi.docs.tutorial-handling-errors
-      fixture_design_ref: /fixture_designs/93
+      fixture_design_ref: /fixture_designs/95
       observation_selectors: *id009
     feature_ids:
     - app-routing
@@ -4451,7 +4470,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/exceptions.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-exceptions
-      fixture_design_ref: /fixture_designs/58
+      fixture_design_ref: /fixture_designs/60
       observation_selectors: *id005
     feature_ids:
     - public-api-errors
@@ -4508,13 +4527,13 @@ api_surface_contract:
       source_path: docs/en/docs/reference/exceptions.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-exceptions
-      fixture_design_ref: /fixture_designs/58
+      fixture_design_ref: /fixture_designs/60
       observation_selectors: *id005
     - coverage_matrix_ref: /coverage_matrix/586
       source_path: docs/en/docs/tutorial/handling-errors.md
       mapping_status: candidate
       fixture_id: fastapi.docs.tutorial-handling-errors
-      fixture_design_ref: /fixture_designs/93
+      fixture_design_ref: /fixture_designs/95
       observation_selectors: *id009
     feature_ids:
     - app-routing
@@ -4808,7 +4827,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/docs.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-docs
-      fixture_design_ref: /fixture_designs/61
+      fixture_design_ref: /fixture_designs/63
       observation_selectors: &id011
       - python.signature
       - python.attribute_value
@@ -4863,7 +4882,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/docs.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-docs
-      fixture_design_ref: /fixture_designs/61
+      fixture_design_ref: /fixture_designs/63
       observation_selectors: *id011
     feature_ids:
     - openapi-docs
@@ -4913,7 +4932,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/docs.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-docs
-      fixture_design_ref: /fixture_designs/61
+      fixture_design_ref: /fixture_designs/63
       observation_selectors: *id011
     feature_ids:
     - openapi-docs
@@ -4962,7 +4981,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/docs.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-docs
-      fixture_design_ref: /fixture_designs/61
+      fixture_design_ref: /fixture_designs/63
       observation_selectors: *id011
     feature_ids:
     - openapi-docs
@@ -5011,7 +5030,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: &id012
       - python.import_path
       - python.signature
@@ -5063,7 +5082,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -5111,7 +5130,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -5159,7 +5178,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -5207,7 +5226,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -5255,7 +5274,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -5303,7 +5322,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -5351,7 +5370,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -5399,7 +5418,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -5447,7 +5466,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -5495,7 +5514,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -5543,7 +5562,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -5591,7 +5610,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -5639,7 +5658,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -5687,7 +5706,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -5735,7 +5754,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -5783,7 +5802,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -5831,7 +5850,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -5879,7 +5898,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -5927,7 +5946,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -5975,7 +5994,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -6023,7 +6042,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -6071,7 +6090,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -6119,7 +6138,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -6167,7 +6186,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -6215,7 +6234,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -6263,7 +6282,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -6311,7 +6330,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -6359,7 +6378,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -6407,7 +6426,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -6455,7 +6474,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -6503,7 +6522,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -6551,7 +6570,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -6599,7 +6618,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -6647,7 +6666,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -6695,7 +6714,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -6743,7 +6762,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -6791,7 +6810,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -6839,7 +6858,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -6887,7 +6906,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -6935,7 +6954,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -6983,7 +7002,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -7031,7 +7050,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -7079,7 +7098,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -7127,7 +7146,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -7175,7 +7194,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -7223,7 +7242,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -7271,7 +7290,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -7319,7 +7338,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -7367,7 +7386,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -7415,7 +7434,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -7463,7 +7482,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -7511,7 +7530,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -7559,7 +7578,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -7607,7 +7626,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -7655,7 +7674,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -7703,7 +7722,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -7751,7 +7770,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -7799,7 +7818,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -7847,7 +7866,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -7895,7 +7914,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -7943,7 +7962,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -7991,7 +8010,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -8039,7 +8058,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -8087,7 +8106,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -8135,7 +8154,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -8183,7 +8202,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -8231,7 +8250,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -8279,7 +8298,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -8327,7 +8346,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -8375,7 +8394,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -8423,7 +8442,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -8471,7 +8490,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -8519,7 +8538,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -8567,7 +8586,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -8615,7 +8634,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -8663,7 +8682,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -8711,7 +8730,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -8759,7 +8778,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -8807,7 +8826,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -8855,7 +8874,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -8903,7 +8922,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -8951,7 +8970,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -8999,7 +9018,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -9047,7 +9066,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -9095,7 +9114,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -9143,7 +9162,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -9191,7 +9210,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -9239,7 +9258,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -9287,7 +9306,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -9335,7 +9354,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -9383,7 +9402,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -9431,7 +9450,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -9479,7 +9498,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -9527,7 +9546,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -9575,7 +9594,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -9623,7 +9642,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -9671,7 +9690,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -9719,7 +9738,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -9767,7 +9786,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -9815,7 +9834,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -9863,7 +9882,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -9911,7 +9930,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -9959,7 +9978,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -10007,7 +10026,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -10055,7 +10074,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -10103,7 +10122,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -10151,7 +10170,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -10199,7 +10218,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -10247,7 +10266,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -10295,7 +10314,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -10343,7 +10362,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -10391,7 +10410,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -10439,7 +10458,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -10487,7 +10506,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -10535,7 +10554,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -10583,7 +10602,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -10631,7 +10650,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -10679,7 +10698,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -10727,7 +10746,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -10775,7 +10794,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -10823,7 +10842,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -10871,7 +10890,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -10919,7 +10938,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -10967,7 +10986,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -11015,7 +11034,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -11063,7 +11082,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -11111,7 +11130,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -11159,7 +11178,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -11207,7 +11226,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -11255,7 +11274,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -11303,7 +11322,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -11351,7 +11370,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -11399,7 +11418,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -11447,7 +11466,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -11495,7 +11514,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -11543,7 +11562,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -11591,7 +11610,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -11639,7 +11658,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -11687,7 +11706,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -11735,7 +11754,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -11783,7 +11802,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -11831,7 +11850,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -11879,7 +11898,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -11927,7 +11946,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -11975,7 +11994,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -12023,7 +12042,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -12071,7 +12090,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -12119,7 +12138,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -12167,7 +12186,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -12215,7 +12234,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -12263,7 +12282,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -12311,7 +12330,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -12359,7 +12378,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -12407,7 +12426,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -12455,7 +12474,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -12503,7 +12522,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -12551,7 +12570,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -12599,7 +12618,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -12647,7 +12666,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -12695,7 +12714,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -12743,7 +12762,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -12791,7 +12810,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -12839,7 +12858,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -12887,7 +12906,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -12935,7 +12954,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -12983,7 +13002,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -13031,7 +13050,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -13079,7 +13098,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -13127,7 +13146,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -13175,7 +13194,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -13223,7 +13242,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -13271,7 +13290,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -13319,7 +13338,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -13367,7 +13386,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -13415,7 +13434,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -13463,7 +13482,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -13511,7 +13530,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -13559,7 +13578,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -13607,7 +13626,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -13655,7 +13674,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -13703,7 +13722,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -13751,7 +13770,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -13799,7 +13818,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -13847,7 +13866,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -13895,7 +13914,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -13943,7 +13962,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -13991,7 +14010,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -14039,7 +14058,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -14087,7 +14106,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -14135,7 +14154,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -14183,7 +14202,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -14231,7 +14250,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -14279,7 +14298,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -14327,7 +14346,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -14375,7 +14394,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -14423,7 +14442,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -14471,7 +14490,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -14519,7 +14538,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -14567,7 +14586,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -14615,7 +14634,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -14663,7 +14682,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -14711,7 +14730,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -14759,7 +14778,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -14807,7 +14826,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -14855,7 +14874,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -14903,7 +14922,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -14951,7 +14970,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -14999,7 +15018,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -15047,7 +15066,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -15095,7 +15114,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -15143,7 +15162,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -15191,7 +15210,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -15239,7 +15258,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -15287,7 +15306,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -15335,7 +15354,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -15383,7 +15402,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -15431,7 +15450,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -15479,7 +15498,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -15527,7 +15546,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -15575,7 +15594,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -15623,7 +15642,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -15671,7 +15690,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -15719,7 +15738,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -15767,7 +15786,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -15815,7 +15834,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -15863,7 +15882,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -15911,7 +15930,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -15959,7 +15978,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -16007,7 +16026,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -16055,7 +16074,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -16103,7 +16122,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -16151,7 +16170,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -16199,7 +16218,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -16247,7 +16266,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -16295,7 +16314,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -16343,7 +16362,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -16391,7 +16410,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -16439,7 +16458,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -16487,7 +16506,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -16535,7 +16554,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -16583,7 +16602,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -16631,7 +16650,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -16679,7 +16698,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -16727,7 +16746,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -16775,7 +16794,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -16823,7 +16842,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -16871,7 +16890,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -16919,7 +16938,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -16967,7 +16986,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -17015,7 +17034,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -17063,7 +17082,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -17111,7 +17130,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -17159,7 +17178,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -17207,7 +17226,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/openapi/models.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-openapi-models
-      fixture_design_ref: /fixture_designs/62
+      fixture_design_ref: /fixture_designs/64
       observation_selectors: *id012
     feature_ids:
     - openapi-docs
@@ -17333,7 +17352,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/parameters.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-parameters
-      fixture_design_ref: /fixture_designs/63
+      fixture_design_ref: /fixture_designs/65
       observation_selectors: *id001
     feature_ids:
     - app-routing
@@ -17386,7 +17405,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/parameters.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-parameters
-      fixture_design_ref: /fixture_designs/63
+      fixture_design_ref: /fixture_designs/65
       observation_selectors: *id001
     feature_ids:
     - app-routing
@@ -17438,7 +17457,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/dependencies.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-dependencies
-      fixture_design_ref: /fixture_designs/56
+      fixture_design_ref: /fixture_designs/58
       observation_selectors: *id003
     feature_ids:
     - app-routing
@@ -17492,7 +17511,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/parameters.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-parameters
-      fixture_design_ref: /fixture_designs/63
+      fixture_design_ref: /fixture_designs/65
       observation_selectors: *id001
     feature_ids:
     - app-routing
@@ -17545,7 +17564,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/parameters.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-parameters
-      fixture_design_ref: /fixture_designs/63
+      fixture_design_ref: /fixture_designs/65
       observation_selectors: *id001
     feature_ids:
     - app-routing
@@ -17598,7 +17617,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/parameters.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-parameters
-      fixture_design_ref: /fixture_designs/63
+      fixture_design_ref: /fixture_designs/65
       observation_selectors: *id001
     feature_ids:
     - app-routing
@@ -17651,7 +17670,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/parameters.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-parameters
-      fixture_design_ref: /fixture_designs/63
+      fixture_design_ref: /fixture_designs/65
       observation_selectors: *id001
     feature_ids:
     - app-routing
@@ -17704,7 +17723,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/parameters.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-parameters
-      fixture_design_ref: /fixture_designs/63
+      fixture_design_ref: /fixture_designs/65
       observation_selectors: *id001
     feature_ids:
     - app-routing
@@ -17756,7 +17775,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/dependencies.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-dependencies
-      fixture_design_ref: /fixture_designs/56
+      fixture_design_ref: /fixture_designs/58
       observation_selectors: *id003
     feature_ids:
     - app-routing
@@ -17809,7 +17828,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/parameters.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-parameters
-      fixture_design_ref: /fixture_designs/63
+      fixture_design_ref: /fixture_designs/65
       observation_selectors: *id001
     feature_ids:
     - app-routing
@@ -17861,7 +17880,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/parameters.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-parameters
-      fixture_design_ref: /fixture_designs/63
+      fixture_design_ref: /fixture_designs/65
       observation_selectors: *id001
     feature_ids:
     - app-routing
@@ -17913,7 +17932,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/parameters.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-parameters
-      fixture_design_ref: /fixture_designs/63
+      fixture_design_ref: /fixture_designs/65
       observation_selectors: *id001
     feature_ids:
     - app-routing
@@ -17965,7 +17984,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/parameters.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-parameters
-      fixture_design_ref: /fixture_designs/63
+      fixture_design_ref: /fixture_designs/65
       observation_selectors: *id001
     feature_ids:
     - app-routing
@@ -18017,7 +18036,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/parameters.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-parameters
-      fixture_design_ref: /fixture_designs/63
+      fixture_design_ref: /fixture_designs/65
       observation_selectors: *id001
     feature_ids:
     - app-routing
@@ -18069,7 +18088,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/parameters.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-parameters
-      fixture_design_ref: /fixture_designs/63
+      fixture_design_ref: /fixture_designs/65
       observation_selectors: *id001
     feature_ids:
     - app-routing
@@ -18121,7 +18140,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/parameters.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-parameters
-      fixture_design_ref: /fixture_designs/63
+      fixture_design_ref: /fixture_designs/65
       observation_selectors: *id001
     feature_ids:
     - app-routing
@@ -18173,7 +18192,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/httpconnection.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-httpconnection
-      fixture_design_ref: /fixture_designs/60
+      fixture_design_ref: /fixture_designs/62
       observation_selectors:
       - http.status
       - http.body.bytes
@@ -18224,7 +18243,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/request.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-request
-      fixture_design_ref: /fixture_designs/64
+      fixture_design_ref: /fixture_designs/66
       observation_selectors: *id013
     feature_ids:
     - app-routing
@@ -18277,7 +18296,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/responses.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-responses
-      fixture_design_ref: /fixture_designs/66
+      fixture_design_ref: /fixture_designs/68
       observation_selectors: &id014
       - python.import_path
       - python.object_identity
@@ -18339,7 +18358,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/responses.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-responses
-      fixture_design_ref: /fixture_designs/66
+      fixture_design_ref: /fixture_designs/68
       observation_selectors: *id014
     feature_ids:
     - public-api-errors
@@ -18393,7 +18412,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/responses.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-responses
-      fixture_design_ref: /fixture_designs/66
+      fixture_design_ref: /fixture_designs/68
       observation_selectors: *id014
     feature_ids:
     - public-api-errors
@@ -18447,7 +18466,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/responses.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-responses
-      fixture_design_ref: /fixture_designs/66
+      fixture_design_ref: /fixture_designs/68
       observation_selectors: *id014
     feature_ids:
     - public-api-errors
@@ -18501,7 +18520,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/responses.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-responses
-      fixture_design_ref: /fixture_designs/66
+      fixture_design_ref: /fixture_designs/68
       observation_selectors: *id014
     feature_ids:
     - public-api-errors
@@ -18555,7 +18574,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/responses.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-responses
-      fixture_design_ref: /fixture_designs/66
+      fixture_design_ref: /fixture_designs/68
       observation_selectors: *id014
     feature_ids:
     - public-api-errors
@@ -18609,7 +18628,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/responses.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-responses
-      fixture_design_ref: /fixture_designs/66
+      fixture_design_ref: /fixture_designs/68
       observation_selectors: *id014
     feature_ids:
     - public-api-errors
@@ -18663,13 +18682,13 @@ api_surface_contract:
       source_path: docs/en/docs/reference/response.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-response
-      fixture_design_ref: /fixture_designs/65
+      fixture_design_ref: /fixture_designs/67
       observation_selectors: *id015
     - coverage_matrix_ref: /coverage_matrix/551
       source_path: docs/en/docs/reference/responses.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-responses
-      fixture_design_ref: /fixture_designs/66
+      fixture_design_ref: /fixture_designs/68
       observation_selectors: *id014
     feature_ids:
     - app-routing
@@ -18727,7 +18746,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/responses.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-responses
-      fixture_design_ref: /fixture_designs/66
+      fixture_design_ref: /fixture_designs/68
       observation_selectors: *id014
     feature_ids:
     - public-api-errors
@@ -18781,7 +18800,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/responses.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-responses
-      fixture_design_ref: /fixture_designs/66
+      fixture_design_ref: /fixture_designs/68
       observation_selectors: *id014
     feature_ids:
     - public-api-errors
@@ -18835,7 +18854,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/responses.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-responses
-      fixture_design_ref: /fixture_designs/66
+      fixture_design_ref: /fixture_designs/68
       observation_selectors: *id014
     feature_ids:
     - public-api-errors
@@ -18927,7 +18946,7 @@ api_surface_contract:
       source_path: docs/en/docs/how-to/custom-request-and-route.md
       mapping_status: candidate
       fixture_id: fastapi.docs.how-to-custom-request-and-route
-      fixture_design_ref: /fixture_designs/50
+      fixture_design_ref: /fixture_designs/52
       observation_selectors:
       - http.body.bytes
       - http.headers.ordered
@@ -18986,7 +19005,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/apirouter.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-apirouter
-      fixture_design_ref: /fixture_designs/54
+      fixture_design_ref: /fixture_designs/56
       observation_selectors: *id016
     feature_ids:
     - app-routing
@@ -19049,7 +19068,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/apirouter.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-apirouter
-      fixture_design_ref: /fixture_designs/54
+      fixture_design_ref: /fixture_designs/56
       observation_selectors: *id016
     feature_ids:
     - app-routing
@@ -19151,7 +19170,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/apirouter.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-apirouter
-      fixture_design_ref: /fixture_designs/54
+      fixture_design_ref: /fixture_designs/56
       observation_selectors: *id016
     feature_ids:
     - app-routing
@@ -19215,7 +19234,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/apirouter.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-apirouter
-      fixture_design_ref: /fixture_designs/54
+      fixture_design_ref: /fixture_designs/56
       observation_selectors: *id016
     feature_ids:
     - app-routing
@@ -19278,7 +19297,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/apirouter.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-apirouter
-      fixture_design_ref: /fixture_designs/54
+      fixture_design_ref: /fixture_designs/56
       observation_selectors: *id016
     feature_ids:
     - app-routing
@@ -19342,7 +19361,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/apirouter.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-apirouter
-      fixture_design_ref: /fixture_designs/54
+      fixture_design_ref: /fixture_designs/56
       observation_selectors: *id016
     feature_ids:
     - app-routing
@@ -19406,7 +19425,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/apirouter.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-apirouter
-      fixture_design_ref: /fixture_designs/54
+      fixture_design_ref: /fixture_designs/56
       observation_selectors: *id016
     feature_ids:
     - app-routing
@@ -19470,7 +19489,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/apirouter.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-apirouter
-      fixture_design_ref: /fixture_designs/54
+      fixture_design_ref: /fixture_designs/56
       observation_selectors: *id016
     feature_ids:
     - app-routing
@@ -19533,7 +19552,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/apirouter.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-apirouter
-      fixture_design_ref: /fixture_designs/54
+      fixture_design_ref: /fixture_designs/56
       observation_selectors: *id016
     feature_ids:
     - app-routing
@@ -19597,7 +19616,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/apirouter.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-apirouter
-      fixture_design_ref: /fixture_designs/54
+      fixture_design_ref: /fixture_designs/56
       observation_selectors: *id016
     feature_ids:
     - app-routing
@@ -19661,7 +19680,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/apirouter.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-apirouter
-      fixture_design_ref: /fixture_designs/54
+      fixture_design_ref: /fixture_designs/56
       observation_selectors: *id016
     feature_ids:
     - app-routing
@@ -19725,7 +19744,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/apirouter.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-apirouter
-      fixture_design_ref: /fixture_designs/54
+      fixture_design_ref: /fixture_designs/56
       observation_selectors: *id016
     feature_ids:
     - app-routing
@@ -19789,7 +19808,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/apirouter.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-apirouter
-      fixture_design_ref: /fixture_designs/54
+      fixture_design_ref: /fixture_designs/56
       observation_selectors: *id016
     feature_ids:
     - app-routing
@@ -19854,7 +19873,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/apirouter.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-apirouter
-      fixture_design_ref: /fixture_designs/54
+      fixture_design_ref: /fixture_designs/56
       observation_selectors: *id016
     feature_ids:
     - app-routing
@@ -20010,7 +20029,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: &id017
       - dependency.call_order
       - http.status
@@ -20078,7 +20097,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -20136,7 +20155,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -20194,7 +20213,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -20252,7 +20271,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -20310,7 +20329,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -20368,7 +20387,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -20426,7 +20445,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -20484,7 +20503,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -20542,7 +20561,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -20600,7 +20619,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -20658,7 +20677,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -20716,7 +20735,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -20774,7 +20793,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -20832,7 +20851,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -20890,7 +20909,7 @@ api_surface_contract:
       source_path: docs/en/docs/how-to/authentication-error-status-code.md
       mapping_status: candidate
       fixture_id: fastapi.docs.how-to-authentication-error-status-code
-      fixture_design_ref: /fixture_designs/46
+      fixture_design_ref: /fixture_designs/48
       observation_selectors: &id018
       - docs.response.status
       - http.body.bytes
@@ -20901,7 +20920,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -20959,7 +20978,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -21016,7 +21035,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -21073,7 +21092,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -21129,7 +21148,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -21186,7 +21205,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -21243,7 +21262,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -21299,7 +21318,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -21356,7 +21375,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -21413,7 +21432,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -21469,7 +21488,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -21526,13 +21545,13 @@ api_surface_contract:
       source_path: docs/en/docs/how-to/authentication-error-status-code.md
       mapping_status: candidate
       fixture_id: fastapi.docs.how-to-authentication-error-status-code
-      fixture_design_ref: /fixture_designs/46
+      fixture_design_ref: /fixture_designs/48
       observation_selectors: *id018
     - coverage_matrix_ref: /coverage_matrix/552
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -21590,7 +21609,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -21647,7 +21666,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -21704,7 +21723,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -21760,7 +21779,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -21816,7 +21835,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -21873,7 +21892,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -21930,7 +21949,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -21986,7 +22005,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -22043,7 +22062,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -22100,7 +22119,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -22156,7 +22175,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -22213,7 +22232,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -22270,7 +22289,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -22327,13 +22346,13 @@ api_surface_contract:
       source_path: docs/en/docs/how-to/authentication-error-status-code.md
       mapping_status: candidate
       fixture_id: fastapi.docs.how-to-authentication-error-status-code
-      fixture_design_ref: /fixture_designs/46
+      fixture_design_ref: /fixture_designs/48
       observation_selectors: *id018
     - coverage_matrix_ref: /coverage_matrix/552
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -22391,7 +22410,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -22448,7 +22467,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -22505,7 +22524,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -22561,7 +22580,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -22618,7 +22637,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -22675,7 +22694,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -22731,7 +22750,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -22788,7 +22807,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -22844,7 +22863,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -22901,7 +22920,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -22957,7 +22976,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -23014,7 +23033,7 @@ api_surface_contract:
       source_path: docs/en/docs/advanced/security/oauth2-scopes.md
       mapping_status: candidate
       fixture_id: fastapi.docs.advanced-security-oauth2-scopes
-      fixture_design_ref: /fixture_designs/35
+      fixture_design_ref: /fixture_designs/37
       observation_selectors:
       - http.body.bytes
       - http.headers.ordered
@@ -23026,7 +23045,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - app-routing
@@ -23084,7 +23103,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -23141,7 +23160,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -23198,7 +23217,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -23255,13 +23274,13 @@ api_surface_contract:
       source_path: docs/en/docs/how-to/authentication-error-status-code.md
       mapping_status: candidate
       fixture_id: fastapi.docs.how-to-authentication-error-status-code
-      fixture_design_ref: /fixture_designs/46
+      fixture_design_ref: /fixture_designs/48
       observation_selectors: *id018
     - coverage_matrix_ref: /coverage_matrix/552
       source_path: docs/en/docs/reference/security/index.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-security-index
-      fixture_design_ref: /fixture_designs/67
+      fixture_design_ref: /fixture_designs/69
       observation_selectors: *id017
     feature_ids:
     - dependency-security
@@ -23319,7 +23338,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/sse.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-sse
-      fixture_design_ref: /fixture_designs/68
+      fixture_design_ref: /fixture_designs/70
       observation_selectors: &id019
       - http.status
       - http.headers.ordered
@@ -23375,7 +23394,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/sse.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-sse
-      fixture_design_ref: /fixture_designs/68
+      fixture_design_ref: /fixture_designs/70
       observation_selectors: *id019
     feature_ids:
     - app-routing
@@ -23396,6 +23415,323 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1533
+      status: full-contract-not-established
+      rust_binding: null
+  - id: fastapi.sse.ServerSentEvent.comment
+    kind: field
+    source_candidate_ref: /api_candidates/1535
+    source_inventory_refs:
+    - /modules/41/definitions/5/members/5
+    source_signature_state: not-recorded
+    source_signature_refs: []
+    runtime_reflections:
+      core:
+        ref: /symbols/1534
+        status: reflected
+        object_identity: null
+        kind: pydantic_field
+        signature_status: not-applicable
+      standard:
+        ref: /symbols/1534
+        object_identity: null
+        kind: pydantic_field
+        signature_status: not-applicable
+    signature_contract_state: non-callable-surface
+    alias_refs: []
+    deprecation_refs: []
+    error_contract_refs: []
+    documentation_contract_refs:
+    - coverage_matrix_ref: /coverage_matrix/610
+      source_path: docs/en/docs/tutorial/server-sent-events.md
+      mapping_status: candidate
+      fixture_id: fastapi.docs.tutorial-server-sent-events
+      fixture_design_ref: /fixture_designs/118
+      observation_selectors: &id020
+      - http.status
+      - http.headers.ordered
+      - http.body.bytes
+      - route.match
+      - validation.error_class
+    feature_ids:
+    - app-routing
+    - python-data-encoding
+    - request-validation
+    - response-serialization
+    observation_selectors:
+    - http.body.bytes
+    - http.headers.ordered
+    - http.status
+    - route.match
+    - validation.error_class
+    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    target_binding:
+      target_profile: fastapi-rs-python-consumer
+      public_python_path: fastapi.sse.ServerSentEvent.comment
+      implementation_owner: fastapi-rs
+      implementation_owner_evidence:
+        kind: fastapi_owned_or_adapter
+        source_candidate_refs:
+        - /api_candidates/1535
+      status: full-contract-not-established
+      rust_binding: null
+  - id: fastapi.sse.ServerSentEvent.data
+    kind: field
+    source_candidate_ref: /api_candidates/1536
+    source_inventory_refs:
+    - /modules/41/definitions/5/members/0
+    source_signature_state: not-recorded
+    source_signature_refs: []
+    runtime_reflections:
+      core:
+        ref: /symbols/1535
+        status: reflected
+        object_identity: null
+        kind: pydantic_field
+        signature_status: not-applicable
+      standard:
+        ref: /symbols/1535
+        object_identity: null
+        kind: pydantic_field
+        signature_status: not-applicable
+    signature_contract_state: non-callable-surface
+    alias_refs: []
+    deprecation_refs: []
+    error_contract_refs: []
+    documentation_contract_refs:
+    - coverage_matrix_ref: /coverage_matrix/610
+      source_path: docs/en/docs/tutorial/server-sent-events.md
+      mapping_status: candidate
+      fixture_id: fastapi.docs.tutorial-server-sent-events
+      fixture_design_ref: /fixture_designs/118
+      observation_selectors: *id020
+    feature_ids:
+    - app-routing
+    - python-data-encoding
+    - request-validation
+    - response-serialization
+    observation_selectors:
+    - http.body.bytes
+    - http.headers.ordered
+    - http.status
+    - route.match
+    - validation.error_class
+    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    target_binding:
+      target_profile: fastapi-rs-python-consumer
+      public_python_path: fastapi.sse.ServerSentEvent.data
+      implementation_owner: fastapi-rs
+      implementation_owner_evidence:
+        kind: fastapi_owned_or_adapter
+        source_candidate_refs:
+        - /api_candidates/1536
+      status: full-contract-not-established
+      rust_binding: null
+  - id: fastapi.sse.ServerSentEvent.event
+    kind: field
+    source_candidate_ref: /api_candidates/1537
+    source_inventory_refs:
+    - /modules/41/definitions/5/members/2
+    source_signature_state: not-recorded
+    source_signature_refs: []
+    runtime_reflections:
+      core:
+        ref: /symbols/1536
+        status: reflected
+        object_identity: null
+        kind: pydantic_field
+        signature_status: not-applicable
+      standard:
+        ref: /symbols/1536
+        object_identity: null
+        kind: pydantic_field
+        signature_status: not-applicable
+    signature_contract_state: non-callable-surface
+    alias_refs: []
+    deprecation_refs: []
+    error_contract_refs: []
+    documentation_contract_refs:
+    - coverage_matrix_ref: /coverage_matrix/610
+      source_path: docs/en/docs/tutorial/server-sent-events.md
+      mapping_status: candidate
+      fixture_id: fastapi.docs.tutorial-server-sent-events
+      fixture_design_ref: /fixture_designs/118
+      observation_selectors: *id020
+    feature_ids:
+    - app-routing
+    - python-data-encoding
+    - request-validation
+    - response-serialization
+    observation_selectors:
+    - http.body.bytes
+    - http.headers.ordered
+    - http.status
+    - route.match
+    - validation.error_class
+    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    target_binding:
+      target_profile: fastapi-rs-python-consumer
+      public_python_path: fastapi.sse.ServerSentEvent.event
+      implementation_owner: fastapi-rs
+      implementation_owner_evidence:
+        kind: fastapi_owned_or_adapter
+        source_candidate_refs:
+        - /api_candidates/1537
+      status: full-contract-not-established
+      rust_binding: null
+  - id: fastapi.sse.ServerSentEvent.id
+    kind: field
+    source_candidate_ref: /api_candidates/1538
+    source_inventory_refs:
+    - /modules/41/definitions/5/members/3
+    source_signature_state: not-recorded
+    source_signature_refs: []
+    runtime_reflections:
+      core:
+        ref: /symbols/1537
+        status: reflected
+        object_identity: null
+        kind: pydantic_field
+        signature_status: not-applicable
+      standard:
+        ref: /symbols/1537
+        object_identity: null
+        kind: pydantic_field
+        signature_status: not-applicable
+    signature_contract_state: non-callable-surface
+    alias_refs: []
+    deprecation_refs: []
+    error_contract_refs: []
+    documentation_contract_refs:
+    - coverage_matrix_ref: /coverage_matrix/610
+      source_path: docs/en/docs/tutorial/server-sent-events.md
+      mapping_status: candidate
+      fixture_id: fastapi.docs.tutorial-server-sent-events
+      fixture_design_ref: /fixture_designs/118
+      observation_selectors: *id020
+    feature_ids:
+    - app-routing
+    - python-data-encoding
+    - request-validation
+    - response-serialization
+    observation_selectors:
+    - http.body.bytes
+    - http.headers.ordered
+    - http.status
+    - route.match
+    - validation.error_class
+    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    target_binding:
+      target_profile: fastapi-rs-python-consumer
+      public_python_path: fastapi.sse.ServerSentEvent.id
+      implementation_owner: fastapi-rs
+      implementation_owner_evidence:
+        kind: fastapi_owned_or_adapter
+        source_candidate_refs:
+        - /api_candidates/1538
+      status: full-contract-not-established
+      rust_binding: null
+  - id: fastapi.sse.ServerSentEvent.raw_data
+    kind: field
+    source_candidate_ref: /api_candidates/1539
+    source_inventory_refs:
+    - /modules/41/definitions/5/members/1
+    source_signature_state: not-recorded
+    source_signature_refs: []
+    runtime_reflections:
+      core:
+        ref: /symbols/1538
+        status: reflected
+        object_identity: null
+        kind: pydantic_field
+        signature_status: not-applicable
+      standard:
+        ref: /symbols/1538
+        object_identity: null
+        kind: pydantic_field
+        signature_status: not-applicable
+    signature_contract_state: non-callable-surface
+    alias_refs: []
+    deprecation_refs: []
+    error_contract_refs: []
+    documentation_contract_refs:
+    - coverage_matrix_ref: /coverage_matrix/610
+      source_path: docs/en/docs/tutorial/server-sent-events.md
+      mapping_status: candidate
+      fixture_id: fastapi.docs.tutorial-server-sent-events
+      fixture_design_ref: /fixture_designs/118
+      observation_selectors: *id020
+    feature_ids:
+    - app-routing
+    - python-data-encoding
+    - request-validation
+    - response-serialization
+    observation_selectors:
+    - http.body.bytes
+    - http.headers.ordered
+    - http.status
+    - route.match
+    - validation.error_class
+    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    target_binding:
+      target_profile: fastapi-rs-python-consumer
+      public_python_path: fastapi.sse.ServerSentEvent.raw_data
+      implementation_owner: fastapi-rs
+      implementation_owner_evidence:
+        kind: fastapi_owned_or_adapter
+        source_candidate_refs:
+        - /api_candidates/1539
+      status: full-contract-not-established
+      rust_binding: null
+  - id: fastapi.sse.ServerSentEvent.retry
+    kind: field
+    source_candidate_ref: /api_candidates/1540
+    source_inventory_refs:
+    - /modules/41/definitions/5/members/4
+    source_signature_state: not-recorded
+    source_signature_refs: []
+    runtime_reflections:
+      core:
+        ref: /symbols/1539
+        status: reflected
+        object_identity: null
+        kind: pydantic_field
+        signature_status: not-applicable
+      standard:
+        ref: /symbols/1539
+        object_identity: null
+        kind: pydantic_field
+        signature_status: not-applicable
+    signature_contract_state: non-callable-surface
+    alias_refs: []
+    deprecation_refs: []
+    error_contract_refs: []
+    documentation_contract_refs:
+    - coverage_matrix_ref: /coverage_matrix/610
+      source_path: docs/en/docs/tutorial/server-sent-events.md
+      mapping_status: candidate
+      fixture_id: fastapi.docs.tutorial-server-sent-events
+      fixture_design_ref: /fixture_designs/118
+      observation_selectors: *id020
+    feature_ids:
+    - app-routing
+    - python-data-encoding
+    - request-validation
+    - response-serialization
+    observation_selectors:
+    - http.body.bytes
+    - http.headers.ordered
+    - http.status
+    - route.match
+    - validation.error_class
+    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    target_binding:
+      target_profile: fastapi-rs-python-consumer
+      public_python_path: fastapi.sse.ServerSentEvent.retry
+      implementation_owner: fastapi-rs
+      implementation_owner_evidence:
+        kind: fastapi_owned_or_adapter
+        source_candidate_refs:
+        - /api_candidates/1540
       status: full-contract-not-established
       rust_binding: null
   - id: fastapi.staticfiles.StaticFiles
@@ -23472,8 +23808,8 @@ api_surface_contract:
       source_path: docs/en/docs/reference/status.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-status
-      fixture_design_ref: /fixture_designs/69
-      observation_selectors: *id020
+      fixture_design_ref: /fixture_designs/71
+      observation_selectors: *id021
     feature_ids:
     - app-routing
     - public-api-errors
@@ -23654,7 +23990,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/websockets.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-websockets
-      fixture_design_ref: /fixture_designs/71
+      fixture_design_ref: /fixture_designs/73
       observation_selectors: *id004
     feature_ids:
     - app-routing
@@ -23705,7 +24041,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/websockets.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-websockets
-      fixture_design_ref: /fixture_designs/71
+      fixture_design_ref: /fixture_designs/73
       observation_selectors: *id004
     feature_ids:
     - app-routing
@@ -23758,7 +24094,7 @@ api_surface_contract:
       source_path: docs/en/docs/reference/websockets.md
       mapping_status: candidate
       fixture_id: fastapi.docs.reference-websockets
-      fixture_design_ref: /fixture_designs/71
+      fixture_design_ref: /fixture_designs/73
       observation_selectors: *id004
     feature_ids:
     - app-routing

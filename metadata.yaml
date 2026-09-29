@@ -95,6 +95,24 @@ import_binding_classification_review:
     api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
     api_review_sha256: b91b53688fe8a45daac10b4a1e6f15f97cf750453161ceddb8e04eaf198937e3
 
+source_api_classification_review:
+  artifact: tests/fixtures/api-source-classification-review.json
+  schema: fastapi-rs/source-api-classification-review@1
+  sha256: b5e9d810a994e0fb9a39f1438cfb97c1c148eba56c0e1a90f7ad05251a6e50e1
+  source_identity:
+    package: FastAPI
+    version: 0.141.1
+    source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
+  counts:
+    candidates: 154
+    supported: 6
+    private_or_internal: 147
+    uncertain: 1
+  candidate_ids_sha256: 293940327e85349574d3033dabe2767fa97597e4fb533bead82664f2bc2f3805
+  selection:
+    uncertain_imported_modules: [collections.abc, fastapi._compat, typing]
+    uncertain_candidate_id_prefixes: [fastapi.sse.]
+
 classification_atlas:
   artifact: tests/fixtures/compatibility-atlas.json
   schema: fastapi-rs/compatibility-atlas@2
@@ -114,6 +132,9 @@ classification_atlas:
     reviewed_import_binding_candidates:
       artifact: /counts/reviewed_import_binding_candidates
       manifest: /source_artifacts/compatibility_atlas/counts/reviewed_import_binding_candidates
+    reviewed_source_api_candidates:
+      artifact: /counts/reviewed_source_api_candidates
+      manifest: /source_artifacts/compatibility_atlas/counts/reviewed_source_api_candidates
     supported:
       artifact: /counts/api_classifications/supported
       manifest: /source_artifacts/compatibility_atlas/counts/source_classifications/supported

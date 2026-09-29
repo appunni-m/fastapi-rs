@@ -23,6 +23,11 @@ from pathlib import Path
 from typing import Any
 
 import yaml
+from source_api_review_schema import (
+    SourceApiReviewSchemaError,
+    validate_source_api_review_schema,
+    validate_source_api_selection,
+)
 
 PROJECT = Path(__file__).resolve().parents[1]
 FASTAPI_VERSION = "0.141.1"
@@ -6639,6 +6644,143 @@ def load_callable_classification_review(
     return review
 
 
+def load_source_api_classification_review(
+    path: Path,
+    *,
+    fastapi_root: Path,
+    fastapi_identity: dict[str, Any],
+    selection: dict[str, list[str]],
+) -> dict[str, Any]:
+    """Load a pinned-source review for the selected non-callable/API-name slice."""
+    try:
+        review = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+        raise AtlasError("cannot read source API classification review: " + str(exc)) from exc
+    expected_identity = {
+        "package": "FastAPI",
+        "version": FASTAPI_VERSION,
+        "source_commit": fastapi_identity["commit"],
+    }
+    try:
+        validate_source_api_review_schema(
+            review,
+            expected_identity=expected_identity,
+            expected_selection=selection,
+        )
+    except SourceApiReviewSchemaError as exc:
+        raise AtlasError(str(exc)) from exc
+    scope = review.get("scope")
+    rows = review.get("rows")
+    identifiers = [row.get("id") for row in rows if isinstance(row, dict)]
+    expected_ids_digest = hashlib.sha256(
+        ("\n".join(sorted(identifiers)) + "\n").encode()
+    ).hexdigest()
+    if scope.get("candidate_ids_sha256") != expected_ids_digest:
+        raise AtlasError(
+            "source API classification review candidate summary does not match its rows"
+        )
+
+    counts: Counter[str] = Counter()
+    root = fastapi_root.resolve()
+    for row in rows:
+        identifier = row.get("id")
+        recommendation = row.get("recommendation")
+        candidate_kind = row.get("candidate_kind")
+        source = row.get("source")
+        binding = row.get("binding")
+        evidence_basis = row.get("evidence_basis")
+        evidence = row.get("evidence")
+        reason = row.get("reason")
+        if (
+            not isinstance(identifier, str)
+            or recommendation not in {"supported", "private/internal", "uncertain"}
+            or not isinstance(candidate_kind, str)
+            or not isinstance(source, dict)
+            or not isinstance(source.get("path"), str)
+            or not isinstance(source.get("line"), int)
+            or isinstance(source.get("line"), bool)
+            or not isinstance(evidence_basis, list)
+            or not evidence_basis
+            or any(not isinstance(value, str) or not value for value in evidence_basis)
+            or not isinstance(evidence, list)
+            or not evidence
+            or not isinstance(reason, str)
+            or not reason.strip()
+        ):
+            raise AtlasError(
+                "source API classification review row is malformed: " + str(identifier)
+            )
+        if candidate_kind == "import_binding":
+            if not isinstance(binding, dict) or not all(
+                isinstance(binding.get(key), str) for key in ("module", "name", "target")
+            ):
+                raise AtlasError("source API import review lacks binding identity: " + identifier)
+        elif binding is not None:
+            raise AtlasError("non-import source API review row has binding identity: " + identifier)
+
+        source_path = (root / source["path"]).resolve()
+        try:
+            source_path.relative_to(root)
+        except ValueError as exc:
+            raise AtlasError("source API review source escapes FastAPI: " + identifier) from exc
+        if not source_path.is_file():
+            raise AtlasError("source API review source is missing: " + source["path"])
+        source_lines = source_path.read_text(encoding="utf-8", errors="replace").splitlines()
+        if not 1 <= source["line"] <= len(source_lines):
+            raise AtlasError("source API review source line is out of range: " + identifier)
+
+        evidence_roles: set[str] = set()
+        has_public_docs = False
+        for reference in evidence:
+            if (
+                not isinstance(reference, dict)
+                or not isinstance(reference.get("path"), str)
+                or not isinstance(reference.get("line"), int)
+                or isinstance(reference.get("line"), bool)
+                or not isinstance(reference.get("role"), str)
+                or not reference["role"]
+            ):
+                raise AtlasError("source API review evidence is malformed: " + identifier)
+            end_line = reference.get("end_line", reference["line"])
+            if not isinstance(end_line, int) or isinstance(end_line, bool):
+                raise AtlasError("source API review evidence range is malformed: " + identifier)
+            evidence_path = (root / reference["path"]).resolve()
+            try:
+                evidence_path.relative_to(root)
+            except ValueError as exc:
+                raise AtlasError(
+                    "source API review evidence escapes FastAPI: " + identifier
+                ) from exc
+            if not evidence_path.is_file():
+                raise AtlasError("source API review evidence is missing: " + reference["path"])
+            evidence_lines = evidence_path.read_text(
+                encoding="utf-8", errors="replace"
+            ).splitlines()
+            if not 1 <= reference["line"] <= end_line <= len(evidence_lines):
+                raise AtlasError("source API review evidence line is out of range: " + identifier)
+            evidence_roles.add(reference["role"])
+            has_public_docs |= reference["path"].startswith("docs/en/docs/")
+
+        if recommendation == "supported" and (
+            "documented" not in evidence_basis or not has_public_docs
+        ):
+            raise AtlasError(
+                "supported source API review lacks documentation evidence: " + identifier
+            )
+        if recommendation == "private/internal" and (
+            "implementation-only" not in evidence_basis
+            or "fastapi-implementation-use" not in evidence_roles
+        ):
+            raise AtlasError(
+                "internal source API review lacks implementation evidence: " + identifier
+            )
+        counts[recommendation] += 1
+
+    if scope.get("recommendation_counts") != dict(counts):
+        raise AtlasError("source API classification review recommendation counts are stale")
+    return review
+
+
 def _pinned_review_source_text(
     source: str,
     path_text: str,
@@ -7099,6 +7241,89 @@ def apply_import_binding_classification_review(
                 )
 
 
+def apply_source_api_classification_review(
+    candidates: dict[str, dict[str, Any]],
+    review: dict[str, Any],
+    *,
+    selection: dict[str, list[str]],
+) -> None:
+    """Apply reviewed source-only dispositions to the exact selected candidate slice."""
+    imported_modules = set(selection["uncertain_imported_modules"])
+    candidate_prefixes = tuple(selection["uncertain_candidate_id_prefixes"])
+    expected = {
+        identifier
+        for identifier, candidate in candidates.items()
+        if candidate.get("classification") == "uncertain"
+        and (
+            (
+                candidate.get("kind") == "import_binding"
+                and candidate.get("imported_module") in imported_modules
+            )
+            or identifier.startswith(candidate_prefixes)
+        )
+    }
+    rows = {row["id"]: row for row in review["rows"]}
+    if set(rows) != expected:
+        missing = sorted(expected - set(rows))
+        extra = sorted(set(rows) - expected)
+        raise AtlasError(
+            "source API classification review does not match its uncertain candidate denominator; "
+            f"missing={missing[:5]}, extra={extra[:5]}"
+        )
+    for identifier, row in rows.items():
+        candidate = candidates[identifier]
+        source = row["source"]
+        if row["candidate_kind"] != candidate.get("kind"):
+            raise AtlasError(
+                "source API review candidate kind differs from inventory: " + identifier
+            )
+        if not any(
+            reference.get("path") == source["path"]
+            and reference.get("line", 0)
+            <= source["line"]
+            <= reference.get("end_line", reference.get("line", 0))
+            for reference in candidate.get("source_evidence", [])
+        ):
+            raise AtlasError(
+                "source API review source location differs from inventory: " + identifier
+            )
+        binding = row.get("binding")
+        if binding is not None and (
+            candidate.get("kind") != "import_binding"
+            or binding.get("module") != candidate.get("imported_module")
+            or binding.get("name") != candidate.get("imported_name")
+            or binding.get("target") != candidate.get("target_path")
+        ):
+            raise AtlasError("source API review binding differs from inventory: " + identifier)
+
+        candidate["classification"] = row["recommendation"]
+        candidate["classification_evidence_rule"] = (
+            "Reviewed pinned FastAPI source/docs evidence; this source classification makes no "
+            "FastAPI-RS support or parity claim."
+        )
+        candidate["classification_review"] = {
+            "source": source,
+            "candidate_kind": row["candidate_kind"],
+            "binding": binding,
+            "evidence_basis": row["evidence_basis"],
+            "evidence": row["evidence"],
+            "reason": row["reason"],
+        }
+        if row["recommendation"] == "supported":
+            for reference in row["evidence"]:
+                if reference["role"] == "fastapi-public-documentation" and reference[
+                    "path"
+                ].startswith("docs/en/docs/"):
+                    public_ref: dict[str, Any] = {
+                        "kind": "reviewed_source_api_documentation_contract",
+                        "path": reference["path"],
+                        "line": reference["line"],
+                    }
+                    if reference.get("end_line", reference["line"]) != reference["line"]:
+                        public_ref["end_line"] = reference["end_line"]
+                    candidate["public_evidence"].append(public_ref)
+
+
 def generate(args: argparse.Namespace) -> dict[str, Any]:
     first_slice_workflow = read_first_asgi_workflow()
     fastapi_root = args.fastapi_source.resolve()
@@ -7106,6 +7331,11 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
     starlette_rs_root = args.starlette_rs_root.resolve()
     project_metadata = yaml.safe_load((PROJECT / "metadata.yaml").read_text(encoding="utf-8"))
     starlette_rs_revision = project_metadata["starlette_rs"]["commit"]
+    source_api_meta = project_metadata["source_api_classification_review"]
+    try:
+        source_api_selection = validate_source_api_selection(source_api_meta["selection"])
+    except (KeyError, SourceApiReviewSchemaError) as exc:
+        raise AtlasError(f"metadata.yaml source API selection is invalid: {exc}") from exc
     try:
         actual_starlette_rs_revision = subprocess.check_output(
             ["git", "-C", str(starlette_rs_root), "rev-parse", "HEAD"],
@@ -7158,6 +7388,12 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         fastapi_identity=fastapi_identity,
         starlette_identity=starlette_identity,
         starlette_rs_commit=starlette_rs_revision,
+    )
+    source_api_review = load_source_api_classification_review(
+        args.source_api_review,
+        fastapi_root=fastapi_root,
+        fastapi_identity=fastapi_identity,
+        selection=source_api_selection,
     )
 
     def starlette_rs_artifact_path(path_text: str) -> Path:
@@ -7446,6 +7682,9 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         record["classification_evidence_rule"] = evidence_rule
     apply_callable_classification_review(candidates, callable_review)
     apply_import_binding_classification_review(candidates, import_binding_review)
+    apply_source_api_classification_review(
+        candidates, source_api_review, selection=source_api_selection
+    )
     for record in candidates.values():
         record["candidate_kinds"].sort()
         record["source_evidence"].sort(key=lambda x: (x["path"], x["line"]))
@@ -9018,6 +9257,13 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             "scope": import_binding_review["scope"],
             "pinned_starlette_rs_sources": import_binding_review["pinned_starlette_rs_sources"],
         },
+        "api_source_classification_review": {
+            "path": args.source_api_review.resolve().relative_to(PROJECT).as_posix(),
+            "schema": source_api_review["schema"],
+            "sha256": sha256(args.source_api_review.resolve()),
+            "source_identity": source_api_review["source_identity"],
+            "scope": source_api_review["scope"],
+        },
         "api_candidates": sorted(candidates.values(), key=lambda x: x["id"]),
         "aliases": aliases,
         "deprecations": deprecations,
@@ -9039,6 +9285,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             "api_candidates": len(candidates),
             "reviewed_callable_candidates": len(callable_review["rows"]),
             "reviewed_import_binding_candidates": len(import_binding_review["rows"]),
+            "reviewed_source_api_candidates": len(source_api_review["rows"]),
             "api_classifications": dict(
                 Counter(record["classification"] for record in candidates.values())
             ),
@@ -9476,6 +9723,7 @@ def _sync_manifest_artifact_metadata(
             "sha256": sha256(atlas_path),
             "api_candidates": counts["api_candidates"],
             "reviewed_import_binding_candidates": counts["reviewed_import_binding_candidates"],
+            "reviewed_source_api_candidates": counts["reviewed_source_api_candidates"],
             "supported": counts["api_classifications"]["supported"],
             "private_or_internal": counts["api_classifications"]["private/internal"],
             "uncertain": counts["api_classifications"]["uncertain"],
@@ -9585,6 +9833,11 @@ def main(argv: Sequence[str] | None = None) -> int:
         "--import-binding-review",
         type=Path,
         default=PROJECT / "tests/fixtures/api-import-binding-classification-review.json",
+    )
+    parser.add_argument(
+        "--source-api-review",
+        type=Path,
+        default=PROJECT / "tests/fixtures/api-source-classification-review.json",
     )
     parser.add_argument(
         "--output", type=Path, default=PROJECT / "tests/fixtures/compatibility-atlas.json"

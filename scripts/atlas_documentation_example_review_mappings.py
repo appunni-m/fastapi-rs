@@ -285,6 +285,60 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
             }
         ],
     },
+    "docs_src/header_params/tutorial003_py310.py": {
+        "rationale": (
+            "The documented route declares optional list[str] x_token values with "
+            "Header(default=None). The linked request cases cover an omitted value, one "
+            "value, and repeated values in order; this partial mapping does not claim other "
+            "Header options or parameter types."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/header_params/tutorial003_py310.py",
+                "start_line": 6,
+                "end_line": 8,
+                "role": "documented direct optional list header declaration",
+            }
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/query-header-parameter-header-tutorial003-direct.yaml",
+                "case_ids": [
+                    "fastapi.query-header-review.header003.direct.missing-list-header",
+                    "fastapi.query-header-review.header003.direct.single-list-header-value",
+                    "fastapi.query-header-review.header003.direct.repeated-list-header-values",
+                ],
+                "observation_selectors": ["http.body.bytes", "http.status"],
+            }
+        ],
+    },
+    "docs_src/header_params/tutorial003_an_py310.py": {
+        "rationale": (
+            "The documented route declares optional list[str] x_token values with Header() "
+            "and a Python default of None. The linked request cases cover an omitted value, "
+            "one value, and repeated values in order; this partial mapping does not claim "
+            "other Header options or parameter types."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/header_params/tutorial003_an_py310.py",
+                "start_line": 8,
+                "end_line": 10,
+                "role": "documented Annotated optional list header declaration",
+            }
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/query-header-parameter-header-tutorial003-annotated.yaml",
+                "case_ids": [
+                    "fastapi.query-header-review.header003.annotated.missing-list-header",
+                    "fastapi.query-header-review.header003.annotated.single-list-header-value",
+                    "fastapi.query-header-review.header003.annotated.repeated-list-header-values",
+                ],
+                "observation_selectors": ["http.body.bytes", "http.status"],
+            }
+        ],
+    },
     "docs_src/header_params/tutorial002_an_py310.py": {
         "rationale": (
             "The linked cases sample the documented Annotated Header(convert_underscores=False) "

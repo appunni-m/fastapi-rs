@@ -13,18 +13,18 @@ This source-backed compatibility atlas indexes the API denominator and candidate
 
 | Candidates | Supported by source evidence | Private/internal | Uncertain |
 |---:|---:|---:|---:|
-| 1593 | 446 | 595 | 552 |
+| 1593 | 452 | 742 | 399 |
 
 `api_candidates` in the machine-readable atlas carries a FastAPI source path/line for every row plus public evidence or an explicit uncertainty/private rule. `supported` classifies the upstream API surface only; it does not claim target implementation support.
 
 ## Per-symbol API contract in the active manifest
 
-The single `tests/fixtures/manifest.yaml` indexes 446 source-supported symbols, with pointers to the pinned AST inventory and both runtime-reflection profiles. It links alias, deprecation, error, documented-feature, selector, and planned Python import-path evidence; 439 symbols link to a documented-page fixture design. The current Python facade directly re-exports 11 native names; this source contract does not measure their behavioral completeness, and broader operation-level review remains pending.
+The single `tests/fixtures/manifest.yaml` indexes 452 source-supported symbols, with pointers to the pinned AST inventory and both runtime-reflection profiles. It links alias, deprecation, error, documented-feature, selector, and planned Python import-path evidence; 445 symbols link to a documented-page fixture design. The current Python facade directly re-exports 11 native names; this source contract does not measure their behavioral completeness, and broader operation-level review remains pending.
 
 | Signature/shape evidence | Symbols |
 |---|---:|
 | `module-object-no-call-signature` | 1 |
-| `non-callable-surface` | 222 |
+| `non-callable-surface` | 228 |
 | `runtime-signature-reflected` | 222 |
 | `runtime-signature-unavailable` | 1 |
 
@@ -34,17 +34,17 @@ The single `tests/fixtures/manifest.yaml` indexes 446 source-supported symbols, 
 |---|---:|---:|---:|---:|---:|
 | Upstream `test_*.py` modules | 492 | 450 | 450 | 0 | 42 |
 | User-facing documentation pages | 155 | 104 | 104 | 0 | 51 |
-| Documentation Python files (examples + support initializers) | 461 | 16 | 16 | 338 | 107 |
+| Documentation Python files (examples + support initializers) | 461 | 18 | 18 | 336 | 107 |
 
-Python-source exclusions include the documented Pydantic Settings configuration file, one debugging/setup example, and 91 package initializers. Of the remaining examples, 16 have a reviewed direct input-workflow link; examples grouped with a documentation page inherit only page-level selectors, which do not claim that each example's behavior was exercised.
+Python-source exclusions include the documented Pydantic Settings configuration file, one debugging/setup example, and 91 package initializers. Of the remaining examples, 18 have a reviewed direct input-workflow link; examples grouped with a documentation page inherit only page-level selectors, which do not claim that each example's behavior was exercised.
 
-Review state is separate from coverage completeness. `reviewed_partial` means pinned source evidence and exact indexed workflows, cases, and selectors were reviewed for the linked behavior; it does not claim complete source behavior or parity. Pending counts identify examples without that direct review. The materialized index has 450 distinct upstream test modules, 104 documentation pages, and 16 exact documentation Python examples linked to workflows; all 1010 mapping rows are partial. No source module, documentation page, or Python example is fully covered by an input workflow.
+Review state is separate from coverage completeness. `reviewed_partial` means pinned source evidence and exact indexed workflows, cases, and selectors were reviewed for the linked behavior; it does not claim complete source behavior or parity. Pending counts identify examples without that direct review. The materialized index has 450 distinct upstream test modules, 104 documentation pages, and 18 exact documentation Python examples linked to workflows; all 1012 mapping rows are partial. No source module, documentation page, or Python example is fully covered by an input workflow.
 
 `mapping_status` labels source-to-feature mapping, while `review_status` and independent workflow links record whether a partial input mapping was reviewed. A row may therefore retain `candidate` while already having `review_status: reviewed_partial` and exact fixture cases/selectors. The documentation denominator is feature pages; `documented_sections` are discovery leads, not separately reviewed workflow units.
 
 Candidate function and section records carry source path/SHA evidence, exact whole-token signals, family IDs, and family-level selectors. Per-function mapping scope distinguishes reviewed source mappings, function-body signals, and filename candidates. Test modules index function names/lines without copying bodies. These records are backlog leads, not independent executable parity cases; linked workflows cover only their declared partial behavior, and additional behavior needs tailored stimuli and selector review. Rows without a signal remain `review_required`; exclusions include a reason. Benchmark modules are routed to correctness-gated benchmark work.
 
-`make parity-validate` checks 1593 API classifications against pinned FastAPI source evidence, every source digest in the coverage matrix, fixture links or exclusion reasons for all 492 test modules and 155 documentation pages, direct Starlette 1.6.0 dependency edges, and all 49 declared observation selectors. It also validates 570 input-only design records, including 2108 per-function test designs, selector evidence, source digests, and the absence of expected result fields. The current materialized-input index contains 440 input-only workflows, 1748 cases, and 1010 partial source mappings. These are oracle inputs, not target parity results; the remaining design candidates still need review and materialization. Selectors marked `planned` in `observation-selectors.json` still need runner support.
+`make parity-validate` checks 1593 API classifications against pinned FastAPI source evidence, every source digest in the coverage matrix, fixture links or exclusion reasons for all 492 test modules and 155 documentation pages, direct Starlette 1.6.0 dependency edges, and all 49 declared observation selectors. It also validates 572 input-only design records, including 2108 per-function test designs, selector evidence, source digests, and the absence of expected result fields. The current materialized-input index contains 440 input-only workflows, 1748 cases, and 1012 partial source mappings. These are oracle inputs, not target parity results; the remaining design candidates still need review and materialization. Selectors marked `planned` in `observation-selectors.json` still need runner support.
 
 ## Independently authored input workflows
 
@@ -324,8 +324,8 @@ Reviewed workflow recipes live in `tests/fixtures/input-recipes/parity/*.yaml`. 
 | `query-header-parameter-header-tutorial001-direct` | 5 | 2 | [`tests/fixtures/input-recipes/parity/query-header-parameter-header-tutorial001-direct.yaml`](../tests/fixtures/input-recipes/parity/query-header-parameter-header-tutorial001-direct.yaml) | [`tests/fixtures/workloads/query_header_parameter_tutorial_review.py`](../tests/fixtures/workloads/query_header_parameter_tutorial_review.py) |
 | `query-header-parameter-header-tutorial002-annotated` | 5 | 1 | [`tests/fixtures/input-recipes/parity/query-header-parameter-header-tutorial002-annotated.yaml`](../tests/fixtures/input-recipes/parity/query-header-parameter-header-tutorial002-annotated.yaml) | [`tests/fixtures/workloads/query_header_parameter_tutorial_review.py`](../tests/fixtures/workloads/query_header_parameter_tutorial_review.py) |
 | `query-header-parameter-header-tutorial002-direct` | 5 | 1 | [`tests/fixtures/input-recipes/parity/query-header-parameter-header-tutorial002-direct.yaml`](../tests/fixtures/input-recipes/parity/query-header-parameter-header-tutorial002-direct.yaml) | [`tests/fixtures/workloads/query_header_parameter_tutorial_review.py`](../tests/fixtures/workloads/query_header_parameter_tutorial_review.py) |
-| `query-header-parameter-header-tutorial003-annotated` | 4 | 1 | [`tests/fixtures/input-recipes/parity/query-header-parameter-header-tutorial003-annotated.yaml`](../tests/fixtures/input-recipes/parity/query-header-parameter-header-tutorial003-annotated.yaml) | [`tests/fixtures/workloads/query_header_parameter_tutorial_review.py`](../tests/fixtures/workloads/query_header_parameter_tutorial_review.py) |
-| `query-header-parameter-header-tutorial003-direct` | 4 | 1 | [`tests/fixtures/input-recipes/parity/query-header-parameter-header-tutorial003-direct.yaml`](../tests/fixtures/input-recipes/parity/query-header-parameter-header-tutorial003-direct.yaml) | [`tests/fixtures/workloads/query_header_parameter_tutorial_review.py`](../tests/fixtures/workloads/query_header_parameter_tutorial_review.py) |
+| `query-header-parameter-header-tutorial003-annotated` | 4 | 2 | [`tests/fixtures/input-recipes/parity/query-header-parameter-header-tutorial003-annotated.yaml`](../tests/fixtures/input-recipes/parity/query-header-parameter-header-tutorial003-annotated.yaml) | [`tests/fixtures/workloads/query_header_parameter_tutorial_review.py`](../tests/fixtures/workloads/query_header_parameter_tutorial_review.py) |
+| `query-header-parameter-header-tutorial003-direct` | 4 | 2 | [`tests/fixtures/input-recipes/parity/query-header-parameter-header-tutorial003-direct.yaml`](../tests/fixtures/input-recipes/parity/query-header-parameter-header-tutorial003-direct.yaml) | [`tests/fixtures/workloads/query_header_parameter_tutorial_review.py`](../tests/fixtures/workloads/query_header_parameter_tutorial_review.py) |
 | `query-header-parameter-query-tutorial001` | 4 | 1 | [`tests/fixtures/input-recipes/parity/query-header-parameter-query-tutorial001.yaml`](../tests/fixtures/input-recipes/parity/query-header-parameter-query-tutorial001.yaml) | [`tests/fixtures/workloads/query_header_parameter_tutorial_review.py`](../tests/fixtures/workloads/query_header_parameter_tutorial_review.py) |
 | `query-header-parameter-query-tutorial002` | 3 | 1 | [`tests/fixtures/input-recipes/parity/query-header-parameter-query-tutorial002.yaml`](../tests/fixtures/input-recipes/parity/query-header-parameter-query-tutorial002.yaml) | [`tests/fixtures/workloads/query_header_parameter_tutorial_review.py`](../tests/fixtures/workloads/query_header_parameter_tutorial_review.py) |
 | `query-header-parameter-query-tutorial003` | 4 | 1 | [`tests/fixtures/input-recipes/parity/query-header-parameter-query-tutorial003.yaml`](../tests/fixtures/input-recipes/parity/query-header-parameter-query-tutorial003.yaml) | [`tests/fixtures/workloads/query_header_parameter_tutorial_review.py`](../tests/fixtures/workloads/query_header_parameter_tutorial_review.py) |
