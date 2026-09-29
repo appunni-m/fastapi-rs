@@ -97,6 +97,9 @@ the FastAPI 0.141.1 oracle, release FastAPI-RS facade, and Starlette 1.6.0 plain
 route control. It measures direct ASGI dispatch without network/client startup
 and stores raw, identity-stamped samples under ignored `benchmark-results/`.
 This narrow baseline is not a full FastAPI performance claim.
+Choose the neighboring validation-error or chunked-body profile by setting
+`BENCHMARK_WORKLOAD=benchmarks/workloads/first-slice-invalid-asgi.yaml` or
+`BENCHMARK_WORKLOAD=benchmarks/workloads/first-slice-chunked-asgi.yaml`.
 
 ## Workspace layout
 

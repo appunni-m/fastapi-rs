@@ -1,0 +1,38 @@
+schema: fastapi-rs/benchmark-workload@1
+id: fastapi.first-slice.invalid-asgi
+title: Invalid item request through FastAPI validation and error serialization
+input:
+  path: tests/fixtures/inputs/parity/first-asgi-request.json
+  case_id: fastapi.first-slice.create-item-invalid
+correctness_gate:
+  parity_runner: scripts/parity/run_first_slice.py
+  parity_case_id: fastapi.first-slice.create-item-invalid
+  required_comparison: all-selected-cases-pass
+  require_equal_untimed_observation:
+  - status
+  - headers
+  - body
+subjects:
+- id: fastapi-0.141.1
+  kind: fastapi
+  environment: oracle
+- id: fastapi-rs-release
+  kind: fastapi-rs
+  environment: target
+timing:
+  boundary: one direct ASGI app invocation, including facade/native dispatch and captured ASGI sends
+  excludes:
+  - interpreter and module startup
+  - app construction and route registration
+  - ASGI scope and receive/send callback construction
+  - network and HTTP client
+  warmups: 50
+  rounds: 5
+  samples_per_round: 200
+  concurrency: 1
+  metrics:
+  - per-request latency nanoseconds: min, median, p95, p99, max, mean
+  - sequential request-loop throughput
+  raw_samples: retain all per-request latency samples
+reporting:
+  fastapi_rs_over_fastapi: report median and p95 ratios only
