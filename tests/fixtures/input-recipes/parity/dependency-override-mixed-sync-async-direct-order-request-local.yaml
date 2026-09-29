@@ -1,0 +1,63 @@
+# Pinned FastAPI 0.141.1 source evidence (tag commit
+# 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f):
+# fastapi/dependencies/utils.py:294-332 builds direct dependency edges in
+# signature parameter order; utils.py:615-616 initializes the request's
+# dependency cache, and :619-680 resolves edges in order, applies the
+# dependency_overrides mapping at :623-638, dispatches coroutine overrides at
+# :673-674 versus synchronous callables through the thread pool at :675-676,
+# then stores each value at :679-680. tests/test_dependency_overrides.py:39-40
+# and :208-213 cover an async override installed on app.dependency_overrides;
+# tests/test_dependency_models.py:22-27 and :133-139 distinguish synchronous
+# and coroutine callables; tests/test_dependency_cache.py:54-61 exercises
+# sequential requests with persistent call counters. This input combines those
+# dimensions: a first direct sync dependency remains unoverridden, then a
+# distinct direct dependency uses a flat async override, with both requests on
+# the same app.
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/dependency_override_mixed_sync_async_direct_order_request_local.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.dependencies.override-mixed-sync-async-direct-order-request-local
+  actions:
+  - action_id: first-request
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /mixed-sync-async-direct-order
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: second-request
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /mixed-sync-async-direct-order
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_dependency_overrides.py, kind: upstream_test}
+  - {path: tests/test_dependency_cache.py, kind: upstream_test}
+  - {path: tests/test_dependency_models.py, kind: upstream_test}

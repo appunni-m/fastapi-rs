@@ -104,6 +104,7 @@ enum OverridePreparation {
     },
 }
 
+#[derive(Clone, Copy, PartialEq, Eq)]
 enum DependencyOverrideCallable {
     Sync,
     CoroutineFunction,
@@ -853,9 +854,8 @@ impl CallablePlan {
         context: &mut InvocationContext<'_, '_>,
     ) -> PyResult<OverridePreparation> {
         let mut has_direct_dependency = false;
-        let mut every_edge_has_async_override = true;
         let mut has_async_override = false;
-        let mut async_overrides = Vec::new();
+        let mut direct_dependencies = Vec::new();
         let mut dependency_edge_index = 0;
 
         for parameter in &self.parameters {
@@ -868,32 +868,36 @@ impl CallablePlan {
 
             let cache_key = plan.callable.as_ptr() as usize;
             let original_callable = plan.callable.bind(context.py);
-            let Some(replacement) = context.dependency_overrides.get_item(original_callable)?
-            else {
-                every_edge_has_async_override = false;
-                continue;
+            let replacement = context.dependency_overrides.get_item(original_callable)?;
+            let (callable, callable_kind) = match replacement {
+                Some(replacement) if !replacement.is(original_callable) => {
+                    let callable_kind = dependency_override_callable(context.py, &replacement)?;
+                    match callable_kind {
+                        DependencyOverrideCallable::AsyncCallableInstance => {
+                            return Err(PyNotImplementedError::new_err(
+                                "async callable-instance dependency overrides are not supported",
+                            ));
+                        }
+                        DependencyOverrideCallable::CoroutineFunction => {
+                            has_async_override = true;
+                        }
+                        DependencyOverrideCallable::Sync => {}
+                    }
+                    (replacement.unbind(), callable_kind)
+                }
+                _ => {
+                    let callable = plan.callable.clone_ref(context.py);
+                    let callable_kind =
+                        dependency_override_callable(context.py, callable.bind(context.py))?;
+                    (callable, callable_kind)
+                }
             };
-            if replacement.is(original_callable) {
-                every_edge_has_async_override = false;
-                continue;
-            }
-            match dependency_override_callable(context.py, &replacement)? {
-                DependencyOverrideCallable::Sync => {
-                    every_edge_has_async_override = false;
-                    continue;
-                }
-                DependencyOverrideCallable::AsyncCallableInstance => {
-                    return Err(PyNotImplementedError::new_err(
-                        "async callable-instance dependency overrides are not supported",
-                    ));
-                }
-                DependencyOverrideCallable::CoroutineFunction => has_async_override = true,
-            }
-            async_overrides.push((
+            direct_dependencies.push((
                 edge_index,
                 cache_key,
                 *use_cache,
-                replacement.unbind(),
+                callable,
+                callable_kind,
                 plan.path_parameters.clone(),
             ));
         }
@@ -903,7 +907,6 @@ impl CallablePlan {
         }
 
         if !has_direct_dependency
-            || !every_edge_has_async_override
             || matches!(
                 dependency_override_callable(context.py, self.callable.bind(context.py))?,
                 DependencyOverrideCallable::CoroutineFunction
@@ -911,30 +914,46 @@ impl CallablePlan {
             )
         {
             return Err(PyNotImplementedError::new_err(
-                "async dependency overrides require direct endpoint edges replaced by flat coroutine functions on a synchronous endpoint",
+                "async dependency overrides require flat direct dependencies on a synchronous endpoint",
             ));
         }
 
-        // Validate the complete override graph before invoking any replacement. This
-        // keeps unsupported mixed or nested graphs from passing coroutine objects to
-        // the endpoint or performing earlier replacement work before rejection.
-        let mut replacement_plans = Vec::with_capacity(async_overrides.len());
-        for (edge_index, cache_key, use_cache, replacement, path_parameters) in async_overrides {
-            let replacement_plan = CallablePlan::build(context.py, replacement, &path_parameters)?;
-            if replacement_plan
+        // Validate every effective edge before invoking any dependency. The
+        // scheduler below then preserves declaration order across synchronous
+        // and coroutine callables without passing coroutine objects to the
+        // endpoint or performing work before an unsupported graph is rejected.
+        let mut dependency_plans = Vec::with_capacity(direct_dependencies.len());
+        for (edge_index, cache_key, use_cache, callable, callable_kind, path_parameters) in
+            direct_dependencies
+        {
+            if callable_kind == DependencyOverrideCallable::AsyncCallableInstance
+                || dependency_callable_is_generator(context.py, callable.bind(context.py))?
+            {
+                return Err(PyNotImplementedError::new_err(
+                    "async dependency graphs do not support callable instances or generator dependencies",
+                ));
+            }
+            let dependency_plan = CallablePlan::build(context.py, callable, &path_parameters)?;
+            if dependency_plan
                 .parameters
                 .iter()
                 .any(|parameter| matches!(parameter.source, ParameterSource::Dependency { .. }))
             {
                 return Err(PyNotImplementedError::new_err(
-                    "nested dependency override replacements are not supported",
+                    "nested dependencies in async override graphs are not supported",
                 ));
             }
-            replacement_plans.push((edge_index, cache_key, use_cache, replacement_plan));
+            dependency_plans.push((
+                edge_index,
+                cache_key,
+                use_cache,
+                callable_kind,
+                dependency_plan,
+            ));
         }
 
         let mut has_validation_errors = !context.failures.is_empty();
-        for (edge_index, cache_key, use_cache, replacement_plan) in replacement_plans {
+        for (edge_index, cache_key, use_cache, callable_kind, dependency_plan) in dependency_plans {
             if edge_index < *context.dependency_override_cursor {
                 continue;
             }
@@ -948,24 +967,30 @@ impl CallablePlan {
                 }
             }
             let initial_failure_count = context.failures.len();
-            let Some(value) = replacement_plan.invoke(context, None, None)? else {
+            let value = match callable_kind {
+                DependencyOverrideCallable::CoroutineFunction => {
+                    dependency_plan.invoke(context, None, None)?
+                }
+                DependencyOverrideCallable::Sync => {
+                    dependency_plan.invoke_in_threadpool(context, None, None)?
+                }
+                DependencyOverrideCallable::AsyncCallableInstance => {
+                    return Err(PyNotImplementedError::new_err(
+                        "async callable-instance dependency overrides are not supported",
+                    ));
+                }
+            };
+            let Some(value) = value else {
                 if context.failures.len() != initial_failure_count {
                     has_validation_errors = true;
                 }
                 continue;
             };
-            if is_awaitable(context.py, value.bind(context.py))? {
-                return Ok(OverridePreparation::Await {
-                    awaitable: value,
-                    cache_key,
-                    edge_index,
-                });
-            }
-            context
-                .dependency_cache
-                .entry(cache_key)
-                .or_insert_with(|| value.clone_ref(context.py));
-            context.prepared_dependency_values.insert(edge_index, value);
+            return Ok(OverridePreparation::Await {
+                awaitable: value,
+                cache_key,
+                edge_index,
+            });
         }
         if has_validation_errors {
             Ok(OverridePreparation::Invalid)
@@ -979,6 +1004,25 @@ impl CallablePlan {
         context: &mut InvocationContext<'_, '_>,
         cache_result: Option<bool>,
         cache_key_override: Option<usize>,
+    ) -> PyResult<Option<Py<PyAny>>> {
+        self.invoke_with_threadpool(context, cache_result, cache_key_override, false)
+    }
+
+    fn invoke_in_threadpool(
+        &self,
+        context: &mut InvocationContext<'_, '_>,
+        cache_result: Option<bool>,
+        cache_key_override: Option<usize>,
+    ) -> PyResult<Option<Py<PyAny>>> {
+        self.invoke_with_threadpool(context, cache_result, cache_key_override, true)
+    }
+
+    fn invoke_with_threadpool(
+        &self,
+        context: &mut InvocationContext<'_, '_>,
+        cache_result: Option<bool>,
+        cache_key_override: Option<usize>,
+        use_threadpool: bool,
     ) -> PyResult<Option<Py<PyAny>>> {
         let initial_failure_count = context.failures.len();
         let kwargs = PyDict::new(context.py);
@@ -1098,11 +1142,16 @@ impl CallablePlan {
                 return Ok(Some(value.clone_ref(context.py)));
             }
         }
-        let result = self
-            .callable
-            .bind(context.py)
-            .call((), Some(&kwargs))
-            .map(Bound::unbind)?;
+        let result = if use_threadpool {
+            context
+                .py
+                .import("starlette.concurrency")?
+                .getattr("run_in_threadpool")?
+                .call((self.callable.bind(context.py),), Some(&kwargs))?
+        } else {
+            self.callable.bind(context.py).call((), Some(&kwargs))?
+        }
+        .unbind();
         if cache_result.is_some() && !context.dependency_cache.contains_key(&cache_key) {
             context
                 .dependency_cache
@@ -1147,6 +1196,34 @@ fn dependency_override_callable(
         return Ok(DependencyOverrideCallable::AsyncCallableInstance);
     }
     Ok(DependencyOverrideCallable::Sync)
+}
+
+fn dependency_callable_is_generator(py: Python<'_>, value: &Bound<'_, PyAny>) -> PyResult<bool> {
+    let inspect = py.import("inspect")?;
+    let is_class = inspect
+        .getattr("isclass")?
+        .call1((value,))?
+        .extract::<bool>()?;
+    let is_generator = inspect
+        .getattr("isgeneratorfunction")?
+        .call1((value,))?
+        .extract::<bool>()?
+        || inspect
+            .getattr("isasyncgenfunction")?
+            .call1((value,))?
+            .extract::<bool>()?;
+    if is_generator || is_class {
+        return Ok(is_generator);
+    }
+    let call_method = value.getattr("__call__")?;
+    Ok(inspect
+        .getattr("isgeneratorfunction")?
+        .call1((&call_method,))?
+        .extract::<bool>()?
+        || inspect
+            .getattr("isasyncgenfunction")?
+            .call1((&call_method,))?
+            .extract::<bool>()?)
 }
 
 fn marker_default(py: Python<'_>, metadata: &[Py<PyAny>]) -> PyResult<Option<Py<PyAny>>> {
