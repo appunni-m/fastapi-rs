@@ -191,6 +191,8 @@ pub(crate) struct PyApiRouter {
     inner: Py<PyFastApi>,
     prefix: String,
     tags: Vec<String>,
+    deprecated: Option<bool>,
+    include_in_schema: bool,
 }
 
 #[pymethods]
@@ -619,19 +621,31 @@ impl PyFastApi {
         )
     }
 
-    #[pyo3(signature = (router, *, prefix = "", tags = None))]
+    #[pyo3(signature = (router, *, prefix = "", tags = None, deprecated = None, include_in_schema = true))]
     fn include_router(
         &mut self,
         py: Python<'_>,
         router: Py<PyApiRouter>,
         prefix: &str,
         tags: Option<Vec<String>>,
+        deprecated: Option<bool>,
+        include_in_schema: bool,
     ) -> PyResult<()> {
         let router = router.bind(py).borrow();
         let prefix = combined_router_prefix(prefix, &router.prefix)?;
         let tags = combined_router_tags(tags.as_deref(), &router.tags);
+        let deprecated = combined_deprecated(deprecated, router.deprecated);
+        let include_in_schema = include_in_schema && router.include_in_schema;
         let source = router.inner.bind(py).borrow();
-        merge_router_routes(py, self, &source, &prefix, &tags)
+        merge_router_routes(
+            py,
+            self,
+            &source,
+            &prefix,
+            &tags,
+            deprecated,
+            include_in_schema,
+        )
     }
 
     fn openapi(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
@@ -812,8 +826,14 @@ impl PyFastApi {
 #[pymethods]
 impl PyApiRouter {
     #[new]
-    #[pyo3(signature = (*, prefix = "", tags = None))]
-    fn new(py: Python<'_>, prefix: &str, tags: Option<Vec<String>>) -> PyResult<Self> {
+    #[pyo3(signature = (*, prefix = "", tags = None, deprecated = None, include_in_schema = true))]
+    fn new(
+        py: Python<'_>,
+        prefix: &str,
+        tags: Option<Vec<String>>,
+        deprecated: Option<bool>,
+        include_in_schema: bool,
+    ) -> PyResult<Self> {
         validate_router_prefix(prefix)?;
         let inner = Py::new(
             py,
@@ -834,6 +854,8 @@ impl PyApiRouter {
             inner,
             prefix: prefix.to_owned(),
             tags: tags.unwrap_or_default(),
+            deprecated,
+            include_in_schema,
         })
     }
 
@@ -842,13 +864,15 @@ impl PyApiRouter {
         &self.prefix
     }
 
-    #[pyo3(signature = (router, *, prefix = "", tags = None))]
+    #[pyo3(signature = (router, *, prefix = "", tags = None, deprecated = None, include_in_schema = true))]
     fn include_router(
         &self,
         py: Python<'_>,
         router: Py<PyApiRouter>,
         prefix: &str,
         tags: Option<Vec<String>>,
+        deprecated: Option<bool>,
+        include_in_schema: bool,
     ) -> PyResult<()> {
         let router = router.bind(py).borrow();
         if self.inner.as_ptr() == router.inner.as_ptr() {
@@ -858,9 +882,19 @@ impl PyApiRouter {
         }
         let prefix = combined_router_prefix(prefix, &router.prefix)?;
         let tags = combined_router_tags(tags.as_deref(), &router.tags);
+        let deprecated = combined_deprecated(deprecated, router.deprecated);
+        let include_in_schema = include_in_schema && router.include_in_schema;
         let source = router.inner.bind(py).borrow();
         let mut destination = self.inner.bind(py).borrow_mut();
-        merge_router_routes(py, &mut destination, &source, &prefix, &tags)
+        merge_router_routes(
+            py,
+            &mut destination,
+            &source,
+            &prefix,
+            &tags,
+            deprecated,
+            include_in_schema,
+        )
     }
 
     fn __getattr__(&self, py: Python<'_>, name: &str) -> PyResult<Py<PyAny>> {
@@ -919,12 +953,22 @@ fn combined_route_tags(
     Some(tags)
 }
 
+fn combined_deprecated(inherited: Option<bool>, router: Option<bool>) -> Option<bool> {
+    if inherited.unwrap_or(false) || router.unwrap_or(false) {
+        Some(true)
+    } else {
+        None
+    }
+}
+
 fn merge_router_routes(
     py: Python<'_>,
     app: &mut PyFastApi,
     source: &PyFastApi,
     prefix: &str,
     inherited_tags: &[String],
+    inherited_deprecated: Option<bool>,
+    inherited_include_in_schema: bool,
 ) -> PyResult<()> {
     for source_route in &source.routes {
         let path = format!("{prefix}{}", source_route.path);
@@ -946,10 +990,10 @@ fn merge_router_routes(
             summary: source_route.summary.clone(),
             response_description: source_route.response_description.clone(),
             operation_id: source_route.operation_id.clone(),
-            deprecated: source_route.deprecated,
+            deprecated: combined_deprecated(inherited_deprecated, source_route.deprecated),
             tags: combined_route_tags(inherited_tags, source_route.tags.as_deref()),
             status_code: source_route.status_code,
-            include_in_schema: source_route.include_in_schema,
+            include_in_schema: inherited_include_in_schema && source_route.include_in_schema,
             endpoint: source_route.endpoint.clone_ref(py),
             response_model: source_route
                 .response_model

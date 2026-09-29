@@ -510,11 +510,11 @@ reviewed_api_contract_overlay:
       supported_slice: >-
         Partial native router: default and non-empty path prefixes, GET route
         decorators, nested inclusion with repeated prefixes, and ordered string
-        tag inheritance are covered by the router-composition, router-prefix-
-        and-nested-composition, and router-tag-inheritance workflows. Router-
-        level dependencies, responses, callbacks, lifespan, WebSockets, enum
-        tags, and other constructor or inclusion options remain outside this
-        slice.
+        tag inheritance, deprecation, and schema inclusion policy are covered
+        by the router-composition, router-prefix-and-nested-composition,
+        router-tag-inheritance, and router-schema-policy workflows. Router-level
+        dependencies, responses, callbacks, lifespan, WebSockets, enum tags,
+        and other constructor or inclusion options remain outside this slice.
     fastapi.applications.FastAPI.include_router:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::include_router
       source_evidence:
@@ -538,9 +538,10 @@ reviewed_api_contract_overlay:
         reviewed fixtures cover path parameters, repeated nested inclusions,
         the users router's scalar query dependency, and ordered string tag
         inheritance across app, parent-router, include, child-router, and route
-        scopes. Inclusion-level dependencies, responses, callbacks,
-        deprecation, schema policy, custom response classes, and ID policies
-        remain outside this slice.
+        scopes. Router/include `deprecated` values propagate to OpenAPI, and
+        `include_in_schema=False` omits routes without affecting dispatch.
+        Inclusion-level dependencies, responses, callbacks, custom response
+        classes, and ID policies remain outside this slice.
     fastapi.routing.APIRouter.include_router:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::include_router
       source_evidence:
@@ -554,7 +555,9 @@ reviewed_api_contract_overlay:
         Nested route sets can be included repeatedly with distinct prefixes and
         string tags. The reviewed inputs observe four concrete routes after two
         nested inclusions and ordered tags across five composition levels.
-        Other router-level options remain outside this slice.
+        `deprecated` and `include_in_schema` inheritance are also covered by
+        router-schema-policy-upstream. Other router-level options remain
+        outside this slice.
     fastapi.routing.APIRouter.__init__:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::new
       source_evidence:
@@ -568,7 +571,9 @@ reviewed_api_contract_overlay:
         `/{version}` prefix and delivers all three path parameters to the
         endpoint in router-prefix-and-nested-composition-upstream. It also
         accepts a non-empty list of string tags, as sampled by
-        router-tag-inheritance-upstream.
+        router-tag-inheritance-upstream. The constructor also accepts
+        `deprecated` and `include_in_schema`; their behavior is sampled by
+        router-schema-policy-upstream.
     fastapi.routing.APIRouter.get:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::__getattr__
       source_evidence:

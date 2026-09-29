@@ -5140,6 +5140,18 @@
       ]
     },
     {
+      "id": "router-schema-policy-upstream",
+      "input_path": "tests/fixtures/inputs/parity/router-schema-policy-upstream.json",
+      "input_sha256": "7d21a3af12fb47c79318df1ccc865c74273aafb45a451bf108a7ba40f6ef7718",
+      "recipe_path": "tests/fixtures/input-recipes/parity/router-schema-policy-upstream.yaml",
+      "recipe_sha256": "109631b5ad1fb4f01f0c7806c8880bb34be297d8caf52b0a7b9d973c81675460",
+      "workload_path": "tests/fixtures/workloads/router_schema_policy_upstream.py",
+      "workload_sha256": "50e74f0ee481fc3afedc00fabaafc91b652ff9b33c704ccd615365488413fd08",
+      "case_ids": [
+        "fastapi.test.test-router-include-context.test-router-schema-policy-inheritance"
+      ]
+    },
+    {
       "id": "router-tag-inheritance-upstream",
       "input_path": "tests/fixtures/inputs/parity/router-tag-inheritance-upstream.json",
       "input_sha256": "18be957b2e0cfd1a6785ae8f31386b6b5977e9907d06fa6a282c77e131d94435",
@@ -19127,6 +19139,37 @@
         "http.body.bytes",
         "http.headers.ordered",
         "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/bigger-applications.md",
+      "fixture_id": "fastapi.docs.tutorial-bigger-applications",
+      "workflow_id": "router-schema-policy-upstream",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.test.test-router-include-context.test-router-schema-policy-inheritance"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_router_include_context.py",
+      "fixture_id": "fastapi.test.test-router-include-context",
+      "workflow_id": "router-schema-policy-upstream",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.test.test-router-include-context.test-router-schema-policy-inheritance"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status",
+        "openapi.document"
       ]
     },
     {
