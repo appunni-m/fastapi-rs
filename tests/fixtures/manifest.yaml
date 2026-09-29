@@ -127,7 +127,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@2
-    sha256: e2d4c2894a949898f85fd7bc23e30b0b84256414fd6173edabc592041a6bb945
+    sha256: 7c9329f1c1bd07940600d69d300fca199f8402add15cba0d7b859cbfdbc152b5
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -156,7 +156,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: f013eef29ffdb35482787ab11cb21da0bb42f395c67c76ba6cee730a5e53a1be
+    sha256: 2e076cbeb10bdb306dfd9804d3e55fbeabde241e8d34a68e9327f7bf8d8b8fc3
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 554
@@ -193,14 +193,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@1
-    sha256: eb3bf7017df8c490be47b45345b367077ac51b2a1c2bfd856ed1577a0296273f
+    sha256: 73d5280f6e9c7e7de905a17a8991ac5037abde82d493d09261488f0f46f32d66
     schema_path: tests/fixtures/schemas/materialized-input-index.schema.json
     schema_sha256: 467200b835dfd99ab16dfbd4ca4507145e070c73aa55d4425fd78e11141c3e86
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
       workflows: 388
-      cases: 1647
-      partial_source_mappings: 893
+      cases: 1654
+      partial_source_mappings: 894
 
 contract_metadata:
   aliases:
@@ -271,9 +271,9 @@ unresolved:
     item_id: case-construction-input-contract
     question: Parameterized route construction and controlled dependency-module state are not expressible as input-only workflow stimuli for setup-time errors.
   oracle_behavior_parity:
-    state: not-demonstrated
-    evidence_ref: oracle_smoke
-    question: The import/OpenAPI smoke did not execute or compare a request-to-response workflow.
+    state: first-ASGI-HTTP-slice-exact; ten-of-ten cases passed; broader public API parity pending
+    evidence_ref: python_asgi_workflow
+    question: The first request-to-response slice passes; parity beyond its ten cases remains unverified.
   starlette_rs_crosswalk:
     state: source-mapped; public-surface review unresolved
     source_artifact: compatibility_atlas
@@ -285,10 +285,10 @@ unresolved:
     pointer: /unresolved_compatibility_points
     item_id: starlette-rs-target-revision
   python_asgi_workflow:
-    state: HTTP-and-WebSocket-v2-oracle-and-comparator-present; fail-closed-target-worker-present; public-target-pending
+    state: HTTP-and-WebSocket-v2-oracle-and-comparator-present; ten-case HTTP slice exact parity; broader target parity pending
     schema_state: v2 strict inputs cover HTTP and WebSocket sessions; matching result and comparison schemas are consumed by the runner
-    runner_state: pinned-source oracle and identity-checked target worker; target execution fails closed until public fastapi facade exists
-    comparator_state: exact-selector-comparator-implemented; live target comparison unavailable
+    runner_state: pinned-source oracle and identity-checked target worker match on all ten first-slice HTTP cases; broader target API coverage pending
+    comparator_state: exact-selector-comparator-implemented; first-slice comparison passed ten of ten cases
     schema_id: fastapi-rs/python-asgi-workflow@2
     schema_path: tests/fixtures/schemas/python-asgi-workflow-v2.schema.json
     schema_sha256: d4e54fe337eb941ac027145d9c18d806c52a1c15b0f758be5a76b1da56f88e74
@@ -298,29 +298,39 @@ unresolved:
     comparison_schema_id: fastapi-rs/python-asgi-comparison@2
     comparison_schema_path: tests/fixtures/schemas/python-asgi-comparison-v2.schema.json
     comparison_schema_sha256: 3e9cb95f0786f370f795e65316e8c69c7b23c9f0ce613e40c40ae8fe987d84c3
-    input_state: HTTP and WebSocket workflows validated; source oracle executable
+    input_state: HTTP and WebSocket workflows validated; pinned FastAPI 0.141.1 / Starlette 1.6.0 oracle and Rust target match on the ten-case first HTTP slice
     oracle_environment: .venv-oracle prepared from FastAPI 0.141.1 lock with local Starlette 1.6.0 override
     recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-    recipe_sha256: 703c55fc25adc016591bf760313341549b9b7dfb76a36e7df8001df0805a096f
+    recipe_sha256: 18867dd5a0ffa68530bd606a246e113b605ac178bbdf07de46ce3fd5160ef3d2
     first_slice_workload:
       path: tests/fixtures/workloads/first_slice.py
       sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
     case_ids:
       - fastapi.first-slice.create-item-valid
+      - fastapi.first-slice.create-item-chunked-body
+      - fastapi.first-slice.create-item-missing-header
       - fastapi.first-slice.create-item-invalid
+      - fastapi.first-slice.create-item-malformed-json
+      - fastapi.first-slice.create-item-aggregated-errors
+      - fastapi.first-slice.create-item-json-suffix-content-type
+      - fastapi.first-slice.create-item-text-plain-content-type
+      - fastapi.first-slice.create-item-missing-content-type
       - fastapi.first-slice.openapi
     expected_outputs: absent
     missing:
       - complete operation-level FastAPI public contract
-      - installed FastAPI-RS public fastapi package and target identity
-      - end-to-end comparison against a live FastAPI-RS result
+      - behavior and implementation coverage for the remaining public FastAPI API
+      - target parity outside the first-slice cases
     source_artifact: compatibility_atlas
     pointer: /unresolved_compatibility_points
     item_id: fixture-recipe-execution-contract
     atlas_question_narrowing: >-
-      The first input now validates and executes against the pinned source
-      oracle; the isolated target worker is present but stops until the public
-      fastapi facade and its identity are available.
+      Ten input-only cases now match against the pinned source oracle and
+      identity-checked Rust target, covering valid and invalid requests,
+      chunked ASGI bodies, required inputs, malformed JSON, aggregated
+      validation, JSON media-type suffix handling, and OpenAPI. All ten
+      selected observations match exactly. This is a first vertical slice;
+      the broader public API remains pending.
   python_asgi_workflow_v3:
     state: schema-and-runner-present; 15 indexed v3 workflows include constructor, WebSocket, and lifecycle cases
     schema_id: fastapi-rs/python-asgi-workflow@3

@@ -61,6 +61,105 @@ cases:
     kind: upstream_documentation
   - path: docs/en/docs/tutorial/header-params.md
     kind: upstream_documentation
+- case_id: fastapi.first-slice.create-item-chunked-body
+  actions:
+  - action_id: post-item
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /items/41
+      query_string: color=blue
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      - - content-length
+        - '29'
+      - - x-actor
+        - reader
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"name":"cable",'
+      more_body: true
+    - type: http.request
+      body: '"quantity":2}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_application.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/first-steps.md
+    kind: upstream_documentation
+- case_id: fastapi.first-slice.create-item-missing-header
+  actions:
+  - action_id: post-item
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /items/41
+      query_string: color=blue
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      - - content-length
+        - '29'
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"name":"cable","quantity":2}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_param_in_path_and_dependency.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/header-params.md
+    kind: upstream_documentation
 - case_id: fastapi.first-slice.create-item-invalid
   actions:
   - action_id: post-item
@@ -110,6 +209,247 @@ cases:
     kind: upstream_documentation
   - path: tests/test_tutorial/test_body_fields/test_tutorial001.py
     kind: upstream_test
+- case_id: fastapi.first-slice.create-item-malformed-json
+  actions:
+  - action_id: post-item
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /items/41
+      query_string: color=blue
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      - - content-length
+        - '17'
+      - - x-actor
+        - reader
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"name":"cable",}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+  source_evidence:
+  - path: docs/en/docs/tutorial/body.md
+    kind: upstream_documentation
+  - path: tests/test_tutorial/test_body_fields/test_tutorial001.py
+    kind: upstream_test
+- case_id: fastapi.first-slice.create-item-aggregated-errors
+  actions:
+  - action_id: post-item
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /items/41
+      query_string: color=blue
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      - - content-length
+        - '29'
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"name":"cable","quantity":0}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_param_in_path_and_dependency.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/body.md
+    kind: upstream_documentation
+- case_id: fastapi.first-slice.create-item-json-suffix-content-type
+  actions:
+  - action_id: post-item
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /items/41
+      query_string: color=blue
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/geo+json
+      - - content-length
+        - '29'
+      - - x-actor
+        - reader
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"name":"cable","quantity":2}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_tutorial/test_body/test_tutorial001.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/body.md
+    kind: upstream_documentation
+- case_id: fastapi.first-slice.create-item-text-plain-content-type
+  actions:
+  - action_id: post-item
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /items/41
+      query_string: color=blue
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - text/plain
+      - - content-length
+        - '29'
+      - - x-actor
+        - reader
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"name":"cable","quantity":2}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_tutorial/test_body/test_tutorial001.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/body.md
+    kind: upstream_documentation
+- case_id: fastapi.first-slice.create-item-missing-content-type
+  actions:
+  - action_id: post-item
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /items/41
+      query_string: color=blue
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-length
+        - '29'
+      - - x-actor
+        - reader
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"name":"cable","quantity":2}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_tutorial/test_body/test_tutorial001.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/body.md
+    kind: upstream_documentation
 - case_id: fastapi.first-slice.openapi
   actions:
   - action_id: get-openapi

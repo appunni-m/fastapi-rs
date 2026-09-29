@@ -200,6 +200,7 @@ fn require_supported_scope(scope_type: &str) -> PyResult<&'static str> {
 
 #[pymodule]
 fn _core(module: &Bound<'_, PyModule>) -> PyResult<()> {
+    fastapi_rs::register_python_api(module)?;
     module.add_class::<PyOperationRouter>()?;
     module.add_function(wrap_pyfunction!(identity, module)?)?;
     module.add_function(wrap_pyfunction!(scope_kind, module)?)?;

@@ -162,8 +162,8 @@ path dependency.
 
 | Dependency | Declared by | Current purpose and source evidence |
 | --- | --- | --- |
-| `starlette-rs` 0.1.0 | `fastapi-rs` normal dependency | Rust integration edge to the separately maintained Starlette replacement. FastAPI-RS currently imports `AsgiScopeKind` and `classify_scope` in `fastapi-rs/src/lib.rs`; this is only the foundation and does not provide the FastAPI runtime. |
-| `pyo3` 0.29.2 | `fastapi-rs-py` normal dependency | Python/Rust binding API for the extension module, Python exceptions, dictionaries, and module registration in `fastapi-rs-py/src/lib.rs`. `abi3-py310` sets the stable Python ABI minimum; Maturin enables `pyo3/extension-module` from `pyproject.toml`. |
+| `starlette-rs` 0.1.0 | `fastapi-rs` normal dependency | Rust routing and request-input primitives used by `fastapi-rs/src/operation.rs` (`RouteTable`, `DetailedRouteMatch`, `QueryParams`, `RequestHeaders`, and `RouteError`). FastAPI-RS owns ASGI orchestration, dependency execution, validation, response shaping, and OpenAPI integration in `fastapi-rs/src/application_runtime.rs`. |
+| `pyo3` 0.29.2 | `fastapi-rs` and `fastapi-rs-py` normal dependencies | Python/Rust binding API used by the Rust-owned FastAPI runtime in `fastapi-rs/src/application_runtime.rs` and `fastapi-rs/src/parameters.rs`, and by extension registration and existing bindings in `fastapi-rs-py/src/lib.rs`. `abi3-py310` sets the stable Python ABI minimum; Maturin enables `pyo3/extension-module` from `pyproject.toml`. |
 | `pyo3-build-config` 0.29.2 | `fastapi-rs-py` build dependency | PyO3 linker configuration invoked by `fastapi-rs-py/build.rs` so the Rust cdylib is linked as a Python extension. |
 | `flate2` 1.1.10 | Starlette-RS normal dependency | Starlette-RS gzip middleware in `starlette-rs/src/gzip.rs`; enables `zlib` with default features disabled, selecting `libz-sys` and its native zlib backend. |
 | `getrandom` 0.4.3 | Starlette-RS normal dependency | Creates unpredictable multipart boundaries for multi-range file responses in `starlette-rs/src/file_response.rs`. |
@@ -212,8 +212,11 @@ Pydantic's public model/schema API and user-supplied endpoints or validators
 remain Python objects. Rust owns FastAPI-specific orchestration and framework
 control flow, invoking those user/Pydantic callables through PyO3 where needed;
 `pydantic-core` supplies Pydantic's Rust validation/serialization engine. The
-public `fastapi` package is restricted to native re-exports and literal
-`__all__`. FastAPI-RS's consumer-facing runtime is not implemented yet.
+public `fastapi` package is restricted to direct native re-exports and literal
+`__all__`. The current consumer-facing runtime is a first ASGI slice with Rust
+owning route registration, dependency execution, request validation, response
+model filtering, and OpenAPI assembly; Pydantic models and user callables remain
+Python objects invoked through PyO3.
 """
 
 

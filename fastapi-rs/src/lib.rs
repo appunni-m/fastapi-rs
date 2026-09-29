@@ -4,12 +4,25 @@
 //! owns the routing, dependency, validation, serialization, and OpenAPI
 //! integration built on top of that boundary.
 
+mod application_runtime;
+mod awaitable;
+mod openapi;
 mod operation;
+mod parameters;
+
+use pyo3::prelude::*;
+use pyo3::types::PyModule;
 
 pub use operation::{
     FastApiInputLocation, FastApiInputParameter, FastApiInputValue, FastApiOperation,
     FastApiOperationMatch, FastApiOperationRouter, FastApiRequestMatch,
 };
+
+/// Registers FastAPI's public Python API from the Rust-owned implementation.
+pub fn register_python_api(module: &Bound<'_, PyModule>) -> PyResult<()> {
+    parameters::register(module)?;
+    application_runtime::register(module)
+}
 
 /// ASGI scope helpers supplied by the Starlette-RS dependency.
 pub mod asgi {

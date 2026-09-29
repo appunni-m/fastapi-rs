@@ -11,11 +11,38 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 PYTHON_PACKAGE_ROOT = PROJECT_ROOT / "fastapi-rs-py" / "python"
-RUST_BINDING_ROOT = PROJECT_ROOT / "fastapi-rs-py" / "src"
+RUST_SOURCE_ROOTS = (
+    PROJECT_ROOT / "fastapi-rs" / "src",
+    PROJECT_ROOT / "fastapi-rs-py" / "src",
+)
 PROJECT_DEPENDENCY_SECTION = "project"
 PROJECT_OPTIONAL_DEPENDENCY_SECTION = "project.optional-dependencies"
 UPSTREAM_FASTAPI_MODULE_LITERAL = re.compile(
-    r"(?P<quote>['\"])fastapi(?:\.[A-Za-z_]\w*)?(?P=quote)"
+    r"(?P<quote>['\"])fastapi(?:\.[A-Za-z_]\w*)*(?P=quote)"
+)
+DYNAMIC_PYTHON_EXECUTION = re.compile(
+    r"\b(?:py|python)\s*\.\s*(?:run|eval)\s*\(|"
+    r"\bPyModule\s*::\s*from_code(?:_bound)?\s*\("
+)
+PUBLIC_FASTAPI_EXPORTS = ["Depends", "FastAPI", "Header", "Query", "status"]
+FORBIDDEN_CONTROL_FLOW = tuple(
+    node_type
+    for node_type in (
+        ast.If,
+        ast.IfExp,
+        ast.For,
+        ast.AsyncFor,
+        ast.While,
+        getattr(ast, "Match", None),
+        ast.Try,
+        ast.With,
+        ast.AsyncWith,
+        ast.ListComp,
+        ast.SetComp,
+        ast.DictComp,
+        ast.GeneratorExp,
+    )
+    if node_type is not None
 )
 
 
@@ -195,6 +222,12 @@ def check_python_facade_pass_through() -> None:
         tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
         imported_names = []
         all_assignments = []
+        for node in ast.walk(tree):
+            if isinstance(node, FORBIDDEN_CONTROL_FLOW):
+                violations.append(
+                    f"{path.relative_to(PROJECT_ROOT)}:{node.lineno}: Python runtime "
+                    f"facades cannot contain control flow ({type(node).__name__})"
+                )
         for index, node in enumerate(tree.body):
             is_docstring = (
                 index == 0
@@ -271,9 +304,67 @@ def check_python_facade_pass_through() -> None:
         raise SystemExit("\n".join(violations))
 
 
+def check_public_fastapi_facade() -> None:
+    """Require the public package to re-export only the initial native symbols."""
+    path = PYTHON_PACKAGE_ROOT / "fastapi" / "__init__.py"
+    if not path.is_file():
+        raise SystemExit(f"public FastAPI facade source is missing: {path}")
+
+    tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+    native_imports = [node for node in tree.body if isinstance(node, ast.ImportFrom)]
+    if len(native_imports) != 1:
+        raise SystemExit(f"{path.relative_to(PROJECT_ROOT)} must have one direct native import")
+
+    native_import = native_imports[0]
+    imported_names = [alias.name for alias in native_import.names]
+    if (
+        native_import.level != 0
+        or native_import.module != _configured_native_module()
+        or any(alias.asname is not None for alias in native_import.names)
+        or imported_names != PUBLIC_FASTAPI_EXPORTS
+    ):
+        raise SystemExit(
+            f"{path.relative_to(PROJECT_ROOT)} must directly re-export "
+            f"{PUBLIC_FASTAPI_EXPORTS!r} from {_configured_native_module()!r}"
+        )
+
+    all_assignments = [node for node in tree.body if _is_static_all_assignment(node)]
+    if len(all_assignments) != 1:
+        raise SystemExit(f"{path.relative_to(PROJECT_ROOT)} must define one literal __all__")
+    exported_names = [item.value for item in all_assignments[0].value.elts]
+    if exported_names != PUBLIC_FASTAPI_EXPORTS:
+        raise SystemExit(
+            f"{path.relative_to(PROJECT_ROOT)} __all__ must be "
+            f"{PUBLIC_FASTAPI_EXPORTS!r}; found {exported_names!r}"
+        )
+
+
 def check_wheel_package_sources() -> None:
     """Require each source Python package to be included in the wheel config."""
-    configured_packages = set(_configured_python_packages())
+    configured_package_list = _configured_python_packages()
+    if len(configured_package_list) != len(set(configured_package_list)):
+        raise SystemExit("tool.maturin.python-packages contains duplicate packages")
+
+    missing_directories = []
+    missing_initializers = []
+    for package in configured_package_list:
+        package_parts = package.split(".")
+        if not package_parts or any(not part.isidentifier() for part in package_parts):
+            raise SystemExit(f"invalid package name in tool.maturin.python-packages: {package!r}")
+        package_directory = PYTHON_PACKAGE_ROOT.joinpath(*package_parts)
+        if not package_directory.is_dir():
+            missing_directories.append(package_directory)
+        elif not (package_directory / "__init__.py").is_file():
+            missing_initializers.append(package_directory / "__init__.py")
+
+    if missing_directories or missing_initializers:
+        missing_paths = [*missing_directories, *missing_initializers]
+        raise SystemExit(
+            "configured Python package source directories must exist and contain "
+            "__init__.py: " + ", ".join(str(path) for path in missing_paths)
+        )
+
+    configured_packages = set(configured_package_list)
     source_packages = {
         ".".join(path.parent.relative_to(PYTHON_PACKAGE_ROOT).parts)
         for path in PYTHON_PACKAGE_ROOT.rglob("__init__.py")
@@ -286,9 +377,9 @@ def check_wheel_package_sources() -> None:
 
 
 def check_rust_binding_import_boundary() -> None:
-    """Reject literal imports of the original FastAPI package from PyO3 bindings."""
+    """Reject literal imports of original FastAPI from either Rust crate."""
     violations = []
-    rust_files = sorted(RUST_BINDING_ROOT.rglob("*.rs"))
+    rust_files = sorted(path for root in RUST_SOURCE_ROOTS for path in root.rglob("*.rs"))
     for path in rust_files:
         source = path.read_text(encoding="utf-8")
         match = UPSTREAM_FASTAPI_MODULE_LITERAL.search(source)
@@ -298,6 +389,13 @@ def check_rust_binding_import_boundary() -> None:
                 f"{path.relative_to(PROJECT_ROOT)}:{line}: native bindings cannot import "
                 "the original FastAPI package"
             )
+        dynamic_execution = DYNAMIC_PYTHON_EXECUTION.search(source)
+        if dynamic_execution:
+            line = source.count("\n", 0, dynamic_execution.start()) + 1
+            violations.append(
+                f"{path.relative_to(PROJECT_ROOT)}:{line}: native bindings cannot execute "
+                "dynamic Python code, which bypasses the runtime import boundary"
+            )
     if violations:
         raise SystemExit("\n".join(violations))
 
@@ -306,6 +404,7 @@ def main() -> int:
     check_declared_runtime_dependency_boundary()
     check_python_facade_pass_through()
     check_wheel_package_sources()
+    check_public_fastapi_facade()
     check_rust_binding_import_boundary()
     parser = argparse.ArgumentParser()
     parser.add_argument(

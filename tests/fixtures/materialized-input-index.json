@@ -1517,14 +1517,21 @@
     {
       "id": "first-asgi-request",
       "input_path": "tests/fixtures/inputs/parity/first-asgi-request.json",
-      "input_sha256": "f99fee3abdd4e37b2cfa56ee61f7a30e5174ff241fa14d09e85275235b92f4a9",
+      "input_sha256": "323221f9411c5291122336ad44d8f222ede7a95c749287a5603db54d8feeca01",
       "recipe_path": "tests/fixtures/input-recipes/parity/first-asgi-request.yaml",
-      "recipe_sha256": "703c55fc25adc016591bf760313341549b9b7dfb76a36e7df8001df0805a096f",
+      "recipe_sha256": "18867dd5a0ffa68530bd606a246e113b605ac178bbdf07de46ce3fd5160ef3d2",
       "workload_path": "tests/fixtures/workloads/first_slice.py",
       "workload_sha256": "da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec",
       "case_ids": [
         "fastapi.first-slice.create-item-valid",
+        "fastapi.first-slice.create-item-chunked-body",
+        "fastapi.first-slice.create-item-missing-header",
         "fastapi.first-slice.create-item-invalid",
+        "fastapi.first-slice.create-item-malformed-json",
+        "fastapi.first-slice.create-item-aggregated-errors",
+        "fastapi.first-slice.create-item-json-suffix-content-type",
+        "fastapi.first-slice.create-item-text-plain-content-type",
+        "fastapi.first-slice.create-item-missing-content-type",
         "fastapi.first-slice.openapi"
       ]
     },
@@ -9809,9 +9816,14 @@
       "fixture_id": "fastapi.docs.tutorial-body",
       "workflow_id": "first-asgi-request",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 7 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
+        "fastapi.first-slice.create-item-aggregated-errors",
         "fastapi.first-slice.create-item-invalid",
+        "fastapi.first-slice.create-item-json-suffix-content-type",
+        "fastapi.first-slice.create-item-malformed-json",
+        "fastapi.first-slice.create-item-missing-content-type",
+        "fastapi.first-slice.create-item-text-plain-content-type",
         "fastapi.first-slice.openapi"
       ],
       "observation_selectors": [
@@ -9846,8 +9858,9 @@
       "fixture_id": "fastapi.docs.tutorial-first-steps",
       "workflow_id": "first-asgi-request",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.send.message_types, docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes asgi.send.message_types, docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
+        "fastapi.first-slice.create-item-chunked-body",
         "fastapi.first-slice.create-item-valid",
         "fastapi.first-slice.openapi"
       ],
@@ -9867,8 +9880,9 @@
       "fixture_id": "fastapi.docs.tutorial-header-params",
       "workflow_id": "first-asgi-request",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
+        "fastapi.first-slice.create-item-missing-header",
         "fastapi.first-slice.create-item-valid",
         "fastapi.first-slice.openapi"
       ],
@@ -9902,8 +9916,9 @@
       "fixture_id": "fastapi.test.test-application",
       "workflow_id": "first-asgi-request",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
+        "fastapi.first-slice.create-item-chunked-body",
         "fastapi.first-slice.create-item-valid",
         "fastapi.first-slice.openapi"
       ],
@@ -9920,8 +9935,10 @@
       "fixture_id": "fastapi.test.test-param-in-path-and-dependency",
       "workflow_id": "first-asgi-request",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.send.message_types, docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 4 case(s); observes asgi.send.message_types, docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
+        "fastapi.first-slice.create-item-aggregated-errors",
+        "fastapi.first-slice.create-item-missing-header",
         "fastapi.first-slice.create-item-valid",
         "fastapi.first-slice.openapi"
       ],
@@ -9938,13 +9955,32 @@
       ]
     },
     {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_body/test_tutorial001.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-body-test-tutorial001",
+      "workflow_id": "first-asgi-request",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.first-slice.create-item-json-suffix-content-type",
+        "fastapi.first-slice.create-item-missing-content-type",
+        "fastapi.first-slice.create-item-text-plain-content-type"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
       "source_item_id": "upstream-test:tests/test_tutorial/test_body_fields/test_tutorial001.py",
       "fixture_id": "fastapi.test.test-tutorial-test-body-fields-test-tutorial001",
       "workflow_id": "first-asgi-request",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.send.message_types, docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes asgi.send.message_types, docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.first-slice.create-item-invalid",
+        "fastapi.first-slice.create-item-malformed-json",
         "fastapi.first-slice.openapi"
       ],
       "observation_selectors": [
