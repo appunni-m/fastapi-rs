@@ -72,7 +72,7 @@ struct InvocationContext<'context, 'py> {
     failures: &'context mut Vec<ValidationIssue>,
     dependency_overrides: &'context Bound<'py, PyDict>,
     dependency_cache: &'context mut HashMap<usize, Py<PyAny>>,
-    prepared_dependency_overrides: &'context mut BTreeSet<usize>,
+    prepared_dependency_values: &'context mut HashMap<usize, Py<PyAny>>,
     dependency_override_cursor: &'context mut usize,
 }
 
@@ -81,7 +81,7 @@ struct RequestInvocation {
     query_params: QueryParams,
     failures: Vec<ValidationIssue>,
     dependency_cache: HashMap<usize, Py<PyAny>>,
-    prepared_dependency_overrides: BTreeSet<usize>,
+    prepared_dependency_values: HashMap<usize, Py<PyAny>>,
     dependency_override_cursor: usize,
 }
 
@@ -90,6 +90,7 @@ enum RouteInvocation {
     AwaitDependency {
         awaitable: Py<PyAny>,
         cache_key: usize,
+        edge_index: usize,
     },
 }
 
@@ -99,6 +100,7 @@ enum OverridePreparation {
     Await {
         awaitable: Py<PyAny>,
         cache_key: usize,
+        edge_index: usize,
     },
 }
 
@@ -851,7 +853,6 @@ impl CallablePlan {
         context: &mut InvocationContext<'_, '_>,
     ) -> PyResult<OverridePreparation> {
         let mut has_direct_dependency = false;
-        let mut every_edge_uses_cache = true;
         let mut every_edge_has_async_override = true;
         let mut has_async_override = false;
         let mut async_overrides = Vec::new();
@@ -864,7 +865,6 @@ impl CallablePlan {
             let edge_index = dependency_edge_index;
             dependency_edge_index += 1;
             has_direct_dependency = true;
-            every_edge_uses_cache &= *use_cache;
 
             let cache_key = plan.callable.as_ptr() as usize;
             let original_callable = plan.callable.bind(context.py);
@@ -892,6 +892,7 @@ impl CallablePlan {
             async_overrides.push((
                 edge_index,
                 cache_key,
+                *use_cache,
                 replacement.unbind(),
                 plan.path_parameters.clone(),
             ));
@@ -902,7 +903,6 @@ impl CallablePlan {
         }
 
         if !has_direct_dependency
-            || !every_edge_uses_cache
             || !every_edge_has_async_override
             || matches!(
                 dependency_override_callable(context.py, self.callable.bind(context.py))?,
@@ -911,7 +911,7 @@ impl CallablePlan {
             )
         {
             return Err(PyNotImplementedError::new_err(
-                "async dependency overrides require cached direct endpoint edges replaced by flat coroutine functions on a synchronous endpoint",
+                "async dependency overrides require direct endpoint edges replaced by flat coroutine functions on a synchronous endpoint",
             ));
         }
 
@@ -919,7 +919,7 @@ impl CallablePlan {
         // keeps unsupported mixed or nested graphs from passing coroutine objects to
         // the endpoint or performing earlier replacement work before rejection.
         let mut replacement_plans = Vec::with_capacity(async_overrides.len());
-        for (edge_index, cache_key, replacement, path_parameters) in async_overrides {
+        for (edge_index, cache_key, use_cache, replacement, path_parameters) in async_overrides {
             let replacement_plan = CallablePlan::build(context.py, replacement, &path_parameters)?;
             if replacement_plan
                 .parameters
@@ -930,34 +930,42 @@ impl CallablePlan {
                     "nested dependency override replacements are not supported",
                 ));
             }
-            replacement_plans.push((edge_index, cache_key, replacement_plan));
+            replacement_plans.push((edge_index, cache_key, use_cache, replacement_plan));
         }
 
         let mut has_validation_errors = !context.failures.is_empty();
-        for (edge_index, cache_key, replacement_plan) in replacement_plans {
+        for (edge_index, cache_key, use_cache, replacement_plan) in replacement_plans {
             if edge_index < *context.dependency_override_cursor {
                 continue;
             }
             *context.dependency_override_cursor = edge_index + 1;
-            if context.prepared_dependency_overrides.contains(&cache_key)
-                || context.dependency_cache.contains_key(&cache_key)
-            {
-                continue;
+            if use_cache {
+                if let Some(value) = context.dependency_cache.get(&cache_key) {
+                    context
+                        .prepared_dependency_values
+                        .insert(edge_index, value.clone_ref(context.py));
+                    continue;
+                }
             }
             let initial_failure_count = context.failures.len();
-            let Some(value) = replacement_plan.invoke(context, Some(true), Some(cache_key))? else {
+            let Some(value) = replacement_plan.invoke(context, None, None)? else {
                 if context.failures.len() != initial_failure_count {
                     has_validation_errors = true;
                 }
                 continue;
             };
             if is_awaitable(context.py, value.bind(context.py))? {
-                context.dependency_cache.remove(&cache_key);
                 return Ok(OverridePreparation::Await {
                     awaitable: value,
                     cache_key,
+                    edge_index,
                 });
             }
+            context
+                .dependency_cache
+                .entry(cache_key)
+                .or_insert_with(|| value.clone_ref(context.py));
+            context.prepared_dependency_values.insert(edge_index, value);
         }
         if has_validation_errors {
             Ok(OverridePreparation::Invalid)
@@ -980,8 +988,15 @@ impl CallablePlan {
             .filter(|parameter| parameter.location == FastApiInputLocation::Body)
             .count()
             > 1;
+        let mut dependency_edge_index = 0;
         for parameter in &self.parameters {
             if let ParameterSource::Dependency { plan, use_cache } = &parameter.source {
+                let edge_index = dependency_edge_index;
+                dependency_edge_index += 1;
+                if let Some(value) = context.prepared_dependency_values.get(&edge_index) {
+                    kwargs.set_item(&parameter.name, value.bind(context.py))?;
+                    continue;
+                }
                 let original_cache_key = plan.callable.as_ptr() as usize;
                 let original_callable = plan.callable.bind(context.py);
                 let replacement = context.dependency_overrides.get_item(original_callable)?;
@@ -1756,7 +1771,7 @@ enum PendingAction {
     LifespanStartupSend,
     LifespanShutdownSend,
     Endpoint,
-    Dependency { cache_key: usize },
+    Dependency { cache_key: usize, edge_index: usize },
     ReturnedResponse,
     SendStart,
     SendBody,
@@ -1945,7 +1960,7 @@ impl FastApiCall {
             query_params,
             failures: Vec::new(),
             dependency_cache: HashMap::new(),
-            prepared_dependency_overrides: BTreeSet::new(),
+            prepared_dependency_values: HashMap::new(),
             dependency_override_cursor: 0,
         });
         self.invoke_route(py)
@@ -1973,7 +1988,7 @@ impl FastApiCall {
                 failures: &mut invocation.failures,
                 dependency_overrides,
                 dependency_cache: &mut invocation.dependency_cache,
-                prepared_dependency_overrides: &mut invocation.prepared_dependency_overrides,
+                prepared_dependency_values: &mut invocation.prepared_dependency_values,
                 dependency_override_cursor: &mut invocation.dependency_override_cursor,
             };
             match route
@@ -1983,9 +1998,11 @@ impl FastApiCall {
                 OverridePreparation::Await {
                     awaitable,
                     cache_key,
+                    edge_index,
                 } => RouteInvocation::AwaitDependency {
                     awaitable,
                     cache_key,
+                    edge_index,
                 },
                 OverridePreparation::Invalid => RouteInvocation::Ready(None),
                 OverridePreparation::Ready => {
@@ -1997,8 +2014,12 @@ impl FastApiCall {
             RouteInvocation::AwaitDependency {
                 awaitable,
                 cache_key,
+                edge_index,
             } => {
-                self.pending = Some(PendingAction::Dependency { cache_key });
+                self.pending = Some(PendingAction::Dependency {
+                    cache_key,
+                    edge_index,
+                });
                 Ok(MachineAction::Await(awaitable))
             }
             RouteInvocation::Ready(Some(endpoint_result)) => {
@@ -2034,14 +2055,20 @@ impl FastApiCall {
         &mut self,
         py: Python<'_>,
         cache_key: usize,
+        edge_index: usize,
         value: Py<PyAny>,
     ) -> PyResult<MachineAction> {
         let invocation = self
             .invocation
             .as_mut()
             .ok_or_else(|| PyRuntimeError::new_err("request invocation state was lost"))?;
-        invocation.dependency_cache.insert(cache_key, value);
-        invocation.prepared_dependency_overrides.insert(cache_key);
+        invocation
+            .dependency_cache
+            .entry(cache_key)
+            .or_insert_with(|| value.clone_ref(py));
+        invocation
+            .prepared_dependency_values
+            .insert(edge_index, value);
         self.invoke_route(py)
     }
 
@@ -2147,9 +2174,10 @@ impl AwaitableStateMachine for FastApiCall {
                 Some(PendingAction::LifespanStartupSend) => self.receive_lifespan(py),
                 Some(PendingAction::LifespanShutdownSend) => Ok(MachineAction::Complete(py.None())),
                 Some(PendingAction::Endpoint) => self.finish_endpoint(py, value),
-                Some(PendingAction::Dependency { cache_key }) => {
-                    self.dependency_resumed(py, cache_key, value)
-                }
+                Some(PendingAction::Dependency {
+                    cache_key,
+                    edge_index,
+                }) => self.dependency_resumed(py, cache_key, edge_index, value),
                 Some(PendingAction::ReturnedResponse) => Ok(MachineAction::Complete(py.None())),
                 Some(PendingAction::SendStart) => self.send_body(py),
                 Some(PendingAction::SendBody) => Ok(MachineAction::Complete(py.None())),
