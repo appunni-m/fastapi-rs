@@ -166,15 +166,21 @@ path dependency.
 | `pyo3` 0.29.2 | `fastapi-rs-py` normal dependency | Python/Rust binding API for the extension module, Python exceptions, dictionaries, and module registration in `fastapi-rs-py/src/lib.rs`. `abi3-py310` sets the stable Python ABI minimum; Maturin enables `pyo3/extension-module` from `pyproject.toml`. |
 | `pyo3-build-config` 0.29.2 | `fastapi-rs-py` build dependency | PyO3 linker configuration invoked by `fastapi-rs-py/build.rs` so the Rust cdylib is linked as a Python extension. |
 | `flate2` 1.1.10 | Starlette-RS normal dependency | Starlette-RS gzip middleware in `starlette-rs/src/gzip.rs`; enables `zlib` with default features disabled, selecting `libz-sys` and its native zlib backend. |
+| `getrandom` 0.4.3 | Starlette-RS normal dependency | Creates unpredictable multipart boundaries for multi-range file responses in `starlette-rs/src/file_response.rs`. |
+| `httpdate` 1.0.3 | Starlette-RS normal dependency | Formats the `Last-Modified` header for file responses in `starlette-rs/src/file_response.rs`. |
+| `md-5` 0.11.0 | Starlette-RS normal dependency | Computes the ETag for file responses in `starlette-rs/src/file_response.rs`. |
+| `mime_guess` 2.0.5 | Starlette-RS normal dependency | Infers file-response media types from paths in `starlette-rs/src/file_response.rs`. |
 | `serde_json` 1.0.151 | Starlette-RS normal dependency | JSON protocol parsing and output in `starlette-rs/src/bin/starlette-rs-parity-adapter.rs`. |
 | `sha2` 0.10.9 | Starlette-RS normal dependency | SHA-256 dependency-lock identity check in the same parity adapter. |
 
-Starlette-RS's adapter dependencies are in the path crate's normal dependency
-set, so they appear in this workspace lock graph. The adapter uses Rust; the
-zlib path additionally links the platform C zlib library. The `cc`, `pkg-config`,
-and `vcpkg` crates support native zlib discovery/building. Transitive crates
-below PyO3 provide Python C-API bindings, procedural macros, Rust syntax/token
-processing, and their helper routines; each exact edge is listed below.
+The four file-response dependencies are used by the Starlette-RS library.
+`serde_json` and `sha2` are used by its parity-adapter binary but are currently
+declared as normal dependencies, so they remain in the package's Cargo graph.
+The adapter uses Rust; the zlib path additionally links the platform C zlib
+library. The `cc`, `pkg-config`, and `vcpkg` crates support native zlib
+discovery/building. Transitive crates below PyO3 provide Python C-API bindings,
+procedural macros, Rust syntax/token processing, and their helper routines;
+each exact edge is listed below.
 
 ## Complete locked package graph
 
