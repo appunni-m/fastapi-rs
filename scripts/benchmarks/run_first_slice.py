@@ -110,7 +110,7 @@ def main() -> int:
             "--input",
             str(input_path),
             "--python",
-            str(args.oracle_python.resolve()),
+            str(args.oracle_python.absolute()),
             "--fastapi-source",
             str(args.fastapi_source.resolve()),
             "--starlette-source",
@@ -124,7 +124,7 @@ def main() -> int:
             "--input",
             str(input_path),
             "--python",
-            str(args.target_python.resolve()),
+            str(args.target_python.absolute()),
             "--target-source",
             str(ROOT),
             "--starlette-rs-source",
@@ -159,9 +159,9 @@ def main() -> int:
         raise BenchmarkError(f"full selected parity gate did not pass: {summary}")
 
     subject_python = {
-        "fastapi": args.oracle_python.resolve(),
-        "starlette-control": args.oracle_python.resolve(),
-        "fastapi-rs": args.target_python.resolve(),
+        "fastapi": args.oracle_python.absolute(),
+        "starlette-control": args.oracle_python.absolute(),
+        "fastapi-rs": args.target_python.absolute(),
     }
     measurements: dict[str, dict[str, Any]] = {}
     for subject in workload["subjects"]:
