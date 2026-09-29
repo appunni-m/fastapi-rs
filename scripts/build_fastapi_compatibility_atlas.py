@@ -5939,7 +5939,7 @@ def read_first_asgi_workflow() -> dict[str, Any]:
             "factory": workflow["workload"].get("factory"),
             "sha256": sha256(PROJECT / workload_path),
         },
-        "state": "input-only recipe and workload present; source and target runs for current digests pending; exact comparator and fail-closed target worker present; public fastapi facade pending",
+        "state": "input-only ten-case recipe and workload, public pass-through facade, Rust first-slice implementation, identity-checked source/target runners, and exact comparator are present; broader operation-level coverage remains pending",
     }
 
 
