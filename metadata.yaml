@@ -237,6 +237,8 @@ reviewed_api_contract_overlay:
         - {path: tests/test_extra_routes.py, symbol: test_options}
         - {path: tests/test_tutorial/test_path_operation_advanced_configurations/test_tutorial004.py, symbol: test_openapi_schema}
         - {path: docs_src/path_operation_advanced_configuration/tutorial004_py310.py}
+        - {path: tests/test_tutorial/test_path_operation_advanced_configurations/test_tutorial001.py, symbol: test_openapi_schema}
+        - {path: docs_src/path_operation_advanced_configuration/tutorial001_py310.py}
       feature_ids: [app-routing, openapi-docs]
       observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths]
       supported_slice: >-
@@ -247,7 +249,9 @@ reviewed_api_contract_overlay:
         explicit non-empty `summary` is emitted in OpenAPI, as sampled by
         `path-operation-other-verb-summaries-isolated`. A non-empty list of
         string `tags` is emitted as the operation tags by the same workflow;
-        enum-valued and empty tag values remain outside this slice.
+        enum-valued and empty tag values remain outside this slice. Explicit
+        non-empty `operation_id` values are used in OpenAPI, sampled across the
+        six decorators by `path-operation-other-verb-operation-ids-isolated`.
     fastapi.applications.FastAPI.trace:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::trace
       source_evidence:
@@ -257,6 +261,8 @@ reviewed_api_contract_overlay:
         - {path: tests/test_extra_routes.py, symbol: test_trace}
         - {path: tests/test_tutorial/test_path_operation_advanced_configurations/test_tutorial004.py, symbol: test_openapi_schema}
         - {path: docs_src/path_operation_advanced_configuration/tutorial004_py310.py}
+        - {path: tests/test_tutorial/test_path_operation_advanced_configurations/test_tutorial001.py, symbol: test_openapi_schema}
+        - {path: docs_src/path_operation_advanced_configuration/tutorial001_py310.py}
       feature_ids: [app-routing, openapi-docs]
       observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths]
       supported_slice: >-
@@ -267,7 +273,9 @@ reviewed_api_contract_overlay:
         explicit non-empty `summary` is emitted in OpenAPI, as sampled by
         `path-operation-other-verb-summaries-isolated`. A non-empty list of
         string `tags` is emitted as the operation tags by the same workflow;
-        enum-valued and empty tag values remain outside this slice.
+        enum-valued and empty tag values remain outside this slice. Explicit
+        non-empty `operation_id` values are used in OpenAPI, sampled across the
+        six decorators by `path-operation-other-verb-operation-ids-isolated`.
     fastapi.applications.FastAPI.head:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::head
       source_evidence:
@@ -278,6 +286,8 @@ reviewed_api_contract_overlay:
         - {path: tests/test_extra_routes.py, symbol: test_get_api_route}
         - {path: tests/test_tutorial/test_path_operation_advanced_configurations/test_tutorial004.py, symbol: test_openapi_schema}
         - {path: docs_src/path_operation_advanced_configuration/tutorial004_py310.py}
+        - {path: tests/test_tutorial/test_path_operation_advanced_configurations/test_tutorial001.py, symbol: test_openapi_schema}
+        - {path: docs_src/path_operation_advanced_configuration/tutorial001_py310.py}
       feature_ids: [app-routing, openapi-docs]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.paths]
       supported_slice: >-
@@ -289,7 +299,9 @@ reviewed_api_contract_overlay:
         `summary` is emitted in OpenAPI, as sampled by
         `path-operation-other-verb-summaries-isolated`. A non-empty list of
         string `tags` is emitted as the operation tags by the same workflow;
-        enum-valued and empty tag values remain outside this slice.
+        enum-valued and empty tag values remain outside this slice. Explicit
+        non-empty `operation_id` values are used in OpenAPI, sampled across the
+        six decorators by `path-operation-other-verb-operation-ids-isolated`.
     fastapi.Body:
       rust_binding: fastapi-rs/src/parameters.rs::body
       source_evidence:
@@ -598,6 +610,8 @@ reviewed_api_contract_overlay:
         - {path: fastapi/openapi/utils.py, symbol: get_openapi_operation_metadata}
         - {path: tests/test_tutorial/test_path_operation_advanced_configurations/test_tutorial004.py, symbol: test_openapi_schema}
         - {path: docs_src/path_operation_advanced_configuration/tutorial004_py310.py}
+        - {path: tests/test_tutorial/test_path_operation_advanced_configurations/test_tutorial001.py, symbol: test_openapi_schema}
+        - {path: docs_src/path_operation_advanced_configuration/tutorial001_py310.py}
       feature_ids: [app-routing, response-serialization, openapi-docs]
       observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths]
       supported_slice: >-
@@ -608,7 +622,9 @@ reviewed_api_contract_overlay:
         `summary` is emitted in OpenAPI, as sampled by
         `path-operation-other-verb-summaries-isolated`. A non-empty list of
         string `tags` is emitted as the operation tags by the same workflow;
-        enum-valued and empty tag values remain outside this slice.
+        enum-valued and empty tag values remain outside this slice. Explicit
+        non-empty `operation_id` values are used in OpenAPI, sampled across the
+        six decorators by `path-operation-other-verb-operation-ids-isolated`.
     fastapi.applications.FastAPI.delete:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::delete
       source_evidence:
@@ -619,6 +635,8 @@ reviewed_api_contract_overlay:
         - {path: tests/test_extra_routes.py, symbol: test_delete}
         - {path: tests/test_tutorial/test_path_operation_advanced_configurations/test_tutorial004.py, symbol: test_openapi_schema}
         - {path: docs_src/path_operation_advanced_configuration/tutorial004_py310.py}
+        - {path: tests/test_tutorial/test_path_operation_advanced_configurations/test_tutorial001.py, symbol: test_openapi_schema}
+        - {path: docs_src/path_operation_advanced_configuration/tutorial001_py310.py}
       feature_ids: [app-routing, openapi-docs]
       observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths]
       supported_slice: >-
@@ -629,7 +647,9 @@ reviewed_api_contract_overlay:
         `summary` is emitted in OpenAPI, as sampled by
         `path-operation-other-verb-summaries-isolated`. A non-empty list of
         string `tags` is emitted as the operation tags by the same workflow;
-        enum-valued and empty tag values remain outside this slice.
+        enum-valued and empty tag values remain outside this slice. Explicit
+        non-empty `operation_id` values are used in OpenAPI, sampled across the
+        six decorators by `path-operation-other-verb-operation-ids-isolated`.
     fastapi.applications.FastAPI.patch:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::patch
       source_evidence:
@@ -640,6 +660,8 @@ reviewed_api_contract_overlay:
         - {path: tests/test_tutorial/test_body_updates/test_tutorial002.py, symbol: test_patch_name}
         - {path: tests/test_tutorial/test_path_operation_advanced_configurations/test_tutorial004.py, symbol: test_openapi_schema}
         - {path: docs_src/path_operation_advanced_configuration/tutorial004_py310.py}
+        - {path: tests/test_tutorial/test_path_operation_advanced_configurations/test_tutorial001.py, symbol: test_openapi_schema}
+        - {path: docs_src/path_operation_advanced_configuration/tutorial001_py310.py}
       feature_ids: [app-routing, openapi-docs, request-validation, response-serialization]
       observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths]
       supported_slice: >-
@@ -650,7 +672,9 @@ reviewed_api_contract_overlay:
         `summary` is emitted in OpenAPI, as sampled by
         `path-operation-other-verb-summaries-isolated`. A non-empty list of
         string `tags` is emitted as the operation tags by the same workflow;
-        enum-valued and empty tag values remain outside this slice.
+        enum-valued and empty tag values remain outside this slice. Explicit
+        non-empty `operation_id` values are used in OpenAPI, sampled across the
+        six decorators by `path-operation-other-verb-operation-ids-isolated`.
     fastapi.Cookie:
       rust_binding: fastapi-rs/src/parameters.rs::cookie
       source_evidence:
