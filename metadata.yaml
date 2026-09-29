@@ -506,15 +506,18 @@ reviewed_api_contract_overlay:
         - {path: tests/test_router_include_context.py, symbol: test_repeated_deep_inclusions_handle_all_concrete_paths}
         - {path: tests/test_router_include_context.py, symbol: test_router_include_context_matches_flattened_include_metadata}
       feature_ids: [app-routing]
-      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths]
       supported_slice: >-
         Partial native router: default and non-empty path prefixes, GET route
         decorators, nested inclusion with repeated prefixes, and ordered string
         tag inheritance, deprecation, and schema inclusion policy are covered
         by the router-composition, router-prefix-and-nested-composition,
-        router-tag-inheritance, and router-schema-policy workflows. Router-level
-        dependencies, responses, callbacks, lifespan, WebSockets, enum tags,
-        and other constructor or inclusion options remain outside this slice.
+        router-tag-inheritance, and router-schema-policy workflows. Synchronous
+        scalar-query dependencies supplied to APIRouter or include_router are
+        validated, run in include-then-router order, and appear in OpenAPI in
+        router-dependencies-isolated. Other dependency forms, responses,
+        callbacks, lifespan, WebSockets, enum tags, and constructor or inclusion
+        options outside the reviewed slices remain unsupported.
     fastapi.applications.FastAPI.include_router:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::include_router
       source_evidence:
@@ -531,7 +534,7 @@ reviewed_api_contract_overlay:
         - {path: docs_src/bigger_applications/app_an_py310/main.py}
         - {path: docs_src/bigger_applications/app_an_py310/routers/users.py}
       feature_ids: [app-routing, request-validation]
-      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths]
       supported_slice: >-
         Includes routes registered on APIRouter, combines route, nested-router,
         and inclusion prefixes, and preserves endpoint dependency plans. The
@@ -540,8 +543,10 @@ reviewed_api_contract_overlay:
         inheritance across app, parent-router, include, child-router, and route
         scopes. Router/include `deprecated` values propagate to OpenAPI, and
         `include_in_schema=False` omits routes without affecting dispatch.
-        Inclusion-level dependencies, responses, callbacks, custom response
-        classes, and ID policies remain outside this slice.
+        Scalar-query dependencies supplied to `include_router` execute before
+        the target router's dependencies and are included in its OpenAPI input
+        parameters by router-dependencies-isolated. Responses, callbacks,
+        custom response classes, and ID policies remain outside this slice.
     fastapi.routing.APIRouter.include_router:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::include_router
       source_evidence:
@@ -550,14 +555,15 @@ reviewed_api_contract_overlay:
         - {path: tests/test_router_include_context.py, symbol: test_repeated_deep_inclusions_handle_all_concrete_paths}
         - {path: tests/test_router_include_context.py, symbol: test_router_include_context_matches_flattened_include_metadata}
       feature_ids: [app-routing]
-      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths]
       supported_slice: >-
         Nested route sets can be included repeatedly with distinct prefixes and
         string tags. The reviewed inputs observe four concrete routes after two
         nested inclusions and ordered tags across five composition levels.
         `deprecated` and `include_in_schema` inheritance are also covered by
-        router-schema-policy-upstream. Other router-level options remain
-        outside this slice.
+        router-schema-policy-upstream. Synchronous scalar-query dependencies
+        at router and include scopes are covered by router-dependencies-isolated.
+        Other router-level options remain outside this slice.
     fastapi.routing.APIRouter.__init__:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::new
       source_evidence:
@@ -565,6 +571,7 @@ reviewed_api_contract_overlay:
         - {path: tests/test_router_include_context.py, symbol: test_router_and_include_prefix_path_params_reach_endpoint_and_openapi}
         - {path: tests/test_router_include_context.py, symbol: test_router_include_context_matches_flattened_include_metadata}
       feature_ids: [app-routing]
+      observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths]
       supported_slice: >-
         The native constructor accepts the default or a keyword-only prefix.
         A non-empty `/tenants/{tenant_id}` prefix combines with an app-level
@@ -573,7 +580,9 @@ reviewed_api_contract_overlay:
         accepts a non-empty list of string tags, as sampled by
         router-tag-inheritance-upstream. The constructor also accepts
         `deprecated` and `include_in_schema`; their behavior is sampled by
-        router-schema-policy-upstream.
+        router-schema-policy-upstream. A list of synchronous Depends declarations
+        with required scalar query inputs is validated and invoked in router-
+        dependencies-isolated.
     fastapi.routing.APIRouter.get:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::__getattr__
       source_evidence:

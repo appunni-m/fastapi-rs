@@ -1,0 +1,73 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/router_dependencies_isolated.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+  - case_id: fastapi.routing.include-router.router-and-include-dependencies
+    actions:
+      - action_id: missing-router-and-include-dependencies
+        kind: http_request
+        scope:
+          type: http
+          asgi: {version: '3.0', spec_version: '2.4'}
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /items
+          query_string: ''
+          root_path: ''
+          headers: [[host, testserver]]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events:
+          - {type: http.request, body: '', more_body: false}
+        observations:
+          - kind: http_response
+            selectors: [status, body]
+            comparison: exact
+      - action_id: both-dependencies-execute-in-order
+        kind: http_request
+        scope:
+          type: http
+          asgi: {version: '3.0', spec_version: '2.4'}
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /items
+          query_string: scope=public&token=abc
+          root_path: ''
+          headers: [[host, testserver]]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events:
+          - {type: http.request, body: '', more_body: false}
+        observations:
+          - kind: http_response
+            selectors: [status, body]
+            comparison: exact
+      - action_id: dependencies-are-documentable-inputs
+        kind: http_request
+        scope:
+          type: http
+          asgi: {version: '3.0', spec_version: '2.4'}
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /openapi.json
+          query_string: ''
+          root_path: ''
+          headers: [[host, testserver]]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events:
+          - {type: http.request, body: '', more_body: false}
+        observations:
+          - kind: openapi
+            json_pointers: [/paths/~1items/get/parameters]
+            comparison: exact
+    source_evidence:
+      - path: tests/test_router_include_context.py
+        kind: upstream_test
+      - path: docs/en/docs/reference/apirouter.md
+        kind: upstream_documentation

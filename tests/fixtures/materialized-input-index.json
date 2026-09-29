@@ -5042,6 +5042,18 @@
       ]
     },
     {
+      "id": "router-dependencies-isolated",
+      "input_path": "tests/fixtures/inputs/parity/router-dependencies-isolated.json",
+      "input_sha256": "10a8fbff3f429d7ee5ac51364fa3b89fa59a5b43b5d1f1b6569e7f2c8059780c",
+      "recipe_path": "tests/fixtures/input-recipes/parity/router-dependencies-isolated.yaml",
+      "recipe_sha256": "77ec723ef023c670b14d531083f6f1b37fdf680b0d48a1a5cd42e460889bd8ca",
+      "workload_path": "tests/fixtures/workloads/router_dependencies_isolated.py",
+      "workload_sha256": "af20c7a4f04290131fbdac019874e8f56f3ae6598b8c14940643f1389a584a7d",
+      "case_ids": [
+        "fastapi.routing.include-router.router-and-include-dependencies"
+      ]
+    },
+    {
       "id": "router-effective-scope-context-upstream",
       "input_path": "tests/fixtures/inputs/parity/router-effective-scope-context-upstream.json",
       "input_sha256": "cdf53f181bd568d7adf2aa58abe6efa8fe34ab88e915f6af753a2ecf0a4e5596",
@@ -18962,6 +18974,37 @@
       "observation_selectors": [
         "http.body.bytes",
         "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:reference/apirouter.md",
+      "fixture_id": "fastapi.docs.reference-apirouter",
+      "workflow_id": "router-dependencies-isolated",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.routing.include-router.router-and-include-dependencies"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status",
+        "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_router_include_context.py",
+      "fixture_id": "fastapi.test.test-router-include-context",
+      "workflow_id": "router-dependencies-isolated",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.routing.include-router.router-and-include-dependencies"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status",
+        "openapi.document",
+        "openapi.paths"
       ]
     },
     {

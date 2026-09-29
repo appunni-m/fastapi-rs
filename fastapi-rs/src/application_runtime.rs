@@ -53,6 +53,7 @@ enum ParameterSource {
     Dependency {
         plan: Box<CallablePlan>,
         use_cache: bool,
+        bind_value: bool,
     },
 }
 
@@ -145,6 +146,7 @@ struct FastApiRoute {
     response_model_exclude_unset: bool,
     response_model_exclude_defaults: bool,
     response_model_exclude_none: bool,
+    router_dependencies: Vec<Py<PyAny>>,
     plan: CallablePlan,
 }
 
@@ -191,6 +193,15 @@ pub(crate) struct PyApiRouter {
     inner: Py<PyFastApi>,
     prefix: String,
     tags: Vec<String>,
+    deprecated: Option<bool>,
+    include_in_schema: bool,
+    dependencies: Vec<Py<PyAny>>,
+}
+
+struct RouterIncludePolicy<'policy> {
+    prefix: &'policy str,
+    tags: &'policy [String],
+    dependencies: &'policy [Py<PyAny>],
     deprecated: Option<bool>,
     include_in_schema: bool,
 }
@@ -621,19 +632,32 @@ impl PyFastApi {
         )
     }
 
-    #[pyo3(signature = (router, *, prefix = "", tags = None, deprecated = None, include_in_schema = true))]
+    #[pyo3(signature = (router, *, prefix = "", tags = None, dependencies = None, deprecated = None, include_in_schema = true))]
+    // lint-exception: preserve FastAPI's include_router keyword signature.
+    #[allow(
+        clippy::too_many_arguments,
+        reason = "preserve the FastAPI-compatible include_router signature"
+    )]
     fn include_router(
         &mut self,
         py: Python<'_>,
         router: Py<PyApiRouter>,
         prefix: &str,
         tags: Option<Vec<String>>,
+        dependencies: Option<Vec<Py<PyAny>>>,
         deprecated: Option<bool>,
         include_in_schema: bool,
     ) -> PyResult<()> {
         let router = router.bind(py).borrow();
         let prefix = combined_router_prefix(prefix, &router.prefix)?;
         let tags = combined_router_tags(tags.as_deref(), &router.tags);
+        let mut dependencies = dependencies.unwrap_or_default();
+        dependencies.extend(
+            router
+                .dependencies
+                .iter()
+                .map(|dependency| dependency.clone_ref(py)),
+        );
         let deprecated = combined_deprecated(deprecated, router.deprecated);
         let include_in_schema = include_in_schema && router.include_in_schema;
         let source = router.inner.bind(py).borrow();
@@ -641,10 +665,13 @@ impl PyFastApi {
             py,
             self,
             &source,
-            &prefix,
-            &tags,
-            deprecated,
-            include_in_schema,
+            RouterIncludePolicy {
+                prefix: &prefix,
+                tags: &tags,
+                dependencies: &dependencies,
+                deprecated,
+                include_in_schema,
+            },
         )
     }
 
@@ -826,11 +853,12 @@ impl PyFastApi {
 #[pymethods]
 impl PyApiRouter {
     #[new]
-    #[pyo3(signature = (*, prefix = "", tags = None, deprecated = None, include_in_schema = true))]
+    #[pyo3(signature = (*, prefix = "", tags = None, dependencies = None, deprecated = None, include_in_schema = true))]
     fn new(
         py: Python<'_>,
         prefix: &str,
         tags: Option<Vec<String>>,
+        dependencies: Option<Vec<Py<PyAny>>>,
         deprecated: Option<bool>,
         include_in_schema: bool,
     ) -> PyResult<Self> {
@@ -856,6 +884,7 @@ impl PyApiRouter {
             tags: tags.unwrap_or_default(),
             deprecated,
             include_in_schema,
+            dependencies: dependencies.unwrap_or_default(),
         })
     }
 
@@ -864,13 +893,19 @@ impl PyApiRouter {
         &self.prefix
     }
 
-    #[pyo3(signature = (router, *, prefix = "", tags = None, deprecated = None, include_in_schema = true))]
+    #[pyo3(signature = (router, *, prefix = "", tags = None, dependencies = None, deprecated = None, include_in_schema = true))]
+    // lint-exception: preserve FastAPI's include_router keyword signature.
+    #[allow(
+        clippy::too_many_arguments,
+        reason = "preserve the FastAPI-compatible include_router signature"
+    )]
     fn include_router(
         &self,
         py: Python<'_>,
         router: Py<PyApiRouter>,
         prefix: &str,
         tags: Option<Vec<String>>,
+        dependencies: Option<Vec<Py<PyAny>>>,
         deprecated: Option<bool>,
         include_in_schema: bool,
     ) -> PyResult<()> {
@@ -882,6 +917,13 @@ impl PyApiRouter {
         }
         let prefix = combined_router_prefix(prefix, &router.prefix)?;
         let tags = combined_router_tags(tags.as_deref(), &router.tags);
+        let mut dependencies = dependencies.unwrap_or_default();
+        dependencies.extend(
+            router
+                .dependencies
+                .iter()
+                .map(|dependency| dependency.clone_ref(py)),
+        );
         let deprecated = combined_deprecated(deprecated, router.deprecated);
         let include_in_schema = include_in_schema && router.include_in_schema;
         let source = router.inner.bind(py).borrow();
@@ -890,10 +932,13 @@ impl PyApiRouter {
             py,
             &mut destination,
             &source,
-            &prefix,
-            &tags,
-            deprecated,
-            include_in_schema,
+            RouterIncludePolicy {
+                prefix: &prefix,
+                tags: &tags,
+                dependencies: &dependencies,
+                deprecated,
+                include_in_schema,
+            },
         )
     }
 
@@ -965,18 +1010,33 @@ fn merge_router_routes(
     py: Python<'_>,
     app: &mut PyFastApi,
     source: &PyFastApi,
-    prefix: &str,
-    inherited_tags: &[String],
-    inherited_deprecated: Option<bool>,
-    inherited_include_in_schema: bool,
+    policy: RouterIncludePolicy<'_>,
 ) -> PyResult<()> {
+    let RouterIncludePolicy {
+        prefix,
+        tags: inherited_tags,
+        dependencies: inherited_dependencies,
+        deprecated: inherited_deprecated,
+        include_in_schema: inherited_include_in_schema,
+    } = policy;
     for source_route in &source.routes {
         let path = format!("{prefix}{}", source_route.path);
-        let plan = CallablePlan::build(
+        let mut route_dependencies = inherited_dependencies
+            .iter()
+            .map(|dependency| dependency.clone_ref(py))
+            .collect::<Vec<_>>();
+        route_dependencies.extend(
+            source_route
+                .router_dependencies
+                .iter()
+                .map(|dependency| dependency.clone_ref(py)),
+        );
+        let mut plan = CallablePlan::build(
             py,
             source_route.endpoint.clone_ref(py),
             &path_parameter_names(&path),
         )?;
+        plan.prepend_dependencies(py, &route_dependencies)?;
         let index = app
             .router
             .add_operation(&path, &source_route.method, source_route.status_code)
@@ -1011,6 +1071,7 @@ fn merge_router_routes(
             response_model_exclude_unset: source_route.response_model_exclude_unset,
             response_model_exclude_defaults: source_route.response_model_exclude_defaults,
             response_model_exclude_none: source_route.response_model_exclude_none,
+            router_dependencies: route_dependencies,
             plan,
         });
     }
@@ -1114,6 +1175,7 @@ impl PyOperationDecorator {
             response_model_exclude_unset: self.response_model_exclude_unset,
             response_model_exclude_defaults: self.response_model_exclude_defaults,
             response_model_exclude_none: self.response_model_exclude_none,
+            router_dependencies: Vec::new(),
             plan,
         });
         Ok(endpoint)
@@ -1177,6 +1239,41 @@ impl CallablePlan {
             parameters,
             path_parameters: path_parameters.to_vec(),
         })
+    }
+
+    fn prepend_dependencies(&mut self, py: Python<'_>, dependencies: &[Py<PyAny>]) -> PyResult<()> {
+        let mut parameters = Vec::with_capacity(dependencies.len() + self.parameters.len());
+        for dependency in dependencies {
+            let annotation = py.None();
+            let source = parameter_source(
+                py,
+                "",
+                annotation.bind(py),
+                std::slice::from_ref(dependency),
+                &self.path_parameters,
+            )?;
+            let ParameterSource::Dependency {
+                plan, use_cache, ..
+            } = source
+            else {
+                return Err(PyValueError::new_err(
+                    "router dependencies must be Depends declarations",
+                ));
+            };
+            parameters.push(CallableParameter {
+                name: String::new(),
+                annotation,
+                default: None,
+                source: ParameterSource::Dependency {
+                    plan,
+                    use_cache,
+                    bind_value: false,
+                },
+            });
+        }
+        parameters.append(&mut self.parameters);
+        self.parameters = parameters;
+        Ok(())
     }
 
     fn input_parameters(&self) -> Vec<FastApiInputParameter> {
@@ -1254,7 +1351,10 @@ impl CallablePlan {
         let mut dependency_edge_index = 0;
 
         for parameter in &self.parameters {
-            let ParameterSource::Dependency { plan, use_cache } = &parameter.source else {
+            let ParameterSource::Dependency {
+                plan, use_cache, ..
+            } = &parameter.source
+            else {
                 continue;
             };
             let edge_index = dependency_edge_index;
@@ -1545,14 +1645,21 @@ impl CallablePlan {
             > 1;
         let mut dependency_edge_index = 0;
         for parameter in &self.parameters {
-            if let ParameterSource::Dependency { plan, use_cache } = &parameter.source {
+            if let ParameterSource::Dependency {
+                plan,
+                use_cache,
+                bind_value,
+            } = &parameter.source
+            {
                 let edge_index = dependency_edge_index;
                 dependency_edge_index += 1;
                 let prepared_value = prepared_dependencies
                     .and_then(|values| values.get(&edge_index))
                     .or_else(|| context.prepared_dependency_values.get(&edge_index));
                 if let Some(value) = prepared_value {
-                    kwargs.set_item(&parameter.name, value.bind(context.py))?;
+                    if *bind_value {
+                        kwargs.set_item(&parameter.name, value.bind(context.py))?;
+                    }
                     continue;
                 }
                 let original_cache_key = plan.callable.as_ptr() as usize;
@@ -1574,7 +1681,9 @@ impl CallablePlan {
                     _ => plan.invoke(context, Some(*use_cache), Some(original_cache_key))?,
                 };
                 if let Some(value) = value {
-                    kwargs.set_item(&parameter.name, value.bind(context.py))?;
+                    if *bind_value {
+                        kwargs.set_item(&parameter.name, value.bind(context.py))?;
+                    }
                 }
             }
         }
@@ -1829,6 +1938,7 @@ fn parameter_source(
                 ParameterSource::Dependency {
                     plan: Box::new(plan),
                     use_cache,
+                    bind_value: true,
                 }
             });
         }
