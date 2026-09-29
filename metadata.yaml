@@ -234,6 +234,7 @@ reviewed_api_contract_overlay:
         - {path: fastapi/applications.py, symbol: options}
         - {path: fastapi/routing.py, symbol: options}
         - {path: fastapi/openapi/utils.py, symbol: get_openapi_operation_metadata}
+        - {path: fastapi/openapi/utils.py, symbol: get_openapi_path}
         - {path: tests/test_extra_routes.py, symbol: test_options}
         - {path: tests/test_tutorial/test_path_operation_advanced_configurations/test_tutorial004.py, symbol: test_openapi_schema}
         - {path: docs_src/path_operation_advanced_configuration/tutorial004_py310.py}
@@ -252,12 +253,16 @@ reviewed_api_contract_overlay:
         enum-valued and empty tag values remain outside this slice. Explicit
         non-empty `operation_id` values are used in OpenAPI, sampled across the
         six decorators by `path-operation-other-verb-operation-ids-isolated`.
+        Explicit `response_description` values are emitted in the success
+        response and sampled with the other direct and router methods by
+        `path-operation-other-verbs-response-descriptions`.
     fastapi.applications.FastAPI.trace:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::trace
       source_evidence:
         - {path: fastapi/applications.py, symbol: trace}
         - {path: fastapi/routing.py, symbol: trace}
         - {path: fastapi/openapi/utils.py, symbol: get_openapi_operation_metadata}
+        - {path: fastapi/openapi/utils.py, symbol: get_openapi_path}
         - {path: tests/test_extra_routes.py, symbol: test_trace}
         - {path: tests/test_tutorial/test_path_operation_advanced_configurations/test_tutorial004.py, symbol: test_openapi_schema}
         - {path: docs_src/path_operation_advanced_configuration/tutorial004_py310.py}
@@ -276,12 +281,16 @@ reviewed_api_contract_overlay:
         enum-valued and empty tag values remain outside this slice. Explicit
         non-empty `operation_id` values are used in OpenAPI, sampled across the
         six decorators by `path-operation-other-verb-operation-ids-isolated`.
+        Explicit `response_description` values are emitted in the success
+        response and sampled with the other direct and router methods by
+        `path-operation-other-verbs-response-descriptions`.
     fastapi.applications.FastAPI.head:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::head
       source_evidence:
         - {path: fastapi/applications.py, symbol: head}
         - {path: fastapi/routing.py, symbol: head}
         - {path: fastapi/openapi/utils.py, symbol: get_openapi_operation_metadata}
+        - {path: fastapi/openapi/utils.py, symbol: get_openapi_path}
         - {path: tests/test_extra_routes.py, symbol: test_head}
         - {path: tests/test_extra_routes.py, symbol: test_get_api_route}
         - {path: tests/test_tutorial/test_path_operation_advanced_configurations/test_tutorial004.py, symbol: test_openapi_schema}
@@ -302,6 +311,9 @@ reviewed_api_contract_overlay:
         enum-valued and empty tag values remain outside this slice. Explicit
         non-empty `operation_id` values are used in OpenAPI, sampled across the
         six decorators by `path-operation-other-verb-operation-ids-isolated`.
+        Explicit `response_description` values are emitted in the success
+        response and sampled with the other direct and router methods by
+        `path-operation-other-verbs-response-descriptions`.
     fastapi.Body:
       rust_binding: fastapi-rs/src/parameters.rs::body
       source_evidence:
@@ -505,7 +517,7 @@ reviewed_api_contract_overlay:
         - {path: tests/test_router_include_context.py, symbol: test_router_and_include_prefix_path_params_reach_endpoint_and_openapi}
         - {path: tests/test_router_include_context.py, symbol: test_repeated_deep_inclusions_handle_all_concrete_paths}
         - {path: tests/test_router_include_context.py, symbol: test_router_include_context_matches_flattened_include_metadata}
-      feature_ids: [app-routing]
+      feature_ids: [app-routing, request-validation, openapi-docs]
       observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths]
       supported_slice: >-
         Partial native router: default and non-empty path prefixes, GET route
@@ -533,7 +545,7 @@ reviewed_api_contract_overlay:
         - {path: docs/en/docs/tutorial/bigger-applications.md}
         - {path: docs_src/bigger_applications/app_an_py310/main.py}
         - {path: docs_src/bigger_applications/app_an_py310/routers/users.py}
-      feature_ids: [app-routing, request-validation]
+      feature_ids: [app-routing, request-validation, openapi-docs]
       observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths]
       supported_slice: >-
         Includes routes registered on APIRouter, combines route, nested-router,
@@ -554,7 +566,7 @@ reviewed_api_contract_overlay:
         - {path: fastapi/routing.py, symbol: APIRouter}
         - {path: tests/test_router_include_context.py, symbol: test_repeated_deep_inclusions_handle_all_concrete_paths}
         - {path: tests/test_router_include_context.py, symbol: test_router_include_context_matches_flattened_include_metadata}
-      feature_ids: [app-routing]
+      feature_ids: [app-routing, request-validation, openapi-docs]
       observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths]
       supported_slice: >-
         Nested route sets can be included repeatedly with distinct prefixes and
@@ -570,7 +582,7 @@ reviewed_api_contract_overlay:
         - {path: fastapi/routing.py, symbol: APIRouter}
         - {path: tests/test_router_include_context.py, symbol: test_router_and_include_prefix_path_params_reach_endpoint_and_openapi}
         - {path: tests/test_router_include_context.py, symbol: test_router_include_context_matches_flattened_include_metadata}
-      feature_ids: [app-routing]
+      feature_ids: [app-routing, request-validation, openapi-docs]
       observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths]
       supported_slice: >-
         The native constructor accepts the default or a keyword-only prefix.
@@ -588,81 +600,105 @@ reviewed_api_contract_overlay:
       source_evidence:
         - {path: fastapi/routing.py, symbol: APIRouter}
         - {path: fastapi/routing.py, symbol: get}
+        - {path: fastapi/openapi/utils.py, symbol: get_openapi_path}
         - {path: tests/test_tutorial/test_bigger_applications/test_main.py, symbol: test_users_token_jessica}
         - {path: tests/test_router_include_context.py, symbol: test_router_and_include_prefix_path_params_reach_endpoint_and_openapi}
         - {path: tests/test_router_include_context.py, symbol: test_router_include_context_matches_flattened_include_metadata}
         - {path: docs_src/bigger_applications/app_an_py310/routers/users.py, symbol: read_users}
-      feature_ids: [app-routing, request-validation]
-      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      feature_ids: [app-routing, request-validation, openapi-docs]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.paths]
       supported_slice: >-
         Registers a GET endpoint on a router for inclusion, including the
         sampled scalar query dependency, path parameters contributed by router
         and app prefixes, and route-level string tags combined with inherited
-        tags in router-tag-inheritance-upstream.
+        tags in router-tag-inheritance-upstream. An explicit
+        `response_description` is emitted in OpenAPI and sampled by
+        path-operation-other-verbs-response-descriptions.
     fastapi.routing.APIRouter.post:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::__getattr__
       source_evidence:
         - {path: fastapi/routing.py, symbol: APIRouter}
         - {path: fastapi/routing.py, symbol: post}
-      feature_ids: [app-routing]
+        - {path: fastapi/openapi/utils.py, symbol: get_openapi_path}
+      feature_ids: [app-routing, openapi-docs]
+      observation_selectors: [openapi.document, openapi.paths]
       supported_slice: >-
-        Native attribute forwarding exposes the POST route decorator. Included
-        POST route behavior remains unverified by a source/target fixture.
+        Native attribute forwarding exposes the POST route decorator. Explicit
+        response descriptions appear in included-route OpenAPI, covered by
+        path-operation-post-response-description-isolated and
+        path-operation-other-verbs-response-descriptions.
     fastapi.routing.APIRouter.put:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::__getattr__
       source_evidence:
         - {path: fastapi/routing.py, symbol: APIRouter}
         - {path: fastapi/routing.py, symbol: put}
-      feature_ids: [app-routing]
+        - {path: fastapi/openapi/utils.py, symbol: get_openapi_path}
+      feature_ids: [app-routing, openapi-docs]
+      observation_selectors: [openapi.document, openapi.paths]
       supported_slice: >-
-        Native attribute forwarding exposes the PUT route decorator. Included
-        PUT route behavior remains unverified by a source/target fixture.
+        Native attribute forwarding exposes the PUT route decorator. An explicit
+        `response_description` is emitted for included routes and sampled by
+        path-operation-other-verbs-response-descriptions.
     fastapi.routing.APIRouter.delete:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::__getattr__
       source_evidence:
         - {path: fastapi/routing.py, symbol: APIRouter}
         - {path: fastapi/routing.py, symbol: delete}
-      feature_ids: [app-routing]
+        - {path: fastapi/openapi/utils.py, symbol: get_openapi_path}
+      feature_ids: [app-routing, openapi-docs]
+      observation_selectors: [openapi.document, openapi.paths]
       supported_slice: >-
-        Native attribute forwarding exposes the DELETE route decorator. Included
-        DELETE route behavior remains unverified by a source/target fixture.
+        Native attribute forwarding exposes the DELETE route decorator. An
+        explicit `response_description` is emitted for included routes and
+        sampled by path-operation-other-verbs-response-descriptions.
     fastapi.routing.APIRouter.patch:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::__getattr__
       source_evidence:
         - {path: fastapi/routing.py, symbol: APIRouter}
         - {path: fastapi/routing.py, symbol: patch}
-      feature_ids: [app-routing]
+        - {path: fastapi/openapi/utils.py, symbol: get_openapi_path}
+      feature_ids: [app-routing, openapi-docs]
+      observation_selectors: [openapi.document, openapi.paths]
       supported_slice: >-
-        Native attribute forwarding exposes the PATCH route decorator. Included
-        PATCH route behavior remains unverified by a source/target fixture.
+        Native attribute forwarding exposes the PATCH route decorator. An
+        explicit `response_description` is emitted for included routes and
+        sampled by path-operation-other-verbs-response-descriptions.
     fastapi.routing.APIRouter.head:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::__getattr__
       source_evidence:
         - {path: fastapi/routing.py, symbol: APIRouter}
         - {path: fastapi/routing.py, symbol: head}
-      feature_ids: [app-routing]
+        - {path: fastapi/openapi/utils.py, symbol: get_openapi_path}
+      feature_ids: [app-routing, openapi-docs]
+      observation_selectors: [openapi.document, openapi.paths]
       supported_slice: >-
-        Native attribute forwarding exposes the HEAD route decorator. Included
-        HEAD route behavior remains unverified by a source/target fixture.
+        Native attribute forwarding exposes the HEAD route decorator. An
+        explicit `response_description` is emitted for included routes and
+        sampled by path-operation-other-verbs-response-descriptions.
     fastapi.routing.APIRouter.options:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::__getattr__
       source_evidence:
         - {path: fastapi/routing.py, symbol: APIRouter}
         - {path: fastapi/routing.py, symbol: options}
-      feature_ids: [app-routing]
+        - {path: fastapi/openapi/utils.py, symbol: get_openapi_path}
+      feature_ids: [app-routing, openapi-docs]
+      observation_selectors: [openapi.document, openapi.paths]
       supported_slice: >-
-        Native attribute forwarding exposes the OPTIONS route decorator.
-        Included OPTIONS route behavior remains unverified by a source/target
-        fixture.
+        Native attribute forwarding exposes the OPTIONS route decorator. An
+        explicit `response_description` is emitted for included routes and
+        sampled by path-operation-other-verbs-response-descriptions.
     fastapi.routing.APIRouter.trace:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::__getattr__
       source_evidence:
         - {path: fastapi/routing.py, symbol: APIRouter}
         - {path: fastapi/routing.py, symbol: trace}
-      feature_ids: [app-routing]
+        - {path: fastapi/openapi/utils.py, symbol: get_openapi_path}
+      feature_ids: [app-routing, openapi-docs]
+      observation_selectors: [openapi.document, openapi.paths]
       supported_slice: >-
-        Native attribute forwarding exposes the TRACE route decorator. Included
-        TRACE route behavior remains unverified by a source/target fixture.
+        Native attribute forwarding exposes the TRACE route decorator. An
+        explicit `response_description` is emitted for included routes and
+        sampled by path-operation-other-verbs-response-descriptions.
     fastapi.applications.FastAPI.get:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::get
       source_evidence:
@@ -721,6 +757,9 @@ reviewed_api_contract_overlay:
         tags and enum-valued tags remain outside this GET slice. Non-empty
         string tags on PUT, PATCH, DELETE, OPTIONS, HEAD, and TRACE are sampled
         by the six-method operation metadata workflow.
+        Non-empty `response_description` values on the direct and APIRouter
+        methods, plus omitted and empty-string controls, are sampled by
+        path-operation-other-verbs-response-descriptions.
     fastapi.applications.FastAPI.post:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::post
       source_evidence:
@@ -777,6 +816,7 @@ reviewed_api_contract_overlay:
         - {path: fastapi/routing.py, symbol: put}
         - {path: fastapi/routing.py, symbol: api_route}
         - {path: fastapi/openapi/utils.py, symbol: get_openapi_operation_metadata}
+        - {path: fastapi/openapi/utils.py, symbol: get_openapi_path}
         - {path: tests/test_tutorial/test_path_operation_advanced_configurations/test_tutorial004.py, symbol: test_openapi_schema}
         - {path: docs_src/path_operation_advanced_configuration/tutorial004_py310.py}
         - {path: tests/test_tutorial/test_path_operation_advanced_configurations/test_tutorial001.py, symbol: test_openapi_schema}
@@ -794,6 +834,9 @@ reviewed_api_contract_overlay:
         enum-valued and empty tag values remain outside this slice. Explicit
         non-empty `operation_id` values are used in OpenAPI, sampled across the
         six decorators by `path-operation-other-verb-operation-ids-isolated`.
+        Explicit `response_description` values are emitted in the success
+        response and sampled with the other direct and router methods by
+        `path-operation-other-verbs-response-descriptions`.
     fastapi.applications.FastAPI.delete:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::delete
       source_evidence:
@@ -801,6 +844,7 @@ reviewed_api_contract_overlay:
         - {path: fastapi/routing.py, symbol: delete}
         - {path: fastapi/routing.py, symbol: api_route}
         - {path: fastapi/openapi/utils.py, symbol: get_openapi_operation_metadata}
+        - {path: fastapi/openapi/utils.py, symbol: get_openapi_path}
         - {path: tests/test_extra_routes.py, symbol: test_delete}
         - {path: tests/test_tutorial/test_path_operation_advanced_configurations/test_tutorial004.py, symbol: test_openapi_schema}
         - {path: docs_src/path_operation_advanced_configuration/tutorial004_py310.py}
@@ -819,6 +863,9 @@ reviewed_api_contract_overlay:
         enum-valued and empty tag values remain outside this slice. Explicit
         non-empty `operation_id` values are used in OpenAPI, sampled across the
         six decorators by `path-operation-other-verb-operation-ids-isolated`.
+        Explicit `response_description` values are emitted in the success
+        response and sampled with the other direct and router methods by
+        `path-operation-other-verbs-response-descriptions`.
     fastapi.applications.FastAPI.patch:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::patch
       source_evidence:
@@ -826,6 +873,7 @@ reviewed_api_contract_overlay:
         - {path: fastapi/routing.py, symbol: patch}
         - {path: fastapi/routing.py, symbol: api_route}
         - {path: fastapi/openapi/utils.py, symbol: get_openapi_operation_metadata}
+        - {path: fastapi/openapi/utils.py, symbol: get_openapi_path}
         - {path: tests/test_tutorial/test_body_updates/test_tutorial002.py, symbol: test_patch_name}
         - {path: tests/test_tutorial/test_path_operation_advanced_configurations/test_tutorial004.py, symbol: test_openapi_schema}
         - {path: docs_src/path_operation_advanced_configuration/tutorial004_py310.py}
@@ -844,6 +892,9 @@ reviewed_api_contract_overlay:
         enum-valued and empty tag values remain outside this slice. Explicit
         non-empty `operation_id` values are used in OpenAPI, sampled across the
         six decorators by `path-operation-other-verb-operation-ids-isolated`.
+        Explicit `response_description` values are emitted in the success
+        response and sampled with the other direct and router methods by
+        `path-operation-other-verbs-response-descriptions`.
     fastapi.Cookie:
       rust_binding: fastapi-rs/src/parameters.rs::cookie
       source_evidence:

@@ -1,0 +1,52 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/path_operation_other_verbs_response_descriptions.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+  - case_id: fastapi.path-operation.other-verbs-response-descriptions
+    actions:
+      - action_id: compare-response-descriptions
+        kind: http_request
+        scope:
+          type: http
+          asgi: {version: '3.0', spec_version: '2.4'}
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /openapi.json
+          query_string: ''
+          root_path: ''
+          headers: [[host, testserver]]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events:
+          - {type: http.request, body: '', more_body: false}
+        observations:
+          - kind: openapi
+            json_pointers:
+              - /paths/~1app-get/get/responses/200/description
+              - /paths/~1app-put/put/responses/200/description
+              - /paths/~1app-delete/delete/responses/200/description
+              - /paths/~1app-patch/patch/responses/200/description
+              - /paths/~1app-head/head/responses/200/description
+              - /paths/~1app-options/options/responses/200/description
+              - /paths/~1app-trace/trace/responses/200/description
+              - /paths/~1app-default/get/responses/200/description
+              - /paths/~1app-empty/put/responses/200/description
+              - /paths/~1router-post/post/responses/200/description
+              - /paths/~1router-get/get/responses/200/description
+              - /paths/~1router-put/put/responses/200/description
+              - /paths/~1router-delete/delete/responses/200/description
+              - /paths/~1router-patch/patch/responses/200/description
+              - /paths/~1router-head/head/responses/200/description
+              - /paths/~1router-options/options/responses/200/description
+              - /paths/~1router-trace/trace/responses/200/description
+            comparison: exact
+    source_evidence:
+      - path: tests/test_tutorial/test_path_operation_configurations/test_tutorial005.py
+        kind: upstream_test
+      - path: docs_src/path_operation_configuration/tutorial005_py310.py
+        kind: upstream_documentation
+      - path: docs/en/docs/tutorial/path-operation-configuration.md
+        kind: upstream_documentation
