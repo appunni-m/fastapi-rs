@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run fresh parity first, then measure three isolated ASGI products."""
+"""Run fresh parity first, then measure the selected isolated ASGI products."""
 
 from __future__ import annotations
 
@@ -69,9 +69,7 @@ def main() -> int:
     parser.add_argument(
         "--workload", type=Path, default=ROOT / "benchmarks/workloads/first-slice-valid-asgi.yaml"
     )
-    parser.add_argument(
-        "--input", type=Path, default=ROOT / "tests/fixtures/inputs/parity/first-asgi-request.json"
-    )
+    parser.add_argument("--input", type=Path)
     parser.add_argument("--fastapi-source", type=Path, default=ROOT / "../fastapi")
     parser.add_argument("--starlette-source", type=Path, default=ROOT / "../starlette")
     parser.add_argument("--starlette-rs-source", type=Path, default=ROOT / "../starlette-rs")
@@ -79,11 +77,14 @@ def main() -> int:
     parser.add_argument("--target-python", type=Path, default=ROOT / ".venv-target/bin/python")
     args = parser.parse_args()
     workload_path = args.workload.resolve()
-    input_path = args.input.resolve()
     workload = yaml.safe_load(workload_path.read_text(encoding="utf-8"))
+    input_path = (ROOT / workload["input"]["path"]).resolve()
+    if args.input is not None and args.input.resolve() != input_path:
+        raise BenchmarkError("command-line input differs from the benchmark workload input")
     input_workflow = json.loads(input_path.read_text(encoding="utf-8"))
     manifest = yaml.safe_load((ROOT / "tests/fixtures/manifest.yaml").read_text(encoding="utf-8"))
     case_id = workload["input"]["case_id"]
+    action_id = workload["input"].get("action_id")
     app_workload = ROOT / input_workflow["workload"]["file"]
     factory = input_workflow["workload"]["factory"]
     oracle_profile = manifest["oracle_profile"]
@@ -108,6 +109,7 @@ def main() -> int:
             "benchmark workload Python identity differs from the pinned oracle/target profile"
         )
 
+    parity_driver._run_cli("input validation", ["validate", "--input", str(input_path)])
     oracle = parity_driver._run_cli(
         "oracle run",
         [
@@ -171,36 +173,39 @@ def main() -> int:
     measurements: dict[str, dict[str, Any]] = {}
     for subject in workload["subjects"]:
         kind = subject["kind"]
+        command = [
+            str(subject_python[kind]),
+            str(ROOT / "scripts/benchmarks/worker.py"),
+            "--kind",
+            kind,
+            "--input",
+            str(input_path),
+            "--case-id",
+            case_id,
+            "--app-workload",
+            str(app_workload),
+            "--factory",
+            factory,
+            "--warmups",
+            str(workload["timing"]["warmups"]),
+            "--rounds",
+            str(workload["timing"]["rounds"]),
+            "--samples-per-round",
+            str(workload["timing"]["samples_per_round"]),
+            "--identities-json",
+            json.dumps(expected_identity, sort_keys=True, separators=(",", ":")),
+            "--fastapi-source",
+            str(args.fastapi_source.resolve()),
+            "--starlette-source",
+            str(args.starlette_source.resolve()),
+            "--starlette-rs-source",
+            str(args.starlette_rs_source.resolve()),
+        ]
+        if action_id is not None:
+            command.extend(["--action-id", action_id])
         measurements[kind] = _run(
             f"{kind} benchmark",
-            [
-                str(subject_python[kind]),
-                str(ROOT / "scripts/benchmarks/worker.py"),
-                "--kind",
-                kind,
-                "--input",
-                str(input_path),
-                "--case-id",
-                case_id,
-                "--app-workload",
-                str(app_workload),
-                "--factory",
-                factory,
-                "--warmups",
-                str(workload["timing"]["warmups"]),
-                "--rounds",
-                str(workload["timing"]["rounds"]),
-                "--samples-per-round",
-                str(workload["timing"]["samples_per_round"]),
-                "--identities-json",
-                json.dumps(expected_identity, sort_keys=True, separators=(",", ":")),
-                "--fastapi-source",
-                str(args.fastapi_source.resolve()),
-                "--starlette-source",
-                str(args.starlette_source.resolve()),
-                "--starlette-rs-source",
-                str(args.starlette_rs_source.resolve()),
-            ],
+            command,
         )
 
     observations = {
@@ -235,6 +240,7 @@ def main() -> int:
             "input_path": str(input_path.relative_to(ROOT)),
             "input_sha256": _sha256(input_path),
             "case_id": case_id,
+            "action_id": action_id,
         },
         "parity_gate": {
             "status": parity["status"],
@@ -261,7 +267,7 @@ def main() -> int:
             "fastapi_rs_over_fastapi_p95": _ratio(target["p95"], oracle["p95"]),
         },
         "interpretation": (
-            "Single-machine first-slice direct-ASGI baseline; not a network or full-suite claim."
+            "Single-machine direct-ASGI scenario baseline; not a network or full-suite claim."
         ),
     }
     results_dir = ROOT / "benchmark-results"

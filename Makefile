@@ -53,7 +53,7 @@ help: ## Show common development commands
 	  '  make parity-compare  Compare live source/target result artifacts exactly' \
 	  '  make parity-api-*    Validate, run, and compare direct Python API probes' \
 	  '  make parity-first-slice Run and compare the pinned first HTTP slice end to end' \
-	  '  make benchmark-first-slice Gate and measure the valid direct-ASGI request path' \
+	  '  make benchmark-first-slice Gate and measure the selected direct-ASGI workload' \
 	  '  make verify         Run formatting, lint, static contracts, and wheel build' \
 	  '  make clean          Remove Cargo outputs under target/' '' \
 	  'PYTHON defaults to the pinned 3.12 development baseline; override PYTHON, CARGO, or MATURIN as needed.'
@@ -186,10 +186,9 @@ parity-first-slice: parity-validate ## Run and exactly compare the pinned first 
 	  --oracle-python "$(ORACLE_PYTHON)" \
 	  --target-python "$(TARGET_PYTHON)"
 
-benchmark-first-slice: parity-validate ## Gate and measure a valid request across FastAPI, FastAPI-RS, and Starlette
+benchmark-first-slice: ## Gate parity and measure the selected FastAPI direct-ASGI workload
 	$(PYTHON) scripts/benchmarks/run_first_slice.py \
 	  --workload "$(BENCHMARK_WORKLOAD)" \
-	  --input "$(PARITY_INPUT)" \
 	  --fastapi-source "$(FASTAPI_SOURCE)" \
 	  --starlette-source "$(STARLETTE_SOURCE)" \
 	  --starlette-rs-source "$(STARLETTE_RS_SOURCE)" \

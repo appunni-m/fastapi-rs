@@ -1,4 +1,4 @@
-"""Measure one isolated product process on the shared valid ASGI input."""
+"""Measure one isolated product process on a selected ASGI input action."""
 
 from __future__ import annotations
 
@@ -293,6 +293,7 @@ def main() -> int:
     )
     parser.add_argument("--input", type=Path, required=True)
     parser.add_argument("--case-id", required=True)
+    parser.add_argument("--action-id")
     parser.add_argument("--app-workload", type=Path, required=True)
     parser.add_argument("--factory", required=True)
     parser.add_argument("--warmups", type=int, required=True)
@@ -316,9 +317,17 @@ def main() -> int:
             f"expected {expected['python']}, got {python_identity}"
         )
     selected = [case for case in workload["cases"] if case["case_id"] == args.case_id]
-    if len(selected) != 1 or len(selected[0]["actions"]) != 1:
-        raise BenchmarkError(f"expected one action for benchmark case {args.case_id}")
-    action = selected[0]["actions"][0]
+    if len(selected) != 1:
+        raise BenchmarkError(f"expected one benchmark case {args.case_id}")
+    actions = selected[0]["actions"]
+    if args.action_id is not None:
+        actions = [action for action in actions if action["action_id"] == args.action_id]
+    if len(actions) != 1:
+        raise BenchmarkError(
+            f"expected one action for benchmark case {args.case_id}"
+            + (f" and action {args.action_id}" if args.action_id is not None else "")
+        )
+    action = actions[0]
 
     identity = _identity(
         args.kind,
@@ -344,6 +353,7 @@ def main() -> int:
     result.update(
         {
             "subject": args.kind,
+            "selected_action_id": action["action_id"],
             "identity": identity,
             "python": python_identity,
             "host": {

@@ -733,10 +733,20 @@ reviewed_api_contract_overlay:
         tests/fixtures/input-recipes/parity/dependency-override-async-endpoint-request-local.yaml,
         cases fastapi.dependencies.override-async-endpoint-omitted-query and
         fastapi.dependencies.override-async-endpoint-supplied-query.
+        A separate async-endpoint sample covers one app-level coroutine
+        override with one nested coroutine dependency whose signature adds
+        exactly two required, unaliased scalar query parameters (`k: str` and
+        `revision: int`). Both missing, one missing, an invalid integer beside
+        the valid string, and both valid are observed independently. This
+        extends the pinned async nested-override test's single required `k`
+        field using FastAPI's generic query validation path; the independently
+        authored input is
+        tests/fixtures/input-recipes/parity/dependency-override-async-nested-two-required-query-wave.yaml,
+        case fastapi.dependency-overrides.async-nested-two-required-query.
         `Query(...)` used as the Python default, validation aliases, constraints,
-        validators, required or non-scalar parameters, other query-bearing
-        multi-key shapes, and newly introduced body, header, cookie, or path
-        inputs remain outside the query-bearing slice. Outside these
+        validators, non-scalar parameters, other query-bearing multi-key
+        layouts, and newly introduced body, header, cookie, or path inputs
+        remain outside the query-bearing slice. Outside these
         coroutine-override slices are mixed-edge arrangements other than the
         reviewed unoverridden-sync-then-coroutine shape, uncached-edge layouts
         other than the reviewed repeated-callable cache-fill and cache-retention

@@ -1,0 +1,41 @@
+schema: fastapi-rs/benchmark-workload@1
+id: fastapi.async-nested-two-query.asgi
+title: Two required query values through one async nested dependency override
+python_identity:
+  implementation: CPython
+  version: 3.12.13
+input:
+  path: tests/fixtures/inputs/parity/dependency-override-async-nested-two-required-query-wave.json
+  case_id: fastapi.dependency-overrides.async-nested-two-required-query
+  action_id: both-query-values-valid
+correctness_gate:
+  parity_runner: scripts/parity/run_first_slice.py
+  parity_case_id: fastapi.dependency-overrides.async-nested-two-required-query
+  required_comparison: all-selected-cases-pass
+  require_equal_untimed_observation:
+  - status
+  - body
+subjects:
+- id: fastapi-0.141.1
+  kind: fastapi
+  environment: oracle
+- id: fastapi-rs-release
+  kind: fastapi-rs
+  environment: target
+timing:
+  boundary: one direct ASGI request with async dependency override resolution and two scalar query validations
+  excludes:
+  - interpreter and module startup
+  - app construction and route registration
+  - ASGI scope and receive/send callback construction
+  - network and HTTP client
+  warmups: 50
+  rounds: 5
+  samples_per_round: 200
+  concurrency: 1
+  metrics:
+  - per-request latency nanoseconds: min, median, p95, p99, max, mean
+  - sequential request-loop throughput
+  raw_samples: retain all per-request latency samples
+reporting:
+  fastapi_rs_over_fastapi: report median and p95 ratios only

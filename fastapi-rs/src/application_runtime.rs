@@ -1107,20 +1107,33 @@ impl CallablePlan {
             }
             let subdependency_plan =
                 CallablePlan::build(context.py, nested_callable, &nested_plan.path_parameters)?;
-            let required_single_query = subdependency_plan.parameters.len() == 1
-                && subdependency_plan.parameters.iter().all(|parameter| {
-                    parameter.default.is_none()
-                        && matches!(
-                            parameter.source,
-                            ParameterSource::Input {
-                                source: InputSource::Query,
-                                ..
-                            }
-                        )
-                });
-            if !required_single_query {
+            let mut required_query_parameters = !subdependency_plan.parameters.is_empty();
+            let allow_single_query_alias = subdependency_plan.parameters.len() == 1;
+            for parameter in &subdependency_plan.parameters {
+                // QueryParams::get supplies one scalar value. Sequence
+                // annotations need FastAPI's getlist behavior and stay out of
+                // this nested-override slice.
+                let query_name_matches = match &parameter.source {
+                    ParameterSource::Input {
+                        source: InputSource::Query,
+                        alias,
+                    } => allow_single_query_alias || alias == &parameter.name,
+                    ParameterSource::Input { .. } | ParameterSource::Dependency { .. } => false,
+                };
+                if parameter.default.is_some()
+                    || !query_name_matches
+                    || !is_builtin_scalar_query_annotation(
+                        context.py,
+                        parameter.annotation.bind(context.py),
+                    )?
+                {
+                    required_query_parameters = false;
+                    break;
+                }
+            }
+            if !required_query_parameters {
                 return Err(PyNotImplementedError::new_err(
-                    "async nested override support is limited to one required query parameter",
+                    "async nested override support requires one or more required scalar query parameters",
                 ));
             }
             nested_override = Some((
@@ -1778,6 +1791,19 @@ fn validate_python_value(
     adapter
         .call_method("validate_python", (value,), Some(&kwargs))
         .map(Bound::unbind)
+}
+
+fn is_builtin_scalar_query_annotation(
+    py: Python<'_>,
+    annotation: &Bound<'_, PyAny>,
+) -> PyResult<bool> {
+    let builtins = py.import("builtins")?;
+    for name in ["str", "int", "float", "bool", "bytes"] {
+        if annotation.is(&builtins.getattr(name)?) {
+            return Ok(true);
+        }
+    }
+    Ok(false)
 }
 
 fn is_pydantic_validation_error(py: Python<'_>, error: &PyErr) -> bool {

@@ -1042,6 +1042,18 @@
       ]
     },
     {
+      "id": "dependency-override-async-nested-two-required-query-wave",
+      "input_path": "tests/fixtures/inputs/parity/dependency-override-async-nested-two-required-query-wave.json",
+      "input_sha256": "25ae2664a7cea9bfb7b9a321997901537794bbd983f2d4e2e5697587bf0cbf53",
+      "recipe_path": "tests/fixtures/input-recipes/parity/dependency-override-async-nested-two-required-query-wave.yaml",
+      "recipe_sha256": "4f0b18cb4e3f4b516e7267cf1d0807dd56c7758459d71797e2c76d21a6c8ac02",
+      "workload_path": "tests/fixtures/workloads/dependency_override_async_nested_two_required_query_wave.py",
+      "workload_sha256": "5c1d651d7feba17d249f2d09329fe6eabe909b6329796e96e2a271b969cb387a",
+      "case_ids": [
+        "fastapi.dependency-overrides.async-nested-two-required-query"
+      ]
+    },
+    {
       "id": "dependency-override-async-query-alias-cache-request-local",
       "input_path": "tests/fixtures/inputs/parity/dependency-override-async-query-alias-cache-request-local.json",
       "input_sha256": "e36b272ebd4512d21c2e7257dadde1f4dbff786fc895df134c2ccaa2bdbc3f1d",
@@ -8477,6 +8489,20 @@
       "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.dependency-overrides.async-nested-required-query"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_dependency_overrides.py",
+      "fixture_id": "fastapi.test.test-dependency-overrides",
+      "workflow_id": "dependency-override-async-nested-two-required-query-wave",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.dependency-overrides.async-nested-two-required-query"
       ],
       "observation_selectors": [
         "http.body.bytes",
