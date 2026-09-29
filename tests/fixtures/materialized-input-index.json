@@ -965,7 +965,7 @@
       "recipe_path": "tests/fixtures/input-recipes/parity/dependency-cache-source-wave.yaml",
       "recipe_sha256": "169cffeffa3bcdf795b2e22363b84485fb699648663fbeba037890aa13440192",
       "workload_path": "tests/fixtures/workloads/dependency_cache_source_wave.py",
-      "workload_sha256": "6d3f8548996fe8c4f423017fef62772178bd43704cd0e1052a0ef0827923f202",
+      "workload_sha256": "7cddcfbe79564595ecbb90786c5f671eda0d235dfd9301a9ebf1f7b53816a41b",
       "case_ids": [
         "fastapi.dependencies.cache-shared-subdependency-source-wave",
         "fastapi.dependencies.cache-bypass-subdependency-source-wave"
@@ -1757,6 +1757,18 @@
       "case_ids": [
         "fastapi.test.test-security-http-digest-description.test-security-http-digest-no-credentials",
         "fastapi.test.test-security-http-digest-description.test-security-http-digest-incorrect-scheme-credentials"
+      ]
+    },
+    {
+      "id": "include-in-schema-methods",
+      "input_path": "tests/fixtures/inputs/parity/include-in-schema-methods.json",
+      "input_sha256": "8e53e182459a03b7d1ced19e342b57e16d9002cd198cada3cdc77b117a13eea4",
+      "recipe_path": "tests/fixtures/input-recipes/parity/include-in-schema-methods.yaml",
+      "recipe_sha256": "672771f8d94a0a92a7e9154efd419805dedf647dae9554aa6d0110b98447166e",
+      "workload_path": "tests/fixtures/workloads/include_in_schema_methods.py",
+      "workload_sha256": "049705cfea5709fd1df58d332e273e6be9180d3acfe4a7e0cde1ee61bb4e870c",
+      "case_ids": [
+        "fastapi.path-operation.include-in-schema.all-http-methods"
       ]
     },
     {
@@ -4257,6 +4269,20 @@
       ]
     },
     {
+      "id": "request-validation-error-object",
+      "input_path": "tests/fixtures/inputs/parity/request-validation-error-object.json",
+      "input_sha256": "10b9cd2cc10d478573bfe85dd7e3fd82e8ed86b183ad701436964c75f83b09e8",
+      "recipe_path": "tests/fixtures/input-recipes/parity/request-validation-error-object.yaml",
+      "recipe_sha256": "c8f855aaad203595a1fe9052c382ef9ffc6d22265fafcccd662a40b422149d82",
+      "workload_path": "tests/fixtures/workloads/request_validation_error_object.py",
+      "workload_sha256": "d73f8cf7d1b4f3e8fb8b8aaa0f9b9237afc3fd6a48a996d39e12c5e55141fb07",
+      "case_ids": [
+        "fastapi.validation-error-object.path-context",
+        "fastapi.validation-error-object.empty-context",
+        "fastapi.validation-error-object.omitted-defaults"
+      ]
+    },
+    {
       "id": "request-validation-parameters",
       "input_path": "tests/fixtures/inputs/parity/request-validation-parameters.json",
       "input_sha256": "900bd92416b11aba2f8b397002c9c075ca71c770d9386ec2507790fa5c548d75",
@@ -4302,6 +4328,18 @@
         "fastapi.request-validation-wave.query-string-validation.test-query-params-str-validations-q-too-long",
         "fastapi.request-validation-wave.cookie-parameter.test",
         "fastapi.request-validation-wave.header-parameter.test"
+      ]
+    },
+    {
+      "id": "response-204-openapi",
+      "input_path": "tests/fixtures/inputs/parity/response-204-openapi.json",
+      "input_sha256": "d87ccd4a2217571a42c9b6b8c29e8b407e6643091eb02dee2be153fd248dd9ec",
+      "recipe_path": "tests/fixtures/input-recipes/parity/response-204-openapi.yaml",
+      "recipe_sha256": "e25a14d516ef599da395791ba14c436bb5460869efa9a9532cf0d8e55570d8d4",
+      "workload_path": "tests/fixtures/workloads/response_204_openapi.py",
+      "workload_sha256": "4c1782284106664c421aa188f40c5241cb171704d42c27feb5867e8df568eece",
+      "case_ids": [
+        "fastapi.response.openapi-204-omits-content"
       ]
     },
     {
@@ -10683,6 +10721,36 @@
       ]
     },
     {
+      "source_item_id": "upstream-test:tests/test_extra_routes.py",
+      "fixture_id": "fastapi.test.test-extra-routes",
+      "workflow_id": "include-in-schema-methods",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.path-operation.include-in-schema.all-http-methods"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status",
+        "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_path_operation_advanced_configurations/test_tutorial003.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-path-operation-advanced-configurations-test-tutorial003",
+      "workflow_id": "include-in-schema-methods",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.path-operation.include-in-schema.all-http-methods"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status",
+        "openapi.document"
+      ]
+    },
+    {
       "source_item_id": "upstream-test:tests/test_inherited_custom_class.py",
       "fixture_id": "fastapi.test.test-inherited-custom-class",
       "workflow_id": "inherited-custom-class-upstream-wave",
@@ -16244,6 +16312,22 @@
       ]
     },
     {
+      "source_item_id": "upstream-test:tests/test_validation_error_context.py",
+      "fixture_id": "fastapi.test.test-validation-error-context",
+      "workflow_id": "request-validation-error-object",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.validation-error-object.empty-context",
+        "fastapi.validation-error-object.omitted-defaults",
+        "fastapi.validation-error-object.path-context"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
       "source_item_id": "documented-page:tutorial/cookie-params.md",
       "fixture_id": "fastapi.docs.tutorial-cookie-params",
       "workflow_id": "request-validation-parameters",
@@ -16561,6 +16645,21 @@
       "observation_selectors": [
         "http.body.bytes",
         "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_response_code_no_body.py",
+      "fixture_id": "fastapi.test.test-response-code-no-body",
+      "workflow_id": "response-204-openapi",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.response.openapi-204-omits-content"
+      ],
+      "observation_selectors": [
+        "docs.response.status",
+        "http.status",
+        "openapi.document"
       ]
     },
     {

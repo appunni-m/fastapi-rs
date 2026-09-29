@@ -123,7 +123,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@2
-    sha256: 61e8e9027613d69cfbf9678dde252589c04036dbd814aba373e8a46120f120b4
+    sha256: 9551630663e83c965d3000d2940526bd1d93468b6b73ca251f97b28c665ecbb2
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -152,7 +152,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 4daddba8174596cbc2ff2997edadd586bf317d2ec96387378ee3d8c7ffa7fda1
+    sha256: 10212e3330b45a80558638ecfeba799add9ab3e73c1df00ef3d66b5b314737c6
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 554
@@ -189,14 +189,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@1
-    sha256: 1c1a21d235e591daf8a2ec3a7111ef581e7479d7f3d8637f31e63965cc8b979d
+    sha256: 1630e3c866d03cce682a0ad9d2c3bbf845595b8023dc27da0825893987855224
     schema_path: tests/fixtures/schemas/materialized-input-index.schema.json
     schema_sha256: 467200b835dfd99ab16dfbd4ca4507145e070c73aa55d4425fd78e11141c3e86
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 402
-      cases: 1693
-      partial_source_mappings: 919
+      workflows: 405
+      cases: 1698
+      partial_source_mappings: 923
 
 contract_metadata:
   aliases:
@@ -754,6 +754,7 @@ api_surface_contract:
     - app-routing
     - dependency-security
     - openapi-docs
+    - request-validation
     observation_selectors:
     - http.body.bytes
     - http.headers.ordered
@@ -761,7 +762,7 @@ api_surface_contract:
     - openapi.document
     - openapi.paths
     - openapi.security
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.Depends
@@ -772,7 +773,7 @@ api_surface_contract:
         - /api_candidates/4
         - /api_candidates/929
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/parameters.rs::depends
   - id: fastapi.FastAPI
     kind: import_binding
     source_candidate_ref: /api_candidates/5
@@ -1399,7 +1400,7 @@ api_surface_contract:
     - python.import_path
     - python.object_identity
     - route.match
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.Response
@@ -1410,7 +1411,7 @@ api_surface_contract:
         - /api_candidates/13
         - /api_candidates/1007
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/application_runtime.rs::register
   - id: fastapi.Security
     kind: import_binding
     source_candidate_ref: /api_candidates/14
@@ -4035,7 +4036,9 @@ api_surface_contract:
     error_contract_refs:
     - /errors/19
     documentation_contract_refs: []
-    feature_ids: []
+    feature_ids:
+    - public-api-errors
+    - request-validation
     observation_selectors:
     - error.args
     - error.class
@@ -4046,7 +4049,7 @@ api_surface_contract:
     - http.status
     - validation.error_class
     - validation.error_details
-    behavior_contract_state: source-evidence-only; fixture link pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.exceptions.RequestValidationError
@@ -4056,7 +4059,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/535
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/errors.rs::RequestValidationError
   - id: fastapi.exceptions.ValidationException.errors
     kind: method
     source_candidate_ref: /api_candidates/547

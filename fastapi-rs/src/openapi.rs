@@ -26,6 +26,7 @@ pub(crate) struct OpenApiOperation {
     pub(crate) request_required: bool,
     pub(crate) response_model_name: Option<String>,
     pub(crate) response_schema: Option<Py<PyAny>>,
+    pub(crate) response_schema_title: String,
 }
 
 /// Assemble the first-slice FastAPI OpenAPI 3.1 document from Rust-owned
@@ -44,11 +45,12 @@ pub(crate) fn openapi_document(
         ) {
             collect_model_schema(py, &mut schemas, name, schema)?;
         }
-        if let (Some(name), Some(schema)) = (
-            operation.response_model_name.as_deref(),
-            operation.response_schema.as_ref(),
-        ) {
-            collect_model_schema(py, &mut schemas, name, schema)?;
+        if let Some(schema) = operation.response_schema.as_ref() {
+            if let Some(name) = operation.response_model_name.as_deref() {
+                collect_model_schema(py, &mut schemas, name, schema)?;
+            } else {
+                collect_schema_definitions(py, &mut schemas, schema)?;
+            }
         }
     }
 
@@ -100,16 +102,26 @@ pub(crate) fn openapi_document(
         let responses = PyDict::new(py);
         let success_response = PyDict::new(py);
         success_response.set_item("description", "Successful Response")?;
-        if let Some(model_name) = operation.response_model_name.as_deref() {
+        if body_allowed_for_status_code(operation.status) {
+            let response_schema = match (
+                operation.response_model_name.as_deref(),
+                operation.response_schema.as_ref(),
+            ) {
+                (Some(model_name), Some(_)) => reference_schema(py, model_name)?.into_any(),
+                (None, Some(schema)) => {
+                    let schema = normalize_schema(py, schema.bind(py), false)?;
+                    if let Ok(schema_dict) = schema.cast::<PyDict>() {
+                        if schema_dict.get_item("$ref")?.is_none() {
+                            schema_dict.set_item("title", &operation.response_schema_title)?;
+                        }
+                    }
+                    schema
+                }
+                _ => PyDict::new(py).into_any(),
+            };
             let content = PyDict::new(py);
             let media_type = PyDict::new(py);
-            media_type.set_item("schema", reference_schema(py, model_name)?)?;
-            content.set_item("application/json", media_type)?;
-            success_response.set_item("content", content)?;
-        } else {
-            let content = PyDict::new(py);
-            let media_type = PyDict::new(py);
-            media_type.set_item("schema", PyDict::new(py))?;
+            media_type.set_item("schema", response_schema)?;
             content.set_item("application/json", media_type)?;
             success_response.set_item("content", content)?;
         }
@@ -151,10 +163,28 @@ pub(crate) fn openapi_document(
     Ok(document.into_any().unbind())
 }
 
+const fn body_allowed_for_status_code(status_code: u16) -> bool {
+    status_code >= 200 && !matches!(status_code, 204 | 205 | 304)
+}
+
 fn collect_model_schema(
     py: Python<'_>,
     schemas: &mut BTreeMap<String, Py<PyAny>>,
     name: &str,
+    schema: &Py<PyAny>,
+) -> PyResult<()> {
+    collect_schema_definitions(py, schemas, schema)?;
+
+    let normalized = normalize_schema(py, schema.bind(py), true)?;
+    schemas
+        .entry(name.to_owned())
+        .or_insert(normalized.unbind().into_any());
+    Ok(())
+}
+
+fn collect_schema_definitions(
+    py: Python<'_>,
+    schemas: &mut BTreeMap<String, Py<PyAny>>,
     schema: &Py<PyAny>,
 ) -> PyResult<()> {
     let schema = schema.bind(py);
@@ -171,11 +201,6 @@ fn collect_model_schema(
             }
         }
     }
-
-    let normalized = normalize_schema(py, schema, true)?;
-    schemas
-        .entry(name.to_owned())
-        .or_insert(normalized.unbind().into_any());
     Ok(())
 }
 

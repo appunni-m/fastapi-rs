@@ -1,3 +1,3 @@
-from fastapi_rs._core import ResponseValidationError
+from fastapi_rs._core import RequestValidationError, ResponseValidationError, ValidationException
 
-__all__ = ["ResponseValidationError"]
+__all__ = ["RequestValidationError", "ResponseValidationError", "ValidationException"]

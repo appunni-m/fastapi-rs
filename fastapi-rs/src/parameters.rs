@@ -12,6 +12,7 @@ pub(crate) struct ParameterMetadata {
     default: Option<Py<PyAny>>,
     gt: Option<Py<PyAny>>,
     convert_underscores: bool,
+    use_cache: bool,
 }
 
 #[pymethods]
@@ -47,10 +48,19 @@ impl ParameterMetadata {
     fn convert_underscores(&self) -> bool {
         self.convert_underscores
     }
+
+    #[getter]
+    fn use_cache(&self) -> bool {
+        self.use_cache
+    }
 }
 
-#[pyfunction(name = "Depends")]
-fn depends(py: Python<'_>, dependency: Py<PyAny>) -> PyResult<Py<ParameterMetadata>> {
+#[pyfunction(name = "Depends", signature = (dependency, *, use_cache = true))]
+fn depends(
+    py: Python<'_>,
+    dependency: Py<PyAny>,
+    use_cache: bool,
+) -> PyResult<Py<ParameterMetadata>> {
     Py::new(
         py,
         ParameterMetadata {
@@ -60,6 +70,7 @@ fn depends(py: Python<'_>, dependency: Py<PyAny>) -> PyResult<Py<ParameterMetada
             default: None,
             gt: None,
             convert_underscores: true,
+            use_cache,
         },
     )
 }
@@ -83,6 +94,7 @@ fn header(
             default,
             gt: None,
             convert_underscores,
+            use_cache: true,
         },
     )
 }
@@ -102,6 +114,7 @@ fn cookie(
             default,
             gt: None,
             convert_underscores: true,
+            use_cache: true,
         },
     )
 }
@@ -122,6 +135,7 @@ fn query(
             default,
             gt,
             convert_underscores: true,
+            use_cache: true,
         },
     )
 }
@@ -137,6 +151,7 @@ fn path(py: Python<'_>, gt: Option<Py<PyAny>>) -> PyResult<Py<ParameterMetadata>
             default: None,
             gt,
             convert_underscores: true,
+            use_cache: true,
         },
     )
 }
@@ -152,6 +167,7 @@ fn body(py: Python<'_>, gt: Option<Py<PyAny>>) -> PyResult<Py<ParameterMetadata>
             default: None,
             gt,
             convert_underscores: true,
+            use_cache: true,
         },
     )
 }

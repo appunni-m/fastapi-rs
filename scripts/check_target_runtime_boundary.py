@@ -32,6 +32,7 @@ PUBLIC_FASTAPI_EXPORTS = [
     "Header",
     "Path",
     "Query",
+    "Response",
     "status",
 ]
 FORBIDDEN_CONTROL_FLOW = tuple(

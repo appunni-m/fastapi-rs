@@ -20,25 +20,37 @@ create_exception!(
 
 create_exception!(
     fastapi.exceptions,
-    ResponseValidationError,
+    ValidationException,
     PyException,
+    "A validation error occurred."
+);
+create_exception!(
+    fastapi.exceptions,
+    RequestValidationError,
+    ValidationException,
+    "The request data failed validation."
+);
+create_exception!(
+    fastapi.exceptions,
+    ResponseValidationError,
+    ValidationException,
     "The response data failed validation."
 );
 
 #[derive(Clone, Copy)]
-enum ResponseValidationErrorMethod {
+enum ValidationExceptionMethod {
     Init,
     Errors,
     String,
 }
 
 #[pyclass]
-struct ResponseValidationErrorMethodDescriptor {
-    method: ResponseValidationErrorMethod,
+struct ValidationExceptionMethodDescriptor {
+    method: ValidationExceptionMethod,
 }
 
 #[pymethods]
-impl ResponseValidationErrorMethodDescriptor {
+impl ValidationExceptionMethodDescriptor {
     fn __get__(
         &self,
         py: Python<'_>,
@@ -56,75 +68,66 @@ impl ResponseValidationErrorMethodDescriptor {
         };
         let instance = instance.unbind();
         match self.method {
-            ResponseValidationErrorMethod::Init => {
-                Py::new(py, BoundResponseValidationErrorInit { instance }).map(Py::into_any)
+            ValidationExceptionMethod::Init => {
+                Py::new(py, BoundValidationExceptionInit { instance }).map(Py::into_any)
             }
-            ResponseValidationErrorMethod::Errors => {
-                Py::new(py, BoundResponseValidationErrorErrors { instance }).map(Py::into_any)
+            ValidationExceptionMethod::Errors => {
+                Py::new(py, BoundValidationExceptionErrors { instance }).map(Py::into_any)
             }
-            ResponseValidationErrorMethod::String => {
-                Py::new(py, BoundResponseValidationErrorString { instance }).map(Py::into_any)
+            ValidationExceptionMethod::String => {
+                Py::new(py, BoundValidationExceptionString { instance }).map(Py::into_any)
             }
         }
     }
 }
 
 #[pyclass]
-struct BoundResponseValidationErrorInit {
+struct BoundValidationExceptionInit {
     instance: Py<PyAny>,
 }
 
 #[pymethods]
-impl BoundResponseValidationErrorInit {
-    #[pyo3(signature = (errors, *, body=None, endpoint_ctx=None))]
+impl BoundValidationExceptionInit {
+    #[pyo3(signature = (errors, *, endpoint_ctx=None))]
     fn __call__(
         &self,
         py: Python<'_>,
         errors: Bound<'_, PyAny>,
-        body: Option<Bound<'_, PyAny>>,
         endpoint_ctx: Option<Bound<'_, PyAny>>,
     ) -> PyResult<()> {
-        let instance = self.instance.bind(py);
-        let context = match endpoint_ctx.as_ref() {
-            Some(context) if context.is_truthy()? => context.clone(),
-            _ => PyDict::new(py).into_any(),
-        };
-        instance.setattr("_errors", &errors)?;
-        instance.setattr("body", body.map(Bound::unbind).unwrap_or_else(|| py.None()))?;
-        instance.setattr(
+        initialize_validation_exception(
+            py,
+            self.instance.bind(py),
+            &errors,
+            endpoint_ctx.as_ref(),
+        )?;
+        self.instance.bind(py).setattr(
             "endpoint_ctx",
             endpoint_ctx.map(Bound::unbind).unwrap_or_else(|| py.None()),
         )?;
-        instance.setattr(
-            "endpoint_function",
-            context.call_method1("get", ("function",))?,
-        )?;
-        instance.setattr("endpoint_path", context.call_method1("get", ("path",))?)?;
-        instance.setattr("endpoint_file", context.call_method1("get", ("file",))?)?;
-        instance.setattr("endpoint_line", context.call_method1("get", ("line",))?)?;
         Ok(())
     }
 }
 
 #[pyclass]
-struct BoundResponseValidationErrorErrors {
+struct BoundValidationExceptionErrors {
     instance: Py<PyAny>,
 }
 
 #[pymethods]
-impl BoundResponseValidationErrorErrors {
+impl BoundValidationExceptionErrors {
     fn __call__(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
         self.instance.bind(py).getattr("_errors").map(Bound::unbind)
     }
 }
 
 #[pyclass]
-struct BoundResponseValidationErrorString {
+struct BoundValidationExceptionString {
     instance: Py<PyAny>,
 }
 
 #[pymethods]
-impl BoundResponseValidationErrorString {
+impl BoundValidationExceptionString {
     fn __call__(&self, py: Python<'_>) -> PyResult<String> {
         let instance = self.instance.bind(py);
         let errors = instance.getattr("_errors")?;
@@ -168,8 +171,199 @@ impl BoundResponseValidationErrorString {
     }
 }
 
+#[derive(Clone, Copy)]
+enum ResponseValidationErrorMethod {
+    Init,
+}
+
+#[derive(Clone, Copy)]
+enum RequestValidationErrorMethod {
+    Init,
+}
+
+#[pyclass]
+struct ResponseValidationErrorMethodDescriptor {
+    method: ResponseValidationErrorMethod,
+}
+
+#[pyclass]
+struct RequestValidationErrorMethodDescriptor {
+    method: RequestValidationErrorMethod,
+}
+
+#[pymethods]
+impl ResponseValidationErrorMethodDescriptor {
+    fn __get__(
+        &self,
+        py: Python<'_>,
+        instance: Option<Bound<'_, PyAny>>,
+        _owner: Bound<'_, PyAny>,
+    ) -> PyResult<Py<PyAny>> {
+        let Some(instance) = instance else {
+            return Py::new(
+                py,
+                Self {
+                    method: self.method,
+                },
+            )
+            .map(Py::into_any);
+        };
+        let instance = instance.unbind();
+        match self.method {
+            ResponseValidationErrorMethod::Init => {
+                Py::new(py, BoundResponseValidationErrorInit { instance }).map(Py::into_any)
+            }
+        }
+    }
+}
+
+#[pymethods]
+impl RequestValidationErrorMethodDescriptor {
+    fn __get__(
+        &self,
+        py: Python<'_>,
+        instance: Option<Bound<'_, PyAny>>,
+        _owner: Bound<'_, PyAny>,
+    ) -> PyResult<Py<PyAny>> {
+        let Some(instance) = instance else {
+            return Py::new(
+                py,
+                Self {
+                    method: self.method,
+                },
+            )
+            .map(Py::into_any);
+        };
+        let instance = instance.unbind();
+        match self.method {
+            RequestValidationErrorMethod::Init => {
+                Py::new(py, BoundRequestValidationErrorInit { instance }).map(Py::into_any)
+            }
+        }
+    }
+}
+
+#[pyclass]
+struct BoundRequestValidationErrorInit {
+    instance: Py<PyAny>,
+}
+
+#[pymethods]
+impl BoundRequestValidationErrorInit {
+    #[pyo3(signature = (errors, *, body=None, endpoint_ctx=None))]
+    fn __call__(
+        &self,
+        py: Python<'_>,
+        errors: Bound<'_, PyAny>,
+        body: Option<Bound<'_, PyAny>>,
+        endpoint_ctx: Option<Bound<'_, PyAny>>,
+    ) -> PyResult<()> {
+        initialize_validation_exception(
+            py,
+            self.instance.bind(py),
+            &errors,
+            endpoint_ctx.as_ref(),
+        )?;
+        self.instance
+            .bind(py)
+            .setattr("body", body.map(Bound::unbind).unwrap_or_else(|| py.None()))?;
+        self.instance.bind(py).setattr(
+            "endpoint_ctx",
+            endpoint_ctx.map(Bound::unbind).unwrap_or_else(|| py.None()),
+        )?;
+        Ok(())
+    }
+}
+
+#[pyclass]
+struct BoundResponseValidationErrorInit {
+    instance: Py<PyAny>,
+}
+
+#[pymethods]
+impl BoundResponseValidationErrorInit {
+    #[pyo3(signature = (errors, *, body=None, endpoint_ctx=None))]
+    fn __call__(
+        &self,
+        py: Python<'_>,
+        errors: Bound<'_, PyAny>,
+        body: Option<Bound<'_, PyAny>>,
+        endpoint_ctx: Option<Bound<'_, PyAny>>,
+    ) -> PyResult<()> {
+        let instance = self.instance.bind(py);
+        initialize_validation_exception(py, instance, &errors, endpoint_ctx.as_ref())?;
+        instance.setattr("body", body.map(Bound::unbind).unwrap_or_else(|| py.None()))?;
+        instance.setattr(
+            "endpoint_ctx",
+            endpoint_ctx.map(Bound::unbind).unwrap_or_else(|| py.None()),
+        )?;
+        Ok(())
+    }
+}
+
+fn initialize_validation_exception(
+    py: Python<'_>,
+    instance: &Bound<'_, PyAny>,
+    errors: &Bound<'_, PyAny>,
+    endpoint_ctx: Option<&Bound<'_, PyAny>>,
+) -> PyResult<()> {
+    let context = match endpoint_ctx {
+        Some(context) if context.is_truthy()? => context.clone(),
+        _ => PyDict::new(py).into_any(),
+    };
+    instance.setattr("_errors", errors)?;
+    instance.setattr(
+        "endpoint_function",
+        context.call_method1("get", ("function",))?,
+    )?;
+    instance.setattr("endpoint_path", context.call_method1("get", ("path",))?)?;
+    instance.setattr("endpoint_file", context.call_method1("get", ("file",))?)?;
+    instance.setattr("endpoint_line", context.call_method1("get", ("line",))?)?;
+    Ok(())
+}
+
 pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     let py = module.py();
+    let validation_exception_type = py.get_type::<ValidationException>();
+    validation_exception_type.setattr(
+        "__init__",
+        Py::new(
+            py,
+            ValidationExceptionMethodDescriptor {
+                method: ValidationExceptionMethod::Init,
+            },
+        )?,
+    )?;
+    validation_exception_type.setattr(
+        "errors",
+        Py::new(
+            py,
+            ValidationExceptionMethodDescriptor {
+                method: ValidationExceptionMethod::Errors,
+            },
+        )?,
+    )?;
+    validation_exception_type.setattr(
+        "__str__",
+        Py::new(
+            py,
+            ValidationExceptionMethodDescriptor {
+                method: ValidationExceptionMethod::String,
+            },
+        )?,
+    )?;
+
+    let request_exception_type = py.get_type::<RequestValidationError>();
+    request_exception_type.setattr(
+        "__init__",
+        Py::new(
+            py,
+            RequestValidationErrorMethodDescriptor {
+                method: RequestValidationErrorMethod::Init,
+            },
+        )?,
+    )?;
+
     let exception_type = py.get_type::<ResponseValidationError>();
     exception_type.setattr(
         "__init__",
@@ -180,24 +374,8 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
             },
         )?,
     )?;
-    exception_type.setattr(
-        "errors",
-        Py::new(
-            py,
-            ResponseValidationErrorMethodDescriptor {
-                method: ResponseValidationErrorMethod::Errors,
-            },
-        )?,
-    )?;
-    exception_type.setattr(
-        "__str__",
-        Py::new(
-            py,
-            ResponseValidationErrorMethodDescriptor {
-                method: ResponseValidationErrorMethod::String,
-            },
-        )?,
-    )?;
+    module.add("ValidationException", validation_exception_type)?;
+    module.add("RequestValidationError", request_exception_type)?;
     module.add("ResponseValidationError", exception_type)
 }
 

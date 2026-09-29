@@ -1,10 +1,10 @@
 //! Rust-owned FastAPI application registration and ASGI request flow.
 
-use std::collections::BTreeSet;
+use std::collections::{BTreeSet, HashMap};
 
 use pyo3::exceptions::{PyRuntimeError, PyValueError};
 use pyo3::prelude::*;
-use pyo3::types::{PyBytes, PyDict, PyList, PyModule, PyTuple};
+use pyo3::types::{PyBytes, PyDict, PyList, PyModule, PyTuple, PyType};
 
 use crate::awaitable::{
     AwaitableStateMachine, MachineAction, MachineResume, into_python_awaitable,
@@ -41,8 +41,14 @@ impl InputSource {
 }
 
 enum ParameterSource {
-    Input { source: InputSource, alias: String },
-    Dependency(Box<CallablePlan>),
+    Input {
+        source: InputSource,
+        alias: String,
+    },
+    Dependency {
+        plan: Box<CallablePlan>,
+        use_cache: bool,
+    },
 }
 
 struct CallableParameter {
@@ -61,6 +67,7 @@ struct FastApiRoute {
     path: String,
     method: String,
     status_code: u16,
+    include_in_schema: bool,
     endpoint: Py<PyAny>,
     response_model: Option<Py<PyAny>>,
     response_model_include: Option<Py<PyAny>>,
@@ -79,6 +86,7 @@ struct ResponseModelOptions {
     exclude_unset: bool,
     exclude_defaults: bool,
     exclude_none: bool,
+    include_in_schema: bool,
 }
 
 struct ParameterOpenApiPlan {
@@ -116,7 +124,7 @@ impl PyFastApi {
         clippy::too_many_arguments,
         reason = "preserve the Python route decorator keyword signature"
     )]
-    #[pyo3(signature = (path, *, response_model = None, status_code = 200, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false))]
+    #[pyo3(signature = (path, *, response_model = None, status_code = 200, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, include_in_schema = true))]
     fn post(
         slf: Py<Self>,
         py: Python<'_>,
@@ -129,6 +137,7 @@ impl PyFastApi {
         response_model_exclude_unset: bool,
         response_model_exclude_defaults: bool,
         response_model_exclude_none: bool,
+        include_in_schema: bool,
     ) -> PyResult<Py<PyOperationDecorator>> {
         operation_decorator(
             slf,
@@ -144,6 +153,7 @@ impl PyFastApi {
                 exclude_unset: response_model_exclude_unset,
                 exclude_defaults: response_model_exclude_defaults,
                 exclude_none: response_model_exclude_none,
+                include_in_schema,
             },
         )
     }
@@ -153,7 +163,7 @@ impl PyFastApi {
         clippy::too_many_arguments,
         reason = "preserve the Python route decorator keyword signature"
     )]
-    #[pyo3(signature = (path, *, response_model = None, status_code = 200, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false))]
+    #[pyo3(signature = (path, *, response_model = None, status_code = 200, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, include_in_schema = true))]
     fn get(
         slf: Py<Self>,
         py: Python<'_>,
@@ -166,6 +176,7 @@ impl PyFastApi {
         response_model_exclude_unset: bool,
         response_model_exclude_defaults: bool,
         response_model_exclude_none: bool,
+        include_in_schema: bool,
     ) -> PyResult<Py<PyOperationDecorator>> {
         operation_decorator(
             slf,
@@ -181,6 +192,7 @@ impl PyFastApi {
                 exclude_unset: response_model_exclude_unset,
                 exclude_defaults: response_model_exclude_defaults,
                 exclude_none: response_model_exclude_none,
+                include_in_schema,
             },
         )
     }
@@ -190,7 +202,7 @@ impl PyFastApi {
         clippy::too_many_arguments,
         reason = "preserve the Python route decorator keyword signature"
     )]
-    #[pyo3(signature = (path, *, response_model = None, status_code = 200, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false))]
+    #[pyo3(signature = (path, *, response_model = None, status_code = 200, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, include_in_schema = true))]
     fn put(
         slf: Py<Self>,
         py: Python<'_>,
@@ -203,6 +215,7 @@ impl PyFastApi {
         response_model_exclude_unset: bool,
         response_model_exclude_defaults: bool,
         response_model_exclude_none: bool,
+        include_in_schema: bool,
     ) -> PyResult<Py<PyOperationDecorator>> {
         operation_decorator(
             slf,
@@ -218,6 +231,7 @@ impl PyFastApi {
                 exclude_unset: response_model_exclude_unset,
                 exclude_defaults: response_model_exclude_defaults,
                 exclude_none: response_model_exclude_none,
+                include_in_schema,
             },
         )
     }
@@ -227,7 +241,7 @@ impl PyFastApi {
         clippy::too_many_arguments,
         reason = "preserve the Python route decorator keyword signature"
     )]
-    #[pyo3(signature = (path, *, response_model = None, status_code = 200, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false))]
+    #[pyo3(signature = (path, *, response_model = None, status_code = 200, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, include_in_schema = true))]
     fn delete(
         slf: Py<Self>,
         py: Python<'_>,
@@ -240,6 +254,7 @@ impl PyFastApi {
         response_model_exclude_unset: bool,
         response_model_exclude_defaults: bool,
         response_model_exclude_none: bool,
+        include_in_schema: bool,
     ) -> PyResult<Py<PyOperationDecorator>> {
         operation_decorator(
             slf,
@@ -255,6 +270,7 @@ impl PyFastApi {
                 exclude_unset: response_model_exclude_unset,
                 exclude_defaults: response_model_exclude_defaults,
                 exclude_none: response_model_exclude_none,
+                include_in_schema,
             },
         )
     }
@@ -264,7 +280,7 @@ impl PyFastApi {
         clippy::too_many_arguments,
         reason = "preserve the Python route decorator keyword signature"
     )]
-    #[pyo3(signature = (path, *, response_model = None, status_code = 200, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false))]
+    #[pyo3(signature = (path, *, response_model = None, status_code = 200, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, include_in_schema = true))]
     fn patch(
         slf: Py<Self>,
         py: Python<'_>,
@@ -277,6 +293,7 @@ impl PyFastApi {
         response_model_exclude_unset: bool,
         response_model_exclude_defaults: bool,
         response_model_exclude_none: bool,
+        include_in_schema: bool,
     ) -> PyResult<Py<PyOperationDecorator>> {
         operation_decorator(
             slf,
@@ -292,6 +309,7 @@ impl PyFastApi {
                 exclude_unset: response_model_exclude_unset,
                 exclude_defaults: response_model_exclude_defaults,
                 exclude_none: response_model_exclude_none,
+                include_in_schema,
             },
         )
     }
@@ -301,7 +319,7 @@ impl PyFastApi {
         clippy::too_many_arguments,
         reason = "preserve the Python route decorator keyword signature"
     )]
-    #[pyo3(signature = (path, *, response_model = None, status_code = 200, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false))]
+    #[pyo3(signature = (path, *, response_model = None, status_code = 200, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, include_in_schema = true))]
     fn head(
         slf: Py<Self>,
         py: Python<'_>,
@@ -314,6 +332,7 @@ impl PyFastApi {
         response_model_exclude_unset: bool,
         response_model_exclude_defaults: bool,
         response_model_exclude_none: bool,
+        include_in_schema: bool,
     ) -> PyResult<Py<PyOperationDecorator>> {
         operation_decorator(
             slf,
@@ -329,6 +348,7 @@ impl PyFastApi {
                 exclude_unset: response_model_exclude_unset,
                 exclude_defaults: response_model_exclude_defaults,
                 exclude_none: response_model_exclude_none,
+                include_in_schema,
             },
         )
     }
@@ -338,7 +358,7 @@ impl PyFastApi {
         clippy::too_many_arguments,
         reason = "preserve the Python route decorator keyword signature"
     )]
-    #[pyo3(signature = (path, *, response_model = None, status_code = 200, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false))]
+    #[pyo3(signature = (path, *, response_model = None, status_code = 200, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, include_in_schema = true))]
     fn options(
         slf: Py<Self>,
         py: Python<'_>,
@@ -351,6 +371,7 @@ impl PyFastApi {
         response_model_exclude_unset: bool,
         response_model_exclude_defaults: bool,
         response_model_exclude_none: bool,
+        include_in_schema: bool,
     ) -> PyResult<Py<PyOperationDecorator>> {
         operation_decorator(
             slf,
@@ -366,6 +387,7 @@ impl PyFastApi {
                 exclude_unset: response_model_exclude_unset,
                 exclude_defaults: response_model_exclude_defaults,
                 exclude_none: response_model_exclude_none,
+                include_in_schema,
             },
         )
     }
@@ -375,7 +397,7 @@ impl PyFastApi {
         clippy::too_many_arguments,
         reason = "preserve the Python route decorator keyword signature"
     )]
-    #[pyo3(signature = (path, *, response_model = None, status_code = 200, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false))]
+    #[pyo3(signature = (path, *, response_model = None, status_code = 200, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, include_in_schema = true))]
     fn trace(
         slf: Py<Self>,
         py: Python<'_>,
@@ -388,6 +410,7 @@ impl PyFastApi {
         response_model_exclude_unset: bool,
         response_model_exclude_defaults: bool,
         response_model_exclude_none: bool,
+        include_in_schema: bool,
     ) -> PyResult<Py<PyOperationDecorator>> {
         operation_decorator(
             slf,
@@ -403,6 +426,7 @@ impl PyFastApi {
                 exclude_unset: response_model_exclude_unset,
                 exclude_defaults: response_model_exclude_defaults,
                 exclude_none: response_model_exclude_none,
+                include_in_schema,
             },
         )
     }
@@ -441,6 +465,7 @@ impl PyFastApi {
         let operations = self
             .routes
             .iter()
+            .filter(|route| route.include_in_schema)
             .map(|route| self.openapi_operation(py, route))
             .collect::<PyResult<Vec<_>>>()?;
         openapi_document(py, &self.title, &self.version, &operations)
@@ -519,10 +544,20 @@ impl PyFastApi {
             }
         };
         let (response_model_name, response_schema) = match route.response_model.as_ref() {
-            Some(model) => (
-                model_name(py, model.bind(py))?,
-                Some(pydantic_schema(py, model.bind(py), "serialization", None)?),
-            ),
+            Some(model) => {
+                let schema = pydantic_schema(py, model.bind(py), "serialization", None)?;
+                let model_name = match schema_definition_name(schema.bind(py))? {
+                    Some(name) => Some(name),
+                    None => {
+                        if is_pydantic_model(py, model.bind(py))? {
+                            model_name(py, model.bind(py))?
+                        } else {
+                            None
+                        }
+                    }
+                };
+                (model_name, Some(schema))
+            }
             None => (None, None),
         };
 
@@ -538,6 +573,7 @@ impl PyFastApi {
             request_required,
             response_model_name,
             response_schema,
+            response_schema_title: response_field_schema_title(&name, &route.path, &route.method),
         })
     }
 }
@@ -549,6 +585,7 @@ struct PyOperationDecorator {
     method: String,
     response_model: Option<Py<PyAny>>,
     status_code: u16,
+    include_in_schema: bool,
     response_model_include: Option<Py<PyAny>>,
     response_model_exclude: Option<Py<PyAny>>,
     response_model_by_alias: bool,
@@ -574,6 +611,7 @@ fn operation_decorator(
             method: method.to_owned(),
             response_model,
             status_code,
+            include_in_schema: response_model_options.include_in_schema,
             response_model_include: response_model_options.include,
             response_model_exclude: response_model_options.exclude,
             response_model_by_alias: response_model_options.by_alias,
@@ -602,6 +640,7 @@ impl PyOperationDecorator {
             path: self.path.clone(),
             method: self.method.clone(),
             status_code: self.status_code,
+            include_in_schema: self.include_in_schema,
             endpoint: endpoint.clone_ref(py),
             response_model: self
                 .response_model
@@ -649,13 +688,18 @@ impl CallablePlan {
                     .unbind();
                 let raw_default = item.getattr("default")?;
                 let (annotation, mut metadata) = annotation_parts(py, annotation)?;
-                let default_is_body_marker = !raw_default.is(&empty)
-                    && raw_default.hasattr("kind")?
-                    && raw_default.getattr("kind")?.extract::<String>()? == "body";
-                if default_is_body_marker {
+                let raw_default_marker_kind =
+                    if !raw_default.is(&empty) && raw_default.hasattr("kind")? {
+                        Some(raw_default.getattr("kind")?.extract::<String>()?)
+                    } else {
+                        None
+                    };
+                let default_is_parameter_marker =
+                    matches!(raw_default_marker_kind.as_deref(), Some("body" | "depends"));
+                if default_is_parameter_marker {
                     metadata.push(raw_default.clone().unbind());
                 }
-                let default = if raw_default.is(&empty) || default_is_body_marker {
+                let default = if raw_default.is(&empty) || default_is_parameter_marker {
                     marker_default(py, &metadata)?
                 } else {
                     Some(raw_default.unbind())
@@ -693,7 +737,7 @@ impl CallablePlan {
                     source: InputSource::Body,
                     ..
                 } => Some(parameter),
-                ParameterSource::Dependency(ref dependency) => dependency.body_parameter(),
+                ParameterSource::Dependency { ref plan, .. } => plan.body_parameter(),
                 _ => None,
             })
     }
@@ -727,8 +771,8 @@ impl CallablePlan {
                         annotation: parameter.annotation.clone_ref(py),
                     });
                 }
-                ParameterSource::Dependency(dependency) => {
-                    parameters.extend(dependency.openapi_parameters(py)?);
+                ParameterSource::Dependency { plan, .. } => {
+                    parameters.extend(plan.openapi_parameters(py)?);
                 }
                 ParameterSource::Input { .. } => {}
             }
@@ -748,6 +792,8 @@ impl CallablePlan {
         py: Python<'_>,
         inputs: &Bound<'_, PyDict>,
         failures: &mut Vec<ValidationIssue>,
+        dependency_cache: &mut HashMap<usize, Py<PyAny>>,
+        cache_result: Option<bool>,
     ) -> PyResult<Option<Py<PyAny>>> {
         let initial_failure_count = failures.len();
         let kwargs = PyDict::new(py);
@@ -758,8 +804,10 @@ impl CallablePlan {
             .count()
             > 1;
         for parameter in &self.parameters {
-            if let ParameterSource::Dependency(dependency) = &parameter.source {
-                if let Some(value) = dependency.invoke(py, inputs, failures)? {
+            if let ParameterSource::Dependency { plan, use_cache } = &parameter.source {
+                if let Some(value) =
+                    plan.invoke(py, inputs, failures, dependency_cache, Some(*use_cache))?
+                {
                     kwargs.set_item(&parameter.name, value.bind(py))?;
                 }
             }
@@ -822,11 +870,21 @@ impl CallablePlan {
         if failures.len() != initial_failure_count {
             return Ok(None);
         }
-        self.callable
+        let cache_key = self.callable.as_ptr() as usize;
+        if cache_result == Some(true) {
+            if let Some(value) = dependency_cache.get(&cache_key) {
+                return Ok(Some(value.clone_ref(py)));
+            }
+        }
+        let result = self
+            .callable
             .bind(py)
             .call((), Some(&kwargs))
-            .map(Bound::unbind)
-            .map(Some)
+            .map(Bound::unbind)?;
+        if cache_result.is_some() && !dependency_cache.contains_key(&cache_key) {
+            dependency_cache.insert(cache_key, result.clone_ref(py));
+        }
+        Ok(Some(result))
     }
 }
 
@@ -856,7 +914,7 @@ impl CallableParameter {
                 location: source.location(),
                 required: self.default.is_none(),
             }],
-            ParameterSource::Dependency(dependency) => dependency.input_parameters(),
+            ParameterSource::Dependency { plan, .. } => plan.input_parameters(),
         }
     }
 }
@@ -913,10 +971,14 @@ fn parameter_source(
         let kind = marker.getattr("kind")?.extract::<String>()?;
         if kind == "depends" {
             let dependency = marker.getattr("dependency")?.unbind();
+            let use_cache = marker.getattr("use_cache")?.extract::<bool>()?;
             let path_names = path_parameters.to_vec();
-            return CallablePlan::build(py, dependency, &path_names)
-                .map(Box::new)
-                .map(ParameterSource::Dependency);
+            return CallablePlan::build(py, dependency, &path_names).map(|plan| {
+                ParameterSource::Dependency {
+                    plan: Box::new(plan),
+                    use_cache,
+                }
+            });
         }
         if kind == "body" {
             return Ok(ParameterSource::Input {
@@ -959,7 +1021,7 @@ fn parameter_source(
             alias: name.to_owned(),
         });
     }
-    if is_pydantic_model(py, annotation) {
+    if is_pydantic_model(py, annotation)? {
         return Ok(ParameterSource::Input {
             source: InputSource::Body,
             alias: name.to_owned(),
@@ -1004,16 +1066,15 @@ fn constrained_parameter_annotation(
     Ok(annotation.clone().unbind())
 }
 
-fn is_pydantic_model(py: Python<'_>, annotation: &Bound<'_, PyAny>) -> bool {
-    let result = py
-        .import("builtins")
-        .and_then(|builtins| builtins.getattr("issubclass"))
-        .and_then(|issubclass| {
-            let base_model = py.import("pydantic")?.getattr("BaseModel")?;
-            issubclass.call1((annotation, base_model))
-        })
-        .and_then(|result| result.extract::<bool>());
-    result.unwrap_or(false)
+fn is_pydantic_model(py: Python<'_>, annotation: &Bound<'_, PyAny>) -> PyResult<bool> {
+    let Ok(annotation_type) = annotation.cast::<PyType>() else {
+        return Ok(false);
+    };
+    let issubclass = py.import("builtins")?.getattr("issubclass")?;
+    let base_model = py.import("pydantic")?.getattr("BaseModel")?;
+    issubclass
+        .call1((annotation_type, base_model))?
+        .extract::<bool>()
 }
 
 fn path_parameter_names(path: &str) -> Vec<String> {
@@ -1061,6 +1122,38 @@ fn model_name(_py: Python<'_>, model: &Bound<'_, PyAny>) -> PyResult<Option<Stri
         .and_then(|name| name.extract::<String>())
         .map(Some)
         .or_else(|_| Ok(None))
+}
+
+fn schema_definition_name(schema: &Bound<'_, PyAny>) -> PyResult<Option<String>> {
+    let Ok(schema) = schema.cast::<PyDict>() else {
+        return Ok(None);
+    };
+    let Some(reference) = schema.get_item("$ref")? else {
+        return Ok(None);
+    };
+    let Ok(reference) = reference.extract::<String>() else {
+        return Ok(None);
+    };
+    let Some(name) = reference.strip_prefix("#/$defs/") else {
+        return Ok(None);
+    };
+    Ok(Some(name.replace("~1", "/").replace("~0", "~")))
+}
+
+fn response_field_schema_title(name: &str, path: &str, method: &str) -> String {
+    let mut unique_id = format!("{name}{path}")
+        .chars()
+        .map(|character| {
+            if character.is_alphanumeric() || character == '_' {
+                character
+            } else {
+                '_'
+            }
+        })
+        .collect::<String>();
+    unique_id.push('_');
+    unique_id.push_str(&method.to_ascii_lowercase());
+    title_case(&format!("Response_{unique_id}").replace('_', " "))
 }
 
 fn aggregate_body_model(
@@ -1417,6 +1510,7 @@ enum PendingAction {
     LifespanStartupSend,
     LifespanShutdownSend,
     Endpoint,
+    ReturnedResponse,
     SendStart,
     SendBody,
 }
@@ -1601,15 +1695,20 @@ impl FastApiCall {
             .route_index
             .ok_or_else(|| PyRuntimeError::new_err("ASGI dispatch has no selected route"))?;
         let mut validation_issues = Vec::new();
+        let mut dependency_cache = HashMap::new();
         let invocation = {
             let app = self.app.bind(py).borrow();
             let route = app
                 .routes
                 .get(route_index)
                 .ok_or_else(|| PyRuntimeError::new_err("selected FastAPI route was lost"))?;
-            route
-                .plan
-                .invoke(py, values.bind(py), &mut validation_issues)
+            route.plan.invoke(
+                py,
+                values.bind(py),
+                &mut validation_issues,
+                &mut dependency_cache,
+                None,
+            )
         };
         match invocation {
             Ok(Some(endpoint_result)) => {
@@ -1641,6 +1740,18 @@ impl FastApiCall {
     }
 
     fn finish_endpoint(&mut self, py: Python<'_>, result: Py<PyAny>) -> PyResult<MachineAction> {
+        let response_type = py.import("starlette.responses")?.getattr("Response")?;
+        if result.bind(py).is_instance(&response_type)? {
+            // Starlette responses own their status, headers, body, and ASGI send path.
+            self.pending = Some(PendingAction::ReturnedResponse);
+            let awaitable = result.bind(py).call1((
+                self.scope.bind(py),
+                self.receive.bind(py),
+                self.send.bind(py),
+            ))?;
+            return Ok(MachineAction::Await(awaitable.unbind()));
+        }
+
         let app = self.app.bind(py).borrow();
         let route = app
             .routes
@@ -1730,6 +1841,7 @@ impl AwaitableStateMachine for FastApiCall {
                 Some(PendingAction::LifespanStartupSend) => self.receive_lifespan(py),
                 Some(PendingAction::LifespanShutdownSend) => Ok(MachineAction::Complete(py.None())),
                 Some(PendingAction::Endpoint) => self.finish_endpoint(py, value),
+                Some(PendingAction::ReturnedResponse) => Ok(MachineAction::Complete(py.None())),
                 Some(PendingAction::SendStart) => self.send_body(py),
                 Some(PendingAction::SendBody) => Ok(MachineAction::Complete(py.None())),
                 None => Err(PyRuntimeError::new_err(
@@ -1745,5 +1857,9 @@ impl AwaitableStateMachine for FastApiCall {
 pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     module.add_class::<PyFastApi>()?;
     module.add_class::<PyOperationDecorator>()?;
-    Ok(())
+    let response = module
+        .py()
+        .import("starlette.responses")?
+        .getattr("Response")?;
+    module.add("Response", response)
 }
