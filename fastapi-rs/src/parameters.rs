@@ -11,6 +11,7 @@ pub(crate) struct ParameterMetadata {
     dependency: Option<Py<PyAny>>,
     default: Option<Py<PyAny>>,
     gt: Option<Py<PyAny>>,
+    lt: Option<Py<PyAny>>,
     convert_underscores: bool,
     use_cache: bool,
 }
@@ -50,6 +51,11 @@ impl ParameterMetadata {
     }
 
     #[getter]
+    fn lt(&self, py: Python<'_>) -> Option<Py<PyAny>> {
+        self.lt.as_ref().map(|lt| lt.clone_ref(py))
+    }
+
+    #[getter]
     fn convert_underscores(&self) -> bool {
         self.convert_underscores
     }
@@ -74,6 +80,7 @@ fn depends(
             dependency: Some(dependency),
             default: None,
             gt: None,
+            lt: None,
             convert_underscores: true,
             use_cache,
         },
@@ -98,6 +105,7 @@ fn header(
             dependency: None,
             default,
             gt: None,
+            lt: None,
             convert_underscores,
             use_cache: true,
         },
@@ -118,6 +126,7 @@ fn cookie(
             dependency: None,
             default,
             gt: None,
+            lt: None,
             convert_underscores: true,
             use_cache: true,
         },
@@ -130,13 +139,14 @@ fn query_ellipsis_default() -> Py<PyAny> {
 
 #[pyfunction(
     name = "Query",
-    signature = (*, alias = None, default = query_ellipsis_default(), gt = None)
+    signature = (*, alias = None, default = query_ellipsis_default(), gt = None, lt = None)
 )]
 fn query(
     py: Python<'_>,
     alias: Option<String>,
     default: Py<PyAny>,
     gt: Option<Py<PyAny>>,
+    lt: Option<Py<PyAny>>,
 ) -> PyResult<Py<ParameterMetadata>> {
     let ellipsis = py.Ellipsis();
     let undefined = py.import("pydantic_core")?.getattr("PydanticUndefined")?;
@@ -153,6 +163,7 @@ fn query(
             dependency: None,
             default,
             gt,
+            lt,
             convert_underscores: true,
             use_cache: true,
         },
@@ -169,6 +180,7 @@ fn path(py: Python<'_>, gt: Option<Py<PyAny>>) -> PyResult<Py<ParameterMetadata>
             dependency: None,
             default: None,
             gt,
+            lt: None,
             convert_underscores: true,
             use_cache: true,
         },
@@ -185,6 +197,7 @@ fn body(py: Python<'_>, gt: Option<Py<PyAny>>) -> PyResult<Py<ParameterMetadata>
             dependency: None,
             default: None,
             gt,
+            lt: None,
             convert_underscores: true,
             use_cache: true,
         },

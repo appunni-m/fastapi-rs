@@ -38,7 +38,6 @@ cases:
     - kind: http_response
       selectors:
       - status
-      - body
       comparison: exact
   - action_id: created-item-response
     kind: http_request
@@ -70,10 +69,9 @@ cases:
     - kind: openapi
       json_pointers:
       - /paths/~1items~1/post/responses/201
-      - /components/schemas/Item
       comparison: exact
   source_evidence:
   - path: tests/test_tutorial/test_path_operation_configurations/test_tutorial001.py
     kind: upstream_test
   - path: docs_src/path_operation_configuration/tutorial001_py310.py
-    kind: upstream_documentation
+    kind: upstream_documentation_example

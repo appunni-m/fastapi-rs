@@ -1,4 +1,4 @@
-"""Focused Annotated query-bound workflow adapted from FastAPI's tutorial."""
+"""Isolated Query-bound workflow adapted from FastAPI tutorial 006."""
 
 from typing import Annotated
 
@@ -9,7 +9,7 @@ def create_app() -> FastAPI:
     app = FastAPI()
 
     @app.get("/items")
-    async def read_item(size: Annotated[float, Query(gt=0)]):
+    async def read_item(size: Annotated[float, Query(gt=0, lt=10.5)]):
         return {"size": size}
 
     return app
