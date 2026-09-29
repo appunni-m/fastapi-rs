@@ -561,6 +561,8 @@ reviewed_api_contract_overlay:
         - {path: tests/test_tutorial/test_path_operation_configurations/test_tutorial005.py, symbol: test_openapi_schema}
         - {path: docs_src/path_operation_configuration/tutorial005_py310.py}
         - {path: docs/en/docs/tutorial/path-operation-configuration.md}
+        - {path: tests/test_tutorial/test_path_operation_configurations/test_tutorial001.py, symbol: test_post_items}
+        - {path: docs_src/path_operation_configuration/tutorial001_py310.py}
       feature_ids: [app-routing, openapi-docs, response-serialization]
       observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths]
       supported_slice: >-
@@ -580,6 +582,9 @@ reviewed_api_contract_overlay:
         `response_description`, including an empty string, is emitted as the
         success response description; omission uses `Successful Response`, as
         sampled by `path-operation-post-response-description-isolated`.
+        An explicit `status_code=201` changes the ASGI response status and the
+        OpenAPI success-response key to `201`; omission retains `200`, sampled
+        by `path-operation-post-status-code-isolated`.
     fastapi.applications.FastAPI.put:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::put
       source_evidence:
