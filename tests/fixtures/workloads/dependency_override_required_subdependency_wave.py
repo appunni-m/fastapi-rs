@@ -12,13 +12,13 @@ def create_app(factory_input: dict[str, Any], event_trace: list[str]) -> FastAPI
 
     app = FastAPI()
 
-    async def original_parameters(q: str, skip: int = 0, limit: int = 100) -> dict[str, Any]:
+    def original_parameters(q: str, skip: int = 0, limit: int = 100) -> dict[str, Any]:
         return {"q": q, "skip": skip, "limit": limit}
 
-    async def replacement_subdependency(k: str) -> dict[str, str]:
+    def replacement_subdependency(k: str) -> dict[str, str]:
         return {"k": k}
 
-    async def replacement_dependency(
+    def replacement_dependency(
         msg: dict[str, str] = Depends(replacement_subdependency),  # noqa: B008
     ) -> dict[str, str]:
         return msg
@@ -26,7 +26,7 @@ def create_app(factory_input: dict[str, Any], event_trace: list[str]) -> FastAPI
     app.dependency_overrides[original_parameters] = replacement_dependency
 
     @app.get("/main-depends/")
-    async def read_main_dependency(
+    def read_main_dependency(
         parameters: dict[str, str] = Depends(original_parameters),  # noqa: B008
     ) -> dict[str, Any]:
         return {"in": "main-depends", "params": parameters}

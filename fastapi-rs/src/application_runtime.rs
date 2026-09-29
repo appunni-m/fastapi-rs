@@ -4,7 +4,8 @@ use std::collections::{BTreeSet, HashMap};
 
 use pyo3::exceptions::{PyRuntimeError, PyValueError};
 use pyo3::prelude::*;
-use pyo3::types::{PyBytes, PyDict, PyList, PyModule, PyTuple, PyType};
+use pyo3::types::{PyBytes, PyDict, PyList, PyModule, PyString, PyTuple, PyType};
+use starlette_rs::QueryParams;
 
 use crate::awaitable::{
     AwaitableStateMachine, MachineAction, MachineResume, into_python_awaitable,
@@ -67,6 +68,7 @@ struct CallablePlan {
 struct InvocationContext<'context, 'py> {
     py: Python<'py>,
     inputs: &'context Bound<'py, PyDict>,
+    query_params: &'context QueryParams,
     failures: &'context mut Vec<ValidationIssue>,
     dependency_overrides: &'context Bound<'py, PyDict>,
     dependency_cache: &'context mut HashMap<usize, Py<PyAny>>,
@@ -866,7 +868,14 @@ impl CallablePlan {
                 if *parameter_source != source {
                     continue;
                 }
-                let value = context.inputs.get_item(&parameter.name)?;
+                let value = if *parameter_source == InputSource::Query {
+                    context
+                        .query_params
+                        .get(alias)
+                        .map(|value| PyString::new(context.py, value).into_any())
+                } else {
+                    context.inputs.get_item(&parameter.name)?
+                };
                 let value = if *parameter_source == InputSource::Body && aggregate_body {
                     match value {
                         Some(body) if body.is_instance_of::<PyDict>() => {
@@ -1709,6 +1718,7 @@ impl FastApiCall {
         let query: Vec<u8> = scope
             .call_method1("get", ("query_string", PyBytes::new(py, b"")))?
             .extract()?;
+        let query_params = QueryParams::parse(&query);
         let headers: Vec<(Vec<u8>, Vec<u8>)> = scope
             .call_method1("get", ("headers", PyList::empty(py)))?
             .extract()?;
@@ -1751,6 +1761,7 @@ impl FastApiCall {
             let mut context = InvocationContext {
                 py,
                 inputs: values.bind(py),
+                query_params: &query_params,
                 failures: &mut validation_issues,
                 dependency_overrides,
                 dependency_cache: &mut dependency_cache,

@@ -370,15 +370,29 @@ reviewed_api_contract_overlay:
       source_evidence:
         - {path: fastapi/applications.py, symbol: __init__}
         - {path: tests/test_dependency_overrides.py, symbol: test_override_simple}
+        - path: tests/test_dependency_overrides.py
+          symbol: test_override_with_sub_main_depends
+          kind: source-definition
+          start_line: 216
+          end_line: 231
+        - path: tests/test_dependency_overrides.py
+          symbol: test_override_with_sub_main_depends_k_bar
+          kind: source-definition
+          start_line: 252
+          end_line: 257
         - {path: tests/test_tutorial/test_testing_dependencies/test_tutorial001.py, symbol: test_override_in_users_with_params}
         - {path: docs_src/dependency_testing/tutorial001_py310.py}
       feature_ids: [app-routing, dependency-security]
       observation_selectors: [http.status, http.body.bytes]
       supported_slice: >-
         Partial native constructor slice: the application exposes a mutable
-        dependency_overrides mapping used by the reviewed synchronous Depends
-        override workflow. This does not establish parity for the remaining
-        FastAPI constructor options or override cache behavior.
+        dependency_overrides mapping used by the reviewed synchronous override
+        slice in Depends: replacing an app-level dependency with a synchronous
+        callable whose nested dependency introduces exactly one required
+        scalar query field `k`. Missing `k` fails request validation; supplying
+        `?k=bar` succeeds.
+        Other constructor options and override cache behavior remain outside
+        this reviewed slice.
     fastapi.applications.FastAPI.__call__:
       rust_binding: fastapi-rs/src/application_runtime.rs::FastApiCall::finish_endpoint
       source_evidence:
@@ -506,6 +520,26 @@ reviewed_api_contract_overlay:
         - {path: fastapi/dependencies/utils.py, symbol: solve_dependencies}
         - {path: tests/test_dependency_cache.py, symbol: test_sub_counter}
         - {path: tests/test_dependency_cache.py, symbol: test_sub_counter_no_cache}
+        - path: tests/test_dependency_overrides.py
+          symbol: overrider_sub_dependency
+          kind: source-definition
+          start_line: 43
+          end_line: 44
+        - path: tests/test_dependency_overrides.py
+          symbol: overrider_dependency_with_sub
+          kind: source-definition
+          start_line: 47
+          end_line: 48
+        - path: tests/test_dependency_overrides.py
+          symbol: test_override_with_sub_main_depends
+          kind: source-definition
+          start_line: 216
+          end_line: 231
+        - path: tests/test_dependency_overrides.py
+          symbol: test_override_with_sub_main_depends_k_bar
+          kind: source-definition
+          start_line: 252
+          end_line: 257
       feature_ids: [dependency-security, request-validation]
       observation_selectors: [http.status, http.body.bytes]
       supported_slice: >-
@@ -514,12 +548,14 @@ reviewed_api_contract_overlay:
         request; use_cache=False bypasses cache lookup for that dependency edge,
         while its result can populate an empty cache entry. The cache resets for
         each request. Synchronous app-level overrides rebuild the replacement
-        dependency from its signature when the replacement only uses fields
-        already registered by the original dependency. Override cache-key
+        dependency from its signature. This slice includes a replacement with
+        one nested dependency that introduces exactly one required scalar query
+        field `k`: omitting it produces 422 required-query validation, while
+        `?k=bar` supplies the value and succeeds. Newly introduced body,
+        header, cookie, or path fields remain unsupported. Override cache-key
         behavior, async and generator dependencies, None-based dependency
-        inference, Security scopes, replacements requiring new input fields,
-        request/function scopes, and the rest of the Depends constructor
-        contract remain outside this reviewed slice.
+        inference, Security scopes, request/function scopes, and the rest of
+        the Depends constructor contract remain outside this reviewed slice.
     fastapi.exceptions.RequestValidationError:
       rust_binding: fastapi-rs/src/errors.rs::RequestValidationError
       source_evidence:
