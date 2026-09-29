@@ -264,12 +264,13 @@ reviewed_api_contract_overlay:
         Explicit `deprecated=True` emits `deprecated: true`; false and
         omitted values remain absent, sampled by
         `path-operation-other-verbs-deprecated`.
-        One route-level `responses` entry with one non-colliding Python integer (not bool)
-        status key and a non-empty string `description` maps to a
-        description-only OpenAPI response object, sampled by
-        `path-operation-other-verbs-responses`. Multiple status entries,
-        response models, extra response fields, string status keys, empty
-        descriptions, and router/include-level response maps remain outside.
+        Route-level `responses` maps with one or more non-colliding Python
+        integer (not bool) status keys and one non-empty string `description`
+        per key emit description-only OpenAPI response objects, sampled by
+        `path-operation-other-verbs-responses`. Multiple fields per response,
+        response models, content, headers, links, extensions, string status
+        keys, empty descriptions, and router/include-level response maps remain
+        outside this slice.
     fastapi.applications.FastAPI.trace:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::trace
       source_evidence:
@@ -306,12 +307,13 @@ reviewed_api_contract_overlay:
         Explicit `deprecated=True` emits `deprecated: true`; false and
         omitted values remain absent, sampled by
         `path-operation-other-verbs-deprecated`.
-        One route-level `responses` entry with one non-colliding Python integer (not bool)
-        status key and a non-empty string `description` maps to a
-        description-only OpenAPI response object, sampled by
-        `path-operation-other-verbs-responses`. Multiple status entries,
-        response models, extra response fields, string status keys, empty
-        descriptions, and router/include-level response maps remain outside.
+        Route-level `responses` maps with one or more non-colliding Python
+        integer (not bool) status keys and one non-empty string `description`
+        per key emit description-only OpenAPI response objects, sampled by
+        `path-operation-other-verbs-responses`. Multiple fields per response,
+        response models, content, headers, links, extensions, string status
+        keys, empty descriptions, and router/include-level response maps remain
+        outside this slice.
     fastapi.applications.FastAPI.head:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::head
       source_evidence:
@@ -350,12 +352,13 @@ reviewed_api_contract_overlay:
         Explicit `deprecated=True` emits `deprecated: true`; false and
         omitted values remain absent, sampled by
         `path-operation-other-verbs-deprecated`.
-        One route-level `responses` entry with one non-colliding Python integer (not bool)
-        status key and a non-empty string `description` maps to a
-        description-only OpenAPI response object, sampled by
-        `path-operation-other-verbs-responses`. Multiple status entries,
-        response models, extra response fields, string status keys, empty
-        descriptions, and router/include-level response maps remain outside.
+        Route-level `responses` maps with one or more non-colliding Python
+        integer (not bool) status keys and one non-empty string `description`
+        per key emit description-only OpenAPI response objects, sampled by
+        `path-operation-other-verbs-responses`. Multiple fields per response,
+        response models, content, headers, links, extensions, string status
+        keys, empty descriptions, and router/include-level response maps remain
+        outside this slice.
     fastapi.Body:
       rust_binding: fastapi-rs/src/parameters.rs::body
       source_evidence:
@@ -571,12 +574,13 @@ reviewed_api_contract_overlay:
         router-tag-inheritance, and router-schema-policy workflows. Synchronous
         scalar-query dependencies supplied to APIRouter or include_router are
         validated, run in include-then-router order, and appear in OpenAPI in
-        router-dependencies-isolated. A route-level `responses` entry with a
-        non-colliding Python integer (not bool) status and non-empty string description is also
-        preserved by FastAPI.include_router in
-        path-operation-other-verbs-responses. Router/include-level response
-        maps, other dependency forms, callbacks, lifespan, WebSockets, enum
-        tags, and other constructor or inclusion options remain unsupported.
+        router-dependencies-isolated. Route-level `responses` maps with one
+        or more non-colliding Python integer (not bool) status keys and one
+        non-empty string description per key are preserved by
+        FastAPI.include_router in path-operation-other-verbs-responses.
+        Router/include-level response maps, other dependency forms, callbacks,
+        lifespan, WebSockets, enum tags, and other constructor or inclusion
+        options remain unsupported.
     fastapi.applications.FastAPI.include_router:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::include_router
       source_evidence:
@@ -609,9 +613,10 @@ reviewed_api_contract_overlay:
         parameters by router-dependencies-isolated.
         Router-level and include-level `responses` maps, callbacks,
         custom response classes, and ID policies remain outside this slice.
-        One route-level `responses` entry with a non-colliding Python integer (not bool)
-        status key and a non-empty string `description` is preserved on the
-        included route, sampled by `path-operation-other-verbs-responses`.
+        Route-level `responses` maps with one or more non-colliding Python
+        integer (not bool) status keys and one non-empty string `description`
+        per key are preserved on the included route, sampled by
+        `path-operation-other-verbs-responses`.
     fastapi.routing.APIRouter.include_router:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::include_router
       source_evidence:
@@ -669,12 +674,13 @@ reviewed_api_contract_overlay:
         tags in router-tag-inheritance-upstream. An explicit
         `response_description` is emitted in OpenAPI and sampled by
         path-operation-other-verbs-response-descriptions.
-        One route-level `responses` entry with one non-colliding Python integer (not bool)
-        status key and a non-empty string `description` maps to a
-        description-only OpenAPI response object, sampled by
-        `path-operation-other-verbs-responses`. Multiple status entries,
-        response models, extra response fields, string status keys, empty
-        descriptions, and router/include-level response maps remain outside.
+        Route-level `responses` maps with one or more non-colliding Python
+        integer (not bool) status keys and one non-empty string `description`
+        per key emit description-only OpenAPI response objects, sampled by
+        `path-operation-other-verbs-responses`. Multiple fields per response,
+        response models, content, headers, links, extensions, string status
+        keys, empty descriptions, and router/include-level response maps remain
+        outside this slice.
     fastapi.routing.APIRouter.post:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::__getattr__
       source_evidence:
@@ -690,12 +696,13 @@ reviewed_api_contract_overlay:
         response descriptions appear in included-route OpenAPI, covered by
         path-operation-post-response-description-isolated and
         path-operation-other-verbs-response-descriptions.
-        One route-level `responses` entry with one non-colliding Python integer (not bool)
-        status key and a non-empty string `description` maps to a
-        description-only OpenAPI response object, sampled by
-        `path-operation-other-verbs-responses`. Multiple status entries,
-        response models, extra response fields, string status keys, empty
-        descriptions, and router/include-level response maps remain outside.
+        Route-level `responses` maps with one or more non-colliding Python
+        integer (not bool) status keys and one non-empty string `description`
+        per key emit description-only OpenAPI response objects, sampled by
+        `path-operation-other-verbs-responses`. Multiple fields per response,
+        response models, content, headers, links, extensions, string status
+        keys, empty descriptions, and router/include-level response maps remain
+        outside this slice.
     fastapi.routing.APIRouter.put:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::__getattr__
       source_evidence:
@@ -715,12 +722,13 @@ reviewed_api_contract_overlay:
         Explicit `deprecated=True` emits `deprecated: true`; false and
         omitted values remain absent, sampled by
         `path-operation-other-verbs-deprecated`.
-        One route-level `responses` entry with one non-colliding Python integer (not bool)
-        status key and a non-empty string `description` maps to a
-        description-only OpenAPI response object, sampled by
-        `path-operation-other-verbs-responses`. Multiple status entries,
-        response models, extra response fields, string status keys, empty
-        descriptions, and router/include-level response maps remain outside.
+        Route-level `responses` maps with one or more non-colliding Python
+        integer (not bool) status keys and one non-empty string `description`
+        per key emit description-only OpenAPI response objects, sampled by
+        `path-operation-other-verbs-responses`. Multiple fields per response,
+        response models, content, headers, links, extensions, string status
+        keys, empty descriptions, and router/include-level response maps remain
+        outside this slice.
     fastapi.routing.APIRouter.delete:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::__getattr__
       source_evidence:
@@ -740,12 +748,13 @@ reviewed_api_contract_overlay:
         Explicit `deprecated=True` emits `deprecated: true`; false and
         omitted values remain absent, sampled by
         `path-operation-other-verbs-deprecated`.
-        One route-level `responses` entry with one non-colliding Python integer (not bool)
-        status key and a non-empty string `description` maps to a
-        description-only OpenAPI response object, sampled by
-        `path-operation-other-verbs-responses`. Multiple status entries,
-        response models, extra response fields, string status keys, empty
-        descriptions, and router/include-level response maps remain outside.
+        Route-level `responses` maps with one or more non-colliding Python
+        integer (not bool) status keys and one non-empty string `description`
+        per key emit description-only OpenAPI response objects, sampled by
+        `path-operation-other-verbs-responses`. Multiple fields per response,
+        response models, content, headers, links, extensions, string status
+        keys, empty descriptions, and router/include-level response maps remain
+        outside this slice.
     fastapi.routing.APIRouter.patch:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::__getattr__
       source_evidence:
@@ -765,12 +774,13 @@ reviewed_api_contract_overlay:
         Explicit `deprecated=True` emits `deprecated: true`; false and
         omitted values remain absent, sampled by
         `path-operation-other-verbs-deprecated`.
-        One route-level `responses` entry with one non-colliding Python integer (not bool)
-        status key and a non-empty string `description` maps to a
-        description-only OpenAPI response object, sampled by
-        `path-operation-other-verbs-responses`. Multiple status entries,
-        response models, extra response fields, string status keys, empty
-        descriptions, and router/include-level response maps remain outside.
+        Route-level `responses` maps with one or more non-colliding Python
+        integer (not bool) status keys and one non-empty string `description`
+        per key emit description-only OpenAPI response objects, sampled by
+        `path-operation-other-verbs-responses`. Multiple fields per response,
+        response models, content, headers, links, extensions, string status
+        keys, empty descriptions, and router/include-level response maps remain
+        outside this slice.
     fastapi.routing.APIRouter.head:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::__getattr__
       source_evidence:
@@ -790,12 +800,13 @@ reviewed_api_contract_overlay:
         Explicit `deprecated=True` emits `deprecated: true`; false and
         omitted values remain absent, sampled by
         `path-operation-other-verbs-deprecated`.
-        One route-level `responses` entry with one non-colliding Python integer (not bool)
-        status key and a non-empty string `description` maps to a
-        description-only OpenAPI response object, sampled by
-        `path-operation-other-verbs-responses`. Multiple status entries,
-        response models, extra response fields, string status keys, empty
-        descriptions, and router/include-level response maps remain outside.
+        Route-level `responses` maps with one or more non-colliding Python
+        integer (not bool) status keys and one non-empty string `description`
+        per key emit description-only OpenAPI response objects, sampled by
+        `path-operation-other-verbs-responses`. Multiple fields per response,
+        response models, content, headers, links, extensions, string status
+        keys, empty descriptions, and router/include-level response maps remain
+        outside this slice.
     fastapi.routing.APIRouter.options:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::__getattr__
       source_evidence:
@@ -815,12 +826,13 @@ reviewed_api_contract_overlay:
         Explicit `deprecated=True` emits `deprecated: true`; false and
         omitted values remain absent, sampled by
         `path-operation-other-verbs-deprecated`.
-        One route-level `responses` entry with one non-colliding Python integer (not bool)
-        status key and a non-empty string `description` maps to a
-        description-only OpenAPI response object, sampled by
-        `path-operation-other-verbs-responses`. Multiple status entries,
-        response models, extra response fields, string status keys, empty
-        descriptions, and router/include-level response maps remain outside.
+        Route-level `responses` maps with one or more non-colliding Python
+        integer (not bool) status keys and one non-empty string `description`
+        per key emit description-only OpenAPI response objects, sampled by
+        `path-operation-other-verbs-responses`. Multiple fields per response,
+        response models, content, headers, links, extensions, string status
+        keys, empty descriptions, and router/include-level response maps remain
+        outside this slice.
     fastapi.routing.APIRouter.trace:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::__getattr__
       source_evidence:
@@ -840,12 +852,13 @@ reviewed_api_contract_overlay:
         Explicit `deprecated=True` emits `deprecated: true`; false and
         omitted values remain absent, sampled by
         `path-operation-other-verbs-deprecated`.
-        One route-level `responses` entry with one non-colliding Python integer (not bool)
-        status key and a non-empty string `description` maps to a
-        description-only OpenAPI response object, sampled by
-        `path-operation-other-verbs-responses`. Multiple status entries,
-        response models, extra response fields, string status keys, empty
-        descriptions, and router/include-level response maps remain outside.
+        Route-level `responses` maps with one or more non-colliding Python
+        integer (not bool) status keys and one non-empty string `description`
+        per key emit description-only OpenAPI response objects, sampled by
+        `path-operation-other-verbs-responses`. Multiple fields per response,
+        response models, content, headers, links, extensions, string status
+        keys, empty descriptions, and router/include-level response maps remain
+        outside this slice.
     fastapi.applications.FastAPI.get:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::get
       source_evidence:
@@ -910,12 +923,13 @@ reviewed_api_contract_overlay:
         Non-empty `response_description` values on the direct and APIRouter
         methods, plus omitted and empty-string controls, are sampled by
         path-operation-other-verbs-response-descriptions.
-        One route-level `responses` entry with one non-colliding Python integer (not bool)
-        status key and a non-empty string `description` maps to a
-        description-only OpenAPI response object, sampled by
-        `path-operation-other-verbs-responses`. Multiple status entries,
-        response models, extra response fields, string status keys, empty
-        descriptions, and router/include-level response maps remain outside.
+        Route-level `responses` maps with one or more non-colliding Python
+        integer (not bool) status keys and one non-empty string `description`
+        per key emit description-only OpenAPI response objects, sampled by
+        `path-operation-other-verbs-responses`. Multiple fields per response,
+        response models, content, headers, links, extensions, string status
+        keys, empty descriptions, and router/include-level response maps remain
+        outside this slice.
     fastapi.applications.FastAPI.post:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::post
       source_evidence:
@@ -968,12 +982,13 @@ reviewed_api_contract_overlay:
         by `path-operation-post-status-code-isolated`.
         `deprecated=True` is emitted as `deprecated: true` in OpenAPI, sampled
         by `path-operation-post-deprecated-isolated`.
-        One route-level `responses` entry with one non-colliding Python integer (not bool)
-        status key and a non-empty string `description` maps to a
-        description-only OpenAPI response object, sampled by
-        `path-operation-other-verbs-responses`. Multiple status entries,
-        response models, extra response fields, string status keys, empty
-        descriptions, and router/include-level response maps remain outside.
+        Route-level `responses` maps with one or more non-colliding Python
+        integer (not bool) status keys and one non-empty string `description`
+        per key emit description-only OpenAPI response objects, sampled by
+        `path-operation-other-verbs-responses`. Multiple fields per response,
+        response models, content, headers, links, extensions, string status
+        keys, empty descriptions, and router/include-level response maps remain
+        outside this slice.
     fastapi.applications.FastAPI.put:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::put
       source_evidence:
@@ -1010,12 +1025,13 @@ reviewed_api_contract_overlay:
         Explicit `deprecated=True` emits `deprecated: true`; false and
         omitted values remain absent, sampled by
         `path-operation-other-verbs-deprecated`.
-        One route-level `responses` entry with one non-colliding Python integer (not bool)
-        status key and a non-empty string `description` maps to a
-        description-only OpenAPI response object, sampled by
-        `path-operation-other-verbs-responses`. Multiple status entries,
-        response models, extra response fields, string status keys, empty
-        descriptions, and router/include-level response maps remain outside.
+        Route-level `responses` maps with one or more non-colliding Python
+        integer (not bool) status keys and one non-empty string `description`
+        per key emit description-only OpenAPI response objects, sampled by
+        `path-operation-other-verbs-responses`. Multiple fields per response,
+        response models, content, headers, links, extensions, string status
+        keys, empty descriptions, and router/include-level response maps remain
+        outside this slice.
     fastapi.applications.FastAPI.delete:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::delete
       source_evidence:
@@ -1053,12 +1069,13 @@ reviewed_api_contract_overlay:
         Explicit `deprecated=True` emits `deprecated: true`; false and
         omitted values remain absent, sampled by
         `path-operation-other-verbs-deprecated`.
-        One route-level `responses` entry with one non-colliding Python integer (not bool)
-        status key and a non-empty string `description` maps to a
-        description-only OpenAPI response object, sampled by
-        `path-operation-other-verbs-responses`. Multiple status entries,
-        response models, extra response fields, string status keys, empty
-        descriptions, and router/include-level response maps remain outside.
+        Route-level `responses` maps with one or more non-colliding Python
+        integer (not bool) status keys and one non-empty string `description`
+        per key emit description-only OpenAPI response objects, sampled by
+        `path-operation-other-verbs-responses`. Multiple fields per response,
+        response models, content, headers, links, extensions, string status
+        keys, empty descriptions, and router/include-level response maps remain
+        outside this slice.
     fastapi.applications.FastAPI.patch:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::patch
       source_evidence:
@@ -1096,12 +1113,13 @@ reviewed_api_contract_overlay:
         Explicit `deprecated=True` emits `deprecated: true`; false and
         omitted values remain absent, sampled by
         `path-operation-other-verbs-deprecated`.
-        One route-level `responses` entry with one non-colliding Python integer (not bool)
-        status key and a non-empty string `description` maps to a
-        description-only OpenAPI response object, sampled by
-        `path-operation-other-verbs-responses`. Multiple status entries,
-        response models, extra response fields, string status keys, empty
-        descriptions, and router/include-level response maps remain outside.
+        Route-level `responses` maps with one or more non-colliding Python
+        integer (not bool) status keys and one non-empty string `description`
+        per key emit description-only OpenAPI response objects, sampled by
+        `path-operation-other-verbs-responses`. Multiple fields per response,
+        response models, content, headers, links, extensions, string status
+        keys, empty descriptions, and router/include-level response maps remain
+        outside this slice.
     fastapi.Cookie:
       rust_binding: fastapi-rs/src/parameters.rs::cookie
       source_evidence:

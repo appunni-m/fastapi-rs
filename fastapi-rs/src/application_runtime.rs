@@ -1143,11 +1143,6 @@ fn additional_response_descriptions(
         return Ok(Vec::new());
     };
     let responses = responses.bind(py).cast::<PyDict>()?;
-    if responses.len() != 1 {
-        return Err(PyNotImplementedError::new_err(
-            "route-level responses currently support exactly one status entry",
-        ));
-    }
     let mut additional_responses = Vec::with_capacity(responses.len());
     for (status, response) in responses.iter() {
         if !status.is_instance_of::<PyInt>() || status.is_instance_of::<PyBool>() {
