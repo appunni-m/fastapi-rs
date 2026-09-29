@@ -13,6 +13,12 @@ pub(crate) struct OpenApiParameter {
     pub(crate) schema: Py<PyAny>,
 }
 
+#[derive(Clone)]
+pub(crate) struct OpenApiAdditionalResponse {
+    pub(crate) status: String,
+    pub(crate) description: String,
+}
+
 /// The OpenAPI-facing contract for one registered FastAPI operation.
 pub(crate) struct OpenApiOperation {
     pub(crate) path: String,
@@ -30,6 +36,7 @@ pub(crate) struct OpenApiOperation {
     pub(crate) response_model_name: Option<String>,
     pub(crate) response_schema: Option<Py<PyAny>>,
     pub(crate) response_schema_title: String,
+    pub(crate) additional_responses: Vec<OpenApiAdditionalResponse>,
 }
 
 /// OpenAPI info supplied by the FastAPI application constructor.
@@ -162,6 +169,24 @@ pub(crate) fn openapi_document(
             schemas
                 .entry("ValidationError".to_owned())
                 .or_insert(validation_error_schema(py)?.unbind().into_any());
+        }
+
+        for additional_response in &operation.additional_responses {
+            match responses.get_item(&additional_response.status)? {
+                Some(existing) => {
+                    let existing = existing.cast_into::<PyDict>().map_err(|_| {
+                        PyErr::new::<pyo3::exceptions::PyTypeError, _>(
+                            "OpenAPI response must be a dictionary",
+                        )
+                    })?;
+                    existing.set_item("description", &additional_response.description)?;
+                }
+                None => {
+                    let response = PyDict::new(py);
+                    response.set_item("description", &additional_response.description)?;
+                    responses.set_item(&additional_response.status, &response)?;
+                }
+            }
         }
 
         operation_document.set_item("responses", responses)?;
