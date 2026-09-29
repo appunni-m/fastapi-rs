@@ -1,0 +1,54 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/path_operation_other_verbs_deprecated.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+  - case_id: fastapi.path-operation.other-verbs-deprecated
+    actions:
+      - action_id: compare-deprecated-operation-flags
+        kind: http_request
+        scope:
+          type: http
+          asgi: {version: '3.0', spec_version: '2.4'}
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /openapi.json
+          query_string: ''
+          root_path: ''
+          headers: [[host, testserver]]
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+        receive_events:
+          - {type: http.request, body: '', more_body: false}
+        observations:
+          - kind: http_response
+            selectors: [status]
+            comparison: exact
+          - kind: openapi
+            json_pointers:
+              - /paths/~1app-put/put/deprecated
+              - /paths/~1app-delete/delete/deprecated
+              - /paths/~1app-patch/patch/deprecated
+              - /paths/~1app-head/head/deprecated
+              - /paths/~1app-options/options/deprecated
+              - /paths/~1app-trace/trace/deprecated
+              - /paths/~1app-put-false/put/deprecated
+              - /paths/~1app-put-default/put/deprecated
+              - /paths/~1router-put/put/deprecated
+              - /paths/~1router-delete/delete/deprecated
+              - /paths/~1router-patch/patch/deprecated
+              - /paths/~1router-head/head/deprecated
+              - /paths/~1router-options/options/deprecated
+              - /paths/~1router-trace/trace/deprecated
+              - /paths/~1router-put-false/put/deprecated
+              - /paths/~1router-put-default/put/deprecated
+            comparison: exact
+    source_evidence:
+      - path: tests/test_tutorial/test_path_operation_configurations/test_tutorial006.py
+        kind: upstream_test
+      - path: docs_src/path_operation_configuration/tutorial006_py310.py
+        kind: upstream_documentation
+      - path: docs/en/docs/tutorial/path-operation-configuration.md
+        kind: upstream_documentation

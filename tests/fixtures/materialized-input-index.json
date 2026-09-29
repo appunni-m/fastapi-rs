@@ -2708,6 +2708,18 @@
       ]
     },
     {
+      "id": "path-operation-other-verbs-deprecated",
+      "input_path": "tests/fixtures/inputs/parity/path-operation-other-verbs-deprecated.json",
+      "input_sha256": "5e66400948138168b7db6e36342691ff964ba413cb0f5c521514ceea48d80130",
+      "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-other-verbs-deprecated.yaml",
+      "recipe_sha256": "a229f4beda2c90036d3f5888c73fc7c264b8171f9f754552f89a7ffa0af88c2e",
+      "workload_path": "tests/fixtures/workloads/path_operation_other_verbs_deprecated.py",
+      "workload_sha256": "25800c3722896b8c312ea19aa7476db7dc70511bb421c7c897d3093d3b0b5f2e",
+      "case_ids": [
+        "fastapi.path-operation.other-verbs-deprecated"
+      ]
+    },
+    {
       "id": "path-operation-other-verbs-response-descriptions",
       "input_path": "tests/fixtures/inputs/parity/path-operation-other-verbs-response-descriptions.json",
       "input_sha256": "f6c912d3c463bee2569048d9840e44f9f530f920a8770388647bbe09e75baf05",
@@ -13260,6 +13272,37 @@
         "fastapi.path-operation.other-verb-summaries-isolated"
       ],
       "observation_selectors": [
+        "openapi.document",
+        "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/path-operation-configuration.md",
+      "fixture_id": "fastapi.docs.tutorial-path-operation-configuration",
+      "workflow_id": "path-operation-other-verbs-deprecated",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.path-operation.other-verbs-deprecated"
+      ],
+      "observation_selectors": [
+        "docs.response.status",
+        "http.status",
+        "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_path_operation_configurations/test_tutorial006.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-path-operation-configurations-test-tutorial006",
+      "workflow_id": "path-operation-other-verbs-deprecated",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.path-operation.other-verbs-deprecated"
+      ],
+      "observation_selectors": [
+        "docs.response.status",
+        "http.status",
         "openapi.document",
         "openapi.paths"
       ]
