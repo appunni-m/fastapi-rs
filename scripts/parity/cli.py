@@ -57,6 +57,11 @@ def _relative_path(path: Path) -> str:
         raise ContractError(f"path is outside the repository: {path}") from exc
 
 
+def _manifest_api_inventory(manifest: dict[str, Any]) -> dict[str, Any]:
+    artifact = manifest["source_artifacts"]["api_inventory"]
+    return read_json(ROOT / artifact["path"])
+
+
 def _validate_result(result: dict[str, Any], input_digest: str, *, product: str = "oracle") -> None:
     schema_path = RESULT_SCHEMAS.get(result.get("schema"))
     if schema_path is None:
@@ -221,7 +226,31 @@ def _validate_indexed_api_workflow(
     coverage_by_id = {row["id"]: row for row in atlas["coverage_matrix"]}
     mappings = [row for row in index["mappings"] if row["workflow_id"] == indexed["id"]]
     for case in workflow["cases"]:
-        evidence = {(row["path"], row["kind"]) for row in case["source_evidence"]}
+        evidence = {
+            (row["path"], row["kind"])
+            for row in case["source_evidence"]
+            if row["kind"] != "upstream_api_definition"
+        }
+        expected_definitions = sorted(
+            (
+                {
+                    "case_id": case["case_id"],
+                    "symbol_id": row["symbol_id"],
+                    "path": row["path"],
+                    "sha256": row["sha256"],
+                }
+                for row in case["source_evidence"]
+                if row["kind"] == "upstream_api_definition"
+            ),
+            key=lambda row: (row["case_id"], row["symbol_id"], row["path"]),
+        )
+        indexed_definitions = [
+            row for row in indexed.get("api_definitions", []) if row["case_id"] == case["case_id"]
+        ]
+        if indexed_definitions != expected_definitions:
+            raise ContractError(
+                f"direct API source definitions differ from indexed evidence: {case['case_id']}"
+            )
         case_mappings = [row for row in mappings if case["case_id"] in row["case_ids"]]
         mapped = set()
         for mapping in case_mappings:
@@ -232,7 +261,7 @@ def _validate_indexed_api_workflow(
                 else "upstream_test"
             )
             mapped.add((source["source_path"], kind))
-        if not mapped or not mapped <= evidence:
+        if (not mapped and not indexed_definitions) or not mapped <= evidence:
             raise ContractError(
                 f"direct API workflow case lacks its indexed source evidence: {case['case_id']}"
             )
@@ -457,7 +486,9 @@ def api_validate_command(args: argparse.Namespace) -> dict[str, Any]:
         starlette_source=args.starlette_source.resolve(),
     )
     public_symbols = validate_api_workflow_public_surface(
-        workflow, manifest.get("api_surface_contract", {})
+        workflow,
+        manifest.get("api_surface_contract", {}),
+        _manifest_api_inventory(manifest),
     )
     return {
         "status": "valid",
@@ -556,7 +587,11 @@ def api_oracle_command(args: argparse.Namespace) -> dict[str, Any]:
         fastapi_source=args.fastapi_source.resolve(),
         starlette_source=args.starlette_source.resolve(),
     )
-    validate_api_workflow_public_surface(workflow, manifest.get("api_surface_contract", {}))
+    validate_api_workflow_public_surface(
+        workflow,
+        manifest.get("api_surface_contract", {}),
+        _manifest_api_inventory(manifest),
+    )
     oracle_profile = manifest["oracle_profile"]
     command = [
         str(python),
@@ -646,7 +681,11 @@ def api_target_command(args: argparse.Namespace) -> dict[str, Any]:
         fastapi_source=args.fastapi_source.resolve(),
         starlette_source=args.starlette_source.resolve(),
     )
-    validate_api_workflow_public_surface(workflow, manifest.get("api_surface_contract", {}))
+    validate_api_workflow_public_surface(
+        workflow,
+        manifest.get("api_surface_contract", {}),
+        _manifest_api_inventory(manifest),
+    )
     target_profile = {
         "python": manifest["oracle_profile"]["python"],
         "shared_runtime_packages": {

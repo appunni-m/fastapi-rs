@@ -194,6 +194,21 @@
         }
       }
     },
+    "attributeValueObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["index", "kind", "values"],
+      "properties": {
+        "index": {"type": "integer", "minimum": 0},
+        "kind": {"const": "python_attribute_value"},
+        "values": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["value"],
+          "properties": {"value": {"$ref": "#/$defs/jsonValue"}}
+        }
+      }
+    },
     "callOutcomeObservation": {
       "type": "object",
       "additionalProperties": false,
@@ -297,6 +312,7 @@
           "items": {
             "oneOf": [
               {"$ref": "#/$defs/returnValueObservation"},
+              {"$ref": "#/$defs/attributeValueObservation"},
               {"$ref": "#/$defs/callOutcomeObservation"},
               {"$ref": "#/$defs/signatureObservation"}
             ]

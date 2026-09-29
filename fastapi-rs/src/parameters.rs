@@ -40,6 +40,11 @@ impl ParameterMetadata {
     }
 
     #[getter]
+    fn default_is_set(&self) -> bool {
+        self.default.is_some()
+    }
+
+    #[getter]
     fn gt(&self, py: Python<'_>) -> Option<Py<PyAny>> {
         self.gt.as_ref().map(|gt| gt.clone_ref(py))
     }
@@ -119,13 +124,23 @@ fn cookie(
     )
 }
 
-#[pyfunction(name = "Query", signature = (*, alias = None, default = None, gt = None))]
+#[pyfunction(
+    name = "Query",
+    signature = (*, alias = None, default = py.Ellipsis(), gt = None)
+)]
 fn query(
     py: Python<'_>,
     alias: Option<String>,
-    default: Option<Py<PyAny>>,
+    default: Py<PyAny>,
     gt: Option<Py<PyAny>>,
 ) -> PyResult<Py<ParameterMetadata>> {
+    let ellipsis = py.Ellipsis();
+    let undefined = py.import("pydantic_core")?.getattr("PydanticUndefined")?;
+    let default = if default.bind(py).is(&ellipsis.bind(py)) || default.bind(py).is(&undefined) {
+        None
+    } else {
+        Some(default)
+    };
     Py::new(
         py,
         ParameterMetadata {

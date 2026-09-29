@@ -169,6 +169,30 @@ def build_index() -> dict[str, Any]:
         workflow, _, input_digest, workload_path = load_workflow(
             input_path, source_root=FASTAPI_SOURCE
         )
+        api_definitions = []
+        for case in workflow["cases"]:
+            public_symbol_ids: set[str] = set()
+            for probe in case.get("probes", []):
+                for key in ("public_callable", "public_attribute"):
+                    reference = probe.get(key)
+                    if isinstance(reference, dict):
+                        public_symbol_ids.add(f"{reference['module']}.{reference['attribute']}")
+            for evidence in case["source_evidence"]:
+                if evidence["kind"] != "upstream_api_definition":
+                    continue
+                if evidence["symbol_id"] not in public_symbol_ids:
+                    raise ContractError(
+                        "upstream API definition evidence must bind to a probed public symbol: "
+                        f"{case['case_id']} -> {evidence['symbol_id']}"
+                    )
+                api_definitions.append(
+                    {
+                        "case_id": case["case_id"],
+                        "symbol_id": evidence["symbol_id"],
+                        "path": evidence["path"],
+                        "sha256": evidence["sha256"],
+                    }
+                )
         input_rel_path = input_path.relative_to(ROOT).as_posix()
         if (
             workflow_id in workflow_rows
@@ -191,6 +215,11 @@ def build_index() -> dict[str, Any]:
         }
         if "oracle_profile_extension" in workflow:
             workflow_ref["oracle_profile_extension"] = workflow["oracle_profile_extension"]
+        if api_definitions:
+            workflow_ref["api_definitions"] = sorted(
+                api_definitions,
+                key=lambda row: (row["case_id"], row["symbol_id"], row["path"]),
+            )
         workflow_rows[workflow_id] = workflow_ref
 
         new_mapping_cases: dict[str, dict[str, Any]] = {}
@@ -214,6 +243,11 @@ def build_index() -> dict[str, Any]:
                 if usable and source_id in backlog_by_source:
                     candidates.append((source_id, usable))
             if not candidates:
+                if any(
+                    evidence.get("kind") == "upstream_api_definition"
+                    for evidence in case["source_evidence"]
+                ):
+                    continue
                 raise ContractError(
                     "workflow case has no source row with a supported observed selector: "
                     f"{case['case_id']}"

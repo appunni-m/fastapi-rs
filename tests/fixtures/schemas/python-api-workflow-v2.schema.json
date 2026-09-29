@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://fastapi-rs.dev/schemas/python-api-workflow/2",
   "title": "FastAPI-RS direct Python API workflow input",
-  "description": "Input-only workflow for calling a pinned FastAPI public Python callable directly and observing JSON-safe values, its signature, or its return-versus-exception outcome.",
+  "description": "Input-only workflow for probing pinned FastAPI public Python callables or reading JSON-safe public attribute values directly.",
   "type": "object",
   "required": ["schema", "workload", "cases"],
   "properties": {
@@ -32,20 +32,54 @@
       "additionalProperties": false
     },
     "sourceEvidence": {
-      "type": "object",
-      "required": ["path", "kind", "sha256"],
-      "properties": {
-        "path": {
-          "type": "string",
-          "minLength": 1,
-          "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.?(?:/|$))[A-Za-z0-9._/-]+$"
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["path", "kind", "sha256"],
+          "properties": {
+            "path": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.?(?:/|$))[A-Za-z0-9._/-]+$"
+            },
+            "kind": {"enum": ["upstream_test", "upstream_documentation"]},
+            "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+          },
+          "additionalProperties": false
         },
-        "kind": {"enum": ["upstream_test", "upstream_documentation"]},
-        "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+        {
+          "type": "object",
+          "required": ["path", "kind", "sha256", "symbol_id"],
+          "properties": {
+            "path": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.?(?:/|$))[A-Za-z0-9._/-]+$"
+            },
+            "kind": {"const": "upstream_api_definition"},
+            "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+            "symbol_id": {
+              "type": "string",
+              "pattern": "^fastapi(?:\\.[A-Za-z_][A-Za-z0-9_]*)+$"
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "publicCallable": {
+      "type": "object",
+      "required": ["module", "attribute"],
+      "properties": {
+        "module": {
+          "type": "string",
+          "pattern": "^fastapi(?:\\.[A-Za-z_][A-Za-z0-9_]*)*$"
+        },
+        "attribute": {"type": "string", "pattern": "^[A-Za-z_][A-Za-z0-9_]*(?:\\.[A-Za-z_][A-Za-z0-9_]*)*$"}
       },
       "additionalProperties": false
     },
-    "publicCallable": {
+    "publicAttribute": {
       "type": "object",
       "required": ["module", "attribute"],
       "properties": {
@@ -66,6 +100,16 @@
       "required": ["kind", "selector", "comparison"],
       "properties": {
         "kind": {"const": "python_return_value"},
+        "selector": {"const": "value"},
+        "comparison": {"const": "exact"}
+      },
+      "additionalProperties": false
+    },
+    "attributeValueObservation": {
+      "type": "object",
+      "required": ["kind", "selector", "comparison"],
+      "properties": {
+        "kind": {"const": "python_attribute_value"},
         "selector": {"const": "value"},
         "comparison": {"const": "exact"}
       },
@@ -94,16 +138,18 @@
     "observation": {
       "oneOf": [
         {"$ref": "#/$defs/returnValueObservation"},
+        {"$ref": "#/$defs/attributeValueObservation"},
         {"$ref": "#/$defs/signatureObservation"},
         {"$ref": "#/$defs/callOutcomeObservation"}
       ]
     },
     "probe": {
       "type": "object",
-      "required": ["probe_id", "public_callable", "argument_bundle", "observations"],
+      "required": ["probe_id", "observations"],
       "properties": {
         "probe_id": {"type": "string", "pattern": "^[a-z][a-z0-9-]*$"},
         "public_callable": {"$ref": "#/$defs/publicCallable"},
+        "public_attribute": {"$ref": "#/$defs/publicAttribute"},
         "argument_bundle": {"$ref": "#/$defs/argumentBundle"},
         "observations": {
           "type": "array",
@@ -113,6 +159,44 @@
         }
       },
       "allOf": [
+        {
+          "oneOf": [
+            {
+              "required": ["public_callable", "argument_bundle"],
+              "not": {"required": ["public_attribute"]}
+            },
+            {
+              "required": ["public_attribute"],
+              "not": {"anyOf": [
+                {"required": ["public_callable"]},
+                {"required": ["argument_bundle"]}
+              ]}
+            }
+          ]
+        },
+        {
+          "if": {"required": ["public_attribute"]},
+          "then": {
+            "properties": {
+              "observations": {"items": {"$ref": "#/$defs/attributeValueObservation"}}
+            }
+          }
+        },
+        {
+          "if": {"required": ["public_callable"]},
+          "then": {
+            "properties": {
+              "observations": {
+                "items": {
+                  "not": {
+                    "properties": {"kind": {"const": "python_attribute_value"}},
+                    "required": ["kind"]
+                  }
+                }
+              }
+            }
+          }
+        },
         {
           "if": {
             "properties": {

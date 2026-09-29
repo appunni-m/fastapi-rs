@@ -1339,9 +1339,13 @@ impl CallablePlan {
                 let item = item?;
                 let name = item.getattr("name")?.extract::<String>()?;
                 let raw_annotation = item.getattr("annotation")?;
-                let annotation = hints
-                    .call_method1("get", (&name, &raw_annotation))?
-                    .unbind();
+                let annotation = if raw_annotation.is(&empty) {
+                    typing.getattr("Any")?.unbind()
+                } else {
+                    hints
+                        .call_method1("get", (&name, &raw_annotation))?
+                        .unbind()
+                };
                 let raw_default = item.getattr("default")?;
                 let (annotation, mut metadata) = annotation_parts(py, annotation)?;
                 let raw_default_marker_kind =
@@ -1350,8 +1354,10 @@ impl CallablePlan {
                     } else {
                         None
                     };
-                let default_is_parameter_marker =
-                    matches!(raw_default_marker_kind.as_deref(), Some("body" | "depends"));
+                let default_is_parameter_marker = matches!(
+                    raw_default_marker_kind.as_deref(),
+                    Some("body" | "depends" | "query")
+                );
                 if default_is_parameter_marker {
                     metadata.push(raw_default.clone().unbind());
                 }
@@ -1848,11 +1854,16 @@ impl CallablePlan {
                 }
                 let value = if *parameter_source == InputSource::Query {
                     if parameter.is_sequence {
-                        let values = PyList::empty(context.py);
-                        for value in context.query_params.get_list(alias) {
-                            values.append(PyString::new(context.py, value))?;
+                        let query_values = context.query_params.get_list(alias);
+                        if query_values.is_empty() {
+                            None
+                        } else {
+                            let values = PyList::empty(context.py);
+                            for value in query_values {
+                                values.append(PyString::new(context.py, value))?;
+                            }
+                            Some(values.into_any())
                         }
-                        Some(values.into_any())
                     } else {
                         context
                             .query_params
@@ -1874,7 +1885,33 @@ impl CallablePlan {
                 };
                 let Some(value) = value else {
                     if let Some(default) = parameter.default.as_ref() {
-                        kwargs.set_item(&parameter.name, default.bind(context.py))?;
+                        let default = context
+                            .py
+                            .import("copy")?
+                            .call_method1("deepcopy", (default.bind(context.py),))?;
+                        if default.is_none() {
+                            kwargs.set_item(&parameter.name, default)?;
+                        } else {
+                            match validate_python_value(
+                                context.py,
+                                parameter.annotation.bind(context.py),
+                                &default,
+                            ) {
+                                Ok(value) => kwargs.set_item(&parameter.name, value)?,
+                                Err(error) if is_pydantic_validation_error(context.py, &error) => {
+                                    context.failures.push(ValidationIssue::Input(Box::new(
+                                        InputValidationFailure {
+                                            error,
+                                            location: source.as_str().to_owned(),
+                                            alias: alias.clone(),
+                                            body_field: *parameter_source == InputSource::Body
+                                                && aggregate_body,
+                                        },
+                                    )));
+                                }
+                                Err(error) => return Err(error),
+                            }
+                        }
                     } else {
                         context.failures.push(ValidationIssue::Missing {
                             location: source.as_str().to_owned(),
@@ -2007,7 +2044,12 @@ fn marker_default(py: Python<'_>, metadata: &[Py<PyAny>]) -> PyResult<Option<Py<
         let kind = marker.getattr("kind")?.extract::<String>()?;
         if kind == "header" || kind == "query" || kind == "cookie" || kind == "body" {
             let default = marker.getattr("default")?;
-            if !default.is_none() {
+            let has_default = if kind == "query" && marker.hasattr("default_is_set")? {
+                marker.getattr("default_is_set")?.extract::<bool>()?
+            } else {
+                !default.is_none()
+            };
+            if has_default {
                 return Ok(Some(default.unbind()));
             }
         }

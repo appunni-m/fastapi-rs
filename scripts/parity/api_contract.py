@@ -644,31 +644,110 @@ def build_api_surface_contract(
 
 
 def validate_api_workflow_public_surface(
-    workflow: dict[str, Any], contract: dict[str, Any]
+    workflow: dict[str, Any],
+    contract: dict[str, Any],
+    inventory: dict[str, Any],
 ) -> list[str]:
-    """Require every direct API probe to call a source-supported public symbol."""
+    """Require public probes and direct source-definition evidence to match the manifest."""
     if contract.get("schema") != CONTRACT_SCHEMA:
         raise ContractError("direct Python API workflow requires the generated public API contract")
-    supported = {
-        symbol.get("id")
+    symbols = [
+        symbol
         for symbol in contract.get("symbols", [])
         if isinstance(symbol, dict) and isinstance(symbol.get("id"), str)
-    }
+    ]
+    symbols_by_id = {symbol["id"]: symbol for symbol in symbols}
     selected: set[str] = set()
     for case in workflow.get("cases", []):
+        selected_in_case: set[str] = set()
         for probe in case.get("probes", []):
-            public_callable = probe.get("public_callable", {})
-            module = public_callable.get("module")
-            attribute = public_callable.get("attribute")
+            public_symbol = probe.get("public_callable", probe.get("public_attribute", {}))
+            module = public_symbol.get("module")
+            attribute = public_symbol.get("attribute")
             symbol_id = f"{module}.{attribute}"
-            if symbol_id not in supported:
+            symbol = symbols_by_id.get(symbol_id)
+            if symbol is None:
                 raise ContractError(
                     "direct Python API workflow references a symbol outside the supported "
                     f"source API contract: {symbol_id}"
                 )
+            runtime_kinds = {
+                reflection.get("kind")
+                for reflection in symbol.get("runtime_reflections", {}).values()
+                if isinstance(reflection, dict)
+            }
+            callable_kinds = {
+                "class",
+                "function",
+                "callable",
+                "async_function",
+                "method",
+                "protocol_method",
+            }
+            manifest_callable = symbol.get("kind") in callable_kinds or bool(
+                runtime_kinds & callable_kinds
+            )
+            is_callable_probe = "public_callable" in probe
+            if is_callable_probe != manifest_callable:
+                probe_kind = "callable" if is_callable_probe else "non-callable attribute"
+                manifest_kind = "callable" if manifest_callable else "non-callable"
+                raise ContractError(
+                    f"direct API {probe_kind} probe disagrees with manifest {manifest_kind} "
+                    f"kind: {symbol_id}"
+                )
             selected.add(symbol_id)
+            selected_in_case.add(symbol_id)
+
+        definition_symbols: set[str] = set()
+        for evidence in case.get("source_evidence", []):
+            if evidence.get("kind") != "upstream_api_definition":
+                continue
+            symbol_id = evidence.get("symbol_id")
+            symbol = symbols_by_id.get(symbol_id)
+            if not isinstance(symbol_id, str) or symbol is None:
+                raise ContractError(
+                    f"API definition evidence references a symbol outside the manifest: {symbol_id}"
+                )
+            if symbol_id not in selected_in_case:
+                raise ContractError(
+                    "API definition evidence is not bound to a probe in its case: "
+                    f"{case.get('case_id')} -> {symbol_id}"
+                )
+            source_refs = symbol.get("source_inventory_refs")
+            if not isinstance(source_refs, list) or any(
+                not isinstance(reference, str) for reference in source_refs
+            ):
+                raise ContractError(f"manifest symbol has no source inventory refs: {symbol_id}")
+            inventory_rows = _resolve_inventory_refs(inventory, source_refs)
+            if any(row.get("id") != symbol_id for row in inventory_rows):
+                raise ContractError(
+                    "API definition evidence inventory identity differs from the manifest symbol: "
+                    f"{symbol_id}"
+                )
+            source_paths = {
+                source_ref.get("path")
+                for row in inventory_rows
+                if isinstance((source_ref := row.get("source_ref")), dict)
+            }
+            if evidence.get("path") not in source_paths:
+                raise ContractError(
+                    "API definition evidence path differs from the manifest symbol source: "
+                    f"{symbol_id} -> {evidence.get('path')}"
+                )
+            definition_symbols.add(symbol_id)
+
+        for probe in case.get("probes", []):
+            if "public_attribute" not in probe:
+                continue
+            public_attribute = probe["public_attribute"]
+            symbol_id = f"{public_attribute['module']}.{public_attribute['attribute']}"
+            if symbol_id not in definition_symbols:
+                raise ContractError(
+                    "direct public attribute probe lacks its source definition evidence: "
+                    f"{case.get('case_id')} -> {symbol_id}"
+                )
     if not selected:
-        raise ContractError("direct Python API workflow contains no public callable probes")
+        raise ContractError("direct Python API workflow contains no public symbol probes")
     return sorted(selected)
 
 
