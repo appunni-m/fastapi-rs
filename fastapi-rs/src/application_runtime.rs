@@ -11,7 +11,7 @@ use crate::awaitable::{
     AwaitableStateMachine, MachineAction, MachineResume, into_python_awaitable,
 };
 use crate::encoding::jsonable_encoder_default;
-use crate::openapi::{OpenApiOperation, OpenApiParameter, openapi_document};
+use crate::openapi::{OpenApiInfo, OpenApiOperation, OpenApiParameter, openapi_document};
 use crate::{
     FastApiInputLocation, FastApiInputParameter, FastApiOperationMatch, FastApiOperationRouter,
 };
@@ -153,6 +153,9 @@ pub(crate) struct PyFastApi {
     description: String,
     version: String,
     openapi_url: String,
+    terms_of_service: Option<String>,
+    contact: Option<Py<PyAny>>,
+    license_info: Option<Py<PyAny>>,
     dependency_overrides: Py<PyDict>,
     router: FastApiOperationRouter,
     routes: Vec<FastApiRoute>,
@@ -161,7 +164,12 @@ pub(crate) struct PyFastApi {
 #[pymethods]
 impl PyFastApi {
     #[new]
-    #[pyo3(signature = (*, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json"))]
+    #[pyo3(signature = (*, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", terms_of_service = None, contact = None, license_info = None))]
+    // lint-exception: PyO3 needs one Rust argument per Python constructor keyword.
+    #[allow(
+        clippy::too_many_arguments,
+        reason = "preserve the Python FastAPI constructor keyword signature"
+    )]
     fn new(
         py: Python<'_>,
         title: &str,
@@ -169,6 +177,9 @@ impl PyFastApi {
         description: &str,
         version: &str,
         openapi_url: &str,
+        terms_of_service: Option<String>,
+        contact: Option<Py<PyAny>>,
+        license_info: Option<Py<PyAny>>,
     ) -> Self {
         Self {
             title: title.to_owned(),
@@ -176,6 +187,9 @@ impl PyFastApi {
             description: description.to_owned(),
             version: version.to_owned(),
             openapi_url: openapi_url.to_owned(),
+            terms_of_service,
+            contact,
+            license_info,
             dependency_overrides: PyDict::new(py).unbind(),
             router: FastApiOperationRouter::new(),
             routes: Vec::new(),
@@ -553,10 +567,15 @@ impl PyFastApi {
             .collect::<PyResult<Vec<_>>>()?;
         openapi_document(
             py,
-            &self.title,
-            self.summary.as_deref(),
-            &self.description,
-            &self.version,
+            OpenApiInfo {
+                title: &self.title,
+                summary: self.summary.as_deref(),
+                description: &self.description,
+                terms_of_service: self.terms_of_service.as_deref(),
+                contact: self.contact.as_ref(),
+                license_info: self.license_info.as_ref(),
+                version: &self.version,
+            },
             &operations,
         )
     }

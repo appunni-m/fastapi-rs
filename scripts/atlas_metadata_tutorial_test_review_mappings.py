@@ -323,7 +323,7 @@ METADATA_TUTORIAL_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                     *_HTTP_AND_OPENAPI_SOURCES,
                 ),
                 workflow_cases=(_GUIDE_METADATA_OPENAPI, _METADATA001_SUMMARY_DESCRIPTION),
-                stimulus_notes="The docs-openapi-interface workflow observes broad metadata behavior; metadata-summary-description-upstream independently isolates non-empty app summary and description at /info/summary and /info/description.",
+                stimulus_notes="The docs-openapi-interface workflow observes broad metadata behavior; metadata-summary-description-upstream independently isolates app summary, description, terms of service, contact, and license fields in OpenAPI info.",
                 contract_gate="Partial candidate: the linked independent case checks /info, /tags, and /paths, not every field in this test's full snapshot, and uses different metadata values. FastAPI owns schema assembly; FastAPI's OpenAPI Pydantic model and Pydantic 2.13.4 encode that schema; Starlette 1.6.0 supplies JSONResponse and the generic ASGI transport.",
             ),
         },

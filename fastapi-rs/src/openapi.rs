@@ -29,14 +29,22 @@ pub(crate) struct OpenApiOperation {
     pub(crate) response_schema_title: String,
 }
 
+/// OpenAPI info supplied by the FastAPI application constructor.
+pub(crate) struct OpenApiInfo<'a> {
+    pub(crate) title: &'a str,
+    pub(crate) summary: Option<&'a str>,
+    pub(crate) description: &'a str,
+    pub(crate) terms_of_service: Option<&'a str>,
+    pub(crate) contact: Option<&'a Py<PyAny>>,
+    pub(crate) license_info: Option<&'a Py<PyAny>>,
+    pub(crate) version: &'a str,
+}
+
 /// Assemble the first-slice FastAPI OpenAPI 3.1 document from Rust-owned
 /// operation metadata and Pydantic JSON Schema values.
 pub(crate) fn openapi_document(
     py: Python<'_>,
-    title: &str,
-    summary: Option<&str>,
-    description: &str,
-    version: &str,
+    app_info: OpenApiInfo<'_>,
     operations: &[OpenApiOperation],
 ) -> PyResult<Py<PyAny>> {
     let mut schemas = BTreeMap::<String, Py<PyAny>>::new();
@@ -149,14 +157,29 @@ pub(crate) fn openapi_document(
     let document = PyDict::new(py);
     document.set_item("openapi", "3.1.0")?;
     let info = PyDict::new(py);
-    info.set_item("title", title)?;
-    if let Some(summary) = summary.filter(|summary| !summary.is_empty()) {
+    info.set_item("title", app_info.title)?;
+    if let Some(summary) = app_info.summary.filter(|summary| !summary.is_empty()) {
         info.set_item("summary", summary)?;
     }
-    if !description.is_empty() {
-        info.set_item("description", description)?;
+    if !app_info.description.is_empty() {
+        info.set_item("description", app_info.description)?;
     }
-    info.set_item("version", version)?;
+    if let Some(terms_of_service) = app_info.terms_of_service.filter(|value| !value.is_empty()) {
+        info.set_item("termsOfService", terms_of_service)?;
+    }
+    if let Some(contact) = app_info.contact {
+        let contact = contact.bind(py);
+        if contact.is_truthy()? {
+            info.set_item("contact", contact)?;
+        }
+    }
+    if let Some(license_info) = app_info.license_info {
+        let license_info = license_info.bind(py);
+        if license_info.is_truthy()? {
+            info.set_item("license", license_info)?;
+        }
+    }
+    info.set_item("version", app_info.version)?;
     document.set_item("info", info)?;
     document.set_item("paths", paths)?;
 

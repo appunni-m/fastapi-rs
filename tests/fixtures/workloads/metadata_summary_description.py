@@ -10,4 +10,14 @@ def create_app() -> FastAPI:
         title="Metadata API",
         summary="A concise API summary.",
         description="Markdown **description** for the API.",
+        terms_of_service="https://example.test/terms",
+        contact={
+            "name": "API Support",
+            "url": "https://example.test/contact",
+            "email": "support@example.test",
+        },
+        license_info={
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT",
+        },
     )

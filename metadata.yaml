@@ -393,9 +393,10 @@ reviewed_api_contract_overlay:
         an app-level dependency with a callable whose nested dependency
         introduces exactly one required scalar query field `k`. Missing `k`
         fails request validation; supplying `?k=bar` succeeds. The async slice
-        is constrained below. The constructor also supports reviewed non-empty
-        `summary` and `description` values in OpenAPI info at `/info/summary`
-        and `/info/description` through `metadata-summary-description-upstream`.
+        is constrained below. The constructor also supports the metadata
+        tutorial's non-empty `summary`, `description`, and
+        `terms_of_service`, plus truthy `contact` and `license_info`, in
+        OpenAPI info through `metadata-summary-description-upstream`.
         Other constructor options and override cache behavior beyond the
         reviewed Depends slice remain outside this reviewed slice.
     fastapi.applications.FastAPI.__call__:
