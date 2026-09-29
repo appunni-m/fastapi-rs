@@ -209,9 +209,7 @@ def target_description(package: dict[str, Any]) -> str:
     return f"{language}; Cargo targets: {rendered_kinds}"
 
 
-def foreign_boundary(
-    package: dict[str, Any], annotations: dict[str, dict[str, str]]
-) -> str:
+def foreign_boundary(package: dict[str, Any], annotations: dict[str, dict[str, str]]) -> str:
     signals: list[str] = []
     links = package.get("links")
     if links:
@@ -243,13 +241,18 @@ def reviewed_boundary_annotations() -> dict[str, dict[str, str]]:
     if not isinstance(annotations, dict):
         raise RuntimeError("metadata.yaml Cargo foreign-boundary annotations must be a mapping")
     for name, annotation in annotations.items():
-        if not isinstance(annotation, dict) or set(annotation) != {
-            "version",
-            "signal",
-            "source_description",
-        } or not all(
-            isinstance(annotation[field], str) and annotation[field]
-            for field in ("version", "signal", "source_description")
+        if (
+            not isinstance(annotation, dict)
+            or set(annotation)
+            != {
+                "version",
+                "signal",
+                "source_description",
+            }
+            or not all(
+                isinstance(annotation[field], str) and annotation[field]
+                for field in ("version", "signal", "source_description")
+            )
         ):
             raise RuntimeError(f"malformed reviewed Cargo boundary annotation: {name}")
     return annotations
