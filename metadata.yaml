@@ -472,6 +472,7 @@ reviewed_api_contract_overlay:
         - {path: tests/test_tutorial/test_path_operation_advanced_configurations/test_tutorial001.py, symbol: test_openapi_schema}
         - {path: docs_src/path_operation_advanced_configuration/tutorial001_py310.py, symbol: read_items}
         - {path: tests/test_response_code_no_body.py, symbol: test_openapi_schema}
+        - {path: tests/test_response_code_no_body.py, symbol: test_get_response}
         - {path: tests/test_response_model_as_return_annotation.py, symbol: test_openapi_schema}
         - {path: tests/test_response_model_as_return_annotation.py, symbol: test_response_model_list_of_model_no_annotation}
         - {path: tests/test_response_model_as_return_annotation.py, symbol: test_response_model_union_no_annotation_return_model1}
@@ -484,7 +485,7 @@ reviewed_api_contract_overlay:
         - {path: tests/test_tutorial/test_path_operation_configurations/test_tutorial006.py, symbol: test_openapi_schema}
         - {path: docs_src/path_operation_configuration/tutorial006_py310.py, symbol: read_elements}
       feature_ids: [app-routing, request-validation, response-serialization, openapi-docs]
-      observation_selectors: [http.status, http.body.bytes, openapi.document]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document]
       supported_slice: >-
         Partial native slice: GET routes can be registered with
         include_in_schema=False, remain callable over HTTP, and be omitted from
@@ -494,7 +495,13 @@ reviewed_api_contract_overlay:
         success description and no response content member. Inferred list and
         union response annotations use inline response schemas and shared model
         definitions. Other response status codes and customization remain
-        governed by their own slices. The GET decorator also accepts an
+        governed by their own slices. A FastAPI-managed GET route using the
+        default JSON response and status_code=204 sends an empty body and omits
+        Content-Length, as shown by
+        response-204-bodyless-isolated-upstream::fastapi.response.bodyless-204-isolated.
+        Custom response classes and the other bodyless status codes remain
+        outside this sample.
+        The GET decorator also accepts an
         explicit non-empty `operation_id`, which is emitted at
         `/paths/~1items~1/get/operationId` by the reviewed
         `path-operation-advanced-configurations-tutorial001-upstream` workflow.

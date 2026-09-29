@@ -4489,6 +4489,18 @@
       ]
     },
     {
+      "id": "response-204-bodyless-isolated-upstream",
+      "input_path": "tests/fixtures/inputs/parity/response-204-bodyless-isolated-upstream.json",
+      "input_sha256": "a426eafaaafb8bdd75903b38778f3c687d0911f9c079da5f930d65b273378e96",
+      "recipe_path": "tests/fixtures/input-recipes/parity/response-204-bodyless-isolated-upstream.yaml",
+      "recipe_sha256": "e072cc6b7e45295e55aca9b6688800d399bbac5c30a7dbe42abcd0220e6a0b27",
+      "workload_path": "tests/fixtures/workloads/response_204_bodyless_upstream.py",
+      "workload_sha256": "79aba902f30390a1ab9c9cd1bc777c8f2044b97f1ea3c58322475722f2b1d392",
+      "case_ids": [
+        "fastapi.response.bodyless-204-isolated"
+      ]
+    },
+    {
       "id": "response-204-openapi",
       "input_path": "tests/fixtures/inputs/parity/response-204-openapi.json",
       "input_sha256": "d87ccd4a2217571a42c9b6b8c29e8b407e6643091eb02dee2be153fd248dd9ec",
@@ -4787,9 +4799,9 @@
     {
       "id": "response-surface",
       "input_path": "tests/fixtures/inputs/parity/response-surface.json",
-      "input_sha256": "b64d1fcdfda2a0ca7ea9a9172c2557066f492635b5a334b0fa103e4113dbc6ac",
+      "input_sha256": "ca8fd637ec1452fab55091410fc84a4e81cd04fdab8bd23a2f43c55396583a9c",
       "recipe_path": "tests/fixtures/input-recipes/parity/response-surface.yaml",
-      "recipe_sha256": "74c4abdd181bc4464f27d9abd6d58f1610906db055d7b5a50383ed3ecb4a9db3",
+      "recipe_sha256": "b7079f884b0c1ab588038fe63c99313ae3a6da48a771f82cb4b7ed3b128db292",
       "workload_path": "tests/fixtures/workloads/response_surface.py",
       "workload_sha256": "66ffee5c3fe256fff983df2cd88425bf8ce4cf2d0d6e1ae9f8946f65bb9bef23",
       "case_ids": [
@@ -17118,6 +17130,36 @@
       ]
     },
     {
+      "source_item_id": "documented-page:advanced/custom-response.md",
+      "fixture_id": "fastapi.docs.advanced-custom-response",
+      "workflow_id": "response-204-bodyless-isolated-upstream",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.response.bodyless-204-isolated"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_response_code_no_body.py",
+      "fixture_id": "fastapi.test.test-response-code-no-body",
+      "workflow_id": "response-204-bodyless-isolated-upstream",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.response.bodyless-204-isolated"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
       "source_item_id": "upstream-test:tests/test_response_code_no_body.py",
       "fixture_id": "fastapi.test.test-response-code-no-body",
       "workflow_id": "response-204-openapi",
@@ -18181,6 +18223,22 @@
         "http.headers.ordered",
         "http.status",
         "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_response_dependency.py",
+      "fixture_id": "fastapi.test.test-response-dependency",
+      "workflow_id": "response-surface",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.response.injected-headers"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
       ]
     },
     {

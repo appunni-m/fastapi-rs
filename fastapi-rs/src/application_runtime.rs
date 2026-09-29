@@ -2030,10 +2030,12 @@ fn response_start(
     body: &[u8],
 ) -> PyResult<Py<PyAny>> {
     let headers = PyList::empty(py);
-    headers.append((
-        PyBytes::new(py, b"content-length"),
-        PyBytes::new(py, body.len().to_string().as_bytes()),
-    ))?;
+    if status != 204 {
+        headers.append((
+            PyBytes::new(py, b"content-length"),
+            PyBytes::new(py, body.len().to_string().as_bytes()),
+        ))?;
+    }
     headers.append((
         PyBytes::new(py, b"content-type"),
         PyBytes::new(py, b"application/json"),
@@ -2548,7 +2550,11 @@ impl FastApiCall {
             jsonable_encoder_default(py, result.bind(py))?
         };
         self.response_status = route.status_code;
-        self.response_body = json_bytes(py, &response_value)?;
+        self.response_body = if route.status_code == 204 {
+            Vec::new()
+        } else {
+            json_bytes(py, &response_value)?
+        };
         drop(app);
         self.send_start(py)
     }
