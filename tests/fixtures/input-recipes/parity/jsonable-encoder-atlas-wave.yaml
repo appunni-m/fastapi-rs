@@ -69,6 +69,33 @@ cases:
     - kind: python_return_value
       selector: value
       comparison: exact
+  - probe_id: list-include-generator
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: list.include-generator
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  - probe_id: list-exclude-generator
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: list.exclude-generator
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  - probe_id: dict-sqlalchemy-safe-falsy
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: dict.sqlalchemy-safe-falsy
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
   - probe_id: custom-class
     public_callable:
       module: fastapi.encoders
@@ -290,6 +317,54 @@ cases:
       module: fastapi.encoders
       attribute: jsonable_encoder
     argument_bundle: color.core
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  - probe_id: dict-items-override
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: dict.items-override
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  - probe_id: model-dump-keyword-presence
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: model.dump-keyword-presence
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  source_evidence:
+  - path: tests/test_jsonable_encoder.py
+    kind: upstream_test
+    sha256: cea093a4d8b99f5e2728b05b172378582f8add4b7199390bb47058dfe532b8a5
+- case_id: fastapi.jsonable-encoder-atlas-wave.unsupported-value-error
+  probes:
+  - probe_id: unsupported-value-error
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: object.unsupported
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  source_evidence:
+  - path: tests/test_jsonable_encoder.py
+    kind: upstream_test
+    sha256: cea093a4d8b99f5e2728b05b172378582f8add4b7199390bb47058dfe532b8a5
+- case_id: fastapi.jsonable-encoder-atlas-wave.pydantic-v1-model-rejection
+  probes:
+  - probe_id: pydantic-v1-model-rejection
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: model.pydantic-v1
     observations:
     - kind: python_return_value
       selector: value

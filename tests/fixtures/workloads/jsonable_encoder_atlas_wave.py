@@ -11,6 +11,7 @@ from pathlib import PurePath, PurePosixPath, PureWindowsPath
 from typing import TypedDict
 
 from pydantic import BaseModel, Field, field_serializer
+from pydantic.v1 import BaseModel as PydanticV1BaseModel
 from pydantic_core import PydanticUndefined as Undefined
 
 
@@ -42,6 +43,11 @@ class Unserializable:
     @property
     def __dict__(self):
         raise NotImplementedError("attributes are unavailable")
+
+
+class ItemsOverrideDict(dict[str, object]):
+    def items(self):
+        return [("label", "reported")]
 
 
 @dataclass
@@ -108,6 +114,17 @@ class ChildModel(BaseModel):
     tag: str
 
 
+class PydanticV1Model(PydanticV1BaseModel):
+    name: str
+
+
+class ObservingModelDump(BaseModel):
+    label: str
+
+    def model_dump(self, **kwargs: object) -> dict[str, object]:
+        return {"keyword_names": sorted(kwargs)}
+
+
 def create_argument_bundles() -> dict[str, dict[str, object]]:
     """Construct independent Python values for direct public-API probes."""
     nested = {"label": "Juniper", "keeper": {"handle": "Ari"}}
@@ -127,6 +144,18 @@ def create_argument_bundles() -> dict[str, dict[str, object]]:
         "dict.empty-exclude": {"args": [nested], "kwargs": {"exclude": set()}},
         "dict.include-list": {"args": [nested], "kwargs": {"include": ["label"]}},
         "dict.exclude-list": {"args": [nested], "kwargs": {"exclude": ["keeper"]}},
+        "list.include-generator": {
+            "args": [[nested]],
+            "kwargs": {"include": (key for key in ("label",))},
+        },
+        "list.exclude-generator": {
+            "args": [[nested]],
+            "kwargs": {"exclude": (key for key in ("keeper",))},
+        },
+        "dict.sqlalchemy-safe-falsy": {
+            "args": [{"_sa_state": "stored", "label": "Juniper"}],
+            "kwargs": {"sqlalchemy_safe": 0},
+        },
         "object.custom-class": {
             "args": [Pet(keeper=Person(handle="Bela"), label="Saffron")],
             "kwargs": {},
@@ -135,8 +164,20 @@ def create_argument_bundles() -> dict[str, dict[str, object]]:
             "args": [DictablePet(keeper=DictablePerson(handle="Cato"), label="Indigo")],
             "kwargs": {},
         },
+        "dict.items-override": {
+            "args": [ItemsOverrideDict(label="stored")],
+            "kwargs": {},
+        },
         "object.dataclass": {"args": [InventoryRecord(label="Fennel", count=23)], "kwargs": {}},
         "object.unsupported": {"args": [Unserializable()], "kwargs": {}},
+        "model.pydantic-v1": {
+            "args": [PydanticV1Model(name="Juniper")],
+            "kwargs": {},
+        },
+        "model.dump-keyword-presence": {
+            "args": [ObservingModelDump(label="Juniper")],
+            "kwargs": {},
+        },
         "model.custom-serializer": {
             "args": [CustomDateModel(moment=datetime(2024, 3, 4, 5, 6, 7, 123456))],
             "kwargs": {},

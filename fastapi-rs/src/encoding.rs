@@ -1,7 +1,7 @@
 //! Rust-owned JSON-compatible conversion for FastAPI values.
 
 use pyo3::PyTypeInfo;
-use pyo3::exceptions::{PyAssertionError, PyValueError};
+use pyo3::exceptions::{PyAssertionError, PyException, PyImportError, PyValueError};
 use pyo3::prelude::*;
 use pyo3::types::{PyDict, PyList, PySet, PyType};
 
@@ -70,6 +70,27 @@ impl JsonableEncoderOptions {
             sqlalchemy_safe: self.sqlalchemy_safe,
         }
     }
+
+    fn with_filters(
+        &self,
+        py: Python<'_>,
+        include: Option<&Bound<'_, PyAny>>,
+        exclude: Option<&Bound<'_, PyAny>>,
+    ) -> Self {
+        Self {
+            include: include.map(|value| value.clone().unbind()),
+            exclude: exclude.map(|value| value.clone().unbind()),
+            by_alias: self.by_alias,
+            exclude_unset: self.exclude_unset,
+            exclude_defaults: self.exclude_defaults,
+            exclude_none: self.exclude_none,
+            custom_encoder: self
+                .custom_encoder
+                .as_ref()
+                .map(|value| value.clone_ref(py)),
+            sqlalchemy_safe: self.sqlalchemy_safe,
+        }
+    }
 }
 
 /// Convert one value according to the selected FastAPI 0.141.1 encoder rules.
@@ -109,10 +130,9 @@ fn encode_value<'py>(
                 return encoder.call1((obj,));
             }
             for item in custom_encoder.call_method0("items")?.try_iter()? {
-                let item = item?;
-                let encoder_type = item.get_item(0)?;
+                let (encoder_type, encoder) = unpack_pair(&item?)?;
                 if obj.is_instance(&encoder_type)? {
-                    return item.get_item(1)?.call1((obj,));
+                    return encoder.call1((obj,));
                 }
             }
         }
@@ -123,13 +143,10 @@ fn encode_value<'py>(
 
     if is_instance(py, obj, "pydantic", "BaseModel")? {
         let kwargs = PyDict::new(py);
+        let none = py.None().into_bound(py);
         kwargs.set_item("mode", "json")?;
-        if let Some(include) = include.as_ref() {
-            kwargs.set_item("include", include)?;
-        }
-        if let Some(exclude) = exclude.as_ref() {
-            kwargs.set_item("exclude", exclude)?;
-        }
+        kwargs.set_item("include", include.as_ref().unwrap_or(&none))?;
+        kwargs.set_item("exclude", exclude.as_ref().unwrap_or(&none))?;
         kwargs.set_item("by_alias", options.by_alias)?;
         kwargs.set_item("exclude_unset", options.exclude_unset)?;
         kwargs.set_item("exclude_none", options.exclude_none)?;
@@ -158,7 +175,8 @@ fn encode_value<'py>(
             return Err(PyAssertionError::new_err(()));
         }
         let data = py.import("dataclasses")?.getattr("asdict")?.call1((obj,))?;
-        return encode_value(py, &data, options);
+        let nested_options = options.with_filters(py, include.as_ref(), exclude.as_ref());
+        return encode_value(py, &data, &nested_options);
     }
 
     encode_builtin_and_container_value(py, obj, options, include.as_ref(), exclude.as_ref())
@@ -202,7 +220,8 @@ fn encode_builtin_and_container_value<'py>(
 
         let encoded = PyDict::new(py);
         let nested_options = options.without_filters(py, true);
-        for (key, value) in dictionary.iter() {
+        for item in obj.call_method0("items")?.try_iter()? {
+            let (key, value) = unpack_pair(&item?)?;
             if options.sqlalchemy_safe && is_string_with_prefix(&key, "_sa")? {
                 continue;
             }
@@ -224,9 +243,10 @@ fn encode_builtin_and_container_value<'py>(
 
     if is_iterable_encoder_value(py, obj)? {
         let encoded = PyList::empty(py);
+        let nested_options = options.with_filters(py, include, exclude);
         for item in obj.try_iter()? {
             let item = item?;
-            encoded.append(encode_value(py, &item, options)?)?;
+            encoded.append(encode_value(py, &item, &nested_options)?)?;
         }
         return Ok(encoded.into_any());
     }
@@ -257,25 +277,69 @@ fn encode_builtin_and_container_value<'py>(
         return Ok(encoded);
     }
 
+    if is_pydantic_v1_model_instance(py, obj)? {
+        let representation = obj.repr()?.extract::<String>()?;
+        return Err(crate::errors::PydanticV1NotSupportedError::new_err(
+            format!(
+                "pydantic.v1 models are no longer supported by FastAPI. Please update the model {representation}."
+            ),
+        ));
+    }
+
     let dict_constructor = py.import("builtins")?.getattr("dict")?;
+    let nested_options = options.with_filters(py, include, exclude);
     match dict_constructor.call1((obj,)) {
-        Ok(data) => encode_value(py, &data, options),
+        Ok(data) => encode_value(py, &data, &nested_options),
         Err(dict_error) => {
+            if !dict_error.is_instance_of::<PyException>(py) {
+                return Err(dict_error);
+            }
             let vars = py.import("builtins")?.getattr("vars")?;
             match vars.call1((obj,)) {
-                Ok(data) => encode_value(py, &data, options),
+                Ok(data) => encode_value(py, &data, &nested_options),
                 Err(vars_error) => {
+                    if !vars_error.is_instance_of::<PyException>(py) {
+                        return Err(vars_error);
+                    }
                     let errors = PyList::empty(py);
                     errors.append(dict_error.value(py))?;
                     errors.append(vars_error.value(py))?;
                     let exception = PyValueError::type_object(py).call1((errors,))?;
                     exception.setattr("__cause__", vars_error.value(py))?;
+                    exception.setattr("__context__", vars_error.value(py))?;
                     exception.setattr("__suppress_context__", true)?;
                     Err(PyErr::from_value(exception))
                 }
             }
         }
     }
+}
+
+fn unpack_pair<'py>(item: &Bound<'py, PyAny>) -> PyResult<(Bound<'py, PyAny>, Bound<'py, PyAny>)> {
+    let mut iterator = item.try_iter()?;
+    let first = iterator
+        .next()
+        .transpose()?
+        .ok_or_else(|| PyValueError::new_err("not enough values to unpack (expected 2, got 0)"))?;
+    let second = iterator
+        .next()
+        .transpose()?
+        .ok_or_else(|| PyValueError::new_err("not enough values to unpack (expected 2, got 1)"))?;
+    if iterator.next().transpose()?.is_some() {
+        return Err(PyValueError::new_err(
+            "too many values to unpack (expected 2)",
+        ));
+    }
+    Ok((first, second))
+}
+
+fn is_pydantic_v1_model_instance(py: Python<'_>, obj: &Bound<'_, PyAny>) -> PyResult<bool> {
+    let legacy_pydantic = match py.import("pydantic.v1") {
+        Ok(module) => module,
+        Err(error) if error.is_instance_of::<PyImportError>(py) => return Ok(false),
+        Err(error) => return Err(error),
+    };
+    obj.is_instance(&legacy_pydantic.getattr("BaseModel")?)
 }
 
 fn is_instance(

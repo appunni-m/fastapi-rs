@@ -13,6 +13,10 @@ use pyo3::types::{PyBytes, PyDict, PyList, PyModule};
 #[pyclass(name = "jsonable_encoder", module = "fastapi.encoders", dict)]
 struct PyJsonableEncoder;
 
+fn extract_truthy(value: &Bound<'_, PyAny>) -> PyResult<bool> {
+    value.is_truthy()
+}
+
 #[pymethods]
 impl PyJsonableEncoder {
     #[pyo3(signature = (obj, include=None, exclude=None, by_alias=true, exclude_unset=false, exclude_defaults=false, exclude_none=false, custom_encoder=None, sqlalchemy_safe=true))]
@@ -27,12 +31,12 @@ impl PyJsonableEncoder {
         obj: Bound<'py, PyAny>,
         include: Option<Bound<'py, PyAny>>,
         exclude: Option<Bound<'py, PyAny>>,
-        by_alias: bool,
-        exclude_unset: bool,
-        exclude_defaults: bool,
-        exclude_none: bool,
+        #[pyo3(from_py_with = extract_truthy)] by_alias: bool,
+        #[pyo3(from_py_with = extract_truthy)] exclude_unset: bool,
+        #[pyo3(from_py_with = extract_truthy)] exclude_defaults: bool,
+        #[pyo3(from_py_with = extract_truthy)] exclude_none: bool,
         custom_encoder: Option<Bound<'py, PyAny>>,
-        sqlalchemy_safe: bool,
+        #[pyo3(from_py_with = extract_truthy)] sqlalchemy_safe: bool,
     ) -> PyResult<Bound<'py, PyAny>> {
         let options = JsonableEncoderOptions::new(JsonableEncoderInput {
             include,

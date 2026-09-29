@@ -20,11 +20,13 @@ def _case(
     workflow,
     *,
     implementation=None,
+    additional_sources=(),
     contract_gate=None,
 ):
     sources = [_source(test_path, start, end, "upstream test stimulus and asserted behavior")]
     if implementation is not None:
         sources.append(implementation)
+    sources.extend(additional_sources)
     row = {
         "feature_ids": list(feature_ids),
         "observation_selectors": list(observation_selectors),
@@ -49,6 +51,30 @@ _ENCODER = _source(
     129,
     190,
     "FastAPI jsonable_encoder public call shape and output filtering options",
+)
+_ENCODER_UNSUPPORTED_FALLBACK = _source(
+    "fastapi/encoders.py",
+    346,
+    355,
+    "jsonable_encoder retries dict/vars conversion and raises ValueError when both fail",
+)
+_ENCODER_PYDANTIC_V1_REJECTION = _source(
+    "fastapi/encoders.py",
+    341,
+    345,
+    "jsonable_encoder detects a Pydantic v1 model instance before generic conversion",
+)
+_PYDANTIC_V1_INSTANCE_DETECTION = _source(
+    "fastapi/_compat/shared.py",
+    186,
+    195,
+    "FastAPI identifies Pydantic v1 model instances through pydantic.v1.BaseModel",
+)
+_PYDANTIC_V1_ERROR_TYPE = _source(
+    "fastapi/exceptions.py",
+    246,
+    249,
+    "PydanticV1NotSupportedError is a FastAPIError subtype",
 )
 _OPENAPI_RESPONSES = _source(
     "fastapi/openapi/utils.py",
@@ -305,6 +331,40 @@ RESPONSE_OPENAPI_TEST_REVIEW_MAPPINGS = {
                 "Use output-matrix probe dataclass for the independently authored record conversion.",
                 implementation=_ENCODER,
                 contract_gate="The input workflow observes the unfiltered dataclass conversion; the source's field filter variants are not separate probes.",
+            ),
+            "test_encode_unsupported": _case(
+                "tests/test_jsonable_encoder.py",
+                134,
+                137,
+                ["python-data-encoding"],
+                ["error.class"],
+                "The source-defined Unserializable value raises while iterating and while reading instance attributes; jsonable_encoder turns the two fallback failures into ValueError.",
+                "Use jsonable-encoder-atlas-wave.yaml case fastapi.jsonable-encoder-atlas-wave.unsupported-value-error, probe unsupported-value-error, with a python_return_value invocation that produces the direct API product_error envelope.",
+                implementation=_ENCODER_UNSUPPORTED_FALLBACK,
+                additional_sources=(
+                    _source(
+                        "tests/test_jsonable_encoder.py",
+                        45,
+                        51,
+                        "Unserializable input raises from both __iter__ and __dict__ access",
+                    ),
+                ),
+                contract_gate="The upstream assertion requires ValueError but does not assert its message. Direct API result v2 records product_error class and message together, and its comparator compares both exactly; it does not expose a class-only error selector. Keep the case source-reviewed, but gate a class-only parity claim until that selector is represented by the API contract.",
+            ),
+            "test_json_encoder_error_with_pydanticv1": _case(
+                "tests/test_jsonable_encoder.py",
+                159,
+                169,
+                ["python-data-encoding"],
+                ["error.class"],
+                "The source constructs a pydantic.v1 model and requires jsonable_encoder to reject it with PydanticV1NotSupportedError.",
+                "Use jsonable-encoder-atlas-wave.yaml case fastapi.jsonable-encoder-atlas-wave.pydantic-v1-model-rejection, probe pydantic-v1-model-rejection, with a python_return_value invocation that produces the direct API product_error envelope.",
+                implementation=_ENCODER_PYDANTIC_V1_REJECTION,
+                additional_sources=(
+                    _PYDANTIC_V1_INSTANCE_DETECTION,
+                    _PYDANTIC_V1_ERROR_TYPE,
+                ),
+                contract_gate="The upstream assertion checks the PydanticV1NotSupportedError class and does not assert its message. Direct API result v2 records product_error class and message together, and its comparator compares both exactly; it does not expose a class-only error selector. Keep the case source-reviewed, but gate a class-only parity claim until that selector is represented by the API contract.",
             ),
             "test_encode_model_with_config": _case(
                 "tests/test_jsonable_encoder.py",

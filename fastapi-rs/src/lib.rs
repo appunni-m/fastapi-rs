@@ -7,6 +7,7 @@
 mod application_runtime;
 mod awaitable;
 mod encoding;
+mod errors;
 mod openapi;
 mod operation;
 mod parameters;
