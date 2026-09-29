@@ -448,6 +448,10 @@ reviewed_api_contract_overlay:
         - {path: tests/test_tutorial/test_path_operation_advanced_configurations/test_tutorial003.py, symbol: test_openapi_schema}
         - {path: docs_src/path_operation_advanced_configuration/tutorial003_py310.py, symbol: read_items}
         - {path: docs_src/path_operation_advanced_configuration/tutorial004_py310.py}
+        - {path: fastapi/routing.py, symbol: APIRoute}
+        - {path: fastapi/openapi/utils.py, symbol: get_openapi_operation_metadata}
+        - {path: tests/test_tutorial/test_path_operation_configurations/test_tutorial006.py, symbol: test_openapi_schema}
+        - {path: docs_src/path_operation_configuration/tutorial006_py310.py, symbol: read_elements}
       feature_ids: [app-routing, request-validation, response-serialization, openapi-docs]
       observation_selectors: [http.status, http.body.bytes, openapi.document]
       supported_slice: >-
@@ -466,7 +470,11 @@ reviewed_api_contract_overlay:
         The same GET slice accepts an explicit non-empty `summary`, emitted at
         `/paths/~1items~1/get/summary` by that workflow. Empty IDs, duplicate-ID
         warnings, and these options on other verb decorators remain outside
-        this GET-only sample.
+        this GET-only sample. The decorator also accepts `deprecated=True` and
+        emits `/paths/~1elements~1/get/deprecated` as `true`, proven by the
+        `path-operation-configurations-tutorial006-upstream` workflow. False
+        and omitted values, and other verb decorators, remain outside this
+        sample.
     fastapi.applications.FastAPI.post:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::post
       source_evidence:

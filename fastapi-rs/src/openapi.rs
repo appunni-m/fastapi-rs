@@ -19,6 +19,7 @@ pub(crate) struct OpenApiOperation {
     pub(crate) method: String,
     pub(crate) summary: String,
     pub(crate) operation_id: String,
+    pub(crate) deprecated: Option<bool>,
     pub(crate) status: u16,
     pub(crate) parameters: Vec<OpenApiParameter>,
     pub(crate) request_model_name: Option<String>,
@@ -82,6 +83,9 @@ pub(crate) fn openapi_document(
         let operation_document = PyDict::new(py);
         operation_document.set_item("summary", &operation.summary)?;
         operation_document.set_item("operationId", &operation.operation_id)?;
+        if operation.deprecated == Some(true) {
+            operation_document.set_item("deprecated", true)?;
+        }
 
         if !operation.parameters.is_empty() {
             let parameters = PyList::empty(py);
