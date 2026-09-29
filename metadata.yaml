@@ -447,6 +447,7 @@ reviewed_api_contract_overlay:
         - {path: tests/test_tutorial/test_path_operation_advanced_configurations/test_tutorial003.py, symbol: test_get}
         - {path: tests/test_tutorial/test_path_operation_advanced_configurations/test_tutorial003.py, symbol: test_openapi_schema}
         - {path: docs_src/path_operation_advanced_configuration/tutorial003_py310.py, symbol: read_items}
+        - {path: docs_src/path_operation_advanced_configuration/tutorial004_py310.py}
       feature_ids: [app-routing, request-validation, response-serialization, openapi-docs]
       observation_selectors: [http.status, http.body.bytes, openapi.document]
       supported_slice: >-
@@ -462,8 +463,10 @@ reviewed_api_contract_overlay:
         explicit non-empty `operation_id`, which is emitted at
         `/paths/~1items~1/get/operationId` by the reviewed
         `path-operation-advanced-configurations-tutorial001-upstream` workflow.
-        Empty IDs, duplicate-ID warnings, and the option on other verb
-        decorators remain outside this GET-only sample.
+        The same GET slice accepts an explicit non-empty `summary`, emitted at
+        `/paths/~1items~1/get/summary` by that workflow. Empty IDs, duplicate-ID
+        warnings, and these options on other verb decorators remain outside
+        this GET-only sample.
     fastapi.applications.FastAPI.post:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::post
       source_evidence:

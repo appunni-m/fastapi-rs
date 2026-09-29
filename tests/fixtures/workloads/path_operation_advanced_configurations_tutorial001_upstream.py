@@ -4,7 +4,11 @@ from fastapi import FastAPI
 def create_app() -> FastAPI:
     app = FastAPI()
 
-    @app.get("/items/", operation_id="some_specific_id_you_define")
+    @app.get(
+        "/items/",
+        summary="An explicit items summary",
+        operation_id="some_specific_id_you_define",
+    )
     async def read_items():
         return [{"item_id": "Foo"}]
 
