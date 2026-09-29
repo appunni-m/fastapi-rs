@@ -433,6 +433,8 @@ reviewed_api_contract_overlay:
         - {path: fastapi/routing.py, symbol: get_request_handler}
         - {path: fastapi/openapi/utils.py, symbol: get_openapi_path}
         - {path: fastapi/utils.py, symbol: is_body_allowed_for_status_code}
+        - {path: tests/test_tutorial/test_path_operation_advanced_configurations/test_tutorial001.py, symbol: test_openapi_schema}
+        - {path: docs_src/path_operation_advanced_configuration/tutorial001_py310.py, symbol: read_items}
         - {path: tests/test_response_code_no_body.py, symbol: test_openapi_schema}
         - {path: tests/test_response_model_as_return_annotation.py, symbol: test_openapi_schema}
         - {path: tests/test_response_model_as_return_annotation.py, symbol: test_response_model_list_of_model_no_annotation}
@@ -451,7 +453,12 @@ reviewed_api_contract_overlay:
         success description and no response content member. Inferred list and
         union response annotations use inline response schemas and shared model
         definitions. Other response status codes and customization remain
-        governed by their own slices.
+        governed by their own slices. The GET decorator also accepts an
+        explicit non-empty `operation_id`, which is emitted at
+        `/paths/~1items~1/get/operationId` by the reviewed
+        `path-operation-advanced-configurations-tutorial001-upstream` workflow.
+        Empty IDs, duplicate-ID warnings, and the option on other verb
+        decorators remain outside this GET-only sample.
     fastapi.applications.FastAPI.post:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::post
       source_evidence:

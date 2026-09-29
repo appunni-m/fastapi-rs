@@ -114,6 +114,7 @@ enum DependencyOverrideCallable {
 struct FastApiRoute {
     path: String,
     method: String,
+    operation_id: Option<String>,
     status_code: u16,
     include_in_schema: bool,
     endpoint: Py<PyAny>,
@@ -135,6 +136,7 @@ struct ResponseModelOptions {
     exclude_defaults: bool,
     exclude_none: bool,
     include_in_schema: bool,
+    operation_id: Option<String>,
 }
 
 struct ParameterOpenApiPlan {
@@ -214,6 +216,7 @@ impl PyFastApi {
                 exclude_defaults: response_model_exclude_defaults,
                 exclude_none: response_model_exclude_none,
                 include_in_schema,
+                operation_id: None,
             },
         )
     }
@@ -223,7 +226,7 @@ impl PyFastApi {
         clippy::too_many_arguments,
         reason = "preserve the Python route decorator keyword signature"
     )]
-    #[pyo3(signature = (path, *, response_model = None, status_code = 200, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, include_in_schema = true))]
+    #[pyo3(signature = (path, *, response_model = None, status_code = 200, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, include_in_schema = true, operation_id = None))]
     fn get(
         slf: Py<Self>,
         py: Python<'_>,
@@ -237,6 +240,7 @@ impl PyFastApi {
         response_model_exclude_defaults: bool,
         response_model_exclude_none: bool,
         include_in_schema: bool,
+        operation_id: Option<String>,
     ) -> PyResult<Py<PyOperationDecorator>> {
         operation_decorator(
             slf,
@@ -253,6 +257,7 @@ impl PyFastApi {
                 exclude_defaults: response_model_exclude_defaults,
                 exclude_none: response_model_exclude_none,
                 include_in_schema,
+                operation_id,
             },
         )
     }
@@ -292,6 +297,7 @@ impl PyFastApi {
                 exclude_defaults: response_model_exclude_defaults,
                 exclude_none: response_model_exclude_none,
                 include_in_schema,
+                operation_id: None,
             },
         )
     }
@@ -331,6 +337,7 @@ impl PyFastApi {
                 exclude_defaults: response_model_exclude_defaults,
                 exclude_none: response_model_exclude_none,
                 include_in_schema,
+                operation_id: None,
             },
         )
     }
@@ -370,6 +377,7 @@ impl PyFastApi {
                 exclude_defaults: response_model_exclude_defaults,
                 exclude_none: response_model_exclude_none,
                 include_in_schema,
+                operation_id: None,
             },
         )
     }
@@ -409,6 +417,7 @@ impl PyFastApi {
                 exclude_defaults: response_model_exclude_defaults,
                 exclude_none: response_model_exclude_none,
                 include_in_schema,
+                operation_id: None,
             },
         )
     }
@@ -448,6 +457,7 @@ impl PyFastApi {
                 exclude_defaults: response_model_exclude_defaults,
                 exclude_none: response_model_exclude_none,
                 include_in_schema,
+                operation_id: None,
             },
         )
     }
@@ -487,6 +497,7 @@ impl PyFastApi {
                 exclude_defaults: response_model_exclude_defaults,
                 exclude_none: response_model_exclude_none,
                 include_in_schema,
+                operation_id: None,
             },
         )
     }
@@ -548,7 +559,12 @@ impl PyFastApi {
             .map(title_case)
             .collect::<Vec<_>>()
             .join(" ");
-        let operation_id = operation_id(&name, &route.path, &route.method);
+        let operation_id = route
+            .operation_id
+            .as_ref()
+            .filter(|operation_id| !operation_id.is_empty())
+            .cloned()
+            .unwrap_or_else(|| operation_id(&name, &route.path, &route.method));
         let parameters = route
             .plan
             .openapi_parameters(py)?
@@ -644,6 +660,7 @@ struct PyOperationDecorator {
     app: Py<PyFastApi>,
     path: String,
     method: String,
+    operation_id: Option<String>,
     response_model: Option<Py<PyAny>>,
     status_code: u16,
     include_in_schema: bool,
@@ -670,6 +687,7 @@ fn operation_decorator(
             app,
             path: path.to_owned(),
             method: method.to_owned(),
+            operation_id: response_model_options.operation_id,
             response_model,
             status_code,
             include_in_schema: response_model_options.include_in_schema,
@@ -700,6 +718,7 @@ impl PyOperationDecorator {
         app.routes.push(FastApiRoute {
             path: self.path.clone(),
             method: self.method.clone(),
+            operation_id: self.operation_id.clone(),
             status_code: self.status_code,
             include_in_schema: self.include_in_schema,
             endpoint: endpoint.clone_ref(py),
