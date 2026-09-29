@@ -310,6 +310,24 @@ reviewed_api_contract_overlay:
         - {path: fastapi/routing.py, symbol: api_route}
       feature_ids: [app-routing, response-serialization, openapi-docs]
       observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths]
+    fastapi.applications.FastAPI.delete:
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::delete
+      source_evidence:
+        - {path: fastapi/applications.py, symbol: delete}
+        - {path: fastapi/routing.py, symbol: delete}
+        - {path: fastapi/routing.py, symbol: api_route}
+        - {path: tests/test_extra_routes.py, symbol: test_delete}
+      feature_ids: [app-routing]
+      observation_selectors: [http.status, http.body.bytes]
+    fastapi.applications.FastAPI.patch:
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::patch
+      source_evidence:
+        - {path: fastapi/applications.py, symbol: patch}
+        - {path: fastapi/routing.py, symbol: patch}
+        - {path: fastapi/routing.py, symbol: api_route}
+        - {path: tests/test_tutorial/test_body_updates/test_tutorial002.py, symbol: test_patch_name}
+      feature_ids: [app-routing, request-validation, response-serialization]
+      observation_selectors: [http.status, http.body.bytes]
     fastapi.Cookie:
       rust_binding: fastapi-rs/src/parameters.rs::cookie
       source_evidence:

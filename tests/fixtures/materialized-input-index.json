@@ -920,6 +920,18 @@
       ]
     },
     {
+      "id": "delete-route-path-only",
+      "input_path": "tests/fixtures/inputs/parity/delete-route-path-only.json",
+      "input_sha256": "8b3d2cc6798e2bfc7dea1441a6d25cca51a5268b53c8bbac411063daf008c3bd",
+      "recipe_path": "tests/fixtures/input-recipes/parity/delete-route-path-only.yaml",
+      "recipe_sha256": "2acd257eba295edfa39aea163226b8b468614943ed22aa3e19a933abca06e567",
+      "workload_path": "tests/fixtures/workloads/delete_route_path_only.py",
+      "workload_sha256": "ea60f1a81d88e3e64e5f56c996ef5bd5fc2b6ffc02aea7347acbe36ff9299f87",
+      "case_ids": [
+        "fastapi.delete.path-only-route"
+      ]
+    },
+    {
       "id": "dependency-after-yield-websocket-broken-upstream",
       "input_path": "tests/fixtures/inputs/parity/dependency-after-yield-websocket-broken-upstream.json",
       "input_sha256": "23d1bb5827bfb34f04bef733b0ad2091671dabb3f9d6494ebd9d433fcaa1ba1c",
@@ -2249,6 +2261,18 @@
       "case_ids": [
         "fastapi.param-class.query-default-absent",
         "fastapi.param-class.query-value-present"
+      ]
+    },
+    {
+      "id": "patch-route-path-body",
+      "input_path": "tests/fixtures/inputs/parity/patch-route-path-body.json",
+      "input_sha256": "80c095defbca582142b64df9c03c24f9f908fd1f8030b7ad7e2c4c776fbaa7a9",
+      "recipe_path": "tests/fixtures/input-recipes/parity/patch-route-path-body.yaml",
+      "recipe_sha256": "83b85a94c6f597deae32f24159440fffe830ddd068dbd3dc7caae2ca6f3533d9",
+      "workload_path": "tests/fixtures/workloads/patch_route_path_body.py",
+      "workload_sha256": "755d7a3dea7371eb1aa6a8a0d1d63eda2139d70038725ff5a9ddc8733ffb9965",
+      "case_ids": [
+        "fastapi.patch.path-model-body"
       ]
     },
     {
@@ -7899,6 +7923,20 @@
       ]
     },
     {
+      "source_item_id": "upstream-test:tests/test_extra_routes.py",
+      "fixture_id": "fastapi.test.test-extra-routes",
+      "workflow_id": "delete-route-path-only",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.delete.path-only-route"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
       "source_item_id": "upstream-test:tests/test_dependency_after_yield_websockets.py",
       "fixture_id": "fastapi.test.test-dependency-after-yield-websockets",
       "workflow_id": "dependency-after-yield-websocket-broken-upstream",
@@ -12040,6 +12078,34 @@
       "case_ids": [
         "fastapi.param-class.query-default-absent",
         "fastapi.param-class.query-value-present"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/body-updates.md",
+      "fixture_id": "fastapi.docs.tutorial-body-updates",
+      "workflow_id": "patch-route-path-body",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.patch.path-model-body"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_extra_routes.py",
+      "fixture_id": "fastapi.test.test-extra-routes",
+      "workflow_id": "patch-route-path-body",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.patch.path-model-body"
       ],
       "observation_selectors": [
         "http.body.bytes",
