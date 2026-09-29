@@ -1,6 +1,6 @@
 # FastAPI compatibility atlas
 
-This pre-implementation atlas indexes the source denominator and candidate fixture mappings. Automated family assignments are evidence leads, not manually reviewed coverage, parity results, or FastAPI-RS support claims.
+This source-backed compatibility atlas indexes the API denominator and candidate fixture mappings. Automated family assignments are evidence leads, not manually reviewed coverage, parity results, or complete FastAPI-RS support claims.
 
 ## Pinned authorities
 
@@ -19,7 +19,7 @@ This pre-implementation atlas indexes the source denominator and candidate fixtu
 
 ## Per-symbol API contract in the active manifest
 
-The single `tests/fixtures/manifest.yaml` now indexes 439 source-supported symbols, with pointers to the pinned AST inventory and both runtime-reflection profiles. It links alias, deprecation, error, documented-feature, selector, and planned Python import-path evidence; 432 symbols link to a documented-page fixture design. The contract is source-backed only: all 439 FastAPI target bindings remain unimplemented, and operation-level behavior review is still pending.
+The single `tests/fixtures/manifest.yaml` indexes 439 source-supported symbols, with pointers to the pinned AST inventory and both runtime-reflection profiles. It links alias, deprecation, error, documented-feature, selector, and planned Python import-path evidence; 432 symbols link to a documented-page fixture design. The current Python facade directly re-exports 5 native names; this source contract does not measure their behavioral completeness, and broader operation-level review remains pending.
 
 | Signature/shape evidence | Symbols |
 |---|---:|
@@ -461,14 +461,14 @@ The sibling Starlette-RS manifest, API review, and coverage matrix remain the so
 
 ## First end-to-end request/response slice and next backlog
 
-Priority 0 is a scoped end-to-end POST `/items/{item_id}` slice: public app/route construction, path and query parsing, a header-backed dependency, Pydantic request validation, response-model filtering, exact HTTP observations, ordered ASGI send-message types, and selected generated OpenAPI fields. Three input-only cases are in `tests/fixtures/input-recipes/parity/first-asgi-request.yaml` under the strict schema `tests/fixtures/schemas/python-asgi-workflow-v2.schema.json`; `make parity-inputs` materializes the ignored JSON input, and the independently authored workload is `tests/fixtures/workloads/first_slice.py`. The exact comparator and fail-closed target worker are present. Earlier source-only run artifacts use older input and manifest digests; rerun the oracle against current digests. The public target package is not implemented, so no live parity comparison is available.
+The implemented first slice is a scoped end-to-end POST `/items/{item_id}` path: Rust-owned app/route construction, path and query parsing, a header-backed dependency, Pydantic request validation, response-model filtering, exact HTTP observations, ordered ASGI send-message types, and selected generated OpenAPI fields. Ten input-only cases are in `tests/fixtures/input-recipes/parity/first-asgi-request.yaml` under the strict schema `tests/fixtures/schemas/python-asgi-workflow-v2.schema.json`; `make parity-inputs` materializes the ignored JSON input, and the independently authored workload is `tests/fixtures/workloads/first_slice.py`. The isolated oracle and target workers and exact comparator are present. This atlas records fixture scope and runner capability; fresh run outcomes belong in ignored `parity-results/` artifacts.
 
-Oracle environment check: FastAPI 0.141.1 imported and generated OpenAPI with only Starlette 1.6.0 and Pydantic 2.13.4 under CPython 3.12.13; `pip check` passed. Historical ASGI workflow artifacts are source-only, have stale fixture/manifest digests, and are not current parity evidence.
+The ten cases define a narrow first vertical slice. Full FastAPI 0.141.1 API and behavior parity remains incomplete; do not read fixture links or runner availability as broader support evidence.
 
 1. Review the 1.6.0 Starlette-RS consumption crosswalk and its contract-area ownership.
 2. Review uncertain API candidates and runtime-generated Python/Pydantic surfaces, retaining explicit uncertainty where source evidence cannot decide.
 3. Materialize independent input-only scenarios from the mapped test/documentation backlog; do not copy upstream tests or expected outputs.
-4. Complete the operation-level contract, materialize the remaining independent inputs, implement the public `fastapi` facade, and run the exact comparator through the isolated target worker before parity claims.
+4. Complete the operation-level contract, materialize the remaining independent inputs, expand the native implementation and pass-through facade, and gate every parity claim on fresh identity-checked comparisons.
 
 ## Unresolved points
 
@@ -478,7 +478,7 @@ Oracle environment check: FastAPI 0.141.1 imported and generated OpenAPI with on
 - **case-construction-input-contract** (workflow-v3-present; dependency-module-state-and-warning-controls-pending): Which controlled dependency-module states and warning observations are still required for setup-time errors beyond the v3 per-case factory input and construction-exception selectors?
 - **lifespan-input-and-observation-contract** (workflow-v3-expressible; fixture-and-warning-coverage-pending): Which FastAPI and APIRouter lifespan combinations still need independent input cases and exact deprecation-warning observations under the v3 lifecycle workflow?
 - **fastapi-cli-compatibility-boundary** (package-pin-and-process-workflow-required): Does FastAPI-RS replace FastAPI's `fastapi` console script, and if so which fastapi-cli package identity, optional environment, arguments, output streams, and exit behavior are in the compatibility contract?
-- **fixture-recipe-execution-contract** (recipe-and-workload-present; current-source-and-target-runs-pending; public-target-pending): Implement the public `fastapi` facade, run it through the identity-checked target worker, and review an exact source/target comparison from both live products.
+- **fixture-recipe-execution-contract** (first-slice-defined; broader-api-coverage-pending): Which additional independently authored workflows should extend the first request/response slice to cover the public FastAPI contract?
 - **starlette-rs-target-revision** (pinned, clean sibling Git commit): Do the local path dependency, metadata, and CI continue to resolve to the same committed Starlette-RS target profile?
 - **app-dependency-wave-residual-gaps** (source-reviewed; partial-input-gates-remain): Which app, dependency, lifecycle, exception, and WebSocket cases still need independent inputs or target observations?
 

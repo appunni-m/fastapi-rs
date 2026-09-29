@@ -8270,7 +8270,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             "id": "starlette-rs-surface-review",
             "status": "crosswalk-generated; support-and-revision-review-pending",
             "question": "For each FastAPI behavior that delegates to Starlette, does the sibling Starlette-RS contract provide the required surface and exact target support, without importing or duplicating unrelated Starlette APIs?",
-            "evidence": f"The merged FastAPI coverage matrix assigns Starlette-RS ownership areas, and direct re-export/subclass/helper edges reference the sibling catalog and reviewed dispositions. FastAPI-RS metadata and CI pin the local sibling at {starlette_rs_revision[:12]}; its manifest is slice-scoped and reports partial, supported, and unimplemented operations. The cross-project behavior review remains open.",
+            "evidence": f"The merged FastAPI coverage matrix assigns Starlette-RS ownership areas, and direct re-export/subclass/helper edges reference the sibling catalog and reviewed dispositions. FastAPI-RS metadata and CI pin the local sibling at {starlette_rs_revision[:12]}; the initial FastAPI-RS slice consumes it, while full cross-project behavior review remains open.",
         },
         {
             "id": "pydantic-runtime-generated-api",
@@ -8304,9 +8304,9 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         },
         {
             "id": "fixture-recipe-execution-contract",
-            "status": "recipe-and-workload-present; current-source-and-target-runs-pending; public-target-pending",
-            "question": "Implement the public `fastapi` facade, run it through the identity-checked target worker, and review an exact source/target comparison from both live products.",
-            "evidence": "The strict input-only recipe and workload exist, and the exact comparator and fail-closed target worker are present. Previously recorded source-only runs use older input and manifest digests, so a source run for the current fixture is still pending. The target worker verifies isolated local FastAPI-RS and Starlette-RS packages and fails closed until the public `fastapi` facade exists.",
+            "status": "first-slice-defined; broader-api-coverage-pending",
+            "question": "Which additional independently authored workflows should extend the first request/response slice to cover the public FastAPI contract?",
+            "evidence": "The strict first-slice input recipe and workload, public pass-through facade, Rust-owned target implementation, oracle and target workers, and exact comparator are present. The first slice is narrow; full operation-level coverage and fresh results for broader cases remain pending.",
         },
         {
             "id": "starlette-rs-target-revision",
@@ -8328,7 +8328,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         {
             "priority": 0,
             "id": "first-end-to-end-request-response-slice",
-            "status": "current-source-run-pending; comparator-present; target-implementation-pending",
+            "status": "first-slice-implemented; broader-contract-pending",
             "schema_path": first_slice_workflow["schema_path"],
             "fixture_path": first_slice_workflow["input_path"],
             "workload_path": first_slice_workflow["workload"]["path"],
@@ -8432,31 +8432,11 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                 "planning_area_owner": "FastAPI-RS taxonomy; not sibling contract operations or implementation coverage",
                 "implementation_revision": starlette_rs_revision,
                 "implementation_revision_state": starlette_rs_revision_state,
-                "state": "bounded Starlette-RS source contract and implementations exist; its manifest reports partial, supported, and unimplemented operations; FastAPI-RS integration remains unimplemented",
+                "state": "bounded Starlette-RS source contract and implementations exist; FastAPI-RS consumes the pinned sibling, while full cross-project consumption review remains open",
             },
-            "python": {
-                **read_python_support(
-                    fastapi_root / "pyproject.toml", fastapi_root / ".github/workflows/test.yml"
-                ),
-                "oracle_smoke_profile": {
-                    "status": "verified-import-and-openapi-smoke",
-                    "verified_on": "2026-09-27",
-                    "implementation": "CPython",
-                    "version": "3.12.13",
-                    "platform": "macOS 15.7.7 arm64",
-                    "fastapi_version": FASTAPI_VERSION,
-                    "starlette_version": STARLETTE_VERSION,
-                    "pydantic_version": "2.13.4",
-                    "pip_check": "passed",
-                    "checks": [
-                        "FastAPI imported from the isolated environment",
-                        "FastAPI app instantiated and registered a GET route",
-                        "app.openapi() included that route",
-                        "FastAPI app was an instance of Starlette",
-                    ],
-                    "parity_result": False,
-                },
-            },
+            "python": read_python_support(
+                fastapi_root / "pyproject.toml", fastapi_root / ".github/workflows/test.yml"
+            ),
             "pydantic": {
                 "selected_version": "2.13.4",
                 "source_lock_version": inventory["source_identity"]
@@ -8615,8 +8595,13 @@ def render_markdown(atlas: dict[str, Any]) -> str:
     if api_contract.get("schema") != "fastapi-rs/public-api-contract@1":
         raise AtlasError("manifest has no generated per-symbol source API contract")
     required_public_symbols = api_contract_counts.get("required_public_symbols", 0)
-    target_bindings_pending = required_public_symbols - api_contract_counts.get(
-        "target_bindings_implemented", 0
+    facade_tree = ast.parse(
+        (PROJECT / "fastapi-rs-py/python/fastapi/__init__.py").read_text(encoding="utf-8")
+    )
+    native_facade_exports = sum(
+        len(node.names)
+        for node in facade_tree.body
+        if isinstance(node, ast.ImportFrom) and node.module == "fastapi_rs._core"
     )
     symbols_with_documented_refs = api_contract_counts.get(
         "symbols_with_documented_feature_refs", 0
@@ -8672,7 +8657,7 @@ def render_markdown(atlas: dict[str, Any]) -> str:
     lines = [
         "# FastAPI compatibility atlas",
         "",
-        "This pre-implementation atlas indexes the source denominator and candidate fixture mappings. Automated family assignments are evidence leads, not manually reviewed coverage, parity results, or FastAPI-RS support claims.",
+        "This source-backed compatibility atlas indexes the API denominator and candidate fixture mappings. Automated family assignments are evidence leads, not manually reviewed coverage, parity results, or complete FastAPI-RS support claims.",
         "",
         "## Pinned authorities",
         "",
@@ -8701,11 +8686,11 @@ def render_markdown(atlas: dict[str, Any]) -> str:
         "",
         "## Per-symbol API contract in the active manifest",
         "",
-        "The single `tests/fixtures/manifest.yaml` now indexes %d source-supported symbols, with pointers to the pinned AST inventory and both runtime-reflection profiles. It links alias, deprecation, error, documented-feature, selector, and planned Python import-path evidence; %d symbols link to a documented-page fixture design. The contract is source-backed only: all %d FastAPI target bindings remain unimplemented, and operation-level behavior review is still pending."
+        "The single `tests/fixtures/manifest.yaml` indexes %d source-supported symbols, with pointers to the pinned AST inventory and both runtime-reflection profiles. It links alias, deprecation, error, documented-feature, selector, and planned Python import-path evidence; %d symbols link to a documented-page fixture design. The current Python facade directly re-exports %d native names; this source contract does not measure their behavioral completeness, and broader operation-level review remains pending."
         % (
             required_public_symbols,
             symbols_with_documented_refs,
-            target_bindings_pending,
+            native_facade_exports,
         ),
         "",
         "| Signature/shape evidence | Symbols |",
@@ -8842,14 +8827,14 @@ def render_markdown(atlas: dict[str, Any]) -> str:
             "",
             "## First end-to-end request/response slice and next backlog",
             "",
-            "Priority 0 is a scoped end-to-end POST `/items/{item_id}` slice: public app/route construction, path and query parsing, a header-backed dependency, Pydantic request validation, response-model filtering, exact HTTP observations, ordered ASGI send-message types, and selected generated OpenAPI fields. Three input-only cases are in `tests/fixtures/input-recipes/parity/first-asgi-request.yaml` under the strict schema `tests/fixtures/schemas/python-asgi-workflow-v2.schema.json`; `make parity-inputs` materializes the ignored JSON input, and the independently authored workload is `tests/fixtures/workloads/first_slice.py`. The exact comparator and fail-closed target worker are present. Earlier source-only run artifacts use older input and manifest digests; rerun the oracle against current digests. The public target package is not implemented, so no live parity comparison is available.",
+            "The implemented first slice is a scoped end-to-end POST `/items/{item_id}` path: Rust-owned app/route construction, path and query parsing, a header-backed dependency, Pydantic request validation, response-model filtering, exact HTTP observations, ordered ASGI send-message types, and selected generated OpenAPI fields. Ten input-only cases are in `tests/fixtures/input-recipes/parity/first-asgi-request.yaml` under the strict schema `tests/fixtures/schemas/python-asgi-workflow-v2.schema.json`; `make parity-inputs` materializes the ignored JSON input, and the independently authored workload is `tests/fixtures/workloads/first_slice.py`. The isolated oracle and target workers and exact comparator are present. This atlas records fixture scope and runner capability; fresh run outcomes belong in ignored `parity-results/` artifacts.",
             "",
-            "Oracle environment check: FastAPI 0.141.1 imported and generated OpenAPI with only Starlette 1.6.0 and Pydantic 2.13.4 under CPython 3.12.13; `pip check` passed. Historical ASGI workflow artifacts are source-only, have stale fixture/manifest digests, and are not current parity evidence.",
+            "The ten cases define a narrow first vertical slice. Full FastAPI 0.141.1 API and behavior parity remains incomplete; do not read fixture links or runner availability as broader support evidence.",
             "",
             "1. Review the 1.6.0 Starlette-RS consumption crosswalk and its contract-area ownership.",
             "2. Review uncertain API candidates and runtime-generated Python/Pydantic surfaces, retaining explicit uncertainty where source evidence cannot decide.",
             "3. Materialize independent input-only scenarios from the mapped test/documentation backlog; do not copy upstream tests or expected outputs.",
-            "4. Complete the operation-level contract, materialize the remaining independent inputs, implement the public `fastapi` facade, and run the exact comparator through the isolated target worker before parity claims.",
+            "4. Complete the operation-level contract, materialize the remaining independent inputs, expand the native implementation and pass-through facade, and gate every parity claim on fresh identity-checked comparisons.",
             "",
             "## Unresolved points",
             "",

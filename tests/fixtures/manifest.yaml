@@ -12,9 +12,9 @@ contract:
     The public FastAPI 0.141.1 Python API and its observable HTTP, WebSocket,
     lifecycle, validation, serialization, and OpenAPI integration behavior.
   implementation_gate: >-
-    Complete and review the operation-level contract, identity checks, isolated
-    workflow runner, result protocol, and comparator before implementation or
-    compatibility claims.
+    Complete and review the operation-level contract and identity checks;
+    extend the Rust implementation and input workflows, and gate compatibility
+    claims on fresh isolated oracle/target comparison results.
 
 selected_contracts:
   fastapi:
@@ -38,11 +38,6 @@ selected_contracts:
     project_classifiers: ["3.10", "3.11", "3.12", "3.13", "3.14"]
     upstream_test_workflow_versions: ["3.10", "3.12", "3.13", "3.14"]
     upstream_free_threaded_workflow: true
-    source_oracle_smoke_runtime:
-      implementation: CPython
-      version: 3.12.13
-      profile_pointer: /authorities/python/oracle_smoke_profile
-      verification_scope: import-and-OpenAPI smoke only
     target_runtime_identity: unresolved
   pydantic:
     role: reused-public-python-model-api
@@ -96,9 +91,9 @@ target:
     name: starlette-rs-py
     version: 0.1.0
     starlette_contract: 1.6.0
-  implementation_revision: null
-  support: unimplemented
-  executable_parity: absent
+  implementation_revision_policy: record-both-git-commits-and-combined-source-digest-per-run
+  support: partial-first-request-response-slice
+  executable_parity: isolated-workers-and-comparator-present; full-parity-pending
 
 source_artifacts:
   api_inventory:
@@ -127,7 +122,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@2
-    sha256: 7c9329f1c1bd07940600d69d300fca199f8402add15cba0d7b859cbfdbc152b5
+    sha256: 336d52cd4cb391dfd44b51bad3650bf0354eaaf4c81714b438aff9443be91199
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -156,7 +151,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 2e076cbeb10bdb306dfd9804d3e55fbeabde241e8d34a68e9327f7bf8d8b8fc3
+    sha256: 612e3a3f7cb014025f1242b28d4f192d1f74e16605983bbac947c981cb5c4108
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 554
@@ -232,25 +227,6 @@ contract_metadata:
     pointer: /authorities/pydantic
     contract_state: selected source-lock baseline; generated/inherited runtime surface unresolved
 
-oracle_smoke:
-  source_artifact: compatibility_atlas
-  pointer: /authorities/python/oracle_smoke_profile
-  status: verified-import-and-openapi-smoke
-  profile:
-    fastapi: 0.141.1
-    starlette: 1.6.0
-    pydantic: 2.13.4
-    python: CPython 3.12.13
-    pip_check: passed
-    verified_on: 2026-09-27
-  scope:
-    - imported FastAPI from the isolated environment
-    - instantiated an app and registered a GET route
-    - confirmed app.openapi() included that route
-    - confirmed the app was an instance of Starlette
-  parity_result: false
-  note: This smoke verifies the selected oracle environment; it does not establish behavior parity.
-
 unresolved:
   dynamic_python_surface:
     state: unresolved
@@ -271,9 +247,9 @@ unresolved:
     item_id: case-construction-input-contract
     question: Parameterized route construction and controlled dependency-module state are not expressible as input-only workflow stimuli for setup-time errors.
   oracle_behavior_parity:
-    state: first-ASGI-HTTP-slice-exact; ten-of-ten cases passed; broader public API parity pending
+    state: first-slice-scope-defined; broader-public-API-parity-pending
     evidence_ref: python_asgi_workflow
-    question: The first request-to-response slice passes; parity beyond its ten cases remains unverified.
+    question: The first request-to-response slice has ten input cases; broader public API parity remains unverified.
   starlette_rs_crosswalk:
     state: source-mapped; public-surface review unresolved
     source_artifact: compatibility_atlas
@@ -285,10 +261,10 @@ unresolved:
     pointer: /unresolved_compatibility_points
     item_id: starlette-rs-target-revision
   python_asgi_workflow:
-    state: HTTP-and-WebSocket-v2-oracle-and-comparator-present; ten-case HTTP slice exact parity; broader target parity pending
+    state: HTTP-and-WebSocket-v2-oracle-target-and-comparator-capabilities-defined
     schema_state: v2 strict inputs cover HTTP and WebSocket sessions; matching result and comparison schemas are consumed by the runner
-    runner_state: pinned-source oracle and identity-checked target worker match on all ten first-slice HTTP cases; broader target API coverage pending
-    comparator_state: exact-selector-comparator-implemented; first-slice comparison passed ten of ten cases
+    runner_state: pinned-source oracle and identity-checked target workers are defined; target API behavior beyond the first-slice scope remains pending
+    comparator_state: exact-selector comparison is implemented; execution outcomes are stored in ignored parity-results artifacts
     schema_id: fastapi-rs/python-asgi-workflow@2
     schema_path: tests/fixtures/schemas/python-asgi-workflow-v2.schema.json
     schema_sha256: d4e54fe337eb941ac027145d9c18d806c52a1c15b0f758be5a76b1da56f88e74
@@ -298,8 +274,8 @@ unresolved:
     comparison_schema_id: fastapi-rs/python-asgi-comparison@2
     comparison_schema_path: tests/fixtures/schemas/python-asgi-comparison-v2.schema.json
     comparison_schema_sha256: 3e9cb95f0786f370f795e65316e8c69c7b23c9f0ce613e40c40ae8fe987d84c3
-    input_state: HTTP and WebSocket workflows validated; pinned FastAPI 0.141.1 / Starlette 1.6.0 oracle and Rust target match on the ten-case first HTTP slice
-    oracle_environment: .venv-oracle prepared from FastAPI 0.141.1 lock with local Starlette 1.6.0 override
+    input_state: HTTP and WebSocket workflow schemas define stimuli; the first HTTP slice has ten input-only cases
+    oracle_environment: isolated environment from the FastAPI 0.141.1 lock with local Starlette 1.6.0 override
     recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
     recipe_sha256: 18867dd5a0ffa68530bd606a246e113b605ac178bbdf07de46ce3fd5160ef3d2
     first_slice_workload:
@@ -325,12 +301,11 @@ unresolved:
     pointer: /unresolved_compatibility_points
     item_id: fixture-recipe-execution-contract
     atlas_question_narrowing: >-
-      Ten input-only cases now match against the pinned source oracle and
-      identity-checked Rust target, covering valid and invalid requests,
-      chunked ASGI bodies, required inputs, malformed JSON, aggregated
-      validation, JSON media-type suffix handling, and OpenAPI. All ten
-      selected observations match exactly. This is a first vertical slice;
-      the broader public API remains pending.
+      Ten input-only cases cover valid and invalid requests, chunked ASGI
+      bodies, required inputs, malformed JSON, aggregated validation, JSON
+      media-type suffix handling, and OpenAPI. They define a first vertical
+      slice; run outcomes belong in ignored parity-results artifacts and the
+      broader public API remains pending.
   python_asgi_workflow_v3:
     state: schema-and-runner-present; 15 indexed v3 workflows include constructor, WebSocket, and lifecycle cases
     schema_id: fastapi-rs/python-asgi-workflow@3
@@ -443,7 +418,6 @@ api_surface_contract:
     symbols_with_alias_refs: 39
     symbols_with_deprecation_refs: 11
     symbols_with_error_contract_refs: 12
-    target_bindings_implemented: 0
   symbols:
   - id: fastapi.APIRouter
     kind: import_binding
@@ -526,7 +500,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/0
         - /api_candidates/1058
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.BackgroundTasks
     kind: import_binding
@@ -588,7 +562,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1
         - /api_candidates/243
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.Body
     kind: import_binding
@@ -645,7 +619,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/2
         - /api_candidates/926
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.Cookie
     kind: import_binding
@@ -704,7 +678,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/3
         - /api_candidates/928
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.Depends
     kind: import_binding
@@ -770,7 +744,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/4
         - /api_candidates/929
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.FastAPI
     kind: import_binding
@@ -908,7 +882,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/5
         - /api_candidates/186
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.File
     kind: import_binding
@@ -961,7 +935,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/6
         - /api_candidates/932
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.Form
     kind: import_binding
@@ -1020,7 +994,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/7
         - /api_candidates/933
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.HTTPException
     kind: import_binding
@@ -1092,7 +1066,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/8
         - /api_candidates/530
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.Header
     kind: import_binding
@@ -1151,7 +1125,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/9
         - /api_candidates/934
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.Path
     kind: import_binding
@@ -1210,7 +1184,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/10
         - /api_candidates/936
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.Query
     kind: import_binding
@@ -1269,7 +1243,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/11
         - /api_candidates/937
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.Request
     kind: import_binding
@@ -1329,7 +1303,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/12
         - /api_candidates/995
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.Response
     kind: import_binding
@@ -1396,7 +1370,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/13
         - /api_candidates/1007
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.Security
     kind: import_binding
@@ -1450,7 +1424,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/14
         - /api_candidates/938
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.UploadFile
     kind: import_binding
@@ -1508,7 +1482,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/15
         - /api_candidates/283
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.WebSocket
     kind: import_binding
@@ -1562,7 +1536,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/16
         - /api_candidates/1590
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.WebSocketDisconnect
     kind: import_binding
@@ -1617,7 +1591,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/17
         - /api_candidates/1591
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.WebSocketException
     kind: import_binding
@@ -1676,7 +1650,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/18
         - /api_candidates/549
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.__version__
     kind: value
@@ -1713,7 +1687,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/20
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.applications.FastAPI
     kind: class
@@ -1788,7 +1762,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/186
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.applications.FastAPI.__call__
     kind: protocol_method
@@ -1832,7 +1806,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/187
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.applications.FastAPI.__init__
     kind: protocol_method
@@ -1907,7 +1881,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/188
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.applications.FastAPI.delete
     kind: method
@@ -1982,7 +1956,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/193
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.applications.FastAPI.exception_handler
     kind: method
@@ -2057,7 +2031,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/194
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.applications.FastAPI.frontend
     kind: method
@@ -2132,7 +2106,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/195
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.applications.FastAPI.get
     kind: method
@@ -2207,7 +2181,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/196
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.applications.FastAPI.head
     kind: method
@@ -2282,7 +2256,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/197
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.applications.FastAPI.include_router
     kind: method
@@ -2357,7 +2331,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/198
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.applications.FastAPI.middleware
     kind: method
@@ -2432,7 +2406,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/199
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.applications.FastAPI.on_event
     kind: method
@@ -2507,7 +2481,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/200
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.applications.FastAPI.openapi
     kind: method
@@ -2582,7 +2556,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/201
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.applications.FastAPI.options
     kind: method
@@ -2657,7 +2631,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/202
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.applications.FastAPI.patch
     kind: method
@@ -2732,7 +2706,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/203
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.applications.FastAPI.post
     kind: method
@@ -2807,7 +2781,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/204
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.applications.FastAPI.put
     kind: method
@@ -2882,7 +2856,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/205
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.applications.FastAPI.trace
     kind: method
@@ -2957,7 +2931,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/207
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.applications.FastAPI.websocket
     kind: method
@@ -3029,7 +3003,7 @@ api_surface_contract:
     - websocket.close_reason
     - websocket.event_order
     - websocket.messages
-    behavior_contract_state: reviewed-operation-and-documentation-links; implementation pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.applications.FastAPI.websocket
@@ -3038,7 +3012,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/208
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.background.BackgroundTasks
     kind: class
@@ -3091,7 +3065,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/243
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.background.BackgroundTasks.add_task
     kind: method
@@ -3164,7 +3138,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/244
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.datastructures.UploadFile
     kind: class
@@ -3215,7 +3189,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/283
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.datastructures.UploadFile.close
     kind: method
@@ -3267,7 +3241,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/287
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.datastructures.UploadFile.content_type
     kind: field
@@ -3318,7 +3292,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/288
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.datastructures.UploadFile.file
     kind: field
@@ -3369,7 +3343,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/289
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.datastructures.UploadFile.filename
     kind: field
@@ -3420,7 +3394,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/290
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.datastructures.UploadFile.headers
     kind: field
@@ -3471,7 +3445,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/291
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.datastructures.UploadFile.read
     kind: method
@@ -3523,7 +3497,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/292
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.datastructures.UploadFile.seek
     kind: method
@@ -3575,7 +3549,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/293
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.datastructures.UploadFile.size
     kind: field
@@ -3626,7 +3600,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/294
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.datastructures.UploadFile.write
     kind: method
@@ -3678,7 +3652,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/295
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.encoders.jsonable_encoder
     kind: function
@@ -3727,7 +3701,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/504
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.exception_handlers.http_exception_handler
     kind: async_function
@@ -3776,7 +3750,7 @@ api_surface_contract:
     - http.body.json
     - http.headers.ordered
     - http.status
-    behavior_contract_state: reviewed-operation-and-documentation-links; implementation pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.exception_handlers.http_exception_handler
@@ -3785,7 +3759,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/513
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.exception_handlers.request_validation_exception_handler
     kind: async_function
@@ -3837,7 +3811,7 @@ api_surface_contract:
     - http.status
     - validation.error_class
     - validation.error_details
-    behavior_contract_state: reviewed-operation-and-documentation-links; implementation pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.exception_handlers.request_validation_exception_handler
@@ -3846,7 +3820,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/516
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.exceptions.HTTPException
     kind: class
@@ -3902,7 +3876,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/530
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.exceptions.HTTPException.__init__
     kind: protocol_method
@@ -3984,7 +3958,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/531
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.exceptions.RequestValidationError
     kind: class
@@ -4031,7 +4005,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/535
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.exceptions.ValidationException.errors
     kind: method
@@ -4100,7 +4074,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/547
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.exceptions.WebSocketException
     kind: class
@@ -4157,7 +4131,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/549
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.exceptions.WebSocketException.__init__
     kind: protocol_method
@@ -4226,7 +4200,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/550
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.middleware.cors.CORSMiddleware
     kind: import_binding
@@ -4271,7 +4245,7 @@ api_surface_contract:
         kind: direct_starlette_reexport
         source_candidate_refs:
         - /api_candidates/565
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.middleware.gzip.GZipMiddleware
     kind: import_binding
@@ -4316,7 +4290,7 @@ api_surface_contract:
         kind: direct_starlette_reexport
         source_candidate_refs:
         - /api_candidates/566
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.middleware.httpsredirect.HTTPSRedirectMiddleware
     kind: import_binding
@@ -4361,7 +4335,7 @@ api_surface_contract:
         kind: direct_starlette_reexport
         source_candidate_refs:
         - /api_candidates/567
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.middleware.trustedhost.TrustedHostMiddleware
     kind: import_binding
@@ -4406,7 +4380,7 @@ api_surface_contract:
         kind: direct_starlette_reexport
         source_candidate_refs:
         - /api_candidates/568
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.docs.get_redoc_html
     kind: function
@@ -4461,7 +4435,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/578
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.docs.get_swagger_ui_html
     kind: function
@@ -4511,7 +4485,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/579
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.docs.get_swagger_ui_oauth2_redirect_html
     kind: function
@@ -4561,7 +4535,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/580
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.docs.swagger_ui_default_parameters
     kind: value
@@ -4610,7 +4584,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/583
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.APIKey
     kind: class
@@ -4662,7 +4636,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/584
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.APIKey.in_
     kind: field
@@ -4710,7 +4684,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/585
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.APIKey.name
     kind: field
@@ -4758,7 +4732,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/586
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.APIKey.type_
     kind: field
@@ -4806,7 +4780,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/587
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.APIKeyIn
     kind: class
@@ -4854,7 +4828,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/588
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.APIKeyIn.cookie
     kind: field
@@ -4902,7 +4876,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/589
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.APIKeyIn.header
     kind: field
@@ -4950,7 +4924,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/590
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.APIKeyIn.query
     kind: field
@@ -4998,7 +4972,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/591
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.BaseModelWithConfig
     kind: class
@@ -5046,7 +5020,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/596
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Components
     kind: class
@@ -5094,7 +5068,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/599
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Components.callbacks
     kind: field
@@ -5142,7 +5116,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/600
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Components.examples
     kind: field
@@ -5190,7 +5164,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/601
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Components.headers
     kind: field
@@ -5238,7 +5212,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/602
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Components.links
     kind: field
@@ -5286,7 +5260,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/603
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Components.parameters
     kind: field
@@ -5334,7 +5308,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/604
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Components.pathItems
     kind: field
@@ -5382,7 +5356,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/605
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Components.requestBodies
     kind: field
@@ -5430,7 +5404,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/606
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Components.responses
     kind: field
@@ -5478,7 +5452,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/607
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Components.schemas
     kind: field
@@ -5526,7 +5500,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/608
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Components.securitySchemes
     kind: field
@@ -5574,7 +5548,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/609
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Contact
     kind: class
@@ -5622,7 +5596,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/610
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Contact.email
     kind: field
@@ -5670,7 +5644,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/611
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Contact.name
     kind: field
@@ -5718,7 +5692,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/612
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Contact.url
     kind: field
@@ -5766,7 +5740,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/613
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Discriminator
     kind: class
@@ -5814,7 +5788,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/614
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Discriminator.mapping
     kind: field
@@ -5862,7 +5836,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/615
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Discriminator.propertyName
     kind: field
@@ -5910,7 +5884,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/616
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Encoding
     kind: class
@@ -5958,7 +5932,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/617
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Encoding.allowReserved
     kind: field
@@ -6006,7 +5980,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/618
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Encoding.contentType
     kind: field
@@ -6054,7 +6028,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/619
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Encoding.explode
     kind: field
@@ -6102,7 +6076,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/620
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Encoding.headers
     kind: field
@@ -6150,7 +6124,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/621
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Encoding.style
     kind: field
@@ -6198,7 +6172,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/622
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Example
     kind: class
@@ -6246,7 +6220,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/624
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Example.__pydantic_config__
     kind: field
@@ -6294,7 +6268,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/625
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Example.description
     kind: field
@@ -6342,7 +6316,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/626
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Example.externalValue
     kind: field
@@ -6390,7 +6364,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/627
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Example.summary
     kind: field
@@ -6438,7 +6412,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/628
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Example.value
     kind: field
@@ -6486,7 +6460,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/629
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.ExternalDocumentation
     kind: class
@@ -6534,7 +6508,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/630
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.ExternalDocumentation.description
     kind: field
@@ -6582,7 +6556,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/631
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.ExternalDocumentation.url
     kind: field
@@ -6630,7 +6604,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/632
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.HTTPBase
     kind: class
@@ -6678,7 +6652,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/635
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.HTTPBase.scheme
     kind: field
@@ -6726,7 +6700,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/636
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.HTTPBase.type_
     kind: field
@@ -6774,7 +6748,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/637
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.HTTPBearer
     kind: class
@@ -6822,7 +6796,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/638
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.HTTPBearer.bearerFormat
     kind: field
@@ -6870,7 +6844,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/639
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.HTTPBearer.scheme
     kind: field
@@ -6918,7 +6892,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/640
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Header
     kind: class
@@ -6966,7 +6940,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/641
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Info
     kind: class
@@ -7014,7 +6988,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/642
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Info.contact
     kind: field
@@ -7062,7 +7036,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/643
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Info.description
     kind: field
@@ -7110,7 +7084,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/644
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Info.license
     kind: field
@@ -7158,7 +7132,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/645
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Info.summary
     kind: field
@@ -7206,7 +7180,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/646
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Info.termsOfService
     kind: field
@@ -7254,7 +7228,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/647
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Info.title
     kind: field
@@ -7302,7 +7276,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/648
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Info.version
     kind: field
@@ -7350,7 +7324,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/649
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.License
     kind: class
@@ -7398,7 +7372,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/651
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.License.identifier
     kind: field
@@ -7446,7 +7420,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/652
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.License.name
     kind: field
@@ -7494,7 +7468,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/653
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.License.url
     kind: field
@@ -7542,7 +7516,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/654
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Link
     kind: class
@@ -7590,7 +7564,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/655
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Link.description
     kind: field
@@ -7638,7 +7612,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/656
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Link.operationId
     kind: field
@@ -7686,7 +7660,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/657
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Link.operationRef
     kind: field
@@ -7734,7 +7708,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/658
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Link.parameters
     kind: field
@@ -7782,7 +7756,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/659
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Link.requestBody
     kind: field
@@ -7830,7 +7804,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/660
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Link.server
     kind: field
@@ -7878,7 +7852,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/661
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.MediaType
     kind: class
@@ -7926,7 +7900,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/664
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.MediaType.encoding
     kind: field
@@ -7974,7 +7948,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/665
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.MediaType.example
     kind: field
@@ -8022,7 +7996,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/666
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.MediaType.examples
     kind: field
@@ -8070,7 +8044,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/667
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.MediaType.schema_
     kind: field
@@ -8118,7 +8092,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/668
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.OAuth2
     kind: class
@@ -8166,7 +8140,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/669
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.OAuth2.flows
     kind: field
@@ -8214,7 +8188,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/670
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.OAuth2.type_
     kind: field
@@ -8262,7 +8236,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/671
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.OAuthFlow
     kind: class
@@ -8310,7 +8284,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/672
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.OAuthFlow.refreshUrl
     kind: field
@@ -8358,7 +8332,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/673
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.OAuthFlow.scopes
     kind: field
@@ -8406,7 +8380,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/674
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.OAuthFlowAuthorizationCode
     kind: class
@@ -8454,7 +8428,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/675
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.OAuthFlowAuthorizationCode.authorizationUrl
     kind: field
@@ -8502,7 +8476,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/676
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.OAuthFlowAuthorizationCode.tokenUrl
     kind: field
@@ -8550,7 +8524,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/677
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.OAuthFlowClientCredentials
     kind: class
@@ -8598,7 +8572,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/678
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.OAuthFlowClientCredentials.tokenUrl
     kind: field
@@ -8646,7 +8620,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/679
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.OAuthFlowImplicit
     kind: class
@@ -8694,7 +8668,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/680
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.OAuthFlowImplicit.authorizationUrl
     kind: field
@@ -8742,7 +8716,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/681
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.OAuthFlowPassword
     kind: class
@@ -8790,7 +8764,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/682
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.OAuthFlowPassword.tokenUrl
     kind: field
@@ -8838,7 +8812,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/683
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.OAuthFlows
     kind: class
@@ -8886,7 +8860,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/684
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.OAuthFlows.authorizationCode
     kind: field
@@ -8934,7 +8908,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/685
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.OAuthFlows.clientCredentials
     kind: field
@@ -8982,7 +8956,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/686
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.OAuthFlows.implicit
     kind: field
@@ -9030,7 +9004,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/687
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.OAuthFlows.password
     kind: field
@@ -9078,7 +9052,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/688
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.OpenAPI
     kind: class
@@ -9126,7 +9100,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/689
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.OpenAPI.components
     kind: field
@@ -9174,7 +9148,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/690
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.OpenAPI.externalDocs
     kind: field
@@ -9222,7 +9196,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/691
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.OpenAPI.info
     kind: field
@@ -9270,7 +9244,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/692
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.OpenAPI.jsonSchemaDialect
     kind: field
@@ -9318,7 +9292,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/693
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.OpenAPI.openapi
     kind: field
@@ -9366,7 +9340,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/694
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.OpenAPI.paths
     kind: field
@@ -9414,7 +9388,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/695
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.OpenAPI.security
     kind: field
@@ -9462,7 +9436,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/696
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.OpenAPI.servers
     kind: field
@@ -9510,7 +9484,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/697
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.OpenAPI.tags
     kind: field
@@ -9558,7 +9532,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/698
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.OpenAPI.webhooks
     kind: field
@@ -9606,7 +9580,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/699
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.OpenIdConnect
     kind: class
@@ -9654,7 +9628,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/700
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.OpenIdConnect.openIdConnectUrl
     kind: field
@@ -9702,7 +9676,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/701
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.OpenIdConnect.type_
     kind: field
@@ -9750,7 +9724,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/702
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Operation
     kind: class
@@ -9798,7 +9772,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/703
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Operation.callbacks
     kind: field
@@ -9846,7 +9820,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/704
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Operation.deprecated
     kind: field
@@ -9894,7 +9868,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/705
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Operation.description
     kind: field
@@ -9942,7 +9916,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/706
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Operation.externalDocs
     kind: field
@@ -9990,7 +9964,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/707
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Operation.operationId
     kind: field
@@ -10038,7 +10012,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/708
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Operation.parameters
     kind: field
@@ -10086,7 +10060,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/709
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Operation.requestBody
     kind: field
@@ -10134,7 +10108,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/710
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Operation.responses
     kind: field
@@ -10182,7 +10156,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/711
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Operation.security
     kind: field
@@ -10230,7 +10204,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/712
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Operation.servers
     kind: field
@@ -10278,7 +10252,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/713
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Operation.summary
     kind: field
@@ -10326,7 +10300,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/714
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Operation.tags
     kind: field
@@ -10374,7 +10348,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/715
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Parameter
     kind: class
@@ -10422,7 +10396,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/717
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Parameter.in_
     kind: field
@@ -10470,7 +10444,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/718
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Parameter.name
     kind: field
@@ -10518,7 +10492,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/719
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.ParameterBase
     kind: class
@@ -10566,7 +10540,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/720
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.ParameterBase.allowReserved
     kind: field
@@ -10614,7 +10588,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/721
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.ParameterBase.content
     kind: field
@@ -10662,7 +10636,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/722
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.ParameterBase.deprecated
     kind: field
@@ -10710,7 +10684,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/723
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.ParameterBase.description
     kind: field
@@ -10758,7 +10732,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/724
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.ParameterBase.example
     kind: field
@@ -10806,7 +10780,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/725
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.ParameterBase.examples
     kind: field
@@ -10854,7 +10828,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/726
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.ParameterBase.explode
     kind: field
@@ -10902,7 +10876,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/727
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.ParameterBase.required
     kind: field
@@ -10950,7 +10924,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/728
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.ParameterBase.schema_
     kind: field
@@ -10998,7 +10972,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/729
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.ParameterBase.style
     kind: field
@@ -11046,7 +11020,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/730
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.ParameterInType
     kind: class
@@ -11094,7 +11068,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/731
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.ParameterInType.cookie
     kind: field
@@ -11142,7 +11116,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/732
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.ParameterInType.header
     kind: field
@@ -11190,7 +11164,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/733
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.ParameterInType.path
     kind: field
@@ -11238,7 +11212,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/734
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.ParameterInType.query
     kind: field
@@ -11286,7 +11260,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/735
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.PathItem
     kind: class
@@ -11334,7 +11308,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/736
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.PathItem.delete
     kind: field
@@ -11382,7 +11356,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/737
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.PathItem.description
     kind: field
@@ -11430,7 +11404,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/738
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.PathItem.get
     kind: field
@@ -11478,7 +11452,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/739
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.PathItem.head
     kind: field
@@ -11526,7 +11500,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/740
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.PathItem.options
     kind: field
@@ -11574,7 +11548,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/741
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.PathItem.parameters
     kind: field
@@ -11622,7 +11596,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/742
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.PathItem.patch
     kind: field
@@ -11670,7 +11644,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/743
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.PathItem.post
     kind: field
@@ -11718,7 +11692,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/744
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.PathItem.put
     kind: field
@@ -11766,7 +11740,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/745
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.PathItem.ref
     kind: field
@@ -11814,7 +11788,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/746
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.PathItem.servers
     kind: field
@@ -11862,7 +11836,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/747
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.PathItem.summary
     kind: field
@@ -11910,7 +11884,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/748
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.PathItem.trace
     kind: field
@@ -11958,7 +11932,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/749
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Reference
     kind: class
@@ -12006,7 +11980,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/750
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Reference.ref
     kind: field
@@ -12054,7 +12028,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/751
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.RequestBody
     kind: class
@@ -12102,7 +12076,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/752
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.RequestBody.content
     kind: field
@@ -12150,7 +12124,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/753
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.RequestBody.description
     kind: field
@@ -12198,7 +12172,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/754
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.RequestBody.required
     kind: field
@@ -12246,7 +12220,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/755
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Response
     kind: class
@@ -12294,7 +12268,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/756
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Response.content
     kind: field
@@ -12342,7 +12316,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/757
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Response.description
     kind: field
@@ -12390,7 +12364,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/758
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Response.headers
     kind: field
@@ -12438,7 +12412,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/759
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Response.links
     kind: field
@@ -12486,7 +12460,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/760
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema
     kind: class
@@ -12534,7 +12508,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/761
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.additionalProperties
     kind: field
@@ -12582,7 +12556,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/762
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.allOf
     kind: field
@@ -12630,7 +12604,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/763
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.anchor
     kind: field
@@ -12678,7 +12652,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/764
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.anyOf
     kind: field
@@ -12726,7 +12700,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/765
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.comment
     kind: field
@@ -12774,7 +12748,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/766
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.const
     kind: field
@@ -12822,7 +12796,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/767
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.contains
     kind: field
@@ -12870,7 +12844,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/768
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.contentEncoding
     kind: field
@@ -12918,7 +12892,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/769
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.contentMediaType
     kind: field
@@ -12966,7 +12940,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/770
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.contentSchema
     kind: field
@@ -13014,7 +12988,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/771
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.default
     kind: field
@@ -13062,7 +13036,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/772
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.defs
     kind: field
@@ -13110,7 +13084,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/773
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.dependentRequired
     kind: field
@@ -13158,7 +13132,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/774
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.dependentSchemas
     kind: field
@@ -13206,7 +13180,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/775
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.deprecated
     kind: field
@@ -13254,7 +13228,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/776
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.description
     kind: field
@@ -13302,7 +13276,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/777
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.discriminator
     kind: field
@@ -13350,7 +13324,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/778
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.dynamicAnchor
     kind: field
@@ -13398,7 +13372,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/779
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.dynamicRef
     kind: field
@@ -13446,7 +13420,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/780
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.else_
     kind: field
@@ -13494,7 +13468,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/781
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.enum
     kind: field
@@ -13542,7 +13516,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/782
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.example
     kind: field
@@ -13590,7 +13564,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/783
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.examples
     kind: field
@@ -13638,7 +13612,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/784
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.exclusiveMaximum
     kind: field
@@ -13686,7 +13660,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/785
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.exclusiveMinimum
     kind: field
@@ -13734,7 +13708,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/786
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.externalDocs
     kind: field
@@ -13782,7 +13756,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/787
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.format
     kind: field
@@ -13830,7 +13804,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/788
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.id
     kind: field
@@ -13878,7 +13852,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/789
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.if_
     kind: field
@@ -13926,7 +13900,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/790
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.items
     kind: field
@@ -13974,7 +13948,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/791
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.maxContains
     kind: field
@@ -14022,7 +13996,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/792
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.maxItems
     kind: field
@@ -14070,7 +14044,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/793
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.maxLength
     kind: field
@@ -14118,7 +14092,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/794
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.maxProperties
     kind: field
@@ -14166,7 +14140,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/795
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.maximum
     kind: field
@@ -14214,7 +14188,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/796
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.minContains
     kind: field
@@ -14262,7 +14236,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/797
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.minItems
     kind: field
@@ -14310,7 +14284,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/798
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.minLength
     kind: field
@@ -14358,7 +14332,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/799
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.minProperties
     kind: field
@@ -14406,7 +14380,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/800
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.minimum
     kind: field
@@ -14454,7 +14428,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/801
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.multipleOf
     kind: field
@@ -14502,7 +14476,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/802
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.not_
     kind: field
@@ -14550,7 +14524,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/803
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.oneOf
     kind: field
@@ -14598,7 +14572,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/804
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.pattern
     kind: field
@@ -14646,7 +14620,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/805
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.patternProperties
     kind: field
@@ -14694,7 +14668,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/806
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.prefixItems
     kind: field
@@ -14742,7 +14716,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/807
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.properties
     kind: field
@@ -14790,7 +14764,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/808
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.propertyNames
     kind: field
@@ -14838,7 +14812,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/809
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.readOnly
     kind: field
@@ -14886,7 +14860,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/810
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.ref
     kind: field
@@ -14934,7 +14908,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/811
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.required
     kind: field
@@ -14982,7 +14956,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/812
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.schema_
     kind: field
@@ -15030,7 +15004,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/813
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.then
     kind: field
@@ -15078,7 +15052,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/814
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.title
     kind: field
@@ -15126,7 +15100,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/815
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.type
     kind: field
@@ -15174,7 +15148,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/816
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.unevaluatedItems
     kind: field
@@ -15222,7 +15196,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/817
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.unevaluatedProperties
     kind: field
@@ -15270,7 +15244,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/818
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.uniqueItems
     kind: field
@@ -15318,7 +15292,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/819
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.vocabulary
     kind: field
@@ -15366,7 +15340,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/820
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.writeOnly
     kind: field
@@ -15414,7 +15388,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/821
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Schema.xml
     kind: field
@@ -15462,7 +15436,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/822
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.SchemaOrBool
     kind: value
@@ -15510,7 +15484,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/823
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.SchemaType
     kind: value
@@ -15558,7 +15532,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/824
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.SecurityBase
     kind: class
@@ -15606,7 +15580,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/825
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.SecurityBase.description
     kind: field
@@ -15654,7 +15628,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/826
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.SecurityBase.type_
     kind: field
@@ -15702,7 +15676,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/827
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.SecurityScheme
     kind: value
@@ -15750,7 +15724,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/828
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.SecuritySchemeType
     kind: class
@@ -15798,7 +15772,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/829
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.SecuritySchemeType.apiKey
     kind: field
@@ -15846,7 +15820,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/830
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.SecuritySchemeType.http
     kind: field
@@ -15894,7 +15868,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/831
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.SecuritySchemeType.oauth2
     kind: field
@@ -15942,7 +15916,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/832
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.SecuritySchemeType.openIdConnect
     kind: field
@@ -15990,7 +15964,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/833
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Server
     kind: class
@@ -16038,7 +16012,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/834
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Server.description
     kind: field
@@ -16086,7 +16060,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/835
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Server.url
     kind: field
@@ -16134,7 +16108,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/836
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Server.variables
     kind: field
@@ -16182,7 +16156,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/837
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.ServerVariable
     kind: class
@@ -16230,7 +16204,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/838
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.ServerVariable.default
     kind: field
@@ -16278,7 +16252,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/839
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.ServerVariable.description
     kind: field
@@ -16326,7 +16300,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/840
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.ServerVariable.enum
     kind: field
@@ -16374,7 +16348,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/841
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Tag
     kind: class
@@ -16422,7 +16396,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/842
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Tag.description
     kind: field
@@ -16470,7 +16444,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/843
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Tag.externalDocs
     kind: field
@@ -16518,7 +16492,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/844
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.Tag.name
     kind: field
@@ -16566,7 +16540,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/845
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.XML
     kind: class
@@ -16614,7 +16588,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/848
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.XML.attribute
     kind: field
@@ -16662,7 +16636,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/849
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.XML.name
     kind: field
@@ -16710,7 +16684,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/850
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.XML.namespace
     kind: field
@@ -16758,7 +16732,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/851
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.XML.prefix
     kind: field
@@ -16806,7 +16780,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/852
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.models.XML.wrapped
     kind: field
@@ -16854,7 +16828,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/853
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.utils.generate_operation_id
     kind: function
@@ -16892,7 +16866,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/898
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.utils.get_openapi
     kind: function
@@ -16930,7 +16904,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/906
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.param_functions.Body
     kind: function
@@ -16983,7 +16957,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/926
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.param_functions.Cookie
     kind: function
@@ -17036,7 +17010,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/928
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.param_functions.Depends
     kind: function
@@ -17089,7 +17063,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/929
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.param_functions.File
     kind: function
@@ -17142,7 +17116,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/932
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.param_functions.Form
     kind: function
@@ -17195,7 +17169,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/933
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.param_functions.Header
     kind: function
@@ -17248,7 +17222,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/934
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.param_functions.Path
     kind: function
@@ -17301,7 +17275,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/936
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.param_functions.Query
     kind: function
@@ -17354,7 +17328,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/937
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.param_functions.Security
     kind: function
@@ -17407,7 +17381,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/938
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.params.Body.__init__
     kind: protocol_method
@@ -17459,7 +17433,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/949
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.params.Cookie.__init__
     kind: protocol_method
@@ -17511,7 +17485,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/953
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.params.File.__init__
     kind: protocol_method
@@ -17563,7 +17537,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/964
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.params.Form.__init__
     kind: protocol_method
@@ -17615,7 +17589,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/966
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.params.Header.__init__
     kind: protocol_method
@@ -17667,7 +17641,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/968
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.params.Path.__init__
     kind: protocol_method
@@ -17719,7 +17693,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/981
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.params.Query.__init__
     kind: protocol_method
@@ -17771,7 +17745,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/984
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.requests.HTTPConnection
     kind: import_binding
@@ -17822,7 +17796,7 @@ api_surface_contract:
         kind: direct_starlette_reexport
         source_candidate_refs:
         - /api_candidates/994
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.requests.Request
     kind: import_binding
@@ -17875,7 +17849,7 @@ api_surface_contract:
         kind: direct_starlette_reexport
         source_candidate_refs:
         - /api_candidates/995
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.responses.FileResponse
     kind: import_binding
@@ -17937,7 +17911,7 @@ api_surface_contract:
         kind: direct_starlette_reexport
         source_candidate_refs:
         - /api_candidates/999
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.responses.HTMLResponse
     kind: import_binding
@@ -17991,7 +17965,7 @@ api_surface_contract:
         kind: direct_starlette_reexport
         source_candidate_refs:
         - /api_candidates/1000
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.responses.JSONResponse
     kind: import_binding
@@ -18045,7 +18019,7 @@ api_surface_contract:
         kind: direct_starlette_reexport
         source_candidate_refs:
         - /api_candidates/1001
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.responses.ORJSONResponse
     kind: class
@@ -18099,7 +18073,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1002
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.responses.ORJSONResponse.render
     kind: method
@@ -18153,7 +18127,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1003
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.responses.PlainTextResponse
     kind: import_binding
@@ -18207,7 +18181,7 @@ api_surface_contract:
         kind: direct_starlette_reexport
         source_candidate_refs:
         - /api_candidates/1004
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.responses.RedirectResponse
     kind: import_binding
@@ -18261,7 +18235,7 @@ api_surface_contract:
         kind: direct_starlette_reexport
         source_candidate_refs:
         - /api_candidates/1006
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.responses.Response
     kind: import_binding
@@ -18325,7 +18299,7 @@ api_surface_contract:
         kind: direct_starlette_reexport
         source_candidate_refs:
         - /api_candidates/1007
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.responses.StreamingResponse
     kind: import_binding
@@ -18379,7 +18353,7 @@ api_surface_contract:
         kind: direct_starlette_reexport
         source_candidate_refs:
         - /api_candidates/1008
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.responses.UJSONResponse
     kind: class
@@ -18433,7 +18407,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1009
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.responses.UJSONResponse.render
     kind: method
@@ -18487,7 +18461,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1010
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.routing.APIRoute
     kind: class
@@ -18524,7 +18498,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1020
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.routing.APIRoute.get_route_handler
     kind: method
@@ -18575,7 +18549,7 @@ api_surface_contract:
     - http.status
     - validation.error_class
     - validation.error_details
-    behavior_contract_state: reviewed-operation-and-documentation-links; implementation pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.routing.APIRoute.get_route_handler
@@ -18584,7 +18558,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1031
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.routing.APIRouter
     kind: class
@@ -18647,7 +18621,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1058
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.routing.APIRouter.__init__
     kind: protocol_method
@@ -18710,7 +18684,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1059
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.routing.APIRouter.add_event_handler
     kind: method
@@ -18748,7 +18722,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1070
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.routing.APIRouter.delete
     kind: method
@@ -18811,7 +18785,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1075
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.routing.APIRouter.frontend
     kind: method
@@ -18874,7 +18848,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1076
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.routing.APIRouter.get
     kind: method
@@ -18937,7 +18911,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1077
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.routing.APIRouter.head
     kind: method
@@ -19000,7 +18974,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1079
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.routing.APIRouter.include_router
     kind: method
@@ -19063,7 +19037,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1080
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.routing.APIRouter.on_event
     kind: method
@@ -19126,7 +19100,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1082
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.routing.APIRouter.options
     kind: method
@@ -19189,7 +19163,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1083
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.routing.APIRouter.patch
     kind: method
@@ -19252,7 +19226,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1084
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.routing.APIRouter.post
     kind: method
@@ -19315,7 +19289,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1085
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.routing.APIRouter.put
     kind: method
@@ -19378,7 +19352,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1086
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.routing.APIRouter.trace
     kind: method
@@ -19441,7 +19415,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1088
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.routing.APIRouter.websocket
     kind: method
@@ -19501,7 +19475,7 @@ api_surface_contract:
     - websocket.close_code
     - websocket.close_reason
     - websocket.messages
-    behavior_contract_state: reviewed-operation-and-documentation-links; implementation pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.routing.APIRouter.websocket
@@ -19510,7 +19484,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1089
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.routing.APIRouter.websocket_route
     kind: method
@@ -19554,7 +19528,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1090
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.routing.iter_route_contexts
     kind: function
@@ -19598,7 +19572,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1390
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.APIKeyCookie
     kind: import_binding
@@ -19665,7 +19639,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1409
         - /api_candidates/1430
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.APIKeyHeader
     kind: import_binding
@@ -19722,7 +19696,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1410
         - /api_candidates/1433
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.APIKeyQuery
     kind: import_binding
@@ -19779,7 +19753,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1411
         - /api_candidates/1437
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.HTTPAuthorizationCredentials
     kind: import_binding
@@ -19836,7 +19810,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1412
         - /api_candidates/1453
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.HTTPBasic
     kind: import_binding
@@ -19893,7 +19867,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1413
         - /api_candidates/1463
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.HTTPBasicCredentials
     kind: import_binding
@@ -19950,7 +19924,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1414
         - /api_candidates/1467
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.HTTPBearer
     kind: import_binding
@@ -20007,7 +19981,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1415
         - /api_candidates/1470
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.HTTPDigest
     kind: import_binding
@@ -20064,7 +20038,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1416
         - /api_candidates/1474
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.OAuth2
     kind: import_binding
@@ -20121,7 +20095,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1417
         - /api_candidates/1490
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.OAuth2AuthorizationCodeBearer
     kind: import_binding
@@ -20178,7 +20152,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1418
         - /api_candidates/1494
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.OAuth2PasswordBearer
     kind: import_binding
@@ -20235,7 +20209,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1419
         - /api_candidates/1498
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.OAuth2PasswordRequestForm
     kind: import_binding
@@ -20292,7 +20266,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1420
         - /api_candidates/1501
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.OAuth2PasswordRequestFormStrict
     kind: import_binding
@@ -20349,7 +20323,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1421
         - /api_candidates/1503
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.OpenIdConnect
     kind: import_binding
@@ -20406,7 +20380,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1422
         - /api_candidates/1516
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.SecurityScopes
     kind: import_binding
@@ -20463,7 +20437,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1423
         - /api_candidates/1508
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.api_key.APIKeyBase.make_not_authenticated_error
     kind: method
@@ -20533,7 +20507,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1428
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.api_key.APIKeyCookie
     kind: class
@@ -20589,7 +20563,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1430
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.api_key.APIKeyCookie.__call__
     kind: protocol_method
@@ -20646,7 +20620,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1431
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.api_key.APIKeyCookie.__init__
     kind: protocol_method
@@ -20703,7 +20677,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1432
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.api_key.APIKeyHeader
     kind: class
@@ -20759,7 +20733,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1433
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.api_key.APIKeyHeader.__call__
     kind: protocol_method
@@ -20816,7 +20790,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1434
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.api_key.APIKeyHeader.__init__
     kind: protocol_method
@@ -20873,7 +20847,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1435
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.api_key.APIKeyQuery
     kind: class
@@ -20929,7 +20903,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1437
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.api_key.APIKeyQuery.__call__
     kind: protocol_method
@@ -20986,7 +20960,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1438
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.api_key.APIKeyQuery.__init__
     kind: protocol_method
@@ -21043,7 +21017,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1439
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.http.HTTPAuthorizationCredentials
     kind: class
@@ -21099,7 +21073,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1453
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.http.HTTPBase.make_not_authenticated_error
     kind: method
@@ -21164,7 +21138,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1460
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.http.HTTPBasic
     kind: class
@@ -21220,7 +21194,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1463
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.http.HTTPBasic.__call__
     kind: protocol_method
@@ -21277,7 +21251,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1464
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.http.HTTPBasic.__init__
     kind: protocol_method
@@ -21334,7 +21308,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1465
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.http.HTTPBasicCredentials
     kind: class
@@ -21390,7 +21364,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1467
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.http.HTTPBearer
     kind: class
@@ -21446,7 +21420,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1470
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.http.HTTPBearer.__call__
     kind: protocol_method
@@ -21503,7 +21477,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1471
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.http.HTTPBearer.__init__
     kind: protocol_method
@@ -21560,7 +21534,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1472
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.http.HTTPDigest
     kind: class
@@ -21616,7 +21590,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1474
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.http.HTTPDigest.__call__
     kind: protocol_method
@@ -21673,7 +21647,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1475
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.http.HTTPDigest.__init__
     kind: protocol_method
@@ -21730,7 +21704,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1476
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.oauth2.OAuth2
     kind: class
@@ -21786,7 +21760,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1490
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.oauth2.OAuth2.__call__
     kind: protocol_method
@@ -21843,7 +21817,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1491
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.oauth2.OAuth2.__init__
     kind: protocol_method
@@ -21900,7 +21874,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1492
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.oauth2.OAuth2.make_not_authenticated_error
     kind: method
@@ -21965,7 +21939,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1493
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.oauth2.OAuth2AuthorizationCodeBearer
     kind: class
@@ -22021,7 +21995,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1494
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.oauth2.OAuth2AuthorizationCodeBearer.__call__
     kind: protocol_method
@@ -22078,7 +22052,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1495
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.oauth2.OAuth2AuthorizationCodeBearer.__init__
     kind: protocol_method
@@ -22135,7 +22109,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1496
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.oauth2.OAuth2PasswordBearer
     kind: class
@@ -22191,7 +22165,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1498
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.oauth2.OAuth2PasswordBearer.__call__
     kind: protocol_method
@@ -22248,7 +22222,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1499
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.oauth2.OAuth2PasswordBearer.__init__
     kind: protocol_method
@@ -22305,7 +22279,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1500
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.oauth2.OAuth2PasswordRequestForm
     kind: class
@@ -22361,7 +22335,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1501
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.oauth2.OAuth2PasswordRequestForm.__init__
     kind: protocol_method
@@ -22418,7 +22392,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1502
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.oauth2.OAuth2PasswordRequestFormStrict
     kind: class
@@ -22474,7 +22448,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1503
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.oauth2.OAuth2PasswordRequestFormStrict.__init__
     kind: protocol_method
@@ -22531,7 +22505,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1504
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.oauth2.SecurityScopes
     kind: class
@@ -22587,7 +22561,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1508
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.oauth2.SecurityScopes.__init__
     kind: protocol_method
@@ -22658,7 +22632,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1509
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.open_id_connect_url.OpenIdConnect
     kind: class
@@ -22714,7 +22688,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1516
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.open_id_connect_url.OpenIdConnect.__call__
     kind: protocol_method
@@ -22771,7 +22745,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1517
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.open_id_connect_url.OpenIdConnect.__init__
     kind: protocol_method
@@ -22828,7 +22802,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1518
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.security.open_id_connect_url.OpenIdConnect.make_not_authenticated_error
     kind: method
@@ -22893,7 +22867,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1519
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.sse.EventSourceResponse
     kind: class
@@ -22949,7 +22923,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1529
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.sse.ServerSentEvent
     kind: class
@@ -23000,7 +22974,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1533
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.staticfiles.StaticFiles
     kind: import_binding
@@ -23045,7 +23019,7 @@ api_surface_contract:
         kind: direct_starlette_reexport
         source_candidate_refs:
         - /api_candidates/1550
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.status
     kind: import_binding
@@ -23097,7 +23071,7 @@ api_surface_contract:
         kind: direct_starlette_reexport
         source_candidate_refs:
         - /api_candidates/1551
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.templating.Jinja2Templates
     kind: import_binding
@@ -23143,7 +23117,7 @@ api_surface_contract:
         kind: direct_starlette_reexport
         source_candidate_refs:
         - /api_candidates/1552
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.testclient.TestClient
     kind: import_binding
@@ -23189,7 +23163,7 @@ api_surface_contract:
         kind: direct_starlette_reexport
         source_candidate_refs:
         - /api_candidates/1553
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.utils.generate_operation_id_for_path
     kind: function
@@ -23227,7 +23201,7 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1582
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.websockets.WebSocket
     kind: import_binding
@@ -23277,7 +23251,7 @@ api_surface_contract:
         kind: direct_starlette_reexport
         source_candidate_refs:
         - /api_candidates/1590
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.websockets.WebSocketDisconnect
     kind: import_binding
@@ -23331,7 +23305,7 @@ api_surface_contract:
         kind: direct_starlette_reexport
         source_candidate_refs:
         - /api_candidates/1591
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
   - id: fastapi.websockets.WebSocketState
     kind: import_binding
@@ -23381,6 +23355,6 @@ api_surface_contract:
         kind: direct_starlette_reexport
         source_candidate_refs:
         - /api_candidates/1592
-      status: unimplemented
+      status: full-contract-not-established
       rust_binding: null
 # END GENERATED PER-SYMBOL API CONTRACT

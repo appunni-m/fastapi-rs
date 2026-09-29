@@ -1,9 +1,9 @@
 # FastAPI-RS
 
-A Rust reimplementation of FastAPI, intended to provide the existing `fastapi`
-Python import surface through a pass-through facade. The Rust workspace and
-private PyO3 binding now build, but the public `fastapi` package and its
-behavior are not implemented. No compatibility or parity claim is made.
+A Rust reimplementation of FastAPI that provides the existing `fastapi` import
+surface through a pass-through facade. The initial native vertical slice
+implements a scoped HTTP request-to-response flow; full FastAPI compatibility
+remains in progress, so no overall compatibility claim is made.
 
 ## Compatibility target
 
@@ -64,14 +64,15 @@ behavior are not implemented. No compatibility or parity claim is made.
 - [Parity and benchmark plan](docs/PARITY_BENCHMARK_PLAN.md) and
   [license analysis](docs/LICENSING.md) define the next contract and release work.
 
-The public `fastapi` implementation and complete operation-level contract are
-not implemented. The isolated target worker and exact comparator are present,
-but target execution stops until the public facade exists; no source/target
-comparison has run against two live products. Author input-only workflow
-recipes in `tests/fixtures/input-recipes/parity/`; run
+The public `fastapi` package is a thin direct re-export from the native module;
+the initial request/response behavior is implemented in Rust. The isolated
+target worker and exact comparator are present, but the operation-level
+contract and full public API implementation remain incomplete. Author
+input-only workflow recipes in `tests/fixtures/input-recipes/parity/`; run
 `make parity-inputs` to materialize ignored JSON before validation or execution.
 Recipes contain stimuli only, never expected output. Oracle artifacts under
-`parity-results/` are source observations rather than parity evidence.
+`parity-results/` are per-run evidence; the atlas and manifest record fixture
+scope and runner capability, not pass/fail results.
 
 Use `make parity-prepare-oracle` for the core environment and
 `make parity-validate` to check source evidence and workflow links. The
@@ -87,8 +88,9 @@ or parity result.
 
 - `fastapi-rs/` owns Rust implementation behavior and integrates the separate
   `starlette-rs` crate.
-- `fastapi-rs-py/` owns the private PyO3 extension and will expose the thin
-  Python `fastapi` facade after its operation contract is complete.
+- `fastapi-rs-py/` owns the private PyO3 extension and thin Python `fastapi`
+  facade. Keep Python runtime modules to direct native re-exports; place all
+  FastAPI-specific behavior and control flow in `fastapi-rs/`.
 - `tests/fixtures/` contains the source inventory, compatibility atlas, and
   input-only workflow definitions. Run `make help` for maintained build and
   quality commands.

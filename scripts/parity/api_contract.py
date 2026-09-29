@@ -562,7 +562,7 @@ def build_api_surface_contract(
                 "feature_ids": sorted(feature_ids),
                 "observation_selectors": sorted(selectors),
                 "behavior_contract_state": (
-                    "reviewed-operation-and-documentation-links; implementation pending"
+                    "reviewed-operation-and-documentation-links; full compatibility pending"
                     if reviewed_operation
                     else "documentation-fixture-design-linked; operation-level review pending"
                     if documentation_refs
@@ -576,7 +576,7 @@ def build_api_surface_contract(
                         "kind": owner_reason,
                         "source_candidate_refs": owner_source_refs,
                     },
-                    "status": "unimplemented",
+                    "status": "full-contract-not-established",
                     "rust_binding": None,
                 },
             }
@@ -625,7 +625,6 @@ def build_api_surface_contract(
             "symbols_with_error_contract_refs": sum(
                 bool(symbol["error_contract_refs"]) for symbol in symbols
             ),
-            "target_bindings_implemented": 0,
         },
         "symbols": symbols,
     }
