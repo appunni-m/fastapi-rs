@@ -245,7 +245,9 @@ reviewed_api_contract_overlay:
         dispatchable while omitting it from OpenAPI. Other route decorator
         options and customization hooks remain outside this reviewed slice. An
         explicit non-empty `summary` is emitted in OpenAPI, as sampled by
-        `path-operation-other-verb-summaries-isolated`.
+        `path-operation-other-verb-summaries-isolated`. A non-empty list of
+        string `tags` is emitted as the operation tags by the same workflow;
+        enum-valued and empty tag values remain outside this slice.
     fastapi.applications.FastAPI.trace:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::trace
       source_evidence:
@@ -263,7 +265,9 @@ reviewed_api_contract_overlay:
         dispatchable while omitting it from OpenAPI. Other route decorator
         options and customization hooks remain outside this reviewed slice. An
         explicit non-empty `summary` is emitted in OpenAPI, as sampled by
-        `path-operation-other-verb-summaries-isolated`.
+        `path-operation-other-verb-summaries-isolated`. A non-empty list of
+        string `tags` is emitted as the operation tags by the same workflow;
+        enum-valued and empty tag values remain outside this slice.
     fastapi.applications.FastAPI.head:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::head
       source_evidence:
@@ -283,7 +287,9 @@ reviewed_api_contract_overlay:
         omitting it from OpenAPI. Other route decorator options and customization
         hooks remain outside this reviewed slice. An explicit non-empty
         `summary` is emitted in OpenAPI, as sampled by
-        `path-operation-other-verb-summaries-isolated`.
+        `path-operation-other-verb-summaries-isolated`. A non-empty list of
+        string `tags` is emitted as the operation tags by the same workflow;
+        enum-valued and empty tag values remain outside this slice.
     fastapi.Body:
       rust_binding: fastapi-rs/src/parameters.rs::body
       source_evidence:
@@ -531,8 +537,9 @@ reviewed_api_contract_overlay:
         and omitted values, and other verb decorators, remain outside this
         sample. It accepts non-empty lists of string `tags` and emits the three
         observed operation tag arrays in the same workflow. Empty or omitted
-        tags, enum-valued tags, and tags on other verb decorators remain outside
-        this slice.
+        tags and enum-valued tags remain outside this GET slice. Non-empty
+        string tags on PUT, PATCH, DELETE, OPTIONS, HEAD, and TRACE are sampled
+        by the six-method operation metadata workflow.
     fastapi.applications.FastAPI.post:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::post
       source_evidence:
@@ -573,7 +580,9 @@ reviewed_api_contract_overlay:
         while omitting it from OpenAPI. Other decorator options and customization
         hooks remain outside this reviewed slice. An explicit non-empty
         `summary` is emitted in OpenAPI, as sampled by
-        `path-operation-other-verb-summaries-isolated`.
+        `path-operation-other-verb-summaries-isolated`. A non-empty list of
+        string `tags` is emitted as the operation tags by the same workflow;
+        enum-valued and empty tag values remain outside this slice.
     fastapi.applications.FastAPI.delete:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::delete
       source_evidence:
@@ -592,7 +601,9 @@ reviewed_api_contract_overlay:
         while omitting it from OpenAPI. Other decorator options and customization
         hooks remain outside this reviewed slice. An explicit non-empty
         `summary` is emitted in OpenAPI, as sampled by
-        `path-operation-other-verb-summaries-isolated`.
+        `path-operation-other-verb-summaries-isolated`. A non-empty list of
+        string `tags` is emitted as the operation tags by the same workflow;
+        enum-valued and empty tag values remain outside this slice.
     fastapi.applications.FastAPI.patch:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::patch
       source_evidence:
@@ -611,7 +622,9 @@ reviewed_api_contract_overlay:
         while omitting it from OpenAPI. Other decorator options and customization
         hooks remain outside this reviewed slice. An explicit non-empty
         `summary` is emitted in OpenAPI, as sampled by
-        `path-operation-other-verb-summaries-isolated`.
+        `path-operation-other-verb-summaries-isolated`. A non-empty list of
+        string `tags` is emitted as the operation tags by the same workflow;
+        enum-valued and empty tag values remain outside this slice.
     fastapi.Cookie:
       rust_binding: fastapi-rs/src/parameters.rs::cookie
       source_evidence:
