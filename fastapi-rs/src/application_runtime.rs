@@ -59,7 +59,22 @@ struct FastApiRoute {
     status_code: u16,
     endpoint: Py<PyAny>,
     response_model: Option<Py<PyAny>>,
+    response_model_include: Option<Py<PyAny>>,
+    response_model_exclude: Option<Py<PyAny>>,
+    response_model_by_alias: bool,
+    response_model_exclude_unset: bool,
+    response_model_exclude_defaults: bool,
+    response_model_exclude_none: bool,
     plan: CallablePlan,
+}
+
+struct ResponseModelOptions {
+    include: Option<Py<PyAny>>,
+    exclude: Option<Py<PyAny>>,
+    by_alias: bool,
+    exclude_unset: bool,
+    exclude_defaults: bool,
+    exclude_none: bool,
 }
 
 struct ParameterOpenApiPlan {
@@ -92,26 +107,78 @@ impl PyFastApi {
         }
     }
 
-    #[pyo3(signature = (path, *, response_model = None, status_code = 200))]
+    // lint-exception: PyO3 needs one Rust argument per FastAPI-compatible keyword.
+    #[allow(
+        clippy::too_many_arguments,
+        reason = "preserve the Python route decorator keyword signature"
+    )]
+    #[pyo3(signature = (path, *, response_model = None, status_code = 200, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false))]
     fn post(
         slf: Py<Self>,
         py: Python<'_>,
         path: &str,
         response_model: Option<Py<PyAny>>,
         status_code: u16,
+        response_model_include: Option<Py<PyAny>>,
+        response_model_exclude: Option<Py<PyAny>>,
+        response_model_by_alias: bool,
+        response_model_exclude_unset: bool,
+        response_model_exclude_defaults: bool,
+        response_model_exclude_none: bool,
     ) -> PyResult<Py<PyOperationDecorator>> {
-        operation_decorator(slf, py, path, "POST", response_model, status_code)
+        operation_decorator(
+            slf,
+            py,
+            path,
+            "POST",
+            response_model,
+            status_code,
+            ResponseModelOptions {
+                include: response_model_include,
+                exclude: response_model_exclude,
+                by_alias: response_model_by_alias,
+                exclude_unset: response_model_exclude_unset,
+                exclude_defaults: response_model_exclude_defaults,
+                exclude_none: response_model_exclude_none,
+            },
+        )
     }
 
-    #[pyo3(signature = (path, *, response_model = None, status_code = 200))]
+    // lint-exception: PyO3 needs one Rust argument per FastAPI-compatible keyword.
+    #[allow(
+        clippy::too_many_arguments,
+        reason = "preserve the Python route decorator keyword signature"
+    )]
+    #[pyo3(signature = (path, *, response_model = None, status_code = 200, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false))]
     fn get(
         slf: Py<Self>,
         py: Python<'_>,
         path: &str,
         response_model: Option<Py<PyAny>>,
         status_code: u16,
+        response_model_include: Option<Py<PyAny>>,
+        response_model_exclude: Option<Py<PyAny>>,
+        response_model_by_alias: bool,
+        response_model_exclude_unset: bool,
+        response_model_exclude_defaults: bool,
+        response_model_exclude_none: bool,
     ) -> PyResult<Py<PyOperationDecorator>> {
-        operation_decorator(slf, py, path, "GET", response_model, status_code)
+        operation_decorator(
+            slf,
+            py,
+            path,
+            "GET",
+            response_model,
+            status_code,
+            ResponseModelOptions {
+                include: response_model_include,
+                exclude: response_model_exclude,
+                by_alias: response_model_by_alias,
+                exclude_unset: response_model_exclude_unset,
+                exclude_defaults: response_model_exclude_defaults,
+                exclude_none: response_model_exclude_none,
+            },
+        )
     }
 
     fn openapi(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
@@ -240,6 +307,12 @@ struct PyOperationDecorator {
     method: String,
     response_model: Option<Py<PyAny>>,
     status_code: u16,
+    response_model_include: Option<Py<PyAny>>,
+    response_model_exclude: Option<Py<PyAny>>,
+    response_model_by_alias: bool,
+    response_model_exclude_unset: bool,
+    response_model_exclude_defaults: bool,
+    response_model_exclude_none: bool,
 }
 
 fn operation_decorator(
@@ -249,6 +322,7 @@ fn operation_decorator(
     method: &str,
     response_model: Option<Py<PyAny>>,
     status_code: u16,
+    response_model_options: ResponseModelOptions,
 ) -> PyResult<Py<PyOperationDecorator>> {
     Py::new(
         py,
@@ -258,6 +332,12 @@ fn operation_decorator(
             method: method.to_owned(),
             response_model,
             status_code,
+            response_model_include: response_model_options.include,
+            response_model_exclude: response_model_options.exclude,
+            response_model_by_alias: response_model_options.by_alias,
+            response_model_exclude_unset: response_model_options.exclude_unset,
+            response_model_exclude_defaults: response_model_options.exclude_defaults,
+            response_model_exclude_none: response_model_options.exclude_none,
         },
     )
 }
@@ -285,6 +365,18 @@ impl PyOperationDecorator {
                 .response_model
                 .as_ref()
                 .map(|model| model.clone_ref(py)),
+            response_model_include: self
+                .response_model_include
+                .as_ref()
+                .map(|value| value.clone_ref(py)),
+            response_model_exclude: self
+                .response_model_exclude
+                .as_ref()
+                .map(|value| value.clone_ref(py)),
+            response_model_by_alias: self.response_model_by_alias,
+            response_model_exclude_unset: self.response_model_exclude_unset,
+            response_model_exclude_defaults: self.response_model_exclude_defaults,
+            response_model_exclude_none: self.response_model_exclude_none,
             plan,
         });
         Ok(endpoint)
@@ -1153,10 +1245,29 @@ impl FastApiCall {
                 .import("pydantic")?
                 .getattr("TypeAdapter")?
                 .call1((response_model.bind(py),))?;
-            let validated = adapter.call_method1("validate_python", (result.bind(py),))?;
+            let validation_kwargs = PyDict::new(py);
+            validation_kwargs.set_item("from_attributes", true)?;
+            let validated = adapter.call_method(
+                "validate_python",
+                (result.bind(py),),
+                Some(&validation_kwargs),
+            )?;
             let kwargs = PyDict::new(py);
             kwargs.set_item("mode", "json")?;
-            kwargs.set_item("by_alias", true)?;
+            kwargs.set_item("by_alias", route.response_model_by_alias)?;
+            kwargs.set_item("exclude_unset", route.response_model_exclude_unset)?;
+            kwargs.set_item("exclude_defaults", route.response_model_exclude_defaults)?;
+            kwargs.set_item("exclude_none", route.response_model_exclude_none)?;
+            if let Some(include) = route.response_model_include.as_ref() {
+                kwargs.set_item("include", include.bind(py))?;
+            } else {
+                kwargs.set_item("include", py.None())?;
+            }
+            if let Some(exclude) = route.response_model_exclude.as_ref() {
+                kwargs.set_item("exclude", exclude.bind(py))?;
+            } else {
+                kwargs.set_item("exclude", py.None())?;
+            }
             adapter.call_method("dump_python", (validated,), Some(&kwargs))?
         } else {
             jsonable_encoder_default(py, result.bind(py))?

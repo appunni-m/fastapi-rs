@@ -291,7 +291,16 @@ reviewed_api_contract_overlay:
       source_evidence:
         - {path: fastapi/applications.py, symbol: get}
         - {path: fastapi/routing.py, symbol: serialize_response}
+        - {path: fastapi/_compat/v2.py, symbol: serialize}
       feature_ids: [app-routing, request-validation, response-serialization]
+      observation_selectors: [http.status, http.body.bytes]
+    fastapi.applications.FastAPI.post:
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::post
+      source_evidence:
+        - {path: fastapi/applications.py, symbol: post}
+        - {path: fastapi/routing.py, symbol: serialize_response}
+        - {path: fastapi/_compat/v2.py, symbol: serialize}
+      feature_ids: [app-routing, response-serialization]
       observation_selectors: [http.status, http.body.bytes]
   warning_classification_reviews:
     fastapi.exceptions.FastAPIDeprecationWarning:

@@ -4312,6 +4312,24 @@
       ]
     },
     {
+      "id": "response-model-post-policy-options-review",
+      "input_path": "tests/fixtures/inputs/parity/response-model-post-policy-options-review.json",
+      "input_sha256": "a79ffd5a4744f907ae2e48be0277435cb513b698bee4b5e7b303d8cda33b8d8c",
+      "recipe_path": "tests/fixtures/input-recipes/parity/response-model-post-policy-options-review.yaml",
+      "recipe_sha256": "6aa499e9e7319bbb4f040fddde4dfafababbce603c611a55b4e9ceadb60a1dbb",
+      "workload_path": "tests/fixtures/workloads/response_model_post_policy_options_review.py",
+      "workload_sha256": "d1fb13097489a107dda2249a635c64c507df0f51427b6a0d08c94152e621c676",
+      "case_ids": [
+        "fastapi.response-model.post-policy.nested-include",
+        "fastapi.response-model.post-policy.nested-exclude",
+        "fastapi.response-model.post-policy.exclude-unset",
+        "fastapi.response-model.post-policy.from-attributes",
+        "fastapi.response-model.post-policy.exclude-defaults",
+        "fastapi.response-model.post-policy.field-name-by-alias-disabled",
+        "fastapi.response-model.post-policy.exclude-none"
+      ]
+    },
+    {
       "id": "response-model-return-annotation-focused-upstream",
       "input_path": "tests/fixtures/inputs/parity/response-model-return-annotation-focused-upstream.json",
       "input_sha256": "8164d119f406b93aa5f39dd90404ffda44996a99c72634cd567ed815603ed5fa",
@@ -16415,6 +16433,85 @@
       "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.response-model-orm-dataclass.attribute-backed-response"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/response-model.md",
+      "fixture_id": "fastapi.docs.tutorial-response-model",
+      "workflow_id": "response-model-post-policy-options-review",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 7 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.response-model.post-policy.exclude-defaults",
+        "fastapi.response-model.post-policy.exclude-none",
+        "fastapi.response-model.post-policy.exclude-unset",
+        "fastapi.response-model.post-policy.field-name-by-alias-disabled",
+        "fastapi.response-model.post-policy.from-attributes",
+        "fastapi.response-model.post-policy.nested-exclude",
+        "fastapi.response-model.post-policy.nested-include"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_read_with_orm_mode.py",
+      "fixture_id": "fastapi.test.test-read-with-orm-mode",
+      "workflow_id": "response-model-post-policy-options-review",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.response-model.post-policy.from-attributes"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_response_by_alias.py",
+      "fixture_id": "fastapi.test.test-response-by-alias",
+      "workflow_id": "response-model-post-policy-options-review",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.response-model.post-policy.field-name-by-alias-disabled"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_response_model_include_exclude.py",
+      "fixture_id": "fastapi.test.test-response-model-include-exclude",
+      "workflow_id": "response-model-post-policy-options-review",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.response-model.post-policy.nested-exclude",
+        "fastapi.response-model.post-policy.nested-include"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_skip_defaults.py",
+      "fixture_id": "fastapi.test.test-skip-defaults",
+      "workflow_id": "response-model-post-policy-options-review",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.response-model.post-policy.exclude-defaults",
+        "fastapi.response-model.post-policy.exclude-none",
+        "fastapi.response-model.post-policy.exclude-unset"
       ],
       "observation_selectors": [
         "http.body.bytes",

@@ -1,0 +1,293 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/response_model_post_policy_options_review.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.response-model.post-policy.nested-include
+  actions:
+  - action_id: include-selected-nested-fields
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /nested/include
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"label":"dispatch-card","owner":{"name":"Mira","email":"mira@example.com","access_token":"token-include-17"},"audit_note":"staff-only"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_response_model_include_exclude.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/response-model.md
+    kind: upstream_documentation
+- case_id: fastapi.response-model.post-policy.nested-exclude
+  actions:
+  - action_id: exclude-nested-credential
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /nested/exclude
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"label":"release-card","owner":{"name":"Ishan","email":"ishan@example.com","access_token":"token-exclude-29"},"audit_note":"editorial-only"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_response_model_include_exclude.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/response-model.md
+    kind: upstream_documentation
+- case_id: fastapi.response-model.post-policy.exclude-unset
+  actions:
+  - action_id: preserve-explicit-null-and-alias
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /exclude-unset
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"label":"unset-card","note":null,"displayName":"Unset Alias"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_skip_defaults.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/response-model.md
+    kind: upstream_documentation
+- case_id: fastapi.response-model.post-policy.from-attributes
+  actions:
+  - action_id: serialize-attribute-backed-response
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /attributes
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"name":"Ada"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_read_with_orm_mode.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/response-model.md
+    kind: upstream_documentation
+- case_id: fastapi.response-model.post-policy.exclude-defaults
+  actions:
+  - action_id: remove-explicit-default-values
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /exclude-defaults
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"label":"defaults-card","state":"draft","retries":3,"note":"retained","displayName":"Defaults Alias"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_skip_defaults.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/response-model.md
+    kind: upstream_documentation
+- case_id: fastapi.response-model.post-policy.field-name-by-alias-disabled
+  actions:
+  - action_id: serialize-python-field-name
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /field-name
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"label":"alias-card","displayName":"Python Name"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_response_by_alias.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/response-model.md
+    kind: upstream_documentation
+- case_id: fastapi.response-model.post-policy.exclude-none
+  actions:
+  - action_id: omit-explicit-null
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /exclude-none
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"label":"null-card","note":null,"displayName":"Null Alias"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_skip_defaults.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/response-model.md
+    kind: upstream_documentation
