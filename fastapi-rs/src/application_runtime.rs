@@ -1,5 +1,7 @@
 //! Rust-owned FastAPI application registration and ASGI request flow.
 
+use std::collections::BTreeSet;
+
 use pyo3::exceptions::{PyRuntimeError, PyValueError};
 use pyo3::prelude::*;
 use pyo3::types::{PyBytes, PyDict, PyList, PyModule, PyTuple};
@@ -375,19 +377,35 @@ impl PyFastApi {
             })
             .collect::<PyResult<Vec<_>>>()?;
 
-        let body_parameter = route.plan.body_parameter();
-        let (request_model_name, request_schema, request_required) = match body_parameter {
-            Some(parameter) => (
-                model_name(py, parameter.annotation.bind(py))?,
-                Some(pydantic_schema(
-                    py,
-                    parameter.annotation.bind(py),
-                    "validation",
-                    None,
-                )?),
-                parameter.default.is_none(),
-            ),
-            None => (None, None, false),
+        let direct_body_parameters = route.plan.direct_body_parameters();
+        let unique_body_names = direct_body_parameters
+            .iter()
+            .map(|parameter| parameter.name.as_str())
+            .collect::<BTreeSet<_>>();
+        let aggregate_body = unique_body_names.len() > 1;
+        let (request_model_name, request_schema, request_required) = if aggregate_body {
+            let aggregate_name = format!("Body_{operation_id}");
+            let aggregate_model =
+                aggregate_body_model(py, &aggregate_name, &direct_body_parameters)?;
+            let request_schema = pydantic_schema(py, aggregate_model.bind(py), "validation", None)?;
+            let request_required = direct_body_parameters
+                .iter()
+                .any(|parameter| parameter.default.is_none());
+            (Some(aggregate_name), Some(request_schema), request_required)
+        } else {
+            match route.plan.body_parameter() {
+                Some(parameter) => (
+                    model_name(py, parameter.annotation.bind(py))?,
+                    Some(pydantic_schema(
+                        py,
+                        parameter.annotation.bind(py),
+                        "validation",
+                        None,
+                    )?),
+                    parameter.default.is_none(),
+                ),
+                None => (None, None, false),
+            }
         };
         let (response_model_name, response_schema) = match route.response_model.as_ref() {
             Some(model) => (
@@ -567,6 +585,21 @@ impl CallablePlan {
                 ParameterSource::Dependency(ref dependency) => dependency.body_parameter(),
                 _ => None,
             })
+    }
+
+    fn direct_body_parameters(&self) -> Vec<&CallableParameter> {
+        self.parameters
+            .iter()
+            .filter(|parameter| {
+                matches!(
+                    parameter.source,
+                    ParameterSource::Input {
+                        source: InputSource::Body,
+                        ..
+                    }
+                )
+            })
+            .collect()
     }
 
     fn openapi_parameters(&self, py: Python<'_>) -> PyResult<Vec<ParameterOpenApiPlan>> {
@@ -912,6 +945,26 @@ fn model_name(_py: Python<'_>, model: &Bound<'_, PyAny>) -> PyResult<Option<Stri
         .and_then(|name| name.extract::<String>())
         .map(Some)
         .or_else(|_| Ok(None))
+}
+
+fn aggregate_body_model(
+    py: Python<'_>,
+    model_name: &str,
+    body_parameters: &[&CallableParameter],
+) -> PyResult<Py<PyAny>> {
+    let fields = PyDict::new(py);
+    let required = py.import("builtins")?.getattr("Ellipsis")?;
+    for parameter in body_parameters {
+        let default = parameter
+            .default
+            .as_ref()
+            .map_or_else(|| required.clone(), |value| value.bind(py).clone());
+        fields.set_item(&parameter.name, (parameter.annotation.bind(py), default))?;
+    }
+    py.import("pydantic")?
+        .getattr("create_model")?
+        .call((model_name,), Some(&fields))
+        .map(Bound::unbind)
 }
 
 fn pydantic_schema(

@@ -198,12 +198,15 @@ reviewed_api_contract_overlay:
       source_evidence:
         - {path: fastapi/param_functions.py, symbol: Body}
         - {path: fastapi/params.py, symbol: Body}
-      feature_ids: [request-validation]
-      observation_selectors: [http.status, http.body.bytes]
+      feature_ids: [request-validation, openapi-docs]
+      observation_selectors: [http.status, http.body.bytes, openapi.request_schema]
       supported_slice: >-
         Partial native slice: Body(gt=...) marks a request-body input and applies
-        the numeric strict-greater-than constraint. Other Body constructor
-        parameters and FieldInfo options remain outside this reviewed slice.
+        the numeric strict-greater-than constraint. OpenAPI request_schema also
+        covers the tested aggregate schema for multiple direct Body fields with
+        distinct names. Aliases, explicit defaults, dependency-provided body
+        fields, Form, File, and other Body constructor or FieldInfo options remain
+        outside this reviewed slice.
     fastapi.Query:
       rust_binding: fastapi-rs/src/parameters.rs::query
       source_evidence:
