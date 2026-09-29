@@ -2,7 +2,9 @@
 
 use std::collections::{BTreeSet, HashMap};
 
-use pyo3::exceptions::{PyNotImplementedError, PyRuntimeError, PyValueError};
+use pyo3::exceptions::{
+    PyAssertionError, PyAttributeError, PyNotImplementedError, PyRuntimeError, PyValueError,
+};
 use pyo3::prelude::*;
 use pyo3::types::{PyBytes, PyDict, PyList, PyModule, PyString, PyTuple, PyType};
 use starlette_rs::QueryParams;
@@ -182,6 +184,12 @@ pub(crate) struct PyFastApi {
     dependency_overrides: Py<PyDict>,
     router: FastApiOperationRouter,
     routes: Vec<FastApiRoute>,
+}
+
+#[pyclass(name = "APIRouter", module = "fastapi_rs._core", unsendable)]
+pub(crate) struct PyApiRouter {
+    inner: Py<PyFastApi>,
+    prefix: String,
 }
 
 #[pymethods]
@@ -610,6 +618,19 @@ impl PyFastApi {
         )
     }
 
+    #[pyo3(signature = (router, *, prefix = ""))]
+    fn include_router(
+        &mut self,
+        py: Python<'_>,
+        router: Py<PyApiRouter>,
+        prefix: &str,
+    ) -> PyResult<()> {
+        let router = router.bind(py).borrow();
+        let prefix = combined_router_prefix(prefix, &router.prefix)?;
+        let source = router.inner.bind(py).borrow();
+        merge_router_routes(py, self, &source, &prefix)
+    }
+
     fn openapi(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
         self.openapi_document(py)
     }
@@ -783,6 +804,146 @@ impl PyFastApi {
             tags: route.tags.clone(),
         })
     }
+}
+
+#[pymethods]
+impl PyApiRouter {
+    #[new]
+    #[pyo3(signature = (*, prefix = ""))]
+    fn new(py: Python<'_>, prefix: &str) -> PyResult<Self> {
+        validate_router_prefix(prefix)?;
+        let inner = Py::new(
+            py,
+            PyFastApi::new(
+                py,
+                "FastAPI",
+                None,
+                "",
+                "0.1.0",
+                "/openapi.json",
+                None,
+                None,
+                None,
+                None,
+            ),
+        )?;
+        Ok(Self {
+            inner,
+            prefix: prefix.to_owned(),
+        })
+    }
+
+    #[getter]
+    fn prefix(&self) -> &str {
+        &self.prefix
+    }
+
+    #[pyo3(signature = (router, *, prefix = ""))]
+    fn include_router(
+        &self,
+        py: Python<'_>,
+        router: Py<PyApiRouter>,
+        prefix: &str,
+    ) -> PyResult<()> {
+        let router = router.bind(py).borrow();
+        if self.inner.as_ptr() == router.inner.as_ptr() {
+            return Err(PyAssertionError::new_err(
+                "Cannot include the same APIRouter instance into itself. Did you mean to include a different router?",
+            ));
+        }
+        let prefix = combined_router_prefix(prefix, &router.prefix)?;
+        let source = router.inner.bind(py).borrow();
+        let mut destination = self.inner.bind(py).borrow_mut();
+        merge_router_routes(py, &mut destination, &source, &prefix)
+    }
+
+    fn __getattr__(&self, py: Python<'_>, name: &str) -> PyResult<Py<PyAny>> {
+        if !matches!(
+            name,
+            "get" | "post" | "put" | "delete" | "patch" | "head" | "options" | "trace"
+        ) {
+            return Err(PyAttributeError::new_err(format!(
+                "'APIRouter' object has no attribute '{name}'"
+            )));
+        }
+        Ok(self.inner.bind(py).getattr(name)?.unbind())
+    }
+}
+
+fn validate_router_prefix(prefix: &str) -> PyResult<()> {
+    if prefix.is_empty() {
+        return Ok(());
+    }
+    if !prefix.starts_with('/') {
+        return Err(PyAssertionError::new_err(
+            "A path prefix must start with '/'",
+        ));
+    }
+    if prefix.ends_with('/') {
+        return Err(PyAssertionError::new_err(
+            "A path prefix must not end with '/', as the routes will start with '/'",
+        ));
+    }
+    Ok(())
+}
+
+fn combined_router_prefix(include_prefix: &str, router_prefix: &str) -> PyResult<String> {
+    validate_router_prefix(include_prefix)?;
+    validate_router_prefix(router_prefix)?;
+    Ok(format!("{include_prefix}{router_prefix}"))
+}
+
+fn merge_router_routes(
+    py: Python<'_>,
+    app: &mut PyFastApi,
+    source: &PyFastApi,
+    prefix: &str,
+) -> PyResult<()> {
+    for source_route in &source.routes {
+        let path = format!("{prefix}{}", source_route.path);
+        let plan = CallablePlan::build(
+            py,
+            source_route.endpoint.clone_ref(py),
+            &path_parameter_names(&path),
+        )?;
+        let index = app
+            .router
+            .add_operation(&path, &source_route.method, source_route.status_code)
+            .map_err(|error| PyValueError::new_err(error.to_string()))?;
+        app.router
+            .set_parameters(index, plan.input_parameters())
+            .ok_or_else(|| PyRuntimeError::new_err("included FastAPI operation was lost"))?;
+        app.routes.push(FastApiRoute {
+            path,
+            method: source_route.method.clone(),
+            summary: source_route.summary.clone(),
+            response_description: source_route.response_description.clone(),
+            operation_id: source_route.operation_id.clone(),
+            deprecated: source_route.deprecated,
+            tags: source_route.tags.clone(),
+            status_code: source_route.status_code,
+            include_in_schema: source_route.include_in_schema,
+            endpoint: source_route.endpoint.clone_ref(py),
+            response_model: source_route
+                .response_model
+                .as_ref()
+                .map(|model| model.clone_ref(py)),
+            response_model_include: source_route
+                .response_model_include
+                .as_ref()
+                .map(|value| value.clone_ref(py)),
+            response_model_exclude: source_route
+                .response_model_exclude
+                .as_ref()
+                .map(|value| value.clone_ref(py)),
+            response_model_by_alias: source_route.response_model_by_alias,
+            response_model_exclude_unset: source_route.response_model_exclude_unset,
+            response_model_exclude_defaults: source_route.response_model_exclude_defaults,
+            response_model_exclude_none: source_route.response_model_exclude_none,
+            plan,
+        });
+    }
+    Ok(())
 }
 
 #[pyclass(name = "_OperationDecorator", module = "fastapi_rs._core", unsendable)]
@@ -2656,6 +2817,7 @@ impl AwaitableStateMachine for FastApiCall {
 /// Registers FastAPI's Rust-owned application type and request markers.
 pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     module.add_class::<PyFastApi>()?;
+    module.add_class::<PyApiRouter>()?;
     module.add_class::<PyOperationDecorator>()?;
     let response = module
         .py()

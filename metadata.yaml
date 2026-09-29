@@ -494,6 +494,140 @@ reviewed_api_contract_overlay:
       supported_slice: >-
         Native FastAPI export is an identity-preserving re-export of
         starlette.responses.Response from the pinned Starlette-RS runtime.
+    fastapi.APIRouter:
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::new
+      source_evidence:
+        - {path: fastapi/__init__.py}
+        - {path: fastapi/routing.py, symbol: APIRouter}
+        - {path: docs/en/docs/reference/apirouter.md}
+        - {path: docs/en/docs/tutorial/bigger-applications.md}
+        - {path: docs_src/bigger_applications/app_an_py310/main.py}
+      feature_ids: [app-routing]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      supported_slice: >-
+        Partial native router: construction with the default prefix, GET route
+        decorators, and inclusion into FastAPI with a path prefix are covered
+        by router-composition-upstream. Router tags,
+        router-level dependencies, responses, callbacks, lifespan, WebSockets,
+        and the other APIRouter constructor or inclusion options remain outside
+        this slice.
+    fastapi.applications.FastAPI.include_router:
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::include_router
+      source_evidence:
+        - {path: fastapi/applications.py, symbol: include_router}
+        - {path: fastapi/routing.py, symbol: include_router}
+        - {path: tests/test_tutorial/test_bigger_applications/test_main.py, symbol: test_users_token_jessica}
+        - {path: tests/test_tutorial/test_bigger_applications/test_main.py, symbol: test_users_with_no_token}
+        - {path: tests/test_tutorial/test_bigger_applications/test_main.py, symbol: test_users_foo_token_jessica}
+        - {path: docs/en/docs/tutorial/bigger-applications.md}
+        - {path: docs_src/bigger_applications/app_an_py310/main.py}
+        - {path: docs_src/bigger_applications/app_an_py310/routers/users.py}
+      feature_ids: [app-routing, request-validation]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      supported_slice: >-
+        Includes routes registered on APIRouter, applies the optional route
+        prefix, and preserves their endpoint dependency plans for the sampled
+        users router. Tags, inclusion-level dependencies, responses, callbacks,
+        deprecation, schema policy, custom response classes, and ID policies
+        remain outside this slice.
+    fastapi.routing.APIRouter.include_router:
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::include_router
+      source_evidence:
+        - {path: fastapi/routing.py, symbol: include_router}
+        - {path: fastapi/routing.py, symbol: APIRouter}
+      feature_ids: [app-routing]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      supported_slice: >-
+        The native binding flattens nested routes with their router and include
+        prefixes. A live source/target fixture for nested inclusion is pending,
+        so this records implementation ownership rather than a compatibility
+        claim. Router-level options remain outside the sampled direct-include
+        slice.
+    fastapi.routing.APIRouter.__init__:
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::new
+      source_evidence:
+        - {path: fastapi/routing.py, symbol: APIRouter}
+      feature_ids: [app-routing]
+      supported_slice: >-
+        The native constructor accepts the default or a keyword-only prefix.
+        The existing route-composition fixture covers the default prefix;
+        behavior for a non-empty router prefix is not yet sampled.
+    fastapi.routing.APIRouter.get:
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::__getattr__
+      source_evidence:
+        - {path: fastapi/routing.py, symbol: APIRouter}
+        - {path: fastapi/routing.py, symbol: get}
+        - {path: tests/test_tutorial/test_bigger_applications/test_main.py, symbol: test_users_token_jessica}
+        - {path: docs_src/bigger_applications/app_an_py310/routers/users.py, symbol: read_users}
+      feature_ids: [app-routing, request-validation]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      supported_slice: >-
+        Registers a GET endpoint on a router for inclusion, including the
+        sampled scalar query dependency and path parameter behavior.
+    fastapi.routing.APIRouter.post:
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::__getattr__
+      source_evidence:
+        - {path: fastapi/routing.py, symbol: APIRouter}
+        - {path: fastapi/routing.py, symbol: post}
+      feature_ids: [app-routing]
+      supported_slice: >-
+        Native attribute forwarding exposes the POST route decorator. Included
+        POST route behavior remains unverified by a source/target fixture.
+    fastapi.routing.APIRouter.put:
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::__getattr__
+      source_evidence:
+        - {path: fastapi/routing.py, symbol: APIRouter}
+        - {path: fastapi/routing.py, symbol: put}
+      feature_ids: [app-routing]
+      supported_slice: >-
+        Native attribute forwarding exposes the PUT route decorator. Included
+        PUT route behavior remains unverified by a source/target fixture.
+    fastapi.routing.APIRouter.delete:
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::__getattr__
+      source_evidence:
+        - {path: fastapi/routing.py, symbol: APIRouter}
+        - {path: fastapi/routing.py, symbol: delete}
+      feature_ids: [app-routing]
+      supported_slice: >-
+        Native attribute forwarding exposes the DELETE route decorator. Included
+        DELETE route behavior remains unverified by a source/target fixture.
+    fastapi.routing.APIRouter.patch:
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::__getattr__
+      source_evidence:
+        - {path: fastapi/routing.py, symbol: APIRouter}
+        - {path: fastapi/routing.py, symbol: patch}
+      feature_ids: [app-routing]
+      supported_slice: >-
+        Native attribute forwarding exposes the PATCH route decorator. Included
+        PATCH route behavior remains unverified by a source/target fixture.
+    fastapi.routing.APIRouter.head:
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::__getattr__
+      source_evidence:
+        - {path: fastapi/routing.py, symbol: APIRouter}
+        - {path: fastapi/routing.py, symbol: head}
+      feature_ids: [app-routing]
+      supported_slice: >-
+        Native attribute forwarding exposes the HEAD route decorator. Included
+        HEAD route behavior remains unverified by a source/target fixture.
+    fastapi.routing.APIRouter.options:
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::__getattr__
+      source_evidence:
+        - {path: fastapi/routing.py, symbol: APIRouter}
+        - {path: fastapi/routing.py, symbol: options}
+      feature_ids: [app-routing]
+      supported_slice: >-
+        Native attribute forwarding exposes the OPTIONS route decorator.
+        Included OPTIONS route behavior remains unverified by a source/target
+        fixture.
+    fastapi.routing.APIRouter.trace:
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::__getattr__
+      source_evidence:
+        - {path: fastapi/routing.py, symbol: APIRouter}
+        - {path: fastapi/routing.py, symbol: trace}
+      feature_ids: [app-routing]
+      supported_slice: >-
+        Native attribute forwarding exposes the TRACE route decorator. Included
+        TRACE route behavior remains unverified by a source/target fixture.
     fastapi.applications.FastAPI.get:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::get
       source_evidence:

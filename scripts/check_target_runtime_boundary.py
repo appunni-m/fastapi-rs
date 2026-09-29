@@ -25,6 +25,7 @@ DYNAMIC_PYTHON_EXECUTION = re.compile(
     r"\bPyModule\s*::\s*from_code(?:_bound)?\s*\("
 )
 PUBLIC_FASTAPI_EXPORTS = [
+    "APIRouter",
     "Body",
     "Cookie",
     "Depends",

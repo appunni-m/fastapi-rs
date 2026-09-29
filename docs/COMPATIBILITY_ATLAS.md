@@ -19,7 +19,7 @@ This source-backed compatibility atlas indexes the API denominator and candidate
 
 ## Per-symbol API contract in the active manifest
 
-The single `tests/fixtures/manifest.yaml` indexes 439 source-supported symbols, with pointers to the pinned AST inventory and both runtime-reflection profiles. It links alias, deprecation, error, documented-feature, selector, and planned Python import-path evidence; 432 symbols link to a documented-page fixture design. The current Python facade directly re-exports 9 native names; this source contract does not measure their behavioral completeness, and broader operation-level review remains pending.
+The single `tests/fixtures/manifest.yaml` indexes 439 source-supported symbols, with pointers to the pinned AST inventory and both runtime-reflection profiles. It links alias, deprecation, error, documented-feature, selector, and planned Python import-path evidence; 432 symbols link to a documented-page fixture design. The current Python facade directly re-exports 10 native names; this source contract does not measure their behavioral completeness, and broader operation-level review remains pending.
 
 | Signature/shape evidence | Symbols |
 |---|---:|
