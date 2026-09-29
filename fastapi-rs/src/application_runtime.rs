@@ -2206,8 +2206,17 @@ fn path_parameter_names(path: &str) -> Vec<String> {
 }
 
 fn operation_id(name: &str, path: &str, method: &str) -> String {
-    let path = path.trim_matches('/').replace(['/', '{', '}'], "_");
-    format!("{name}_{path}_{}", method.to_ascii_lowercase())
+    let mut operation_id = String::with_capacity(name.len() + path.len() + method.len() + 1);
+    for character in name.chars().chain(path.chars()) {
+        if character.is_alphanumeric() || character == '_' {
+            operation_id.push(character);
+        } else {
+            operation_id.push('_');
+        }
+    }
+    operation_id.push('_');
+    operation_id.push_str(&method.to_ascii_lowercase());
+    operation_id
 }
 
 fn title_case(value: &str) -> String {
