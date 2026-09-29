@@ -123,6 +123,30 @@ starlette_rs:
   boundary: FastAPI records only its direct Starlette imports, aliases, inheritance and integration edges; generic Starlette API and behavior stay sibling-owned.
   catalog_policy: Link to sibling artifacts; never copy or expand the Starlette API catalog here.
 
+cargo_dependency_inventory:
+  schema: fastapi-rs/cargo-dependency-inventory-annotations@1
+  purpose: Reviewed foreign-boundary labels supplement active Cargo metadata fields.
+  foreign_boundary_annotations:
+    cc:
+      version: 1.5.1
+      signal: Native C compiler build helper
+      source_description: >-
+        A build-time dependency for Cargo build scripts to assist in invoking
+        the native C compiler to compile native C code into a static archive
+        to be linked into Rust code.
+    libc:
+      version: 0.2.189
+      signal: Platform C library FFI bindings
+      source_description: Raw FFI bindings to platform libraries like libc.
+    pyo3:
+      version: 0.29.2
+      signal: Python interpreter C-API bindings
+      source_description: Bindings to Python interpreter
+    pyo3-ffi:
+      version: 0.29.2
+      signal: Python C-API bindings
+      source_description: Python-API bindings for the PyO3 ecosystem
+
 reviewed_api_contract_overlay:
   schema: fastapi-rs/reviewed-api-contract-overlay@1
   purpose: >-

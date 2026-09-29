@@ -14,6 +14,14 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "docs" / "RUST_TARGET_DEPENDENCIES.md"
+ROLE_ORDER = (
+    "runtime",
+    "optional runtime",
+    "build",
+    "optional build",
+    "dev",
+    "optional dev",
+)
 
 
 def cargo_metadata(*, offline: bool) -> dict[str, Any]:
@@ -110,9 +118,159 @@ def markdown_cell(value: object) -> str:
     return " ".join(str(value or "—").split()).replace("|", "\\|")
 
 
+def dependency_kinds(dependency: dict[str, Any]) -> set[str]:
+    return {dep_kind["kind"] or "normal" for dep_kind in dependency.get("dep_kinds", [])}
+
+
+def cargo_crate_name(value: str) -> str:
+    """Normalize hyphen/underscore spelling differences in Cargo metadata names."""
+    return value.replace("-", "_").lower()
+
+
+def optional_dependency(
+    package: dict[str, Any], dependency: dict[str, Any], target_package: dict[str, Any]
+) -> bool:
+    """Return whether this active metadata edge is declared optional."""
+    active_kinds = {
+        (dep_kind["kind"] or "normal", dep_kind.get("target"))
+        for dep_kind in dependency.get("dep_kinds", [])
+    }
+    edge_name = dependency["name"]
+    for declared in package.get("dependencies", []):
+        if cargo_crate_name(declared["name"]) != cargo_crate_name(target_package["name"]):
+            continue
+        if cargo_crate_name(declared.get("rename") or declared["name"]) != cargo_crate_name(
+            edge_name
+        ):
+            continue
+        declared_kind = declared.get("kind") or "normal"
+        if (declared_kind, declared.get("target")) not in active_kinds:
+            continue
+        if declared.get("optional", False):
+            return True
+    return False
+
+
+def package_roles(metadata: dict[str, Any]) -> dict[str, set[str]]:
+    """Propagate active Cargo dependency roles from the workspace product roots."""
+    packages = {package["id"]: package for package in metadata["packages"]}
+    nodes = {node["id"]: node for node in metadata["resolve"]["nodes"]}
+    roles: dict[str, set[str]] = {}
+    visited: set[tuple[str, str, bool]] = set()
+
+    def visit(package_id: str, role: str, optional: bool) -> None:
+        state = (package_id, role, optional)
+        if state in visited:
+            return
+        visited.add(state)
+        roles.setdefault(package_id, set()).add(f"optional {role}" if optional else role)
+        node = nodes.get(package_id)
+        package = packages.get(package_id)
+        if node is None or package is None:
+            return
+        for dependency in node["deps"]:
+            target_id = dependency["pkg"]
+            target_package = packages[target_id]
+            is_optional = optional or optional_dependency(package, dependency, target_package)
+            for kind in dependency_kinds(dependency):
+                next_role = role
+                if kind == "build":
+                    next_role = "build"
+                elif kind == "dev":
+                    next_role = "dev"
+                visit(target_id, next_role, is_optional)
+
+    workspace_members = metadata.get("workspace_members", [])
+    if not workspace_members:
+        raise RuntimeError("Cargo metadata does not identify workspace dependency roots")
+    for package_id in workspace_members:
+        visit(package_id, "runtime", False)
+    return roles
+
+
+def target_description(package: dict[str, Any]) -> str:
+    """Describe Rust language and the declared Cargo target kinds."""
+    kinds = sorted({kind for target in package.get("targets", []) for kind in target["kind"]})
+    if not kinds:
+        return "Rust (target kind unavailable)"
+    language = "Rust proc macro" if "proc-macro" in kinds else "Rust"
+    labels = {
+        "bin": "binary",
+        "cdylib": "C-compatible dynamic library",
+        "custom-build": "build script",
+        "dylib": "dynamic library",
+        "example": "example",
+        "lib": "library",
+        "rlib": "Rust library",
+        "staticlib": "static library",
+        "test": "test target",
+    }
+    rendered_kinds = ", ".join(labels.get(kind, kind) for kind in kinds)
+    return f"{language}; Cargo targets: {rendered_kinds}"
+
+
+def foreign_boundary(
+    package: dict[str, Any], annotations: dict[str, dict[str, str]]
+) -> str:
+    signals: list[str] = []
+    links = package.get("links")
+    if links:
+        signals.append(f"Cargo links = {links}")
+    annotation = annotations.get(package["name"])
+    if annotation is not None:
+        if package["version"] != annotation["version"]:
+            raise RuntimeError(
+                f"reviewed Cargo boundary annotation for {package['name']} "
+                f"expects version {annotation['version']}, found {package['version']}"
+            )
+        if " ".join((package.get("description") or "").split()) != " ".join(
+            annotation["source_description"].split()
+        ):
+            raise RuntimeError(
+                f"reviewed Cargo boundary annotation for {package['name']} "
+                "no longer matches its Cargo package description"
+            )
+        signals.append(f"Reviewed metadata annotation: {annotation['signal']}")
+    return "; ".join(signals) or "No Cargo links declaration or reviewed boundary annotation"
+
+
+def reviewed_boundary_annotations() -> dict[str, dict[str, str]]:
+    authority = yaml.safe_load((ROOT / "metadata.yaml").read_text(encoding="utf-8"))
+    inventory = authority.get("cargo_dependency_inventory", {})
+    if inventory.get("schema") != "fastapi-rs/cargo-dependency-inventory-annotations@1":
+        raise RuntimeError("metadata.yaml does not declare the reviewed Cargo inventory schema")
+    annotations = inventory.get("foreign_boundary_annotations")
+    if not isinstance(annotations, dict):
+        raise RuntimeError("metadata.yaml Cargo foreign-boundary annotations must be a mapping")
+    for name, annotation in annotations.items():
+        if not isinstance(annotation, dict) or set(annotation) != {
+            "version",
+            "signal",
+            "source_description",
+        } or not all(
+            isinstance(annotation[field], str) and annotation[field]
+            for field in ("version", "signal", "source_description")
+        ):
+            raise RuntimeError(f"malformed reviewed Cargo boundary annotation: {name}")
+    return annotations
+
+
 def render(metadata: dict[str, Any], starlette_rs_revision: str) -> str:
     packages = {package["id"]: package for package in metadata["packages"]}
     nodes = {node["id"]: node for node in metadata["resolve"]["nodes"]}
+    roles_by_package = package_roles(metadata)
+    annotations = reviewed_boundary_annotations()
+    active_packages_by_name: dict[str, list[dict[str, Any]]] = {}
+    for package_id, package in packages.items():
+        if package_id in nodes:
+            active_packages_by_name.setdefault(package["name"], []).append(package)
+    for name, annotation in annotations.items():
+        matching = active_packages_by_name.get(name, [])
+        if len(matching) != 1 or matching[0]["version"] != annotation["version"]:
+            raise RuntimeError(
+                f"reviewed Cargo boundary annotation for {name} does not identify exactly "
+                "one active package at its pinned version"
+            )
     rows: list[str] = []
 
     for package_id, package in sorted(
@@ -123,15 +281,9 @@ def render(metadata: dict[str, Any], starlette_rs_revision: str) -> str:
             continue
         package_id_label = f"{package['name']} {package['version']}"
         features = ", ".join(sorted(node["features"])) or "—"
-        targets = (
-            ", ".join(sorted({kind for target in package["targets"] for kind in target["kind"]}))
-            or "—"
-        )
-        language = "Rust"
-        if "proc-macro" in targets:
-            language = "Rust proc macro"
-        elif "build-script" in targets:
-            language = "Rust build script"
+        roles = sorted(roles_by_package.get(package_id, set()), key=ROLE_ORDER.index)
+        if not roles:
+            raise RuntimeError(f"active Cargo package has no workspace role: {package_id_label}")
         source = "registry"
         if package["source"] is None:
             source = "workspace/path"
@@ -153,7 +305,9 @@ def render(metadata: dict[str, Any], starlette_rs_revision: str) -> str:
                 for value in (
                     package_id_label,
                     license_value or "UNSPECIFIED",
-                    language,
+                    target_description(package),
+                    ", ".join(roles),
+                    foreign_boundary(package, annotations),
                     source,
                     features,
                     package.get("description") or "No Cargo package description",
@@ -201,15 +355,22 @@ each exact edge is listed below.
 
 ## Complete locked package graph
 
-Cargo metadata reports every resolved workspace/registry package, selected
-feature, package license expression, Cargo target kind, description, and its
-immediate dependency edges. Following the edge column recursively from the
-three project crates above gives the full transitive closure, including
-build-time crates. Cargo license expressions are preserved verbatim; `OR`
-means the distributor may satisfy either license, while `AND` requires both.
+Cargo metadata reports every active workspace/registry package, selected
+feature, package license expression, Cargo target kind, declared `links`
+value, declared target kinds, description, and immediate dependency edges.
+Listed target kinds are package declarations, not claims that every test,
+example, or benchmark target is built in this profile. Roles propagate from
+the workspace product roots: normal edges preserve the current role, while
+build and dev edges classify their dependency subgraphs as build or dev.
+Optional labels mark packages reached through an active optional dependency
+edge. The foreign-boundary column reports Cargo `links` declarations and
+reviewed package-description annotations in `metadata.yaml`; an absent signal
+means no such declaration is present in this inventory. Cargo license
+expressions are preserved verbatim; `OR` means the distributor may satisfy
+either license, while `AND` requires both.
 
-| Package | Cargo license expression/file | Language/target | Source | Enabled features | Package purpose | Depends on |
-| --- | --- | --- | --- | --- | --- | --- |
+| Package | Cargo license expression/file | Language and declared Cargo targets | Role(s) | Native/foreign boundary signal | Source | Enabled features | Package purpose | Depends on |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
 {chr(10).join(rows)}
 
 ## Python package dependencies
