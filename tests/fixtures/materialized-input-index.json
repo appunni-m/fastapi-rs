@@ -3272,6 +3272,18 @@
       ]
     },
     {
+      "id": "path-operation-post-deprecated-isolated",
+      "input_path": "tests/fixtures/inputs/parity/path-operation-post-deprecated-isolated.json",
+      "input_sha256": "f55b051c6e687273b5f6b9a1a7b45589901e2abb15797617b62ac46f78a98b5b",
+      "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-post-deprecated-isolated.yaml",
+      "recipe_sha256": "448909da202d9e2b3a823c6235e3c72fbc94f1757870c4970627887707330c6e",
+      "workload_path": "tests/fixtures/workloads/path_operation_post_deprecated_isolated.py",
+      "workload_sha256": "9f7cdc1fe0a7b1471631725a10f0ead9fef315cbfefaf8d079a3c790260ac0d8",
+      "case_ids": [
+        "fastapi.path-operation.post-deprecated-isolated"
+      ]
+    },
+    {
       "id": "path-operation-post-operation-id-isolated",
       "input_path": "tests/fixtures/inputs/parity/path-operation-post-operation-id-isolated.json",
       "input_sha256": "573b79276e64d62719377e54e7d25c5cb278bde9a253dea5480dac72bd4357fb",
@@ -13855,6 +13867,33 @@
       "observation_selectors": [
         "docs.response.status",
         "http.status",
+        "openapi.document",
+        "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/path-operation-configuration.md",
+      "fixture_id": "fastapi.docs.tutorial-path-operation-configuration",
+      "workflow_id": "path-operation-post-deprecated-isolated",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.path-operation.post-deprecated-isolated"
+      ],
+      "observation_selectors": [
+        "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_path_operation_configurations/test_tutorial006.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-path-operation-configurations-test-tutorial006",
+      "workflow_id": "path-operation-post-deprecated-isolated",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.path-operation.post-deprecated-isolated"
+      ],
+      "observation_selectors": [
         "openapi.document",
         "openapi.paths"
       ]

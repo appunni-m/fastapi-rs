@@ -563,6 +563,8 @@ reviewed_api_contract_overlay:
         - {path: docs/en/docs/tutorial/path-operation-configuration.md}
         - {path: tests/test_tutorial/test_path_operation_configurations/test_tutorial001.py, symbol: test_post_items}
         - {path: docs_src/path_operation_configuration/tutorial001_py310.py}
+        - {path: tests/test_tutorial/test_path_operation_configurations/test_tutorial006.py, symbol: test_openapi_schema}
+        - {path: docs_src/path_operation_configuration/tutorial006_py310.py}
       feature_ids: [app-routing, openapi-docs, response-serialization]
       observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths]
       supported_slice: >-
@@ -585,6 +587,8 @@ reviewed_api_contract_overlay:
         An explicit `status_code=201` changes the ASGI response status and the
         OpenAPI success-response key to `201`; omission retains `200`, sampled
         by `path-operation-post-status-code-isolated`.
+        `deprecated=True` is emitted as `deprecated: true` in OpenAPI, sampled
+        by `path-operation-post-deprecated-isolated`.
     fastapi.applications.FastAPI.put:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::put
       source_evidence:
