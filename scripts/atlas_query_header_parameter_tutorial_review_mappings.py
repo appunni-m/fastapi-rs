@@ -448,7 +448,7 @@ _HEADER_MODULES: dict[str, dict[str, Any]] = {
                     "openapi.document",
                     "openapi.paths",
                 ],
-                "rationale": "Covers the aliased optional header parameter and the complete OpenAPI response.",
+                "rationale": "Covers the aliased optional header parameter, including its narrow name/location/required/nullable schema, and the complete OpenAPI response.",
             },
         },
         "parameters": [

@@ -241,6 +241,50 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
             }
         ],
     },
+    "docs_src/header_params/tutorial001_py310.py": {
+        "rationale": (
+            "The documented route declares user_agent with Header(default=None). The linked "
+            "input omits the user-agent header and observes the response status and body, "
+            "limiting this mapping to the omitted-header default None."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/header_params/tutorial001_py310.py",
+                "start_line": 6,
+                "end_line": 8,
+                "role": "documented route declaration with Header(default=None)",
+            }
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/query-header-parameter-header-tutorial001-direct.yaml",
+                "case_ids": ["fastapi.header.tutorial001.direct.absent-user-agent"],
+                "observation_selectors": ["http.body.bytes", "http.status"],
+            }
+        ],
+    },
+    "docs_src/header_params/tutorial001_an_py310.py": {
+        "rationale": (
+            "The documented route declares user_agent with Header() and a Python default of "
+            "None. The linked input omits the user-agent header and observes the response "
+            "status and body, limiting this mapping to the omitted-header default None."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/header_params/tutorial001_an_py310.py",
+                "start_line": 8,
+                "end_line": 10,
+                "role": "documented Annotated route declaration with default None",
+            }
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/query-header-parameter-header-tutorial001-annotated.yaml",
+                "case_ids": ["fastapi.header.tutorial001.annotated.absent-user-agent"],
+                "observation_selectors": ["http.body.bytes", "http.status"],
+            }
+        ],
+    },
     "docs_src/header_params/tutorial002_an_py310.py": {
         "rationale": (
             "The linked cases sample the documented Annotated Header(convert_underscores=False) "
@@ -312,6 +356,52 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
                 "recipe_path": "tests/fixtures/input-recipes/parity/metadata-tutorial001-upstream.yaml",
                 "case_ids": ["fastapi.docs.metadata.tutorial001.openapi-info-fields"],
                 "observation_selectors": ["openapi.document"],
+            }
+        ],
+    },
+    "docs_src/path_operation_configuration/tutorial002_py310.py": {
+        "rationale": (
+            "The linked case observes the three documented non-empty string tag values for "
+            "POST /items/, GET /items/, and GET /users/ through their selected OpenAPI tag "
+            "pointers. The mapping is limited to those tag fields; it does not claim the Item "
+            "request/response model behavior, HTTP response bodies, enum tags, or tag inheritance."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/path_operation_configuration/tutorial002_py310.py",
+                "start_line": 15,
+                "end_line": 27,
+                "role": "documented string-tagged POST and GET operations",
+            }
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-configurations-tutorial002-upstream.yaml",
+                "case_ids": ["fastapi.path-operation-configurations.tutorial002"],
+                "observation_selectors": ["http.status", "openapi.document"],
+            }
+        ],
+    },
+    "docs_src/path_operation_configuration/tutorial005_py310.py": {
+        "rationale": (
+            "The linked case observes the pinned example's explicit non-empty "
+            "response_description at the selected POST success-response pointer. The mapping "
+            "does not claim summary or docstring extraction, request/response model behavior, "
+            "status defaults, or other response descriptions."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/path_operation_configuration/tutorial005_py310.py",
+                "start_line": 15,
+                "end_line": 30,
+                "role": "documented POST response_description and response",
+            }
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-configurations-tutorial005-upstream.yaml",
+                "case_ids": ["fastapi.path-operation-configurations.tutorial005"],
+                "observation_selectors": ["http.status", "openapi.document"],
             }
         ],
     },

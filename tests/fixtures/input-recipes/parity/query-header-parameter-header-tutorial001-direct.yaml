@@ -88,6 +88,43 @@ cases:
     kind: upstream_test
   - path: docs_src/header_params/tutorial001_py310.py
     kind: upstream_documentation
+- case_id: fastapi.header.tutorial001.direct.absent-user-agent
+  actions:
+  - action_id: absent-user-agent
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs_src/header_params/tutorial001_py310.py
+    kind: upstream_documentation_example
 - case_id: fastapi.query-header-review.header001.direct.user-agent-override
   actions:
   - action_id: user-agent-override
@@ -171,6 +208,7 @@ cases:
       - /info
       - /paths
       - /components
+      - /paths/~1items~1/get/parameters/0
       comparison: exact
   source_evidence:
   - path: tests/test_tutorial/test_header_params/test_tutorial001.py
