@@ -73,6 +73,7 @@ struct InvocationContext<'context, 'py> {
     dependency_overrides: &'context Bound<'py, PyDict>,
     dependency_cache: &'context mut HashMap<usize, Py<PyAny>>,
     prepared_dependency_overrides: &'context mut BTreeSet<usize>,
+    dependency_override_cursor: &'context mut usize,
 }
 
 struct RequestInvocation {
@@ -81,6 +82,7 @@ struct RequestInvocation {
     failures: Vec<ValidationIssue>,
     dependency_cache: HashMap<usize, Py<PyAny>>,
     prepared_dependency_overrides: BTreeSet<usize>,
+    dependency_override_cursor: usize,
 }
 
 enum RouteInvocation {
@@ -853,11 +855,14 @@ impl CallablePlan {
         let mut every_edge_has_async_override = true;
         let mut has_async_override = false;
         let mut async_overrides = Vec::new();
+        let mut dependency_edge_index = 0;
 
         for parameter in &self.parameters {
             let ParameterSource::Dependency { plan, use_cache } = &parameter.source else {
                 continue;
             };
+            let edge_index = dependency_edge_index;
+            dependency_edge_index += 1;
             has_direct_dependency = true;
             every_edge_uses_cache &= *use_cache;
 
@@ -885,6 +890,7 @@ impl CallablePlan {
                 DependencyOverrideCallable::CoroutineFunction => has_async_override = true,
             }
             async_overrides.push((
+                edge_index,
                 cache_key,
                 replacement.unbind(),
                 plan.path_parameters.clone(),
@@ -913,7 +919,7 @@ impl CallablePlan {
         // keeps unsupported mixed or nested graphs from passing coroutine objects to
         // the endpoint or performing earlier replacement work before rejection.
         let mut replacement_plans = Vec::with_capacity(async_overrides.len());
-        for (cache_key, replacement, path_parameters) in async_overrides {
+        for (edge_index, cache_key, replacement, path_parameters) in async_overrides {
             let replacement_plan = CallablePlan::build(context.py, replacement, &path_parameters)?;
             if replacement_plan
                 .parameters
@@ -924,10 +930,15 @@ impl CallablePlan {
                     "nested dependency override replacements are not supported",
                 ));
             }
-            replacement_plans.push((cache_key, replacement_plan));
+            replacement_plans.push((edge_index, cache_key, replacement_plan));
         }
 
-        for (cache_key, replacement_plan) in replacement_plans {
+        let mut has_validation_errors = !context.failures.is_empty();
+        for (edge_index, cache_key, replacement_plan) in replacement_plans {
+            if edge_index < *context.dependency_override_cursor {
+                continue;
+            }
+            *context.dependency_override_cursor = edge_index + 1;
             if context.prepared_dependency_overrides.contains(&cache_key)
                 || context.dependency_cache.contains_key(&cache_key)
             {
@@ -936,7 +947,7 @@ impl CallablePlan {
             let initial_failure_count = context.failures.len();
             let Some(value) = replacement_plan.invoke(context, Some(true), Some(cache_key))? else {
                 if context.failures.len() != initial_failure_count {
-                    return Ok(OverridePreparation::Invalid);
+                    has_validation_errors = true;
                 }
                 continue;
             };
@@ -948,7 +959,11 @@ impl CallablePlan {
                 });
             }
         }
-        Ok(OverridePreparation::Ready)
+        if has_validation_errors {
+            Ok(OverridePreparation::Invalid)
+        } else {
+            Ok(OverridePreparation::Ready)
+        }
     }
 
     fn invoke(
@@ -1931,6 +1946,7 @@ impl FastApiCall {
             failures: Vec::new(),
             dependency_cache: HashMap::new(),
             prepared_dependency_overrides: BTreeSet::new(),
+            dependency_override_cursor: 0,
         });
         self.invoke_route(py)
     }
@@ -1958,6 +1974,7 @@ impl FastApiCall {
                 dependency_overrides,
                 dependency_cache: &mut invocation.dependency_cache,
                 prepared_dependency_overrides: &mut invocation.prepared_dependency_overrides,
+                dependency_override_cursor: &mut invocation.dependency_override_cursor,
             };
             match route
                 .plan

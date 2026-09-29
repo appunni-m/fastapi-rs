@@ -1017,6 +1017,18 @@
       ]
     },
     {
+      "id": "dependency-override-async-query-alias-cache-request-local",
+      "input_path": "tests/fixtures/inputs/parity/dependency-override-async-query-alias-cache-request-local.json",
+      "input_sha256": "e36b272ebd4512d21c2e7257dadde1f4dbff786fc895df134c2ccaa2bdbc3f1d",
+      "recipe_path": "tests/fixtures/input-recipes/parity/dependency-override-async-query-alias-cache-request-local.yaml",
+      "recipe_sha256": "37eec31d9e3f9728aeca656c1ef28cff1582e22bff48c0547b135ab0eba2feb6",
+      "workload_path": "tests/fixtures/workloads/dependency_override_async_query_alias_cache_request_local.py",
+      "workload_sha256": "9bbb0af6784cf7246bf9a37b61ffde8d39ce3ad3012c9f2e93d161506fb49995",
+      "case_ids": [
+        "fastapi.dependencies.override-async-query-alias-cache-request-local"
+      ]
+    },
+    {
       "id": "dependency-override-async-query-cache-request-local",
       "input_path": "tests/fixtures/inputs/parity/dependency-override-async-query-cache-request-local.json",
       "input_sha256": "11b12de96309629fed67756b4b90de5fc6dcf8e761e654fb647b9049e8d7dece",
@@ -1026,6 +1038,18 @@
       "workload_sha256": "737dcce3ee8debcfcee898932d57d200c499feb951253120769bee3360c4b448",
       "case_ids": [
         "fastapi.dependencies.override-async-query-cache-request-local"
+      ]
+    },
+    {
+      "id": "dependency-override-async-query-validation-aggregation",
+      "input_path": "tests/fixtures/inputs/parity/dependency-override-async-query-validation-aggregation.json",
+      "input_sha256": "53a222c9c8b46662a0c326cf9346dcbee725e87787c53b7ff48fcb6eaeebfcbf",
+      "recipe_path": "tests/fixtures/input-recipes/parity/dependency-override-async-query-validation-aggregation.yaml",
+      "recipe_sha256": "7f8299ecd34276025f2c7038534d46edff360e212cbcad7f5f377811dd3e7184",
+      "workload_path": "tests/fixtures/workloads/dependency_override_async_query_validation_aggregation.py",
+      "workload_sha256": "19cb99fc9331d186bc5112e33d0a831aae48bf1659ba741294580cfc98c3f927",
+      "case_ids": [
+        "fastapi.dependencies.override-async-query-validation-aggregation"
       ]
     },
     {
@@ -8369,6 +8393,34 @@
       ]
     },
     {
+      "source_item_id": "upstream-test:tests/test_dependency_overrides.py",
+      "fixture_id": "fastapi.test.test-dependency-overrides",
+      "workflow_id": "dependency-override-async-query-alias-cache-request-local",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.dependencies.override-async-query-alias-cache-request-local"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_request_params/test_query/test_optional_str.py",
+      "fixture_id": "fastapi.test.test-request-params-test-query-test-optional-str",
+      "workflow_id": "dependency-override-async-query-alias-cache-request-local",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.dependencies.override-async-query-alias-cache-request-local"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
       "source_item_id": "upstream-test:tests/test_dependency_cache.py",
       "fixture_id": "fastapi.test.test-dependency-cache",
       "workflow_id": "dependency-override-async-query-cache-request-local",
@@ -8390,6 +8442,20 @@
       "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.dependencies.override-async-query-cache-request-local"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_dependency_overrides.py",
+      "fixture_id": "fastapi.test.test-dependency-overrides",
+      "workflow_id": "dependency-override-async-query-validation-aggregation",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.dependencies.override-async-query-validation-aggregation"
       ],
       "observation_selectors": [
         "http.body.bytes",

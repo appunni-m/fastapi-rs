@@ -552,6 +552,16 @@ reviewed_api_contract_overlay:
           kind: source-definition
           start_line: 208
           end_line: 213
+        - path: tests/test_request_params/test_query/test_optional_str.py
+          symbol: read_optional_alias
+          kind: source-definition
+          start_line: 76
+          end_line: 79
+        - path: tests/test_request_params/test_query/test_optional_str.py
+          symbol: test_optional_alias_missing
+          kind: source-definition
+          start_line: 115
+          end_line: 119
         - path: tests/test_dependency_overrides.py
           symbol: overrider_dependency_with_sub
           kind: source-definition
@@ -602,18 +612,29 @@ reviewed_api_contract_overlay:
         tests/fixtures/input-recipes/parity/dependency-override-async-two-keys-request-local.yaml,
         case fastapi.dependencies.override-async-two-keys-request-local. A
         narrower query-bearing slice also supports a flat coroutine-function
-        override declared with exactly one optional plain scalar parameter
-        `q: str | None = None`, when repeated direct endpoint edges reference
-        the same original callable, use default caching, and the endpoint is
-        synchronous. The omitted query supplies None; `?q=foo` supplies "foo".
-        The override runs once for those repeated edges per request and runs
-        again on the next request. This exact shape is covered by
+        override with exactly one optional scalar query parameter defaulting to
+        None, when repeated direct endpoint edges reference the same original
+        callable, use default caching, and the synchronous endpoint has no
+        additional request inputs.
+        Reviewed declarations are `q: str | None = None`,
+        `q: Annotated[str | None, Query(alias="search")] = None`, and
+        `q: int | None = None`. Omission supplies None; `?q=foo`,
+        `?search=foo`, and `?q=42` resolve to the matching string or integer
+        values. For the integer form, `?q=oops` returns one matching query
+        validation issue per repeated edge without invoking the override; a
+        later valid request confirms request-local cache reset. Input-only
+        fixtures cover these exact shapes:
         tests/fixtures/input-recipes/parity/dependency-override-async-query-cache-request-local.yaml,
-        case fastapi.dependencies.override-async-query-cache-request-local.
-        Explicit `Query(...)` markers, aliases, validators, required or
-        non-scalar parameters, other query-bearing multi-key shapes, and newly
-        introduced body, header, cookie, or path inputs remain outside the
-        query-bearing slice. Outside these coroutine-override slices are mixed
+        case fastapi.dependencies.override-async-query-cache-request-local;
+        tests/fixtures/input-recipes/parity/dependency-override-async-query-alias-cache-request-local.yaml,
+        case fastapi.dependencies.override-async-query-alias-cache-request-local;
+        and tests/fixtures/input-recipes/parity/dependency-override-async-query-validation-aggregation.yaml,
+        case fastapi.dependencies.override-async-query-validation-aggregation.
+        `Query(...)` used as the Python default, validation aliases, constraints,
+        validators, required or non-scalar parameters, other query-bearing
+        multi-key shapes, and newly introduced body, header, cookie, or path
+        inputs remain outside the query-bearing slice. Outside these
+        coroutine-override slices are mixed
         synchronous or unoverridden direct edges, `use_cache=False` override
         edges, nested dependencies of coroutine overrides, async endpoints with
         coroutine overrides, async callable-instance overrides, async

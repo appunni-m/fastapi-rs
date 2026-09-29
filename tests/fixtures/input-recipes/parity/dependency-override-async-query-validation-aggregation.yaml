@@ -1,0 +1,94 @@
+# Pinned FastAPI 0.141.1 source evidence (tag commit
+# 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f):
+# fastapi/dependencies/utils.py:619 walks direct dependency edges in order,
+# and :640-655 recursively solves each edge, appends its errors, then continues
+# before reaching the cache lookup at :656-661. Query validation errors are
+# collected at :684-697, while a valid coroutine dependency is awaited at
+# :673-680. Thus repeated edges report repeated invalid-query errors while
+# later edges still resolve; failed input never invokes that replacement.
+# fastapi/params.py:745-749 sets Depends.use_cache=True by default. The source
+# tests exercise async app-level overrides in tests/test_dependency_overrides.py
+# at :39-40 and :208-212. Four sequential requests expose duplicated errors,
+# valid cache reuse, and that the invalid request does not invoke the override.
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/dependency_override_async_query_validation_aggregation.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.dependencies.override-async-query-validation-aggregation
+  actions:
+  - action_id: omitted-query
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /override-async-query-validation
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: valid-query
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /override-async-query-validation
+      query_string: q=42
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: invalid-query
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /override-async-query-validation
+      query_string: q=oops
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: request-after-invalid-query
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /override-async-query-validation
+      query_string: q=43
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_dependency_overrides.py, kind: upstream_test}

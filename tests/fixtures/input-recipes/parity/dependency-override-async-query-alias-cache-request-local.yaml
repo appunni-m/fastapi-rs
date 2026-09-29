@@ -1,0 +1,60 @@
+# Pinned FastAPI 0.141.1 source evidence (tag commit
+# 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f):
+# tests/test_dependency_overrides.py:39-40 defines the async optional-query
+# override; lines 208-212 install it and issue a request. In
+# fastapi/dependencies/utils.py:623-638, solve_dependencies rebuilds a
+# dependant from the override callable; utils.py:524-535 applies the query
+# field alias; utils.py:656-680 performs cache lookup and stores the result.
+# fastapi/params.py:221-280 defines Query(alias=...). The pinned test
+# tests/test_request_params/test_query/test_optional_str.py:75-79 and
+# :111-120 demonstrate a Python parameter named p whose query alias is p_alias,
+# including omission; this fixture uses q/search to observe that behavior
+# through a dependency override. The repeated original edge and two requests
+# on one app make cache reuse and request-local reset observable.
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/dependency_override_async_query_alias_cache_request_local.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.dependencies.override-async-query-alias-cache-request-local
+  actions:
+  - action_id: omitted-search
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /override-async-query-alias-cache
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: supplied-search
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /override-async-query-alias-cache
+      query_string: search=foo
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_dependency_overrides.py, kind: upstream_test}
+  - {path: tests/test_request_params/test_query/test_optional_str.py, kind: upstream_test}
