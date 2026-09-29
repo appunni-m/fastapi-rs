@@ -425,15 +425,22 @@ reviewed_api_contract_overlay:
         - {path: docs_src/path_params_numeric_validations/tutorial006_an_py310.py, symbol: read_items}
         - {path: tests/test_tutorial/test_path_params_numeric_validations/test_tutorial006.py, symbol: test_read_items_size_too_large}
         - {path: tests/test_tutorial/test_path_params_numeric_validations/test_tutorial006.py, symbol: test_openapi_schema}
+        - {path: docs_src/query_params_str_validations/tutorial003_an_py310.py, symbol: read_items}
+        - {path: tests/test_tutorial/test_query_params_str_validations/test_tutorial003.py, symbol: test_query_params_str_validations_q_too_short}
+        - {path: tests/test_tutorial/test_query_params_str_validations/test_tutorial003.py, symbol: test_query_params_str_validations_q_query}
+        - {path: tests/test_tutorial/test_query_params_str_validations/test_tutorial003.py, symbol: test_query_params_str_validations_q_too_long}
+        - {path: tests/test_tutorial/test_query_params_str_validations/test_tutorial003.py, symbol: test_openapi_schema}
       feature_ids: [request-validation, openapi-docs]
       observation_selectors: [http.status, http.body.bytes, openapi.request_schema]
       supported_slice: >-
         Partial native slice: Annotated numeric query parameters using Query(gt=...)
         and Query(lt=...) apply strict exclusive lower and upper bounds, including
-        both bounds together. The focused query workflow covers the upper boundary
-        and its exclusiveMaximum OpenAPI schema without claiming Path-bound support.
-        Other Query constructor parameters and FieldInfo options remain outside
-        this reviewed slice.
+        both bounds together. Required scalar string query parameters using
+        Query(min_length=...) and Query(max_length=...) enforce inclusive length
+        bounds and expose minLength/maxLength in OpenAPI. Focused workflows cover
+        both string boundaries and the schema. Optional/default length-constrained
+        parameters, Path length constraints, other Query constructor parameters,
+        and other FieldInfo options remain outside this reviewed slice.
     fastapi.Header:
       rust_binding: fastapi-rs/src/parameters.rs::header
       source_evidence:

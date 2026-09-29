@@ -53523,14 +53523,14 @@
     "documentation_python_examples": 370,
     "documentation_python_examples_excluded": 16,
     "documentation_python_examples_grouped_with_page": 354,
-    "documentation_python_examples_pending_behavior_review": 343,
-    "documentation_python_examples_with_independent_input_workflow_link": 11,
-    "documentation_python_examples_with_reviewed_partial_mapping": 11,
+    "documentation_python_examples_pending_behavior_review": 342,
+    "documentation_python_examples_with_independent_input_workflow_link": 12,
+    "documentation_python_examples_with_reviewed_partial_mapping": 12,
     "documentation_python_source_files": 461,
     "documentation_support_files_excluded": 91,
     "error_candidates": 42,
     "first_slice_input_cases": 10,
-    "fixture_backlog_items": 565,
+    "fixture_backlog_items": 566,
     "reviewed_callable_candidates": 137,
     "reviewed_import_binding_candidates": 97,
     "source_deprecations": 19,
@@ -119608,15 +119608,24 @@
         "app-routing",
         "openapi-docs"
       ],
-      "fixture_id": null,
+      "fixture_id": "fastapi.docs-example.metadata-tutorial001-py310",
       "id": "documented-example:docs_src/metadata/tutorial001_py310.py",
       "kind": "documented_python_example_source",
       "mapped_fixture_ids": [
         "fastapi.docs.tutorial-metadata"
       ],
       "mapping_evidence": {
-        "example_observation_selectors": [],
-        "example_selector_evidence": [],
+        "example_observation_selectors": [
+          "openapi.document"
+        ],
+        "example_selector_evidence": [
+          {
+            "feature_id": "openapi-docs",
+            "selectors": [
+              "openapi.document"
+            ]
+          }
+        ],
         "example_source_path": "docs_src/metadata/tutorial001_py310.py",
         "feature_evidence": [
           {
@@ -119630,7 +119639,20 @@
             ]
           }
         ],
-        "independent_workflow_mappings": [],
+        "independent_workflow_mappings": [
+          {
+            "case_ids": [
+              "fastapi.docs.metadata.tutorial001.openapi-info-fields"
+            ],
+            "coverage_scope": "Partial independent sample across 1 case(s); observes openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "openapi.document"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/metadata-tutorial001-upstream.yaml",
+            "workflow_id": "metadata-tutorial001-upstream"
+          }
+        ],
         "mapped_documented_pages": [
           {
             "feature_ids": [
@@ -119657,12 +119679,34 @@
             "source_path": "docs/en/docs/tutorial/metadata.md"
           }
         ],
-        "mapping_rule": "supporting source inherits selectors from its mapped page fixture; this links the source to page-level observations and does not claim independent per-example behavior coverage",
+        "mapping_rule": "distinct upstream_documentation_example evidence maps this exact docs_src file to the listed independent cases and selectors; inherited page selectors remain separate and do not widen this example-level scope",
         "page_match": "matched",
         "page_paths": [
           "tutorial/metadata.md"
         ],
-        "reviewed_example_mapping": null
+        "reviewed_example_mapping": {
+          "rationale": "The selected OpenAPI pointers observe the pinned example's exact non-empty summary, description, terms_of_service, contact, and license_info values. The mapping is limited to those five /info fields; it does not claim empty or omitted value handling, openapi_external_docs, route behavior, model serialization, or other constructor options.",
+          "source_evidence": [
+            {
+              "end_line": 33,
+              "path": "docs_src/metadata/tutorial001_py310.py",
+              "role": "documented description and app-level OpenAPI metadata",
+              "sha256": "9b7279fed766be1ec15ae64610961e53e883325055a61e43f06d54059a82b88e",
+              "start_line": 3
+            }
+          ],
+          "workflow_cases": [
+            {
+              "case_ids": [
+                "fastapi.docs.metadata.tutorial001.openapi-info-fields"
+              ],
+              "observation_selectors": [
+                "openapi.document"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/metadata-tutorial001-upstream.yaml"
+            }
+          ]
+        }
       },
       "mapping_status": "supporting_source",
       "observation_selectors": [
@@ -119671,8 +119715,8 @@
         "docs.response.status",
         "openapi.document"
       ],
-      "review_reason": "Exact example-level case/selectors or a source-backed exclusion reason remain to be reviewed.",
-      "review_status": "pending",
+      "review_reason": null,
+      "review_status": "reviewed_partial",
       "selector_evidence": [
         {
           "feature_id": "openapi-docs",
@@ -381675,6 +381719,18 @@
             ],
             "recipe_path": "tests/fixtures/input-recipes/parity/docs-openapi-interface.yaml",
             "workflow_id": "docs-openapi-interface"
+          },
+          {
+            "case_ids": [
+              "fastapi.docs.metadata.tutorial001.openapi-info-fields"
+            ],
+            "coverage_scope": "Partial independent sample across 1 case(s); observes openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "openapi.document"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/metadata-tutorial001-upstream.yaml",
+            "workflow_id": "metadata-tutorial001-upstream"
           }
         ],
         "linked_example_sources": [
@@ -587356,6 +587412,21 @@
         "independent_workflow_mappings": [
           {
             "case_ids": [
+              "fastapi.query.string-length.tutorial003-scalar-boundaries"
+            ],
+            "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.status",
+              "openapi.document",
+              "openapi.paths"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/query-string-length-bounds.yaml",
+            "workflow_id": "query-string-length-bounds"
+          },
+          {
+            "case_ids": [
               "fastapi.query-validation.tutorial003-length-bounds"
             ],
             "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
@@ -630165,7 +630236,7 @@
     }
   },
   "fixture_backlog_ref": {
-    "item_count": 565,
+    "item_count": 566,
     "path": "tests/fixtures/fixture-backlog.json",
     "schema": "fastapi-rs/fixture-backlog@1"
   },

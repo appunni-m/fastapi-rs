@@ -2207,7 +2207,19 @@ fn constrained_parameter_annotation(
         } else {
             None
         };
-        if gt.is_none() && lt.is_none() {
+        let min_length = if kind == "query" {
+            let min_length = marker.getattr("min_length")?;
+            (!min_length.is_none()).then_some(min_length)
+        } else {
+            None
+        };
+        let max_length = if kind == "query" {
+            let max_length = marker.getattr("max_length")?;
+            (!max_length.is_none()).then_some(max_length)
+        } else {
+            None
+        };
+        if gt.is_none() && lt.is_none() && min_length.is_none() && max_length.is_none() {
             continue;
         }
         let kwargs = PyDict::new(py);
@@ -2216,6 +2228,12 @@ fn constrained_parameter_annotation(
         }
         if let Some(lt) = lt {
             kwargs.set_item("lt", lt)?;
+        }
+        if let Some(min_length) = min_length {
+            kwargs.set_item("min_length", min_length)?;
+        }
+        if let Some(max_length) = max_length {
+            kwargs.set_item("max_length", max_length)?;
         }
         let field = py
             .import("pydantic")?

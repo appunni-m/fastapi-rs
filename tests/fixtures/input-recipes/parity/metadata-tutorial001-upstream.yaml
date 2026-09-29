@@ -37,3 +37,41 @@ cases:
     kind: upstream_test
   - path: docs_src/metadata/tutorial001_py310.py
     kind: upstream_documentation
+- case_id: fastapi.docs.metadata.tutorial001.openapi-info-fields
+  actions:
+  - action_id: selected-openapi-info-fields
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /info/summary
+      - /info/description
+      - /info/termsOfService
+      - /info/contact
+      - /info/license
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/metadata.md
+    kind: upstream_documentation
+  - path: docs_src/metadata/tutorial001_py310.py
+    kind: upstream_documentation_example

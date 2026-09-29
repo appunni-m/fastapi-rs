@@ -12,6 +12,8 @@ pub(crate) struct ParameterMetadata {
     default: Option<Py<PyAny>>,
     gt: Option<Py<PyAny>>,
     lt: Option<Py<PyAny>>,
+    min_length: Option<Py<PyAny>>,
+    max_length: Option<Py<PyAny>>,
     convert_underscores: bool,
     use_cache: bool,
 }
@@ -56,6 +58,20 @@ impl ParameterMetadata {
     }
 
     #[getter]
+    fn min_length(&self, py: Python<'_>) -> Option<Py<PyAny>> {
+        self.min_length
+            .as_ref()
+            .map(|min_length| min_length.clone_ref(py))
+    }
+
+    #[getter]
+    fn max_length(&self, py: Python<'_>) -> Option<Py<PyAny>> {
+        self.max_length
+            .as_ref()
+            .map(|max_length| max_length.clone_ref(py))
+    }
+
+    #[getter]
     fn convert_underscores(&self) -> bool {
         self.convert_underscores
     }
@@ -81,6 +97,8 @@ fn depends(
             default: None,
             gt: None,
             lt: None,
+            min_length: None,
+            max_length: None,
             convert_underscores: true,
             use_cache,
         },
@@ -106,6 +124,8 @@ fn header(
             default,
             gt: None,
             lt: None,
+            min_length: None,
+            max_length: None,
             convert_underscores,
             use_cache: true,
         },
@@ -127,6 +147,8 @@ fn cookie(
             default,
             gt: None,
             lt: None,
+            min_length: None,
+            max_length: None,
             convert_underscores: true,
             use_cache: true,
         },
@@ -139,7 +161,15 @@ fn query_ellipsis_default() -> Py<PyAny> {
 
 #[pyfunction(
     name = "Query",
-    signature = (*, alias = None, default = query_ellipsis_default(), gt = None, lt = None)
+    signature = (
+        *,
+        alias = None,
+        default = query_ellipsis_default(),
+        gt = None,
+        lt = None,
+        min_length = None,
+        max_length = None
+    )
 )]
 fn query(
     py: Python<'_>,
@@ -147,6 +177,8 @@ fn query(
     default: Py<PyAny>,
     gt: Option<Py<PyAny>>,
     lt: Option<Py<PyAny>>,
+    min_length: Option<Py<PyAny>>,
+    max_length: Option<Py<PyAny>>,
 ) -> PyResult<Py<ParameterMetadata>> {
     let ellipsis = py.Ellipsis();
     let undefined = py.import("pydantic_core")?.getattr("PydanticUndefined")?;
@@ -164,6 +196,8 @@ fn query(
             default,
             gt,
             lt,
+            min_length,
+            max_length,
             convert_underscores: true,
             use_cache: true,
         },
@@ -181,6 +215,8 @@ fn path(py: Python<'_>, gt: Option<Py<PyAny>>) -> PyResult<Py<ParameterMetadata>
             default: None,
             gt,
             lt: None,
+            min_length: None,
+            max_length: None,
             convert_underscores: true,
             use_cache: true,
         },
@@ -198,6 +234,8 @@ fn body(py: Python<'_>, gt: Option<Py<PyAny>>) -> PyResult<Py<ParameterMetadata>
             default: None,
             gt,
             lt: None,
+            min_length: None,
+            max_length: None,
             convert_underscores: true,
             use_cache: true,
         },
