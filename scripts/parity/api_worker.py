@@ -221,6 +221,23 @@ def _resolve_public_callable(
     spec: dict[str, str], fastapi_root: Path, supported_symbols: frozenset[str]
 ) -> Any:
     _require_supported_callable(spec, supported_symbols)
+    value = _resolve_public_attribute_value(spec, fastapi_root)
+    if not callable(value):
+        raise TypeError(f"public attribute is not callable: {spec['module']}.{spec['attribute']}")
+    return value
+
+
+def _resolve_public_attribute(
+    spec: dict[str, str], fastapi_root: Path, supported_symbols: frozenset[str]
+) -> Any:
+    _require_supported_attribute(spec, supported_symbols)
+    value = _resolve_public_attribute_value(spec, fastapi_root)
+    if callable(value):
+        raise TypeError(f"public attribute is callable: {spec['module']}.{spec['attribute']}")
+    return value
+
+
+def _resolve_public_attribute_value(spec: dict[str, str], fastapi_root: Path) -> Any:
     module_name = spec["module"]
     module = importlib.import_module(module_name)
     module_file = getattr(module, "__file__", None)
@@ -229,14 +246,22 @@ def _resolve_public_callable(
     value: Any = module
     for segment in spec["attribute"].split("."):
         value = getattr(value, segment)
-    if not callable(value):
-        raise TypeError(f"public attribute is not callable: {module_name}.{spec['attribute']}")
     return value
 
 
 def _require_supported_callable(spec: dict[str, str], supported_symbols: frozenset[str]) -> str:
+    return _require_supported_symbol(spec, supported_symbols, label="callable")
+
+
+def _require_supported_attribute(spec: dict[str, str], supported_symbols: frozenset[str]) -> str:
+    return _require_supported_symbol(spec, supported_symbols, label="attribute")
+
+
+def _require_supported_symbol(
+    spec: dict[str, str], supported_symbols: frozenset[str], *, label: str
+) -> str:
     if not isinstance(spec, dict):
-        raise WorkerError("direct Python API callable reference is malformed")
+        raise WorkerError(f"direct Python API {label} reference is malformed")
     module_name = spec.get("module")
     attribute = spec.get("attribute")
     if (
@@ -245,7 +270,7 @@ def _require_supported_callable(spec: dict[str, str], supported_symbols: frozens
         or _MODULE_PATH.fullmatch(module_name) is None
         or _ATTRIBUTE_PATH.fullmatch(attribute) is None
     ):
-        raise WorkerError("direct Python API callable reference is malformed")
+        raise WorkerError(f"direct Python API {label} reference is malformed")
     symbol_id = f"{module_name}.{attribute}"
     if symbol_id not in supported_symbols:
         raise WorkerError(
@@ -268,11 +293,23 @@ def _validate_workflow_callables(
         for probe in case["probes"]:
             if not isinstance(probe, dict):
                 raise WorkerError("direct Python API workflow probe is malformed")
-            selected.add(
-                _require_supported_callable(probe.get("public_callable", {}), supported_symbols)
-            )
+            if "public_callable" in probe:
+                if any(
+                    observation.get("kind") == "python_attribute_value"
+                    for observation in probe.get("observations", [])
+                ):
+                    raise WorkerError("python_attribute_value requires a public_attribute probe")
+                selected.add(
+                    _require_supported_callable(probe["public_callable"], supported_symbols)
+                )
+            elif "public_attribute" in probe:
+                selected.add(
+                    _require_supported_attribute(probe["public_attribute"], supported_symbols)
+                )
+            else:
+                raise WorkerError("direct Python API probe has no public symbol reference")
     if not selected:
-        raise WorkerError("direct Python API workflow contains no supported callable probes")
+        raise WorkerError("direct Python API workflow contains no supported public symbols")
 
 
 def _validate_argument_bundles(value: Any) -> Mapping[str, Any]:
@@ -316,8 +353,18 @@ async def _run_probe(
     allow_nonfinite_floats: bool = False,
 ) -> dict[str, Any]:
     try:
-        function = _resolve_public_callable(
-            probe["public_callable"], fastapi_root, supported_symbols
+        attribute_value = None
+        if "public_attribute" in probe:
+            attribute_value = _resolve_public_attribute(
+                probe["public_attribute"], fastapi_root, supported_symbols
+            )
+            function = None
+        else:
+            function = _resolve_public_callable(
+                probe["public_callable"], fastapi_root, supported_symbols
+            )
+        has_attribute_value_observation = any(
+            observation["kind"] == "python_attribute_value" for observation in probe["observations"]
         )
         has_signature_observation = any(
             observation["kind"] == "python_signature" for observation in probe["observations"]
@@ -351,6 +398,12 @@ async def _run_probe(
         for index, observation in enumerate(probe["observations"]):
             if observation["kind"] == "python_signature":
                 values = {"signature": signature}
+            elif observation["kind"] == "python_attribute_value":
+                if not has_attribute_value_observation:
+                    raise WorkerError("attribute value observation is missing its public attribute")
+                if not _is_strict_json_value(attribute_value):
+                    raise ValueError("public attribute value is not strict JSON")
+                values = {"value": _json_safe(attribute_value)}
             elif observation["kind"] == "python_return_value":
                 if allow_nonfinite_floats:
                     projected, nonfinite_floats = _json_safe_with_nonfinite(result)
@@ -384,7 +437,11 @@ async def _run_case(
     *,
     allow_nonfinite_floats: bool = False,
 ) -> dict[str, Any]:
-    bundles = await _make_bundles(factory)
+    bundles = (
+        await _make_bundles(factory)
+        if any("public_callable" in probe for probe in case["probes"])
+        else {}
+    )
     probes = []
     for probe in case["probes"]:
         probes.append(
@@ -582,7 +639,51 @@ def _validate_indexed_workflow(
         row for row in index.get("mappings", []) if row.get("workflow_id") == indexed.get("id")
     ]
     for case in workflow["cases"]:
-        evidence = {(row.get("path"), row.get("kind")) for row in case["source_evidence"]}
+        evidence = {
+            (row.get("path"), row.get("kind"))
+            for row in case["source_evidence"]
+            if row.get("kind") != "upstream_api_definition"
+        }
+        expected_definitions = sorted(
+            (
+                {
+                    "case_id": case["case_id"],
+                    "symbol_id": row["symbol_id"],
+                    "path": row["path"],
+                    "sha256": row["sha256"],
+                }
+                for row in case["source_evidence"]
+                if row.get("kind") == "upstream_api_definition"
+            ),
+            key=lambda row: (row["case_id"], row["symbol_id"], row["path"]),
+        )
+        indexed_definitions = [
+            row
+            for row in indexed.get("api_definitions", [])
+            if row.get("case_id") == case["case_id"]
+        ]
+        if indexed_definitions != expected_definitions:
+            raise WorkerError(
+                f"direct API source definitions differ from indexed evidence: {case['case_id']}"
+            )
+        probed_symbols = {
+            f"{reference['module']}.{reference['attribute']}"
+            for probe in case["probes"]
+            for key in ("public_callable", "public_attribute")
+            if isinstance((reference := probe.get(key)), dict)
+        }
+        if any(
+            definition["symbol_id"] not in probed_symbols for definition in expected_definitions
+        ):
+            raise WorkerError(
+                f"direct API source definition is not bound to a public probe: {case['case_id']}"
+            )
+        if any("public_attribute" in probe for probe in case["probes"]) and not any(
+            definition["symbol_id"] in probed_symbols for definition in expected_definitions
+        ):
+            raise WorkerError(
+                f"public attribute probe lacks API definition evidence: {case['case_id']}"
+            )
         for source_evidence in case["source_evidence"]:
             source_path = (fastapi_root / source_evidence["path"]).resolve()
             if (
@@ -606,9 +707,10 @@ def _validate_indexed_workflow(
                 else "upstream_test"
             )
             mapped.add((source.get("source_path"), kind))
-        if not mapped or not mapped <= evidence:
+        if (not mapped and not expected_definitions) or not mapped <= evidence:
             raise WorkerError(
-                f"direct API workflow case lacks indexed source evidence: {case['case_id']}"
+                "direct API workflow case lacks indexed source evidence or an API definition: "
+                f"{case['case_id']}"
             )
 
 

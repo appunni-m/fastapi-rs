@@ -1,0 +1,21 @@
+schema: fastapi-rs/python-api-workflow@2
+workload:
+  file: tests/fixtures/workloads/direct_api_reference_wave.py
+  factory: create_argument_bundles
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.public-api.package-version-value
+  probes:
+  - probe_id: package-version
+    public_attribute:
+      module: fastapi
+      attribute: __version__
+    observations:
+    - kind: python_attribute_value
+      selector: value
+      comparison: exact
+  source_evidence:
+  - path: fastapi/__init__.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.__version__
+    sha256: 036406d9f615d215ac92794c38c799eee6b498935659ce0335debfd47815d7b9

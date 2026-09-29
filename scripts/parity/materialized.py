@@ -32,6 +32,8 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
             for observation in probe["observations"]:
                 if observation["kind"] == "python_return_value":
                     selectors.add("python.attribute_value")
+                elif observation["kind"] == "python_attribute_value":
+                    selectors.add("python.attribute_value")
                 elif observation["kind"] == "python_signature":
                     selectors.add("python.signature")
                 elif observation["kind"] == "python_call_outcome":
@@ -148,6 +150,7 @@ def validate_materialized_input_index(
     selector_rows = {row["id"]: row for row in selector_catalog["selectors"] if "id" in row}
     workflow_cases: dict[str, dict[str, dict[str, Any]]] = {}
     workflow_schemas: dict[str, str] = {}
+    api_definition_cases: dict[str, set[str]] = {}
     for workflow_id, workflow_ref in workflow_by_id.items():
         for path_key, digest_key, label in (
             ("input_path", "input_sha256", "workflow input"),
@@ -177,6 +180,62 @@ def validate_materialized_input_index(
             _fail(f"workload binding differs from index: {workflow_id}")
         if sha256_file(workload_path) != workflow_ref["workload_sha256"]:
             _fail(f"workload digest differs from loaded workflow: {workflow_id}")
+        expected_api_definitions: list[dict[str, str]] = []
+        defined_cases: set[str] = set()
+        for case in workflow["cases"]:
+            public_symbol_ids = {
+                f"{probe[key]['module']}.{probe[key]['attribute']}"
+                for probe in case.get("probes", [])
+                for key in ("public_callable", "public_attribute")
+                if isinstance(probe.get(key), dict)
+            }
+            for evidence in case["source_evidence"]:
+                if evidence["kind"] != "upstream_api_definition":
+                    continue
+                symbol_id = evidence["symbol_id"]
+                if symbol_id not in public_symbol_ids:
+                    _fail(
+                        "API definition evidence does not match a probed public symbol: "
+                        f"{case['case_id']} -> {symbol_id}"
+                    )
+                source_path = (fastapi_source / evidence["path"]).resolve()
+                try:
+                    source_path.relative_to(fastapi_source.resolve())
+                except ValueError as exc:
+                    raise ContractError(
+                        "materialized input index: API definition escapes the pinned FastAPI tree"
+                    ) from exc
+                if not source_path.is_file() or sha256_file(source_path) != evidence["sha256"]:
+                    _fail(f"API definition source digest is stale: {evidence['path']}")
+                expected_api_definitions.append(
+                    {
+                        "case_id": case["case_id"],
+                        "symbol_id": symbol_id,
+                        "path": evidence["path"],
+                        "sha256": evidence["sha256"],
+                    }
+                )
+                defined_cases.add(case["case_id"])
+            if any("public_attribute" in probe for probe in case.get("probes", [])) and not any(
+                evidence["kind"] == "upstream_api_definition"
+                for evidence in case["source_evidence"]
+            ):
+                _fail(f"public attribute probe lacks API definition evidence: {case['case_id']}")
+            if case["case_id"] in defined_cases:
+                selected = _selected_selectors(case, workflow_schema=workflow["schema"])
+                for selector_id in selected:
+                    selector = selector_rows.get(selector_id)
+                    if selector is None or selector["workflow_support"] not in {
+                        "supported",
+                        "partial",
+                    }:
+                        _fail(f"API definition probe uses an unsupported selector: {selector_id}")
+        expected_api_definitions.sort(
+            key=lambda row: (row["case_id"], row["symbol_id"], row["path"])
+        )
+        if workflow_ref.get("api_definitions", []) != expected_api_definitions:
+            _fail(f"API source-definition references differ from workflow evidence: {workflow_id}")
+        api_definition_cases[workflow_id] = defined_cases
         actual_cases = {case["case_id"]: case for case in workflow["cases"]}
         if set(actual_cases) != set(workflow_ref["case_ids"]):
             _fail(f"workflow case IDs differ from index: {workflow_id}")
@@ -268,8 +327,11 @@ def validate_materialized_input_index(
                 _fail(f"selector is missing or lacks workflow support: {selector_id}")
 
     for workflow_id, cases in workflow_cases.items():
-        if mapped_cases[workflow_id] != cases.keys():
-            _fail(f"workflow contains cases without source mappings: {workflow_id}")
+        covered_cases = mapped_cases[workflow_id] | api_definition_cases[workflow_id]
+        if covered_cases != cases.keys():
+            _fail(
+                f"workflow contains cases without source mappings or API definitions: {workflow_id}"
+            )
 
     expected_mappings_by_source: dict[str, list[dict[str, Any]]] = {}
     for mapping in sorted(

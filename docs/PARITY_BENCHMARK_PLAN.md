@@ -65,6 +65,16 @@ versioned result schema, and an exact comparison command. The initial
 `make parity-api-compare SOURCE_RESULT=... TARGET_RESULT=...`. Its nine cases
 are a narrow direct-call slice and do not establish the rest of the public API.
 
+Workflow v2 also reads non-callable public attributes through the same
+identity-checked workers. A `public_attribute` probe emits a
+`python_attribute_value` observation only when the value is strict JSON, so
+the source and target values compare exactly. The input-only
+`fastapi-version-value.yaml` case exercises `fastapi.__version__` without
+embedding the oracle value in the recipe. Its `upstream_api_definition`
+evidence binds that public symbol to the digest-pinned definition in
+`fastapi/__init__.py`; definition evidence does not claim fixture-matrix
+coverage.
+
 Keep the complete FastAPI public inventory in the one project manifest and
 make every parity case reference a public operation and semantic requirement.
 Use input files as executable stimuli only: app/route setup, ordered public

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://fastapi-rs.dev/schemas/materialized-input-index/1",
   "title": "FastAPI-RS materialized fixture index",
-  "description": "Maps independently authored, input-only workflows and their concrete cases to selected source backlog items. A partial mapping does not claim full source-suite coverage.",
+  "description": "Maps independently authored, input-only workflows and their concrete cases to selected source backlog items or directly referenced public API definitions. A partial mapping does not claim full source-suite coverage.",
   "type": "object",
   "required": ["schema", "authority", "workflows", "mappings"],
   "properties": {
@@ -56,6 +56,12 @@
         "workload_path": {"$ref": "#/$defs/relativePath"},
         "workload_sha256": {"$ref": "#/$defs/sha256"},
         "oracle_profile_extension": {"enum": ["standard-multipart"]},
+        "api_definitions": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/apiDefinition"}
+        },
         "case_ids": {
           "type": "array",
           "minItems": 1,
@@ -94,6 +100,17 @@
           "uniqueItems": true,
           "items": {"type": "string", "minLength": 1}
         }
+      },
+      "additionalProperties": false
+    },
+    "apiDefinition": {
+      "type": "object",
+      "required": ["case_id", "symbol_id", "path", "sha256"],
+      "properties": {
+        "case_id": {"type": "string", "pattern": "^fastapi(?:\\.[a-z0-9][a-z0-9-]*){2,}$"},
+        "symbol_id": {"type": "string", "pattern": "^fastapi(?:\\.[A-Za-z_][A-Za-z0-9_]*)+$"},
+        "path": {"$ref": "#/$defs/relativePath"},
+        "sha256": {"$ref": "#/$defs/sha256"}
       },
       "additionalProperties": false
     }

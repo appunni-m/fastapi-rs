@@ -1721,6 +1721,26 @@
       "oracle_profile_extension": "standard-multipart"
     },
     {
+      "id": "fastapi-version-value",
+      "input_path": "tests/fixtures/inputs/parity/fastapi-version-value.json",
+      "input_sha256": "ac9e10f5ee1b168d83fe0ac01bab21a57f217f227d46c258dd33ad807c2ab4ec",
+      "recipe_path": "tests/fixtures/input-recipes/parity/fastapi-version-value.yaml",
+      "recipe_sha256": "1e9dd3ae2f56d85c669622a8610009d8f183eb9622298c1c8635b80379f38ce0",
+      "workload_path": "tests/fixtures/workloads/direct_api_reference_wave.py",
+      "workload_sha256": "57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741",
+      "case_ids": [
+        "fastapi.public-api.package-version-value"
+      ],
+      "api_definitions": [
+        {
+          "case_id": "fastapi.public-api.package-version-value",
+          "symbol_id": "fastapi.__version__",
+          "path": "fastapi/__init__.py",
+          "sha256": "036406d9f615d215ac92794c38c799eee6b498935659ce0335debfd47815d7b9"
+        }
+      ]
+    },
+    {
       "id": "first-asgi-request",
       "input_path": "tests/fixtures/inputs/parity/first-asgi-request.json",
       "input_sha256": "323221f9411c5291122336ad44d8f222ede7a95c749287a5603db54d8feeca01",
@@ -3751,6 +3771,20 @@
         "fastapi.pydantic-response-serialization-wave.response-field-filter.test-openapi-schema",
         "fastapi.pydantic-response-serialization-wave.nested-submodel-filter.test-filter-sub-model",
         "fastapi.pydantic-response-serialization-wave.nested-submodel-filter.test-openapi-schema"
+      ]
+    },
+    {
+      "id": "query-default-isolation",
+      "input_path": "tests/fixtures/inputs/parity/query-default-isolation.json",
+      "input_sha256": "52006c07c8fd623368a865f7c076347fb3a519fe81ef0e3f000821364611aed3",
+      "recipe_path": "tests/fixtures/input-recipes/parity/query-default-isolation.yaml",
+      "recipe_sha256": "ae5875e42d9510b2f9d94135359c9487325940f151f566af73f1b836736fea0c",
+      "workload_path": "tests/fixtures/workloads/query_default_isolation.py",
+      "workload_sha256": "9bd336af3585b4a5a187ff712cceb91313a9e8b5162ad9de2ddd16ac4834269e",
+      "case_ids": [
+        "fastapi.query-default-isolation.pydantic-undefined-is-required",
+        "fastapi.query-default-isolation.invalid-default-is-validated",
+        "fastapi.query-default-isolation.mutable-default-is-copied-per-request"
       ]
     },
     {
@@ -15210,6 +15244,22 @@
         "http.body.bytes",
         "http.status",
         "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_query.py",
+      "fixture_id": "fastapi.test.test-query",
+      "workflow_id": "query-default-isolation",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.query-default-isolation.invalid-default-is-validated",
+        "fastapi.query-default-isolation.mutable-default-is-copied-per-request",
+        "fastapi.query-default-isolation.pydantic-undefined-is-required"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
       ]
     },
     {
