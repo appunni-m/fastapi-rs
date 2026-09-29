@@ -20,7 +20,7 @@ PARITY_API_INPUT ?= tests/fixtures/inputs/parity/encoding.json
 BENCHMARK_WORKLOAD ?= benchmarks/workloads/first-slice-valid-asgi.yaml
 
 .DEFAULT_GOAL := help
-.PHONY: help fmt format clippy build build-rust build-python python-facade-check rust-policy-check compatibility-atlas-update api-contract-update api-contract-check metadata-check dependency-inventory-update dependency-inventory-check parity-inputs parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-target parity-api-runtime parity-validate parity-index-update parity-index-check parity-oracle parity-oracle-standard parity-target parity-compare parity-api-validate parity-api-oracle parity-api-target parity-api-compare parity-first-slice benchmark-first-slice verify clean
+.PHONY: help fmt format clippy build build-rust build-python python-facade-check rust-policy-check compatibility-atlas-update api-contract-update api-contract-check metadata-check dependency-inventory-update dependency-inventory-check parity-inputs parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-target parity-api-runtime parity-validate parity-index-update parity-index-check parity-oracle parity-oracle-standard parity-target parity-compare parity-api-validate parity-api-oracle parity-api-target parity-api-compare parity-first-slice benchmark-contract-check benchmark-first-slice verify clean
 
 help: ## Show common development commands
 	@printf '%s\n' \
@@ -53,6 +53,7 @@ help: ## Show common development commands
 	  '  make parity-compare  Compare live source/target result artifacts exactly' \
 	  '  make parity-api-*    Validate, run, and compare direct Python API probes' \
 	  '  make parity-first-slice Run and compare the pinned first HTTP slice end to end' \
+	  '  make benchmark-contract-check Validate benchmark workloads against parity inputs and runner policy' \
 	  '  make benchmark-first-slice Gate and measure the selected direct-ASGI workload' \
 	  '  make verify         Run formatting, lint, static contracts, and wheel build' \
 	  '  make clean          Remove Cargo outputs under target/' '' \
@@ -186,7 +187,10 @@ parity-first-slice: parity-validate ## Run and exactly compare the pinned first 
 	  --oracle-python "$(ORACLE_PYTHON)" \
 	  --target-python "$(TARGET_PYTHON)"
 
-benchmark-first-slice: ## Gate parity and measure the selected FastAPI direct-ASGI workload
+benchmark-contract-check: parity-inputs ## Validate workload/result schemas and parity references
+	$(PYTHON) -m scripts.benchmarks.contract --check
+
+benchmark-first-slice: benchmark-contract-check ## Gate parity and measure the selected FastAPI direct-ASGI workload
 	$(PYTHON) scripts/benchmarks/run_first_slice.py \
 	  --workload "$(BENCHMARK_WORKLOAD)" \
 	  --fastapi-source "$(FASTAPI_SOURCE)" \
@@ -197,7 +201,7 @@ benchmark-first-slice: ## Gate parity and measure the selected FastAPI direct-AS
 
 build: build-rust build-python ## Build the Rust crates and Python wheel
 
-verify: fmt clippy parity-index-check api-contract-check metadata-check dependency-inventory-check parity-validate build-python ## Run formatting, lint, static contracts, and package checks
+verify: fmt clippy parity-index-check api-contract-check metadata-check dependency-inventory-check benchmark-contract-check parity-validate build-python ## Run formatting, lint, static contracts, and package checks
 
 clean: ## Remove Cargo outputs under target/
 	$(CARGO) clean

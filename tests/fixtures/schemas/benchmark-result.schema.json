@@ -1,0 +1,263 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastapi-rs/benchmark-result@1",
+  "title": "FastAPI-RS direct ASGI benchmark result",
+  "type": "object",
+  "required": [
+    "schema",
+    "run_id",
+    "created_at",
+    "workload",
+    "parity_gate",
+    "code",
+    "host",
+    "target_build",
+    "subjects",
+    "ratios",
+    "interpretation"
+  ],
+  "properties": {
+    "schema": {"const": "fastapi-rs/benchmark-result@1"},
+    "run_id": {"type": "string", "format": "uuid"},
+    "created_at": {"type": "string", "format": "date-time"},
+    "workload": {
+      "type": "object",
+      "required": [
+        "id",
+        "path",
+        "sha256",
+        "input_path",
+        "input_sha256",
+        "case_id",
+        "action_id"
+      ],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "path": {"type": "string", "pattern": "^benchmarks/workloads/.+\\.yaml$"},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "input_path": {"type": "string", "pattern": "^tests/fixtures/inputs/parity/.+\\.json$"},
+        "input_sha256": {"$ref": "#/$defs/sha256"},
+        "case_id": {"type": "string", "minLength": 1},
+        "action_id": {"type": ["string", "null"]}
+      },
+      "additionalProperties": false
+    },
+    "parity_gate": {
+      "type": "object",
+      "required": ["status", "summary", "comparison_artifact", "comparison_sha256"],
+      "properties": {
+        "status": {"const": "completed"},
+        "summary": {
+          "type": "object",
+          "required": ["selected", "passed", "failed", "not_run"],
+          "properties": {
+            "selected": {"type": "integer", "minimum": 1},
+            "passed": {"type": "integer", "minimum": 1},
+            "failed": {"const": 0},
+            "not_run": {"const": 0}
+          },
+          "additionalProperties": false
+        },
+        "comparison_artifact": {"type": "string", "pattern": "^parity-results/.+\\.json$"},
+        "comparison_sha256": {"$ref": "#/$defs/sha256"}
+      },
+      "additionalProperties": false
+    },
+    "code": {
+      "type": "object",
+      "required": ["fastapi_source", "starlette_source", "fastapi_rs_source", "starlette_rs_source"],
+      "properties": {
+        "fastapi_source": {"$ref": "#/$defs/gitRevision"},
+        "starlette_source": {"$ref": "#/$defs/gitRevision"},
+        "fastapi_rs_source": {"$ref": "#/$defs/gitRevision"},
+        "starlette_rs_source": {"$ref": "#/$defs/gitRevision"}
+      },
+      "additionalProperties": false
+    },
+    "host": {
+      "type": "object",
+      "required": ["platform", "machine"],
+      "properties": {
+        "platform": {"type": "string", "minLength": 1},
+        "machine": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "target_build": {
+      "type": "object",
+      "required": ["cargo_profile", "cargo_features", "rustc", "cargo"],
+      "properties": {
+        "cargo_profile": {"const": "release"},
+        "cargo_features": {"const": ["pyo3/extension-module"]},
+        "rustc": {"type": "string", "minLength": 1},
+        "cargo": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "subjects": {
+      "type": "object",
+      "required": ["fastapi", "fastapi-rs"],
+      "properties": {
+        "fastapi": {"$ref": "#/$defs/subjectResult"},
+        "fastapi-rs": {"$ref": "#/$defs/subjectResult"},
+        "starlette-control": {"$ref": "#/$defs/subjectResult"}
+      },
+      "additionalProperties": false
+    },
+    "ratios": {
+      "type": "object",
+      "required": ["fastapi_rs_over_fastapi_median", "fastapi_rs_over_fastapi_p95"],
+      "properties": {
+        "fastapi_rs_over_fastapi_median": {"type": "number", "exclusiveMinimum": 0},
+        "fastapi_rs_over_fastapi_p95": {"type": "number", "exclusiveMinimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "interpretation": {"const": "Single-machine direct-ASGI scenario baseline; not a network or full-suite claim."}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "gitRevision": {"type": "string", "pattern": "^[a-f0-9]{40}$"},
+    "sharedPackages": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {"type": "string", "minLength": 1}
+    },
+    "host": {
+      "type": "object",
+      "required": ["platform", "machine", "processor", "cpu_count"],
+      "properties": {
+        "platform": {"type": "string"},
+        "machine": {"type": "string"},
+        "processor": {"type": "string"},
+        "cpu_count": {"type": ["integer", "null"], "minimum": 1}
+      },
+      "additionalProperties": false
+    },
+    "python": {
+      "type": "object",
+      "required": ["implementation", "version"],
+      "properties": {
+        "implementation": {"type": "string", "minLength": 1},
+        "version": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "signature": {
+      "type": "object",
+      "required": ["status", "headers", "body_hex"],
+      "properties": {
+        "status": {"type": "integer", "minimum": 100, "maximum": 599},
+        "headers": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "prefixItems": [
+              {"type": "string", "pattern": "^(?:[a-f0-9]{2})*$"},
+              {"type": "string", "pattern": "^(?:[a-f0-9]{2})*$"}
+            ],
+            "minItems": 2,
+            "maxItems": 2
+          }
+        },
+        "body_hex": {"type": "string", "pattern": "^(?:[a-f0-9]{2})*$"}
+      },
+      "additionalProperties": false
+    },
+    "identity": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["fastapi", "fastapi_source", "starlette", "starlette_source", "shared_packages"],
+          "properties": {
+            "fastapi": {"type": "string", "minLength": 1},
+            "fastapi_source": {"$ref": "#/$defs/gitRevision"},
+            "starlette": {"type": "string", "minLength": 1},
+            "starlette_source": {"$ref": "#/$defs/gitRevision"},
+            "shared_packages": {"$ref": "#/$defs/sharedPackages"}
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["starlette", "starlette_source", "shared_packages"],
+          "properties": {
+            "starlette": {"type": "string", "minLength": 1},
+            "starlette_source": {"$ref": "#/$defs/gitRevision"},
+            "shared_packages": {"$ref": "#/$defs/sharedPackages"}
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["fastapi_rs_source", "fastapi_rs", "fastapi_rs_native_extension_sha256", "target_binary_sha256", "starlette_rs", "starlette_rs_source", "shared_packages"],
+          "properties": {
+            "fastapi_rs_source": {"$ref": "#/$defs/gitRevision"},
+            "fastapi_rs": {"type": "string", "minLength": 1},
+            "fastapi_rs_native_extension_sha256": {"$ref": "#/$defs/sha256"},
+            "target_binary_sha256": {"$ref": "#/$defs/sha256"},
+            "starlette_rs": {"type": "string", "minLength": 1},
+            "starlette_rs_source": {"$ref": "#/$defs/gitRevision"},
+            "shared_packages": {"$ref": "#/$defs/sharedPackages"}
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "subjectResult": {
+      "type": "object",
+      "required": [
+        "sample_count",
+        "warmup_count",
+        "rounds",
+        "samples_per_round",
+        "latency_ns",
+        "request_loop_throughput_per_second",
+        "request_loop_elapsed_ns",
+        "raw_latency_ns",
+        "correctness_observation",
+        "subject",
+        "selected_action_id",
+        "identity",
+        "python",
+        "host",
+        "generated_at"
+      ],
+      "properties": {
+        "sample_count": {"type": "integer", "minimum": 1},
+        "warmup_count": {"type": "integer", "minimum": 1},
+        "rounds": {"type": "integer", "minimum": 1},
+        "samples_per_round": {"type": "integer", "minimum": 1},
+        "latency_ns": {
+          "type": "object",
+          "required": ["min", "median", "p95", "p99", "max", "mean"],
+          "properties": {
+            "min": {"type": "integer", "minimum": 0},
+            "median": {"type": "integer", "minimum": 0},
+            "p95": {"type": "integer", "minimum": 0},
+            "p99": {"type": "integer", "minimum": 0},
+            "max": {"type": "integer", "minimum": 0},
+            "mean": {"type": "number", "minimum": 0}
+          },
+          "additionalProperties": false
+        },
+        "request_loop_throughput_per_second": {"type": "number", "exclusiveMinimum": 0},
+        "request_loop_elapsed_ns": {"type": "integer", "minimum": 1},
+        "raw_latency_ns": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "integer", "minimum": 0}
+        },
+        "correctness_observation": {"$ref": "#/$defs/signature"},
+        "subject": {"enum": ["fastapi", "fastapi-rs", "starlette-control"]},
+        "selected_action_id": {"type": "string", "minLength": 1},
+        "identity": {"$ref": "#/$defs/identity"},
+        "python": {"$ref": "#/$defs/python"},
+        "host": {"$ref": "#/$defs/host"},
+        "generated_at": {"type": "string", "format": "date-time"}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

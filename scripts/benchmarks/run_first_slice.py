@@ -15,8 +15,6 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-import yaml
-
 ROOT = Path(__file__).resolve().parents[2]
 
 
@@ -65,6 +63,7 @@ def main() -> int:
     if str(ROOT) not in sys.path:
         sys.path.insert(0, str(ROOT))
     parity_driver = importlib.import_module("scripts.parity.run_first_slice")
+    contract = importlib.import_module("scripts.benchmarks.contract")
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--workload", type=Path, default=ROOT / "benchmarks/workloads/first-slice-valid-asgi.yaml"
@@ -76,13 +75,12 @@ def main() -> int:
     parser.add_argument("--oracle-python", type=Path, default=ROOT / ".venv-oracle/bin/python")
     parser.add_argument("--target-python", type=Path, default=ROOT / ".venv-target/bin/python")
     args = parser.parse_args()
-    workload_path = args.workload.resolve()
-    workload = yaml.safe_load(workload_path.read_text(encoding="utf-8"))
-    input_path = (ROOT / workload["input"]["path"]).resolve()
+    workload, workload_path, input_workflow, input_path, selected_action = contract.load_workload(
+        args.workload
+    )
     if args.input is not None and args.input.resolve() != input_path:
         raise BenchmarkError("command-line input differs from the benchmark workload input")
-    input_workflow = json.loads(input_path.read_text(encoding="utf-8"))
-    manifest = yaml.safe_load((ROOT / "tests/fixtures/manifest.yaml").read_text(encoding="utf-8"))
+    manifest = contract.read_manifest()
     case_id = workload["input"]["case_id"]
     action_id = workload["input"].get("action_id")
     app_workload = ROOT / input_workflow["workload"]["file"]
@@ -229,6 +227,7 @@ def main() -> int:
     comparison_path = Path(parity["comparison_result"])
     if not comparison_path.is_absolute():
         comparison_path = ROOT / comparison_path
+    comparison_relative_path = comparison_path.relative_to(ROOT).as_posix()
     result = {
         "schema": "fastapi-rs/benchmark-result@1",
         "run_id": str(uuid.uuid4()),
@@ -245,7 +244,7 @@ def main() -> int:
         "parity_gate": {
             "status": parity["status"],
             "summary": summary,
-            "comparison_artifact": str(comparison_path),
+            "comparison_artifact": comparison_relative_path,
             "comparison_sha256": _sha256(comparison_path),
         },
         "code": {
@@ -270,6 +269,13 @@ def main() -> int:
             "Single-machine direct-ASGI scenario baseline; not a network or full-suite claim."
         ),
     }
+    contract.validate_result(
+        result,
+        workload=workload,
+        workload_path=workload_path,
+        input_path=input_path,
+        action=selected_action,
+    )
     results_dir = ROOT / "benchmark-results"
     results_dir.mkdir(exist_ok=True)
     artifact = (

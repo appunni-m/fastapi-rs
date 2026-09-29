@@ -7,6 +7,7 @@ import asyncio
 import base64
 import hashlib
 import importlib
+import importlib.machinery
 import importlib.metadata
 import importlib.util
 import json
@@ -78,6 +79,16 @@ def _digest(path: Path) -> str:
     with path.open("rb") as stream:
         for block in iter(lambda: stream.read(128 * 1024), b""):
             digest.update(block)
+    return digest.hexdigest()
+
+
+def _combine_digests(entries: dict[str, str]) -> str:
+    digest = hashlib.sha256()
+    for name, value in sorted(entries.items()):
+        digest.update(name.encode("utf-8"))
+        digest.update(b"\0")
+        digest.update(value.encode("ascii"))
+        digest.update(b"\0")
     return digest.hexdigest()
 
 
@@ -174,17 +185,33 @@ def _identity(
         raise BenchmarkError("FastAPI-RS runtime unexpectedly contains FastAPI distribution")
     core = importlib.import_module("fastapi_rs._core")
     starlette_rs = importlib.import_module("starlette_rs_py")
+    starlette_rs_core = importlib.import_module("starlette_rs_py._core")
     target_root = ROOT / "fastapi-rs-py/python/fastapi"
     if not Path(fastapi.__file__).resolve().is_relative_to(target_root):
         raise BenchmarkError("FastAPI-RS public facade imported outside the target checkout")
-    if not Path(core.__file__).resolve().is_file():
-        raise BenchmarkError("FastAPI-RS native extension is missing")
+    fastapi_rs_core_path = Path(core.__file__).resolve()
+    if not fastapi_rs_core_path.is_file() or not any(
+        str(fastapi_rs_core_path).endswith(suffix)
+        for suffix in importlib.machinery.EXTENSION_SUFFIXES
+    ):
+        raise BenchmarkError("FastAPI-RS did not load a compiled native extension")
     if (
         not Path(starlette_rs.__file__)
         .resolve()
         .is_relative_to(starlette_rs_root / "starlette-rs-py/python/starlette_rs_py")
     ):
         raise BenchmarkError("Starlette-RS binding imported outside the pinned checkout")
+    starlette_rs_core_path = Path(starlette_rs_core.__file__).resolve()
+    starlette_rs_core_root = starlette_rs_root / "starlette-rs-py/python/starlette_rs_py"
+    if (
+        not starlette_rs_core_path.is_relative_to(starlette_rs_core_root)
+        or not starlette_rs_core_path.is_file()
+        or not any(
+            str(starlette_rs_core_path).endswith(suffix)
+            for suffix in importlib.machinery.EXTENSION_SUFFIXES
+        )
+    ):
+        raise BenchmarkError("Starlette-RS did not load its pinned compiled native extension")
     starlette_rs_commit = _git(starlette_rs_root, "rev-parse", "HEAD")
     if starlette_rs_commit != expected["starlette_rs_source"]:
         raise BenchmarkError("Starlette-RS source revision is not the pinned clean commit")
@@ -202,7 +229,13 @@ def _identity(
     return {
         "fastapi_rs_source": target_commit,
         "fastapi_rs": fastapi_rs_version,
-        "fastapi_rs_native_extension_sha256": _digest(Path(core.__file__).resolve()),
+        "fastapi_rs_native_extension_sha256": _digest(fastapi_rs_core_path),
+        "target_binary_sha256": _combine_digests(
+            {
+                "fastapi_rs._core": _digest(fastapi_rs_core_path),
+                "starlette_rs_py._core": _digest(starlette_rs_core_path),
+            }
+        ),
         "starlette_rs": starlette_rs_version,
         "starlette_rs_source": starlette_rs_commit,
         "shared_packages": _shared_package_identity(expected["shared_packages"]),
