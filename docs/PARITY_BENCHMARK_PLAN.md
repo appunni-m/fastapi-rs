@@ -152,6 +152,14 @@ under ignored `benchmark-results/`.
 This is a first-slice baseline only. It does not replace the upstream TestClient
 benchmark suite or establish performance parity beyond the measured request.
 
+The repeated-sequence-query lane is also executable after its three-action
+identity-checked workflow passes. Run
+`make benchmark-first-slice BENCHMARK_WORKLOAD=benchmarks/workloads/repeated-sequence-query-asgi.yaml`
+to time only the valid `q=5&q=6` request while gating against the complete
+multi-query case, including invalid-value aggregation and OpenAPI parity. It
+compares FastAPI with FastAPI-RS directly; Starlette is omitted because it does
+not own FastAPI's repeated-query list validation behavior.
+
 Start with FastAPI's own workloads in `tests/benchmarks/` and
 `tests/memory_benchmarks/` at the pinned tag. This preserves comparisons to
 FastAPI's established work while the additional workloads isolate costs that
