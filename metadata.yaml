@@ -547,10 +547,14 @@ reviewed_api_contract_overlay:
         - {path: fastapi/routing.py, symbol: serialize_response}
         - {path: fastapi/_compat/v2.py, symbol: serialize}
         - {path: fastapi/openapi/utils.py, symbol: get_openapi_path}
+        - {path: fastapi/openapi/utils.py, symbol: get_openapi_operation_metadata}
+        - {path: fastapi/routing.py, symbol: post}
         - {path: tests/test_tutorial/test_path_operation_advanced_configurations/test_tutorial004.py, symbol: test_openapi_schema}
         - {path: docs_src/path_operation_advanced_configuration/tutorial004_py310.py}
         - {path: tests/test_tutorial/test_path_operation_configurations/test_tutorial002.py, symbol: test_openapi_schema}
         - {path: docs_src/path_operation_configuration/tutorial002_py310.py}
+        - {path: docs/en/docs/advanced/generate-clients.md}
+        - {path: docs_src/generate_clients/tutorial001_py310.py}
       feature_ids: [app-routing, openapi-docs, response-serialization]
       observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths]
       supported_slice: >-
@@ -558,9 +562,11 @@ reviewed_api_contract_overlay:
         response pipeline. include_in_schema=False keeps the route dispatchable
         while omitting it from OpenAPI. An explicit non-empty `summary` is
         emitted as the operation summary in OpenAPI, as sampled by
-        `path-operation-post-summary-isolated`. Other decorator options,
-        generated summaries, and customization hooks remain outside this
-        reviewed slice. A non-empty list of string `tags` is emitted as the
+        `path-operation-post-summary-isolated`. Generated summaries, response
+        customization, and other hooks remain outside this reviewed slice. An
+        explicit non-empty `operation_id` is emitted at
+        `/paths/~1stock/post/operationId`, as sampled by `docs-openapi-schema`.
+        A non-empty list of string `tags` is emitted as the
         operation's tags, as sampled by `path-operation-post-tags-isolated`;
         enum and empty tag values remain outside this slice.
     fastapi.applications.FastAPI.put:
