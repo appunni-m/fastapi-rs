@@ -53523,14 +53523,14 @@
     "documentation_python_examples": 370,
     "documentation_python_examples_excluded": 16,
     "documentation_python_examples_grouped_with_page": 354,
-    "documentation_python_examples_pending_behavior_review": 347,
-    "documentation_python_examples_with_independent_input_workflow_link": 7,
-    "documentation_python_examples_with_reviewed_partial_mapping": 7,
+    "documentation_python_examples_pending_behavior_review": 343,
+    "documentation_python_examples_with_independent_input_workflow_link": 11,
+    "documentation_python_examples_with_reviewed_partial_mapping": 11,
     "documentation_python_source_files": 461,
     "documentation_support_files_excluded": 91,
     "error_candidates": 42,
     "first_slice_input_cases": 10,
-    "fixture_backlog_items": 561,
+    "fixture_backlog_items": 565,
     "reviewed_callable_candidates": 137,
     "reviewed_import_binding_candidates": 97,
     "source_deprecations": 19,
@@ -117247,15 +117247,33 @@
         "public-api-errors",
         "request-validation"
       ],
-      "fixture_id": null,
+      "fixture_id": "fastapi.docs-example.header-params-tutorial002-an-py310",
       "id": "documented-example:docs_src/header_params/tutorial002_an_py310.py",
       "kind": "documented_python_example_source",
       "mapped_fixture_ids": [
         "fastapi.docs.tutorial-header-params"
       ],
       "mapping_evidence": {
-        "example_observation_selectors": [],
-        "example_selector_evidence": [],
+        "example_observation_selectors": [
+          "http.body.bytes",
+          "http.status"
+        ],
+        "example_selector_evidence": [
+          {
+            "feature_id": "app-routing",
+            "selectors": [
+              "http.body.bytes",
+              "http.status"
+            ]
+          },
+          {
+            "feature_id": "request-validation",
+            "selectors": [
+              "http.body.bytes",
+              "http.status"
+            ]
+          }
+        ],
         "example_source_path": "docs_src/header_params/tutorial002_an_py310.py",
         "feature_evidence": [
           {
@@ -117283,7 +117301,23 @@
             ]
           }
         ],
-        "independent_workflow_mappings": [],
+        "independent_workflow_mappings": [
+          {
+            "case_ids": [
+              "fastapi.header.convert-underscores-false.hyphen-name",
+              "fastapi.header.convert-underscores-false.missing",
+              "fastapi.header.convert-underscores-false.underscore-name"
+            ],
+            "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/header-convert-underscores-false.yaml",
+            "workflow_id": "header-convert-underscores-false"
+          }
+        ],
         "mapped_documented_pages": [
           {
             "feature_ids": [
@@ -117337,12 +117371,37 @@
             "source_path": "docs/en/docs/tutorial/header-params.md"
           }
         ],
-        "mapping_rule": "supporting source inherits selectors from its mapped page fixture; this links the source to page-level observations and does not claim independent per-example behavior coverage",
+        "mapping_rule": "distinct upstream_documentation_example evidence maps this exact docs_src file to the listed independent cases and selectors; inherited page selectors remain separate and do not widen this example-level scope",
         "page_match": "matched",
         "page_paths": [
           "tutorial/header-params.md"
         ],
-        "reviewed_example_mapping": null
+        "reviewed_example_mapping": {
+          "rationale": "The linked cases sample the documented Annotated Header(convert_underscores=False) parameter when absent, supplied under its underscore name, and supplied under the hyphenated name. This is a partial sample of that header-name conversion setting, not a claim about other Header options or header parameter behavior.",
+          "source_evidence": [
+            {
+              "end_line": 12,
+              "path": "docs_src/header_params/tutorial002_an_py310.py",
+              "role": "documented optional Header(convert_underscores=False) route",
+              "sha256": "deb25cb19f089f242479e0ff91f018dbcbdfa0b49d00f850eb57aad3b4803f95",
+              "start_line": 1
+            }
+          ],
+          "workflow_cases": [
+            {
+              "case_ids": [
+                "fastapi.header.convert-underscores-false.missing",
+                "fastapi.header.convert-underscores-false.underscore-name",
+                "fastapi.header.convert-underscores-false.hyphen-name"
+              ],
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/header-convert-underscores-false.yaml"
+            }
+          ]
+        }
       },
       "mapping_status": "supporting_source",
       "observation_selectors": [
@@ -117357,8 +117416,8 @@
         "validation.error_class",
         "validation.error_details"
       ],
-      "review_reason": "Exact example-level case/selectors or a source-backed exclusion reason remain to be reviewed.",
-      "review_status": "pending",
+      "review_reason": null,
+      "review_status": "reviewed_partial",
       "selector_evidence": [
         {
           "feature_id": "app-routing",
@@ -122977,15 +123036,48 @@
         "request-validation",
         "response-serialization"
       ],
-      "fixture_id": null,
+      "fixture_id": "fastapi.docs-example.path-operation-advanced-configuration-tutorial003-py310",
       "id": "documented-example:docs_src/path_operation_advanced_configuration/tutorial003_py310.py",
       "kind": "documented_python_example_source",
       "mapped_fixture_ids": [
         "fastapi.docs.advanced-path-operation-advanced-configuration"
       ],
       "mapping_evidence": {
-        "example_observation_selectors": [],
-        "example_selector_evidence": [],
+        "example_observation_selectors": [
+          "http.body.bytes",
+          "http.status",
+          "openapi.document"
+        ],
+        "example_selector_evidence": [
+          {
+            "feature_id": "app-routing",
+            "selectors": [
+              "http.body.bytes",
+              "http.status"
+            ]
+          },
+          {
+            "feature_id": "openapi-docs",
+            "selectors": [
+              "http.body.bytes",
+              "openapi.document"
+            ]
+          },
+          {
+            "feature_id": "request-validation",
+            "selectors": [
+              "http.body.bytes",
+              "http.status"
+            ]
+          },
+          {
+            "feature_id": "response-serialization",
+            "selectors": [
+              "http.body.bytes",
+              "http.status"
+            ]
+          }
+        ],
         "example_source_path": "docs_src/path_operation_advanced_configuration/tutorial003_py310.py",
         "feature_evidence": [
           {
@@ -123016,7 +123108,22 @@
             ]
           }
         ],
-        "independent_workflow_mappings": [],
+        "independent_workflow_mappings": [
+          {
+            "case_ids": [
+              "fastapi.path-operation-advanced-configurations.tutorial003"
+            ],
+            "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.status",
+              "openapi.document"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-advanced-configurations-tutorial003-upstream.yaml",
+            "workflow_id": "path-operation-advanced-configurations-tutorial003-upstream"
+          }
+        ],
         "mapped_documented_pages": [
           {
             "feature_ids": [
@@ -123066,12 +123173,36 @@
             "source_path": "docs/en/docs/advanced/path-operation-advanced-configuration.md"
           }
         ],
-        "mapping_rule": "supporting source inherits selectors from its mapped page fixture; this links the source to page-level observations and does not claim independent per-example behavior coverage",
+        "mapping_rule": "distinct upstream_documentation_example evidence maps this exact docs_src file to the listed independent cases and selectors; inherited page selectors remain separate and do not widen this example-level scope",
         "page_match": "matched",
         "page_paths": [
           "advanced/path-operation-advanced-configuration.md"
         ],
-        "reviewed_example_mapping": null
+        "reviewed_example_mapping": {
+          "rationale": "FastAPI 0.141.1 serves the documented GET /items/ route while excluding it from the selected OpenAPI paths because include_in_schema=False. The linked case observes that route response and the paths projection only; it does not claim other route configuration behavior or full application parity.",
+          "source_evidence": [
+            {
+              "end_line": 8,
+              "path": "docs_src/path_operation_advanced_configuration/tutorial003_py310.py",
+              "role": "documented route response and include_in_schema=False",
+              "sha256": "941873b2122df66345d4f4cc14d4e9b5d16ac352b43e3aa9b38bea7425c85699",
+              "start_line": 1
+            }
+          ],
+          "workflow_cases": [
+            {
+              "case_ids": [
+                "fastapi.path-operation-advanced-configurations.tutorial003"
+              ],
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status",
+                "openapi.document"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-advanced-configurations-tutorial003-upstream.yaml"
+            }
+          ]
+        }
       },
       "mapping_status": "supporting_source",
       "observation_selectors": [
@@ -123082,8 +123213,8 @@
         "openapi.document",
         "openapi.paths"
       ],
-      "review_reason": "Exact example-level case/selectors or a source-backed exclusion reason remain to be reviewed.",
-      "review_status": "pending",
+      "review_reason": null,
+      "review_status": "reviewed_partial",
       "selector_evidence": [
         {
           "feature_id": "openapi-docs",
@@ -125412,15 +125543,43 @@
         "request-validation",
         "status-codes"
       ],
-      "fixture_id": null,
+      "fixture_id": "fastapi.docs-example.path-operation-configuration-tutorial001-py310",
       "id": "documented-example:docs_src/path_operation_configuration/tutorial001_py310.py",
       "kind": "documented_python_example_source",
       "mapped_fixture_ids": [
         "fastapi.docs.tutorial-path-operation-configuration"
       ],
       "mapping_evidence": {
-        "example_observation_selectors": [],
-        "example_selector_evidence": [],
+        "example_observation_selectors": [
+          "http.status",
+          "openapi.document"
+        ],
+        "example_selector_evidence": [
+          {
+            "feature_id": "app-routing",
+            "selectors": [
+              "http.status"
+            ]
+          },
+          {
+            "feature_id": "openapi-docs",
+            "selectors": [
+              "openapi.document"
+            ]
+          },
+          {
+            "feature_id": "request-validation",
+            "selectors": [
+              "http.status"
+            ]
+          },
+          {
+            "feature_id": "status-codes",
+            "selectors": [
+              "http.status"
+            ]
+          }
+        ],
         "example_source_path": "docs_src/path_operation_configuration/tutorial001_py310.py",
         "feature_evidence": [
           {
@@ -125471,7 +125630,21 @@
             ]
           }
         ],
-        "independent_workflow_mappings": [],
+        "independent_workflow_mappings": [
+          {
+            "case_ids": [
+              "fastapi.path-operation-configurations.tutorial001"
+            ],
+            "coverage_scope": "Partial independent sample across 1 case(s); observes http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "http.status",
+              "openapi.document"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-configurations-tutorial001-upstream.yaml",
+            "workflow_id": "path-operation-configurations-tutorial001-upstream"
+          }
+        ],
         "mapped_documented_pages": [
           {
             "feature_ids": [
@@ -125516,12 +125689,35 @@
             "source_path": "docs/en/docs/tutorial/path-operation-configuration.md"
           }
         ],
-        "mapping_rule": "supporting source inherits selectors from its mapped page fixture; this links the source to page-level observations and does not claim independent per-example behavior coverage",
+        "mapping_rule": "distinct upstream_documentation_example evidence maps this exact docs_src file to the listed independent cases and selectors; inherited page selectors remain separate and do not widen this example-level scope",
         "page_match": "matched",
         "page_paths": [
           "tutorial/path-operation-configuration.md"
         ],
-        "reviewed_example_mapping": null
+        "reviewed_example_mapping": {
+          "rationale": "The linked case submits the documented POST /items/ body and samples the HTTP status plus the selected OpenAPI response 201 and Item schema pointers. The mapping is limited to this route's status_code=201 behavior and those selected document fields; it does not claim status defaults or broader response-model behavior.",
+          "source_evidence": [
+            {
+              "end_line": 17,
+              "path": "docs_src/path_operation_configuration/tutorial001_py310.py",
+              "role": "documented Item request/response and status_code=201 route",
+              "sha256": "bc81403d3667db3c7cc62c0443dacf6e589a5705aebaf4f6086eb203490b5aa5",
+              "start_line": 1
+            }
+          ],
+          "workflow_cases": [
+            {
+              "case_ids": [
+                "fastapi.path-operation-configurations.tutorial001"
+              ],
+              "observation_selectors": [
+                "http.status",
+                "openapi.document"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-configurations-tutorial001-upstream.yaml"
+            }
+          ]
+        }
       },
       "mapping_status": "supporting_source",
       "observation_selectors": [
@@ -125533,8 +125729,8 @@
         "python.import_path",
         "python.object_identity"
       ],
-      "review_reason": "Exact example-level case/selectors or a source-backed exclusion reason remain to be reviewed.",
-      "review_status": "pending",
+      "review_reason": null,
+      "review_status": "reviewed_partial",
       "selector_evidence": [
         {
           "feature_id": "app-routing",
@@ -128053,15 +128249,37 @@
         "public-api-errors",
         "request-validation"
       ],
-      "fixture_id": null,
+      "fixture_id": "fastapi.docs-example.path-operation-configuration-tutorial006-py310",
       "id": "documented-example:docs_src/path_operation_configuration/tutorial006_py310.py",
       "kind": "documented_python_example_source",
       "mapped_fixture_ids": [
         "fastapi.docs.tutorial-path-operation-configuration"
       ],
       "mapping_evidence": {
-        "example_observation_selectors": [],
-        "example_selector_evidence": [],
+        "example_observation_selectors": [
+          "http.status",
+          "openapi.document"
+        ],
+        "example_selector_evidence": [
+          {
+            "feature_id": "app-routing",
+            "selectors": [
+              "http.status"
+            ]
+          },
+          {
+            "feature_id": "openapi-docs",
+            "selectors": [
+              "openapi.document"
+            ]
+          },
+          {
+            "feature_id": "request-validation",
+            "selectors": [
+              "http.status"
+            ]
+          }
+        ],
         "example_source_path": "docs_src/path_operation_configuration/tutorial006_py310.py",
         "feature_evidence": [
           {
@@ -128102,7 +128320,21 @@
             ]
           }
         ],
-        "independent_workflow_mappings": [],
+        "independent_workflow_mappings": [
+          {
+            "case_ids": [
+              "fastapi.path-operation-configurations.tutorial006"
+            ],
+            "coverage_scope": "Partial independent sample across 1 case(s); observes http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "http.status",
+              "openapi.document"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-configurations-tutorial006-upstream.yaml",
+            "workflow_id": "path-operation-configurations-tutorial006-upstream"
+          }
+        ],
         "mapped_documented_pages": [
           {
             "feature_ids": [
@@ -128147,12 +128379,35 @@
             "source_path": "docs/en/docs/tutorial/path-operation-configuration.md"
           }
         ],
-        "mapping_rule": "supporting source inherits selectors from its mapped page fixture; this links the source to page-level observations and does not claim independent per-example behavior coverage",
+        "mapping_rule": "distinct upstream_documentation_example evidence maps this exact docs_src file to the listed independent cases and selectors; inherited page selectors remain separate and do not widen this example-level scope",
         "page_match": "matched",
         "page_paths": [
           "tutorial/path-operation-configuration.md"
         ],
-        "reviewed_example_mapping": null
+        "reviewed_example_mapping": {
+          "rationale": "The linked input case observes the documented /items/, /users/, and /elements/ routes as successful responses, plus their selected OpenAPI tags and the deprecated=True flag for /elements/. The mapping is limited to these non-empty tags and the deprecation field; it does not cover other path-operation options.",
+          "source_evidence": [
+            {
+              "end_line": 18,
+              "path": "docs_src/path_operation_configuration/tutorial006_py310.py",
+              "role": "documented non-empty tags and deprecated=True path operations",
+              "sha256": "5056b0c416045694765968b7a4f7c3dfbaffe4a1cee1947826b03add7b1ea8a1",
+              "start_line": 1
+            }
+          ],
+          "workflow_cases": [
+            {
+              "case_ids": [
+                "fastapi.path-operation-configurations.tutorial006"
+              ],
+              "observation_selectors": [
+                "http.status",
+                "openapi.document"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-configurations-tutorial006-upstream.yaml"
+            }
+          ]
+        }
       },
       "mapping_status": "supporting_source",
       "observation_selectors": [
@@ -128164,8 +128419,8 @@
         "python.import_path",
         "python.object_identity"
       ],
-      "review_reason": "Exact example-level case/selectors or a source-backed exclusion reason remain to be reviewed.",
-      "review_status": "pending",
+      "review_reason": null,
+      "review_status": "reviewed_partial",
       "selector_evidence": [
         {
           "feature_id": "app-routing",
@@ -573108,10 +573363,9 @@
             "case_ids": [
               "fastapi.path-operation-configurations.tutorial001"
             ],
-            "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_scope": "Partial independent sample across 1 case(s); observes http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
             "coverage_status": "partial",
             "observation_selectors": [
-              "http.body.bytes",
               "http.status",
               "openapi.document",
               "openapi.paths"
@@ -576362,10 +576616,9 @@
             "case_ids": [
               "fastapi.path-operation-configurations.tutorial006"
             ],
-            "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_scope": "Partial independent sample across 1 case(s); observes http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
             "coverage_status": "partial",
             "observation_selectors": [
-              "http.body.bytes",
               "http.status",
               "openapi.document",
               "openapi.paths"
@@ -582509,14 +582762,16 @@
         "independent_workflow_mappings": [
           {
             "case_ids": [
+              "fastapi.query.gt-zero.lt-upper-bound-and-openapi",
               "fastapi.query.gt-zero.positive-value",
               "fastapi.query.gt-zero.zero-rejected"
             ],
-            "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
             "coverage_status": "partial",
             "observation_selectors": [
               "http.body.bytes",
-              "http.status"
+              "http.status",
+              "openapi.document"
             ],
             "recipe_path": "tests/fixtures/input-recipes/parity/query-gt-zero.yaml",
             "workflow_id": "query-gt-zero"
@@ -629910,7 +630165,7 @@
     }
   },
   "fixture_backlog_ref": {
-    "item_count": 561,
+    "item_count": 565,
     "path": "tests/fixtures/fixture-backlog.json",
     "schema": "fastapi-rs/fixture-backlog@1"
   },

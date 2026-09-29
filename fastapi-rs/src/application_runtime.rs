@@ -2201,11 +2201,22 @@ fn constrained_parameter_annotation(
             continue;
         }
         let gt = marker.getattr("gt")?;
-        if gt.is_none() {
+        let lt = if kind == "query" {
+            let lt = marker.getattr("lt")?;
+            (!lt.is_none()).then_some(lt)
+        } else {
+            None
+        };
+        if gt.is_none() && lt.is_none() {
             continue;
         }
         let kwargs = PyDict::new(py);
-        kwargs.set_item("gt", gt)?;
+        if !gt.is_none() {
+            kwargs.set_item("gt", gt)?;
+        }
+        if let Some(lt) = lt {
+            kwargs.set_item("lt", lt)?;
+        }
         let field = py
             .import("pydantic")?
             .getattr("Field")?
