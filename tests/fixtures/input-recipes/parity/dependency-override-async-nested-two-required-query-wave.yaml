@@ -4,8 +4,11 @@
 # app-level override whose nested dependency declares a required query value.
 # fastapi/dependencies/utils.py:619-655 resolves override dependencies
 # recursively; :681-697 extracts and validates query parameters. This
-# independent workflow adds a second required scalar query value and records
-# stimuli only, with no expected outputs.
+# independent workflow covers two required scalar query values in its baseline
+# route and composes the nested override pattern with two explicit Query aliases
+# in a second route. The pinned sources test these component rules separately;
+# no upstream test asserts this exact combination. Inputs only, no expected
+# outputs.
 schema: fastapi-rs/python-asgi-workflow@3
 workload:
   file: tests/fixtures/workloads/dependency_override_async_nested_two_required_query_wave.py
@@ -93,3 +96,86 @@ cases:
     - {kind: http_response, selectors: [status, body], comparison: exact}
   source_evidence:
   - {path: tests/test_dependency_overrides.py, kind: upstream_test}
+- case_id: fastapi.dependency-overrides.async-nested-two-distinct-query-aliases
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: both-aliased-query-values-missing
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /main-depends-aliased/
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: revision-alias-missing
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /main-depends-aliased/
+      query_string: item-key=bar
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: revision-alias-invalid-integer
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /main-depends-aliased/
+      query_string: item-key=bar&revision-number=not-an-integer
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: both-aliased-query-values-valid
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /main-depends-aliased/
+      query_string: item-key=bar&revision-number=7
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_dependency_overrides.py, kind: upstream_test}
+  - path: tests/test_request_params/test_query/test_required_str.py
+    kind: upstream_test

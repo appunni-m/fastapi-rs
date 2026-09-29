@@ -1108,7 +1108,6 @@ impl CallablePlan {
             let subdependency_plan =
                 CallablePlan::build(context.py, nested_callable, &nested_plan.path_parameters)?;
             let mut required_query_parameters = !subdependency_plan.parameters.is_empty();
-            let allow_single_query_alias = subdependency_plan.parameters.len() == 1;
             for parameter in &subdependency_plan.parameters {
                 // QueryParams::get supplies one scalar value. Sequence
                 // annotations need FastAPI's getlist behavior and stay out of
@@ -1116,8 +1115,8 @@ impl CallablePlan {
                 let query_name_matches = match &parameter.source {
                     ParameterSource::Input {
                         source: InputSource::Query,
-                        alias,
-                    } => allow_single_query_alias || alias == &parameter.name,
+                        ..
+                    } => true,
                     ParameterSource::Input { .. } | ParameterSource::Dependency { .. } => false,
                 };
                 if parameter.default.is_some()

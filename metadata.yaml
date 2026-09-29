@@ -394,6 +394,8 @@ reviewed_api_contract_overlay:
       source_evidence:
         - {path: fastapi/applications.py, symbol: __init__}
         - {path: tests/test_dependency_overrides.py, symbol: test_override_simple}
+        - {path: tests/test_request_params/test_query/test_required_str.py, symbol: test_required_alias_missing}
+        - {path: tests/test_request_params/test_query/test_required_str.py, symbol: test_required_alias_by_alias}
         - path: tests/test_dependency_overrides.py
           symbol: test_override_with_sub_main_depends
           kind: source-definition
@@ -412,7 +414,7 @@ reviewed_api_contract_overlay:
         - {path: fastapi/applications.py, symbol: openapi}
         - {path: tests/test_application.py, symbol: test_openapi_schema}
         - {path: tests/main.py}
-      feature_ids: [app-routing, dependency-security, openapi-docs]
+      feature_ids: [app-routing, dependency-security, request-validation, openapi-docs]
       observation_selectors: [http.status, http.body.bytes, openapi.document]
       supported_slice: >-
         Partial native constructor slice: the application exposes a mutable
@@ -750,6 +752,13 @@ reviewed_api_contract_overlay:
         authored input is
         tests/fixtures/input-recipes/parity/dependency-override-async-nested-two-required-query-wave.yaml,
         case fastapi.dependency-overrides.async-nested-two-required-query.
+        A second case composes the same nested override shape with two required
+        `Annotated` query aliases (`item-key` and `revision-number`). It
+        observes missing, partial, invalid-integer, and valid alias inputs.
+        The upstream override and required-alias tests establish these
+        component rules; no upstream test asserts their exact combination:
+        tests/fixtures/input-recipes/parity/dependency-override-async-nested-two-required-query-wave.yaml,
+        case fastapi.dependency-overrides.async-nested-two-distinct-query-aliases.
         `Query(...)` used as the Python default, validation aliases, constraints,
         validators, non-scalar parameters, other query-bearing multi-key
         layouts, and newly introduced body, header, cookie, or path inputs

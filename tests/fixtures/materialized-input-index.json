@@ -1044,13 +1044,14 @@
     {
       "id": "dependency-override-async-nested-two-required-query-wave",
       "input_path": "tests/fixtures/inputs/parity/dependency-override-async-nested-two-required-query-wave.json",
-      "input_sha256": "25ae2664a7cea9bfb7b9a321997901537794bbd983f2d4e2e5697587bf0cbf53",
+      "input_sha256": "ad4c97b7ca940bba454249f4076faf2860a4f3eb80cdec433c492a1e9b331d11",
       "recipe_path": "tests/fixtures/input-recipes/parity/dependency-override-async-nested-two-required-query-wave.yaml",
-      "recipe_sha256": "4f0b18cb4e3f4b516e7267cf1d0807dd56c7758459d71797e2c76d21a6c8ac02",
+      "recipe_sha256": "9f8510206fd5397f591f3360b580f32ceb9e1e10a8c36103ba01a93497249016",
       "workload_path": "tests/fixtures/workloads/dependency_override_async_nested_two_required_query_wave.py",
-      "workload_sha256": "5c1d651d7feba17d249f2d09329fe6eabe909b6329796e96e2a271b969cb387a",
+      "workload_sha256": "b141d4a519a40acd92aab0f195b39f783713256c25678307630c098b0716a5c4",
       "case_ids": [
-        "fastapi.dependency-overrides.async-nested-two-required-query"
+        "fastapi.dependency-overrides.async-nested-two-required-query",
+        "fastapi.dependency-overrides.async-nested-two-distinct-query-aliases"
       ]
     },
     {
@@ -8512,11 +8513,29 @@
       "fixture_id": "fastapi.test.test-dependency-overrides",
       "workflow_id": "dependency-override-async-nested-two-required-query-wave",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
+        "fastapi.dependency-overrides.async-nested-two-distinct-query-aliases",
         "fastapi.dependency-overrides.async-nested-two-required-query"
       ],
       "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_request_params/test_query/test_required_str.py",
+      "fixture_id": "fastapi.test.test-request-params-test-query-test-required-str",
+      "workflow_id": "dependency-override-async-nested-two-required-query-wave",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.dependency-overrides.async-nested-two-distinct-query-aliases"
+      ],
+      "observation_selectors": [
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
         "http.body.bytes",
         "http.status"
       ]
