@@ -92,6 +92,12 @@ enum RouteInvocation {
         cache_key: usize,
         edge_index: usize,
     },
+    AwaitOverrideSubdependency {
+        awaitable: Py<PyAny>,
+        parent_plan: Box<CallablePlan>,
+        cache_key: usize,
+        edge_index: usize,
+    },
 }
 
 enum OverridePreparation {
@@ -99,6 +105,12 @@ enum OverridePreparation {
     Invalid,
     Await {
         awaitable: Py<PyAny>,
+        cache_key: usize,
+        edge_index: usize,
+    },
+    AwaitSubdependency {
+        awaitable: Py<PyAny>,
+        parent_plan: Box<CallablePlan>,
         cache_key: usize,
         edge_index: usize,
     },
@@ -1031,7 +1043,9 @@ impl CallablePlan {
         // scheduler below then preserves declaration order across synchronous
         // and coroutine callables without passing coroutine objects to the
         // endpoint or performing work before an unsupported graph is rejected.
+        let direct_dependency_count = direct_dependencies.len();
         let mut dependency_plans = Vec::with_capacity(direct_dependencies.len());
+        let mut nested_override = None;
         for (edge_index, cache_key, use_cache, callable, callable_kind, path_parameters) in
             direct_dependencies
         {
@@ -1043,22 +1057,116 @@ impl CallablePlan {
                 ));
             }
             let dependency_plan = CallablePlan::build(context.py, callable, &path_parameters)?;
-            if dependency_plan
+            let nested_dependencies = dependency_plan
                 .parameters
                 .iter()
-                .any(|parameter| matches!(parameter.source, ParameterSource::Dependency { .. }))
+                .filter_map(|parameter| match &parameter.source {
+                    ParameterSource::Dependency { plan, .. } => Some(plan.as_ref()),
+                    ParameterSource::Input { .. } => None,
+                })
+                .collect::<Vec<_>>();
+            if nested_dependencies.is_empty() {
+                dependency_plans.push((
+                    edge_index,
+                    cache_key,
+                    use_cache,
+                    callable_kind,
+                    dependency_plan,
+                ));
+                continue;
+            }
+
+            if direct_dependency_count != 1
+                || nested_override.is_some()
+                || nested_dependencies.len() != 1
+                || callable_kind != DependencyOverrideCallable::CoroutineFunction
             {
                 return Err(PyNotImplementedError::new_err(
-                    "nested dependencies in async override graphs are not supported",
+                    "async nested override support is limited to one coroutine override with one coroutine query dependency",
                 ));
             }
-            dependency_plans.push((
+            let nested_plan = nested_dependencies[0];
+            let nested_original = nested_plan.callable.bind(context.py);
+            let nested_replacement = context.dependency_overrides.get_item(nested_original)?;
+            let (nested_callable, nested_kind) = match nested_replacement {
+                Some(replacement) if !replacement.is(nested_original) => {
+                    let kind = dependency_override_callable(context.py, &replacement)?;
+                    (replacement.unbind(), kind)
+                }
+                _ => (
+                    nested_plan.callable.clone_ref(context.py),
+                    dependency_override_callable(context.py, nested_original)?,
+                ),
+            };
+            if nested_kind != DependencyOverrideCallable::CoroutineFunction
+                || dependency_callable_is_generator(context.py, nested_callable.bind(context.py))?
+            {
+                return Err(PyNotImplementedError::new_err(
+                    "async nested override support requires a coroutine query dependency",
+                ));
+            }
+            let subdependency_plan =
+                CallablePlan::build(context.py, nested_callable, &nested_plan.path_parameters)?;
+            let required_single_query = subdependency_plan.parameters.len() == 1
+                && subdependency_plan.parameters.iter().all(|parameter| {
+                    parameter.default.is_none()
+                        && matches!(
+                            parameter.source,
+                            ParameterSource::Input {
+                                source: InputSource::Query,
+                                ..
+                            }
+                        )
+                });
+            if !required_single_query {
+                return Err(PyNotImplementedError::new_err(
+                    "async nested override support is limited to one required query parameter",
+                ));
+            }
+            nested_override = Some((
                 edge_index,
                 cache_key,
                 use_cache,
-                callable_kind,
-                dependency_plan,
+                Box::new(dependency_plan),
+                Box::new(subdependency_plan),
             ));
+        }
+
+        if let Some((edge_index, cache_key, use_cache, parent_plan, subdependency_plan)) =
+            nested_override
+        {
+            if edge_index < *context.dependency_override_cursor {
+                return if context.failures.is_empty() {
+                    Ok(OverridePreparation::Ready)
+                } else {
+                    Ok(OverridePreparation::Invalid)
+                };
+            }
+            *context.dependency_override_cursor = edge_index + 1;
+            if use_cache {
+                if let Some(value) = context.dependency_cache.get(&cache_key) {
+                    context
+                        .prepared_dependency_values
+                        .insert(edge_index, value.clone_ref(context.py));
+                    return Ok(OverridePreparation::Ready);
+                }
+            }
+            let initial_failure_count = context.failures.len();
+            let value = subdependency_plan.invoke(context, None, None)?;
+            let Some(awaitable) = value else {
+                if context.failures.len() != initial_failure_count {
+                    return Ok(OverridePreparation::Invalid);
+                }
+                return Err(PyRuntimeError::new_err(
+                    "nested coroutine dependency completed without a value or validation failure",
+                ));
+            };
+            return Ok(OverridePreparation::AwaitSubdependency {
+                awaitable,
+                parent_plan,
+                cache_key,
+                edge_index,
+            });
         }
 
         let mut has_validation_errors = !context.failures.is_empty();
@@ -1114,7 +1222,15 @@ impl CallablePlan {
         cache_result: Option<bool>,
         cache_key_override: Option<usize>,
     ) -> PyResult<Option<Py<PyAny>>> {
-        self.invoke_with_threadpool(context, cache_result, cache_key_override, false)
+        self.invoke_with_threadpool(context, cache_result, cache_key_override, false, None)
+    }
+
+    fn invoke_with_prepared_dependencies(
+        &self,
+        context: &mut InvocationContext<'_, '_>,
+        prepared_dependencies: &HashMap<usize, Py<PyAny>>,
+    ) -> PyResult<Option<Py<PyAny>>> {
+        self.invoke_with_threadpool(context, None, None, false, Some(prepared_dependencies))
     }
 
     fn invoke_in_threadpool(
@@ -1123,7 +1239,7 @@ impl CallablePlan {
         cache_result: Option<bool>,
         cache_key_override: Option<usize>,
     ) -> PyResult<Option<Py<PyAny>>> {
-        self.invoke_with_threadpool(context, cache_result, cache_key_override, true)
+        self.invoke_with_threadpool(context, cache_result, cache_key_override, true, None)
     }
 
     fn invoke_with_threadpool(
@@ -1132,6 +1248,7 @@ impl CallablePlan {
         cache_result: Option<bool>,
         cache_key_override: Option<usize>,
         use_threadpool: bool,
+        prepared_dependencies: Option<&HashMap<usize, Py<PyAny>>>,
     ) -> PyResult<Option<Py<PyAny>>> {
         let initial_failure_count = context.failures.len();
         let kwargs = PyDict::new(context.py);
@@ -1146,7 +1263,10 @@ impl CallablePlan {
             if let ParameterSource::Dependency { plan, use_cache } = &parameter.source {
                 let edge_index = dependency_edge_index;
                 dependency_edge_index += 1;
-                if let Some(value) = context.prepared_dependency_values.get(&edge_index) {
+                let prepared_value = prepared_dependencies
+                    .and_then(|values| values.get(&edge_index))
+                    .or_else(|| context.prepared_dependency_values.get(&edge_index));
+                if let Some(value) = prepared_value {
                     kwargs.set_item(&parameter.name, value.bind(context.py))?;
                     continue;
                 }
@@ -1957,7 +2077,15 @@ enum PendingAction {
     LifespanStartupSend,
     LifespanShutdownSend,
     Endpoint,
-    Dependency { cache_key: usize, edge_index: usize },
+    Dependency {
+        cache_key: usize,
+        edge_index: usize,
+    },
+    OverrideSubdependency {
+        parent_plan: Box<CallablePlan>,
+        cache_key: usize,
+        edge_index: usize,
+    },
     ReturnedResponse,
     SendStart,
     SendBody,
@@ -2190,6 +2318,17 @@ impl FastApiCall {
                     cache_key,
                     edge_index,
                 },
+                OverridePreparation::AwaitSubdependency {
+                    awaitable,
+                    parent_plan,
+                    cache_key,
+                    edge_index,
+                } => RouteInvocation::AwaitOverrideSubdependency {
+                    awaitable,
+                    parent_plan,
+                    cache_key,
+                    edge_index,
+                },
                 OverridePreparation::Invalid => RouteInvocation::Ready(None),
                 OverridePreparation::Ready => {
                     RouteInvocation::Ready(route.plan.invoke(&mut context, None, None)?)
@@ -2203,6 +2342,19 @@ impl FastApiCall {
                 edge_index,
             } => {
                 self.pending = Some(PendingAction::Dependency {
+                    cache_key,
+                    edge_index,
+                });
+                Ok(MachineAction::Await(awaitable))
+            }
+            RouteInvocation::AwaitOverrideSubdependency {
+                awaitable,
+                parent_plan,
+                cache_key,
+                edge_index,
+            } => {
+                self.pending = Some(PendingAction::OverrideSubdependency {
+                    parent_plan,
                     cache_key,
                     edge_index,
                 });
@@ -2256,6 +2408,48 @@ impl FastApiCall {
             .prepared_dependency_values
             .insert(edge_index, value);
         self.invoke_route(py)
+    }
+
+    fn override_subdependency_resumed(
+        &mut self,
+        py: Python<'_>,
+        parent_plan: CallablePlan,
+        cache_key: usize,
+        edge_index: usize,
+        subdependency_value: Py<PyAny>,
+    ) -> PyResult<MachineAction> {
+        let mut prepared_dependencies = HashMap::new();
+        prepared_dependencies.insert(0, subdependency_value);
+        let parent_result = {
+            let invocation = self
+                .invocation
+                .as_mut()
+                .ok_or_else(|| PyRuntimeError::new_err("request invocation state was lost"))?;
+            let app = self.app.bind(py).borrow();
+            let mut context = InvocationContext {
+                py,
+                inputs: invocation.inputs.bind(py),
+                query_params: &invocation.query_params,
+                failures: &mut invocation.failures,
+                dependency_overrides: app.dependency_overrides.bind(py),
+                dependency_cache: &mut invocation.dependency_cache,
+                prepared_dependency_values: &mut invocation.prepared_dependency_values,
+                dependency_override_cursor: &mut invocation.dependency_override_cursor,
+            };
+            parent_plan.invoke_with_prepared_dependencies(&mut context, &prepared_dependencies)?
+        };
+        let Some(parent_result) = parent_result else {
+            return self.invoke_route(py);
+        };
+        if is_awaitable(py, parent_result.bind(py))? {
+            self.pending = Some(PendingAction::Dependency {
+                cache_key,
+                edge_index,
+            });
+            Ok(MachineAction::Await(parent_result))
+        } else {
+            self.dependency_resumed(py, cache_key, edge_index, parent_result)
+        }
     }
 
     fn finish_endpoint(&mut self, py: Python<'_>, result: Py<PyAny>) -> PyResult<MachineAction> {
@@ -2364,6 +2558,17 @@ impl AwaitableStateMachine for FastApiCall {
                     cache_key,
                     edge_index,
                 }) => self.dependency_resumed(py, cache_key, edge_index, value),
+                Some(PendingAction::OverrideSubdependency {
+                    parent_plan,
+                    cache_key,
+                    edge_index,
+                }) => self.override_subdependency_resumed(
+                    py,
+                    *parent_plan,
+                    cache_key,
+                    edge_index,
+                    value,
+                ),
                 Some(PendingAction::ReturnedResponse) => Ok(MachineAction::Complete(py.None())),
                 Some(PendingAction::SendStart) => self.send_body(py),
                 Some(PendingAction::SendBody) => Ok(MachineAction::Complete(py.None())),

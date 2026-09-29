@@ -1030,6 +1030,18 @@
       ]
     },
     {
+      "id": "dependency-override-async-nested-query-wave",
+      "input_path": "tests/fixtures/inputs/parity/dependency-override-async-nested-query-wave.json",
+      "input_sha256": "db0bc90dd3d69cdc48164c562001252894ee23a86a50fd774399209ba2dc7438",
+      "recipe_path": "tests/fixtures/input-recipes/parity/dependency-override-async-nested-query-wave.yaml",
+      "recipe_sha256": "289e9aeb6c18ea548e8ec844f6b2f74364b4b49a9a2926593d1f22745671d5ec",
+      "workload_path": "tests/fixtures/workloads/dependency_override_async_nested_query_wave.py",
+      "workload_sha256": "47a748429141c5142aa9d6e44adc075ce3f7050c2fd8b4dcba47c16ef9fcb33e",
+      "case_ids": [
+        "fastapi.dependency-overrides.async-nested-required-query"
+      ]
+    },
+    {
       "id": "dependency-override-async-query-alias-cache-request-local",
       "input_path": "tests/fixtures/inputs/parity/dependency-override-async-query-alias-cache-request-local.json",
       "input_sha256": "e36b272ebd4512d21c2e7257dadde1f4dbff786fc895df134c2ccaa2bdbc3f1d",
@@ -8451,6 +8463,20 @@
       "case_ids": [
         "fastapi.dependencies.override-async-endpoint-omitted-query",
         "fastapi.dependencies.override-async-endpoint-supplied-query"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_dependency_overrides.py",
+      "fixture_id": "fastapi.test.test-dependency-overrides",
+      "workflow_id": "dependency-override-async-nested-query-wave",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.dependency-overrides.async-nested-required-query"
       ],
       "observation_selectors": [
         "http.body.bytes",

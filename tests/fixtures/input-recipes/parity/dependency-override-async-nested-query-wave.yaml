@@ -1,0 +1,57 @@
+# Pinned FastAPI 0.141.1 source evidence (tag commit
+# 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f):
+# tests/test_dependency_overrides.py:14-16 defines the async endpoint,
+# :43-48 the async nested override, and :216-257 check the required `k`
+# validation and response. This independent input-only workflow stores no
+# expected outputs and does not copy the upstream tests.
+schema: fastapi-rs/python-asgi-workflow@3
+workload:
+  file: tests/fixtures/workloads/dependency_override_async_nested_query_wave.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.dependency-overrides.async-nested-required-query
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: missing-k
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /main-depends/
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: provide-k
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /main-depends/
+      query_string: k=bar
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_dependency_overrides.py, kind: upstream_test}
