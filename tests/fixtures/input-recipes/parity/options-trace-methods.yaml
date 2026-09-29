@@ -1,0 +1,83 @@
+# Input-only method dispatch for native FastAPI OPTIONS and TRACE decorators.
+# The upstream tests use response classes; this focused workload keeps the
+# response in the shared JSON behavior while exercising the same registrations.
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/options_trace_methods.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.test.test-extra-routes.test-options-method
+  actions:
+  - action_id: dispatch-options
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: OPTIONS
+      scheme: http
+      path: /verbs
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_extra_routes.py
+    kind: upstream_test
+- case_id: fastapi.test.test-extra-routes.test-trace-method
+  actions:
+  - action_id: dispatch-trace
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: TRACE
+      scheme: http
+      path: /verbs
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_extra_routes.py
+    kind: upstream_test

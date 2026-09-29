@@ -1,0 +1,85 @@
+# Input-only Annotated integer path-bound cases based on FastAPI 0.141.1.
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/path_gt_zero.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.path.gt-zero.positive-integer
+  actions:
+  - action_id: submit-positive
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/1
+      query_string: q=
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_path_params_numeric_validations/test_tutorial005.py
+    kind: upstream_test
+  - path: docs_src/path_params_numeric_validations/tutorial005_an_py310.py
+    kind: upstream_documentation
+- case_id: fastapi.path.gt-zero.zero-rejected
+  actions:
+  - action_id: submit-zero
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/0
+      query_string: q=somequery
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_path_params_numeric_validations/test_tutorial005.py
+    kind: upstream_test
+  - path: docs_src/path_params_numeric_validations/tutorial005_an_py310.py
+    kind: upstream_documentation

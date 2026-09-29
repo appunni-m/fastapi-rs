@@ -4,6 +4,10 @@ use starlette_rs::{
     Cookies, DetailedRouteMatch, QueryParams, RequestHeaders, RouteError, RouteTable,
 };
 
+// FastAPI's APIRoute uses an exact method set. Hide GET from RouteTable's
+// generic GET-to-HEAD expansion while keeping normal GET matching here.
+const INTERNAL_GET_METHOD: &str = "\0FASTAPI_GET";
+
 /// The source location FastAPI uses to obtain one endpoint argument.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum FastApiInputLocation {
@@ -84,7 +88,7 @@ pub enum FastApiOperationMatch {
     MethodNotAllowed {
         /// The stable index of the first operation with this path.
         operation_index: usize,
-        /// Methods accepted by the matching path, including implicit `HEAD` for `GET`.
+        /// Methods accepted by the matching FastAPI path operation.
         allowed_methods: Vec<String>,
         /// Captured path parameters in template order.
         path_params: Vec<(String, String)>,
@@ -104,8 +108,9 @@ pub struct FastApiRequestMatch {
 
 /// FastAPI operation metadata backed by Starlette-RS's canonical route table.
 ///
-/// FastAPI owns operation metadata such as response status; Starlette-RS owns
-/// path parsing, parameter capture, method matching, and `root_path` handling.
+/// FastAPI owns operation metadata and exact method semantics; Starlette-RS
+/// owns path parsing, parameter capture, route precedence, and `root_path`
+/// handling.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct FastApiOperationRouter {
     route_table: RouteTable,
@@ -124,8 +129,8 @@ impl FastApiOperationRouter {
 
     /// Registers one path operation and returns its stable insertion index.
     ///
-    /// The route table performs path validation and Starlette-compatible
-    /// matching. FastAPI keeps the operation's selected response status.
+    /// The route table performs path validation and path matching. FastAPI
+    /// preserves the operation's exact method set and selected response status.
     ///
     /// # Errors
     ///
@@ -138,9 +143,12 @@ impl FastApiOperationRouter {
     ) -> Result<usize, RouteError> {
         let path = path.into();
         let method = method.as_ref().to_ascii_uppercase();
-        let operation_index = self
-            .route_table
-            .add_route(path.clone(), [method.as_str()])?;
+        let route_method = if method == "GET" {
+            INTERNAL_GET_METHOD
+        } else {
+            method.as_str()
+        };
+        let operation_index = self.route_table.add_route(path.clone(), [route_method])?;
         self.operations.push(FastApiOperation {
             path,
             methods: vec![method],
@@ -232,12 +240,18 @@ impl FastApiOperationRouter {
         FastApiRequestMatch { route, inputs }
     }
 
-    /// Selects an operation using Starlette-RS path, method, and root-path rules.
+    /// Selects an operation using FastAPI method semantics and Starlette-RS
+    /// path and root-path rules.
     #[must_use]
     pub fn matches(&self, path: &str, root_path: &str, method: &str) -> FastApiOperationMatch {
+        let route_method = if method == "GET" {
+            INTERNAL_GET_METHOD
+        } else {
+            method
+        };
         match self
             .route_table
-            .matches_detailed_with_root_path(path, root_path, method)
+            .matches_detailed_with_root_path(path, root_path, route_method)
         {
             DetailedRouteMatch::Matched {
                 route_index,
@@ -252,7 +266,16 @@ impl FastApiOperationRouter {
                 path_params,
             } => FastApiOperationMatch::MethodNotAllowed {
                 operation_index: route_index,
-                allowed_methods,
+                allowed_methods: allowed_methods
+                    .into_iter()
+                    .map(|method| {
+                        if method == INTERNAL_GET_METHOD {
+                            String::from("GET")
+                        } else {
+                            method
+                        }
+                    })
+                    .collect(),
                 path_params,
             },
             DetailedRouteMatch::NotFound => FastApiOperationMatch::NotFound,

@@ -11,6 +11,7 @@ pub(crate) struct ParameterMetadata {
     dependency: Option<Py<PyAny>>,
     default: Option<Py<PyAny>>,
     gt: Option<Py<PyAny>>,
+    convert_underscores: bool,
 }
 
 #[pymethods]
@@ -41,6 +42,11 @@ impl ParameterMetadata {
     fn gt(&self, py: Python<'_>) -> Option<Py<PyAny>> {
         self.gt.as_ref().map(|gt| gt.clone_ref(py))
     }
+
+    #[getter]
+    fn convert_underscores(&self) -> bool {
+        self.convert_underscores
+    }
 }
 
 #[pyfunction(name = "Depends")]
@@ -53,15 +59,20 @@ fn depends(py: Python<'_>, dependency: Py<PyAny>) -> PyResult<Py<ParameterMetada
             dependency: Some(dependency),
             default: None,
             gt: None,
+            convert_underscores: true,
         },
     )
 }
 
-#[pyfunction(name = "Header", signature = (*, alias = None, default = None))]
+#[pyfunction(
+    name = "Header",
+    signature = (*, alias = None, default = None, convert_underscores = true)
+)]
 fn header(
     py: Python<'_>,
     alias: Option<String>,
     default: Option<Py<PyAny>>,
+    convert_underscores: bool,
 ) -> PyResult<Py<ParameterMetadata>> {
     Py::new(
         py,
@@ -71,6 +82,7 @@ fn header(
             dependency: None,
             default,
             gt: None,
+            convert_underscores,
         },
     )
 }
@@ -89,6 +101,7 @@ fn cookie(
             dependency: None,
             default,
             gt: None,
+            convert_underscores: true,
         },
     )
 }
@@ -108,6 +121,22 @@ fn query(
             dependency: None,
             default,
             gt,
+            convert_underscores: true,
+        },
+    )
+}
+
+#[pyfunction(name = "Path", signature = (*, gt = None))]
+fn path(py: Python<'_>, gt: Option<Py<PyAny>>) -> PyResult<Py<ParameterMetadata>> {
+    Py::new(
+        py,
+        ParameterMetadata {
+            kind: "path".to_owned(),
+            alias: None,
+            dependency: None,
+            default: None,
+            gt,
+            convert_underscores: true,
         },
     )
 }
@@ -122,6 +151,7 @@ fn body(py: Python<'_>, gt: Option<Py<PyAny>>) -> PyResult<Py<ParameterMetadata>
             dependency: None,
             default: None,
             gt,
+            convert_underscores: true,
         },
     )
 }
@@ -134,6 +164,7 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     module.add_function(wrap_pyfunction!(header, module)?)?;
     module.add_function(wrap_pyfunction!(cookie, module)?)?;
     module.add_function(wrap_pyfunction!(query, module)?)?;
+    module.add_function(wrap_pyfunction!(path, module)?)?;
     module.add_function(wrap_pyfunction!(body, module)?)?;
 
     let status = PyModule::new(py, "status")?;

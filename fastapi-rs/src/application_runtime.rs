@@ -296,6 +296,117 @@ impl PyFastApi {
         )
     }
 
+    // lint-exception: PyO3 needs one Rust argument per FastAPI-compatible keyword.
+    #[allow(
+        clippy::too_many_arguments,
+        reason = "preserve the Python route decorator keyword signature"
+    )]
+    #[pyo3(signature = (path, *, response_model = None, status_code = 200, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false))]
+    fn head(
+        slf: Py<Self>,
+        py: Python<'_>,
+        path: &str,
+        response_model: Option<Py<PyAny>>,
+        status_code: u16,
+        response_model_include: Option<Py<PyAny>>,
+        response_model_exclude: Option<Py<PyAny>>,
+        response_model_by_alias: bool,
+        response_model_exclude_unset: bool,
+        response_model_exclude_defaults: bool,
+        response_model_exclude_none: bool,
+    ) -> PyResult<Py<PyOperationDecorator>> {
+        operation_decorator(
+            slf,
+            py,
+            path,
+            "HEAD",
+            response_model,
+            status_code,
+            ResponseModelOptions {
+                include: response_model_include,
+                exclude: response_model_exclude,
+                by_alias: response_model_by_alias,
+                exclude_unset: response_model_exclude_unset,
+                exclude_defaults: response_model_exclude_defaults,
+                exclude_none: response_model_exclude_none,
+            },
+        )
+    }
+
+    // lint-exception: PyO3 needs one Rust argument per FastAPI-compatible keyword.
+    #[allow(
+        clippy::too_many_arguments,
+        reason = "preserve the Python route decorator keyword signature"
+    )]
+    #[pyo3(signature = (path, *, response_model = None, status_code = 200, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false))]
+    fn options(
+        slf: Py<Self>,
+        py: Python<'_>,
+        path: &str,
+        response_model: Option<Py<PyAny>>,
+        status_code: u16,
+        response_model_include: Option<Py<PyAny>>,
+        response_model_exclude: Option<Py<PyAny>>,
+        response_model_by_alias: bool,
+        response_model_exclude_unset: bool,
+        response_model_exclude_defaults: bool,
+        response_model_exclude_none: bool,
+    ) -> PyResult<Py<PyOperationDecorator>> {
+        operation_decorator(
+            slf,
+            py,
+            path,
+            "OPTIONS",
+            response_model,
+            status_code,
+            ResponseModelOptions {
+                include: response_model_include,
+                exclude: response_model_exclude,
+                by_alias: response_model_by_alias,
+                exclude_unset: response_model_exclude_unset,
+                exclude_defaults: response_model_exclude_defaults,
+                exclude_none: response_model_exclude_none,
+            },
+        )
+    }
+
+    // lint-exception: PyO3 needs one Rust argument per FastAPI-compatible keyword.
+    #[allow(
+        clippy::too_many_arguments,
+        reason = "preserve the Python route decorator keyword signature"
+    )]
+    #[pyo3(signature = (path, *, response_model = None, status_code = 200, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false))]
+    fn trace(
+        slf: Py<Self>,
+        py: Python<'_>,
+        path: &str,
+        response_model: Option<Py<PyAny>>,
+        status_code: u16,
+        response_model_include: Option<Py<PyAny>>,
+        response_model_exclude: Option<Py<PyAny>>,
+        response_model_by_alias: bool,
+        response_model_exclude_unset: bool,
+        response_model_exclude_defaults: bool,
+        response_model_exclude_none: bool,
+    ) -> PyResult<Py<PyOperationDecorator>> {
+        operation_decorator(
+            slf,
+            py,
+            path,
+            "TRACE",
+            response_model,
+            status_code,
+            ResponseModelOptions {
+                include: response_model_include,
+                exclude: response_model_exclude,
+                by_alias: response_model_by_alias,
+                exclude_unset: response_model_exclude_unset,
+                exclude_defaults: response_model_exclude_defaults,
+                exclude_none: response_model_exclude_none,
+            },
+        )
+    }
+
     fn openapi(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
         self.openapi_document(py)
     }
@@ -813,17 +924,22 @@ fn parameter_source(
                 alias: name.to_owned(),
             });
         }
+        if kind == "path" {
+            return Ok(ParameterSource::Input {
+                source: InputSource::Path,
+                alias: name.to_owned(),
+            });
+        }
         if kind == "header" || kind == "query" || kind == "cookie" {
-            let alias = marker
-                .getattr("alias")?
-                .extract::<Option<String>>()?
-                .unwrap_or_else(|| {
-                    if kind == "header" {
-                        name.replace('_', "-")
-                    } else {
-                        name.to_owned()
-                    }
-                });
+            let alias = match marker.getattr("alias")?.extract::<Option<String>>()? {
+                Some(alias) => alias,
+                None if kind == "header"
+                    && marker.getattr("convert_underscores")?.extract::<bool>()? =>
+                {
+                    name.replace('_', "-")
+                }
+                None => name.to_owned(),
+            };
             return Ok(ParameterSource::Input {
                 source: if kind == "header" {
                     InputSource::Header
@@ -866,7 +982,7 @@ fn constrained_parameter_annotation(
             continue;
         }
         let kind = marker.getattr("kind")?.extract::<String>()?;
-        if kind != "body" && kind != "query" {
+        if kind != "body" && kind != "query" && kind != "path" {
             continue;
         }
         let gt = marker.getattr("gt")?;

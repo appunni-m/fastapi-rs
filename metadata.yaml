@@ -193,6 +193,55 @@ reviewed_api_contract_overlay:
         - validation.error_class
         - validation.error_details
   operations:
+    fastapi.Path:
+      rust_binding: fastapi-rs/src/parameters.rs::path
+      source_evidence:
+        - {path: fastapi/param_functions.py, symbol: Path}
+        - {path: fastapi/params.py, symbol: Path}
+      feature_ids: [request-validation]
+      observation_selectors: [http.status, http.body.bytes]
+      supported_slice: >-
+        Partial native slice: Annotated[int, Path(gt=0)] validates path integers
+        with a strict lower bound above zero. Other Path constructor parameters
+        and FieldInfo options remain outside this reviewed slice.
+    fastapi.applications.FastAPI.options:
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::options
+      source_evidence:
+        - {path: fastapi/applications.py, symbol: options}
+        - {path: fastapi/routing.py, symbol: options}
+        - {path: tests/test_extra_routes.py, symbol: test_options}
+      feature_ids: [app-routing]
+      observation_selectors: [http.status, http.body.bytes]
+      supported_slice: >-
+        Partial native slice: registers an OPTIONS operation using the shared
+        FastAPI response pipeline. Other route decorator options and customization
+        hooks remain outside this reviewed slice.
+    fastapi.applications.FastAPI.trace:
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::trace
+      source_evidence:
+        - {path: fastapi/applications.py, symbol: trace}
+        - {path: fastapi/routing.py, symbol: trace}
+        - {path: tests/test_extra_routes.py, symbol: test_trace}
+      feature_ids: [app-routing]
+      observation_selectors: [http.status, http.body.bytes]
+      supported_slice: >-
+        Partial native slice: registers a TRACE operation using the shared
+        FastAPI response pipeline. Other route decorator options and customization
+        hooks remain outside this reviewed slice.
+    fastapi.applications.FastAPI.head:
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::head
+      source_evidence:
+        - {path: fastapi/applications.py, symbol: head}
+        - {path: fastapi/routing.py, symbol: head}
+        - {path: tests/test_extra_routes.py, symbol: test_head}
+        - {path: tests/test_extra_routes.py, symbol: test_get_api_route}
+      feature_ids: [app-routing]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      supported_slice: >-
+        Partial native slice: registers exact HEAD operations, lets an explicit
+        HEAD route win after a same-path GET route, and does not treat a GET-only
+        route as HEAD. Other route decorator options and customization hooks remain
+        outside this reviewed slice.
     fastapi.Body:
       rust_binding: fastapi-rs/src/parameters.rs::body
       source_evidence:
@@ -218,6 +267,20 @@ reviewed_api_contract_overlay:
         Partial native slice: Annotated numeric query parameters using Query(gt=...)
         apply the strict-greater-than constraint. Other Query constructor
         parameters and FieldInfo options remain outside this reviewed slice.
+    fastapi.Header:
+      rust_binding: fastapi-rs/src/parameters.rs::header
+      source_evidence:
+        - {path: fastapi/param_functions.py, symbol: Header}
+        - {path: fastapi/params.py, symbol: Header}
+        - {path: fastapi/dependencies/utils.py, symbol: analyze_param}
+        - {path: tests/test_tutorial/test_header_params/test_tutorial002.py, symbol: test}
+      feature_ids: [request-validation]
+      observation_selectors: [http.status, http.body.bytes]
+      supported_slice: >-
+        Partial native slice: an Annotated optional string header accepts an
+        underscore-preserving name with Header(convert_underscores=False), while
+        the hyphenated spelling does not satisfy it. Default-style Header markers
+        and other Header or FieldInfo options remain outside this reviewed slice.
     fastapi.exception_handlers.http_exception_handler:
       source_evidence:
         - {path: fastapi/exception_handlers.py, symbol: http_exception_handler}

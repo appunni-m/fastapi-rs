@@ -1678,6 +1678,34 @@
       ]
     },
     {
+      "id": "head-explicit-route",
+      "input_path": "tests/fixtures/inputs/parity/head-explicit-route.json",
+      "input_sha256": "02b6c4d4559d74d3dc2a066c901bb8f5bad56af3b9e83e5bb12def12e51ef0a4",
+      "recipe_path": "tests/fixtures/input-recipes/parity/head-explicit-route.yaml",
+      "recipe_sha256": "d6cd0005dc2be777fe79a57b0ef2caa0e7fec681969a4ad283db4b28ef7493da",
+      "workload_path": "tests/fixtures/workloads/head_dispatch.py",
+      "workload_sha256": "cfbfbaa4508bda5186f89d4963b3b93f5460b404e169a1af0dbb339745767c89",
+      "case_ids": [
+        "fastapi.routing.head.explicit-after-get",
+        "fastapi.routing.head.get-remains-get",
+        "fastapi.routing.head.get-only-is-not-head"
+      ]
+    },
+    {
+      "id": "header-convert-underscores-false",
+      "input_path": "tests/fixtures/inputs/parity/header-convert-underscores-false.json",
+      "input_sha256": "89c2e239531da2d6e0508be565a1adea098ac0df50bd009a1296ee7d3942cf3b",
+      "recipe_path": "tests/fixtures/input-recipes/parity/header-convert-underscores-false.yaml",
+      "recipe_sha256": "4db4483c3e0247ac23355a7a546607e733a40b44fd8d2fb020b3b3381bf7933e",
+      "workload_path": "tests/fixtures/workloads/header_convert_underscores_false.py",
+      "workload_sha256": "4f62064661de35099fe5e97394206268cea5f7f0713155f4e3376a29a701acf6",
+      "case_ids": [
+        "fastapi.header.convert-underscores-false.missing",
+        "fastapi.header.convert-underscores-false.underscore-name",
+        "fastapi.header.convert-underscores-false.hyphen-name"
+      ]
+    },
+    {
       "id": "header-param-model-tutorial003",
       "input_path": "tests/fixtures/inputs/parity/header-param-model-tutorial003.json",
       "input_sha256": "bb9df1fbb0960a1568d740bab89e8cc8b25926c9fdaeafc8214c6a642bca8cba",
@@ -2266,6 +2294,19 @@
       ]
     },
     {
+      "id": "options-trace-methods",
+      "input_path": "tests/fixtures/inputs/parity/options-trace-methods.json",
+      "input_sha256": "a97ac12c7599e80141110f522fcbaf2e69616bbfd54f96f6d56cdf30d1e76216",
+      "recipe_path": "tests/fixtures/input-recipes/parity/options-trace-methods.yaml",
+      "recipe_sha256": "59014644b20f447f4af1bcb41092bc8b81a7355b0da051183cb190b59d5c812e",
+      "workload_path": "tests/fixtures/workloads/options_trace_methods.py",
+      "workload_sha256": "07fd6da3aa57e29eb83653c6ca51841033d2a666bdcd70fb968953b3ec6d698c",
+      "case_ids": [
+        "fastapi.test.test-extra-routes.test-options-method",
+        "fastapi.test.test-extra-routes.test-trace-method"
+      ]
+    },
+    {
       "id": "param-class-query-wave",
       "input_path": "tests/fixtures/inputs/parity/param-class-query-wave.json",
       "input_sha256": "e8ecf55db26d0e3db7b99b203105b855f92ec808b9a708f05df5391626367f94",
@@ -2288,6 +2329,19 @@
       "workload_sha256": "755d7a3dea7371eb1aa6a8a0d1d63eda2139d70038725ff5a9ddc8733ffb9965",
       "case_ids": [
         "fastapi.patch.path-model-body"
+      ]
+    },
+    {
+      "id": "path-gt-zero",
+      "input_path": "tests/fixtures/inputs/parity/path-gt-zero.json",
+      "input_sha256": "095c90741db7423b998bf1e1d795b6730472a9980788c07c7d49fae186f7f685",
+      "recipe_path": "tests/fixtures/input-recipes/parity/path-gt-zero.yaml",
+      "recipe_sha256": "11ea9488aa919304659ca8c0c9123bc87b63bb53e0525aa29b8db664a4e7703a",
+      "workload_path": "tests/fixtures/workloads/path_gt_zero.py",
+      "workload_sha256": "7446e6bd58209c57ab58fe6cb2c8fafe892f13c55a33100af9e544425c9dad15",
+      "case_ids": [
+        "fastapi.path.gt-zero.positive-integer",
+        "fastapi.path.gt-zero.zero-rejected"
       ]
     },
     {
@@ -10507,6 +10561,39 @@
       ]
     },
     {
+      "source_item_id": "upstream-test:tests/test_extra_routes.py",
+      "fixture_id": "fastapi.test.test-extra-routes",
+      "workflow_id": "head-explicit-route",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.routing.head.explicit-after-get",
+        "fastapi.routing.head.get-only-is-not-head",
+        "fastapi.routing.head.get-remains-get"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_header_params/test_tutorial002.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-header-params-test-tutorial002",
+      "workflow_id": "header-convert-underscores-false",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.header.convert-underscores-false.hyphen-name",
+        "fastapi.header.convert-underscores-false.missing",
+        "fastapi.header.convert-underscores-false.underscore-name"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
       "source_item_id": "upstream-test:tests/test_tutorial/test_header_param_models/test_tutorial003.py",
       "fixture_id": "fastapi.test.test-tutorial-test-header-param-models-test-tutorial003",
       "workflow_id": "header-param-model-tutorial003",
@@ -12115,6 +12202,21 @@
       ]
     },
     {
+      "source_item_id": "upstream-test:tests/test_extra_routes.py",
+      "fixture_id": "fastapi.test.test-extra-routes",
+      "workflow_id": "options-trace-methods",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.test.test-extra-routes.test-options-method",
+        "fastapi.test.test-extra-routes.test-trace-method"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
       "source_item_id": "upstream-test:tests/test_param_class.py",
       "fixture_id": "fastapi.test.test-param-class",
       "workflow_id": "param-class-query-wave",
@@ -12151,6 +12253,21 @@
       "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.patch.path-model-body"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_path_params_numeric_validations/test_tutorial005.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-path-params-numeric-validations-test-tutorial005",
+      "workflow_id": "path-gt-zero",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.path.gt-zero.positive-integer",
+        "fastapi.path.gt-zero.zero-rejected"
       ],
       "observation_selectors": [
         "http.body.bytes",

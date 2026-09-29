@@ -1,0 +1,134 @@
+# Input-only cases from FastAPI 0.141.1's Header tutorial and tests.
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/header_convert_underscores_false.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.header.convert-underscores-false.missing
+  actions:
+  - action_id: request-without-header
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - user-agent
+        - testclient
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_header_params/test_tutorial002.py
+    kind: upstream_test
+  - path: docs_src/header_params/tutorial002_an_py310.py
+    kind: upstream_documentation
+- case_id: fastapi.header.convert-underscores-false.underscore-name
+  actions:
+  - action_id: request-with-underscore-header
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - user-agent
+        - testclient
+      - - strange_header
+        - FastAPI test
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_header_params/test_tutorial002.py
+    kind: upstream_test
+  - path: docs_src/header_params/tutorial002_an_py310.py
+    kind: upstream_documentation
+- case_id: fastapi.header.convert-underscores-false.hyphen-name
+  actions:
+  - action_id: request-with-hyphen-header
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - user-agent
+        - testclient
+      - - strange-header
+        - Not really underscore
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_header_params/test_tutorial002.py
+    kind: upstream_test
+  - path: docs_src/header_params/tutorial002_an_py310.py
+    kind: upstream_documentation
