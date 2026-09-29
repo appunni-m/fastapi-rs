@@ -228,6 +228,7 @@ def read_manifest() -> dict[str, Any]:
     for artifact_name in (
         "api_inventory",
         "api_classification_review",
+        "api_import_binding_classification_review",
         "compatibility_atlas",
         "fixture_backlog",
         "observation_selector_catalog",
@@ -268,6 +269,58 @@ def read_manifest() -> dict[str, Any]:
         or review.get("source_identity", {}).get("selected_starlette_profile") != "1.6.0"
     ):
         raise ContractError("API callable-classification review identity is unsupported")
+
+    import_binding_review_artifact = source_artifacts["api_import_binding_classification_review"]
+    import_binding_review_link = atlas.get("api_import_binding_classification_review")
+    if not isinstance(import_binding_review_link, dict) or any(
+        import_binding_review_link.get(atlas_key)
+        != import_binding_review_artifact.get(manifest_key)
+        for atlas_key, manifest_key in (
+            ("path", "path"),
+            ("schema", "schema"),
+            ("sha256", "sha256"),
+        )
+    ):
+        raise ContractError("manifest import-binding review differs from atlas evidence")
+    import_binding_review = read_json(
+        _resolve_repo_file(
+            import_binding_review_artifact["path"], "API import-binding classification review"
+        )
+    )
+    if not isinstance(import_binding_review, dict):
+        raise ContractError("API import-binding classification review must be an object")
+    scope = import_binding_review.get("scope", {})
+    source_identity = import_binding_review.get("source_identity", {})
+    counts = import_binding_review_artifact.get("counts", {})
+    recommendations = scope.get("recommendation_counts", {})
+    expected_review_counts = {
+        "candidates": scope.get("candidate_count"),
+        "supported": recommendations.get("supported"),
+        "private_or_internal": recommendations.get("private/internal"),
+        "uncertain": recommendations.get("uncertain"),
+        "starlette_rs_reviewed_candidates": scope.get("starlette_rs_reviewed_candidate_count"),
+        "starlette_rs_unreviewed_unique_targets": scope.get(
+            "starlette_rs_unreviewed_unique_target_count"
+        ),
+    }
+    pinned_sources = import_binding_review.get("pinned_starlette_rs_sources", {})
+    pinned_files = pinned_sources.get("files", {}) if isinstance(pinned_sources, dict) else {}
+    source_digests = {
+        f"{name}_sha256": pinned_files.get(name, {}).get("sha256")
+        for name in ("metadata", "manifest", "api_catalog", "api_review")
+    }
+    if (
+        import_binding_review.get("schema") != import_binding_review_artifact.get("schema")
+        or source_identity != import_binding_review_artifact.get("source_identity")
+        or not isinstance(pinned_sources, dict)
+        or pinned_sources.get("contract_id")
+        != import_binding_review_artifact.get("starlette_rs_contract_id")
+        or import_binding_review.get("scope", {}).get("candidate_ids_sha256")
+        != import_binding_review_artifact.get("candidate_ids_sha256")
+        or expected_review_counts != {key: counts.get(key) for key in expected_review_counts}
+        or source_digests != import_binding_review_artifact.get("pinned_starlette_rs_sources")
+    ):
+        raise ContractError("API import-binding classification review metadata is unsupported")
 
     unresolved = manifest.get("unresolved")
     workflow_contract = (

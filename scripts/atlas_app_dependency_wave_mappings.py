@@ -169,6 +169,7 @@ _STARLETTE_EXCEPTION_DISPATCH = _source(
 _HTTP_BODY_STATUS = ["http_response.status", "http_response.body"]
 _HTTP_FULL = ["http_response.status", "http_response.headers", "http_response.body"]
 _HTTP_ROUTING = [*_HTTP_FULL]
+_HTTP_ROUTING_SEND = [*_HTTP_FULL, "asgi.send.message_types"]
 _CONSTRUCTION = [
     "construction.outcome",
     "construction.exception_class",
@@ -207,17 +208,39 @@ APP_DEPENDENCY_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                 "tests/test_application.py",
                 "test_get_path",
                 ["app-routing"],
-                ["http.status", "http.body.json"],
-                "The source parametrizes two registered routes and one unmatched path; this link covers only the unmatched 404 branch.",
                 [
+                    "http.status",
+                    "http.headers.ordered",
+                    "http.body.bytes",
+                    "asgi.send.message_types",
+                ],
+                "The source parametrizes an api_route endpoint, an add_api_route endpoint, and an unmatched path; the independent cases cover both successful registration forms and the existing 404 branch.",
+                [
+                    _case_link(
+                        "tests/fixtures/input-recipes/parity/application-route-registration-upstream.yaml",
+                        "fastapi.application.api-route-dispatch",
+                        _HTTP_ROUTING_SEND,
+                    ),
+                    _case_link(
+                        "tests/fixtures/input-recipes/parity/application-route-registration-upstream.yaml",
+                        "fastapi.application.add-api-route-dispatch",
+                        _HTTP_ROUTING_SEND,
+                    ),
                     _case_link(
                         "tests/fixtures/input-recipes/parity/routing-surface.yaml",
                         "fastapi.routing.not-found",
                         _HTTP_ROUTING,
-                    )
+                    ),
                 ],
-                "Partial: the independent /missing case covers only the 404 branch of this three-path parametrized test. Successful route payloads and generic router/TestClient behavior are not claimed; generic Starlette 1.6.0 routing remains in Starlette-RS.",
-                (_ROUTER_INCLUDE,),
+                "Partial: all three path branches now have input coverage, with exact status, ordered headers, body bytes, and ASGI send order for the two successful registration forms. The workflow uses independently authored endpoints and does not claim TestClient behavior or broader route registration semantics; generic Starlette 1.6.0 routing remains in Starlette-RS.",
+                (
+                    _source(
+                        "tests/main.py",
+                        13,
+                        22,
+                        "Pinned app fixture registers the tested endpoint once with api_route and once with add_api_route",
+                    ),
+                ),
             ),
             "test_enum_status_code_response": _review(
                 "tests/test_application.py",

@@ -1,0 +1,54 @@
+# Partial scope: independently exercises the two successful FastAPI route-
+# registration forms referenced by test_application.test_get_path.
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/application_route_registration_upstream.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.application.api-route-dispatch
+  actions:
+  - action_id: get-api-route
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /api_route
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+    - {kind: asgi_send, selector: message_types, comparison: ordered}
+  source_evidence:
+  - {path: tests/test_application.py, kind: upstream_test}
+- case_id: fastapi.application.add-api-route-dispatch
+  actions:
+  - action_id: get-add-api-route
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /non_decorated_route
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+    - {kind: asgi_send, selector: message_types, comparison: ordered}
+  source_evidence:
+  - {path: tests/test_application.py, kind: upstream_test}

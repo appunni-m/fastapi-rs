@@ -362,6 +362,112 @@ def validate() -> None:
     require_equal("atlas schema", atlas_meta["schema"], manifest_atlas["schema"])
     require_equal("atlas schema", atlas.get("schema"), atlas_meta["schema"])
     validate_digest(atlas_path, manifest_atlas, "classification atlas")
+
+    import_binding_meta = metadata["import_binding_classification_review"]
+    import_binding_path = artifact_path(import_binding_meta["artifact"])
+    import_binding_review = load_json(import_binding_path)
+    manifest_import_binding = manifest["source_artifacts"][
+        "api_import_binding_classification_review"
+    ]
+    require_equal(
+        "import-binding review artifact path",
+        import_binding_meta["artifact"],
+        manifest_import_binding["path"],
+    )
+    require_equal(
+        "import-binding review schema",
+        import_binding_meta["schema"],
+        manifest_import_binding["schema"],
+    )
+    require_equal(
+        "import-binding review schema",
+        import_binding_review.get("schema"),
+        import_binding_meta["schema"],
+    )
+    validate_digest(import_binding_path, manifest_import_binding, "import-binding review")
+    expected_import_binding_identity = {
+        "package": "FastAPI",
+        "version": fastapi["version"],
+        "source_commit": fastapi["commit"],
+        "selected_starlette_profile": starlette["version"],
+        "starlette_source_commit": starlette["commit"],
+        "starlette_rs_contract_commit": metadata["starlette_rs"]["commit"],
+    }
+    require_equal(
+        "import-binding review source identity",
+        import_binding_review.get("source_identity"),
+        expected_import_binding_identity,
+    )
+    require_equal(
+        "metadata import-binding review source identity",
+        import_binding_meta["source_identity"],
+        expected_import_binding_identity,
+    )
+    require_equal(
+        "manifest import-binding review source identity",
+        manifest_import_binding["source_identity"],
+        expected_import_binding_identity,
+    )
+    import_binding_scope = import_binding_review.get("scope", {})
+    import_binding_recommendations = import_binding_scope.get("recommendation_counts", {})
+    expected_import_binding_counts = {
+        "candidates": import_binding_scope.get("candidate_count"),
+        "supported": import_binding_recommendations.get("supported"),
+        "private_or_internal": import_binding_recommendations.get("private/internal"),
+        "uncertain": import_binding_recommendations.get("uncertain"),
+        "starlette_rs_reviewed_candidates": import_binding_scope.get(
+            "starlette_rs_reviewed_candidate_count"
+        ),
+        "starlette_rs_unreviewed_unique_targets": import_binding_scope.get(
+            "starlette_rs_unreviewed_unique_target_count"
+        ),
+    }
+    require_equal(
+        "metadata import-binding review counts",
+        import_binding_meta["counts"],
+        expected_import_binding_counts,
+    )
+    require_equal(
+        "manifest import-binding review counts",
+        manifest_import_binding["counts"],
+        expected_import_binding_counts,
+    )
+    require_equal(
+        "metadata import-binding candidate ID digest",
+        import_binding_meta["candidate_ids_sha256"],
+        import_binding_scope.get("candidate_ids_sha256"),
+    )
+    require_equal(
+        "manifest import-binding candidate ID digest",
+        manifest_import_binding["candidate_ids_sha256"],
+        import_binding_scope.get("candidate_ids_sha256"),
+    )
+    pinned_starlette_rs_sources = import_binding_review.get("pinned_starlette_rs_sources", {})
+    require_equal(
+        "metadata Starlette-RS contract id",
+        import_binding_meta["starlette_rs_contract_id"],
+        pinned_starlette_rs_sources.get("contract_id"),
+    )
+    require_equal(
+        "manifest Starlette-RS contract id",
+        manifest_import_binding["starlette_rs_contract_id"],
+        pinned_starlette_rs_sources.get("contract_id"),
+    )
+    expected_pinned_source_digests = {
+        f"{name}_sha256": pinned_starlette_rs_sources.get("files", {}).get(name, {}).get("sha256")
+        for name in ("metadata", "manifest", "api_catalog", "api_review")
+    }
+    require_equal(
+        "metadata pinned Starlette-RS evidence digests",
+        import_binding_meta["pinned_starlette_rs_sources"],
+        expected_pinned_source_digests,
+    )
+    require_equal(
+        "manifest pinned Starlette-RS evidence digests",
+        manifest_import_binding["pinned_starlette_rs_sources"],
+        expected_pinned_source_digests,
+    )
+
     atlas_fastapi = pointer(atlas, "/authorities/fastapi", "atlas FastAPI authority")
     for field in ("repository", "version", "commit"):
         require_equal(f"atlas FastAPI identity {field}", atlas_fastapi[field], fastapi[field])
@@ -371,6 +477,85 @@ def validate() -> None:
     candidates = pointer(atlas, atlas_meta["candidates_pointer"], "atlas API candidates")
     if not isinstance(candidates, list):
         raise MetadataError("atlas candidate pointer must resolve to a list")
+    import_binding_link = atlas.get("api_import_binding_classification_review")
+    for atlas_key, review_key in (("path", "path"), ("schema", "schema"), ("sha256", "sha256")):
+        require_equal(
+            f"atlas import-binding review {atlas_key}",
+            import_binding_link.get(atlas_key) if isinstance(import_binding_link, dict) else None,
+            manifest_import_binding[review_key],
+        )
+    require_equal(
+        "atlas import-binding review source identity",
+        import_binding_link.get("source_identity")
+        if isinstance(import_binding_link, dict)
+        else None,
+        expected_import_binding_identity,
+    )
+    require_equal(
+        "atlas import-binding review scope",
+        import_binding_link.get("scope") if isinstance(import_binding_link, dict) else None,
+        import_binding_scope,
+    )
+    require_equal(
+        "atlas pinned Starlette-RS source evidence",
+        import_binding_link.get("pinned_starlette_rs_sources")
+        if isinstance(import_binding_link, dict)
+        else None,
+        pinned_starlette_rs_sources,
+    )
+    candidates_by_id = {candidate.get("id"): candidate for candidate in candidates}
+    import_binding_rows = import_binding_review.get("rows", [])
+    reviewed_import_binding_ids = {row.get("id") for row in import_binding_rows}
+    if len(reviewed_import_binding_ids) != len(import_binding_rows):
+        raise MetadataError("import-binding review candidate IDs are not unique")
+    for row in import_binding_rows:
+        candidate = candidates_by_id.get(row.get("id"))
+        if candidate is None:
+            raise MetadataError("import-binding review candidate is absent from the atlas")
+        require_equal(
+            f"atlas import-binding classification {row['id']}",
+            candidate.get("classification"),
+            row.get("recommendation"),
+        )
+        require_equal(
+            f"atlas import-binding binding identity {row['id']}",
+            {
+                "module": candidate.get("imported_module"),
+                "name": candidate.get("imported_name"),
+                "target": candidate.get("target_path"),
+            },
+            row.get("binding"),
+        )
+    reviewed_starlette_import_ids = {
+        candidate.get("id")
+        for candidate in candidates
+        if candidate.get("kind") == "import_binding"
+        and (candidate.get("imported_module") or "").startswith("starlette")
+        and candidate.get("id") in reviewed_import_binding_ids
+    }
+    require_equal(
+        "Starlette import-binding review exact denominator",
+        reviewed_starlette_import_ids,
+        reviewed_import_binding_ids,
+    )
+
+    callable_review_artifact = manifest["source_artifacts"]["api_classification_review"]
+    callable_review = load_json(artifact_path(callable_review_artifact["path"]))
+    callable_review_rows = callable_review.get("rows", [])
+    callable_uncertain_ids = {
+        row.get("id") for row in callable_review_rows if row.get("recommendation") == "uncertain"
+    }
+    require_equal("retained uncertain callable denominator", len(callable_uncertain_ids), 18)
+    for row in callable_review_rows:
+        candidate = candidates_by_id.get(row.get("id"))
+        if candidate is None:
+            raise MetadataError("callable review candidate is absent from the atlas")
+        require_equal(
+            f"atlas callable classification {row['id']}",
+            candidate.get("classification"),
+            row.get("recommendation"),
+        )
+
     classification_policy = pointer(
         atlas, atlas_meta["policy_pointer"], "atlas classification policy"
     )

@@ -124,6 +124,19 @@
       ]
     },
     {
+      "id": "application-route-registration-upstream",
+      "input_path": "tests/fixtures/inputs/parity/application-route-registration-upstream.json",
+      "input_sha256": "7440983174e91935c61615df2ecc02c086ba4f124cc31bf396d5150d5ff9e24b",
+      "recipe_path": "tests/fixtures/input-recipes/parity/application-route-registration-upstream.yaml",
+      "recipe_sha256": "2d09d41e29ddf1e7339ee47d11e8988b2bc7cdbf50bca91a4a73b172aefa00ff",
+      "workload_path": "tests/fixtures/workloads/application_route_registration_upstream.py",
+      "workload_sha256": "c6e843ce408d17769264bc547d1e502027f9ca2d0c5dad95f988d3739448b135",
+      "case_ids": [
+        "fastapi.application.api-route-dispatch",
+        "fastapi.application.add-api-route-dispatch"
+      ]
+    },
+    {
       "id": "arbitrary-types-public-api-upstream",
       "input_path": "tests/fixtures/inputs/parity/arbitrary-types-public-api-upstream.json",
       "input_sha256": "244e085b79c610fd649aa067cb4e3049dd4ee8de962e48a47c63194d60c258e5",
@@ -6794,6 +6807,23 @@
       ],
       "observation_selectors": [
         "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_application.py",
+      "fixture_id": "fastapi.test.test-application",
+      "workflow_id": "application-route-registration-upstream",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.application.add-api-route-dispatch",
+        "fastapi.application.api-route-dispatch"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.headers.ordered",
         "http.status"
       ]
     },

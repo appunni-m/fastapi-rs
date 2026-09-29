@@ -69,6 +69,32 @@ api_inventory:
       artifact: /counts/symbols_with_source_deprecation_evidence
       manifest: /source_artifacts/api_inventory/counts/source_deprecations
 
+import_binding_classification_review:
+  artifact: tests/fixtures/api-import-binding-classification-review.json
+  schema: fastapi-starlette-import-binding-review/v1
+  sha256: bb088c074b10928b304ff5f1b8931033a7e08e379ef3364491f575765195e797
+  source_identity:
+    package: FastAPI
+    version: 0.141.1
+    source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
+    selected_starlette_profile: 1.6.0
+    starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
+    starlette_rs_contract_commit: e60b8f1dc6a50c0d5597587fe5408669ed7572e7
+  starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-schema-slice
+  counts:
+    candidates: 97
+    supported: 7
+    private_or_internal: 85
+    uncertain: 5
+    starlette_rs_reviewed_candidates: 93
+    starlette_rs_unreviewed_unique_targets: 4
+  candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
+  pinned_starlette_rs_sources:
+    metadata_sha256: d3c50a793efef8f109bd23813fc2fd06fb2e13fd640eb9b07a19bbb15003d677
+    manifest_sha256: e4c311ef937ce41c10baf0a26b8592b265079322dc30bcc54a86a5abf449e315
+    api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
+    api_review_sha256: b91b53688fe8a45daac10b4a1e6f15f97cf750453161ceddb8e04eaf198937e3
+
 classification_atlas:
   artifact: tests/fixtures/compatibility-atlas.json
   schema: fastapi-rs/compatibility-atlas@2
@@ -85,6 +111,9 @@ classification_atlas:
     api_candidates:
       artifact: /counts/api_candidates
       manifest: /source_artifacts/compatibility_atlas/counts/api_candidates
+    reviewed_import_binding_candidates:
+      artifact: /counts/reviewed_import_binding_candidates
+      manifest: /source_artifacts/compatibility_atlas/counts/reviewed_import_binding_candidates
     supported:
       artifact: /counts/api_classifications/supported
       manifest: /source_artifacts/compatibility_atlas/counts/source_classifications/supported

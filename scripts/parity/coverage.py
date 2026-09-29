@@ -31,6 +31,14 @@ OUTPUT_KEYS = {
     "timings",
 }
 FIXTURE_KINDS = {"upstream_test_module", "documented_feature_page"}
+REVIEWED_CALLABLE_KINDS = {
+    "classmethod",
+    "function",
+    "async_function",
+    "method",
+    "property_getter",
+    "protocol_method",
+}
 
 
 def _fail(message: str) -> None:
@@ -403,6 +411,8 @@ def validate_compatibility_artifacts(
         row["id"]: row
         for row in atlas.get("api_candidates", [])
         if isinstance(row.get("classification_review"), dict)
+        and row.get("visibility") in {"public", "public_protocol"}
+        and row.get("kind") in REVIEWED_CALLABLE_KINDS
     }
     _require(
         len(review_by_id) == len(review_rows) and set(review_by_id) == set(reviewed_candidates),

@@ -120,17 +120,44 @@ source_artifacts:
       supported: 47
       private_or_internal: 72
       uncertain: 18
+  api_import_binding_classification_review:
+    path: tests/fixtures/api-import-binding-classification-review.json
+    schema: fastapi-starlette-import-binding-review/v1
+    sha256: bb088c074b10928b304ff5f1b8931033a7e08e379ef3364491f575765195e797
+    purpose: Reviewed source-backed disposition of uncertain FastAPI import bindings from the selected Starlette profile
+    source_identity:
+      package: FastAPI
+      version: 0.141.1
+      source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
+      selected_starlette_profile: 1.6.0
+      starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
+      starlette_rs_contract_commit: e60b8f1dc6a50c0d5597587fe5408669ed7572e7
+    starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-schema-slice
+    counts:
+      candidates: 97
+      supported: 7
+      private_or_internal: 85
+      uncertain: 5
+      starlette_rs_reviewed_candidates: 93
+      starlette_rs_unreviewed_unique_targets: 4
+    candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
+    pinned_starlette_rs_sources:
+      metadata_sha256: d3c50a793efef8f109bd23813fc2fd06fb2e13fd640eb9b07a19bbb15003d677
+      manifest_sha256: e4c311ef937ce41c10baf0a26b8592b265079322dc30bcc54a86a5abf449e315
+      api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
+      api_review_sha256: b91b53688fe8a45daac10b4a1e6f15f97cf750453161ceddb8e04eaf198937e3
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@2
-    sha256: ad571768c484c6f1947c7be45c641b9dd8759d3fb278d6216c23175812278ba6
+    sha256: db6550554785e27d87ec69cae6d45e3e47eaede4f8d0aa56867d75d5bff5a60d
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
+      reviewed_import_binding_candidates: 97
       source_classifications:
-        supported: 439
-        private_or_internal: 510
-        uncertain: 644
+        supported: 446
+        private_or_internal: 595
+        uncertain: 552
       alias_records: 69
       source_deprecations: 19
       error_candidates: 42
@@ -152,7 +179,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 5a37e6c7f9a31d3b5562e4068080ccfdd3768bfde788550b2cec472ddf81634f
+    sha256: 532c27f0364c93fd43a346511684181fa66c7eef9d99dfd6d8df0b4781df4780
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 554
@@ -189,14 +216,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@1
-    sha256: cfcbff25947b5e3d565f068634e97c80cc38361f3f902914fce04b07e3a791ad
+    sha256: 65658d172ee66dfd897747428bf95c226281204f9cf46d3573dabddf631af023
     schema_path: tests/fixtures/schemas/materialized-input-index.schema.json
     schema_sha256: 467200b835dfd99ab16dfbd4ca4507145e070c73aa55d4425fd78e11141c3e86
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 435
-      cases: 1732
-      partial_source_mappings: 980
+      workflows: 436
+      cases: 1734
+      partial_source_mappings: 981
 
 contract_metadata:
   aliases:
@@ -422,17 +449,17 @@ api_surface_contract:
   - source_artifacts.compatibility_atlas.coverage_matrix
   - source_artifacts.fixture_backlog
   counts:
-    required_public_symbols: 439
+    required_public_symbols: 446
     signature_contract_states:
       module-object-no-call-signature: 1
       non-callable-surface: 222
-      runtime-signature-reflected: 215
+      runtime-signature-reflected: 222
       runtime-signature-unavailable: 1
     implementation_owner_plans:
       fastapi-rs: 415
-      starlette-rs: 24
-    symbols_with_documented_feature_refs: 432
-    symbols_with_alias_refs: 39
+      starlette-rs: 31
+    symbols_with_documented_feature_refs: 439
+    symbols_with_alias_refs: 46
     symbols_with_deprecation_refs: 11
     symbols_with_error_contract_refs: 12
   symbols:
@@ -3191,6 +3218,270 @@ api_surface_contract:
         - /api_candidates/244
       status: full-contract-not-established
       rust_binding: null
+  - id: fastapi.datastructures.Address
+    kind: import_binding
+    source_candidate_ref: /api_candidates/262
+    source_inventory_refs:
+    - /import_bindings/180
+    source_signature_state: not-recorded
+    source_signature_refs: []
+    runtime_reflections:
+      core:
+        ref: /symbols/261
+        status: reflected
+        object_identity: starlette.datastructures.Address
+        kind: class
+        signature_status: available
+      standard:
+        ref: /symbols/261
+        object_identity: starlette.datastructures.Address
+        kind: class
+        signature_status: available
+    signature_contract_state: runtime-signature-reflected
+    alias_refs:
+    - /aliases/29
+    deprecation_refs: []
+    error_contract_refs: []
+    documentation_contract_refs:
+    - coverage_matrix_ref: /coverage_matrix/560
+      source_path: docs/en/docs/release-notes.md
+      mapping_status: excluded
+      fixture_id: null
+      fixture_design_ref: null
+      observation_selectors: *id002
+    feature_ids: []
+    observation_selectors: []
+    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    target_binding:
+      target_profile: fastapi-rs-python-consumer
+      public_python_path: fastapi.datastructures.Address
+      implementation_owner: starlette-rs
+      implementation_owner_evidence:
+        kind: direct_starlette_reexport
+        source_candidate_refs:
+        - /api_candidates/262
+      status: full-contract-not-established
+      rust_binding: null
+  - id: fastapi.datastructures.FormData
+    kind: import_binding
+    source_candidate_ref: /api_candidates/274
+    source_inventory_refs:
+    - /import_bindings/181
+    source_signature_state: not-recorded
+    source_signature_refs: []
+    runtime_reflections:
+      core:
+        ref: /symbols/273
+        status: reflected
+        object_identity: starlette.datastructures.FormData
+        kind: class
+        signature_status: available
+      standard:
+        ref: /symbols/273
+        object_identity: starlette.datastructures.FormData
+        kind: class
+        signature_status: available
+    signature_contract_state: runtime-signature-reflected
+    alias_refs:
+    - /aliases/30
+    deprecation_refs: []
+    error_contract_refs: []
+    documentation_contract_refs:
+    - coverage_matrix_ref: /coverage_matrix/560
+      source_path: docs/en/docs/release-notes.md
+      mapping_status: excluded
+      fixture_id: null
+      fixture_design_ref: null
+      observation_selectors: *id002
+    feature_ids: []
+    observation_selectors: []
+    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    target_binding:
+      target_profile: fastapi-rs-python-consumer
+      public_python_path: fastapi.datastructures.FormData
+      implementation_owner: starlette-rs
+      implementation_owner_evidence:
+        kind: direct_starlette_reexport
+        source_candidate_refs:
+        - /api_candidates/274
+      status: full-contract-not-established
+      rust_binding: null
+  - id: fastapi.datastructures.Headers
+    kind: import_binding
+    source_candidate_ref: /api_candidates/276
+    source_inventory_refs:
+    - /import_bindings/182
+    source_signature_state: not-recorded
+    source_signature_refs: []
+    runtime_reflections:
+      core:
+        ref: /symbols/275
+        status: reflected
+        object_identity: starlette.datastructures.Headers
+        kind: class
+        signature_status: available
+      standard:
+        ref: /symbols/275
+        object_identity: starlette.datastructures.Headers
+        kind: class
+        signature_status: available
+    signature_contract_state: runtime-signature-reflected
+    alias_refs:
+    - /aliases/31
+    deprecation_refs: []
+    error_contract_refs: []
+    documentation_contract_refs:
+    - coverage_matrix_ref: /coverage_matrix/560
+      source_path: docs/en/docs/release-notes.md
+      mapping_status: excluded
+      fixture_id: null
+      fixture_design_ref: null
+      observation_selectors: *id002
+    feature_ids: []
+    observation_selectors: []
+    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    target_binding:
+      target_profile: fastapi-rs-python-consumer
+      public_python_path: fastapi.datastructures.Headers
+      implementation_owner: starlette-rs
+      implementation_owner_evidence:
+        kind: direct_starlette_reexport
+        source_candidate_refs:
+        - /api_candidates/276
+      status: full-contract-not-established
+      rust_binding: null
+  - id: fastapi.datastructures.QueryParams
+    kind: import_binding
+    source_candidate_ref: /api_candidates/278
+    source_inventory_refs:
+    - /import_bindings/183
+    source_signature_state: not-recorded
+    source_signature_refs: []
+    runtime_reflections:
+      core:
+        ref: /symbols/277
+        status: reflected
+        object_identity: starlette.datastructures.QueryParams
+        kind: class
+        signature_status: available
+      standard:
+        ref: /symbols/277
+        object_identity: starlette.datastructures.QueryParams
+        kind: class
+        signature_status: available
+    signature_contract_state: runtime-signature-reflected
+    alias_refs:
+    - /aliases/32
+    deprecation_refs: []
+    error_contract_refs: []
+    documentation_contract_refs:
+    - coverage_matrix_ref: /coverage_matrix/560
+      source_path: docs/en/docs/release-notes.md
+      mapping_status: excluded
+      fixture_id: null
+      fixture_design_ref: null
+      observation_selectors: *id002
+    feature_ids: []
+    observation_selectors: []
+    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    target_binding:
+      target_profile: fastapi-rs-python-consumer
+      public_python_path: fastapi.datastructures.QueryParams
+      implementation_owner: starlette-rs
+      implementation_owner_evidence:
+        kind: direct_starlette_reexport
+        source_candidate_refs:
+        - /api_candidates/278
+      status: full-contract-not-established
+      rust_binding: null
+  - id: fastapi.datastructures.State
+    kind: import_binding
+    source_candidate_ref: /api_candidates/280
+    source_inventory_refs:
+    - /import_bindings/184
+    source_signature_state: not-recorded
+    source_signature_refs: []
+    runtime_reflections:
+      core:
+        ref: /symbols/279
+        status: reflected
+        object_identity: starlette.datastructures.State
+        kind: class
+        signature_status: available
+      standard:
+        ref: /symbols/279
+        object_identity: starlette.datastructures.State
+        kind: class
+        signature_status: available
+    signature_contract_state: runtime-signature-reflected
+    alias_refs:
+    - /aliases/33
+    deprecation_refs: []
+    error_contract_refs: []
+    documentation_contract_refs:
+    - coverage_matrix_ref: /coverage_matrix/560
+      source_path: docs/en/docs/release-notes.md
+      mapping_status: excluded
+      fixture_id: null
+      fixture_design_ref: null
+      observation_selectors: *id002
+    feature_ids: []
+    observation_selectors: []
+    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    target_binding:
+      target_profile: fastapi-rs-python-consumer
+      public_python_path: fastapi.datastructures.State
+      implementation_owner: starlette-rs
+      implementation_owner_evidence:
+        kind: direct_starlette_reexport
+        source_candidate_refs:
+        - /api_candidates/280
+      status: full-contract-not-established
+      rust_binding: null
+  - id: fastapi.datastructures.URL
+    kind: import_binding
+    source_candidate_ref: /api_candidates/282
+    source_inventory_refs:
+    - /import_bindings/179
+    source_signature_state: not-recorded
+    source_signature_refs: []
+    runtime_reflections:
+      core:
+        ref: /symbols/281
+        status: reflected
+        object_identity: starlette.datastructures.URL
+        kind: class
+        signature_status: available
+      standard:
+        ref: /symbols/281
+        object_identity: starlette.datastructures.URL
+        kind: class
+        signature_status: available
+    signature_contract_state: runtime-signature-reflected
+    alias_refs:
+    - /aliases/28
+    deprecation_refs: []
+    error_contract_refs: []
+    documentation_contract_refs:
+    - coverage_matrix_ref: /coverage_matrix/560
+      source_path: docs/en/docs/release-notes.md
+      mapping_status: excluded
+      fixture_id: null
+      fixture_design_ref: null
+      observation_selectors: *id002
+    feature_ids: []
+    observation_selectors: []
+    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    target_binding:
+      target_profile: fastapi-rs-python-consumer
+      public_python_path: fastapi.datastructures.URL
+      implementation_owner: starlette-rs
+      implementation_owner_evidence:
+        kind: direct_starlette_reexport
+        source_candidate_refs:
+        - /api_candidates/282
+      status: full-contract-not-established
+      rust_binding: null
   - id: fastapi.datastructures.UploadFile
     kind: class
     source_candidate_ref: /api_candidates/283
@@ -4434,6 +4725,57 @@ api_surface_contract:
         kind: direct_starlette_reexport
         source_candidate_refs:
         - /api_candidates/568
+      status: full-contract-not-established
+      rust_binding: null
+  - id: fastapi.middleware.wsgi.WSGIMiddleware
+    kind: import_binding
+    source_candidate_ref: /api_candidates/569
+    source_inventory_refs:
+    - /import_bindings/338
+    source_signature_state: not-recorded
+    source_signature_refs: []
+    runtime_reflections:
+      core:
+        ref: /symbols/568
+        status: reflected
+        object_identity: starlette.middleware.wsgi.WSGIMiddleware
+        kind: class
+        signature_status: available
+      standard:
+        ref: /symbols/568
+        object_identity: starlette.middleware.wsgi.WSGIMiddleware
+        kind: class
+        signature_status: available
+    signature_contract_state: runtime-signature-reflected
+    alias_refs:
+    - /aliases/43
+    deprecation_refs: []
+    error_contract_refs: []
+    documentation_contract_refs:
+    - coverage_matrix_ref: /coverage_matrix/496
+      source_path: docs/en/docs/advanced/wsgi.md
+      mapping_status: excluded
+      fixture_id: null
+      fixture_design_ref: null
+      observation_selectors: []
+    - coverage_matrix_ref: /coverage_matrix/560
+      source_path: docs/en/docs/release-notes.md
+      mapping_status: excluded
+      fixture_id: null
+      fixture_design_ref: null
+      observation_selectors: *id002
+    feature_ids:
+    - middleware-integrations
+    observation_selectors: []
+    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    target_binding:
+      target_profile: fastapi-rs-python-consumer
+      public_python_path: fastapi.middleware.wsgi.WSGIMiddleware
+      implementation_owner: starlette-rs
+      implementation_owner_evidence:
+        kind: direct_starlette_reexport
+        source_candidate_refs:
+        - /api_candidates/569
       status: full-contract-not-established
       rust_binding: null
   - id: fastapi.openapi.docs.get_redoc_html

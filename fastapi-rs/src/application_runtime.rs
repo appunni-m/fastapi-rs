@@ -665,6 +665,51 @@ impl PyFastApi {
         )
     }
 
+    #[pyo3(signature = (path, *, include_in_schema = true))]
+    fn api_route(
+        slf: Py<Self>,
+        py: Python<'_>,
+        path: &str,
+        include_in_schema: bool,
+    ) -> PyResult<Py<PyOperationDecorator>> {
+        operation_decorator(
+            slf,
+            py,
+            path,
+            "GET",
+            None,
+            None,
+            ResponseModelOptions {
+                include: None,
+                exclude: None,
+                by_alias: true,
+                exclude_unset: false,
+                exclude_defaults: false,
+                exclude_none: false,
+                include_in_schema,
+                response_description: None,
+                responses: None,
+                summary: None,
+                operation_id: None,
+                deprecated: None,
+                tags: None,
+            },
+        )
+    }
+
+    #[pyo3(signature = (path, endpoint, *, include_in_schema = true))]
+    fn add_api_route(
+        slf: Py<Self>,
+        py: Python<'_>,
+        path: &str,
+        endpoint: Py<PyAny>,
+        include_in_schema: bool,
+    ) -> PyResult<()> {
+        let decorator = Self::api_route(slf, py, path, include_in_schema)?;
+        decorator.bind(py).call1((endpoint,))?;
+        Ok(())
+    }
+
     #[pyo3(signature = (router, *, prefix = "", tags = None, dependencies = None, deprecated = None, include_in_schema = true))]
     // lint-exception: preserve FastAPI's include_router keyword signature.
     #[allow(
@@ -979,7 +1024,16 @@ impl PyApiRouter {
     fn __getattr__(&self, py: Python<'_>, name: &str) -> PyResult<Py<PyAny>> {
         if !matches!(
             name,
-            "get" | "post" | "put" | "delete" | "patch" | "head" | "options" | "trace"
+            "get"
+                | "post"
+                | "put"
+                | "delete"
+                | "patch"
+                | "head"
+                | "options"
+                | "trace"
+                | "api_route"
+                | "add_api_route"
         ) {
             return Err(PyAttributeError::new_err(format!(
                 "'APIRouter' object has no attribute '{name}'"

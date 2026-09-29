@@ -12,6 +12,7 @@ import argparse
 import ast
 import csv
 import hashlib
+import io
 import json
 import re
 import subprocess
@@ -40,6 +41,7 @@ ASGI_WORKFLOW_SCHEMA_PATH = Path("tests/fixtures/schemas/python-asgi-workflow-v2
 ASGI_WORKFLOW_INPUT_PATH = Path("tests/fixtures/inputs/parity/first-asgi-request.json")
 ASGI_WORKFLOW_SCHEMA_ID = "fastapi-rs/python-asgi-workflow@2"
 CALLABLE_CLASSIFICATION_REVIEW_SCHEMA = "fastapi-callable-classification-review/v1"
+IMPORT_BINDING_CLASSIFICATION_REVIEW_SCHEMA = "fastapi-starlette-import-binding-review/v1"
 REVIEWED_CALLABLE_KINDS = {
     "classmethod",
     "function",
@@ -6628,6 +6630,321 @@ def load_callable_classification_review(
     return review
 
 
+def _pinned_review_source_text(
+    source: str,
+    path_text: str,
+    *,
+    fastapi_root: Path,
+    starlette_root: Path,
+    starlette_rs_root: Path,
+    starlette_rs_commit: str,
+) -> str:
+    if source == "starlette_rs":
+        path = Path(path_text)
+        if path.is_absolute() or ".." in path.parts:
+            raise AtlasError("Starlette-RS review evidence path is not repository-relative")
+        try:
+            return subprocess.check_output(
+                [
+                    "git",
+                    "-C",
+                    str(starlette_rs_root),
+                    "show",
+                    f"{starlette_rs_commit}:{path.as_posix()}",
+                ],
+                text=True,
+                stderr=subprocess.PIPE,
+            )
+        except (OSError, subprocess.CalledProcessError) as exc:
+            detail = (
+                exc.stderr.strip() if isinstance(exc, subprocess.CalledProcessError) else str(exc)
+            )
+            raise AtlasError("cannot read pinned Starlette-RS review evidence: " + detail) from exc
+    roots = {"fastapi": fastapi_root, "starlette": starlette_root}
+    if source not in roots:
+        raise AtlasError("import-binding review evidence names an unknown source: " + source)
+    root = roots[source].resolve()
+    evidence_path = (root / path_text).resolve()
+    try:
+        evidence_path.relative_to(root)
+    except ValueError as exc:
+        raise AtlasError("import-binding review evidence escapes its source checkout") from exc
+    if not evidence_path.is_file():
+        raise AtlasError("import-binding review evidence is missing: " + path_text)
+    return evidence_path.read_text(encoding="utf-8", errors="replace")
+
+
+def load_import_binding_classification_review(
+    path: Path,
+    *,
+    fastapi_root: Path,
+    starlette_root: Path,
+    starlette_rs_root: Path,
+    fastapi_identity: dict[str, Any],
+    starlette_identity: dict[str, Any],
+    starlette_rs_commit: str,
+) -> dict[str, Any]:
+    """Load source evidence for a partial, exact Starlette-origin binding review."""
+    try:
+        review = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+        raise AtlasError(
+            "cannot read API import-binding classification review: " + str(exc)
+        ) from exc
+    if (
+        not isinstance(review, dict)
+        or review.get("schema") != IMPORT_BINDING_CLASSIFICATION_REVIEW_SCHEMA
+    ):
+        raise AtlasError("API import-binding classification review has an unsupported schema")
+    expected_identity = {
+        "package": "FastAPI",
+        "version": FASTAPI_VERSION,
+        "source_commit": fastapi_identity["commit"],
+        "selected_starlette_profile": STARLETTE_VERSION,
+        "starlette_source_commit": starlette_identity["commit"],
+        "starlette_rs_contract_commit": starlette_rs_commit,
+    }
+    if review.get("source_identity") != expected_identity:
+        raise AtlasError("API import-binding review has the wrong source identity")
+    # Validate that the immutable sibling commit object exists even if the
+    # caller's working tree has local changes. The main atlas path separately
+    # requires its selected Starlette-RS checkout to match the pinned revision.
+    if (
+        run_git(starlette_rs_root, "rev-parse", "--verify", f"{starlette_rs_commit}^{{commit}}")
+        != starlette_rs_commit
+    ):
+        raise AtlasError("API import-binding review Starlette-RS commit is unavailable")
+
+    pinned_sources = review.get("pinned_starlette_rs_sources")
+    expected_source_paths = {
+        "metadata": "metadata.yaml",
+        "manifest": "tests/fixtures/manifest.yaml",
+        "api_catalog": "docs/api-surface.csv",
+        "api_review": "docs/atlas/api-review.csv",
+    }
+    if not isinstance(pinned_sources, dict) or set(pinned_sources.get("files", {})) != set(
+        expected_source_paths
+    ):
+        raise AtlasError("API import-binding review lacks its pinned Starlette-RS source set")
+    pinned_text: dict[str, str] = {}
+    for role, expected_path in expected_source_paths.items():
+        reference = pinned_sources["files"].get(role)
+        if (
+            not isinstance(reference, dict)
+            or reference.get("path") != expected_path
+            or not isinstance(reference.get("git_blob"), str)
+            or not isinstance(reference.get("sha256"), str)
+        ):
+            raise AtlasError("API import-binding review has malformed Starlette-RS source identity")
+        actual_blob = run_git(
+            starlette_rs_root, "rev-parse", f"{starlette_rs_commit}:{expected_path}"
+        )
+        try:
+            source_bytes = subprocess.check_output(
+                [
+                    "git",
+                    "-C",
+                    str(starlette_rs_root),
+                    "show",
+                    f"{starlette_rs_commit}:{expected_path}",
+                ],
+                stderr=subprocess.PIPE,
+            )
+        except (OSError, subprocess.CalledProcessError) as exc:
+            detail = (
+                exc.stderr.decode("utf-8", errors="replace").strip()
+                if isinstance(exc, subprocess.CalledProcessError)
+                else str(exc)
+            )
+            raise AtlasError("cannot read pinned Starlette-RS source identity: " + detail) from exc
+        if (
+            reference["git_blob"] != actual_blob
+            or reference["sha256"] != hashlib.sha256(source_bytes).hexdigest()
+        ):
+            raise AtlasError("pinned Starlette-RS source digest differs from the review: " + role)
+        pinned_text[role] = source_bytes.decode("utf-8", errors="replace")
+    try:
+        pinned_metadata = yaml.safe_load(pinned_text["metadata"])
+        pinned_manifest = json.loads(pinned_text["manifest"])
+    except (yaml.YAMLError, json.JSONDecodeError) as exc:
+        raise AtlasError("pinned Starlette-RS identity artifacts are malformed") from exc
+    if (
+        pinned_metadata.get("authority", {}).get("revision") != STARLETTE_COMMIT
+        or pinned_manifest.get("scope", {}).get("inventory", {}).get("revision") != STARLETTE_COMMIT
+        or not any(
+            oracle.get("id") == "starlette-python" and oracle.get("version") == STARLETTE_VERSION
+            for oracle in pinned_manifest.get("oracles", [])
+        )
+    ):
+        raise AtlasError("pinned Starlette-RS sources select the wrong Starlette profile")
+    sibling_contract_id = pinned_manifest.get("scope", {}).get("id")
+    if pinned_sources.get("contract_id") != sibling_contract_id:
+        raise AtlasError("API import-binding review has the wrong Starlette-RS contract id")
+
+    evidence_text_cache: dict[tuple[str, str], str] = {}
+    sibling_review_text = pinned_text["api_review"]
+    sibling_review_rows_by_line: dict[int, dict[str, str]] = {}
+    sibling_review_reader = csv.DictReader(io.StringIO(sibling_review_text, newline=""))
+    for sibling_row in sibling_review_reader:
+        sibling_review_rows_by_line[sibling_review_reader.line_num] = sibling_row
+
+    rows = review.get("rows")
+    if not isinstance(rows, list) or not rows:
+        raise AtlasError("API import-binding review has no rows")
+    identifiers = [row.get("id") for row in rows if isinstance(row, dict)]
+    if len(identifiers) != len(rows) or len(identifiers) != len(set(identifiers)):
+        raise AtlasError("API import-binding review IDs must be unique")
+    counts: Counter[str] = Counter()
+    for row in rows:
+        identifier = row.get("id")
+        recommendation = row.get("recommendation")
+        source = row.get("source")
+        evidence_basis = row.get("evidence_basis")
+        evidence = row.get("evidence")
+        reason = row.get("reason")
+        binding = row.get("binding")
+        sibling_review = row.get("starlette_rs_review")
+        if (
+            not isinstance(identifier, str)
+            or recommendation not in {"supported", "private/internal", "uncertain"}
+            or not isinstance(source, dict)
+            or not isinstance(source.get("path"), str)
+            or not isinstance(source.get("line"), int)
+            or isinstance(source.get("line"), bool)
+            or not isinstance(binding, dict)
+            or not all(isinstance(binding.get(key), str) for key in ("module", "name", "target"))
+            or not isinstance(evidence_basis, list)
+            or not evidence_basis
+            or any(not isinstance(value, str) or not value for value in evidence_basis)
+            or not isinstance(evidence, list)
+            or not evidence
+            or not isinstance(reason, str)
+            or not reason.strip()
+            or not isinstance(sibling_review, dict)
+            or sibling_review.get("state") not in {"reviewed", "no_exact_row"}
+        ):
+            raise AtlasError("API import-binding review row is malformed: " + str(identifier))
+
+        fastapi_source = (fastapi_root / source["path"]).resolve()
+        try:
+            fastapi_source.relative_to(fastapi_root.resolve())
+        except ValueError as exc:
+            raise AtlasError(
+                "API import-binding review source escapes FastAPI: " + identifier
+            ) from exc
+        if not fastapi_source.is_file():
+            raise AtlasError("API import-binding review source is missing: " + source["path"])
+        fastapi_lines = fastapi_source.read_text(encoding="utf-8", errors="replace").splitlines()
+        if not 1 <= source["line"] <= len(fastapi_lines):
+            raise AtlasError("API import-binding review source line is out of range: " + identifier)
+
+        evidence_roles: set[str] = set()
+        has_public_doc_evidence = False
+        exact_starlette_review: dict[str, str] | None = None
+        for reference in evidence:
+            if (
+                not isinstance(reference, dict)
+                or reference.get("source") not in {"fastapi", "starlette", "starlette_rs"}
+                or not isinstance(reference.get("path"), str)
+                or not isinstance(reference.get("line"), int)
+                or isinstance(reference.get("line"), bool)
+                or not isinstance(reference.get("role"), str)
+                or not reference["role"]
+            ):
+                raise AtlasError("API import-binding review has malformed evidence: " + identifier)
+            end_line = reference.get("end_line", reference["line"])
+            if not isinstance(end_line, int) or isinstance(end_line, bool):
+                raise AtlasError(
+                    "API import-binding review has malformed evidence range: " + identifier
+                )
+            evidence_key = (reference["source"], reference["path"])
+            if evidence_key not in evidence_text_cache:
+                evidence_text_cache[evidence_key] = _pinned_review_source_text(
+                    reference["source"],
+                    reference["path"],
+                    fastapi_root=fastapi_root,
+                    starlette_root=starlette_root,
+                    starlette_rs_root=starlette_rs_root,
+                    starlette_rs_commit=starlette_rs_commit,
+                )
+            evidence_text = evidence_text_cache[evidence_key]
+            evidence_lines = evidence_text.splitlines()
+            if not 1 <= reference["line"] <= end_line <= len(evidence_lines):
+                raise AtlasError(
+                    "API import-binding review evidence line is out of range: " + identifier
+                )
+            evidence_roles.add(reference["role"])
+            if reference["source"] == "fastapi" and reference["path"].startswith("docs/"):
+                has_public_doc_evidence = True
+            if (
+                reference["source"] == "starlette_rs"
+                and reference["path"] == "docs/atlas/api-review.csv"
+            ):
+                csv_row = sibling_review_rows_by_line.get(reference["line"])
+                if csv_row is None:
+                    raise AtlasError("pinned Starlette-RS API review line is not a data row")
+                if csv_row.get("qualified_name") != binding["target"]:
+                    raise AtlasError(
+                        "Starlette-RS evidence target differs from FastAPI binding: " + identifier
+                    )
+                exact_starlette_review = csv_row
+        if "fastapi-binding" not in evidence_roles or "starlette-target" not in evidence_roles:
+            raise AtlasError(
+                "API import-binding review lacks both binding and target evidence: " + identifier
+            )
+        strong_public_basis = {"release-note", "documented", "explicit-deprecation/source-contract"}
+        if recommendation == "supported" and (
+            not (strong_public_basis & set(evidence_basis)) or not has_public_doc_evidence
+        ):
+            raise AtlasError(
+                "supported import-binding review lacks FastAPI public-contract evidence: "
+                + identifier
+            )
+        if (
+            recommendation == "private/internal"
+            and "fastapi-implementation-use" not in evidence_roles
+        ):
+            raise AtlasError(
+                "internal import-binding review lacks FastAPI implementation-use evidence: "
+                + identifier
+            )
+
+        if sibling_review["state"] == "reviewed":
+            if (
+                exact_starlette_review is None
+                or sibling_review.get("qualified_name") != binding["target"]
+                or sibling_review.get("disposition")
+                != exact_starlette_review.get("api_disposition")
+                or sibling_review.get("catalog_row") != exact_starlette_review.get("catalog_row")
+            ):
+                raise AtlasError(
+                    "Starlette-RS review record differs from pinned source: " + identifier
+                )
+        elif exact_starlette_review is not None or sibling_review.get("disposition") is not None:
+            raise AtlasError(
+                "Starlette-RS no-row limitation conflicts with pinned source: " + identifier
+            )
+
+        counts[recommendation] += 1
+    scope = review.get("scope", {})
+    reviewed_candidate_count = sum(
+        row.get("starlette_rs_review", {}).get("state") == "reviewed" for row in rows
+    )
+    unreviewed_targets = {
+        row.get("binding", {}).get("target")
+        for row in rows
+        if row.get("starlette_rs_review", {}).get("state") == "no_exact_row"
+    }
+    if (
+        scope.get("candidate_count") != len(rows)
+        or scope.get("recommendation_counts") != dict(counts)
+        or scope.get("starlette_rs_reviewed_candidate_count") != reviewed_candidate_count
+        or scope.get("starlette_rs_unreviewed_unique_target_count") != len(unreviewed_targets)
+    ):
+        raise AtlasError("API import-binding review summary does not match its rows")
+    return review
+
+
 def apply_callable_classification_review(
     candidates: dict[str, dict[str, Any]], review: dict[str, Any]
 ) -> None:
@@ -6700,6 +7017,79 @@ def apply_callable_classification_review(
                 )
 
 
+def apply_import_binding_classification_review(
+    candidates: dict[str, dict[str, Any]], review: dict[str, Any]
+) -> None:
+    """Apply review rows to exactly the uncertain Starlette-origin bindings."""
+    expected = {
+        identifier
+        for identifier, candidate in candidates.items()
+        if candidate.get("classification") == "uncertain"
+        and candidate.get("kind") == "import_binding"
+        and (candidate.get("imported_module") or "").startswith("starlette")
+    }
+    rows = {row["id"]: row for row in review["rows"]}
+    if set(rows) != expected:
+        missing = sorted(expected - set(rows))
+        extra = sorted(set(rows) - expected)
+        raise AtlasError(
+            "API import-binding review does not match the uncertain Starlette-origin denominator; "
+            f"missing={missing[:5]}, extra={extra[:5]}"
+        )
+    for identifier, row in rows.items():
+        candidate = candidates[identifier]
+        source = row["source"]
+        binding = row["binding"]
+        if (
+            binding.get("module") != candidate.get("imported_module")
+            or binding.get("name") != candidate.get("imported_name")
+            or binding.get("target") != candidate.get("target_path")
+        ):
+            raise AtlasError(
+                "API import-binding review target differs from inventory: " + identifier
+            )
+        if not any(
+            reference.get("path") == source["path"] and reference.get("line") == source["line"]
+            for reference in candidate.get("source_evidence", [])
+        ):
+            raise AtlasError(
+                "API import-binding review source location differs from inventory: " + identifier
+            )
+        candidate["classification"] = row["recommendation"]
+        candidate["classification_evidence_rule"] = (
+            "Reviewed FastAPI import-site/use evidence, pinned Starlette target source, and the "
+            "pinned Starlette-RS target review where present. The sibling disposition applies to "
+            "the canonical Starlette target, not automatically to this FastAPI import path."
+        )
+        candidate["classification_review"] = {
+            "source": source,
+            "binding": binding,
+            "evidence_basis": row["evidence_basis"],
+            "evidence": row["evidence"],
+            "starlette_rs_review": row["starlette_rs_review"],
+            "reason": row["reason"],
+        }
+        if row["recommendation"] == "supported":
+            for reference in row["evidence"]:
+                if reference["source"] == "fastapi" and reference["path"].startswith("docs/"):
+                    public_ref: dict[str, Any] = {
+                        "kind": "reviewed_import_binding_documentation_contract",
+                        "path": reference["path"],
+                        "line": reference["line"],
+                    }
+                    if reference.get("end_line", reference["line"]) != reference["line"]:
+                        public_ref["end_line"] = reference["end_line"]
+                    candidate["public_evidence"].append(public_ref)
+            if "explicit-deprecation/source-contract" in row["evidence_basis"]:
+                candidate["public_evidence"].append(
+                    {
+                        "kind": "reviewed_import_binding_deprecation_contract",
+                        "path": source["path"],
+                        "line": source["line"],
+                    }
+                )
+
+
 def generate(args: argparse.Namespace) -> dict[str, Any]:
     first_slice_workflow = read_first_asgi_workflow()
     fastapi_root = args.fastapi_source.resolve()
@@ -6751,6 +7141,15 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         fastapi_identity=fastapi_identity,
     )
     starlette_rs_metadata = project_metadata["starlette_rs"]
+    import_binding_review = load_import_binding_classification_review(
+        args.import_binding_review,
+        fastapi_root=fastapi_root,
+        starlette_root=starlette_root,
+        starlette_rs_root=starlette_rs_root,
+        fastapi_identity=fastapi_identity,
+        starlette_identity=starlette_identity,
+        starlette_rs_commit=starlette_rs_revision,
+    )
 
     def starlette_rs_artifact_path(path_text: str) -> Path:
         owner_path = Path(starlette_rs_metadata["owner"])
@@ -7037,6 +7436,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         record["classification"] = status
         record["classification_evidence_rule"] = evidence_rule
     apply_callable_classification_review(candidates, callable_review)
+    apply_import_binding_classification_review(candidates, import_binding_review)
     for record in candidates.values():
         record["candidate_kinds"].sort()
         record["source_evidence"].sort(key=lambda x: (x["path"], x["line"]))
@@ -8503,6 +8903,14 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             "sha256": sha256(args.callable_review.resolve()),
             "scope": callable_review["scope"],
         },
+        "api_import_binding_classification_review": {
+            "path": args.import_binding_review.resolve().relative_to(PROJECT).as_posix(),
+            "schema": import_binding_review["schema"],
+            "sha256": sha256(args.import_binding_review.resolve()),
+            "source_identity": import_binding_review["source_identity"],
+            "scope": import_binding_review["scope"],
+            "pinned_starlette_rs_sources": import_binding_review["pinned_starlette_rs_sources"],
+        },
         "api_candidates": sorted(candidates.values(), key=lambda x: x["id"]),
         "aliases": aliases,
         "deprecations": deprecations,
@@ -8523,6 +8931,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         "counts": {
             "api_candidates": len(candidates),
             "reviewed_callable_candidates": len(callable_review["rows"]),
+            "reviewed_import_binding_candidates": len(import_binding_review["rows"]),
             "api_classifications": dict(
                 Counter(record["classification"] for record in candidates.values())
             ),
@@ -8937,6 +9346,7 @@ def _sync_manifest_artifact_metadata(
         {
             "sha256": sha256(atlas_path),
             "api_candidates": counts["api_candidates"],
+            "reviewed_import_binding_candidates": counts["reviewed_import_binding_candidates"],
             "supported": counts["api_classifications"]["supported"],
             "private_or_internal": counts["api_classifications"]["private/internal"],
             "uncertain": counts["api_classifications"]["uncertain"],
@@ -9041,6 +9451,11 @@ def main(argv: Sequence[str] | None = None) -> int:
         "--callable-review",
         type=Path,
         default=PROJECT / "tests/fixtures/api-classification-review.json",
+    )
+    parser.add_argument(
+        "--import-binding-review",
+        type=Path,
+        default=PROJECT / "tests/fixtures/api-import-binding-classification-review.json",
     )
     parser.add_argument(
         "--output", type=Path, default=PROJECT / "tests/fixtures/compatibility-atlas.json"
