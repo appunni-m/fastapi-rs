@@ -58,6 +58,13 @@ pass-through `fastapi` facade, isolated workers, and an exact comparator. The
 comparison in ignored `parity-results/`; CI runs this gate. This only validates
 the current first slice. It does not establish broader API or feature parity.
 
+Direct Python callable probes also have isolated source and target workers, a
+versioned result schema, and an exact comparison command. The initial
+`encoding.yaml` workflow observes JSON-encoder return values and signatures; run it with
+`make parity-api-oracle`, `make parity-api-target`, then
+`make parity-api-compare SOURCE_RESULT=... TARGET_RESULT=...`. Its nine cases
+are a narrow direct-call slice and do not establish the rest of the public API.
+
 Keep the complete FastAPI public inventory in the one project manifest and
 make every parity case reference a public operation and semantic requirement.
 Use input files as executable stimuli only: app/route setup, ordered public

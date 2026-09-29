@@ -8,6 +8,7 @@ import datetime as dt
 import importlib
 import inspect
 import json
+import math
 import re
 import sys
 import uuid
@@ -27,7 +28,7 @@ from scripts.parity.worker import (
 )
 
 WORKFLOW_SCHEMA_ID = "fastapi-rs/python-api-workflow@1"
-RESULT_SCHEMA_ID = "fastapi-rs/python-api-workflow-result@1"
+RESULT_SCHEMA_ID = "fastapi-rs/python-api-workflow-result@2"
 MANIFEST_PATH = ROOT / "tests/fixtures/manifest.yaml"
 ATLAS_SCHEMA_ID = "fastapi-rs/compatibility-atlas@2"
 INDEX_SCHEMA_ID = "fastapi-rs/materialized-input-index@1"
@@ -77,35 +78,52 @@ def _signature_object_identity(value: Any, kind: str) -> dict[str, str] | None:
     return {"kind": kind, "qualified_name": f"{module}.{qualified_name}"}
 
 
+def _is_strict_json_value(value: Any, *, depth: int = 0) -> bool:
+    """Accept only values whose JSON projection preserves their Python types."""
+    if value is None or type(value) in {bool, int, str}:
+        return True
+    if type(value) is float:
+        return math.isfinite(value)
+    if depth >= 64:
+        return False
+    if type(value) is list:
+        return all(_is_strict_json_value(item, depth=depth + 1) for item in value)
+    if type(value) is dict:
+        return all(
+            type(key) is str and _is_strict_json_value(item, depth=depth + 1)
+            for key, item in value.items()
+        )
+    return False
+
+
 def _signature_component(value: Any, *, depth: int = 0) -> Any:
     """Keep JSON defaults exact and encode FastAPI wrapper/type/callable defaults by identity."""
     if value is inspect.Signature.empty:
         return None
     if depth > 8:
         raise WorkerError("signature default projection exceeded its nesting limit")
-    try:
+    if _is_strict_json_value(value):
         return _json_safe(value)
-    except ValueError:
-        value_type = type(value)
-        qualified_type = f"{value_type.__module__}.{value_type.__qualname__}"
+    value_type = type(value)
+    qualified_type = f"{value_type.__module__}.{value_type.__qualname__}"
 
-        if qualified_type == "fastapi.datastructures.DefaultPlaceholder":
-            return {
-                "kind": "fastapi_default_placeholder",
-                "value": _signature_component(value.value, depth=depth + 1),
-            }
-        if inspect.isclass(value):
-            identity = _signature_object_identity(value, "class")
-            if identity is not None:
-                return identity
-        elif inspect.isroutine(value):
-            identity = _signature_object_identity(value, "callable")
-            if identity is not None:
-                return identity
+    if qualified_type == "fastapi.datastructures.DefaultPlaceholder":
+        return {
+            "kind": "fastapi_default_placeholder",
+            "value": _signature_component(value.value, depth=depth + 1),
+        }
+    if inspect.isclass(value):
+        identity = _signature_object_identity(value, "class")
+        if identity is not None:
+            return identity
+    elif inspect.isroutine(value):
+        identity = _signature_object_identity(value, "callable")
+        if identity is not None:
+            return identity
 
-        raise WorkerError(
-            f"signature default cannot be represented as strict JSON without loss: {qualified_type}"
-        ) from None
+    raise WorkerError(
+        f"signature default cannot be represented as strict JSON without loss: {qualified_type}"
+    ) from None
 
 
 def _signature_value(function: Any) -> dict[str, Any]:

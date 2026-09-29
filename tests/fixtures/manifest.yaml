@@ -123,7 +123,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@2
-    sha256: 6531c66a254b0487e6d4f31c6ad451ab7d77429119dc00b5c11410fa2e1de008
+    sha256: 7f222e4d793c71efb452e0d1c6fc7341f6dd053adfbddd319c0c45fb31604f92
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -321,13 +321,16 @@ unresolved:
     coverage: constructor observations, explicit HTTP/WebSocket ASGI actions, and lifespan startup/request/shutdown workflows
     warning_capture: planned; no workflow selector observes Python warning category/message
   python_api_workflow:
-    state: oracle-only; target-comparison-unavailable
+    state: isolated-oracle-and-target-workers-and-exact-comparator-present; broader-public-api-parity-pending
     schema_id: fastapi-rs/python-api-workflow@1
     schema_path: tests/fixtures/schemas/python-api-workflow.schema.json
     schema_sha256: 2b1553f1846ac3a20e95aff02c74700556a54f37b95b046e415195d94f9238ae
-    result_schema_id: fastapi-rs/python-api-workflow-result@1
-    result_schema_path: tests/fixtures/schemas/python-api-workflow-result.schema.json
-    result_schema_sha256: c6013fd073a6192a15f6f829541d3511b323684ada223961f5ff0cb85f060987
+    result_schema_id: fastapi-rs/python-api-workflow-result@2
+    result_schema_path: tests/fixtures/schemas/python-api-workflow-result-v2.schema.json
+    result_schema_sha256: 50c8fe06a1e8d47d0408d6c94e2b94f33f1f4b97f4fedad8064f824fcdace268
+    comparison_schema_id: fastapi-rs/python-api-comparison@1
+    comparison_schema_path: tests/fixtures/schemas/python-api-comparison-v1.schema.json
+    comparison_schema_sha256: 628652b15823404605a31cda43f1f5c3b61890bde51a1c1e33b2456fa23ef3ad
     recipe_path: tests/fixtures/input-recipes/parity/encoding.yaml
     recipe_sha256: 83d0e301a6cbc7583aca83a40cacd387f7d4d804a6f331753def02dc6aab7f36
     case_ids:
@@ -340,12 +343,10 @@ unresolved:
       - fastapi.jsonable-encoder.model.exclude-defaults
       - fastapi.jsonable-encoder.custom-encoder.exact-type
       - fastapi.jsonable-encoder.custom-encoder.base-type
-    missing:
-      - installed FastAPI-RS direct-call target worker
-      - direct Python API target result and comparator
     note: >-
-      This lane captures source-oracle return values and signatures only. It does
-      not establish FastAPI-RS behavior parity.
+      The direct API lane now runs identity-checked source and target workers and
+      exact comparisons for selected signatures and return values. Its nine
+      encoding cases are still only a narrow slice of the full public API.
   fixture_backlog_integrity:
     state: source-linked-designs-validated; incremental-materialization-indexed; full-backlog-pending
     source_artifacts: [compatibility_atlas, fixture_backlog, materialized_input_index]

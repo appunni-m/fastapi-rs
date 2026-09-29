@@ -12,12 +12,17 @@ from typing import Any
 
 from jsonschema import Draft202012Validator, FormatChecker
 
+from scripts.parity.api_comparator import compare_api_workflow_results
 from scripts.parity.api_contract import (
     validate_api_surface_contract,
     validate_api_workflow_public_surface,
 )
 from scripts.parity.comparator import SHARED_ORACLE_PACKAGES, compare_workflow_results
 from scripts.parity.contract import (
+    API_COMPARISON_SCHEMA,
+    API_COMPARISON_SCHEMA_ID,
+    API_RESULT_SCHEMA,
+    API_RESULT_SCHEMA_ID,
     API_WORKFLOW_SCHEMA_ID,
     COMPARISON_SCHEMA_IDS_BY_WORKFLOW,
     COMPARISON_SCHEMAS,
@@ -42,7 +47,6 @@ DEFAULT_INPUT = Path("tests/fixtures/inputs/parity/first-asgi-request.json")
 DEFAULT_FASTAPI_SOURCE = (ROOT / "../fastapi").resolve()
 DEFAULT_STARLETTE_SOURCE = (ROOT / "../starlette").resolve()
 DEFAULT_STARLETTE_RS_SOURCE = (ROOT / "../starlette-rs").resolve()
-API_RESULT_SCHEMA = ROOT / "tests/fixtures/schemas/python-api-workflow-result.schema.json"
 
 
 def _relative_path(path: Path) -> str:
@@ -97,10 +101,10 @@ def _load_result_artifact(path: Path, expected_product: str) -> tuple[dict[str, 
 def _write_immutable_result(result: dict[str, Any], artifact_root: Path) -> Path:
     artifact_root = artifact_root.resolve()
     try:
-        artifact_root.relative_to(ROOT)
+        artifact_root.relative_to(ROOT / "parity-results")
     except ValueError as exc:
         raise ContractError(
-            "result artifacts must be written inside the ignored repository result tree"
+            "result artifacts must be written inside the ignored parity-results tree"
         ) from exc
     artifact_root.mkdir(parents=True, exist_ok=True)
     artifact_path = artifact_root / f"{result['run_id']}.json"
@@ -468,6 +472,8 @@ def api_validate_command(args: argparse.Namespace) -> dict[str, Any]:
 
 
 def _validate_api_result(result: dict[str, Any], input_digest: str) -> None:
+    if result.get("schema") != API_RESULT_SCHEMA_ID:
+        raise ContractError(f"direct API result requires {API_RESULT_SCHEMA_ID}")
     schema = read_json(API_RESULT_SCHEMA)
     validator = Draft202012Validator(schema, format_checker=FormatChecker())
     errors = sorted(validator.iter_errors(result), key=lambda error: error.message)
@@ -613,6 +619,185 @@ def api_oracle_command(args: argparse.Namespace) -> dict[str, Any]:
     }
 
 
+def api_target_command(args: argparse.Namespace) -> dict[str, Any]:
+    workflow, workflow_path, input_digest, workload_path = load_workflow(
+        args.input,
+        source_root=args.fastapi_source.resolve(),
+    )
+    if workflow["schema"] != API_WORKFLOW_SCHEMA_ID:
+        raise ContractError(f"api-target requires {API_WORKFLOW_SCHEMA_ID}")
+    python = args.python.absolute()
+    if not python.is_file():
+        raise ContractError(
+            f"target Python interpreter does not exist: {python}; run make parity-prepare-target"
+        )
+    manifest_path = ROOT / "tests/fixtures/manifest.yaml"
+    manifest = read_manifest()
+    manifest_digest = sha256_file(manifest_path)
+    workload_digest = sha256_file(workload_path)
+    materialized_inputs = _validate_indexed_api_workflow(
+        manifest,
+        workflow,
+        workflow_path,
+        input_digest,
+        fastapi_source=args.fastapi_source.resolve(),
+        starlette_source=args.starlette_source.resolve(),
+    )
+    validate_api_workflow_public_surface(workflow, manifest.get("api_surface_contract", {}))
+    target_profile = {
+        "python": manifest["oracle_profile"]["python"],
+        "shared_runtime_packages": {
+            name: version
+            for name, version in manifest["oracle_profile"]["packages"].items()
+            if name in SHARED_ORACLE_PACKAGES
+        },
+        "target": manifest["target"],
+    }
+    command = [
+        str(python),
+        "-m",
+        "scripts.parity.api_target_worker",
+        "--input",
+        str(workflow_path),
+        "--fastapi-source",
+        str(args.fastapi_source.resolve()),
+        "--target-source",
+        str(args.target_source.resolve()),
+        "--starlette-rs-source",
+        str(args.starlette_rs_source.resolve()),
+        "--target-profile",
+        json.dumps(target_profile, separators=(",", ":")),
+        "--input-sha256",
+        input_digest,
+        "--workload-sha256",
+        workload_digest,
+        "--manifest-sha256",
+        manifest_digest,
+    ]
+    environment = os.environ.copy()
+    for variable in ("PYTHONPATH", "PYTHONHOME", "VIRTUAL_ENV"):
+        environment.pop(variable, None)
+    environment["PYTHONNOUSERSITE"] = "1"
+    environment["PYTHONDONTWRITEBYTECODE"] = "1"
+    try:
+        completed = subprocess.run(
+            command,
+            cwd=ROOT,
+            env=environment,
+            capture_output=True,
+            text=True,
+            timeout=args.timeout_seconds,
+            check=False,
+        )
+    except subprocess.TimeoutExpired as exc:
+        raise ContractError(f"direct API target exceeded {args.timeout_seconds}s") from exc
+    if completed.returncode != 0:
+        try:
+            worker_error = json.loads(completed.stdout)
+        except json.JSONDecodeError:
+            worker_error = {"message": completed.stderr.strip() or completed.stdout.strip()}
+        raise ContractError(f"direct API target failed: {worker_error}")
+    try:
+        result = json.loads(completed.stdout)
+    except json.JSONDecodeError as exc:
+        raise ContractError("direct API target emitted malformed JSON") from exc
+    if not isinstance(result, dict) or not isinstance(result.get("command"), dict):
+        raise ContractError("direct API target result is malformed")
+    result["command"]["argv"] = command
+    _validate_api_result(result, input_digest)
+    _validate_api_result_bindings(workflow, result)
+    if result["product"] != "target":
+        raise ContractError("direct API target worker emitted a non-target result")
+    if result["manifest"].get("sha256") != manifest_digest:
+        raise ContractError("direct API target references a different manifest")
+    if result["input"].get("path") != workflow_path.relative_to(ROOT).as_posix():
+        raise ContractError("direct API target references a different workflow path")
+    if result["workload"].get("sha256") != workload_digest:
+        raise ContractError("direct API target references a different workload")
+    artifact_path = _write_immutable_result(result, args.output_dir)
+    return {
+        "status": result["status"],
+        "product": result["product"],
+        "identity": result["identity"],
+        "case_count": len(result["cases"]),
+        "product_error_cases": [
+            case["case_id"] for case in result["cases"] if case["status"] == "product_error"
+        ],
+        "materialized_inputs": materialized_inputs,
+        "artifact": _relative_path(artifact_path),
+    }
+
+
+def api_compare_command(args: argparse.Namespace) -> dict[str, Any]:
+    source, source_path, source_digest = _load_result_artifact(args.source_result, "oracle")
+    target, target_path, target_digest = _load_result_artifact(args.target_result, "target")
+    if source.get("schema") != API_RESULT_SCHEMA_ID or target.get("schema") != API_RESULT_SCHEMA_ID:
+        raise ContractError(
+            "api-compare requires direct Python API source and target result artifacts"
+        )
+    workflow, workflow_path, input_digest, workload_path = load_workflow(
+        args.input,
+        source_root=args.fastapi_source.resolve(),
+    )
+    if workflow["schema"] != API_WORKFLOW_SCHEMA_ID:
+        raise ContractError(f"api-compare requires {API_WORKFLOW_SCHEMA_ID}")
+    _validate_api_result_bindings(workflow, source)
+    _validate_api_result_bindings(workflow, target)
+    manifest_path = ROOT / "tests/fixtures/manifest.yaml"
+    manifest = read_manifest()
+    manifest_digest = sha256_file(manifest_path)
+    command = [
+        sys.executable,
+        "-m",
+        "scripts.parity.cli",
+        "api-compare",
+        "--input",
+        workflow_path.relative_to(ROOT).as_posix(),
+        "--source-result",
+        source_path.relative_to(ROOT).as_posix(),
+        "--target-result",
+        target_path.relative_to(ROOT).as_posix(),
+    ]
+    comparison = compare_api_workflow_results(
+        workflow=workflow,
+        source=source,
+        target=target,
+        oracle_profile=manifest["oracle_profile"],
+        target_profile=manifest["target"],
+        manifest_sha256=manifest_digest,
+        input_path=workflow_path.relative_to(ROOT).as_posix(),
+        input_sha256=input_digest,
+        workload_sha256=sha256_file(workload_path),
+        source_result_ref={
+            "path": source_path.relative_to(ROOT).as_posix(),
+            "sha256": source_digest,
+            "run_id": source["run_id"],
+            "product": source["product"],
+        },
+        target_result_ref={
+            "path": target_path.relative_to(ROOT).as_posix(),
+            "sha256": target_digest,
+            "run_id": target["run_id"],
+            "product": target["product"],
+        },
+        command=command,
+    )
+    if comparison.get("schema") != API_COMPARISON_SCHEMA_ID:
+        raise ContractError("direct API comparator emitted an unsupported result schema")
+    schema = read_json(API_COMPARISON_SCHEMA)
+    validator = Draft202012Validator(schema, format_checker=FormatChecker())
+    errors = sorted(validator.iter_errors(comparison), key=lambda error: error.message)
+    if errors:
+        details = "; ".join(error.message for error in errors)
+        raise ContractError(f"direct API comparison does not match its schema: {details}")
+    artifact_path = _write_immutable_result(comparison, ROOT / "parity-results/comparisons")
+    return {
+        "status": comparison["status"],
+        "summary": comparison["summary"],
+        "artifact": _relative_path(artifact_path),
+    }
+
+
 def compare_command(args: argparse.Namespace) -> dict[str, Any]:
     source, source_path, source_digest = _load_result_artifact(args.source_result, "oracle")
     target, target_path, target_digest = _load_result_artifact(args.target_result, "target")
@@ -735,6 +920,30 @@ def build_parser() -> argparse.ArgumentParser:
     )
     api_oracle.set_defaults(handler=api_oracle_command)
 
+    api_target = subparsers.add_parser(
+        "api-target", help="run direct public Python API probes in the isolated FastAPI-RS target"
+    )
+    api_target.add_argument("--input", required=True, type=Path)
+    api_target.add_argument("--python", type=Path, default=ROOT / ".venv-target/bin/python")
+    api_target.add_argument("--fastapi-source", type=Path, default=DEFAULT_FASTAPI_SOURCE)
+    api_target.add_argument("--starlette-source", type=Path, default=DEFAULT_STARLETTE_SOURCE)
+    api_target.add_argument("--target-source", type=Path, default=ROOT)
+    api_target.add_argument("--starlette-rs-source", type=Path, default=DEFAULT_STARLETTE_RS_SOURCE)
+    api_target.add_argument("--timeout-seconds", type=int, default=180)
+    api_target.add_argument(
+        "--output-dir", type=Path, default=ROOT / "parity-results/python-api-target"
+    )
+    api_target.set_defaults(handler=api_target_command)
+
+    api_compare = subparsers.add_parser(
+        "api-compare", help="compare direct public Python API observations exactly"
+    )
+    api_compare.add_argument("--input", required=True, type=Path)
+    api_compare.add_argument("--fastapi-source", type=Path, default=DEFAULT_FASTAPI_SOURCE)
+    api_compare.add_argument("--source-result", required=True, type=Path)
+    api_compare.add_argument("--target-result", required=True, type=Path)
+    api_compare.set_defaults(handler=api_compare_command)
+
     compare = subparsers.add_parser(
         "compare", help="compare isolated oracle and FastAPI-RS results"
     )
@@ -754,7 +963,9 @@ def main() -> int:
         print(f"parity: {exc}", file=sys.stderr)
         return 2
     print(json.dumps(result, ensure_ascii=False, allow_nan=False, indent=2))
-    if args.command == "compare" and (result["summary"]["failed"] or result["summary"]["not_run"]):
+    if args.command in {"compare", "api-compare"} and (
+        result["summary"]["failed"] or result["summary"]["not_run"]
+    ):
         return 1
     return 0
 

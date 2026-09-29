@@ -91,6 +91,12 @@ builds the PyO3 extension in Cargo release mode and verifies that the Python
 and Rust Starlette-RS dependencies resolve to the same clean pinned checkout.
 Per-run results stay under ignored `parity-results/`.
 
+The initial direct Python API lane covers nine `jsonable_encoder` inputs,
+observing return values and signatures through isolated workers. Run
+`make parity-api-oracle`, `make parity-api-target`, then
+`make parity-api-compare SOURCE_RESULT=... TARGET_RESULT=...`; this narrow lane
+does not represent full public API parity.
+
 The first correctness-gated performance lane is `make benchmark-first-slice`.
 It runs the pinned ten-case parity gate, then compares one valid request through
 the FastAPI 0.141.1 oracle, release FastAPI-RS facade, and Starlette 1.6.0 plain

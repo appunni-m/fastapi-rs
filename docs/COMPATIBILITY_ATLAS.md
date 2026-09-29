@@ -36,7 +36,7 @@ The single `tests/fixtures/manifest.yaml` indexes 439 source-supported symbols, 
 | User-facing documentation pages | 155 | 104 | 104 | 0 | 51 |
 | Documentation Python files (examples + support initializers) | 461 | 355 | — | 355 | 106 |
 
-Python-source exclusions are one debugging/setup example and 91 package initializers; the remaining examples are grouped with their mapped documentation pages.
+Python-source exclusions are one debugging/setup example and 91 package initializers; the remaining examples are grouped with their mapped documentation pages. Inherited selectors identify page-level observations and do not claim that each example's behavior was exercised.
 
 Review state is separate from coverage completeness. `reviewed_partial` means pinned source evidence and exact indexed workflows, cases, and selectors were reviewed for the linked behavior; it does not claim complete source behavior or parity. Pending counts identify links without that review. The materialized index has 450 distinct upstream test modules and 104 documentation pages linked to workflows; all 894 mapping rows are partial. No source module or documentation page is fully covered by an input workflow.
 

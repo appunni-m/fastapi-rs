@@ -42,6 +42,31 @@ def _require(condition: bool, message: str) -> None:
         _fail(message)
 
 
+def _merge_page_selector_evidence(
+    evidence_groups: list[list[dict[str, Any]]],
+) -> list[dict[str, Any]]:
+    selectors_by_feature: dict[str | None, set[str]] = {}
+    extensions_by_feature: dict[str | None, set[str]] = {}
+    for evidence_group in evidence_groups:
+        for evidence in evidence_group:
+            feature_id = evidence["feature_id"]
+            selectors_by_feature.setdefault(feature_id, set()).update(evidence["selectors"])
+            extensions_by_feature.setdefault(feature_id, set()).update(
+                evidence.get("schema_extension_required", [])
+            )
+
+    merged = []
+    for feature_id in sorted(selectors_by_feature, key=lambda value: (value is None, value or "")):
+        evidence = {
+            "feature_id": feature_id,
+            "selectors": sorted(selectors_by_feature[feature_id]),
+        }
+        if extensions_by_feature[feature_id]:
+            evidence["schema_extension_required"] = sorted(extensions_by_feature[feature_id])
+        merged.append(evidence)
+    return merged
+
+
 def _source_path(root: Path, value: Any, label: str) -> Path:
     _require(isinstance(value, str) and bool(value), f"{label} has no source path")
     candidate = (root / value).resolve()
@@ -828,6 +853,168 @@ def validate_compatibility_artifacts(
                 )
                 _reject_output_values(section, f"documented section in {fixture_id}")
 
+    active_page_rows_by_fixture = {
+        row["fixture_id"]: row
+        for row in coverage_rows
+        if row.get("kind") == "documented_feature_page"
+        and row.get("mapping_status") != "excluded"
+        and row.get("fixture_id")
+    }
+    documentation_examples = [
+        row for row in coverage_rows if row.get("kind") == "documented_python_example_source"
+    ]
+    for example in documentation_examples:
+        example_id = example.get("id")
+        status = example.get("mapping_status")
+        if status == "excluded":
+            reason = example.get("exclusion_reason")
+            _require(
+                isinstance(reason, str) and bool(reason.strip()),
+                f"excluded documentation example {example_id} has no reason",
+            )
+            continue
+
+        _require(
+            status == "supporting_source",
+            f"documentation example {example_id} is neither mapped nor explicitly excluded",
+        )
+        _require(
+            example.get("fixture_id") is None,
+            f"supporting documentation example {example_id} is incorrectly an independent fixture",
+        )
+        mapped_fixture_ids = example.get("mapped_fixture_ids")
+        _require(
+            isinstance(mapped_fixture_ids, list)
+            and bool(mapped_fixture_ids)
+            and all(
+                isinstance(fixture_id, str) and bool(fixture_id)
+                for fixture_id in mapped_fixture_ids
+            )
+            and len(mapped_fixture_ids) == len(set(mapped_fixture_ids)),
+            f"supporting documentation example {example_id} has no unique page fixture references",
+        )
+        page_references = example.get("mapping_evidence", {}).get("mapped_documented_pages")
+        _require(
+            isinstance(page_references, list) and bool(page_references),
+            f"supporting documentation example {example_id} has no page selector evidence",
+        )
+        _require(
+            all(
+                isinstance(reference, dict)
+                and isinstance(reference.get("fixture_id"), str)
+                and bool(reference.get("fixture_id"))
+                for reference in page_references
+            ),
+            f"supporting documentation example {example_id} has malformed page references",
+        )
+        page_references_by_fixture = {
+            reference.get("fixture_id"): reference
+            for reference in page_references
+            if isinstance(reference, dict)
+        }
+        _require(
+            len(page_references_by_fixture) == len(page_references)
+            and set(page_references_by_fixture) == set(mapped_fixture_ids),
+            f"supporting documentation example {example_id} has inconsistent page references",
+        )
+
+        inherited_selectors: set[str] = set()
+        page_selector_evidence_groups: list[list[dict[str, Any]]] = []
+        for fixture_id in mapped_fixture_ids:
+            page_row = active_page_rows_by_fixture.get(fixture_id)
+            _require(
+                page_row is not None,
+                f"supporting documentation example {example_id} references inactive page "
+                f"fixture {fixture_id}",
+            )
+            page_workflows = page_row.get("mapping_evidence", {}).get(
+                "independent_workflow_mappings", []
+            )
+            _require(
+                bool(page_workflows),
+                f"supporting documentation example {example_id} references an unmapped page "
+                f"fixture {fixture_id}",
+            )
+            page_reference = page_references_by_fixture[fixture_id]
+            _require(
+                page_reference.get("source_path") == page_row.get("source_path")
+                and page_reference.get("feature_ids") == page_row.get("feature_ids")
+                and page_reference.get("observation_selectors")
+                == page_row.get("observation_selectors")
+                and page_reference.get("selector_evidence") == page_row.get("selector_evidence"),
+                f"supporting documentation example {example_id} has stale page selectors "
+                f"for {fixture_id}",
+            )
+            page_feature_ids = set(page_row.get("feature_ids", []))
+            page_selector_evidence = page_row.get("selector_evidence")
+            _require(
+                isinstance(page_selector_evidence, list) and bool(page_selector_evidence),
+                f"supporting documentation example {example_id} references page {fixture_id} "
+                "without feature-selector evidence",
+            )
+            _require(
+                all(
+                    isinstance(evidence, dict)
+                    and (
+                        evidence.get("feature_id") is None
+                        or evidence.get("feature_id") in page_feature_ids
+                    )
+                    and isinstance(evidence.get("selectors"), list)
+                    and bool(evidence.get("selectors"))
+                    and all(
+                        isinstance(selector, str) and bool(selector)
+                        for selector in evidence["selectors"]
+                    )
+                    and (
+                        "schema_extension_required" not in evidence
+                        or (
+                            isinstance(evidence["schema_extension_required"], list)
+                            and all(
+                                isinstance(selector, str) and bool(selector)
+                                for selector in evidence["schema_extension_required"]
+                            )
+                        )
+                    )
+                    for evidence in page_selector_evidence
+                ),
+                f"supporting documentation example {example_id} references malformed "
+                f"feature-selector evidence on page {fixture_id}",
+            )
+            evidence_selectors = {
+                selector
+                for evidence in page_selector_evidence
+                for selector in evidence["selectors"]
+            }
+            _require(
+                evidence_selectors == set(page_row.get("observation_selectors", [])),
+                f"page {fixture_id} feature-selector evidence does not match its selectors",
+            )
+            page_design = fixture_by_source.get(page_row.get("id"))
+            _require(
+                page_design is not None
+                and page_design.get("id") == fixture_id
+                and bool(page_design.get("independent_workflow_mappings"))
+                and page_design.get("selector_evidence") == page_selector_evidence
+                and page_design.get("observation_selectors")
+                == page_row.get("observation_selectors"),
+                f"supporting documentation example {example_id} references a page without "
+                "an input design",
+            )
+            inherited_selectors.update(page_row.get("observation_selectors", []))
+            page_selector_evidence_groups.append(page_selector_evidence)
+
+        _require(
+            example.get("observation_selectors") == sorted(inherited_selectors),
+            f"supporting documentation example {example_id} selectors do not inherit "
+            "its page fixtures",
+        )
+        _require(
+            example.get("selector_evidence")
+            == _merge_page_selector_evidence(page_selector_evidence_groups),
+            f"supporting documentation example {example_id} feature-selector evidence does not "
+            "inherit its page fixtures",
+        )
+
     for row in coverage_rows:
         if row.get("kind") in FIXTURE_KINDS and row.get("mapping_status") != "excluded":
             _require(
@@ -919,6 +1106,13 @@ def validate_compatibility_artifacts(
         "api_classifications": dict(sorted(classifications.items())),
         "upstream_test_modules": kinds["upstream_test_module"],
         "documented_feature_pages": kinds["documented_feature_page"],
+        "documentation_python_examples": len(documentation_examples),
+        "documentation_python_examples_grouped_with_page": sum(
+            row.get("mapping_status") == "supporting_source" for row in documentation_examples
+        ),
+        "documentation_python_examples_excluded": sum(
+            row.get("mapping_status") == "excluded" for row in documentation_examples
+        ),
         "fixture_designs": len(fixture_rows),
         "test_case_designs": len(case_ids),
         "selector_definitions": len(selector_specs),

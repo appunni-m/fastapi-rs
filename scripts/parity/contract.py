@@ -15,6 +15,8 @@ ROOT = Path(__file__).resolve().parents[2]
 WORKFLOW_SCHEMA = ROOT / "tests/fixtures/schemas/python-asgi-workflow-v2.schema.json"
 WORKFLOW_SCHEMA_V3 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-v3.schema.json"
 API_WORKFLOW_SCHEMA = ROOT / "tests/fixtures/schemas/python-api-workflow.schema.json"
+API_RESULT_SCHEMA = ROOT / "tests/fixtures/schemas/python-api-workflow-result-v2.schema.json"
+API_COMPARISON_SCHEMA = ROOT / "tests/fixtures/schemas/python-api-comparison-v1.schema.json"
 RESULT_SCHEMA = ROOT / "tests/fixtures/schemas/python-asgi-workflow-result-v2.schema.json"
 RESULT_SCHEMA_V3 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-result-v3.schema.json"
 COMPARISON_SCHEMA = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v2.schema.json"
@@ -22,6 +24,8 @@ COMPARISON_SCHEMA_V3 = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v3.
 WORKFLOW_SCHEMA_ID = "fastapi-rs/python-asgi-workflow@2"
 WORKFLOW_SCHEMA_V3_ID = "fastapi-rs/python-asgi-workflow@3"
 API_WORKFLOW_SCHEMA_ID = "fastapi-rs/python-api-workflow@1"
+API_RESULT_SCHEMA_ID = "fastapi-rs/python-api-workflow-result@2"
+API_COMPARISON_SCHEMA_ID = "fastapi-rs/python-api-comparison@1"
 RESULT_SCHEMA_ID = "fastapi-rs/python-asgi-workflow-result@2"
 RESULT_SCHEMA_V3_ID = "fastapi-rs/python-asgi-workflow-result@3"
 COMPARISON_SCHEMA_ID = "fastapi-rs/python-asgi-comparison@2"
@@ -35,10 +39,12 @@ WORKFLOW_SCHEMAS = {
 RESULT_SCHEMAS = {
     RESULT_SCHEMA_ID: RESULT_SCHEMA,
     RESULT_SCHEMA_V3_ID: RESULT_SCHEMA_V3,
+    API_RESULT_SCHEMA_ID: API_RESULT_SCHEMA,
 }
 COMPARISON_SCHEMAS = {
     COMPARISON_SCHEMA_ID: COMPARISON_SCHEMA,
     COMPARISON_SCHEMA_V3_ID: COMPARISON_SCHEMA_V3,
+    API_COMPARISON_SCHEMA_ID: API_COMPARISON_SCHEMA,
 }
 RESULT_SCHEMA_IDS_BY_WORKFLOW = {
     WORKFLOW_SCHEMA_ID: RESULT_SCHEMA_ID,
@@ -277,6 +283,11 @@ def read_manifest() -> dict[str, Any]:
     api_schema_refs = (
         ("schema_path", "schema_sha256", "direct Python API workflow schema"),
         ("result_schema_path", "result_schema_sha256", "direct Python API result schema"),
+        (
+            "comparison_schema_path",
+            "comparison_schema_sha256",
+            "direct Python API comparison schema",
+        ),
         ("recipe_path", "recipe_sha256", "direct Python API workflow recipe"),
     )
     for path_key, digest_key, label in api_schema_refs:

@@ -6173,6 +6173,30 @@ def selector_evidence(
     return result
 
 
+def merge_selector_evidence(
+    evidence_groups: Sequence[Sequence[dict[str, Any]]],
+) -> list[dict[str, Any]]:
+    """Merge page-level feature/selector links without reassigning selectors."""
+    selectors_by_feature: dict[str | None, set[str]] = defaultdict(set)
+    extensions_by_feature: dict[str | None, set[str]] = defaultdict(set)
+    for evidence_group in evidence_groups:
+        for evidence in evidence_group:
+            feature_id = evidence["feature_id"]
+            selectors_by_feature[feature_id].update(evidence["selectors"])
+            extensions_by_feature[feature_id].update(evidence.get("schema_extension_required", []))
+
+    merged = []
+    for feature_id in sorted(selectors_by_feature, key=lambda value: (value is None, value or "")):
+        evidence = {
+            "feature_id": feature_id,
+            "selectors": sorted(selectors_by_feature[feature_id]),
+        }
+        if extensions_by_feature[feature_id]:
+            evidence["schema_extension_required"] = sorted(extensions_by_feature[feature_id])
+        merged.append(evidence)
+    return merged
+
+
 def selectors_for(features: Sequence[str]) -> list[str]:
     by_id = {feature["id"]: feature for feature in FEATURES}
     return selectors_with_exact_http_body(
@@ -8118,6 +8142,9 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             and item["fixture_id"]
         ]
         mapped_pages = sorted({item["fixture_id"] for item in mapped_page_items})
+        inherited_page_selectors = sorted(
+            {selector for item in mapped_page_items for selector in item["observation_selectors"]}
+        )
         example_exclusion = DOC_EXAMPLE_EXCLUSION_OVERRIDES.get(rel)
         features = (
             []
@@ -8134,6 +8161,20 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                 }
             )
         )
+        example_selectors = (
+            []
+            if example_exclusion
+            else inherited_page_selectors
+            if mapped_pages
+            else selectors_for(features)
+        )
+        example_selector_evidence = (
+            []
+            if example_exclusion
+            else merge_selector_evidence([item["selector_evidence"] for item in mapped_page_items])
+            if mapped_pages
+            else selector_evidence(features, example_selectors)
+        )
         coverage_items.append(
             {
                 "id": item_id,
@@ -8144,8 +8185,8 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                 "feature_ids": features,
                 "fixture_id": None,
                 "mapped_fixture_ids": mapped_pages,
-                "observation_selectors": selectors_for(features),
-                "selector_evidence": selector_evidence(features),
+                "observation_selectors": example_selectors,
+                "selector_evidence": example_selector_evidence,
                 "starlette_rs_planning_areas": starlette_areas_for(features),
                 "exclusion_reason": example_exclusion,
                 "mapping_status": "excluded"
@@ -8167,10 +8208,15 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                             "fixture_id": item["fixture_id"],
                             "feature_ids": item["feature_ids"],
                             "observation_selectors": item["observation_selectors"],
+                            "selector_evidence": item["selector_evidence"],
                         }
                         for item in mapped_page_items
                     ],
-                    "mapping_rule": "source file is grouped with its mapped documentation page; page feature selectors are inherited, and the source is not counted as an independent case",
+                    "mapping_rule": "supporting source inherits selectors from its mapped page fixture; this links the source to page-level observations and does not claim independent per-example behavior coverage"
+                    if mapped_pages and not example_exclusion
+                    else "source is excluded by the recorded exclusion reason"
+                    if example_exclusion
+                    else "source has no active page fixture mapping and requires review",
                 },
             }
         )
@@ -8736,7 +8782,7 @@ def render_markdown(atlas: dict[str, Any]) -> str:
                 + counts["documentation_support_files_excluded"],
             ),
             "",
-            "Python-source exclusions are one debugging/setup example and %d package initializers; the remaining examples are grouped with their mapped documentation pages."
+            "Python-source exclusions are one debugging/setup example and %d package initializers; the remaining examples are grouped with their mapped documentation pages. Inherited selectors identify page-level observations and do not claim that each example's behavior was exercised."
             % counts["documentation_support_files_excluded"],
             "",
             "Review state is separate from coverage completeness. `reviewed_partial` means pinned source evidence and exact indexed workflows, cases, and selectors were reviewed for the linked behavior; it does not claim complete source behavior or parity. Pending counts identify links without that review. The materialized index has %d distinct upstream test modules and %d documentation pages linked to workflows; all %d mapping rows are partial. No source module or documentation page is fully covered by an input workflow."

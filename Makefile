@@ -16,10 +16,11 @@ STARLETTE_RS_SOURCE ?= $(abspath ../starlette-rs)
 SOURCE_RESULT ?=
 TARGET_RESULT ?=
 PARITY_INPUT ?= tests/fixtures/inputs/parity/first-asgi-request.json
+PARITY_API_INPUT ?= tests/fixtures/inputs/parity/encoding.json
 BENCHMARK_WORKLOAD ?= benchmarks/workloads/first-slice-valid-asgi.yaml
 
 .DEFAULT_GOAL := help
-.PHONY: help fmt format clippy build build-rust build-python python-facade-check rust-policy-check compatibility-atlas-update api-contract-update api-contract-check metadata-check dependency-inventory-update dependency-inventory-check parity-inputs parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-target parity-api-runtime parity-validate parity-index-update parity-index-check parity-oracle parity-oracle-standard parity-target parity-compare parity-first-slice benchmark-first-slice verify clean
+.PHONY: help fmt format clippy build build-rust build-python python-facade-check rust-policy-check compatibility-atlas-update api-contract-update api-contract-check metadata-check dependency-inventory-update dependency-inventory-check parity-inputs parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-target parity-api-runtime parity-validate parity-index-update parity-index-check parity-oracle parity-oracle-standard parity-target parity-compare parity-api-validate parity-api-oracle parity-api-target parity-api-compare parity-first-slice benchmark-first-slice verify clean
 
 help: ## Show common development commands
 	@printf '%s\n' \
@@ -50,6 +51,7 @@ help: ## Show common development commands
 	  '  make parity-oracle-standard Run PARITY_INPUT with locked standard extras' \
 	  '  make parity-target   Run PARITY_INPUT against the isolated FastAPI-RS target' \
 	  '  make parity-compare  Compare live source/target result artifacts exactly' \
+	  '  make parity-api-*    Validate, run, and compare direct Python API probes' \
 	  '  make parity-first-slice Run and compare the pinned first HTTP slice end to end' \
 	  '  make benchmark-first-slice Gate and measure the valid direct-ASGI request path' \
 	  '  make verify         Run formatting, lint, static contracts, and wheel build' \
@@ -155,6 +157,19 @@ parity-target: parity-inputs ## Execute PARITY_INPUT against the isolated FastAP
 
 parity-compare: ## Compare live source/target result artifacts exactly
 	$(PYTHON) -m scripts.parity.cli compare --source-result "$(SOURCE_RESULT)" --target-result "$(TARGET_RESULT)"
+
+parity-api-validate: parity-inputs ## Validate a direct public Python API workflow
+	$(PYTHON) -m scripts.parity.cli api-validate --input "$(PARITY_API_INPUT)"
+
+parity-api-oracle: parity-inputs ## Execute a direct public API workflow against FastAPI 0.141.1
+	$(PYTHON) -m scripts.parity.cli api-oracle --input "$(PARITY_API_INPUT)"
+
+parity-api-target: parity-inputs ## Execute a direct public API workflow against FastAPI-RS
+	$(TARGET_PYTHON) scripts/check_target_runtime_boundary.py
+	$(PYTHON) -m scripts.parity.cli api-target --input "$(PARITY_API_INPUT)"
+
+parity-api-compare: ## Compare direct public API source and target result artifacts exactly
+	$(PYTHON) -m scripts.parity.cli api-compare --input "$(PARITY_API_INPUT)" --source-result "$(SOURCE_RESULT)" --target-result "$(TARGET_RESULT)"
 
 parity-first-slice: parity-validate ## Run and exactly compare the pinned first HTTP slice
 	$(PYTHON) scripts/parity/run_first_slice.py \
