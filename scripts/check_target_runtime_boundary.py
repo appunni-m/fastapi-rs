@@ -11,8 +11,12 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 PYTHON_PACKAGE_ROOT = PROJECT_ROOT / "fastapi-rs-py" / "python"
+RUST_BINDING_ROOT = PROJECT_ROOT / "fastapi-rs-py" / "src"
 PROJECT_DEPENDENCY_SECTION = "project"
 PROJECT_OPTIONAL_DEPENDENCY_SECTION = "project.optional-dependencies"
+UPSTREAM_FASTAPI_MODULE_LITERAL = re.compile(
+    r"(?P<quote>['\"])fastapi(?:\.[A-Za-z_]\w*)?(?P=quote)"
+)
 
 
 def _configured_native_module() -> str:
@@ -32,6 +36,32 @@ def _configured_native_module() -> str:
         if module_match:
             return module_match.group(1)
     raise SystemExit("pyproject.toml must configure tool.maturin.module-name")
+
+
+def _configured_python_packages() -> list[str]:
+    """Read the Python packages included in the published wheel."""
+    pyproject = (PROJECT_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    section = None
+    array_value = None
+    for line in pyproject.splitlines():
+        section_match = re.fullmatch(r"\s*\[([^]]+)\]\s*", line)
+        if section_match:
+            section = section_match.group(1)
+            array_value = None
+            continue
+        if section != "tool.maturin":
+            continue
+        package_match = re.match(r"\s*python-packages\s*=\s*(\[.*)$", line)
+        if package_match:
+            array_value = package_match.group(1)
+            if _toml_array_is_complete(array_value):
+                return _toml_strings(array_value)
+            continue
+        if array_value is not None:
+            array_value += "\n" + line
+            if _toml_array_is_complete(array_value):
+                return _toml_strings(array_value)
+    raise SystemExit("pyproject.toml must configure tool.maturin.python-packages")
 
 
 def _toml_array_is_complete(value: str) -> bool:
@@ -241,9 +271,42 @@ def check_python_facade_pass_through() -> None:
         raise SystemExit("\n".join(violations))
 
 
+def check_wheel_package_sources() -> None:
+    """Require each source Python package to be included in the wheel config."""
+    configured_packages = set(_configured_python_packages())
+    source_packages = {
+        ".".join(path.parent.relative_to(PYTHON_PACKAGE_ROOT).parts)
+        for path in PYTHON_PACKAGE_ROOT.rglob("__init__.py")
+    }
+    if source_packages != configured_packages:
+        raise SystemExit(
+            "tool.maturin.python-packages must match Python package sources: "
+            f"configured={sorted(configured_packages)!r}, source={sorted(source_packages)!r}"
+        )
+
+
+def check_rust_binding_import_boundary() -> None:
+    """Reject literal imports of the original FastAPI package from PyO3 bindings."""
+    violations = []
+    rust_files = sorted(RUST_BINDING_ROOT.rglob("*.rs"))
+    for path in rust_files:
+        source = path.read_text(encoding="utf-8")
+        match = UPSTREAM_FASTAPI_MODULE_LITERAL.search(source)
+        if match:
+            line = source.count("\n", 0, match.start()) + 1
+            violations.append(
+                f"{path.relative_to(PROJECT_ROOT)}:{line}: native bindings cannot import "
+                "the original FastAPI package"
+            )
+    if violations:
+        raise SystemExit("\n".join(violations))
+
+
 def main() -> int:
     check_declared_runtime_dependency_boundary()
     check_python_facade_pass_through()
+    check_wheel_package_sources()
+    check_rust_binding_import_boundary()
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--source-only",

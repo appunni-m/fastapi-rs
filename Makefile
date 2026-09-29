@@ -18,13 +18,14 @@ TARGET_RESULT ?=
 PARITY_INPUT ?= tests/fixtures/inputs/parity/first-asgi-request.json
 
 .DEFAULT_GOAL := help
-.PHONY: help fmt format clippy build build-rust build-python python-facade-check compatibility-atlas-update api-contract-update api-contract-check metadata-check parity-inputs parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-target parity-api-runtime parity-validate parity-index-update parity-index-check parity-oracle parity-oracle-standard parity-target parity-compare verify clean
+.PHONY: help fmt format clippy build build-rust build-python python-facade-check rust-policy-check compatibility-atlas-update api-contract-update api-contract-check metadata-check parity-inputs parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-target parity-api-runtime parity-validate parity-index-update parity-index-check parity-oracle parity-oracle-standard parity-target parity-compare verify clean
 
 help: ## Show common development commands
 	@printf '%s\n' \
 	  'FastAPI-RS — Rust-backed FastAPI compatibility project' '' \
 	  '  make fmt            Check Rust formatting and Python lint' \
 	  '  make python-facade-check Enforce import/re-export-only Python runtime modules' \
+	  '  make rust-policy-check Enforce no-unsafe, no-unit-test, and lint-suppression policy' \
 	  '  make format         Apply Rust formatting' \
 	  '  make clippy         Run strict workspace Clippy' \
 	  '  make build          Build the Rust crates and Python wheel' \
@@ -50,7 +51,7 @@ help: ## Show common development commands
 	  '  make clean          Remove Cargo outputs under target/' '' \
 	  'PYTHON defaults to the pinned 3.12 development baseline; override PYTHON, CARGO, or MATURIN as needed.'
 
-fmt: ## Check Rust formatting and Python lint
+fmt: rust-policy-check ## Check Rust formatting and Python lint
 	$(CARGO) fmt --package fastapi-rs --package fastapi-rs-py -- --check
 	$(PYTHON) -m ruff format --check fastapi-rs-py/python scripts tests/fixtures/workloads
 	$(PYTHON) -m ruff check fastapi-rs-py/python scripts tests/fixtures/workloads
@@ -59,11 +60,14 @@ fmt: ## Check Rust formatting and Python lint
 python-facade-check: ## Require imports/re-exports only in the Python runtime package
 	$(PYTHON) scripts/check_target_runtime_boundary.py --source-only
 
+rust-policy-check: ## Enforce no-unsafe, no-unit-test, and lint-suppression policy
+	$(PYTHON) scripts/check_rust_policy.py
+
 format: ## Apply Rust formatting
 	$(CARGO) fmt --package fastapi-rs --package fastapi-rs-py
 	$(PYTHON) -m ruff format fastapi-rs-py/python scripts tests/fixtures/workloads
 
-clippy: ## Run strict workspace Clippy
+clippy: rust-policy-check ## Run strict workspace Clippy
 	$(CARGO) clippy --workspace --all-targets --all-features --locked -- -D warnings
 
 build-rust: ## Build all Rust workspace crates
