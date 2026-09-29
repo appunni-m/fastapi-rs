@@ -34,6 +34,8 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
                     selectors.add("python.attribute_value")
                 elif observation["kind"] == "python_signature":
                     selectors.add("python.signature")
+                elif observation["kind"] == "python_call_outcome":
+                    selectors.add("python.call_outcome")
         return selectors
 
     if workflow_schema == WORKFLOW_SCHEMA_V3_ID:

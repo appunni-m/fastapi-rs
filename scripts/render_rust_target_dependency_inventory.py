@@ -40,11 +40,13 @@ def cargo_metadata(*, offline: bool) -> dict[str, Any]:
     return json.loads(result.stdout)
 
 
-def validate_starlette_rs_revision() -> str:
+def validate_starlette_rs_revision(source_root: Path) -> str:
     """Require the local path dependency to match the reviewed source pin."""
     authority = yaml.safe_load((ROOT / "metadata.yaml").read_text(encoding="utf-8"))
     expected_revision = authority["starlette_rs"]["commit"]
-    source_root = (ROOT.parent / "starlette-rs").resolve()
+    source_root = source_root.resolve()
+    if not source_root.is_dir():
+        raise RuntimeError(f"Starlette-RS source checkout does not exist: {source_root}")
     revision = subprocess.run(
         ["git", "-C", str(source_root), "rev-parse", "HEAD"],
         check=True,
@@ -87,6 +89,21 @@ def validate_starlette_rs_revision() -> str:
             f"the clean pinned revision {expected_revision}\n{changes}"
         )
     return expected_revision
+
+
+def validate_cargo_source(metadata: dict[str, Any], source_root: Path) -> None:
+    """Ensure Cargo resolved the Starlette-RS path passed to this inventory run."""
+    expected_manifest = (source_root.resolve() / "starlette-rs" / "Cargo.toml").resolve()
+    manifests = {
+        Path(package["manifest_path"]).resolve()
+        for package in metadata.get("packages", [])
+        if package.get("name") == "starlette-rs"
+    }
+    if manifests != {expected_manifest}:
+        raise RuntimeError(
+            "Cargo metadata does not resolve the pinned Starlette-RS source argument: "
+            f"expected={expected_manifest}, resolved={sorted(map(str, manifests))}"
+        )
 
 
 def markdown_cell(value: object) -> str:
@@ -224,10 +241,13 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--offline", action="store_true")
     parser.add_argument("--check", action="store_true")
+    parser.add_argument("--starlette-rs-source", type=Path, default=ROOT.parent / "starlette-rs")
     args = parser.parse_args()
     try:
-        revision = validate_starlette_rs_revision()
-        output = render(cargo_metadata(offline=args.offline), revision)
+        revision = validate_starlette_rs_revision(args.starlette_rs_source)
+        metadata = cargo_metadata(offline=args.offline)
+        validate_cargo_source(metadata, args.starlette_rs_source)
+        output = render(metadata, revision)
     except (RuntimeError, json.JSONDecodeError, subprocess.CalledProcessError) as error:
         print(f"dependency inventory failed: {error}", file=sys.stderr)
         return 1

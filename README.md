@@ -91,8 +91,11 @@ builds the PyO3 extension in Cargo release mode and verifies that the Python
 and Rust Starlette-RS dependencies resolve to the same clean pinned checkout.
 Per-run results stay under ignored `parity-results/`.
 
-The initial direct Python API lane covers nine `jsonable_encoder` inputs,
-observing return values and signatures through isolated workers. Run
+The legacy version 1 direct Python API lane covers nine `jsonable_encoder`
+inputs, observing return values and signatures through isolated workers. The
+version 2 encoder atlas wave compares 61 return probes and two callable
+outcomes, including exact raised exception classes/messages and non-finite
+floats retained in a JSON Pointer sidecar. Run
 `make parity-api-oracle`, `make parity-api-target`, then
 `make parity-api-compare SOURCE_RESULT=... TARGET_RESULT=...`; this narrow lane
 does not represent full public API parity.

@@ -123,7 +123,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@2
-    sha256: 47bf218d2b0126ee1fd64ebc7db142706fc274ff493dfaeed43c8c38c0ee3930
+    sha256: 6377057109c3d3459ba4e9995307763c3c8fa9b6849212c3ef4f2d631a64125a
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -152,7 +152,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 55ec7330b7fb4578e9a1218ac90ccc9af2816720155785ea14fd0cc6445c6db1
+    sha256: 0a31698f42cfe9790d3f049c2fe27cf7fd32efdf58717dd481a6e30331bad50b
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 554
@@ -161,10 +161,10 @@ source_artifacts:
   observation_selector_catalog:
     path: tests/fixtures/observation-selectors.json
     schema: fastapi-rs/observation-selector-catalog@1
-    sha256: 8392af31788aaa97db4b277d62c863b649c9db7fb34ff931a40ba093734e7295
+    sha256: a88a0dacacd075a2986e304ce0526a01830589e5e1032df256072bd8255de5a1
     purpose: Exact projection semantics for the atlas and fixture selectors
     counts:
-      selectors: 48
+      selectors: 49
       parameterized_selectors: 1
   runtime_api_surface_core:
     path: tests/fixtures/runtime-api-surface-core.json
@@ -189,7 +189,7 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@1
-    sha256: bbc66c90e0414d69038bec4a378b407f5852d0fdf3539972517d8b9bf34e0467
+    sha256: 2abc4cb54d09572affa738b10842c1166da62e4d4e9b244d056ad0e70ed7a5de
     schema_path: tests/fixtures/schemas/materialized-input-index.schema.json
     schema_sha256: 467200b835dfd99ab16dfbd4ca4507145e070c73aa55d4425fd78e11141c3e86
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
@@ -344,9 +344,24 @@ unresolved:
       - fastapi.jsonable-encoder.custom-encoder.exact-type
       - fastapi.jsonable-encoder.custom-encoder.base-type
     note: >-
-      The direct API lane now runs identity-checked source and target workers and
-      exact comparisons for selected signatures and return values. Its nine
-      encoding cases are still only a narrow slice of the full public API.
+      The version 1 direct API lane runs identity-checked source and target
+      workers and exact comparisons for selected signatures and return values.
+      Version 2 adds callable outcome and non-finite float observations. The
+      existing nine encoding cases remain a narrow slice of the full public API.
+  python_api_workflow_v2:
+    state: versioned-outcome-observation-contract; v1 remains supported
+    schema_id: fastapi-rs/python-api-workflow@2
+    schema_path: tests/fixtures/schemas/python-api-workflow-v2.schema.json
+    schema_sha256: c06cf8df6611db64a36f1c5f3f8857416deda3fc4722bb059827a50807a66037
+    result_schema_id: fastapi-rs/python-api-workflow-result@3
+    result_schema_path: tests/fixtures/schemas/python-api-workflow-result-v3.schema.json
+    result_schema_sha256: f4fec0249680cb5abc4b29a38a7c2bd6e281f824062dfdaf747044a65238fc48
+    comparison_schema_id: fastapi-rs/python-api-comparison@2
+    comparison_schema_path: tests/fixtures/schemas/python-api-comparison-v2.schema.json
+    comparison_schema_sha256: abf84978afdfcc33d548802b26cec427adf76c0a62071f8e6d0a1b825a96b813
+    coverage: >-
+      Adds explicit direct-call return-versus-exception outcomes and a lossless
+      JSON-pointer sidecar for NaN and positive or negative infinity values.
   fixture_backlog_integrity:
     state: source-linked-designs-validated; incremental-materialization-indexed; full-backlog-pending
     source_artifacts: [compatibility_atlas, fixture_backlog, materialized_input_index]
@@ -3693,6 +3708,7 @@ api_surface_contract:
     - python-data-encoding
     observation_selectors:
     - python.attribute_value
+    - python.call_outcome
     - python.signature
     behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:

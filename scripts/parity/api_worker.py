@@ -28,7 +28,14 @@ from scripts.parity.worker import (
 )
 
 WORKFLOW_SCHEMA_ID = "fastapi-rs/python-api-workflow@1"
+WORKFLOW_SCHEMA_V2_ID = "fastapi-rs/python-api-workflow@2"
+WORKFLOW_SCHEMA_IDS = frozenset({WORKFLOW_SCHEMA_ID, WORKFLOW_SCHEMA_V2_ID})
 RESULT_SCHEMA_ID = "fastapi-rs/python-api-workflow-result@2"
+RESULT_SCHEMA_V3_ID = "fastapi-rs/python-api-workflow-result@3"
+RESULT_SCHEMA_IDS_BY_WORKFLOW = {
+    WORKFLOW_SCHEMA_ID: RESULT_SCHEMA_ID,
+    WORKFLOW_SCHEMA_V2_ID: RESULT_SCHEMA_V3_ID,
+}
 MANIFEST_PATH = ROOT / "tests/fixtures/manifest.yaml"
 ATLAS_SCHEMA_ID = "fastapi-rs/compatibility-atlas@2"
 INDEX_SCHEMA_ID = "fastapi-rs/materialized-input-index@1"
@@ -67,6 +74,61 @@ def _json_safe(value: Any) -> Any:
     except (TypeError, ValueError, OverflowError, RecursionError) as exc:
         raise ValueError(
             f"public callable returned a value that is not strict JSON: {exc}"
+        ) from exc
+
+
+class _NonFiniteFloat:
+    """Temporary marker used only while projecting non-finite JSON numbers."""
+
+    __slots__ = ("value",)
+
+    def __init__(self, value: str) -> None:
+        self.value = value
+
+
+def _json_safe_with_nonfinite(value: Any) -> tuple[Any, list[dict[str, str]]]:
+    """Project JSON data while retaining non-finite float paths as sidecar metadata."""
+    labels = {
+        "NaN": "nan",
+        "Infinity": "positive_infinity",
+        "-Infinity": "negative_infinity",
+    }
+    try:
+        encoded = json.dumps(
+            value,
+            ensure_ascii=False,
+            allow_nan=True,
+            separators=(",", ":"),
+        )
+        decoded = json.loads(
+            encoded,
+            parse_constant=lambda token: _NonFiniteFloat(labels[token]),
+        )
+        sidecar: list[dict[str, str]] = []
+
+        def replace_nonfinite(item: Any, path: str) -> Any:
+            if isinstance(item, _NonFiniteFloat):
+                sidecar.append({"path": path, "value": item.value})
+                return None
+            if isinstance(item, list):
+                return [
+                    replace_nonfinite(child, f"{path}/{index}") for index, child in enumerate(item)
+                ]
+            if isinstance(item, dict):
+                return {
+                    key: replace_nonfinite(
+                        child, f"{path}/{key.replace('~', '~0').replace('/', '~1')}"
+                    )
+                    for key, child in item.items()
+                }
+            return item
+
+        projected = replace_nonfinite(decoded, "")
+        sidecar.sort(key=lambda record: record["path"])
+        return projected, sidecar
+    except (KeyError, TypeError, ValueError, OverflowError, RecursionError) as exc:
+        raise ValueError(
+            f"public callable returned a value that is not JSON-compatible: {exc}"
         ) from exc
 
 
@@ -250,6 +312,8 @@ async def _run_probe(
     bundles: Mapping[str, Any],
     fastapi_root: Path,
     supported_symbols: frozenset[str],
+    *,
+    allow_nonfinite_floats: bool = False,
 ) -> dict[str, Any]:
     try:
         function = _resolve_public_callable(
@@ -261,20 +325,42 @@ async def _run_probe(
         has_return_value_observation = any(
             observation["kind"] == "python_return_value" for observation in probe["observations"]
         )
+        has_call_outcome_observation = any(
+            observation["kind"] == "python_call_outcome" for observation in probe["observations"]
+        )
         signature = _signature_value(function) if has_signature_observation else None
         result = None
+        call_outcome = None
         if has_return_value_observation:
             args, kwargs = _get_arguments(bundles, probe["argument_bundle"])
             result = function(*args, **kwargs)
             if inspect.isawaitable(result):
                 result = await result
+        elif has_call_outcome_observation:
+            args, kwargs = _get_arguments(bundles, probe["argument_bundle"])
+            try:
+                result = function(*args, **kwargs)
+                if inspect.isawaitable(result):
+                    result = await result
+            except Exception as exc:
+                call_outcome = {"status": "raised", "error": _error_record(exc)}
+            else:
+                call_outcome = {"status": "returned"}
 
         observations = []
         for index, observation in enumerate(probe["observations"]):
             if observation["kind"] == "python_signature":
                 values = {"signature": signature}
             elif observation["kind"] == "python_return_value":
-                values = {"value": _json_safe(result)}
+                if allow_nonfinite_floats:
+                    projected, nonfinite_floats = _json_safe_with_nonfinite(result)
+                    values = {"value": projected}
+                    if nonfinite_floats:
+                        values["nonfinite_floats"] = nonfinite_floats
+                else:
+                    values = {"value": _json_safe(result)}
+            elif observation["kind"] == "python_call_outcome":
+                values = {"outcome": call_outcome}
             else:
                 raise WorkerError(f"unsupported direct API observation: {observation['kind']}")
             observations.append({"index": index, "kind": observation["kind"], "values": values})
@@ -295,11 +381,21 @@ async def _run_case(
     factory: Any,
     fastapi_root: Path,
     supported_symbols: frozenset[str],
+    *,
+    allow_nonfinite_floats: bool = False,
 ) -> dict[str, Any]:
     bundles = await _make_bundles(factory)
     probes = []
     for probe in case["probes"]:
-        probes.append(await _run_probe(probe, bundles, fastapi_root, supported_symbols))
+        probes.append(
+            await _run_probe(
+                probe,
+                bundles,
+                fastapi_root,
+                supported_symbols,
+                allow_nonfinite_floats=allow_nonfinite_floats,
+            )
+        )
     errors = [probe["error"] for probe in probes if probe["status"] == "product_error"]
     result: dict[str, Any] = {
         "case_id": case["case_id"],
@@ -316,10 +412,20 @@ async def _run_cases(
     factory: Any,
     fastapi_root: Path,
     supported_symbols: frozenset[str],
+    *,
+    allow_nonfinite_floats: bool = False,
 ) -> list[dict[str, Any]]:
     cases = []
     for case in workflow["cases"]:
-        cases.append(await _run_case(case, factory, fastapi_root, supported_symbols))
+        cases.append(
+            await _run_case(
+                case,
+                factory,
+                fastapi_root,
+                supported_symbols,
+                allow_nonfinite_floats=allow_nonfinite_floats,
+            )
+        )
     return cases
 
 
@@ -550,7 +656,7 @@ def run_oracle(
     if _sha256_file(workflow_path) != input_sha256:
         raise WorkerError("workflow input changed after host-side validation")
     workflow = json.loads(workflow_path.read_text(encoding="utf-8"))
-    if not isinstance(workflow, dict) or workflow.get("schema") != WORKFLOW_SCHEMA_ID:
+    if not isinstance(workflow, dict) or workflow.get("schema") not in WORKFLOW_SCHEMA_IDS:
         raise WorkerError("workflow schema identity changed after host-side validation")
 
     fastapi_root = fastapi_root.resolve()
@@ -576,12 +682,20 @@ def run_oracle(
     )
     identity = _oracle_identity(fastapi_root, starlette_root, profile)
     factory = _load_workload(workload_path, input_sha256, workflow["workload"]["factory"])
-    cases = asyncio.run(_run_cases(workflow, factory, fastapi_root, supported_symbols))
+    cases = asyncio.run(
+        _run_cases(
+            workflow,
+            factory,
+            fastapi_root,
+            supported_symbols,
+            allow_nonfinite_floats=workflow["schema"] == WORKFLOW_SCHEMA_V2_ID,
+        )
+    )
     _validate_result_consistency(cases)
     finished = dt.datetime.now(dt.UTC)
     manifest_path = MANIFEST_PATH
     result = {
-        "schema": RESULT_SCHEMA_ID,
+        "schema": RESULT_SCHEMA_IDS_BY_WORKFLOW[workflow["schema"]],
         "run_id": str(uuid.uuid4()),
         "started_at": started.isoformat(),
         "finished_at": finished.isoformat(),

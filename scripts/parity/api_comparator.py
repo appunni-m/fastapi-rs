@@ -7,7 +7,12 @@ import uuid
 from typing import Any
 
 from scripts.parity.comparator import _validate_identity_pair
-from scripts.parity.contract import API_COMPARISON_SCHEMA_ID, ContractError
+from scripts.parity.contract import (
+    API_COMPARISON_SCHEMA_IDS_BY_WORKFLOW,
+    API_RESULT_SCHEMA_IDS_BY_WORKFLOW,
+    API_WORKFLOW_SCHEMA_IDS,
+    ContractError,
+)
 
 
 def _diff(probe_id: str, path: str, source: Any, target: Any) -> dict[str, Any]:
@@ -51,12 +56,14 @@ def compare_api_workflow_results(
     command: list[str],
 ) -> dict[str, Any]:
     """Compare same-index API observations and retain exact source/target values."""
-    if workflow.get("schema") != "fastapi-rs/python-api-workflow@1":
-        raise ContractError("direct API comparison requires the version 1 API workflow")
-    if source.get("schema") != "fastapi-rs/python-api-workflow-result@2":
-        raise ContractError("direct API source result has an unsupported schema")
-    if target.get("schema") != "fastapi-rs/python-api-workflow-result@2":
-        raise ContractError("direct API target result has an unsupported schema")
+    workflow_schema_id = workflow.get("schema")
+    if workflow_schema_id not in API_WORKFLOW_SCHEMA_IDS:
+        raise ContractError("direct API comparison requires a supported API workflow")
+    expected_result_schema = API_RESULT_SCHEMA_IDS_BY_WORKFLOW[workflow_schema_id]
+    if source.get("schema") != expected_result_schema:
+        raise ContractError("direct API source result schema differs from its workflow version")
+    if target.get("schema") != expected_result_schema:
+        raise ContractError("direct API target result schema differs from its workflow version")
     if source.get("product") != "oracle" or target.get("product") != "target":
         raise ContractError("direct API comparison needs oracle and target results")
     for label, result in (("oracle", source), ("target", target)):
@@ -195,7 +202,7 @@ def compare_api_workflow_results(
 
     failed = sum(case["outcome"] == "fail" for case in cases)
     return {
-        "schema": API_COMPARISON_SCHEMA_ID,
+        "schema": API_COMPARISON_SCHEMA_IDS_BY_WORKFLOW[workflow_schema_id],
         "run_id": str(uuid.uuid4()),
         "created_at": dt.datetime.now(dt.UTC).isoformat(),
         "scope": "direct-python-api",

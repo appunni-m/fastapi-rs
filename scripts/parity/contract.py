@@ -15,8 +15,11 @@ ROOT = Path(__file__).resolve().parents[2]
 WORKFLOW_SCHEMA = ROOT / "tests/fixtures/schemas/python-asgi-workflow-v2.schema.json"
 WORKFLOW_SCHEMA_V3 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-v3.schema.json"
 API_WORKFLOW_SCHEMA = ROOT / "tests/fixtures/schemas/python-api-workflow.schema.json"
+API_WORKFLOW_SCHEMA_V2 = ROOT / "tests/fixtures/schemas/python-api-workflow-v2.schema.json"
 API_RESULT_SCHEMA = ROOT / "tests/fixtures/schemas/python-api-workflow-result-v2.schema.json"
+API_RESULT_SCHEMA_V3 = ROOT / "tests/fixtures/schemas/python-api-workflow-result-v3.schema.json"
 API_COMPARISON_SCHEMA = ROOT / "tests/fixtures/schemas/python-api-comparison-v1.schema.json"
+API_COMPARISON_SCHEMA_V2 = ROOT / "tests/fixtures/schemas/python-api-comparison-v2.schema.json"
 RESULT_SCHEMA = ROOT / "tests/fixtures/schemas/python-asgi-workflow-result-v2.schema.json"
 RESULT_SCHEMA_V3 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-result-v3.schema.json"
 COMPARISON_SCHEMA = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v2.schema.json"
@@ -24,8 +27,28 @@ COMPARISON_SCHEMA_V3 = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v3.
 WORKFLOW_SCHEMA_ID = "fastapi-rs/python-asgi-workflow@2"
 WORKFLOW_SCHEMA_V3_ID = "fastapi-rs/python-asgi-workflow@3"
 API_WORKFLOW_SCHEMA_ID = "fastapi-rs/python-api-workflow@1"
+API_WORKFLOW_SCHEMA_V2_ID = "fastapi-rs/python-api-workflow@2"
 API_RESULT_SCHEMA_ID = "fastapi-rs/python-api-workflow-result@2"
+API_RESULT_SCHEMA_V3_ID = "fastapi-rs/python-api-workflow-result@3"
 API_COMPARISON_SCHEMA_ID = "fastapi-rs/python-api-comparison@1"
+API_COMPARISON_SCHEMA_V2_ID = "fastapi-rs/python-api-comparison@2"
+API_WORKFLOW_SCHEMA_IDS = frozenset({API_WORKFLOW_SCHEMA_ID, API_WORKFLOW_SCHEMA_V2_ID})
+API_RESULT_SCHEMA_IDS_BY_WORKFLOW = {
+    API_WORKFLOW_SCHEMA_ID: API_RESULT_SCHEMA_ID,
+    API_WORKFLOW_SCHEMA_V2_ID: API_RESULT_SCHEMA_V3_ID,
+}
+API_RESULT_SCHEMAS_BY_ID = {
+    API_RESULT_SCHEMA_ID: API_RESULT_SCHEMA,
+    API_RESULT_SCHEMA_V3_ID: API_RESULT_SCHEMA_V3,
+}
+API_COMPARISON_SCHEMA_IDS_BY_WORKFLOW = {
+    API_WORKFLOW_SCHEMA_ID: API_COMPARISON_SCHEMA_ID,
+    API_WORKFLOW_SCHEMA_V2_ID: API_COMPARISON_SCHEMA_V2_ID,
+}
+API_COMPARISON_SCHEMAS_BY_ID = {
+    API_COMPARISON_SCHEMA_ID: API_COMPARISON_SCHEMA,
+    API_COMPARISON_SCHEMA_V2_ID: API_COMPARISON_SCHEMA_V2,
+}
 RESULT_SCHEMA_ID = "fastapi-rs/python-asgi-workflow-result@2"
 RESULT_SCHEMA_V3_ID = "fastapi-rs/python-asgi-workflow-result@3"
 COMPARISON_SCHEMA_ID = "fastapi-rs/python-asgi-comparison@2"
@@ -35,24 +58,29 @@ WORKFLOW_SCHEMAS = {
     WORKFLOW_SCHEMA_ID: WORKFLOW_SCHEMA,
     WORKFLOW_SCHEMA_V3_ID: WORKFLOW_SCHEMA_V3,
     API_WORKFLOW_SCHEMA_ID: API_WORKFLOW_SCHEMA,
+    API_WORKFLOW_SCHEMA_V2_ID: API_WORKFLOW_SCHEMA_V2,
 }
 RESULT_SCHEMAS = {
     RESULT_SCHEMA_ID: RESULT_SCHEMA,
     RESULT_SCHEMA_V3_ID: RESULT_SCHEMA_V3,
     API_RESULT_SCHEMA_ID: API_RESULT_SCHEMA,
+    API_RESULT_SCHEMA_V3_ID: API_RESULT_SCHEMA_V3,
 }
 COMPARISON_SCHEMAS = {
     COMPARISON_SCHEMA_ID: COMPARISON_SCHEMA,
     COMPARISON_SCHEMA_V3_ID: COMPARISON_SCHEMA_V3,
     API_COMPARISON_SCHEMA_ID: API_COMPARISON_SCHEMA,
+    API_COMPARISON_SCHEMA_V2_ID: API_COMPARISON_SCHEMA_V2,
 }
 RESULT_SCHEMA_IDS_BY_WORKFLOW = {
     WORKFLOW_SCHEMA_ID: RESULT_SCHEMA_ID,
     WORKFLOW_SCHEMA_V3_ID: RESULT_SCHEMA_V3_ID,
+    **API_RESULT_SCHEMA_IDS_BY_WORKFLOW,
 }
 COMPARISON_SCHEMA_IDS_BY_WORKFLOW = {
     WORKFLOW_SCHEMA_ID: COMPARISON_SCHEMA_ID,
     WORKFLOW_SCHEMA_V3_ID: COMPARISON_SCHEMA_V3_ID,
+    **API_COMPARISON_SCHEMA_IDS_BY_WORKFLOW,
 }
 
 
@@ -296,6 +324,30 @@ def read_manifest() -> dict[str, Any]:
             api_workflow_contract.get(digest_key),
             label,
         )
+    api_workflow_v2_contract = unresolved.get("python_api_workflow_v2")
+    if not isinstance(api_workflow_v2_contract, dict):
+        raise ContractError("manifest direct Python API v2 workflow contract is missing")
+    if (
+        api_workflow_v2_contract.get("schema_id") != API_WORKFLOW_SCHEMA_V2_ID
+        or api_workflow_v2_contract.get("result_schema_id") != API_RESULT_SCHEMA_V3_ID
+        or api_workflow_v2_contract.get("comparison_schema_id") != API_COMPARISON_SCHEMA_V2_ID
+    ):
+        raise ContractError("manifest direct Python API v2 schema identities are unsupported")
+    api_v2_schema_refs = (
+        ("schema_path", "schema_sha256", "direct Python API v2 workflow schema"),
+        ("result_schema_path", "result_schema_sha256", "direct Python API v3 result schema"),
+        (
+            "comparison_schema_path",
+            "comparison_schema_sha256",
+            "direct Python API v2 comparison schema",
+        ),
+    )
+    for path_key, digest_key, label in api_v2_schema_refs:
+        _verify_digest_ref(
+            api_workflow_v2_contract.get(path_key),
+            api_workflow_v2_contract.get(digest_key),
+            label,
+        )
     asgi_workflow_contract = (
         unresolved.get("python_asgi_workflow") if isinstance(unresolved, dict) else None
     )
@@ -448,7 +500,7 @@ def load_workflow(
                             _validate_json_pointer(
                                 pointer, f"{case['case_id']}:{action['action_id']}"
                             )
-        elif workflow_schema_id == API_WORKFLOW_SCHEMA_ID:
+        elif workflow_schema_id in API_WORKFLOW_SCHEMA_IDS:
             _validate_unique_ids(case["probes"], "probe_id", f"probes in {case['case_id']}")
 
         if source_root is not None:
@@ -463,7 +515,7 @@ def load_workflow(
                     ) from exc
                 if not source_path.is_file():
                     raise ContractError(f"source evidence does not exist: {evidence['path']}")
-                if workflow_schema_id == API_WORKFLOW_SCHEMA_ID:
+                if workflow_schema_id in API_WORKFLOW_SCHEMA_IDS:
                     if sha256_file(source_path) != evidence["sha256"]:
                         raise ContractError(
                             f"direct API source evidence digest is stale: {evidence['path']}"

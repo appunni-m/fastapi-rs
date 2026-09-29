@@ -101,7 +101,7 @@ Optional-feature comments and the console entry point are in the pinned [pyproje
 
 ## Build and development dependency graphs
 
-The build backend is separate from the resolved runtime/dev lock. FastAPI declares PDM Backend (pdm-backend, pdm.backend) in build-system.requires without a version constraint; it is not an entry in this tag's uv lock. The backend builds wheel/sdist and reads FastAPI's dynamic version. Its exact build version and isolated build requirements are not identity-pinned here.
+The build backend is separate from the resolved runtime/dev lock. FastAPI declares PDM Backend (pdm-backend, pdm.backend) in build-system.requires without a version constraint; it is not an entry in this tag's uv lock, so the exact backend used for the tagged upstream build remains unknown. [An audit-only lock](audit-locks/fastapi-0.141.1-pdm-backend.yaml) selects PDM Backend 2.4.9 with artifact hashes and the recursive closure for CPython 3.12.13. That release is Python-only and MIT-licensed; its sole declared dependency is conditional on Python <3.10, outside FastAPI's supported range. The audit profile does not modify source-oracle or target-runtime identities and does not pin the external build frontend/toolchain.
 
 The upstream groups below are development/tooling dependencies, not FastAPI imports. Versions are exact lock resolutions. Each linked release's PyPI JSON includes the license metadata used here.
 

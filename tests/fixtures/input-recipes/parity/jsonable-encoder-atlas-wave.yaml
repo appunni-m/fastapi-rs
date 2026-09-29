@@ -1,4 +1,4 @@
-schema: fastapi-rs/python-api-workflow@1
+schema: fastapi-rs/python-api-workflow@2
 workload:
   file: tests/fixtures/workloads/jsonable_encoder_atlas_wave.py
   factory: create_argument_bundles
@@ -11,7 +11,7 @@ cases:
       module: fastapi.encoders
       attribute: jsonable_encoder
     argument_bundle: dict.default
-    observations:
+    observations: &encoder-return-observation
     - kind: python_return_value
       selector: value
       comparison: exact
@@ -294,6 +294,24 @@ cases:
     - kind: python_return_value
       selector: value
       comparison: exact
+  - probe_id: decimal-nan
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: decimal.nan
+    observations: *encoder-return-observation
+  - probe_id: decimal-positive-infinity
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: decimal.positive-infinity
+    observations: *encoder-return-observation
+  - probe_id: decimal-negative-infinity
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: decimal.negative-infinity
+    observations: *encoder-return-observation
   - probe_id: deque-child-model
     public_callable:
       module: fastapi.encoders
@@ -339,6 +357,132 @@ cases:
     - kind: python_return_value
       selector: value
       comparison: exact
+  - probe_id: dict-empty-include-list
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: dict.empty-include-list
+    observations: *encoder-return-observation
+  - probe_id: dict-empty-exclude-list
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: dict.empty-exclude-list
+    observations: *encoder-return-observation
+  - probe_id: custom-class-include
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: object.custom-class-include
+    observations: *encoder-return-observation
+  - probe_id: custom-class-exclude
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: object.custom-class-exclude
+    observations: *encoder-return-observation
+  - probe_id: custom-class-empty-include
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: object.custom-class-empty-include
+    observations: *encoder-return-observation
+  - probe_id: custom-class-empty-exclude
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: object.custom-class-empty-exclude
+    observations: *encoder-return-observation
+  - probe_id: dictable-object-include
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: object.dictable-include
+    observations: *encoder-return-observation
+  - probe_id: dictable-object-exclude
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: object.dictable-exclude
+    observations: *encoder-return-observation
+  - probe_id: dictable-object-empty-include
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: object.dictable-empty-include
+    observations: *encoder-return-observation
+  - probe_id: dictable-object-empty-exclude
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: object.dictable-empty-exclude
+    observations: *encoder-return-observation
+  - probe_id: dataclass-include
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: object.dataclass-include
+    observations: *encoder-return-observation
+  - probe_id: dataclass-exclude
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: object.dataclass-exclude
+    observations: *encoder-return-observation
+  - probe_id: dataclass-empty-include
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: object.dataclass-empty-include
+    observations: *encoder-return-observation
+  - probe_id: dataclass-empty-exclude
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: object.dataclass-empty-exclude
+    observations: *encoder-return-observation
+  - probe_id: model-include-set
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: model.include-set
+    observations: *encoder-return-observation
+  - probe_id: model-exclude-set
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: model.exclude-set
+    observations: *encoder-return-observation
+  - probe_id: model-empty-include-set
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: model.empty-include-set
+    observations: *encoder-return-observation
+  - probe_id: model-empty-exclude-set
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: model.empty-exclude-set
+    observations: *encoder-return-observation
+  - probe_id: model-subclass-custom-serializer
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: model.custom-serializer-subclass
+    observations: *encoder-return-observation
+  - probe_id: nested-model-dict-unfiltered
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: nested.model-dict-unfiltered
+    observations: *encoder-return-observation
+  - probe_id: custom-encoder-default
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: custom-encoder.default
+    observations: *encoder-return-observation
   source_evidence:
   - path: tests/test_jsonable_encoder.py
     kind: upstream_test
@@ -351,8 +495,8 @@ cases:
       attribute: jsonable_encoder
     argument_bundle: object.unsupported
     observations:
-    - kind: python_return_value
-      selector: value
+    - kind: python_call_outcome
+      selector: outcome
       comparison: exact
   source_evidence:
   - path: tests/test_jsonable_encoder.py
@@ -366,8 +510,8 @@ cases:
       attribute: jsonable_encoder
     argument_bundle: model.pydantic-v1
     observations:
-    - kind: python_return_value
-      selector: value
+    - kind: python_call_outcome
+      selector: outcome
       comparison: exact
   source_evidence:
   - path: tests/test_jsonable_encoder.py

@@ -29,8 +29,7 @@ from scripts.parity.worker import (
     _validate_workload_path,
 )
 
-WORKFLOW_SCHEMA_ID = api_worker.WORKFLOW_SCHEMA_ID
-RESULT_SCHEMA_ID = "fastapi-rs/python-api-workflow-result@2"
+WORKFLOW_SCHEMA_IDS = api_worker.WORKFLOW_SCHEMA_IDS
 MANIFEST_PATH = ROOT / "tests/fixtures/manifest.yaml"
 TARGET_IMPORT_ROOT = TARGET_PACKAGE_ROOT.parent
 
@@ -88,8 +87,8 @@ def run_target(
     if _sha256_file(workflow_path) != input_sha256:
         raise WorkerError("workflow input digest changed after host-side validation")
     workflow = _read_workflow(workflow_path)
-    if workflow.get("schema") != WORKFLOW_SCHEMA_ID:
-        raise WorkerError(f"target API worker accepts only {WORKFLOW_SCHEMA_ID} workflows")
+    if workflow.get("schema") not in WORKFLOW_SCHEMA_IDS:
+        raise WorkerError("target API worker received an unsupported direct API workflow schema")
 
     workload_reference = workflow.get("workload")
     if not isinstance(workload_reference, dict) or not isinstance(
@@ -130,7 +129,13 @@ def run_target(
     # The worker's source allowlist remains anchored to FastAPI, while callable
     # imports are constrained to the target's public `fastapi` package root.
     cases = asyncio.run(
-        api_worker._run_cases(workflow, factory, TARGET_IMPORT_ROOT, supported_symbols)
+        api_worker._run_cases(
+            workflow,
+            factory,
+            TARGET_IMPORT_ROOT,
+            supported_symbols,
+            allow_nonfinite_floats=workflow["schema"] == api_worker.WORKFLOW_SCHEMA_V2_ID,
+        )
     )
     api_worker._validate_result_consistency(cases)
     _verify_case_probe_order(workflow, cases)
@@ -144,7 +149,7 @@ def run_target(
 
     finished = dt.datetime.now(dt.UTC)
     return {
-        "schema": RESULT_SCHEMA_ID,
+        "schema": api_worker.RESULT_SCHEMA_IDS_BY_WORKFLOW[workflow["schema"]],
         "run_id": str(uuid.uuid4()),
         "started_at": started.isoformat(),
         "finished_at": finished.isoformat(),

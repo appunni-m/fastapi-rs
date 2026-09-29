@@ -19,11 +19,11 @@ from scripts.parity.api_contract import (
 )
 from scripts.parity.comparator import SHARED_ORACLE_PACKAGES, compare_workflow_results
 from scripts.parity.contract import (
-    API_COMPARISON_SCHEMA,
-    API_COMPARISON_SCHEMA_ID,
-    API_RESULT_SCHEMA,
-    API_RESULT_SCHEMA_ID,
-    API_WORKFLOW_SCHEMA_ID,
+    API_COMPARISON_SCHEMA_IDS_BY_WORKFLOW,
+    API_COMPARISON_SCHEMAS_BY_ID,
+    API_RESULT_SCHEMA_IDS_BY_WORKFLOW,
+    API_RESULT_SCHEMAS_BY_ID,
+    API_WORKFLOW_SCHEMA_IDS,
     COMPARISON_SCHEMA_IDS_BY_WORKFLOW,
     COMPARISON_SCHEMAS,
     RESULT_SCHEMAS,
@@ -445,8 +445,8 @@ def api_validate_command(args: argparse.Namespace) -> dict[str, Any]:
         args.input,
         source_root=args.fastapi_source.resolve(),
     )
-    if workflow["schema"] != API_WORKFLOW_SCHEMA_ID:
-        raise ContractError(f"api-validate requires {API_WORKFLOW_SCHEMA_ID}")
+    if workflow["schema"] not in API_WORKFLOW_SCHEMA_IDS:
+        raise ContractError("api-validate requires a supported direct Python API workflow")
     manifest = read_manifest()
     materialized_inputs = _validate_indexed_api_workflow(
         manifest,
@@ -471,10 +471,13 @@ def api_validate_command(args: argparse.Namespace) -> dict[str, Any]:
     }
 
 
-def _validate_api_result(result: dict[str, Any], input_digest: str) -> None:
-    if result.get("schema") != API_RESULT_SCHEMA_ID:
-        raise ContractError(f"direct API result requires {API_RESULT_SCHEMA_ID}")
-    schema = read_json(API_RESULT_SCHEMA)
+def _validate_api_result(
+    result: dict[str, Any], input_digest: str, workflow_schema_id: str
+) -> None:
+    result_schema_id = API_RESULT_SCHEMA_IDS_BY_WORKFLOW.get(workflow_schema_id)
+    if result_schema_id is None or result.get("schema") != result_schema_id:
+        raise ContractError("direct API result schema differs from its workflow version")
+    schema = read_json(API_RESULT_SCHEMAS_BY_ID[result_schema_id])
     validator = Draft202012Validator(schema, format_checker=FormatChecker())
     errors = sorted(validator.iter_errors(result), key=lambda error: error.message)
     if errors:
@@ -538,8 +541,8 @@ def api_oracle_command(args: argparse.Namespace) -> dict[str, Any]:
         args.input,
         source_root=args.fastapi_source.resolve(),
     )
-    if workflow["schema"] != API_WORKFLOW_SCHEMA_ID:
-        raise ContractError(f"api-oracle requires {API_WORKFLOW_SCHEMA_ID}")
+    if workflow["schema"] not in API_WORKFLOW_SCHEMA_IDS:
+        raise ContractError("api-oracle requires a supported direct Python API workflow")
     python = args.python.absolute()
     if not python.is_file():
         raise ContractError(f"oracle Python interpreter does not exist: {python}")
@@ -603,7 +606,7 @@ def api_oracle_command(args: argparse.Namespace) -> dict[str, Any]:
     if not isinstance(result, dict):
         raise ContractError("direct API oracle result must be a JSON object")
     result["command"]["argv"] = command
-    _validate_api_result(result, input_digest)
+    _validate_api_result(result, input_digest, workflow["schema"])
     _validate_api_result_bindings(workflow, result)
     artifact_path = _write_immutable_result(result, args.output_dir)
     return {
@@ -624,8 +627,8 @@ def api_target_command(args: argparse.Namespace) -> dict[str, Any]:
         args.input,
         source_root=args.fastapi_source.resolve(),
     )
-    if workflow["schema"] != API_WORKFLOW_SCHEMA_ID:
-        raise ContractError(f"api-target requires {API_WORKFLOW_SCHEMA_ID}")
+    if workflow["schema"] not in API_WORKFLOW_SCHEMA_IDS:
+        raise ContractError("api-target requires a supported direct Python API workflow")
     python = args.python.absolute()
     if not python.is_file():
         raise ContractError(
@@ -704,7 +707,7 @@ def api_target_command(args: argparse.Namespace) -> dict[str, Any]:
     if not isinstance(result, dict) or not isinstance(result.get("command"), dict):
         raise ContractError("direct API target result is malformed")
     result["command"]["argv"] = command
-    _validate_api_result(result, input_digest)
+    _validate_api_result(result, input_digest, workflow["schema"])
     _validate_api_result_bindings(workflow, result)
     if result["product"] != "target":
         raise ContractError("direct API target worker emitted a non-target result")
@@ -731,16 +734,15 @@ def api_target_command(args: argparse.Namespace) -> dict[str, Any]:
 def api_compare_command(args: argparse.Namespace) -> dict[str, Any]:
     source, source_path, source_digest = _load_result_artifact(args.source_result, "oracle")
     target, target_path, target_digest = _load_result_artifact(args.target_result, "target")
-    if source.get("schema") != API_RESULT_SCHEMA_ID or target.get("schema") != API_RESULT_SCHEMA_ID:
-        raise ContractError(
-            "api-compare requires direct Python API source and target result artifacts"
-        )
     workflow, workflow_path, input_digest, workload_path = load_workflow(
         args.input,
         source_root=args.fastapi_source.resolve(),
     )
-    if workflow["schema"] != API_WORKFLOW_SCHEMA_ID:
-        raise ContractError(f"api-compare requires {API_WORKFLOW_SCHEMA_ID}")
+    if workflow["schema"] not in API_WORKFLOW_SCHEMA_IDS:
+        raise ContractError("api-compare requires a supported direct Python API workflow")
+    result_schema_id = API_RESULT_SCHEMA_IDS_BY_WORKFLOW[workflow["schema"]]
+    if source.get("schema") != result_schema_id or target.get("schema") != result_schema_id:
+        raise ContractError("direct API source and target result schemas differ from the workflow")
     _validate_api_result_bindings(workflow, source)
     _validate_api_result_bindings(workflow, target)
     manifest_path = ROOT / "tests/fixtures/manifest.yaml"
@@ -782,9 +784,10 @@ def api_compare_command(args: argparse.Namespace) -> dict[str, Any]:
         },
         command=command,
     )
-    if comparison.get("schema") != API_COMPARISON_SCHEMA_ID:
+    comparison_schema_id = API_COMPARISON_SCHEMA_IDS_BY_WORKFLOW[workflow["schema"]]
+    if comparison.get("schema") != comparison_schema_id:
         raise ContractError("direct API comparator emitted an unsupported result schema")
-    schema = read_json(API_COMPARISON_SCHEMA)
+    schema = read_json(API_COMPARISON_SCHEMAS_BY_ID[comparison_schema_id])
     validator = Draft202012Validator(schema, format_checker=FormatChecker())
     errors = sorted(validator.iter_errors(comparison), key=lambda error: error.message)
     if errors:

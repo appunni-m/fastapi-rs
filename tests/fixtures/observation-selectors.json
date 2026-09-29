@@ -213,7 +213,13 @@
     },
     {
       "id": "python.attribute_value",
-      "projection": "Explicitly selected public attribute value using a typed JSON-safe representation.",
+      "projection": "Direct public callable return value as typed JSON-safe data; workflow v1 requires strict JSON, while workflow v2 preserves non-finite float leaves with an optional RFC 6901 pointer/value sidecar and null placeholders.",
+      "comparison": "exact",
+      "workflow_support": "supported"
+    },
+    {
+      "id": "python.call_outcome",
+      "projection": "Whether a direct public callable returned or raised; a raised outcome includes the fully qualified exception class and exact message.",
       "comparison": "exact",
       "workflow_support": "supported"
     },

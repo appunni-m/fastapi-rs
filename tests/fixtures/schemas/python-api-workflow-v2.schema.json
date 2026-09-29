@@ -1,0 +1,156 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fastapi-rs.dev/schemas/python-api-workflow/2",
+  "title": "FastAPI-RS direct Python API workflow input",
+  "description": "Input-only workflow for calling a pinned FastAPI public Python callable directly and observing JSON-safe values, its signature, or its return-versus-exception outcome.",
+  "type": "object",
+  "required": ["schema", "workload", "cases"],
+  "properties": {
+    "schema": {"const": "fastapi-rs/python-api-workflow@2"},
+    "workload": {"$ref": "#/$defs/workload"},
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/case"}
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "relativePythonFile": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.?(?:/|$))[A-Za-z0-9._/-]+\\.py$"
+    },
+    "workload": {
+      "type": "object",
+      "required": ["file", "factory", "instantiate_per_case"],
+      "properties": {
+        "file": {"$ref": "#/$defs/relativePythonFile"},
+        "factory": {"type": "string", "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"},
+        "instantiate_per_case": {"const": true}
+      },
+      "additionalProperties": false
+    },
+    "sourceEvidence": {
+      "type": "object",
+      "required": ["path", "kind", "sha256"],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.?(?:/|$))[A-Za-z0-9._/-]+$"
+        },
+        "kind": {"enum": ["upstream_test", "upstream_documentation"]},
+        "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+      },
+      "additionalProperties": false
+    },
+    "publicCallable": {
+      "type": "object",
+      "required": ["module", "attribute"],
+      "properties": {
+        "module": {
+          "type": "string",
+          "pattern": "^fastapi(?:\\.[A-Za-z_][A-Za-z0-9_]*)*$"
+        },
+        "attribute": {"type": "string", "pattern": "^[A-Za-z_][A-Za-z0-9_]*(?:\\.[A-Za-z_][A-Za-z0-9_]*)*$"}
+      },
+      "additionalProperties": false
+    },
+    "argumentBundle": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:[._-][a-z0-9]+)*$"
+    },
+    "returnValueObservation": {
+      "type": "object",
+      "required": ["kind", "selector", "comparison"],
+      "properties": {
+        "kind": {"const": "python_return_value"},
+        "selector": {"const": "value"},
+        "comparison": {"const": "exact"}
+      },
+      "additionalProperties": false
+    },
+    "signatureObservation": {
+      "type": "object",
+      "required": ["kind", "selector", "comparison"],
+      "properties": {
+        "kind": {"const": "python_signature"},
+        "selector": {"const": "signature"},
+        "comparison": {"const": "exact"}
+      },
+      "additionalProperties": false
+    },
+    "callOutcomeObservation": {
+      "type": "object",
+      "required": ["kind", "selector", "comparison"],
+      "properties": {
+        "kind": {"const": "python_call_outcome"},
+        "selector": {"const": "outcome"},
+        "comparison": {"const": "exact"}
+      },
+      "additionalProperties": false
+    },
+    "observation": {
+      "oneOf": [
+        {"$ref": "#/$defs/returnValueObservation"},
+        {"$ref": "#/$defs/signatureObservation"},
+        {"$ref": "#/$defs/callOutcomeObservation"}
+      ]
+    },
+    "probe": {
+      "type": "object",
+      "required": ["probe_id", "public_callable", "argument_bundle", "observations"],
+      "properties": {
+        "probe_id": {"type": "string", "pattern": "^[a-z][a-z0-9-]*$"},
+        "public_callable": {"$ref": "#/$defs/publicCallable"},
+        "argument_bundle": {"$ref": "#/$defs/argumentBundle"},
+        "observations": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/observation"}
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "observations": {
+                "contains": {
+                  "properties": {"kind": {"const": "python_call_outcome"}},
+                  "required": ["kind"]
+                }
+              }
+            },
+            "required": ["observations"]
+          },
+          "then": {"properties": {"observations": {"maxItems": 1}}}
+        }
+      ],
+      "additionalProperties": false
+    },
+    "case": {
+      "type": "object",
+      "required": ["case_id", "probes", "source_evidence"],
+      "properties": {
+        "case_id": {
+          "type": "string",
+          "pattern": "^fastapi(?:\\.[a-z0-9][a-z0-9-]*){2,}$"
+        },
+        "probes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/probe"}
+        },
+        "source_evidence": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/sourceEvidence"}
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

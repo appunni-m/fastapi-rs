@@ -84,6 +84,10 @@ class CustomDateModel(BaseModel):
         return value.replace(microsecond=0).isoformat()
 
 
+class CustomDateModelChild(CustomDateModel):
+    """Subtype with inherited custom serialization for regression input."""
+
+
 class SafeDateTime(datetime):
     """Datetime subtype for custom-encoder matching inputs."""
 
@@ -130,6 +134,9 @@ def create_argument_bundles() -> dict[str, dict[str, object]]:
     nested = {"label": "Juniper", "keeper": {"handle": "Ari"}}
     defaults = ModelWithDefaults(required="fixed", preferred="fixed")
     custom_date: DatePayload = {"moment": SafeDateTime(2024, 2, 3, 4, 5, 6)}
+    pet = Pet(keeper=Person(handle="Bela"), label="Saffron")
+    dictable_pet = DictablePet(keeper=DictablePerson(handle="Cato"), label="Indigo")
+    record = InventoryRecord(label="Fennel", count=23)
 
     class CustomStatus(Enum):
         OPEN = "OPEN"
@@ -144,6 +151,8 @@ def create_argument_bundles() -> dict[str, dict[str, object]]:
         "dict.empty-exclude": {"args": [nested], "kwargs": {"exclude": set()}},
         "dict.include-list": {"args": [nested], "kwargs": {"include": ["label"]}},
         "dict.exclude-list": {"args": [nested], "kwargs": {"exclude": ["keeper"]}},
+        "dict.empty-include-list": {"args": [nested], "kwargs": {"include": []}},
+        "dict.empty-exclude-list": {"args": [nested], "kwargs": {"exclude": []}},
         "list.include-generator": {
             "args": [[nested]],
             "kwargs": {"include": (key for key in ("label",))},
@@ -156,19 +165,25 @@ def create_argument_bundles() -> dict[str, dict[str, object]]:
             "args": [{"_sa_state": "stored", "label": "Juniper"}],
             "kwargs": {"sqlalchemy_safe": 0},
         },
-        "object.custom-class": {
-            "args": [Pet(keeper=Person(handle="Bela"), label="Saffron")],
-            "kwargs": {},
-        },
-        "object.dictable": {
-            "args": [DictablePet(keeper=DictablePerson(handle="Cato"), label="Indigo")],
-            "kwargs": {},
-        },
+        "object.custom-class": {"args": [pet], "kwargs": {}},
+        "object.custom-class-include": {"args": [pet], "kwargs": {"include": {"label"}}},
+        "object.custom-class-exclude": {"args": [pet], "kwargs": {"exclude": {"keeper"}}},
+        "object.custom-class-empty-include": {"args": [pet], "kwargs": {"include": set()}},
+        "object.custom-class-empty-exclude": {"args": [pet], "kwargs": {"exclude": set()}},
+        "object.dictable": {"args": [dictable_pet], "kwargs": {}},
+        "object.dictable-include": {"args": [dictable_pet], "kwargs": {"include": {"label"}}},
+        "object.dictable-exclude": {"args": [dictable_pet], "kwargs": {"exclude": {"keeper"}}},
+        "object.dictable-empty-include": {"args": [dictable_pet], "kwargs": {"include": set()}},
+        "object.dictable-empty-exclude": {"args": [dictable_pet], "kwargs": {"exclude": set()}},
         "dict.items-override": {
             "args": [ItemsOverrideDict(label="stored")],
             "kwargs": {},
         },
-        "object.dataclass": {"args": [InventoryRecord(label="Fennel", count=23)], "kwargs": {}},
+        "object.dataclass": {"args": [record], "kwargs": {}},
+        "object.dataclass-include": {"args": [record], "kwargs": {"include": {"label"}}},
+        "object.dataclass-exclude": {"args": [record], "kwargs": {"exclude": {"count"}}},
+        "object.dataclass-empty-include": {"args": [record], "kwargs": {"include": set()}},
+        "object.dataclass-empty-exclude": {"args": [record], "kwargs": {"exclude": set()}},
         "object.unsupported": {"args": [Unserializable()], "kwargs": {}},
         "model.pydantic-v1": {
             "args": [PydanticV1Model(name="Juniper")],
@@ -182,9 +197,17 @@ def create_argument_bundles() -> dict[str, dict[str, object]]:
             "args": [CustomDateModel(moment=datetime(2024, 3, 4, 5, 6, 7, 123456))],
             "kwargs": {},
         },
+        "model.custom-serializer-subclass": {
+            "args": [CustomDateModelChild(moment=datetime(2024, 3, 4, 5, 6, 7, 123456))],
+            "kwargs": {},
+        },
         "model.enum-config": {"args": [ConfiguredModel(access=AccessLevel.steward)], "kwargs": {}},
         "model.alias": {"args": [AliasedModel(CallSign="North")], "kwargs": {}},
         "model.defaults": {"args": [defaults], "kwargs": {}},
+        "model.include-set": {"args": [defaults], "kwargs": {"include": {"preferred"}}},
+        "model.exclude-set": {"args": [defaults], "kwargs": {"exclude": {"fallback"}}},
+        "model.empty-include-set": {"args": [defaults], "kwargs": {"include": set()}},
+        "model.empty-exclude-set": {"args": [defaults], "kwargs": {"exclude": set()}},
         "model.exclude-unset": {"args": [defaults], "kwargs": {"exclude_unset": True}},
         "model.exclude-defaults": {"args": [defaults], "kwargs": {"exclude_defaults": True}},
         "model.combined-filter": {
@@ -193,6 +216,7 @@ def create_argument_bundles() -> dict[str, dict[str, object]]:
         },
         "nested.model-list": {"args": [[defaults]], "kwargs": {"exclude_defaults": True}},
         "nested.model-dict": {"args": [{"entry": defaults}], "kwargs": {"exclude_defaults": True}},
+        "nested.model-dict-unfiltered": {"args": [{"entry": defaults}], "kwargs": {}},
         "nested.model-dict-list": {
             "args": [{"entry": [defaults]}],
             "kwargs": {"exclude_defaults": True},
@@ -205,6 +229,7 @@ def create_argument_bundles() -> dict[str, dict[str, object]]:
             "args": [custom_date],
             "kwargs": {"custom_encoder": {datetime: lambda value: value.strftime("%H:%M:%S")}},
         },
+        "custom-encoder.default": {"args": [custom_date], "kwargs": {}},
         "enum.custom-encoder": {
             "args": [CustomStatus.OPEN],
             "kwargs": {"custom_encoder": {CustomStatus: lambda value: value.value.lower()}},
@@ -221,6 +246,15 @@ def create_argument_bundles() -> dict[str, dict[str, object]]:
         "path.value": {"args": [{"location": PurePath("/orchid", "seed")}], "kwargs": {}},
         "decimal.float": {"args": [{"amount": Decimal("3.75")}], "kwargs": {}},
         "decimal.integer": {"args": [{"amount": Decimal("8")}], "kwargs": {}},
+        "decimal.nan": {"args": [{"amount": Decimal("NaN")}], "kwargs": {}},
+        "decimal.positive-infinity": {
+            "args": [{"amount": Decimal("Infinity")}],
+            "kwargs": {},
+        },
+        "decimal.negative-infinity": {
+            "args": [{"amount": Decimal("-Infinity")}],
+            "kwargs": {},
+        },
         "nested.deque-models": {"args": [deque([ChildModel(tag="larch")])], "kwargs": {}},
         "undefined.value": {"args": [{"amount": Undefined}], "kwargs": {}},
         "color.core": {"args": [{"shade": Color("blue")}], "kwargs": {}},

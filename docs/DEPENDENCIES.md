@@ -79,7 +79,7 @@ These are declared extras, not default FastAPI runtime requirements. Versions be
 
 ## Build and contributor groups
 
-FastAPI's Python package is built with unpinned isolated build requirement `pdm-backend` (`pdm.backend`, MIT); its version is read dynamically from `fastapi/__init__.py`. This is not in the application runtime graph. FastAPI is not itself built as a Rust extension.
+FastAPI's tagged source declares unversioned isolated build requirement `pdm-backend` (`pdm.backend`); its dynamic version comes from `fastapi/__init__.py`. The upstream declaration and `uv.lock` do not identify the historical backend version used for the tagged release. For reproducible dependency auditing, [the audit-only build lock](audit-locks/fastapi-0.141.1-pdm-backend.yaml) records PDM Backend 2.4.9, selected on 2026-09-29, with exact artifact hashes. Its wheel is pure Python and MIT-licensed. For FastAPI's supported Python `>=3.10`, the locked backend has no active transitive dependencies; `importlib-metadata>=3.6` applies only below Python 3.10. This profile does not change the upstream oracle lock or the FastAPI-RS target runtime, and it does not pin the external build frontend/toolchain. FastAPI itself is not built as a Rust extension.
 
 The following are resolved package sets from `uv.lock`; package groups include the nested groups named by `pyproject.toml`:
 

@@ -1,0 +1,59 @@
+schema: fastapi-rs/audit-only-build-lock@1
+
+# FastAPI 0.141.1 leaves its build backend unbounded. This profile fixes one
+# reproducible backend distribution for dependency auditing; it does not claim
+# which version upstream used to build the tagged release.
+source:
+  repository: https://github.com/fastapi/fastapi
+  tag: 0.141.1
+  commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
+  build_system_file: pyproject.toml
+  requires: [pdm-backend]
+  build_backend: pdm.backend
+  project_requires_python: ">=3.10"
+  version_source: fastapi/__init__.py
+  upstream_lock: uv.lock
+  upstream_lock_contains_backend: false
+
+profile:
+  id: fastapi-0.141.1-pdm-backend-audit-cpython-3.12.13
+  selected_on: 2026-09-29
+  selection_reason: latest non-yanked PyPI release observed on this date; explicit audit pin because upstream does not constrain it
+  python: {implementation: CPython, version: 3.12.13}
+  resolution: audit-only-explicit-selection
+  upstream_build_version: unresolved-unpinned
+  target_runtime: false
+  build_frontend: external-to-build-system-requires-and-not-locked-here
+  selected_artifact: wheel
+  closure_distribution_count: 1
+
+packages:
+  - name: pdm-backend
+    version: 2.4.9
+    role: build-only-pep517-backend
+    purpose: Builds FastAPI wheel and source distribution; reads PEP 621 metadata and the configured version file.
+    implementation: Python; universal py3-none-any wheel, no native component indicated.
+    license: MIT
+    requires_python: ">=3.9"
+    requires_dist:
+      - name: importlib-metadata
+        requirement: importlib-metadata>=3.6
+        marker: python_version < "3.10"
+        active_in_profile: false
+        reason: FastAPI's pinned source requires Python >=3.10 and this profile uses Python 3.12.13.
+    active_transitive_dependencies: []
+    artifacts:
+      wheel:
+        filename: pdm_backend-2.4.9-py3-none-any.whl
+        url: https://files.pythonhosted.org/packages/55/30/c8bd9fab1f3811462451e4a41a36d2e85b361560416ec874131611cc7982/pdm_backend-2.4.9-py3-none-any.whl
+        sha256: 8d1064751dadb0c40b1026b46826a448d85c8228a564985c62fb53d4aba538a1
+      source_distribution:
+        filename: pdm_backend-2.4.9.tar.gz
+        url: https://files.pythonhosted.org/packages/f1/b2/73898a92113f532fe9cecaae97f070a12ec4c786d66af377a6f81d38e208/pdm_backend-2.4.9.tar.gz
+        sha256: c41a852ccbf4b567b033db9b2ae78660d7a4ea49307719959ab88a01f0aabb2e
+    evidence:
+      upstream_declaration: https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L1-L12
+      version_source_configuration: https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L189-L191
+      backend_version_metadata: https://pypi.org/pypi/pdm-backend/2.4.9/json
+      backend_documentation: https://backend.pdm-project.org/
+      backend_license_source: https://github.com/pdm-project/pdm-backend/blob/2.4.9/LICENSE
