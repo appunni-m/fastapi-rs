@@ -291,4 +291,28 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
             }
         ],
     },
+    "docs_src/metadata/tutorial001_py310.py": {
+        "rationale": (
+            "The selected OpenAPI pointers observe the pinned example's exact non-empty "
+            "summary, description, terms_of_service, contact, and license_info values. The "
+            "mapping is limited to those five /info fields; it does not claim empty or omitted "
+            "value handling, openapi_external_docs, route behavior, model serialization, or other "
+            "constructor options."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/metadata/tutorial001_py310.py",
+                "start_line": 3,
+                "end_line": 33,
+                "role": "documented description and app-level OpenAPI metadata",
+            }
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/metadata-tutorial001-upstream.yaml",
+                "case_ids": ["fastapi.docs.metadata.tutorial001.openapi-info-fields"],
+                "observation_selectors": ["openapi.document"],
+            }
+        ],
+    },
 }

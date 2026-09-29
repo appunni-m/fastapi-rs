@@ -2070,13 +2070,14 @@
     {
       "id": "metadata-tutorial001-upstream",
       "input_path": "tests/fixtures/inputs/parity/metadata-tutorial001-upstream.json",
-      "input_sha256": "7b2c70bdcfbd6acd0a46d097e60541382846c0d9ffdc5b7f7e832bf907db15eb",
+      "input_sha256": "ea72ee9de809e1f05351ebd8a5a16b83dc3f5d8279543c7a1cd9a508066fe993",
       "recipe_path": "tests/fixtures/input-recipes/parity/metadata-tutorial001-upstream.yaml",
-      "recipe_sha256": "30670852d14b927e8c713143554e8b927adec02a25d9fcb531414d6263ae7c78",
+      "recipe_sha256": "385c1b6f564ce58af4b75084930cf61337eeddc19e36183cd7a6caff81ebfacc",
       "workload_path": "tests/fixtures/workloads/metadata_tutorial001_upstream.py",
       "workload_sha256": "a9243d32a555e902cfe8b30410f62c2a38726d7f5a6f335a7d336b1966d1c77e",
       "case_ids": [
-        "fastapi.test.test-tutorial-test-metadata-test-tutorial001.test-items"
+        "fastapi.test.test-tutorial-test-metadata-test-tutorial001.test-items",
+        "fastapi.docs.metadata.tutorial001.openapi-info-fields"
       ]
     },
     {
@@ -4132,6 +4133,18 @@
         "fastapi.query-required-optional-integer.test-query-list.empty",
         "fastapi.query-required-optional-integer.test-query-list-default.repeated",
         "fastapi.query-required-optional-integer.test-query-list-default.empty"
+      ]
+    },
+    {
+      "id": "query-string-length-bounds",
+      "input_path": "tests/fixtures/inputs/parity/query-string-length-bounds.json",
+      "input_sha256": "efe9956323ca7a0e8a55be07181c116b9512bed3312f7bf329fb8e1799b4f4b9",
+      "recipe_path": "tests/fixtures/input-recipes/parity/query-string-length-bounds.yaml",
+      "recipe_sha256": "7536d04e2cd9d275a336645574c5b2fdcc3aa98db11030ec3a84fd02b9101cbb",
+      "workload_path": "tests/fixtures/workloads/query_string_length_bounds.py",
+      "workload_sha256": "17a2289e78cc082464b35e1d885702008b9f2c601837324b942320e490d0b06f",
+      "case_ids": [
+        "fastapi.query.string-length.tutorial003-scalar-boundaries"
       ]
     },
     {
@@ -11856,6 +11869,32 @@
       ]
     },
     {
+      "source_item_id": "documented-example:docs_src/metadata/tutorial001_py310.py",
+      "fixture_id": "fastapi.docs-example.metadata-tutorial001-py310",
+      "workflow_id": "metadata-tutorial001-upstream",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.docs.metadata.tutorial001.openapi-info-fields"
+      ],
+      "observation_selectors": [
+        "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/metadata.md",
+      "fixture_id": "fastapi.docs.tutorial-metadata",
+      "workflow_id": "metadata-tutorial001-upstream",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.docs.metadata.tutorial001.openapi-info-fields"
+      ],
+      "observation_selectors": [
+        "openapi.document"
+      ]
+    },
+    {
       "source_item_id": "upstream-test:tests/test_tutorial/test_metadata/test_tutorial001.py",
       "fixture_id": "fastapi.test.test-tutorial-test-metadata-test-tutorial001",
       "workflow_id": "metadata-tutorial001-upstream",
@@ -15779,6 +15818,22 @@
       "observation_selectors": [
         "http.body.bytes",
         "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_query_params_str_validations/test_tutorial003.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-query-params-str-validations-test-tutorial003",
+      "workflow_id": "query-string-length-bounds",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.query.string-length.tutorial003-scalar-boundaries"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status",
+        "openapi.document",
+        "openapi.paths"
       ]
     },
     {
