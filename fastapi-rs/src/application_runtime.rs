@@ -190,6 +190,7 @@ pub(crate) struct PyFastApi {
 pub(crate) struct PyApiRouter {
     inner: Py<PyFastApi>,
     prefix: String,
+    tags: Vec<String>,
 }
 
 #[pymethods]
@@ -618,17 +619,19 @@ impl PyFastApi {
         )
     }
 
-    #[pyo3(signature = (router, *, prefix = ""))]
+    #[pyo3(signature = (router, *, prefix = "", tags = None))]
     fn include_router(
         &mut self,
         py: Python<'_>,
         router: Py<PyApiRouter>,
         prefix: &str,
+        tags: Option<Vec<String>>,
     ) -> PyResult<()> {
         let router = router.bind(py).borrow();
         let prefix = combined_router_prefix(prefix, &router.prefix)?;
+        let tags = combined_router_tags(tags.as_deref(), &router.tags);
         let source = router.inner.bind(py).borrow();
-        merge_router_routes(py, self, &source, &prefix)
+        merge_router_routes(py, self, &source, &prefix, &tags)
     }
 
     fn openapi(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
@@ -809,8 +812,8 @@ impl PyFastApi {
 #[pymethods]
 impl PyApiRouter {
     #[new]
-    #[pyo3(signature = (*, prefix = ""))]
-    fn new(py: Python<'_>, prefix: &str) -> PyResult<Self> {
+    #[pyo3(signature = (*, prefix = "", tags = None))]
+    fn new(py: Python<'_>, prefix: &str, tags: Option<Vec<String>>) -> PyResult<Self> {
         validate_router_prefix(prefix)?;
         let inner = Py::new(
             py,
@@ -830,6 +833,7 @@ impl PyApiRouter {
         Ok(Self {
             inner,
             prefix: prefix.to_owned(),
+            tags: tags.unwrap_or_default(),
         })
     }
 
@@ -838,12 +842,13 @@ impl PyApiRouter {
         &self.prefix
     }
 
-    #[pyo3(signature = (router, *, prefix = ""))]
+    #[pyo3(signature = (router, *, prefix = "", tags = None))]
     fn include_router(
         &self,
         py: Python<'_>,
         router: Py<PyApiRouter>,
         prefix: &str,
+        tags: Option<Vec<String>>,
     ) -> PyResult<()> {
         let router = router.bind(py).borrow();
         if self.inner.as_ptr() == router.inner.as_ptr() {
@@ -852,9 +857,10 @@ impl PyApiRouter {
             ));
         }
         let prefix = combined_router_prefix(prefix, &router.prefix)?;
+        let tags = combined_router_tags(tags.as_deref(), &router.tags);
         let source = router.inner.bind(py).borrow();
         let mut destination = self.inner.bind(py).borrow_mut();
-        merge_router_routes(py, &mut destination, &source, &prefix)
+        merge_router_routes(py, &mut destination, &source, &prefix, &tags)
     }
 
     fn __getattr__(&self, py: Python<'_>, name: &str) -> PyResult<Py<PyAny>> {
@@ -893,11 +899,32 @@ fn combined_router_prefix(include_prefix: &str, router_prefix: &str) -> PyResult
     Ok(format!("{include_prefix}{router_prefix}"))
 }
 
+fn combined_router_tags(include_tags: Option<&[String]>, router_tags: &[String]) -> Vec<String> {
+    let mut tags = include_tags.unwrap_or_default().to_vec();
+    tags.extend_from_slice(router_tags);
+    tags
+}
+
+fn combined_route_tags(
+    inherited_tags: &[String],
+    route_tags: Option<&[String]>,
+) -> Option<Vec<String>> {
+    if inherited_tags.is_empty() && route_tags.is_none() {
+        return None;
+    }
+    let mut tags = inherited_tags.to_vec();
+    if let Some(route_tags) = route_tags {
+        tags.extend_from_slice(route_tags);
+    }
+    Some(tags)
+}
+
 fn merge_router_routes(
     py: Python<'_>,
     app: &mut PyFastApi,
     source: &PyFastApi,
     prefix: &str,
+    inherited_tags: &[String],
 ) -> PyResult<()> {
     for source_route in &source.routes {
         let path = format!("{prefix}{}", source_route.path);
@@ -920,7 +947,7 @@ fn merge_router_routes(
             response_description: source_route.response_description.clone(),
             operation_id: source_route.operation_id.clone(),
             deprecated: source_route.deprecated,
-            tags: source_route.tags.clone(),
+            tags: combined_route_tags(inherited_tags, source_route.tags.as_deref()),
             status_code: source_route.status_code,
             include_in_schema: source_route.include_in_schema,
             endpoint: source_route.endpoint.clone_ref(py),

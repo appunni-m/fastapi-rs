@@ -5140,6 +5140,18 @@
       ]
     },
     {
+      "id": "router-tag-inheritance-upstream",
+      "input_path": "tests/fixtures/inputs/parity/router-tag-inheritance-upstream.json",
+      "input_sha256": "18be957b2e0cfd1a6785ae8f31386b6b5977e9907d06fa6a282c77e131d94435",
+      "recipe_path": "tests/fixtures/input-recipes/parity/router-tag-inheritance-upstream.yaml",
+      "recipe_sha256": "30f3678b11be543e90a6c04f94b3eb717601312c2722d2f250cca9e566637230",
+      "workload_path": "tests/fixtures/workloads/router_tag_inheritance_upstream.py",
+      "workload_sha256": "6d2f68129f4c64656239f1e6534d1d4ae8ac8d99dafb83643a5f7b612be828d7",
+      "case_ids": [
+        "fastapi.test.test-router-include-context.test-router-tag-inheritance-openapi-subset"
+      ]
+    },
+    {
       "id": "routing-surface",
       "input_path": "tests/fixtures/inputs/parity/routing-surface.json",
       "input_sha256": "9dd6591f848a713802cb0d1d77768778cb53fa2fb95a437a50a5c10292f50a73",
@@ -19115,6 +19127,39 @@
         "http.body.bytes",
         "http.headers.ordered",
         "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/bigger-applications.md",
+      "fixture_id": "fastapi.docs.tutorial-bigger-applications",
+      "workflow_id": "router-tag-inheritance-upstream",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.test.test-router-include-context.test-router-tag-inheritance-openapi-subset"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status",
+        "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_router_include_context.py",
+      "fixture_id": "fastapi.test.test-router-include-context",
+      "workflow_id": "router-tag-inheritance-upstream",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.test.test-router-include-context.test-router-tag-inheritance-openapi-subset"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status",
+        "openapi.document",
+        "openapi.paths"
       ]
     },
     {

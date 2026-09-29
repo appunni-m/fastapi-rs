@@ -504,16 +504,17 @@ reviewed_api_contract_overlay:
         - {path: docs_src/bigger_applications/app_an_py310/main.py}
         - {path: tests/test_router_include_context.py, symbol: test_router_and_include_prefix_path_params_reach_endpoint_and_openapi}
         - {path: tests/test_router_include_context.py, symbol: test_repeated_deep_inclusions_handle_all_concrete_paths}
+        - {path: tests/test_router_include_context.py, symbol: test_router_include_context_matches_flattened_include_metadata}
       feature_ids: [app-routing]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
       supported_slice: >-
         Partial native router: default and non-empty path prefixes, GET route
-        decorators, and nested inclusion with repeated prefixes are covered by
-        router-composition-upstream and router-prefix-and-nested-composition-upstream.
-        Router tags,
-        router-level dependencies, responses, callbacks, lifespan, WebSockets,
-        and the other APIRouter constructor or inclusion options remain outside
-        this slice.
+        decorators, nested inclusion with repeated prefixes, and ordered string
+        tag inheritance are covered by the router-composition, router-prefix-
+        and-nested-composition, and router-tag-inheritance workflows. Router-
+        level dependencies, responses, callbacks, lifespan, WebSockets, enum
+        tags, and other constructor or inclusion options remain outside this
+        slice.
     fastapi.applications.FastAPI.include_router:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::include_router
       source_evidence:
@@ -521,6 +522,8 @@ reviewed_api_contract_overlay:
         - {path: fastapi/routing.py, symbol: include_router}
         - {path: tests/test_router_include_context.py, symbol: test_router_and_include_prefix_path_params_reach_endpoint_and_openapi}
         - {path: tests/test_router_include_context.py, symbol: test_repeated_deep_inclusions_handle_all_concrete_paths}
+        - {path: tests/test_router_include_context.py, symbol: test_router_include_context_matches_flattened_include_metadata}
+        - {path: tests/test_router_include_context.py, symbol: test_live_route_addition_uses_include_metadata_for_runtime_and_openapi}
         - {path: tests/test_tutorial/test_bigger_applications/test_main.py, symbol: test_users_token_jessica}
         - {path: tests/test_tutorial/test_bigger_applications/test_main.py, symbol: test_users_with_no_token}
         - {path: tests/test_tutorial/test_bigger_applications/test_main.py, symbol: test_users_foo_token_jessica}
@@ -533,8 +536,9 @@ reviewed_api_contract_overlay:
         Includes routes registered on APIRouter, combines route, nested-router,
         and inclusion prefixes, and preserves endpoint dependency plans. The
         reviewed fixtures cover path parameters, repeated nested inclusions,
-        and the users router's scalar query dependency. Tags, inclusion-level
-        dependencies, responses, callbacks,
+        the users router's scalar query dependency, and ordered string tag
+        inheritance across app, parent-router, include, child-router, and route
+        scopes. Inclusion-level dependencies, responses, callbacks,
         deprecation, schema policy, custom response classes, and ID policies
         remain outside this slice.
     fastapi.routing.APIRouter.include_router:
@@ -543,24 +547,28 @@ reviewed_api_contract_overlay:
         - {path: fastapi/routing.py, symbol: include_router}
         - {path: fastapi/routing.py, symbol: APIRouter}
         - {path: tests/test_router_include_context.py, symbol: test_repeated_deep_inclusions_handle_all_concrete_paths}
+        - {path: tests/test_router_include_context.py, symbol: test_router_include_context_matches_flattened_include_metadata}
       feature_ids: [app-routing]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
       supported_slice: >-
-        Nested route sets can be included repeatedly with distinct prefixes;
-        the reviewed input observes four concrete routes after two nested
-        inclusions and two app-level inclusions. Router-level options remain
-        outside this slice.
+        Nested route sets can be included repeatedly with distinct prefixes and
+        string tags. The reviewed inputs observe four concrete routes after two
+        nested inclusions and ordered tags across five composition levels.
+        Other router-level options remain outside this slice.
     fastapi.routing.APIRouter.__init__:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::new
       source_evidence:
         - {path: fastapi/routing.py, symbol: APIRouter}
         - {path: tests/test_router_include_context.py, symbol: test_router_and_include_prefix_path_params_reach_endpoint_and_openapi}
+        - {path: tests/test_router_include_context.py, symbol: test_router_include_context_matches_flattened_include_metadata}
       feature_ids: [app-routing]
       supported_slice: >-
         The native constructor accepts the default or a keyword-only prefix.
         A non-empty `/tenants/{tenant_id}` prefix combines with an app-level
         `/{version}` prefix and delivers all three path parameters to the
-        endpoint in router-prefix-and-nested-composition-upstream.
+        endpoint in router-prefix-and-nested-composition-upstream. It also
+        accepts a non-empty list of string tags, as sampled by
+        router-tag-inheritance-upstream.
     fastapi.routing.APIRouter.get:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::__getattr__
       source_evidence:
@@ -568,13 +576,15 @@ reviewed_api_contract_overlay:
         - {path: fastapi/routing.py, symbol: get}
         - {path: tests/test_tutorial/test_bigger_applications/test_main.py, symbol: test_users_token_jessica}
         - {path: tests/test_router_include_context.py, symbol: test_router_and_include_prefix_path_params_reach_endpoint_and_openapi}
+        - {path: tests/test_router_include_context.py, symbol: test_router_include_context_matches_flattened_include_metadata}
         - {path: docs_src/bigger_applications/app_an_py310/routers/users.py, symbol: read_users}
       feature_ids: [app-routing, request-validation]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
       supported_slice: >-
         Registers a GET endpoint on a router for inclusion, including the
-        sampled scalar query dependency, path parameter behavior, and route
-        parameters contributed by router and app inclusion prefixes.
+        sampled scalar query dependency, path parameters contributed by router
+        and app prefixes, and route-level string tags combined with inherited
+        tags in router-tag-inheritance-upstream.
     fastapi.routing.APIRouter.post:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::__getattr__
       source_evidence:
