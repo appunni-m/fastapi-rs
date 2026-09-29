@@ -1,6 +1,8 @@
 //! FastAPI-owned operation registration layered over Starlette-RS routing.
 
-use starlette_rs::{DetailedRouteMatch, QueryParams, RequestHeaders, RouteError, RouteTable};
+use starlette_rs::{
+    Cookies, DetailedRouteMatch, QueryParams, RequestHeaders, RouteError, RouteTable,
+};
 
 /// The source location FastAPI uses to obtain one endpoint argument.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -11,6 +13,8 @@ pub enum FastApiInputLocation {
     Query,
     /// A case-insensitive HTTP header.
     Header,
+    /// A request cookie.
+    Cookie,
     /// The complete request body.
     Body,
 }
@@ -23,6 +27,7 @@ impl FastApiInputLocation {
             Self::Path => "path",
             Self::Query => "query",
             Self::Header => "header",
+            Self::Cookie => "cookie",
             Self::Body => "body",
         }
     }
@@ -33,7 +38,7 @@ impl FastApiInputLocation {
 pub struct FastApiInputParameter {
     /// The Python endpoint argument name.
     pub name: String,
-    /// The external name used in a path, query string, or header.
+    /// The external name used in a path, query string, header, or cookie.
     pub alias: String,
     /// The request component from which the value is extracted.
     pub location: FastApiInputLocation,
@@ -162,9 +167,10 @@ impl FastApiOperationRouter {
 
     /// Matches the request and extracts raw endpoint arguments.
     ///
-    /// Path matching, query decoding, and header lookup are delegated to
-    /// Starlette-RS. Values remain unvalidated so the Python binding can pass
-    /// them through the same Pydantic boundary as the public runtime.
+    /// Path matching, query decoding, header lookup, and cookie parsing are
+    /// delegated to Starlette-RS. Values remain unvalidated so the Python
+    /// binding can pass them through the same Pydantic boundary as the public
+    /// runtime.
     #[must_use]
     pub fn resolve_inputs(
         &self,
@@ -193,6 +199,7 @@ impl FastApiOperationRouter {
             .collect();
         let query = QueryParams::parse(raw_query);
         let headers = RequestHeaders::new(headers);
+        let cookies = Cookies::from_headers(&headers);
         let parameters = self
             .operations
             .get(operation_index)
@@ -210,6 +217,9 @@ impl FastApiOperationRouter {
                     FastApiInputLocation::Header => {
                         headers.get(parameter.alias.as_bytes()).map(<[u8]>::to_vec)
                     }
+                    FastApiInputLocation::Cookie => cookies
+                        .get(&parameter.alias)
+                        .map(|value| value.as_bytes().to_vec()),
                     FastApiInputLocation::Body => Some(body.to_vec()),
                 };
                 FastApiInputValue {

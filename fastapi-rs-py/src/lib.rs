@@ -158,6 +158,7 @@ impl PyOperationRouter {
                     "path" => FastApiInputLocation::Path,
                     "query" => FastApiInputLocation::Query,
                     "header" => FastApiInputLocation::Header,
+                    "cookie" => FastApiInputLocation::Cookie,
                     "body" => FastApiInputLocation::Body,
                     _ => return Err(PyValueError::new_err("unknown FastAPI input location")),
                 };

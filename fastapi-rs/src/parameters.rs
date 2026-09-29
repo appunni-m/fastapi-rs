@@ -67,6 +67,23 @@ fn header(
     )
 }
 
+#[pyfunction(name = "Cookie", signature = (*, alias = None, default = None))]
+fn cookie(
+    py: Python<'_>,
+    alias: Option<String>,
+    default: Option<Py<PyAny>>,
+) -> PyResult<Py<ParameterMetadata>> {
+    Py::new(
+        py,
+        ParameterMetadata {
+            kind: "cookie".to_owned(),
+            alias,
+            dependency: None,
+            default,
+        },
+    )
+}
+
 #[pyfunction(name = "Query", signature = (*, alias = None, default = None))]
 fn query(
     py: Python<'_>,
@@ -90,6 +107,7 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     module.add_class::<ParameterMetadata>()?;
     module.add_function(wrap_pyfunction!(depends, module)?)?;
     module.add_function(wrap_pyfunction!(header, module)?)?;
+    module.add_function(wrap_pyfunction!(cookie, module)?)?;
     module.add_function(wrap_pyfunction!(query, module)?)?;
 
     let status = PyModule::new(py, "status")?;

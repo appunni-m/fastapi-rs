@@ -1,3 +1,3 @@
-from fastapi_rs._core import Depends, FastAPI, Header, Query, status
+from fastapi_rs._core import Cookie, Depends, FastAPI, Header, Query, status
 
-__all__ = ["Depends", "FastAPI", "Header", "Query", "status"]
+__all__ = ["Cookie", "Depends", "FastAPI", "Header", "Query", "status"]

@@ -597,6 +597,22 @@
       ]
     },
     {
+      "id": "cookie-parameter-surface-review",
+      "input_path": "tests/fixtures/inputs/parity/cookie-parameter-surface-review.json",
+      "input_sha256": "819dcfee03571ad78b237dceef9813c352add95857d77ddfab861de9c127274d",
+      "recipe_path": "tests/fixtures/input-recipes/parity/cookie-parameter-surface-review.yaml",
+      "recipe_sha256": "1284d8447eaf7b5ce71ef51af5f6e5aa74422c703182ce7fe6afdf3f3d32167d",
+      "workload_path": "tests/fixtures/workloads/cookie_parameter_surface.py",
+      "workload_sha256": "d5c8a9bc32b6b36dabc935ea4b58780c2a3a5e4df4facc8056b90b65275f2130",
+      "case_ids": [
+        "fastapi.request-parameters.cookie.review-slice.alias-valid",
+        "fastapi.request-parameters.cookie.review-slice.alias-name-missing",
+        "fastapi.request-parameters.cookie.review-slice.required-missing",
+        "fastapi.request-parameters.cookie.review-slice.optional-missing",
+        "fastapi.request-parameters.cookie.review-slice.openapi-parameter"
+      ]
+    },
+    {
       "id": "core-allow-inf-nan-enforcing-upstream",
       "input_path": "tests/fixtures/inputs/parity/core-allow-inf-nan-enforcing-upstream.json",
       "input_sha256": "d80c61ff94e537bbf1e85f3f75fa73c01702646605ba58841f370ebf06268e21",
@@ -7343,6 +7359,59 @@
       ],
       "observation_selectors": [
         "construction.outcome"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/cookie-params.md",
+      "fixture_id": "fastapi.docs.tutorial-cookie-params",
+      "workflow_id": "cookie-parameter-surface-review",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 4 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.request-parameters.cookie.review-slice.alias-name-missing",
+        "fastapi.request-parameters.cookie.review-slice.alias-valid",
+        "fastapi.request-parameters.cookie.review-slice.optional-missing",
+        "fastapi.request-parameters.cookie.review-slice.required-missing"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_request_params/test_cookie/test_optional_str.py",
+      "fixture_id": "fastapi.test.test-request-params-test-cookie-test-optional-str",
+      "workflow_id": "cookie-parameter-surface-review",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.request-parameters.cookie.review-slice.openapi-parameter",
+        "fastapi.request-parameters.cookie.review-slice.optional-missing"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status",
+        "openapi.document",
+        "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_request_params/test_cookie/test_required_str.py",
+      "fixture_id": "fastapi.test.test-request-params-test-cookie-test-required-str",
+      "workflow_id": "cookie-parameter-surface-review",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 4 case(s); observes http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.request-parameters.cookie.review-slice.alias-name-missing",
+        "fastapi.request-parameters.cookie.review-slice.alias-valid",
+        "fastapi.request-parameters.cookie.review-slice.openapi-parameter",
+        "fastapi.request-parameters.cookie.review-slice.required-missing"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status",
+        "openapi.document",
+        "openapi.paths"
       ]
     },
     {

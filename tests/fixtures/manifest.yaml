@@ -123,7 +123,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@2
-    sha256: 1bf72d9c3d71d995864eed4196a714fbd833f6da22ec6edf370590e8d29b5b07
+    sha256: 0c829de0633c2489e28ac3546a8570f574701d376648d696354ced7cc06fbaaa
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -152,7 +152,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: bddaf5550d7501eda2805d27a484d270303b8ba293950b476f9a1f4c22edfd11
+    sha256: 82460f154da7cc1cebe53544486c4cbfc571d082fea5e04bb6439bfdaa4a30cc
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 554
@@ -189,14 +189,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@1
-    sha256: d267d64b348338489fbe96bc5e7ae695472e6243909d8d30917c775decc3c62c
+    sha256: cccc012be5df3878361b6e87f48fdacf3418a69c959c093db27007bdeea15185
     schema_path: tests/fixtures/schemas/materialized-input-index.schema.json
     schema_sha256: 467200b835dfd99ab16dfbd4ca4507145e070c73aa55d4425fd78e11141c3e86
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 392
-      cases: 1669
-      partial_source_mappings: 906
+      workflows: 393
+      cases: 1674
+      partial_source_mappings: 909
 
 contract_metadata:
   aliases:
@@ -684,8 +684,9 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
+    - openapi.document
     - openapi.paths
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.Cookie
@@ -696,7 +697,7 @@ api_surface_contract:
         - /api_candidates/3
         - /api_candidates/928
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/parameters.rs::cookie
   - id: fastapi.Depends
     kind: import_binding
     source_candidate_ref: /api_candidates/4

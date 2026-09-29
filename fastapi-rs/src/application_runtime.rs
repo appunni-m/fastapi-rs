@@ -18,6 +18,7 @@ enum InputSource {
     Path,
     Query,
     Header,
+    Cookie,
     Body,
 }
 
@@ -27,6 +28,7 @@ impl InputSource {
             Self::Path => FastApiInputLocation::Path,
             Self::Query => FastApiInputLocation::Query,
             Self::Header => FastApiInputLocation::Header,
+            Self::Cookie => FastApiInputLocation::Cookie,
             Self::Body => FastApiInputLocation::Body,
         }
     }
@@ -497,6 +499,7 @@ impl CallablePlan {
             InputSource::Path,
             InputSource::Query,
             InputSource::Header,
+            InputSource::Cookie,
             InputSource::Body,
         ] {
             for parameter in &self.parameters {
@@ -553,7 +556,7 @@ fn marker_default(py: Python<'_>, metadata: &[Py<PyAny>]) -> PyResult<Option<Py<
             continue;
         }
         let kind = marker.getattr("kind")?.extract::<String>()?;
-        if kind == "header" || kind == "query" {
+        if kind == "header" || kind == "query" || kind == "cookie" {
             let default = marker.getattr("default")?;
             if !default.is_none() {
                 return Ok(Some(default.unbind()));
@@ -629,7 +632,7 @@ fn parameter_source(
                 .map(Box::new)
                 .map(ParameterSource::Dependency);
         }
-        if kind == "header" || kind == "query" {
+        if kind == "header" || kind == "query" || kind == "cookie" {
             let alias = marker
                 .getattr("alias")?
                 .extract::<Option<String>>()?
@@ -643,6 +646,8 @@ fn parameter_source(
             return Ok(ParameterSource::Input {
                 source: if kind == "header" {
                     InputSource::Header
+                } else if kind == "cookie" {
+                    InputSource::Cookie
                 } else {
                     InputSource::Query
                 },
@@ -704,17 +709,20 @@ fn operation_id(name: &str, path: &str, method: &str) -> String {
 }
 
 fn title_case(value: &str) -> String {
-    value
-        .split_whitespace()
-        .map(|part| {
-            let mut chars = part.chars();
-            chars.next().map_or_else(String::new, |first| {
-                first.to_ascii_uppercase().to_string()
-                    + chars.as_str().to_ascii_lowercase().as_str()
-            })
-        })
-        .collect::<Vec<_>>()
-        .join(" ")
+    let mut titled = String::with_capacity(value.len());
+    let mut capitalize_next = true;
+    for character in value.chars() {
+        if capitalize_next {
+            titled.extend(character.to_uppercase());
+            capitalize_next = false;
+        } else if character.is_alphanumeric() {
+            titled.extend(character.to_lowercase());
+        } else {
+            titled.push(character);
+            capitalize_next = true;
+        }
+    }
+    titled
 }
 
 fn model_name(_py: Python<'_>, model: &Bound<'_, PyAny>) -> PyResult<Option<String>> {
@@ -958,7 +966,9 @@ fn decode_input_values(
             FastApiInputLocation::Header => PyBytes::new(py, &value)
                 .call_method1("decode", ("latin-1",))
                 .map_err(InputDecodeError::Other)?,
-            FastApiInputLocation::Path | FastApiInputLocation::Query => PyBytes::new(py, &value)
+            FastApiInputLocation::Path
+            | FastApiInputLocation::Query
+            | FastApiInputLocation::Cookie => PyBytes::new(py, &value)
                 .call_method1("decode", ("utf-8",))
                 .map_err(InputDecodeError::Other)?,
         };

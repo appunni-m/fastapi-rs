@@ -1,0 +1,140 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/cookie_parameter_surface.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.request-parameters.cookie.review-slice.alias-valid
+  actions:
+  - action_id: get-cookie-by-alias
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /cookies/required
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      - [cookie, 'session-id=alpha; theme=dark']
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_request_params/test_cookie/test_required_str.py, kind: upstream_test}
+  - {path: docs/en/docs/tutorial/cookie-params.md, kind: upstream_documentation}
+- case_id: fastapi.request-parameters.cookie.review-slice.alias-name-missing
+  actions:
+  - action_id: get-cookie-by-python-name
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /cookies/required
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      - [cookie, session=alpha]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_request_params/test_cookie/test_required_str.py, kind: upstream_test}
+  - {path: docs/en/docs/tutorial/cookie-params.md, kind: upstream_documentation}
+- case_id: fastapi.request-parameters.cookie.review-slice.required-missing
+  actions:
+  - action_id: get-required-cookie-missing
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /cookies/required
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_request_params/test_cookie/test_required_str.py, kind: upstream_test}
+  - {path: docs/en/docs/tutorial/cookie-params.md, kind: upstream_documentation}
+- case_id: fastapi.request-parameters.cookie.review-slice.optional-missing
+  actions:
+  - action_id: get-optional-cookie-missing
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /cookies/optional
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_request_params/test_cookie/test_optional_str.py, kind: upstream_test}
+  - {path: docs/en/docs/tutorial/cookie-params.md, kind: upstream_documentation}
+- case_id: fastapi.request-parameters.cookie.review-slice.openapi-parameter
+  actions:
+  - action_id: inspect-cookie-parameter-schema
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths/~1cookies~1required/get/parameters
+      - /paths/~1cookies~1optional/get/parameters
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_request_params/test_cookie/test_required_str.py, kind: upstream_test}
+  - {path: tests/test_request_params/test_cookie/test_optional_str.py, kind: upstream_test}
+  - {path: docs/en/docs/tutorial/cookie-params.md, kind: upstream_documentation}

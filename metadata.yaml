@@ -302,6 +302,13 @@ reviewed_api_contract_overlay:
         - {path: fastapi/_compat/v2.py, symbol: serialize}
       feature_ids: [app-routing, response-serialization]
       observation_selectors: [http.status, http.body.bytes]
+    fastapi.Cookie:
+      rust_binding: fastapi-rs/src/parameters.rs::cookie
+      source_evidence:
+        - {path: fastapi/param_functions.py, symbol: Cookie}
+        - {path: fastapi/params.py, symbol: Cookie}
+      feature_ids: [request-validation, openapi-docs]
+      observation_selectors: [http.status, http.body.bytes, openapi.document]
   warning_classification_reviews:
     fastapi.exceptions.FastAPIDeprecationWarning:
       classification: uncertain
