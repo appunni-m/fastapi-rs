@@ -262,13 +262,13 @@ impl PyFastApi {
         clippy::too_many_arguments,
         reason = "preserve the Python route decorator keyword signature"
     )]
-    #[pyo3(signature = (path, *, response_model = None, status_code = 200, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None))]
+    #[pyo3(signature = (path, *, response_model = None, status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None))]
     fn post(
         slf: Py<Self>,
         py: Python<'_>,
         path: &str,
         response_model: Option<Py<PyAny>>,
-        status_code: u16,
+        status_code: Option<u16>,
         response_model_include: Option<Py<PyAny>>,
         response_model_exclude: Option<Py<PyAny>>,
         response_model_by_alias: bool,
@@ -313,13 +313,13 @@ impl PyFastApi {
         clippy::too_many_arguments,
         reason = "preserve the Python route decorator keyword signature"
     )]
-    #[pyo3(signature = (path, *, response_model = None, status_code = 200, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None))]
+    #[pyo3(signature = (path, *, response_model = None, status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None))]
     fn get(
         slf: Py<Self>,
         py: Python<'_>,
         path: &str,
         response_model: Option<Py<PyAny>>,
-        status_code: u16,
+        status_code: Option<u16>,
         response_model_include: Option<Py<PyAny>>,
         response_model_exclude: Option<Py<PyAny>>,
         response_model_by_alias: bool,
@@ -364,13 +364,13 @@ impl PyFastApi {
         clippy::too_many_arguments,
         reason = "preserve the Python route decorator keyword signature"
     )]
-    #[pyo3(signature = (path, *, response_model = None, status_code = 200, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None))]
+    #[pyo3(signature = (path, *, response_model = None, status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None))]
     fn put(
         slf: Py<Self>,
         py: Python<'_>,
         path: &str,
         response_model: Option<Py<PyAny>>,
-        status_code: u16,
+        status_code: Option<u16>,
         response_model_include: Option<Py<PyAny>>,
         response_model_exclude: Option<Py<PyAny>>,
         response_model_by_alias: bool,
@@ -415,13 +415,13 @@ impl PyFastApi {
         clippy::too_many_arguments,
         reason = "preserve the Python route decorator keyword signature"
     )]
-    #[pyo3(signature = (path, *, response_model = None, status_code = 200, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None))]
+    #[pyo3(signature = (path, *, response_model = None, status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None))]
     fn delete(
         slf: Py<Self>,
         py: Python<'_>,
         path: &str,
         response_model: Option<Py<PyAny>>,
-        status_code: u16,
+        status_code: Option<u16>,
         response_model_include: Option<Py<PyAny>>,
         response_model_exclude: Option<Py<PyAny>>,
         response_model_by_alias: bool,
@@ -466,13 +466,13 @@ impl PyFastApi {
         clippy::too_many_arguments,
         reason = "preserve the Python route decorator keyword signature"
     )]
-    #[pyo3(signature = (path, *, response_model = None, status_code = 200, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None))]
+    #[pyo3(signature = (path, *, response_model = None, status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None))]
     fn patch(
         slf: Py<Self>,
         py: Python<'_>,
         path: &str,
         response_model: Option<Py<PyAny>>,
-        status_code: u16,
+        status_code: Option<u16>,
         response_model_include: Option<Py<PyAny>>,
         response_model_exclude: Option<Py<PyAny>>,
         response_model_by_alias: bool,
@@ -517,13 +517,13 @@ impl PyFastApi {
         clippy::too_many_arguments,
         reason = "preserve the Python route decorator keyword signature"
     )]
-    #[pyo3(signature = (path, *, response_model = None, status_code = 200, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None))]
+    #[pyo3(signature = (path, *, response_model = None, status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None))]
     fn head(
         slf: Py<Self>,
         py: Python<'_>,
         path: &str,
         response_model: Option<Py<PyAny>>,
-        status_code: u16,
+        status_code: Option<u16>,
         response_model_include: Option<Py<PyAny>>,
         response_model_exclude: Option<Py<PyAny>>,
         response_model_by_alias: bool,
@@ -568,13 +568,13 @@ impl PyFastApi {
         clippy::too_many_arguments,
         reason = "preserve the Python route decorator keyword signature"
     )]
-    #[pyo3(signature = (path, *, response_model = None, status_code = 200, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None))]
+    #[pyo3(signature = (path, *, response_model = None, status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None))]
     fn options(
         slf: Py<Self>,
         py: Python<'_>,
         path: &str,
         response_model: Option<Py<PyAny>>,
-        status_code: u16,
+        status_code: Option<u16>,
         response_model_include: Option<Py<PyAny>>,
         response_model_exclude: Option<Py<PyAny>>,
         response_model_by_alias: bool,
@@ -619,13 +619,13 @@ impl PyFastApi {
         clippy::too_many_arguments,
         reason = "preserve the Python route decorator keyword signature"
     )]
-    #[pyo3(signature = (path, *, response_model = None, status_code = 200, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None))]
+    #[pyo3(signature = (path, *, response_model = None, status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None))]
     fn trace(
         slf: Py<Self>,
         py: Python<'_>,
         path: &str,
         response_model: Option<Py<PyAny>>,
-        status_code: u16,
+        status_code: Option<u16>,
         response_model_include: Option<Py<PyAny>>,
         response_model_exclude: Option<Py<PyAny>>,
         response_model_by_alias: bool,
@@ -1184,7 +1184,7 @@ fn operation_decorator(
     path: &str,
     method: &str,
     response_model: Option<Py<PyAny>>,
-    status_code: u16,
+    status_code: Option<u16>,
     response_model_options: ResponseModelOptions,
 ) -> PyResult<Py<PyOperationDecorator>> {
     let additional_responses =
@@ -1204,7 +1204,7 @@ fn operation_decorator(
             deprecated: response_model_options.deprecated,
             tags: response_model_options.tags,
             response_model,
-            status_code,
+            status_code: status_code.unwrap_or(200),
             include_in_schema: response_model_options.include_in_schema,
             response_model_include: response_model_options.include,
             response_model_exclude: response_model_options.exclude,

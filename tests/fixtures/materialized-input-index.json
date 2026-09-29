@@ -3392,6 +3392,18 @@
       ]
     },
     {
+      "id": "path-operation-status-code-none-isolated",
+      "input_path": "tests/fixtures/inputs/parity/path-operation-status-code-none-isolated.json",
+      "input_sha256": "7204014aeb8f7be56cf16565cd17bcfcba8805fd01956345455be7811617f75b",
+      "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-status-code-none-isolated.yaml",
+      "recipe_sha256": "804cb9d5978fccfbf76be517ffee94ac3785134da6417a443bf29ec822012f34",
+      "workload_path": "tests/fixtures/workloads/path_operation_status_code_none.py",
+      "workload_sha256": "74dce95f9edbe667794352a9d1ac6802a13f87a7c2b1fa0ff6d57f71ff229136",
+      "case_ids": [
+        "fastapi.path-operation.status-code-none"
+      ]
+    },
+    {
       "id": "path-params-tutorial001-upstream",
       "input_path": "tests/fixtures/inputs/parity/path-params-tutorial001-upstream.json",
       "input_sha256": "58feaa527d2829cd8167f0eb03acaf541d08eb8cafdbf2f8cdf171b41a1edfbe",
@@ -14236,6 +14248,65 @@
         "fastapi.path-operation.post-tags-isolated"
       ],
       "observation_selectors": [
+        "openapi.document",
+        "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/path-operation-configuration.md",
+      "fixture_id": "fastapi.docs.tutorial-path-operation-configuration",
+      "workflow_id": "path-operation-status-code-none-isolated",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.path-operation.status-code-none"
+      ],
+      "observation_selectors": [
+        "http.status",
+        "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_extra_routes.py",
+      "fixture_id": "fastapi.test.test-extra-routes",
+      "workflow_id": "path-operation-status-code-none-isolated",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.path-operation.status-code-none"
+      ],
+      "observation_selectors": [
+        "http.status",
+        "openapi.document",
+        "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_router_include_context.py",
+      "fixture_id": "fastapi.test.test-router-include-context",
+      "workflow_id": "path-operation-status-code-none-isolated",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.path-operation.status-code-none"
+      ],
+      "observation_selectors": [
+        "http.status",
+        "openapi.document",
+        "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_path_operation_configurations/test_tutorial001.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-path-operation-configurations-test-tutorial001",
+      "workflow_id": "path-operation-status-code-none-isolated",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.path-operation.status-code-none"
+      ],
+      "observation_selectors": [
+        "http.status",
         "openapi.document",
         "openapi.paths"
       ]
