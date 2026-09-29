@@ -63,6 +63,7 @@ struct CallableParameter {
     name: String,
     annotation: Py<PyAny>,
     default: Option<Py<PyAny>>,
+    is_sequence: bool,
     source: ParameterSource,
 }
 
@@ -1361,12 +1362,14 @@ impl CallablePlan {
                 };
                 let validated_annotation =
                     constrained_parameter_annotation(py, annotation.bind(py), &metadata)?;
+                let is_sequence = field_annotation_is_sequence(py, validated_annotation.bind(py))?;
                 let source =
                     parameter_source(py, &name, annotation.bind(py), &metadata, path_parameters)?;
                 Ok(CallableParameter {
                     name,
                     annotation: validated_annotation,
                     default,
+                    is_sequence,
                     source,
                 })
             })
@@ -1401,6 +1404,7 @@ impl CallablePlan {
                 name: String::new(),
                 annotation,
                 default: None,
+                is_sequence: false,
                 source: ParameterSource::Dependency {
                     plan,
                     use_cache,
@@ -1843,10 +1847,18 @@ impl CallablePlan {
                     continue;
                 }
                 let value = if *parameter_source == InputSource::Query {
-                    context
-                        .query_params
-                        .get(alias)
-                        .map(|value| PyString::new(context.py, value).into_any())
+                    if parameter.is_sequence {
+                        let values = PyList::empty(context.py);
+                        for value in context.query_params.get_list(alias) {
+                            values.append(PyString::new(context.py, value))?;
+                        }
+                        Some(values.into_any())
+                    } else {
+                        context
+                            .query_params
+                            .get(alias)
+                            .map(|value| PyString::new(context.py, value).into_any())
+                    }
                 } else {
                     context.inputs.get_item(&parameter.name)?
                 };
@@ -2333,6 +2345,81 @@ fn is_pydantic_validation_error(py: Python<'_>, error: &PyErr) -> bool {
                 .matches(py, &validation_error)
                 .is_ok_and(|value| value)
         })
+}
+
+/// Mirrors FastAPI's public sequence-annotation classification for request extraction.
+fn field_annotation_is_sequence(py: Python<'_>, annotation: &Bound<'_, PyAny>) -> PyResult<bool> {
+    let typing = py.import("typing")?;
+    let origin = typing.getattr("get_origin")?.call1((annotation,))?;
+    let annotated = typing.getattr("Annotated")?;
+    if origin.is(&annotated) {
+        let arguments = typing
+            .getattr("get_args")?
+            .call1((annotation,))?
+            .cast_into::<PyTuple>()?;
+        return field_annotation_is_sequence(py, &arguments.get_item(0)?);
+    }
+
+    let types = py.import("types")?;
+    let union = typing.getattr("Union")?;
+    let union_type = types.getattr("UnionType")?;
+    if origin.is(&union) || origin.is(&union_type) {
+        let arguments = typing
+            .getattr("get_args")?
+            .call1((annotation,))?
+            .cast_into::<PyTuple>()?;
+        for argument in arguments.iter() {
+            if field_annotation_is_sequence(py, &argument)? {
+                return Ok(true);
+            }
+        }
+        return Ok(false);
+    }
+
+    if is_sequence_class(py, annotation)? {
+        return Ok(true);
+    }
+    !origin.is_none() && is_sequence_class(py, &origin)
+}
+
+fn is_sequence_class(py: Python<'_>, annotation: &Bound<'_, PyAny>) -> PyResult<bool> {
+    let builtins = py.import("builtins")?;
+    if !builtins
+        .getattr("isinstance")?
+        .call1((annotation, builtins.getattr("type")?))?
+        .extract::<bool>()?
+    {
+        return Ok(false);
+    }
+
+    let str_type = builtins.getattr("str")?;
+    let bytes_type = builtins.getattr("bytes")?;
+    let excluded = PyTuple::new(py, [str_type, bytes_type])?;
+    if builtins
+        .getattr("issubclass")?
+        .call1((annotation, excluded))?
+        .extract::<bool>()?
+    {
+        return Ok(false);
+    }
+
+    let collections_abc = py.import("collections.abc")?;
+    let collections = py.import("collections")?;
+    let sequence_types = PyTuple::new(
+        py,
+        [
+            collections_abc.getattr("Sequence")?,
+            builtins.getattr("list")?,
+            builtins.getattr("tuple")?,
+            builtins.getattr("set")?,
+            builtins.getattr("frozenset")?,
+            collections.getattr("deque")?,
+        ],
+    )?;
+    builtins
+        .getattr("issubclass")?
+        .call1((annotation, sequence_types))?
+        .extract()
 }
 
 fn is_json_decode_error(py: Python<'_>, error: &PyErr) -> bool {
