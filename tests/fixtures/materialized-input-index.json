@@ -3356,6 +3356,19 @@
       ]
     },
     {
+      "id": "query-gt-zero",
+      "input_path": "tests/fixtures/inputs/parity/query-gt-zero.json",
+      "input_sha256": "24e3d83416ef42b77a851288503e533cbe34ddff90144da9dd72df2e6d4594f1",
+      "recipe_path": "tests/fixtures/input-recipes/parity/query-gt-zero.yaml",
+      "recipe_sha256": "1f59c451c4f573907fc0c29c3fa521c22627012f6bf0417ce7981b58477c52a8",
+      "workload_path": "tests/fixtures/workloads/query_gt_zero.py",
+      "workload_sha256": "12e6e39c379f3b8a11d0635daad213dda225acda42c33fb6ccbbb5974a42b430",
+      "case_ids": [
+        "fastapi.query.gt-zero.positive-value",
+        "fastapi.query.gt-zero.zero-rejected"
+      ]
+    },
+    {
       "id": "query-header-parameter-header-tutorial001-annotated",
       "input_path": "tests/fixtures/inputs/parity/query-header-parameter-header-tutorial001-annotated.json",
       "input_sha256": "ec2e570ca378c9536cd397b810813f1cc6d0f9e1d8f92b569beb3f68448e73c5",
@@ -13680,6 +13693,21 @@
         "http.body.bytes",
         "http.status",
         "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_path_params_numeric_validations/test_tutorial006.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-path-params-numeric-validations-test-tutorial006",
+      "workflow_id": "query-gt-zero",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.query.gt-zero.positive-value",
+        "fastapi.query.gt-zero.zero-rejected"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
       ]
     },
     {

@@ -93,11 +93,12 @@ fn cookie(
     )
 }
 
-#[pyfunction(name = "Query", signature = (*, alias = None, default = None))]
+#[pyfunction(name = "Query", signature = (*, alias = None, default = None, gt = None))]
 fn query(
     py: Python<'_>,
     alias: Option<String>,
     default: Option<Py<PyAny>>,
+    gt: Option<Py<PyAny>>,
 ) -> PyResult<Py<ParameterMetadata>> {
     Py::new(
         py,
@@ -106,7 +107,7 @@ fn query(
             alias,
             dependency: None,
             default,
-            gt: None,
+            gt,
         },
     )
 }

@@ -204,6 +204,17 @@ reviewed_api_contract_overlay:
         Partial native slice: Body(gt=...) marks a request-body input and applies
         the numeric strict-greater-than constraint. Other Body constructor
         parameters and FieldInfo options remain outside this reviewed slice.
+    fastapi.Query:
+      rust_binding: fastapi-rs/src/parameters.rs::query
+      source_evidence:
+        - {path: fastapi/param_functions.py, symbol: Query}
+        - {path: fastapi/params.py, symbol: Query}
+      feature_ids: [request-validation]
+      observation_selectors: [http.status, http.body.bytes]
+      supported_slice: >-
+        Partial native slice: Annotated numeric query parameters using Query(gt=...)
+        apply the strict-greater-than constraint. Other Query constructor
+        parameters and FieldInfo options remain outside this reviewed slice.
     fastapi.exception_handlers.http_exception_handler:
       source_evidence:
         - {path: fastapi/exception_handlers.py, symbol: http_exception_handler}

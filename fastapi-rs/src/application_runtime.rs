@@ -532,7 +532,7 @@ impl CallablePlan {
                     Some(raw_default.unbind())
                 };
                 let validated_annotation =
-                    constrained_body_annotation(py, annotation.bind(py), &metadata)?;
+                    constrained_parameter_annotation(py, annotation.bind(py), &metadata)?;
                 let source =
                     parameter_source(py, &name, annotation.bind(py), &metadata, path_parameters)?;
                 Ok(CallableParameter {
@@ -822,14 +822,18 @@ fn parameter_source(
     })
 }
 
-fn constrained_body_annotation(
+fn constrained_parameter_annotation(
     py: Python<'_>,
     annotation: &Bound<'_, PyAny>,
     metadata: &[Py<PyAny>],
 ) -> PyResult<Py<PyAny>> {
     for marker in metadata {
         let marker = marker.bind(py);
-        if !marker.hasattr("kind")? || marker.getattr("kind")?.extract::<String>()? != "body" {
+        if !marker.hasattr("kind")? {
+            continue;
+        }
+        let kind = marker.getattr("kind")?.extract::<String>()?;
+        if kind != "body" && kind != "query" {
             continue;
         }
         let gt = marker.getattr("gt")?;
