@@ -124,9 +124,13 @@ fn cookie(
     )
 }
 
+fn query_ellipsis_default() -> Py<PyAny> {
+    Python::attach(|py| py.Ellipsis())
+}
+
 #[pyfunction(
     name = "Query",
-    signature = (*, alias = None, default = py.Ellipsis(), gt = None)
+    signature = (*, alias = None, default = query_ellipsis_default(), gt = None)
 )]
 fn query(
     py: Python<'_>,
