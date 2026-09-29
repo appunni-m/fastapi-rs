@@ -3272,6 +3272,18 @@
       ]
     },
     {
+      "id": "path-operation-post-operation-id-isolated",
+      "input_path": "tests/fixtures/inputs/parity/path-operation-post-operation-id-isolated.json",
+      "input_sha256": "573b79276e64d62719377e54e7d25c5cb278bde9a253dea5480dac72bd4357fb",
+      "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-post-operation-id-isolated.yaml",
+      "recipe_sha256": "e83f29c372427ac930e3bf382b6bb24df418b3914e26af3ac18f53b104e492d3",
+      "workload_path": "tests/fixtures/workloads/path_operation_post_operation_id_isolated.py",
+      "workload_sha256": "45613be73c2396c3dfd0cebc49240213447b60f0b2059657a3d11f4f02accc8e",
+      "case_ids": [
+        "fastapi.path-operation.post-operation-id-isolated"
+      ]
+    },
+    {
       "id": "path-operation-post-summary-isolated",
       "input_path": "tests/fixtures/inputs/parity/path-operation-post-summary-isolated.json",
       "input_sha256": "bd65bd52c8f56fb54c40b794dc6e5045481bde57b5b752fe7995f62577a03ae1",
@@ -13819,6 +13831,34 @@
       "observation_selectors": [
         "docs.response.status",
         "http.status",
+        "openapi.document",
+        "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:advanced/path-operation-advanced-configuration.md",
+      "fixture_id": "fastapi.docs.advanced-path-operation-advanced-configuration",
+      "workflow_id": "path-operation-post-operation-id-isolated",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.path-operation.post-operation-id-isolated"
+      ],
+      "observation_selectors": [
+        "openapi.document",
+        "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_path_operation_advanced_configurations/test_tutorial001.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-path-operation-advanced-configurations-test-tutorial001",
+      "workflow_id": "path-operation-post-operation-id-isolated",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.path-operation.post-operation-id-isolated"
+      ],
+      "observation_selectors": [
         "openapi.document",
         "openapi.paths"
       ]
