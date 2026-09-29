@@ -4,8 +4,9 @@
 # defaults Depends.use_cache to true at lines 745-749. The workload marks the
 # first two repeated override edges uncached and leaves the third cached, then
 # repeats the sequence on the same app to expose lookup bypass, first-value
-# retention, and request-local reset. Related upstream behavior is covered by
-# tests/test_dependency_cache.py:30-35 and :64-81.
+# retention, and request-local reset. The second case checks cached -> uncached
+# -> cached ordering against an already populated slot. Related upstream
+# behavior is covered by tests/test_dependency_cache.py:30-35 and :64-81.
 schema: fastapi-rs/python-asgi-workflow@2
 workload:
   file: tests/fixtures/workloads/dependency_override_async_uncached_edges_request_local.py
@@ -41,6 +42,47 @@ cases:
       method: GET
       scheme: http
       path: /override-async-uncached
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_dependency_cache.py, kind: upstream_test}
+  - {path: tests/test_dependency_overrides.py, kind: upstream_test}
+- case_id: fastapi.dependencies.override-async-cache-uncached-edges-request-local
+  actions:
+  - action_id: first-request
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /override-async-cache-uncached
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: second-request
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /override-async-cache-uncached
       query_string: ''
       root_path: ''
       headers: [[host, testserver]]

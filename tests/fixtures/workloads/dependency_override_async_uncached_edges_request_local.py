@@ -31,5 +31,18 @@ def create_app() -> FastAPI:
             "call_count": override_calls["count"],
         }
 
+    @app.get("/override-async-cache-uncached")
+    def read_cached_override(
+        first: Annotated[int, Depends(original_dependency)],
+        uncached: Annotated[int, Depends(original_dependency, use_cache=False)],
+        cached: Annotated[int, Depends(original_dependency)],
+    ) -> dict[str, object]:
+        return {
+            "first": first,
+            "uncached": uncached,
+            "cached": cached,
+            "call_count": override_calls["count"],
+        }
+
     app.dependency_overrides[original_dependency] = replacement_dependency
     return app

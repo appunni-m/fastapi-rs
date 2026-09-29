@@ -632,23 +632,25 @@ reviewed_api_contract_overlay:
         and tests/fixtures/input-recipes/parity/dependency-override-async-query-validation-aggregation.yaml,
         case fastapi.dependencies.override-async-query-validation-aggregation.
         A separate uncached-edge slice covers a synchronous endpoint with the
-        same original dependency on two direct `use_cache=False` edges followed
-        by one default-cached edge, all replaced by the same flat coroutine
-        function. Each uncached edge bypasses cache lookup and invokes the
-        replacement; the first fills the request cache, the second leaves that
-        value intact, and the cached edge reuses the first value. A later
-        request resolves all three edges again. This independently authored
-        partial sample combines cache and override behavior; no single upstream
-        test asserts this exact async/uncached combination:
+        same original dependency on direct edges, all replaced by the same flat
+        coroutine function. It covers two orderings: two `use_cache=False`
+        edges followed by one default-cached edge, and default-cached followed
+        by uncached then cached. Uncached edges bypass lookup and invoke the
+        replacement; they fill an empty request cache but leave an existing
+        value intact, and later cached edges reuse the first value. A later
+        request resolves all three edges again. These independently authored
+        partial samples combine cache and override behavior; no single upstream
+        test asserts these exact async/uncached combinations:
         tests/fixtures/input-recipes/parity/dependency-override-async-uncached-edges-request-local.yaml,
-        case fastapi.dependencies.override-async-uncached-edges-request-local.
+        cases fastapi.dependencies.override-async-uncached-edges-request-local
+        and fastapi.dependencies.override-async-cache-uncached-edges-request-local.
         `Query(...)` used as the Python default, validation aliases, constraints,
         validators, required or non-scalar parameters, other query-bearing
         multi-key shapes, and newly introduced body, header, cookie, or path
         inputs remain outside the query-bearing slice. Outside these
         coroutine-override slices are mixed synchronous or unoverridden direct
-        edges, uncached-edge layouts other than the reviewed two-uncached-then-
-        cached repeated-callable shape, nested dependencies of coroutine
+        edges, uncached-edge layouts other than the reviewed repeated-callable
+        cache-fill and cache-retention orderings, nested dependencies of coroutine
         overrides, async endpoints with coroutine overrides, async
         callable-instance overrides, async generators, and generator
         dependencies. None-based dependency
