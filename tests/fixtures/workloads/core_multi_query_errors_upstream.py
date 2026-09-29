@@ -8,8 +8,8 @@ from fastapi import FastAPI, Query
 def create_app() -> FastAPI:
     app = FastAPI()
 
-    @app.get("/readings")
-    def read_readings(q: list[int] = Query(default=None)) -> dict[str, list[int] | None]:  # noqa: B008
+    @app.get("/items/")
+    def read_items(q: list[int] = Query(default=None)):  # noqa: B008
         return {"q": q}
 
     return app
