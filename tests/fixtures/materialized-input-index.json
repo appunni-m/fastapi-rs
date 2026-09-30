@@ -988,11 +988,23 @@
       ]
     },
     {
+      "id": "default-response-class-precedence-wave",
+      "input_path": "tests/fixtures/inputs/parity/default-response-class-precedence-wave.json",
+      "input_sha256": "4f91457fbd245d956b29dfe447306b5bff084718c042e5f3b2b0a6eb4e875f21",
+      "recipe_path": "tests/fixtures/input-recipes/parity/default-response-class-precedence-wave.yaml",
+      "recipe_sha256": "c14b1f3bfd1c2480cf7a20d61888f29c09b5ae88743994f2d03df8e304292d7d",
+      "workload_path": "tests/fixtures/workloads/default_response_class_precedence_wave.py",
+      "workload_sha256": "ddf08ccc7aeaaa2471c7dc7cf629e585733813d864dfce436d57aba5880b412f",
+      "case_ids": [
+        "fastapi.test.test-default-response-class.test-app"
+      ]
+    },
+    {
       "id": "default-response-class-router-upstream",
       "input_path": "tests/fixtures/inputs/parity/default-response-class-router-upstream.json",
-      "input_sha256": "e6d438cc4e79e1d0962d7dae8e20a40476bb37225bf5c45716061cee3acba445",
+      "input_sha256": "a59a089cf0bf2adec2769a11133dd2c0440460576fbb1bbb4617705edaae1d21",
       "recipe_path": "tests/fixtures/input-recipes/parity/default-response-class-router-upstream.yaml",
-      "recipe_sha256": "73723dfebfc24115918716b2c276b55c1ef50fad687b15a3fe117f2172dd0748",
+      "recipe_sha256": "b88a0be3afa2ba628f649992cd13a1bdec1038b2cc3fa9ef14a1036c9dcf1cf3",
       "workload_path": "tests/fixtures/workloads/default_response_class_router_upstream.py",
       "workload_sha256": "5f504da33c3a2c4616eb95c89ec0dff23460e382a2eb8fd58374f3cfb6247c6a",
       "case_ids": [
@@ -8910,6 +8922,36 @@
         "http.status",
         "openapi.document",
         "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_default_response_class.py",
+      "fixture_id": "fastapi.test.test-default-response-class",
+      "workflow_id": "default-response-class-precedence-wave",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.test.test-default-response-class.test-app"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_default_response_class.py",
+      "fixture_id": "fastapi.test.test-default-response-class",
+      "workflow_id": "default-response-class-router-upstream",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.test.test-default-response-class-router.test-app-override"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
       ]
     },
     {
