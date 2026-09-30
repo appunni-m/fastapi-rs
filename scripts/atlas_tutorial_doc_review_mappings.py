@@ -190,7 +190,7 @@ DOC_PAGE_REVIEW_MAPPINGS = {
             "fastapi.test.test-tutorial-test-websockets-test-tutorial002.test-websocket-with-header-and-query, "
             "fastapi.test.test-tutorial-test-websockets-test-tutorial002.test-websocket-no-credentials, "
             "and fastapi.test.test-tutorial-test-websockets-test-tutorial002.test-websocket-invalid-data "
-            "(messages/event order, with close-code checks on the latter two). Its case "
+            "(messages/event order, with close-code and close-reason checks on the latter two). Its case "
             "fastapi.test.test-tutorial-test-websockets-test-tutorial001.test-main observes the "
             "demo HTTP response. "
             "tests/fixtures/input-recipes/parity/websockets-tutorial003-upstream-subset.yaml "

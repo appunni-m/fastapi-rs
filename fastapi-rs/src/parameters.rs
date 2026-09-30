@@ -151,14 +151,15 @@ fn depends(
 
 #[pyfunction(
     name = "Header",
-    signature = (*, alias = None, default = None, convert_underscores = true)
+    signature = (default = query_ellipsis_default(), *, alias = None, convert_underscores = true)
 )]
 fn header(
     py: Python<'_>,
+    default: Py<PyAny>,
     alias: Option<String>,
-    default: Option<Py<PyAny>>,
     convert_underscores: bool,
 ) -> PyResult<Py<ParameterMetadata>> {
+    let default = optional_parameter_default(py, default)?;
     Py::new(
         py,
         ParameterMetadata {
@@ -182,12 +183,13 @@ fn header(
     )
 }
 
-#[pyfunction(name = "Cookie", signature = (*, alias = None, default = None))]
+#[pyfunction(name = "Cookie", signature = (default = query_ellipsis_default(), *, alias = None))]
 fn cookie(
     py: Python<'_>,
+    default: Py<PyAny>,
     alias: Option<String>,
-    default: Option<Py<PyAny>>,
 ) -> PyResult<Py<ParameterMetadata>> {
+    let default = optional_parameter_default(py, default)?;
     Py::new(
         py,
         ParameterMetadata {
@@ -213,6 +215,17 @@ fn cookie(
 
 fn query_ellipsis_default() -> Py<PyAny> {
     Python::attach(|py| py.Ellipsis())
+}
+
+fn optional_parameter_default(py: Python<'_>, default: Py<PyAny>) -> PyResult<Option<Py<PyAny>>> {
+    let default = default.bind(py);
+    let ellipsis = py.Ellipsis();
+    let undefined = py.import("pydantic_core")?.getattr("PydanticUndefined")?;
+    if default.is(ellipsis.bind(py)) || default.is(&undefined) {
+        Ok(None)
+    } else {
+        Ok(Some(default.clone().unbind()))
+    }
 }
 
 #[pyfunction(

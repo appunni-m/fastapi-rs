@@ -40,6 +40,7 @@ PUBLIC_FASTAPI_EXPORTS = [
     "UploadFile",
     "WebSocket",
     "WebSocketDisconnect",
+    "WebSocketException",
     "__version__",
     "status",
 ]

@@ -80,14 +80,14 @@ api_inventory:
 import_binding_classification_review:
   artifact: tests/fixtures/api-import-binding-classification-review.json
   schema: fastapi-starlette-import-binding-review/v1
-  sha256: b36b6d140b7810aecc36b89f1fe2a0369ad72532ab6e30f5e831d21c208063db
+  sha256: ba193eb4c125af314aa84650a339b34653afaacc12600009101f7aca07ace9de
   source_identity:
     package: FastAPI
     version: 0.141.1
     source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
     selected_starlette_profile: 1.6.0
     starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
-    starlette_rs_contract_commit: c3712b66b5d8ea7b77e5c98bd03fc974c6fc0744
+    starlette_rs_contract_commit: 53b982e3164fca822c4e09b390d681bffd0d7fe6
   starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
   counts:
     candidates: 97
@@ -99,7 +99,7 @@ import_binding_classification_review:
   candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
   pinned_starlette_rs_sources:
     metadata_sha256: 398b9c070c03cc9ff78cd9ec879a95f40144548efefaf3ad76b999cd31c6f217
-    manifest_sha256: cd5c7d0494659d80d6c8293fd1eb853e05ff36ef30d651801bb4cf2b47df3acc
+    manifest_sha256: f1524beda48d49143fd934263620c998588f61dd512b6302fdd3da9c62a34c2e
     api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
     api_review_sha256: 822503a4b91afc8b61f1b668d286cedfb3378d96be02f4ebb6c84c9210208325
 
@@ -182,7 +182,7 @@ classification_atlas:
 starlette_rs:
   owner: ../starlette-rs
   repository: https://github.com/appunni-m/starlette-rs
-  commit: c3712b66b5d8ea7b77e5c98bd03fc974c6fc0744
+  commit: 53b982e3164fca822c4e09b390d681bffd0d7fe6
   distribution_version: 0.1.0
   contract_id: starlette-1.6.0-asgi-http-config-session-slice
   metadata: ../starlette-rs/metadata.yaml
@@ -607,6 +607,12 @@ reviewed_api_contract_overlay:
       source_evidence:
         - {path: fastapi/applications.py, symbol: websocket}
         - {path: fastapi/routing.py, symbol: get_websocket_app}
+        - {path: tests/test_ws_dependencies.py, symbol: test_index}
+        - {path: tests/test_tutorial/test_websockets/test_tutorial002.py, symbol: test_websocket_with_cookie}
+        - {path: tests/test_tutorial/test_websockets/test_tutorial002.py, symbol: test_websocket_with_header}
+        - {path: tests/test_tutorial/test_websockets/test_tutorial002.py, symbol: test_websocket_with_header_and_query}
+        - {path: tests/test_tutorial/test_websockets/test_tutorial002.py, symbol: test_websocket_no_credentials}
+        - {path: tests/test_tutorial/test_websockets/test_tutorial002.py, symbol: test_websocket_invalid_data}
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::websocket
       feature_ids: [request-validation, websocket-lifecycle]
       observation_selectors:
@@ -614,11 +620,15 @@ reviewed_api_contract_overlay:
         - validation.error_details
         - websocket.close_code
         - websocket.close_reason
+        - websocket.event_order
+        - websocket.messages
       error_contract_ids: [fastapi.exceptions.WebSocketRequestValidationError]
     fastapi.routing.APIRouter.websocket:
       source_evidence:
         - {path: fastapi/routing.py, symbol: websocket}
         - {path: fastapi/routing.py, symbol: get_websocket_app}
+        - {path: tests/test_ws_dependencies.py, symbol: test_routerindex}
+        - {path: tests/test_ws_dependencies.py, symbol: test_routerprefixindex}
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::__getattr__ and PyFastApi::websocket
       feature_ids: [request-validation, websocket-lifecycle]
       observation_selectors:
@@ -626,6 +636,8 @@ reviewed_api_contract_overlay:
         - validation.error_details
         - websocket.close_code
         - websocket.close_reason
+        - websocket.event_order
+        - websocket.messages
       error_contract_ids: [fastapi.exceptions.WebSocketRequestValidationError]
     fastapi.routing.APIRoute.get_route_handler:
       source_evidence:
@@ -657,6 +669,9 @@ reviewed_api_contract_overlay:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::new
       source_evidence:
         - {path: fastapi/applications.py, symbol: __init__}
+        - {path: tests/test_ws_dependencies.py, symbol: test_index}
+        - {path: tests/test_ws_dependencies.py, symbol: test_routerindex}
+        - {path: tests/test_ws_dependencies.py, symbol: test_routerprefixindex}
         - {path: tests/test_dependency_overrides.py, symbol: test_override_simple}
         - {path: tests/test_request_params/test_query/test_required_str.py, symbol: test_required_alias_missing}
         - {path: tests/test_request_params/test_query/test_required_str.py, symbol: test_required_alias_by_alias}
@@ -678,8 +693,8 @@ reviewed_api_contract_overlay:
         - {path: fastapi/applications.py, symbol: openapi}
         - {path: tests/test_application.py, symbol: test_openapi_schema}
         - {path: tests/main.py}
-      feature_ids: [app-routing, dependency-security, request-validation, openapi-docs]
-      observation_selectors: [http.status, http.body.bytes, openapi.document]
+      feature_ids: [app-routing, dependency-security, request-validation, websocket-lifecycle, openapi-docs]
+      observation_selectors: [http.status, http.body.bytes, websocket.event_order, websocket.messages, openapi.document]
       supported_slice: >-
         Partial native constructor slice: the application exposes a mutable
         dependency_overrides mapping used by the reviewed synchronous and
@@ -694,6 +709,11 @@ reviewed_api_contract_overlay:
         That workflow also verifies a truthy constructor-provided
         `openapi_external_docs` mapping at `/externalDocs`; empty, omitted, and
         invalid values are not part of this slice.
+        The `dependencies` constructor argument is applied to direct WebSocket
+        routes and to included-router WebSocket routes. The selected cases
+        observe app, include, router, and route dependency order through
+        WebSocket messages and ASGI event order; other dependency forms and
+        HTTP-path ordering are not exercised by this workflow.
         Other constructor options and override cache behavior beyond the
         reviewed Depends slice remain outside this reviewed slice.
     fastapi.applications.FastAPI:
@@ -771,13 +791,15 @@ reviewed_api_contract_overlay:
         non-empty string description per key are preserved by
         FastAPI.include_router in path-operation-other-verbs-responses.
         Router/include-level response maps, other dependency forms, callbacks,
-        lifespan, WebSockets, enum tags, and other constructor or inclusion
-        options remain unsupported.
+        lifespan, other WebSocket inclusion behavior, enum tags, and other
+        constructor or inclusion options remain unsupported.
     fastapi.applications.FastAPI.include_router:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::include_router
       source_evidence:
         - {path: fastapi/applications.py, symbol: include_router}
         - {path: fastapi/routing.py, symbol: include_router}
+        - {path: tests/test_ws_dependencies.py, symbol: test_routerindex}
+        - {path: tests/test_ws_dependencies.py, symbol: test_routerprefixindex}
         - {path: tests/test_router_include_context.py, symbol: test_router_and_include_prefix_path_params_reach_endpoint_and_openapi}
         - {path: tests/test_router_include_context.py, symbol: test_repeated_deep_inclusions_handle_all_concrete_paths}
         - {path: tests/test_router_include_context.py, symbol: test_router_include_context_matches_flattened_include_metadata}
@@ -790,8 +812,8 @@ reviewed_api_contract_overlay:
         - {path: docs_src/bigger_applications/app_an_py310/routers/users.py}
         - {path: tests/test_additional_responses_router.py}
         - {path: docs/en/docs/advanced/additional-responses.md}
-      feature_ids: [app-routing, request-validation, openapi-docs]
-      observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths]
+      feature_ids: [app-routing, request-validation, websocket-lifecycle, openapi-docs]
+      observation_selectors: [http.status, http.body.bytes, websocket.event_order, websocket.messages, openapi.document, openapi.paths]
       supported_slice: >-
         Includes routes registered on APIRouter, combines route, nested-router,
         and inclusion prefixes, and preserves endpoint dependency plans. The
@@ -803,6 +825,9 @@ reviewed_api_contract_overlay:
         Scalar-query dependencies supplied to `include_router` execute before
         the target router's dependencies and are included in its OpenAPI input
         parameters by router-dependencies-isolated.
+        For WebSocket routes, the selected `test_ws_dependencies.py` cases
+        preserve app, include, router, and route dependency ordering in emitted
+        messages for both root and prefixed included routers.
         Router-level and include-level `responses` maps, callbacks,
         custom response classes, and ID policies remain outside this slice.
         Route-level `responses` maps with one or more non-colliding Python
@@ -1592,6 +1617,48 @@ reviewed_api_contract_overlay:
         FastAPI string representation. Request validation generated by ASGI
         dispatch, custom exception handlers, WebSocket validation, overrides,
         and other ValidationException subclasses remain outside this slice.
+    fastapi.WebSocketException:
+      rust_binding: fastapi-rs/src/errors.rs::register
+      source_evidence:
+        - {path: fastapi/__init__.py}
+        - {path: fastapi/exceptions.py, symbol: WebSocketException}
+      feature_ids: [public-api-errors, websocket-lifecycle]
+      observation_selectors:
+        - error.args
+        - error.class
+        - error.public_attributes
+        - python.import_path
+        - python.object_identity
+        - websocket.close_code
+        - websocket.close_reason
+    fastapi.exceptions.WebSocketException:
+      rust_binding: fastapi-rs/src/errors.rs::register
+      source_evidence:
+        - {path: fastapi/exceptions.py, symbol: WebSocketException}
+      feature_ids: [public-api-errors, websocket-lifecycle]
+      observation_selectors:
+        - error.args
+        - error.class
+        - error.public_attributes
+        - python.import_path
+        - python.object_identity
+        - websocket.close_code
+        - websocket.close_reason
+    fastapi.exceptions.WebSocketException.__init__:
+      rust_binding: fastapi-rs/src/errors.rs::register
+      source_evidence:
+        - path: fastapi/exceptions.py
+          symbol: __init__
+          kind: source-definition
+          start_line: 128
+          end_line: 154
+      feature_ids: [public-api-errors, websocket-lifecycle]
+      observation_selectors:
+        - error.args
+        - error.public_attributes
+        - python.signature
+        - websocket.close_code
+        - websocket.close_reason
   warning_classification_reviews:
     fastapi.exceptions.FastAPIDeprecationWarning:
       classification: uncertain

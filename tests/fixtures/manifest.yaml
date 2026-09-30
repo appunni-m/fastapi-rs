@@ -91,7 +91,7 @@ target:
     name: starlette-rs-py
     version: 0.1.0
     starlette_contract: 1.6.0
-    commit: c3712b66b5d8ea7b77e5c98bd03fc974c6fc0744
+    commit: 53b982e3164fca822c4e09b390d681bffd0d7fe6
   external_python_runtime_lock:
     path: requirements/target-runtime-cpython-3.12.13.lock
     sha256: efb7ca633fc9a9c8587a6f59f8ee9b509151f6f77ceb75a56dd3cdeff2be99f7
@@ -128,7 +128,7 @@ source_artifacts:
   api_import_binding_classification_review:
     path: tests/fixtures/api-import-binding-classification-review.json
     schema: fastapi-starlette-import-binding-review/v1
-    sha256: b36b6d140b7810aecc36b89f1fe2a0369ad72532ab6e30f5e831d21c208063db
+    sha256: ba193eb4c125af314aa84650a339b34653afaacc12600009101f7aca07ace9de
     purpose: Reviewed source-backed disposition of uncertain FastAPI import bindings from the selected Starlette profile
     source_identity:
       package: FastAPI
@@ -136,7 +136,7 @@ source_artifacts:
       source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
       selected_starlette_profile: 1.6.0
       starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
-      starlette_rs_contract_commit: c3712b66b5d8ea7b77e5c98bd03fc974c6fc0744
+      starlette_rs_contract_commit: 53b982e3164fca822c4e09b390d681bffd0d7fe6
     starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
     counts:
       candidates: 97
@@ -148,7 +148,7 @@ source_artifacts:
     candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
     pinned_starlette_rs_sources:
       metadata_sha256: 398b9c070c03cc9ff78cd9ec879a95f40144548efefaf3ad76b999cd31c6f217
-      manifest_sha256: cd5c7d0494659d80d6c8293fd1eb853e05ff36ef30d651801bb4cf2b47df3acc
+      manifest_sha256: f1524beda48d49143fd934263620c998588f61dd512b6302fdd3da9c62a34c2e
       api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
       api_review_sha256: 822503a4b91afc8b61f1b668d286cedfb3378d96be02f4ebb6c84c9210208325
   api_source_classification_review:
@@ -172,7 +172,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@2
-    sha256: 709d584cb6f0f289352c6ac40d010082829e1c288c0220681d4fb4c95eb67934
+    sha256: 02952bdb362c8f4dae58c3a615d039ec2b52a115cbef59ef6a3ff0e47635068d
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -203,7 +203,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: cbe74f77eb3c42151c7d39b348b3898c4222e2b57e328866de09b2ec41fc997a
+    sha256: b00edb10de9f115d144c3a5c89feb27ac8303e25c0a222c88d455600b59418ed
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 628
@@ -240,7 +240,7 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@1
-    sha256: 4b994da53245c7735799ac8002b492730a0ced51b78db8b7c62da46fd0e5a856
+    sha256: f7a82edf8a6a062dc85b07bb0246e4d9247914ae8ecb8956412319ede98f9909
     schema_path: tests/fixtures/schemas/materialized-input-index.schema.json
     schema_sha256: b0a2ec32c63dc82ec43cb4c5ffaf41590e951526de305865a24301ea42e947d2
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
@@ -1785,6 +1785,7 @@ api_surface_contract:
       observation_selectors: *id005
     feature_ids:
     - public-api-errors
+    - websocket-lifecycle
     observation_selectors:
     - error.args
     - error.class
@@ -1798,7 +1799,7 @@ api_surface_contract:
     - python.signature
     - websocket.close_code
     - websocket.close_reason
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.WebSocketException
@@ -1809,7 +1810,7 @@ api_surface_contract:
         - /api_candidates/18
         - /api_candidates/549
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/errors.rs::register
   - id: fastapi.__version__
     kind: value
     source_candidate_ref: /api_candidates/20
@@ -4541,6 +4542,7 @@ api_surface_contract:
       observation_selectors: *id005
     feature_ids:
     - public-api-errors
+    - websocket-lifecycle
     observation_selectors:
     - error.args
     - error.class
@@ -4554,7 +4556,7 @@ api_surface_contract:
     - python.signature
     - websocket.close_code
     - websocket.close_reason
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.exceptions.WebSocketException
@@ -4564,7 +4566,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/549
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/errors.rs::register
   - id: fastapi.exceptions.WebSocketException.__init__
     kind: protocol_method
     source_candidate_ref: /api_candidates/550
@@ -4608,7 +4610,9 @@ api_surface_contract:
     - python-data-encoding
     - request-validation
     - response-serialization
+    - websocket-lifecycle
     observation_selectors:
+    - error.args
     - error.class
     - error.public_attributes
     - http.body.bytes
@@ -4623,7 +4627,8 @@ api_surface_contract:
     - validation.error_class
     - validation.error_details
     - websocket.close_code
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    - websocket.close_reason
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.exceptions.WebSocketException.__init__
@@ -4633,7 +4638,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/550
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/errors.rs::register
   - id: fastapi.exceptions.WebSocketRequestValidationError
     kind: class
     source_candidate_ref: /api_candidates/551
@@ -20121,6 +20126,7 @@ api_surface_contract:
     - validation.error_details
     - websocket.close_code
     - websocket.close_reason
+    - websocket.event_order
     - websocket.messages
     behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:

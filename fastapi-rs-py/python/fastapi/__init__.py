@@ -14,6 +14,7 @@ from fastapi_rs._core import (
     UploadFile,
     WebSocket,
     WebSocketDisconnect,
+    WebSocketException,
     __version__,
     status,
 )
@@ -34,6 +35,7 @@ __all__ = [
     "UploadFile",
     "WebSocket",
     "WebSocketDisconnect",
+    "WebSocketException",
     "__version__",
     "status",
 ]

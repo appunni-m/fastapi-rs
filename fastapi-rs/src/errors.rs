@@ -374,9 +374,77 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
             },
         )?,
     )?;
+    let websocket_exception_base = py
+        .import("starlette.exceptions")?
+        .getattr("WebSocketException")?;
+    let websocket_exception_bases = PyTuple::new(py, [websocket_exception_base])?;
+    let websocket_exception_namespace = PyDict::new(py);
+    websocket_exception_namespace.set_item("__module__", "fastapi.exceptions")?;
+    websocket_exception_namespace.set_item(
+        "__doc__",
+        "A WebSocket exception you can raise in your own code to show errors to the client.",
+    )?;
+    let websocket_exception_type = py.import("builtins")?.getattr("type")?.call1((
+        "WebSocketException",
+        websocket_exception_bases,
+        websocket_exception_namespace,
+    ))?;
+    set_websocket_exception_signature(py, &websocket_exception_type)?;
     module.add("ValidationException", validation_exception_type)?;
     module.add("RequestValidationError", request_exception_type)?;
-    module.add("ResponseValidationError", exception_type)
+    module.add("ResponseValidationError", exception_type)?;
+    module.add("WebSocketException", websocket_exception_type)
+}
+
+fn set_websocket_exception_signature(
+    py: Python<'_>,
+    exception_type: &Bound<'_, PyAny>,
+) -> PyResult<()> {
+    let inspect = py.import("inspect")?;
+    let annotated_doc = py.import("annotated_doc")?.getattr("Doc")?;
+    let annotated = py.import("typing")?.getattr("Annotated")?;
+    let code_doc = annotated_doc.call1((
+        "\n                A closing code from the\n                [valid codes defined in the specification](https://datatracker.ietf.org/doc/html/rfc6455#section-7.4.1).\n                ",
+    ))?;
+    let reason_doc = annotated_doc.call1((
+        "\n                The reason to close the WebSocket connection.\n\n                It is UTF-8-encoded data. The interpretation of the reason is up to the\n                application, it is not specified by the WebSocket specification.\n\n                It could contain text that could be human-readable or interpretable\n                by the client code, etc.\n                ",
+    ))?;
+    let code_annotation = annotated
+        .getattr("__class_getitem__")?
+        .call1((PyTuple::new(
+            py,
+            [
+                py.get_type::<pyo3::types::PyInt>().as_any(),
+                code_doc.as_any(),
+            ],
+        )?,))?;
+    let string_type = py.get_type::<PyString>();
+    let none = py.None();
+    let none_type = none.bind(py).get_type();
+    let optional_string = string_type.call_method1("__or__", (none_type,))?;
+    let reason_annotation = annotated
+        .getattr("__class_getitem__")?
+        .call1((PyTuple::new(
+            py,
+            [optional_string.as_any(), reason_doc.as_any()],
+        )?,))?;
+
+    let parameter_type = inspect.getattr("Parameter")?;
+    let kind = parameter_type.getattr("POSITIONAL_OR_KEYWORD")?;
+    let code_kwargs = PyDict::new(py);
+    code_kwargs.set_item("annotation", code_annotation)?;
+    let code = parameter_type.call(("code", &kind), Some(&code_kwargs))?;
+    let reason_kwargs = PyDict::new(py);
+    reason_kwargs.set_item("annotation", reason_annotation)?;
+    reason_kwargs.set_item("default", py.None())?;
+    let reason = parameter_type.call(("reason", &kind), Some(&reason_kwargs))?;
+    let parameters = PyList::new(py, [code, reason])?;
+    let signature_kwargs = PyDict::new(py);
+    signature_kwargs.set_item("return_annotation", py.None())?;
+    let signature = inspect
+        .getattr("Signature")?
+        .call((parameters,), Some(&signature_kwargs))?;
+    exception_type.setattr("__signature__", signature)
 }
 
 pub(crate) fn response_validation_error(

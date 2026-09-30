@@ -256,6 +256,7 @@ pub(crate) struct PyFastApi {
     contact: Option<Py<PyAny>>,
     license_info: Option<Py<PyAny>>,
     openapi_external_docs: Option<Py<PyAny>>,
+    dependencies: Vec<Py<PyAny>>,
     default_response_class: Option<Py<PyAny>>,
     dependency_overrides: Py<PyDict>,
     router: FastApiOperationRouter,
@@ -293,7 +294,7 @@ struct RouterIncludePolicy<'policy> {
 #[pymethods]
 impl PyFastApi {
     #[new]
-    #[pyo3(signature = (*, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", terms_of_service = None, contact = None, license_info = None, openapi_external_docs = None, default_response_class = None))]
+    #[pyo3(signature = (*, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", terms_of_service = None, contact = None, license_info = None, openapi_external_docs = None, dependencies = None, default_response_class = None))]
     // lint-exception: PyO3 needs one Rust argument per Python constructor keyword.
     #[allow(
         clippy::too_many_arguments,
@@ -310,6 +311,7 @@ impl PyFastApi {
         contact: Option<Py<PyAny>>,
         license_info: Option<Py<PyAny>>,
         openapi_external_docs: Option<Py<PyAny>>,
+        dependencies: Option<Vec<Py<PyAny>>>,
         default_response_class: Option<Py<PyAny>>,
     ) -> Self {
         Self {
@@ -322,6 +324,7 @@ impl PyFastApi {
             contact,
             license_info,
             openapi_external_docs,
+            dependencies: dependencies.unwrap_or_default(),
             default_response_class,
             dependency_overrides: PyDict::new(py).unbind(),
             router: FastApiOperationRouter::new(),
@@ -914,8 +917,13 @@ impl PyFastApi {
         let router = router.bind(py).borrow();
         let prefix = combined_router_prefix(prefix, &router.prefix)?;
         let tags = combined_router_tags(tags.as_deref(), &router.tags);
-        let mut dependencies = dependencies.unwrap_or_default();
-        dependencies.extend(
+        let mut inherited_dependencies = self
+            .dependencies
+            .iter()
+            .map(|dependency| dependency.clone_ref(py))
+            .collect::<Vec<_>>();
+        inherited_dependencies.extend(dependencies.unwrap_or_default());
+        inherited_dependencies.extend(
             router
                 .dependencies
                 .iter()
@@ -931,7 +939,7 @@ impl PyFastApi {
             RouterIncludePolicy {
                 prefix: &prefix,
                 tags: &tags,
-                dependencies: &dependencies,
+                dependencies: &inherited_dependencies,
                 deprecated,
                 include_in_schema,
             },
@@ -1303,6 +1311,7 @@ impl PyApiRouter {
                 "",
                 "0.1.0",
                 "/openapi.json",
+                None,
                 None,
                 None,
                 None,
@@ -1803,7 +1812,16 @@ fn operation_decorator(
 impl PyOperationDecorator {
     fn __call__(&self, py: Python<'_>, endpoint: Py<PyAny>) -> PyResult<Py<PyAny>> {
         let path_parameters = path_parameter_names(&self.path);
-        let plan = CallablePlan::build(py, endpoint.clone_ref(py), &path_parameters)?;
+        let app_dependencies = self
+            .app
+            .bind(py)
+            .borrow()
+            .dependencies
+            .iter()
+            .map(|dependency| dependency.clone_ref(py))
+            .collect::<Vec<_>>();
+        let mut plan = CallablePlan::build(py, endpoint.clone_ref(py), &path_parameters)?;
+        plan.prepend_dependencies(py, &app_dependencies)?;
         let generator_kind = generator_kind(py, endpoint.bind(py))?;
         let (inferred_name, param_convertors) =
             route_reverse_metadata(py, &self.path, endpoint.bind(py))?;
@@ -1901,7 +1919,7 @@ impl PyOperationDecorator {
             response_model_exclude_unset: self.response_model_exclude_unset,
             response_model_exclude_defaults: self.response_model_exclude_defaults,
             response_model_exclude_none: self.response_model_exclude_none,
-            router_dependencies: Vec::new(),
+            router_dependencies: app_dependencies,
             plan,
         });
         Ok(endpoint)
@@ -1912,8 +1930,21 @@ impl PyOperationDecorator {
 impl PyWebSocketDecorator {
     fn __call__(&self, py: Python<'_>, endpoint: Py<PyAny>) -> PyResult<Py<PyAny>> {
         let path_parameters = path_parameter_names(&self.path);
+        let mut route_dependencies = self
+            .app
+            .bind(py)
+            .borrow()
+            .dependencies
+            .iter()
+            .map(|dependency| dependency.clone_ref(py))
+            .collect::<Vec<_>>();
+        route_dependencies.extend(
+            self.dependencies
+                .iter()
+                .map(|dependency| dependency.clone_ref(py)),
+        );
         let mut plan = CallablePlan::build(py, endpoint.clone_ref(py), &path_parameters)?;
-        plan.prepend_dependencies(py, &self.dependencies)?;
+        plan.prepend_dependencies(py, &route_dependencies)?;
         let param_convertors = route_param_convertors(py, &self.path)?;
         let inputs = plan.input_parameters();
         let mut app = self.app.bind(py).borrow_mut();
@@ -1929,11 +1960,7 @@ impl PyWebSocketDecorator {
         app.websocket_routes.push(FastApiWebSocketRoute {
             path: self.path.clone(),
             param_convertors,
-            route_dependencies: self
-                .dependencies
-                .iter()
-                .map(|dependency| dependency.clone_ref(py))
-                .collect(),
+            route_dependencies,
             endpoint: endpoint.clone_ref(py),
             plan,
         });
@@ -1942,6 +1969,34 @@ impl PyWebSocketDecorator {
 }
 
 impl CallablePlan {
+    fn has_only_synchronous_dependencies(
+        &self,
+        context: &InvocationContext<'_, '_>,
+    ) -> PyResult<bool> {
+        for parameter in &self.parameters {
+            let ParameterSource::Dependency { plan, .. } = &parameter.source else {
+                continue;
+            };
+            let original_callable = plan.callable.bind(context.py);
+            let replacement = context.dependency_overrides.get_item(original_callable)?;
+            let callable = match replacement {
+                Some(replacement) if !replacement.is(original_callable) => replacement.unbind(),
+                _ => plan.callable.clone_ref(context.py),
+            };
+            if dependency_override_callable(context.py, callable.bind(context.py))?
+                != DependencyOverrideCallable::Sync
+                || dependency_callable_is_generator(context.py, callable.bind(context.py))?
+            {
+                return Ok(false);
+            }
+            let dependency_plan = CallablePlan::build(context.py, callable, &plan.path_parameters)?;
+            if !dependency_plan.has_only_synchronous_dependencies(context)? {
+                return Ok(false);
+            }
+        }
+        Ok(true)
+    }
+
     fn build(py: Python<'_>, callable: Py<PyAny>, path_parameters: &[String]) -> PyResult<Self> {
         let inspect = py.import("inspect")?;
         let typing = py.import("typing")?;
@@ -1980,7 +2035,7 @@ impl CallablePlan {
                     };
                 let default_is_parameter_marker = matches!(
                     raw_default_marker_kind.as_deref(),
-                    Some("body" | "depends" | "query" | "form" | "file")
+                    Some("body" | "depends" | "query" | "header" | "cookie" | "form" | "file")
                 );
                 if default_is_parameter_marker {
                     metadata.push(raw_default.clone().unbind());
@@ -2327,6 +2382,19 @@ impl CallablePlan {
                 })
                 .collect::<Vec<_>>();
             if nested_dependencies.is_empty() {
+                dependency_plans.push((
+                    edge_index,
+                    cache_key,
+                    use_cache,
+                    callable_kind,
+                    dependency_plan,
+                ));
+                continue;
+            }
+
+            if callable_kind == DependencyOverrideCallable::Sync
+                && dependency_plan.has_only_synchronous_dependencies(context)?
+            {
                 dependency_plans.push((
                     edge_index,
                     cache_key,
@@ -2826,8 +2894,10 @@ fn marker_default(py: Python<'_>, metadata: &[Py<PyAny>]) -> PyResult<Option<Py<
             || kind == "file"
         {
             let default = marker.getattr("default")?;
-            let has_default = if matches!(kind.as_str(), "query" | "form" | "file")
-                && marker.hasattr("default_is_set")?
+            let has_default = if matches!(
+                kind.as_str(),
+                "header" | "query" | "cookie" | "form" | "file"
+            ) && marker.hasattr("default_is_set")?
             {
                 marker.getattr("default_is_set")?.extract::<bool>()?
             } else {
@@ -4084,7 +4154,10 @@ fn is_json_decode_error(py: Python<'_>, error: &PyErr) -> bool {
         .is_ok_and(|decode_error| error.matches(py, &decode_error).is_ok_and(|value| value))
 }
 
-fn validation_response_body(py: Python<'_>, failures: &[ValidationIssue]) -> PyResult<Py<PyAny>> {
+fn validation_error_details<'py>(
+    py: Python<'py>,
+    failures: &[ValidationIssue],
+) -> PyResult<Bound<'py, PyList>> {
     let details = PyList::empty(py);
     for failure in failures {
         match failure {
@@ -4100,6 +4173,11 @@ fn validation_response_body(py: Python<'_>, failures: &[ValidationIssue]) -> PyR
             }
         }
     }
+    Ok(details)
+}
+
+fn validation_response_body(py: Python<'_>, failures: &[ValidationIssue]) -> PyResult<Py<PyAny>> {
+    let details = validation_error_details(py, failures)?;
     let result = PyDict::new(py);
     result.set_item("detail", details)?;
     Ok(jsonable_encoder_default(py, &result)?.unbind())
@@ -4888,6 +4966,34 @@ impl FastApiCall {
         Ok(MachineAction::Await(awaitable.unbind()))
     }
 
+    fn close_websocket_exception(
+        &mut self,
+        py: Python<'_>,
+        error: PyErr,
+    ) -> PyResult<MachineAction> {
+        let value = error.value(py);
+        let exception_type = py
+            .import("starlette.exceptions")?
+            .getattr("WebSocketException")?;
+        if !value.is_instance(&exception_type)? {
+            return Err(error);
+        }
+        let websocket = self
+            .websocket
+            .as_ref()
+            .ok_or_else(|| PyRuntimeError::new_err("FastAPI WebSocket was not initialized"))?;
+        let awaitable = websocket
+            .bind(py)
+            .call_method1("close", (value.getattr("code")?, value.getattr("reason")?))?;
+        if !is_awaitable(py, &awaitable)? {
+            return Err(PyTypeError::new_err(
+                "Starlette WebSocket.close must return an awaitable",
+            ));
+        }
+        self.pending = Some(PendingAction::WebSocketClose);
+        Ok(MachineAction::Await(awaitable.unbind()))
+    }
+
     fn receive_http_body(&mut self, py: Python<'_>) -> PyResult<MachineAction> {
         let request = self
             .request
@@ -5233,9 +5339,22 @@ impl FastApiCall {
                     .ok_or_else(|| PyRuntimeError::new_err("request invocation state was lost"))?;
                 if !invocation.failures.is_empty() {
                     if self.websocket_route_index.is_some() {
-                        return Err(PyValueError::new_err(
-                            "FastAPI WebSocket validation failure handling is not in the current target slice",
-                        ));
+                        let details = validation_error_details(py, &invocation.failures)?;
+                        let reason = jsonable_encoder_default(py, &details)?;
+                        let websocket = self.websocket.as_ref().ok_or_else(|| {
+                            PyRuntimeError::new_err("FastAPI WebSocket was not initialized")
+                        })?;
+                        let kwargs = PyDict::new(py);
+                        kwargs.set_item("code", 1008)?;
+                        kwargs.set_item("reason", reason)?;
+                        let close = websocket.bind(py).call_method("close", (), Some(&kwargs))?;
+                        if !is_awaitable(py, &close)? {
+                            return Err(PyTypeError::new_err(
+                                "Starlette WebSocket.close must return an awaitable",
+                            ));
+                        }
+                        self.pending = Some(PendingAction::WebSocketClose);
+                        return Ok(MachineAction::Await(close.unbind()));
                     }
                     self.response_status = 422;
                     self.response_body = json_bytes(
@@ -5628,6 +5747,11 @@ impl FastApiCall {
             },
             MachineResume::Error(error) => match self.pending.take() {
                 Some(PendingAction::FormParse) => self.form_parse_failed(py, error),
+                Some(
+                    PendingAction::WebSocketEndpoint
+                    | PendingAction::Dependency { .. }
+                    | PendingAction::OverrideSubdependency { .. },
+                ) => self.close_websocket_exception(py, error),
                 Some(PendingAction::FormCloseAfterError(_))
                 | Some(PendingAction::FormCloseAfterResponse) => Err(error),
                 _ => Err(error),
