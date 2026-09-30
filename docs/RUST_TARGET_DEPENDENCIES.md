@@ -170,3 +170,15 @@ public `fastapi` package is restricted to direct native re-exports and literal
 owning route registration, dependency execution, request validation, response
 model filtering, and OpenAPI assembly; Pydantic models and user callables remain
 Python objects invoked through PyO3.
+
+Do not add the pinned `pydantic-core` crate directly to this workspace without
+an explicit toolchain and boundary review. Its [2.46.4 Cargo manifest] sets
+`rust-version = 1.88` and depends on PyO3 0.28, while this workspace declares
+Rust 1.85 and PyO3 0.29.2. Pydantic's [architecture contract] also treats model
+definition and core-schema generation as Python package work, with validation
+and serialization delegated to the Rust core. Keep FastAPI-specific control
+flow in `fastapi-rs`, and call Pydantic's public model/schema APIs through the
+existing PyO3 boundary.
+
+[2.46.4 Cargo manifest]: https://github.com/pydantic/pydantic/blob/v2.13.4/pydantic-core/Cargo.toml
+[architecture contract]: https://pydantic.dev/docs/validation/dev/internals/architecture/

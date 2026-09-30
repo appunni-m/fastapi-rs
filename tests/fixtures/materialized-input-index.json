@@ -5088,6 +5088,20 @@
       ]
     },
     {
+      "id": "response-model-inferred-iterable-policies",
+      "input_path": "tests/fixtures/inputs/parity/response-model-inferred-iterable-policies.json",
+      "input_sha256": "0732db6495d90d46828b97738aaf92316c07ed747bcc20ac825c511cffd0b94e",
+      "recipe_path": "tests/fixtures/input-recipes/parity/response-model-inferred-iterable-policies.yaml",
+      "recipe_sha256": "06d435e84f90d207196d57cb7683a55aa2cfd6652af147a2e80246ab32d4ff12",
+      "workload_path": "tests/fixtures/workloads/response_model_inferred_iterable_policies.py",
+      "workload_sha256": "73bc0810c485ec61e57a526360ec4db8624883934875280215a93d22dbff0dd5",
+      "case_ids": [
+        "fastapi.response-model.inferred-iterable.exclude-unset",
+        "fastapi.response-model.inferred-iterable.exclude-defaults",
+        "fastapi.response-model.inferred-iterable.exclude-none"
+      ]
+    },
+    {
       "id": "response-model-orm-dataclass-upstream",
       "input_path": "tests/fixtures/inputs/parity/response-model-orm-dataclass-upstream.json",
       "input_sha256": "cf6fb223cc835f46d1bc3a3f59d7e163954d43248d549b5103a98cf05d48df22",
@@ -19281,6 +19295,22 @@
         "fastapi.response-model.include.nested.model",
         "fastapi.response-model.mixed-include-exclude.dict",
         "fastapi.response-model.mixed-include-exclude.model"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_skip_defaults.py",
+      "fixture_id": "fastapi.test.test-skip-defaults",
+      "workflow_id": "response-model-inferred-iterable-policies",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.response-model.inferred-iterable.exclude-defaults",
+        "fastapi.response-model.inferred-iterable.exclude-none",
+        "fastapi.response-model.inferred-iterable.exclude-unset"
       ],
       "observation_selectors": [
         "http.body.bytes",

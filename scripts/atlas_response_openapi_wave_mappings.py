@@ -154,6 +154,56 @@ def _default_response_class_case(test_path, start, end, rationale, workflow, *, 
     )
 
 
+_INFERRED_ITERABLE_RESPONSE_POLICY = (
+    _source(
+        "fastapi/routing.py",
+        1081,
+        1112,
+        "FastAPI infers a response model from a non-streaming endpoint return annotation",
+    ),
+    _source(
+        "fastapi/routing.py",
+        301,
+        338,
+        "FastAPI validates the response and applies serialization policy flags",
+    ),
+    _source(
+        "fastapi/routing.py",
+        727,
+        738,
+        "FastAPI forwards response-model filter flags into response serialization",
+    ),
+    _source(
+        "fastapi/_compat/v2.py",
+        190,
+        213,
+        "FastAPI forwards field filters into Pydantic TypeAdapter serialization",
+    ),
+)
+
+
+def _inferred_iterable_policy_case(test_path, start, end, rationale, workflow):
+    return _case(
+        test_path,
+        start,
+        end,
+        ["response-serialization"],
+        ["http.status", "http.body.bytes"],
+        rationale,
+        workflow,
+        implementation=_INFERRED_ITERABLE_RESPONSE_POLICY[0],
+        additional_sources=_INFERRED_ITERABLE_RESPONSE_POLICY[1:],
+        contract_gate=(
+            "Partial: the workload uses an independently defined Pydantic model, "
+            "endpoint paths, and values, while exercising the same inferred "
+            "Iterable[Model] response and one exclusion policy per route. It "
+            "compares status and exact response bytes; it does not claim the "
+            "source model's field names or payload. Pydantic owns model-level "
+            "validation and serialization."
+        ),
+    )
+
+
 RESPONSE_OPENAPI_TEST_REVIEW_MAPPINGS = {
     "tests/test_additional_response_extra.py": {
         "functions": {
@@ -481,6 +531,31 @@ RESPONSE_OPENAPI_TEST_REVIEW_MAPPINGS = {
                 "A path-operation response class has final precedence over nested include defaults.",
                 "Use default-response-class-router-upstream.yaml case fastapi.test.test-default-response-class-router.test-router-b-a-c-override, action dispatch.",
                 gate="Partial: the case samples a deepest-level custom response override; FastAPI selects the class while Starlette supplies generic rendering and transport.",
+            ),
+        }
+    },
+    "tests/test_skip_defaults.py": {
+        "functions": {
+            "test_return_iterable_exclude_unset": _inferred_iterable_policy_case(
+                "tests/test_skip_defaults.py",
+                113,
+                115,
+                "FastAPI infers an Iterable[Model] response model from the endpoint return annotation and applies response_model_exclude_unset to every item.",
+                "Use response-model-inferred-iterable-policies.yaml case fastapi.response-model.inferred-iterable.exclude-unset, action exclude-unset-from-inferred-iterable.",
+            ),
+            "test_return_iterable_exclude_defaults": _inferred_iterable_policy_case(
+                "tests/test_skip_defaults.py",
+                118,
+                120,
+                "FastAPI applies response_model_exclude_defaults to every item of an inferred Iterable[Model] response.",
+                "Use response-model-inferred-iterable-policies.yaml case fastapi.response-model.inferred-iterable.exclude-defaults, action exclude-defaults-from-inferred-iterable.",
+            ),
+            "test_return_iterable_exclude_none": _inferred_iterable_policy_case(
+                "tests/test_skip_defaults.py",
+                123,
+                125,
+                "FastAPI applies response_model_exclude_none to every item of an inferred Iterable[Model] response.",
+                "Use response-model-inferred-iterable-policies.yaml case fastapi.response-model.inferred-iterable.exclude-none, action exclude-none-from-inferred-iterable.",
             ),
         }
     },
@@ -941,19 +1016,6 @@ RESPONSE_OPENAPI_TEST_EXCLUSIONS = {
 # as covered or permanently excluded.  They need a distinct input case before
 # their source assertions can become mappings.
 RESPONSE_OPENAPI_REVIEW_GAPS = {
-    "tests/test_datetime_custom_encoder.py": {
-        "test_pydanticv2": {
-            "reason": "This test asserts a field_serializer's output after FastAPI's HTTP response-model serialization. The direct jsonable_encoder recipe does not traverse the ASGI route response path, and the current response workload has no datetime serializer route.",
-            "supporting_sources": [
-                _source(
-                    "tests/test_datetime_custom_encoder.py",
-                    8,
-                    28,
-                    "field serializer, FastAPI response-model route, and parsed JSON assertion",
-                )
-            ],
-        },
-    },
     "tests/test_response_model_sub_types.py": {
         "test_openapi_schema": {
             "reason": "The full source snapshot distinguishes integer, integer-list, model, and model-list additional response schemas. No independent recipe compares all four schema branches.",
