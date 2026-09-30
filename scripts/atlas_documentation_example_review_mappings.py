@@ -123,6 +123,34 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
             }
         ],
     },
+    "docs_src/security/tutorial003_py310.py": {
+        "rationale": (
+            "The FastAPI 0.141.1 example extracts a bearer token, resolves a current user through "
+            "nested dependencies, and applies an app-owned inactive-user policy. The independent "
+            "case sends an authenticated token through the same dependency shape and observes the "
+            "resulting HTTP response. It samples FastAPI bearer parsing and dependency dispatch; "
+            "the inactive flag check and error text remain application-owned."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/security/tutorial003_py310.py",
+                "start_line": 56,
+                "end_line": 70,
+                "role": "documented bearer extraction and nested current-active-user dependency",
+            }
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/security-oauth2-inactive-user-source-wave.yaml",
+                "case_ids": ["fastapi.security.tutorial-003.oauth2-inactive-user"],
+                "observation_selectors": [
+                    "http.body.bytes",
+                    "http.headers.ordered",
+                    "http.status",
+                ],
+            }
+        ],
+    },
     "docs_src/behind_a_proxy/tutorial002_py310.py": {
         "rationale": (
             "FastAPI 0.141.1 configures this app with root_path=/api/v1. The listed input cases "

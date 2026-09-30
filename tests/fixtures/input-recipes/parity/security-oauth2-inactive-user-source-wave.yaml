@@ -1,0 +1,50 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/security_oauth2_inactive_user_source_wave.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.security.tutorial-003.oauth2-inactive-user
+  actions:
+  - action_id: authenticated-inactive-user
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /users/me
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Bearer disabled-account
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_security/test_tutorial003.py
+    kind: upstream_test
+  - path: docs_src/security/tutorial003_py310.py
+    kind: upstream_documentation_example
+  - path: docs/en/docs/tutorial/security/simple-oauth2.md
+    kind: upstream_documentation

@@ -1,0 +1,52 @@
+schema: fastapi-rs/python-asgi-workflow@2
+oracle_profile_extension: standard-multipart
+workload:
+  file: tests/fixtures/workloads/form_file_empty_optional_integer.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.request-form-default.blank-optional-integer
+  actions:
+  - action_id: submit-blank-form-value
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /review/form-file/defaults
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/x-www-form-urlencoded
+      - - content-length
+        - '4'
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: age=
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_form_default.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/request-forms.md
+    kind: upstream_documentation
+  - path: docs/en/docs/tutorial/request-files.md
+    kind: upstream_documentation

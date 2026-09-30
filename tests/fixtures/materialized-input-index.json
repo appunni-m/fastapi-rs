@@ -21,6 +21,18 @@
       ]
     },
     {
+      "id": "additional-response-status-keys-review",
+      "input_path": "tests/fixtures/inputs/parity/additional-response-status-keys-review.json",
+      "input_sha256": "05df7667aac15b59c78aa1866ed0f1087800e71626b6823a1073239bc3ae3732",
+      "recipe_path": "tests/fixtures/input-recipes/parity/additional-response-status-keys-review.yaml",
+      "recipe_sha256": "5843e448b4b5a3a4f52df9a6330e7929e4f7de5a3a7f2eb361c3e596f71c06d6",
+      "workload_path": "tests/fixtures/workloads/additional_response_status_keys_review.py",
+      "workload_sha256": "c15f55a827cf473ef004c3605b30e6b1a02605cca17530e9e27fa2d1112f3343",
+      "case_ids": [
+        "fastapi.additional-responses.status-key-normalization.lowercase-range"
+      ]
+    },
+    {
       "id": "additional-responses",
       "input_path": "tests/fixtures/inputs/parity/additional-responses.json",
       "input_sha256": "3cb29da55ea95fc6290eb29dea725e0a3cfb97260ac183466ab8435043f439ef",
@@ -1885,6 +1897,19 @@
         "fastapi.application-testing.openapi",
         "fastapi.application-testing.lifespan-items"
       ]
+    },
+    {
+      "id": "form-file-empty-optional-integer",
+      "input_path": "tests/fixtures/inputs/parity/form-file-empty-optional-integer.json",
+      "input_sha256": "9cfb18112b7f2a02e3e5030442c50aa5e631c17be597a1c7a20263855c88bcb7",
+      "recipe_path": "tests/fixtures/input-recipes/parity/form-file-empty-optional-integer.yaml",
+      "recipe_sha256": "c3866542f5ffdbffdeaac2eed77b22a9f6967ae7d65707119991a35d9082f8aa",
+      "workload_path": "tests/fixtures/workloads/form_file_empty_optional_integer.py",
+      "workload_sha256": "0b17914a2aa03b520e651fc2d172ae345473ef27188ff7c006aeddafcd827ca4",
+      "case_ids": [
+        "fastapi.request-form-default.blank-optional-integer"
+      ],
+      "oracle_profile_extension": "standard-multipart"
     },
     {
       "id": "frontend-fallback-routing-source-review",
@@ -5825,6 +5850,18 @@
       ]
     },
     {
+      "id": "security-oauth2-inactive-user-source-wave",
+      "input_path": "tests/fixtures/inputs/parity/security-oauth2-inactive-user-source-wave.json",
+      "input_sha256": "c78d2a0552781967fecbf4b0f648489e0c39fc16039ca1b37b5b2991635fa57f",
+      "recipe_path": "tests/fixtures/input-recipes/parity/security-oauth2-inactive-user-source-wave.yaml",
+      "recipe_sha256": "c2158f838785a1acf961853bc702307be7ec9f520a4bc0d54c68ad9179a7eec8",
+      "workload_path": "tests/fixtures/workloads/security_oauth2_inactive_user_source_wave.py",
+      "workload_sha256": "0f6a1b48f71fee572543e5ee856ddf603c3326acd5070e1bc2663e3d29298772",
+      "case_ids": [
+        "fastapi.security.tutorial-003.oauth2-inactive-user"
+      ]
+    },
+    {
       "id": "security-oauth2-optional-description-strict-form-gap-wave",
       "input_path": "tests/fixtures/inputs/parity/security-oauth2-optional-description-strict-form-gap-wave.json",
       "input_sha256": "e720132e2054c439ea2cde7646b360981cf1cccfb4e307abf06ebd744af4a66d",
@@ -6875,6 +6912,22 @@
         "docs.response.status",
         "http.status",
         "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_additional_responses_router.py",
+      "fixture_id": "fastapi.test.test-additional-responses-router",
+      "workflow_id": "additional-response-status-keys-review",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.additional-responses.status-key-normalization.lowercase-range"
+      ],
+      "observation_selectors": [
+        "docs.response.status",
+        "http.status",
+        "openapi.document",
+        "openapi.paths"
       ]
     },
     {
@@ -11606,6 +11659,48 @@
         "asgi.lifespan.shutdown",
         "asgi.lifespan.startup",
         "asgi.lifespan.workload_trace",
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/request-files.md",
+      "fixture_id": "fastapi.docs.tutorial-request-files",
+      "workflow_id": "form-file-empty-optional-integer",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.request-form-default.blank-optional-integer"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/request-forms.md",
+      "fixture_id": "fastapi.docs.tutorial-request-forms",
+      "workflow_id": "form-file-empty-optional-integer",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.request-form-default.blank-optional-integer"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_form_default.py",
+      "fixture_id": "fastapi.test.test-form-default",
+      "workflow_id": "form-file-empty-optional-integer",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.request-form-default.blank-optional-integer"
+      ],
+      "observation_selectors": [
         "http.body.bytes",
         "http.status"
       ]
@@ -22040,6 +22135,51 @@
       "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.security-oauth2-authorization-code-scopes.test-root"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-example:docs_src/security/tutorial003_py310.py",
+      "fixture_id": "fastapi.docs-example.security-tutorial003-py310",
+      "workflow_id": "security-oauth2-inactive-user-source-wave",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.security.tutorial-003.oauth2-inactive-user"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/security/simple-oauth2.md",
+      "fixture_id": "fastapi.docs.tutorial-security-simple-oauth2",
+      "workflow_id": "security-oauth2-inactive-user-source-wave",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.security.tutorial-003.oauth2-inactive-user"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_security/test_tutorial003.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-security-test-tutorial003",
+      "workflow_id": "security-oauth2-inactive-user-source-wave",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.security.tutorial-003.oauth2-inactive-user"
       ],
       "observation_selectors": [
         "http.body.bytes",

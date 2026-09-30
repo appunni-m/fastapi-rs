@@ -48,6 +48,9 @@ _SECURITY_ATLAS = "tests/fixtures/input-recipes/parity/security-atlas-wave.yaml"
 _TUTORIAL004 = "tests/fixtures/input-recipes/parity/security-tutorial004-auth-input-gap-wave.yaml"
 _TUTORIAL005 = "tests/fixtures/input-recipes/parity/security-tutorial005-auth-scopes-gap-wave.yaml"
 _HTTP_BASIC_RECIPE = "tests/fixtures/input-recipes/parity/http-basic.yaml"
+_OAUTH2_INACTIVE_USER_RECIPE = (
+    "tests/fixtures/input-recipes/parity/security-oauth2-inactive-user-source-wave.yaml"
+)
 
 
 def _source(path: str, start: int, end: int, role: str) -> dict[str, Any]:
@@ -435,7 +438,7 @@ SECURITY_TUTORIAL_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
         },
     ),
     _TEST_ROOT + "test_tutorial003.py": _module(
-        "Tutorial 003 combines OAuth2 form parsing and bearer dependencies with a tutorial-owned in-memory user database and fake password/token functions. FastAPI-owned successful form, bearer, and OpenAPI paths are mapped; app-auth branches are explicitly excluded below.",
+        "Tutorial 003 combines OAuth2 form parsing and bearer dependencies with a tutorial-owned in-memory user database and fake password/token functions. FastAPI-owned form, bearer, dependency, and OpenAPI paths are mapped; the inactive-user input observes dependency dispatch while keeping its authorization policy app-owned.",
         {
             "test_login": _fn(
                 "test_tutorial003.py",
@@ -511,6 +514,43 @@ SECURITY_TUTORIAL_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                     _DEPENDENCY_SOLVER,
                 ),
                 ["dependency-security", "response-serialization"],
+            ),
+            "test_inactive_user": _fn(
+                "test_tutorial003.py",
+                "test_inactive_user",
+                "The source supplies a valid bearer token for an inactive user, exercising bearer extraction and nested current-user dependencies before application authorization returns an error.",
+                "The independent case sends a different authenticated inactive-user token through the same dependency shape and observes the HTTP response. FastAPI bearer parsing and dependency dispatch are the mapped behavior; the inactive flag policy and its error text are application-owned.",
+                [
+                    _http_case(
+                        _OAUTH2_INACTIVE_USER_RECIPE,
+                        "fastapi.security.tutorial-003.oauth2-inactive-user",
+                        "authenticated-inactive-user",
+                    )
+                ],
+                (
+                    _docs(
+                        "tutorial003",
+                        56,
+                        70,
+                        "bearer extraction, current-user lookup, and nested active-user dependency",
+                    ),
+                    _source(
+                        "docs/en/docs/tutorial/security/simple-oauth2.md",
+                        187,
+                        197,
+                        "OAuth2 bearer token and current-user dependency tutorial",
+                    ),
+                    _source(
+                        "docs/en/docs/tutorial/security/simple-oauth2.md",
+                        263,
+                        279,
+                        "inactive-user HTTPException behavior is application-owned",
+                    ),
+                    _OAUTH2_BEARER,
+                    _DEPENDENCY_SOLVER,
+                    _HTTP_EXCEPTION_HANDLER,
+                ),
+                ["dependency-security", "public-api-errors"],
             ),
             "test_incorrect_token_type": _fn(
                 "test_tutorial003.py",
@@ -1311,10 +1351,6 @@ _TUTORIAL003_APP_EXCLUSIONS = {
         "OAuth2PasswordBearer accepts the syntactically valid bearer string; the source failure comes from the tutorial's fake token-to-user lookup and custom HTTPException, not a FastAPI token validator.",
         _docs("tutorial003", 49, 64, "app-owned fake token decoding and user lookup"),
     ),
-    "test_inactive_user": (
-        "The source rejects the fake database user's disabled flag in get_current_active_user. This application authorization rule is outside FastAPI's bearer and dependency contract.",
-        _docs("tutorial003", 67, 70, "app-owned inactive-user policy"),
-    ),
 }
 _TUTORIAL003_PATH = _TEST_ROOT + "test_tutorial003.py"
 for _name, (_reason, _source_row) in _TUTORIAL003_APP_EXCLUSIONS.items():
@@ -1323,5 +1359,6 @@ for _name, (_reason, _source_row) in _TUTORIAL003_APP_EXCLUSIONS.items():
     )
 
 
-# The existing recipes/workloads already stimulate each FastAPI-owned behavior
-# reviewed here; no additional recipe or workload is introduced by this sidecar.
+# The reviewed recipes use independently authored inputs. The tutorial 003
+# inactive-user case samples bearer extraction and nested dependency dispatch
+# while treating the authorization policy as app-owned.
