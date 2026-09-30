@@ -23,7 +23,7 @@ The source identities agree with reviewed metadata:
 | FastAPI source at `../fastapi` | Clean checkout at `95f8322ee1dcda7ceace7b1c4f6c9915b36d748f`; `pyproject.toml` declares five runtime requirements and Python `>=3.10`. |
 | FastAPI source lock | `../fastapi/uv.lock` SHA-256 is `96ae079a121e11b4cc0d260df5b7f77189bb90fa23a2da368f607418c2d98165`; it resolves FastAPI's source graph to Pydantic 2.13.4, pydantic-core 2.46.4, and Starlette 1.3.1. |
 | Selected Starlette contract | Clean `../starlette` checkout is tag 1.6.0, commit `4f250d6b814587e20c5365f0a5f0c4d42bcb929f`. This is the sole Starlette compatibility contract. The upstream lock's 1.3.1 row is provenance only. The parity preparation explicitly omits that locked package and installs the selected source checkout. |
-| Starlette-RS source | `metadata.yaml` selects commit `e60b8f1dc6a50c0d5597587fe5408669ed7572e7`. A clean checkout of that commit exists at `/private/tmp/fastapi-rs-bench.dKByAf/starlette-rs`; the dependency inventory check passed when given that source path. The Makefile's default sibling path currently resolves to a different, dirty checkout (`a74f57c19e666f061bf00dd071142ed766815d8d`). This is a source-selection/setup mismatch, not evidence that the generated inventory has stale provenance. |
+| Starlette-RS source | `metadata.yaml` selects commit `56beb29876e040b8a59afecdf4750d55432c006d`. A clean detached helper checkout at `/private/tmp/fastapi-rs-atlas-starlette-rs` is pinned to that commit. The shared `../starlette-rs` checkout has the same HEAD but contains concurrent working-tree changes, so reproducible checks and benchmarks use the clean helper through `STARLETTE_RS_SOURCE`. |
 
 ### Pydantic and Rust finding
 

@@ -18,15 +18,15 @@ source files, 24 reference Markdown pages, 61 unique reference autodoc targets,
 and 492 `test_*.py` modules. These are inventory inputs, **not** the number of
 manifest operations. Many targets expand into classes with multiple methods,
 many public names are aliases, and the `status`/OpenAPI-model targets expand to
-large value/model sets. The active manifest now indexes all 439
-source-supported symbols with source-inventory and runtime-reflection
-pointers. It records 215 runtime signatures, one unavailable constructor
-signature for `Example` (`TypedDict(total=False)`), one module object with no
-call signature, and 222 non-callable values/fields. The source inventory records
-its `total=False` class option; runtime reflection records its required and
-optional keys. The remaining uncertain candidates and
-operation-level behavior requirements still need review before the contract is
-complete.
+large value/model sets. The active manifest indexes 452 required public
+symbols with source-inventory and runtime-reflection pointers. This is the
+reviewed API denominator, not an implementation-support count. It records 222
+runtime-reflected signatures, one unavailable constructor signature for
+`Example` (`TypedDict(total=False)`), one module object with no call signature,
+and 228 non-callable values/fields. The source inventory records its
+`total=False` class option; runtime reflection records its required and optional
+keys. Broader operation-level behavior and full implementation coverage remain
+pending.
 
 The API authority is the versioned source plus its English reference and
 user-facing docs. The migration-parity manifest should preserve fully qualified
@@ -353,7 +353,7 @@ logging, accepted arguments, and emitted schema where observable.
 | `FastAPI.on_event(event_type)` / `APIRouter.on_event` | Deprecated; lifespan context manager is replacement. `FastAPI.on_event` is decorated with `typing_extensions.deprecated`. | `applications.py:4654-4681`; `routing.py:6423+` |
 | `regex` field argument | Deprecated since FastAPI 0.100.0 / Pydantic v2; use `pattern`. Remains accepted and emits `FastAPIDeprecationWarning`. | `params.py:48-109` and corresponding helper signatures in `param_functions.py` |
 | `example` field argument | Deprecated; use `examples`; remains accepted and emits `FastAPIDeprecationWarning`. | `params.py:61-78`; helpers at `param_functions.py` |
-| legacy `extra` field kwargs | Deprecated; use `json_schema_extra`; remains accepted, forwarded into schema extras, and emits warning. | `params.py:69-110`; helper signatures |
+| legacy `extra` field kwargs | Deprecated in helper `Annotated` signatures; use `json_schema_extra`. Remains accepted and is merged into schema extras; the FastAPI `Param`/`Body` source does not issue a call-time warning for `extra` itself (it does for `example` and `regex`). | `param_functions.py:289-301`; `params.py:74-110, 519-569` |
 | `UJSONResponse`, `ORJSONResponse` | Both decorated deprecated classes; instantiation warns. Still require optional `ujson`/`orjson` only when rendering. | `responses.py:48-105`; `tests/test_deprecated_responses.py` |
 | `fastapi.middleware.wsgi.WSGIMiddleware` | Import compatibility reexport marked deprecated in release notes/docs; use `a2wsgi.WSGIMiddleware`. | `middleware/wsgi.py`; `docs/en/docs/advanced/wsgi.md` and release notes |
 | `FastAPI(on_startup=..., on_shutdown=...)` | Legacy lifecycle path; use `lifespan`. These are accepted constructor options. Check the pinned Starlette runtime for warning semantics rather than inferring a warning from prose. | `applications.py:58-...` |
