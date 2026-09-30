@@ -11,6 +11,7 @@ mod errors;
 mod openapi;
 mod operation;
 mod parameters;
+mod sse;
 
 use pyo3::prelude::*;
 use pyo3::types::PyModule;
@@ -25,6 +26,7 @@ pub use operation::{
 pub fn register_python_api(module: &Bound<'_, PyModule>) -> PyResult<()> {
     errors::register(module)?;
     parameters::register(module)?;
+    sse::register(module)?;
     application_runtime::register(module)
 }
 

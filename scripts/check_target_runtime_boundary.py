@@ -395,7 +395,7 @@ def check_rust_binding_import_boundary() -> None:
     for path in rust_files:
         source = path.read_text(encoding="utf-8")
         match = UPSTREAM_FASTAPI_MODULE_LITERAL.search(source)
-        if match and not _is_pyclass_module_metadata(source, match.start()):
+        if match and not _is_fastapi_module_metadata(source, match.start()):
             line = source.count("\n", 0, match.start()) + 1
             violations.append(
                 f"{path.relative_to(PROJECT_ROOT)}:{line}: native bindings cannot import "
@@ -412,16 +412,26 @@ def check_rust_binding_import_boundary() -> None:
         raise SystemExit("\n".join(violations))
 
 
-def _is_pyclass_module_metadata(source: str, offset: int) -> bool:
-    """Allow FastAPI module metadata on a PyO3 class without allowing an import."""
+def _is_fastapi_module_metadata(source: str, offset: int) -> bool:
+    """Allow public module identity metadata without allowing a runtime import."""
     attribute_start = source.rfind("#[pyclass", 0, offset)
-    if attribute_start < 0:
-        return False
-    attribute_end = source.find("]", attribute_start)
-    if attribute_end < offset:
-        return False
-    attribute = source[attribute_start : attribute_end + 1]
-    return re.search(r"\bmodule\s*=\s*['\"]fastapi(?:\.[A-Za-z_]\w*)*['\"]", attribute) is not None
+    if attribute_start >= 0:
+        attribute_end = source.find("]", attribute_start)
+        if attribute_end >= offset:
+            attribute = source[attribute_start : attribute_end + 1]
+            if re.search(r"\bmodule\s*=\s*['\"]fastapi(?:\.[A-Za-z_]\w*)*['\"]", attribute):
+                return True
+    line_start = source.rfind("\n", 0, offset) + 1
+    line_end = source.find("\n", offset)
+    line = source[line_start : len(source) if line_end < 0 else line_end]
+    return (
+        re.search(
+            r"\.(?:setattr|set_item)\(\s*['\"]__module__['\"]\s*,\s*"
+            r"['\"]fastapi(?:\.[A-Za-z_]\w*)*['\"]\s*\)",
+            line,
+        )
+        is not None
+    )
 
 
 def main() -> int:

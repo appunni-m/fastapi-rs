@@ -17,6 +17,7 @@ use crate::encoding::jsonable_encoder_default;
 use crate::openapi::{
     OpenApiAdditionalResponse, OpenApiInfo, OpenApiOperation, OpenApiParameter, openapi_document,
 };
+use crate::sse;
 use crate::{
     FastApiInputLocation, FastApiInputParameter, FastApiOperationMatch, FastApiOperationRouter,
 };
@@ -164,6 +165,7 @@ struct FastApiRoute {
     status_code: u16,
     include_in_schema: bool,
     response_class: Option<Py<PyAny>>,
+    sse_stream: bool,
     generator_kind: FastApiGeneratorKind,
     stream_item_type: Option<Py<PyAny>>,
     endpoint: Py<PyAny>,
@@ -214,6 +216,7 @@ pub(crate) struct PyFastApi {
     contact: Option<Py<PyAny>>,
     license_info: Option<Py<PyAny>>,
     openapi_external_docs: Option<Py<PyAny>>,
+    default_response_class: Option<Py<PyAny>>,
     dependency_overrides: Py<PyDict>,
     router: FastApiOperationRouter,
     named_routes: NamedRouteTable,
@@ -241,7 +244,7 @@ struct RouterIncludePolicy<'policy> {
 #[pymethods]
 impl PyFastApi {
     #[new]
-    #[pyo3(signature = (*, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", terms_of_service = None, contact = None, license_info = None, openapi_external_docs = None))]
+    #[pyo3(signature = (*, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", terms_of_service = None, contact = None, license_info = None, openapi_external_docs = None, default_response_class = None))]
     // lint-exception: PyO3 needs one Rust argument per Python constructor keyword.
     #[allow(
         clippy::too_many_arguments,
@@ -258,6 +261,7 @@ impl PyFastApi {
         contact: Option<Py<PyAny>>,
         license_info: Option<Py<PyAny>>,
         openapi_external_docs: Option<Py<PyAny>>,
+        default_response_class: Option<Py<PyAny>>,
     ) -> Self {
         Self {
             title: title.to_owned(),
@@ -269,6 +273,7 @@ impl PyFastApi {
             contact,
             license_info,
             openapi_external_docs,
+            default_response_class,
             dependency_overrides: PyDict::new(py).unbind(),
             router: FastApiOperationRouter::new(),
             named_routes: NamedRouteTable::new(),
@@ -1071,8 +1076,10 @@ impl PyFastApi {
             }
             None => (None, None),
         };
-        let jsonl_stream = route.generator_kind.is_generator() && route.response_class.is_none();
-        let (stream_item_model_name, stream_item_schema) = if jsonl_stream {
+        let sse_stream = route.sse_stream;
+        let jsonl_stream =
+            route.generator_kind.is_generator() && route.response_class.is_none() && !sse_stream;
+        let (stream_item_model_name, stream_item_schema) = if jsonl_stream || sse_stream {
             match route.stream_item_type.as_ref() {
                 Some(stream_item_type) => {
                     let schema =
@@ -1111,6 +1118,7 @@ impl PyFastApi {
             response_schema,
             response_schema_title: response_field_schema_title(&name, &route.path, &route.method),
             jsonl_stream,
+            sse_stream,
             stream_item_model_name,
             stream_item_schema,
             deprecated: route.deprecated,
@@ -1122,7 +1130,7 @@ impl PyFastApi {
 #[pymethods]
 impl PyApiRouter {
     #[new]
-    #[pyo3(signature = (*, prefix = "", tags = None, dependencies = None, deprecated = None, include_in_schema = true))]
+    #[pyo3(signature = (*, prefix = "", tags = None, dependencies = None, deprecated = None, include_in_schema = true, default_response_class = None))]
     fn new(
         py: Python<'_>,
         prefix: &str,
@@ -1130,6 +1138,7 @@ impl PyApiRouter {
         dependencies: Option<Vec<Py<PyAny>>>,
         deprecated: Option<bool>,
         include_in_schema: bool,
+        default_response_class: Option<Py<PyAny>>,
     ) -> PyResult<Self> {
         validate_router_prefix(prefix)?;
         let inner = Py::new(
@@ -1145,6 +1154,7 @@ impl PyApiRouter {
                 None,
                 None,
                 None,
+                default_response_class,
             ),
         )?;
         Ok(Self {
@@ -1316,6 +1326,20 @@ fn merge_router_routes(
         )?;
         plan.prepend_dependencies(py, &route_dependencies)?;
         let param_convertors = route_param_convertors(py, &path)?;
+        let response_class = source_route
+            .response_class
+            .as_ref()
+            .map(|value| value.clone_ref(py))
+            .or_else(|| {
+                app.default_response_class
+                    .as_ref()
+                    .map(|value| value.clone_ref(py))
+            });
+        let sse_stream = source_route.generator_kind.is_generator()
+            && match response_class.as_ref() {
+                Some(class) => sse::is_event_source_response_class(py, class.bind(py))?,
+                None => false,
+            };
         let index = app
             .router
             .add_operation(&path, &source_route.method, source_route.status_code)
@@ -1339,10 +1363,8 @@ fn merge_router_routes(
             tags: combined_route_tags(inherited_tags, source_route.tags.as_deref()),
             status_code: source_route.status_code,
             include_in_schema: inherited_include_in_schema && source_route.include_in_schema,
-            response_class: source_route
-                .response_class
-                .as_ref()
-                .map(|value| value.clone_ref(py)),
+            response_class,
+            sse_stream,
             generator_kind: source_route.generator_kind,
             stream_item_type: source_route
                 .stream_item_type
@@ -1604,10 +1626,33 @@ impl PyOperationDecorator {
             (true, Some(annotation)) => stream_item_type(py, annotation.bind(py))?,
             _ => None,
         };
-        let stream_item_type = if self.response_class.is_none() {
-            inferred_stream_item_type
-                .as_ref()
-                .map(|value| value.clone_ref(py))
+        let default_response_class = self
+            .app
+            .bind(py)
+            .borrow()
+            .default_response_class
+            .as_ref()
+            .map(|value| value.clone_ref(py));
+        let response_class = self
+            .response_class
+            .as_ref()
+            .map(|value| value.clone_ref(py))
+            .or(default_response_class);
+        let sse_stream = generator_kind.is_generator()
+            && match response_class.as_ref() {
+                Some(class) => sse::is_event_source_response_class(py, class.bind(py))?,
+                None => false,
+            };
+        let stream_item_type = if self.response_class.is_none() || sse_stream {
+            match inferred_stream_item_type.as_ref() {
+                Some(item_type)
+                    if sse_stream && sse::is_server_sent_event_class(py, item_type.bind(py))? =>
+                {
+                    None
+                }
+                Some(item_type) => Some(item_type.clone_ref(py)),
+                None => None,
+            }
         } else {
             None
         };
@@ -1649,10 +1694,8 @@ impl PyOperationDecorator {
             tags: self.tags.clone(),
             status_code: self.status_code,
             include_in_schema: self.include_in_schema,
-            response_class: self
-                .response_class
-                .as_ref()
-                .map(|value| value.clone_ref(py)),
+            response_class,
+            sse_stream,
             generator_kind,
             stream_item_type,
             endpoint: endpoint.clone_ref(py),
@@ -3252,6 +3295,7 @@ enum PendingAction {
 enum FastApiStreamEncoding {
     Raw,
     JsonLines,
+    ServerSentEvents,
 }
 
 struct StreamItemSerializer {
@@ -3272,6 +3316,80 @@ impl StreamItemSerializer {
     }
 }
 
+fn encode_sse_stream_item(
+    py: Python<'_>,
+    item: &Bound<'_, PyAny>,
+    serializer: Option<&StreamItemSerializer>,
+) -> PyResult<Py<PyBytes>> {
+    if sse::is_server_sent_event(py, item)? {
+        let raw_data = item.getattr("raw_data")?;
+        let data = item.getattr("data")?;
+        let data_str = if !raw_data.is_none() {
+            Some(raw_data.extract::<String>()?)
+        } else if data.is_none() {
+            None
+        } else if data.hasattr("model_dump_json")? {
+            Some(data.call_method0("model_dump_json")?.extract::<String>()?)
+        } else {
+            let encoded = jsonable_encoder_default(py, &data)?;
+            Some(
+                py.import("json")?
+                    .getattr("dumps")?
+                    .call1((encoded,))?
+                    .extract::<String>()?,
+            )
+        };
+        let event = item.getattr("event")?;
+        let id = item.getattr("id")?;
+        let retry = item.getattr("retry")?;
+        let comment = item.getattr("comment")?;
+        return sse::format_event(
+            py,
+            data_str.as_deref(),
+            Some(&event),
+            Some(&id),
+            Some(&retry),
+            Some(&comment),
+        );
+    }
+
+    let data_str = if let Some(serializer) = serializer {
+        let validated = match serializer.adapter.bind(py).call_method(
+            "validate_python",
+            (item,),
+            Some(serializer.validation_kwargs.bind(py)),
+        ) {
+            Ok(validated) => validated,
+            Err(error) if is_pydantic_validation_error(py, &error) => {
+                return Err(crate::errors::response_validation_error(
+                    py,
+                    &error,
+                    item,
+                    serializer.endpoint_context.bind(py),
+                )?);
+            }
+            Err(error) => return Err(error),
+        };
+        let bytes = serializer
+            .adapter
+            .bind(py)
+            .call_method(
+                "dump_json",
+                (validated,),
+                Some(serializer.serialization_kwargs.bind(py)),
+            )?
+            .extract::<Vec<u8>>()?;
+        String::from_utf8(bytes).map_err(|error| PyValueError::new_err(error.to_string()))?
+    } else {
+        let encoded = jsonable_encoder_default(py, item)?;
+        py.import("json")?
+            .getattr("dumps")?
+            .call1((encoded,))?
+            .extract::<String>()?
+    };
+    sse::format_event(py, Some(&data_str), None, None, None, None)
+}
+
 #[pyclass(name = "_FastApiAsyncStream", module = "fastapi_rs._core", unsendable)]
 struct PyFastApiAsyncStream {
     iterator: Py<PyAny>,
@@ -3286,7 +3404,7 @@ struct PyFastApiAsyncStream {
 impl PyFastApiAsyncStream {
     #[new]
     fn new(py: Python<'_>, content: Py<PyAny>, json_lines: bool) -> PyResult<Self> {
-        Self::from_content(py, content, false, json_lines, None)
+        Self::from_content(py, content, false, json_lines, false, None)
     }
 
     fn __aiter__(slf: Py<Self>) -> Py<Self> {
@@ -3339,6 +3457,7 @@ impl PyFastApiAsyncStream {
         content: Py<PyAny>,
         synchronous: bool,
         json_lines: bool,
+        sse_stream: bool,
         serializer: Option<StreamItemSerializer>,
     ) -> PyResult<Self> {
         let iterator = if synchronous {
@@ -3352,7 +3471,9 @@ impl PyFastApiAsyncStream {
             iterator,
             synchronous,
             sentinel,
-            encoding: if json_lines {
+            encoding: if sse_stream {
+                FastApiStreamEncoding::ServerSentEvents
+            } else if json_lines {
                 FastApiStreamEncoding::JsonLines
             } else {
                 FastApiStreamEncoding::Raw
@@ -3406,6 +3527,10 @@ impl AwaitableStateMachine for FastApiStreamNext {
                     }
                     match self.encoding {
                         FastApiStreamEncoding::Raw => Ok(MachineAction::Complete(value)),
+                        FastApiStreamEncoding::ServerSentEvents => {
+                            encode_sse_stream_item(py, value.bind(py), self.serializer.as_ref())
+                                .map(|encoded| MachineAction::Complete(encoded.into_any()))
+                        }
                         FastApiStreamEncoding::JsonLines => {
                             let mut line = if let Some(serializer) = self.serializer.as_ref() {
                                 let validated = match serializer.adapter.bind(py).call_method(
@@ -3836,7 +3961,7 @@ impl FastApiCall {
             return self.start_returned_response(py, result.bind(py));
         }
 
-        let (generator_kind, response_class, status_code, stream_serializer) = {
+        let (generator_kind, response_class, sse_stream, status_code, stream_serializer) = {
             let app = self.app.bind(py).borrow();
             let route = app
                 .routes
@@ -3892,12 +4017,13 @@ impl FastApiCall {
                     .response_class
                     .as_ref()
                     .map(|response_class| response_class.clone_ref(py)),
+                route.sse_stream,
                 route.status_code,
                 stream_serializer,
             )
         };
         if generator_kind.is_generator() {
-            let json_lines = response_class.is_none();
+            let json_lines = response_class.is_none() && !sse_stream;
             let synchronous = generator_kind == FastApiGeneratorKind::Sync;
             let stream = Py::new(
                 py,
@@ -3906,21 +4032,30 @@ impl FastApiCall {
                     result,
                     synchronous,
                     json_lines,
+                    sse_stream,
                     stream_serializer,
                 )?,
             )?;
-            let response_class = match response_class {
-                Some(response_class) => response_class,
-                None => py
-                    .import("starlette.responses")?
+            let response_class = if sse_stream {
+                py.import("starlette.responses")?
                     .getattr("StreamingResponse")?
-                    .unbind(),
+                    .unbind()
+            } else {
+                match response_class {
+                    Some(response_class) => response_class,
+                    None => py
+                        .import("starlette.responses")?
+                        .getattr("StreamingResponse")?
+                        .unbind(),
+                }
             };
             let kwargs = PyDict::new(py);
             kwargs.set_item("content", stream.bind(py))?;
             kwargs.set_item("status_code", status_code)?;
             if json_lines {
                 kwargs.set_item("media_type", "application/jsonl")?;
+            } else if sse_stream {
+                kwargs.set_item("media_type", "text/event-stream")?;
             } else {
                 let streaming_response = py
                     .import("starlette.responses")?
@@ -3936,6 +4071,11 @@ impl FastApiCall {
                 }
             }
             let response = response_class.bind(py).call((), Some(&kwargs))?;
+            if sse_stream {
+                let headers = response.getattr("headers")?;
+                headers.set_item("Cache-Control", "no-cache")?;
+                headers.set_item("X-Accel-Buffering", "no")?;
+            }
             return self.start_returned_response(py, &response);
         }
 

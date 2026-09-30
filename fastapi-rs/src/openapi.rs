@@ -37,6 +37,7 @@ pub(crate) struct OpenApiOperation {
     pub(crate) response_schema: Option<Py<PyAny>>,
     pub(crate) response_schema_title: String,
     pub(crate) jsonl_stream: bool,
+    pub(crate) sse_stream: bool,
     pub(crate) stream_item_model_name: Option<String>,
     pub(crate) stream_item_schema: Option<Py<PyAny>>,
     pub(crate) additional_responses: Vec<OpenApiAdditionalResponse>,
@@ -157,6 +158,44 @@ pub(crate) fn openapi_document(
                 media_type.set_item("itemSchema", item_schema)?;
                 let content = PyDict::new(py);
                 content.set_item("application/jsonl", media_type)?;
+                success_response.set_item("content", content)?;
+            } else if operation.sse_stream {
+                let properties = PyDict::new(py);
+                let data_schema = PyDict::new(py);
+                data_schema.set_item("type", "string")?;
+                properties.set_item("data", &data_schema)?;
+                let event_schema = PyDict::new(py);
+                event_schema.set_item("type", "string")?;
+                properties.set_item("event", event_schema)?;
+                let id_schema = PyDict::new(py);
+                id_schema.set_item("type", "string")?;
+                properties.set_item("id", id_schema)?;
+                let retry_schema = PyDict::new(py);
+                retry_schema.set_item("type", "integer")?;
+                retry_schema.set_item("minimum", 0)?;
+                properties.set_item("retry", retry_schema)?;
+
+                let item_schema = PyDict::new(py);
+                item_schema.set_item("type", "object")?;
+                item_schema.set_item("properties", &properties)?;
+                if let Some(schema) = operation.stream_item_schema.as_ref() {
+                    data_schema.set_item("contentMediaType", "application/json")?;
+                    if let Some(model_name) = operation.stream_item_model_name.as_deref() {
+                        data_schema.set_item("contentSchema", reference_schema(py, model_name)?)?;
+                    } else {
+                        data_schema.set_item(
+                            "contentSchema",
+                            normalize_schema(py, schema.bind(py), false)?,
+                        )?;
+                    }
+                    let required = PyList::empty(py);
+                    required.append("data")?;
+                    item_schema.set_item("required", required)?;
+                }
+                let media_type = PyDict::new(py);
+                media_type.set_item("itemSchema", item_schema)?;
+                let content = PyDict::new(py);
+                content.set_item("text/event-stream", media_type)?;
                 success_response.set_item("content", content)?;
             } else {
                 let response_schema = match (
