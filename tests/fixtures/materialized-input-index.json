@@ -3666,6 +3666,21 @@
       ]
     },
     {
+      "id": "public-errors-http-websocket-wave",
+      "input_path": "tests/fixtures/inputs/parity/public-errors-http-websocket-wave.json",
+      "input_sha256": "93570c9e572a530050157c142219c4adc7b294256a7f4932bfae6c11703dc55a",
+      "recipe_path": "tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml",
+      "recipe_sha256": "5509807c38d51e6318b4794b8e4168dccc0e8bf1315feb82802f156216867e34",
+      "workload_path": "tests/fixtures/workloads/public_errors_http_websocket_wave.py",
+      "workload_sha256": "32120531e0c5ccf0229f234235789111d1acc1309f68b4ea5be0eb670b78831c",
+      "case_ids": [
+        "fastapi.public-errors.http.fastapi-json-detail-and-header",
+        "fastapi.public-errors.http.starlette-base-detail-and-header",
+        "fastapi.public-errors.http.bodyless-status-with-detail",
+        "fastapi.public-errors.websocket.pre-accept-code-and-reason"
+      ]
+    },
+    {
       "id": "public-model-edge-cases-upstream",
       "input_path": "tests/fixtures/inputs/parity/public-model-edge-cases-upstream.json",
       "input_sha256": "c57d6c184aa472f1633a6b43865c27b34e97ed0d2c158b73bb81877d76252ea4",
@@ -4648,6 +4663,19 @@
         "fastapi.docs.handling-errors.body-echo.invalid-input",
         "fastapi.docs.handling-errors.body-echo.valid-input",
         "fastapi.docs.handling-errors.body-echo.openapi"
+      ]
+    },
+    {
+      "id": "request-validation-error-details-wave",
+      "input_path": "tests/fixtures/inputs/parity/request-validation-error-details-wave.json",
+      "input_sha256": "5939f83391603bcf9c667acd5c7c28639b3684b6052614e1b84bc35c4f480413",
+      "recipe_path": "tests/fixtures/input-recipes/parity/request-validation-error-details-wave.yaml",
+      "recipe_sha256": "92d93929f0f731ca8fbf0d1dd563d9f0c2021124def5bd86ade710f3552bf563",
+      "workload_path": "tests/fixtures/workloads/request_validation_error_details_wave.py",
+      "workload_sha256": "ed520f22df0b590bbaedb937b7c48f720bbc5cfe03a1cb2c3963532803f5a138",
+      "case_ids": [
+        "fastapi.request-validation-error-details.multi-location-default-422",
+        "fastapi.request-validation-error-details.rethrowing-handler"
       ]
     },
     {
@@ -15229,6 +15257,96 @@
       ]
     },
     {
+      "source_item_id": "documented-page:advanced/websockets.md",
+      "fixture_id": "fastapi.docs.advanced-websockets",
+      "workflow_id": "public-errors-http-websocket-wave",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes websocket.close_code, websocket.event_order. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.public-errors.websocket.pre-accept-code-and-reason"
+      ],
+      "observation_selectors": [
+        "websocket.close_code",
+        "websocket.event_order"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:reference/exceptions.md",
+      "fixture_id": "fastapi.docs.reference-exceptions",
+      "workflow_id": "public-errors-http-websocket-wave",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes websocket.close_code. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.public-errors.websocket.pre-accept-code-and-reason"
+      ],
+      "observation_selectors": [
+        "websocket.close_code"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/handling-errors.md",
+      "fixture_id": "fastapi.docs.tutorial-handling-errors",
+      "workflow_id": "public-errors-http-websocket-wave",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.public-errors.http.bodyless-status-with-detail",
+        "fastapi.public-errors.http.fastapi-json-detail-and-header",
+        "fastapi.public-errors.http.starlette-base-detail-and-header"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_starlette_exception.py",
+      "fixture_id": "fastapi.test.test-starlette-exception",
+      "workflow_id": "public-errors-http-websocket-wave",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.public-errors.http.bodyless-status-with-detail",
+        "fastapi.public-errors.http.fastapi-json-detail-and-header",
+        "fastapi.public-errors.http.starlette-base-detail-and-header"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_websockets/test_tutorial002.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-websockets-test-tutorial002",
+      "workflow_id": "public-errors-http-websocket-wave",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes websocket.close_code, websocket.event_order. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.public-errors.websocket.pre-accept-code-and-reason"
+      ],
+      "observation_selectors": [
+        "websocket.close_code",
+        "websocket.event_order"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_ws_router.py",
+      "fixture_id": "fastapi.test.test-ws-router",
+      "workflow_id": "public-errors-http-websocket-wave",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes websocket.close_code, websocket.close_reason, websocket.event_order. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.public-errors.websocket.pre-accept-code-and-reason"
+      ],
+      "observation_selectors": [
+        "websocket.close_code",
+        "websocket.close_reason",
+        "websocket.event_order"
+      ]
+    },
+    {
       "source_item_id": "upstream-test:tests/test_depends_hashable.py",
       "fixture_id": "fastapi.test.test-depends-hashable",
       "workflow_id": "public-model-edge-cases-upstream",
@@ -18050,6 +18168,71 @@
         "http.headers.ordered",
         "http.status",
         "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_multi_body_errors.py",
+      "fixture_id": "fastapi.test.test-multi-body-errors",
+      "workflow_id": "request-validation-error-details-wave",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.application_error.exception, construction.exception_class, construction.exception_message, construction.outcome, error.public_attributes, http.body.bytes, http.headers.ordered, http.status, validation.error_class, validation.error_details. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.request-validation-error-details.multi-location-default-422",
+        "fastapi.request-validation-error-details.rethrowing-handler"
+      ],
+      "observation_selectors": [
+        "asgi.application_error.exception",
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
+        "error.public_attributes",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status",
+        "validation.error_class",
+        "validation.error_details"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_multi_query_errors.py",
+      "fixture_id": "fastapi.test.test-multi-query-errors",
+      "workflow_id": "request-validation-error-details-wave",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.application_error.exception, construction.exception_class, construction.exception_message, construction.outcome, error.public_attributes, http.body.bytes, http.headers.ordered, http.status, validation.error_class, validation.error_details. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.request-validation-error-details.multi-location-default-422",
+        "fastapi.request-validation-error-details.rethrowing-handler"
+      ],
+      "observation_selectors": [
+        "asgi.application_error.exception",
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
+        "error.public_attributes",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status",
+        "validation.error_class",
+        "validation.error_details"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_validation_error_context.py",
+      "fixture_id": "fastapi.test.test-validation-error-context",
+      "workflow_id": "request-validation-error-details-wave",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.application_error.exception, construction.exception_class, construction.exception_message, construction.outcome, error.public_attributes, validation.error_class, validation.error_details. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.request-validation-error-details.rethrowing-handler"
+      ],
+      "observation_selectors": [
+        "asgi.application_error.exception",
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
+        "error.public_attributes",
+        "validation.error_class",
+        "validation.error_details"
       ]
     },
     {

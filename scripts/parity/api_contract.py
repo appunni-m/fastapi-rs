@@ -131,6 +131,106 @@ def _implementation_owner_plan(
     return "fastapi-rs", "fastapi_owned_or_adapter", source_refs
 
 
+def _reviewed_deprecation_references(
+    rules: list[Any],
+    *,
+    atlas_deprecations: list[dict[str, Any]],
+    candidates_by_id: dict[str, dict[str, Any]],
+    supported_symbol_ids: set[str],
+) -> dict[str, list[str]]:
+    """Map reviewed method rules to exact source deprecation records."""
+    rule_ids: set[str] = set()
+    method_ids: set[str] = set()
+    references: dict[str, list[str]] = defaultdict(list)
+
+    for rule in rules:
+        if not isinstance(rule, dict):
+            raise ContractError("reviewed deprecation reference rule must be a mapping")
+        rule_id = rule.get("id")
+        if not isinstance(rule_id, str) or not rule_id:
+            raise ContractError("reviewed deprecation reference rules require stable IDs")
+        if rule_id in rule_ids:
+            raise ContractError(f"reviewed deprecation reference rule ID is duplicated: {rule_id}")
+        rule_ids.add(rule_id)
+
+        method_id = rule.get("symbol_id")
+        record_symbol_id = rule.get("deprecation_symbol_id")
+        source_path = rule.get("source_path")
+        source_line = rule.get("source_line")
+        source_end_line = rule.get("source_end_line")
+        if not all(
+            isinstance(value, str) and value for value in (method_id, record_symbol_id, source_path)
+        ):
+            raise ContractError(f"reviewed deprecation reference identity is invalid: {rule_id}")
+        if (
+            not isinstance(source_line, int)
+            or isinstance(source_line, bool)
+            or not isinstance(source_end_line, int)
+            or isinstance(source_end_line, bool)
+            or source_line < 1
+            or source_end_line < source_line
+        ):
+            raise ContractError(f"reviewed deprecation source range is invalid: {rule_id}")
+        if method_id in method_ids:
+            raise ContractError(f"method has multiple reviewed deprecation rules: {method_id}")
+        method_ids.add(method_id)
+        if method_id not in supported_symbol_ids:
+            raise ContractError(
+                f"deprecation rule references an unsupported API symbol: {method_id}"
+            )
+        candidate = candidates_by_id[method_id]
+        if candidate.get("kind") != "method" or not method_id.startswith(record_symbol_id + "."):
+            raise ContractError(
+                f"deprecation rule does not identify a method of its record: {rule_id}"
+            )
+        method_source_rows = candidate.get("source_evidence", [])
+        if not isinstance(method_source_rows, list) or not any(
+            isinstance(row, dict)
+            and row.get("path") == source_path
+            and row.get("line") == source_end_line + 1
+            for row in method_source_rows
+        ):
+            raise ContractError(
+                f"deprecation evidence is not adjacent to the method definition: {rule_id}"
+            )
+
+        matching_evidence: list[tuple[int, dict[str, Any]]] = []
+        for record_index, record in enumerate(atlas_deprecations):
+            evidence_rows = record.get("evidence", [])
+            if not isinstance(evidence_rows, list):
+                raise ContractError(
+                    f"atlas deprecation evidence must be a list: {record.get('symbol_id')}"
+                )
+            for evidence in evidence_rows:
+                if not isinstance(evidence, dict):
+                    raise ContractError(
+                        "atlas deprecation evidence row must be a mapping: "
+                        f"{record.get('symbol_id')}"
+                    )
+                source_ref = evidence.get("source_ref")
+                if (
+                    evidence.get("kind") == "typing_extensions.deprecated"
+                    and isinstance(source_ref, dict)
+                    and source_ref.get("path") == source_path
+                    and source_ref.get("line") == source_line
+                    and source_ref.get("end_line") == source_end_line
+                ):
+                    matching_evidence.append((record_index, record))
+        if len(matching_evidence) != 1:
+            raise ContractError(
+                "reviewed deprecation rule must match exactly one pinned atlas evidence row: "
+                f"{rule_id}"
+            )
+        record_index, record = matching_evidence[0]
+        if record.get("symbol_id") != record_symbol_id:
+            raise ContractError(
+                f"reviewed deprecation rule matched the wrong source record: {rule_id}"
+            )
+        references[method_id].append(_pointer("deprecations", record_index))
+
+    return dict(references)
+
+
 def build_api_surface_contract(
     *,
     inventory: dict[str, Any],
@@ -153,6 +253,9 @@ def build_api_surface_contract(
         not isinstance(rule, dict) for rule in error_selector_rules
     ):
         raise ContractError("reviewed API error selector rules must be a list of mappings")
+    deprecation_reference_rules = overlay.get("deprecation_reference_rules", [])
+    if not isinstance(deprecation_reference_rules, list):
+        raise ContractError("reviewed API deprecation reference rules must be a list")
     warning_reviews = overlay.get("warning_classification_reviews", {})
     if not isinstance(warning_reviews, dict):
         raise ContractError("reviewed warning classification overlays must be a mapping")
@@ -231,6 +334,18 @@ def build_api_surface_contract(
             "reviewed API overlay references operations outside the supported source contract: "
             + ", ".join(sorted(unsupported_overlay_operations))
         )
+    reviewed_deprecation_refs = _reviewed_deprecation_references(
+        deprecation_reference_rules,
+        atlas_deprecations=atlas["deprecations"],
+        candidates_by_id=candidates_by_id,
+        supported_symbol_ids=set(api_symbol_ids),
+    )
+    for symbol_id, references in reviewed_deprecation_refs.items():
+        if deprecations.get(symbol_id):
+            raise ContractError(
+                f"reviewed deprecation rule duplicates a direct source record: {symbol_id}"
+            )
+        deprecations[symbol_id].extend(references)
 
     selector_catalog = json.loads(
         (PROJECT_ROOT / "tests/fixtures/observation-selectors.json").read_text(encoding="utf-8")

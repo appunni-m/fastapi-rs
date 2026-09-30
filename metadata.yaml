@@ -266,6 +266,22 @@ reviewed_api_contract_overlay:
         - asgi.application_error.exception
         - validation.error_class
         - validation.error_details
+  # These rules link method identities to the exact decorator evidence nested
+  # in their containing class's atlas deprecation record. Warning capture is
+  # still pending in the Python/ASGI workflow.
+  deprecation_reference_rules:
+    - id: fastapi-app-on-event
+      symbol_id: fastapi.applications.FastAPI.on_event
+      deprecation_symbol_id: fastapi.applications.FastAPI
+      source_path: fastapi/applications.py
+      source_line: 4654
+      source_end_line: 4661
+    - id: fastapi-router-on-event
+      symbol_id: fastapi.routing.APIRouter.on_event
+      deprecation_symbol_id: fastapi.routing.APIRouter
+      source_path: fastapi/routing.py
+      source_line: 6415
+      source_end_line: 6422
   operations:
     fastapi.Path:
       rust_binding: fastapi-rs/src/parameters.rs::path

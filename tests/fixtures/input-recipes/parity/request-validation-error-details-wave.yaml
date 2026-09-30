@@ -1,0 +1,80 @@
+schema: fastapi-rs/python-asgi-workflow@3
+workload:
+  file: tests/fixtures/workloads/request_validation_error_details_wave.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.request-validation-error-details.multi-location-default-422
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: invalid-query-and-body
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /items
+      query_string: 'q=bad&q=worse'
+      root_path: ''
+      headers:
+      - [host, testserver]
+      - [content-type, application/json]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: '[{"name":"Foo","age":-1.0},{"age":"six"}]'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, headers, body]
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_multi_query_errors.py, kind: upstream_test}
+  - {path: tests/test_multi_body_errors.py, kind: upstream_test}
+- case_id: fastapi.request-validation-error-details.rethrowing-handler
+  factory_input:
+    rethrow_validation_error: true
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: capture-invalid-query-and-body-error
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /items
+      query_string: 'q=bad&q=worse'
+      root_path: ''
+      headers:
+      - [host, testserver]
+      - [content-type, application/json]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: '[{"name":"Foo","age":-1.0},{"age":"six"}]'
+      more_body: false
+    observations:
+    - {kind: application_error, selector: validation_error_class, comparison: exact}
+    - {kind: application_error, selector: exception, comparison: exact}
+    - {kind: application_error, selector: validation_error_details, comparison: exact}
+    - kind: application_error
+      selector: error_public_attributes
+      attributes: [args, body, endpoint_path, endpoint_file, endpoint_line]
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_multi_query_errors.py, kind: upstream_test}
+  - {path: tests/test_multi_body_errors.py, kind: upstream_test}
+  - {path: tests/test_validation_error_context.py, kind: upstream_test}
