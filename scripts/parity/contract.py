@@ -257,7 +257,7 @@ def read_manifest() -> dict[str, Any]:
         "name": "starlette-rs-py",
         "version": "0.1.0",
         "starlette_contract": "1.6.0",
-        "commit": "73dc6da38b340e8282191d958ac9deeecdf71f8b",
+        "commit": "e580345efd1c199f7366235240a6f962e714d7a4",
     }:
         raise ContractError("manifest target must select Starlette-RS 0.1.0 for the 1.6.0 contract")
     source_artifacts = manifest.get("source_artifacts")

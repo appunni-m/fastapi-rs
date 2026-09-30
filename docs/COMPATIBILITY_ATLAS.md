@@ -528,7 +528,7 @@ The merged coverage matrix links each FastAPI test, documented feature, or examp
 |---:|---:|---:|---:|
 | 945 | 2449 | 523 | 6 |
 
-The sibling Starlette-RS manifest, API review, and coverage matrix remain the sole Starlette API inventory. FastAPI's atlas stores only relevant requirement references plus manifest/catalog/review/matrix SHA-256 digests. The inspected Starlette-RS implementation revision is 73dc6da38b340e8282191d958ac9deeecdf71f8b (pinned, clean sibling Git commit).
+The sibling Starlette-RS manifest, API review, and coverage matrix remain the sole Starlette API inventory. FastAPI's atlas stores only relevant requirement references plus manifest/catalog/review/matrix SHA-256 digests. The inspected Starlette-RS implementation revision is e580345efd1c199f7366235240a6f962e714d7a4 (pinned, clean sibling Git commit).
 
 ## Errors, aliases, optional features, and deprecations
 
