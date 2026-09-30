@@ -5194,7 +5194,7 @@
       "input_path": "tests/fixtures/inputs/parity/response-model-data-filter-exclude-unset-none-review.json",
       "input_sha256": "e8df817a4df31b3f2f646068c8a9286416ff13577822d1fc572bbc5d8eb34a17",
       "recipe_path": "tests/fixtures/input-recipes/parity/response-model-data-filter-exclude-unset-none-review.yaml",
-      "recipe_sha256": "329cd16cf7a92ed0d8823f42f7643b41df31eee1d4c6232d07697d0961d5866c",
+      "recipe_sha256": "13d2d7fd91e5c044a6206669b7a6dad226a34a17dbdb926f8ad9d2322709cecb",
       "workload_path": "tests/fixtures/workloads/response_model_data_filter_exclude_unset_none_review.py",
       "workload_sha256": "24b60f06b2472a0254c9ae15d0b208e0edd99d3cb8a3833696d343bacd0c13cd",
       "case_ids": [
@@ -6513,6 +6513,18 @@
         "fastapi.test.test-starlette-urlconvertors.test-route-converters-query",
         "fastapi.test.test-starlette-urlconvertors.test-url-path-for-path-convertor",
         "fastapi.test.test-starlette-urlconvertors.test-url-path-for-explicit-name"
+      ]
+    },
+    {
+      "id": "status-module-identity",
+      "input_path": "tests/fixtures/inputs/parity/status-module-identity.json",
+      "input_sha256": "b4620f847fba631bc81970cc9d983a64db753e5d828e2cf9cfef4211031a5e6f",
+      "recipe_path": "tests/fixtures/input-recipes/parity/status-module-identity.yaml",
+      "recipe_sha256": "145e57da69d805462d71bba719e97bbc76f9e0883ea400329552248142f3994a",
+      "workload_path": "tests/fixtures/workloads/status_module_identity.py",
+      "workload_sha256": "a8bdb4fb090cb11b24b690c4151d78e514c4ec1956ffb1c0e3cff511ea065e05",
+      "case_ids": [
+        "fastapi.status-alias.namespace"
       ]
     },
     {
@@ -24276,6 +24288,19 @@
       "observation_selectors": [
         "http.body.bytes",
         "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:reference/status.md",
+      "fixture_id": "fastapi.docs.reference-status",
+      "workflow_id": "status-module-identity",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.status-alias.namespace"
+      ],
+      "observation_selectors": [
         "http.status"
       ]
     },

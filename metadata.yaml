@@ -80,14 +80,14 @@ api_inventory:
 import_binding_classification_review:
   artifact: tests/fixtures/api-import-binding-classification-review.json
   schema: fastapi-starlette-import-binding-review/v1
-  sha256: 734560410239ed00d816091302e578b8544942ea3c2d3e7e3577ccbf7aacfd6f
+  sha256: b36b6d140b7810aecc36b89f1fe2a0369ad72532ab6e30f5e831d21c208063db
   source_identity:
     package: FastAPI
     version: 0.141.1
     source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
     selected_starlette_profile: 1.6.0
     starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
-    starlette_rs_contract_commit: 513016a86032330e83ca768e41669eb173fc9157
+    starlette_rs_contract_commit: c3712b66b5d8ea7b77e5c98bd03fc974c6fc0744
   starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
   counts:
     candidates: 97
@@ -99,7 +99,7 @@ import_binding_classification_review:
   candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
   pinned_starlette_rs_sources:
     metadata_sha256: 398b9c070c03cc9ff78cd9ec879a95f40144548efefaf3ad76b999cd31c6f217
-    manifest_sha256: 8babb9a7c3758c9aaf1931a8d2132eb783965b28fd3a1435c738a5835f06ef23
+    manifest_sha256: cd5c7d0494659d80d6c8293fd1eb853e05ff36ef30d651801bb4cf2b47df3acc
     api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
     api_review_sha256: 822503a4b91afc8b61f1b668d286cedfb3378d96be02f4ebb6c84c9210208325
 
@@ -182,7 +182,7 @@ classification_atlas:
 starlette_rs:
   owner: ../starlette-rs
   repository: https://github.com/appunni-m/starlette-rs
-  commit: 513016a86032330e83ca768e41669eb173fc9157
+  commit: c3712b66b5d8ea7b77e5c98bd03fc974c6fc0744
   distribution_version: 0.1.0
   contract_id: starlette-1.6.0-asgi-http-config-session-slice
   metadata: ../starlette-rs/metadata.yaml
@@ -534,6 +534,18 @@ reviewed_api_contract_overlay:
         Request body state so raw body access remains available to the endpoint.
         Generic Request API parity remains owned by Starlette-RS and is not
         established by these FastAPI integration cases.
+    fastapi.status:
+      rust_binding: fastapi-rs/src/parameters.rs::register
+      source_evidence:
+        - {path: fastapi/__init__.py}
+        - {path: docs/en/docs/reference/status.md}
+      feature_ids: [response-serialization]
+      observation_selectors: [http.status, http.body.bytes]
+      supported_slice: >-
+        The root fastapi.status export is the exact Starlette-RS starlette.status
+        module object. The identity-checked HTTP workflow compares its complete
+        __all__ names and integer values against the pinned FastAPI oracle;
+        generic Starlette status values remain owned by the sibling contract.
     fastapi.Header:
       rust_binding: fastapi-rs/src/parameters.rs::header
       source_evidence:

@@ -448,24 +448,7 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     module.add_function(wrap_pyfunction!(form, module)?)?;
     module.add_function(wrap_pyfunction!(file, module)?)?;
 
-    let status = PyModule::new(py, "status")?;
-    status.add("HTTP_200_OK", 200)?;
-    status.add("HTTP_201_CREATED", 201)?;
-    status.add("HTTP_202_ACCEPTED", 202)?;
-    status.add("HTTP_204_NO_CONTENT", 204)?;
-    status.add("HTTP_400_BAD_REQUEST", 400)?;
-    status.add("HTTP_401_UNAUTHORIZED", 401)?;
-    status.add("HTTP_403_FORBIDDEN", 403)?;
-    status.add("HTTP_404_NOT_FOUND", 404)?;
-    status.add("HTTP_405_METHOD_NOT_ALLOWED", 405)?;
-    status.add("HTTP_409_CONFLICT", 409)?;
-    status.add("HTTP_422_UNPROCESSABLE_ENTITY", 422)?;
-    status.add("HTTP_429_TOO_MANY_REQUESTS", 429)?;
-    status.add("HTTP_500_INTERNAL_SERVER_ERROR", 500)?;
-    status.add("HTTP_501_NOT_IMPLEMENTED", 501)?;
-    status.add("HTTP_502_BAD_GATEWAY", 502)?;
-    status.add("HTTP_503_SERVICE_UNAVAILABLE", 503)?;
-    status.add("HTTP_504_GATEWAY_TIMEOUT", 504)?;
+    let status = py.import("starlette.status")?;
     module.add_submodule(&status)?;
     Ok(())
 }

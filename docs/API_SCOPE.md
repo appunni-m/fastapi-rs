@@ -95,11 +95,12 @@ manifest's `target_binding.public_python_path` records the required spelling,
 and target status remains `full-contract-not-established` until full interface
 and behavior parity are recorded.
 
-`fastapi.status` is a Starlette module reexport in the oracle. The current
-target builds a smaller status module in FastAPI-RS, so module presence alone
-does not establish the required object identity or full constant set. Treat
-that as a target gap until it reexports the Starlette-RS-owned namespace and
-passes identity-checked comparison.
+`fastapi.status` is a Starlette module reexport in the oracle. FastAPI-RS now
+binds the exact `starlette.status` module object. The focused identity-checked
+workflow compares that identity, the declared `__all__` order, and all
+exported values. Deprecated aliases, warnings, `dir`, and missing-attribute
+behavior remain delegated to the pinned Starlette-RS contract and are not
+observed by this FastAPI workflow.
 
 ## Documented reference targets
 

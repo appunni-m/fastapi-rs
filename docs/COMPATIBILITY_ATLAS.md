@@ -6,7 +6,7 @@ This source-backed compatibility atlas indexes the API denominator and candidate
 
 - FastAPI: 0.141.1 at `95f8322ee1dcda7ceace7b1c4f6c9915b36d748f`.
 - Starlette oracle contract: 1.6.0 at `4f250d6b814587e20c5365f0a5f0c4d42bcb929f` (the sole selected Starlette version).
-- Starlette-RS implementation contract: at `513016a86032330e83ca768e41669eb173fc9157`.
+- Starlette-RS implementation contract: at `c3712b66b5d8ea7b77e5c98bd03fc974c6fc0744`.
 - FastAPI declares `starlette>=0.46.0`, which admits the selected contract. Its upstream lock graph is dependency-inventory evidence, not another compatibility profile.
 - Pydantic: 2.13.4 source-lock baseline; Python support is `>=3.10`.
 
@@ -40,13 +40,13 @@ The single `tests/fixtures/manifest.yaml` indexes 461 source-supported symbols, 
 
 Python-source exclusions include the documented Pydantic Settings configuration file, one debugging/setup example, and 91 package initializers. Of the remaining examples, 73 have a reviewed direct input-workflow link; examples grouped with a documentation page inherit only page-level selectors, which do not claim that each example's behavior was exercised.
 
-Review state is separate from coverage completeness. `reviewed_partial` means pinned source evidence and exact indexed workflows, cases, and selectors were reviewed for the linked behavior; it does not claim complete source behavior or parity. Pending counts identify examples without that direct review. The materialized index has 451 distinct upstream test modules, 104 documentation pages, and 73 exact documentation Python examples linked to workflows; all 1110 mapping rows are partial. No source module, documentation page, or Python example is fully covered by an input workflow.
+Review state is separate from coverage completeness. `reviewed_partial` means pinned source evidence and exact indexed workflows, cases, and selectors were reviewed for the linked behavior; it does not claim complete source behavior or parity. Pending counts identify examples without that direct review. The materialized index has 451 distinct upstream test modules, 104 documentation pages, and 73 exact documentation Python examples linked to workflows; all 1111 mapping rows are partial. No source module, documentation page, or Python example is fully covered by an input workflow.
 
 `mapping_status` labels source-to-feature mapping, while `review_status` and independent workflow links record whether a partial input mapping was reviewed. A row may therefore retain `candidate` while already having `review_status: reviewed_partial` and exact fixture cases/selectors. The documentation denominator is feature pages; `documented_sections` are discovery leads, not separately reviewed workflow units.
 
 Candidate function and section records carry source path/SHA evidence, exact whole-token signals, family IDs, and family-level selectors. Per-function mapping scope distinguishes reviewed source mappings, function-body signals, and filename candidates. Test modules index function names/lines without copying bodies. These records are backlog leads, not independent executable parity cases; linked workflows cover only their declared partial behavior, and additional behavior needs tailored stimuli and selector review. Rows without a signal remain `review_required`; exclusions include a reason. Benchmark modules are routed to correctness-gated benchmark work.
 
-`make parity-validate` checks 1593 API classifications against pinned FastAPI source evidence, every source digest in the coverage matrix, fixture links or exclusion reasons for all 492 test modules and 155 documentation pages, direct Starlette 1.6.0 dependency edges, and all 50 declared observation selectors. It also validates 628 input-only design records, including 2114 per-function test designs, selector evidence, source digests, and the absence of expected result fields. The current materialized-input index contains 473 input-only workflows, 1849 cases, and 1110 partial source mappings. These are oracle inputs, not target parity results; the remaining design candidates still need review and materialization. Selectors marked `planned` in `observation-selectors.json` still need runner support.
+`make parity-validate` checks 1593 API classifications against pinned FastAPI source evidence, every source digest in the coverage matrix, fixture links or exclusion reasons for all 492 test modules and 155 documentation pages, direct Starlette 1.6.0 dependency edges, and all 50 declared observation selectors. It also validates 628 input-only design records, including 2114 per-function test designs, selector evidence, source digests, and the absence of expected result fields. The current materialized-input index contains 474 input-only workflows, 1850 cases, and 1111 partial source mappings. These are oracle inputs, not target parity results; the remaining design candidates still need review and materialization. Selectors marked `planned` in `observation-selectors.json` still need runner support.
 
 ## Independently authored input workflows
 
@@ -481,6 +481,7 @@ Reviewed workflow recipes live in `tests/fixtures/input-recipes/parity/*.yaml`. 
 | `starlette-routing-runtime-upstream` | 5 | 1 | [`tests/fixtures/input-recipes/parity/starlette-routing-runtime-upstream.yaml`](../tests/fixtures/input-recipes/parity/starlette-routing-runtime-upstream.yaml) | [`tests/fixtures/workloads/starlette_routing_runtime.py`](../tests/fixtures/workloads/starlette_routing_runtime.py) |
 | `starlette-static-files-runtime-upstream` | 3 | 1 | [`tests/fixtures/input-recipes/parity/starlette-static-files-runtime-upstream.yaml`](../tests/fixtures/input-recipes/parity/starlette-static-files-runtime-upstream.yaml) | [`tests/fixtures/workloads/starlette_static_files_runtime.py`](../tests/fixtures/workloads/starlette_static_files_runtime.py) |
 | `starlette-url-converters-upstream` | 6 | 1 | [`tests/fixtures/input-recipes/parity/starlette-url-converters-upstream.yaml`](../tests/fixtures/input-recipes/parity/starlette-url-converters-upstream.yaml) | [`tests/fixtures/workloads/starlette_url_converters_upstream.py`](../tests/fixtures/workloads/starlette_url_converters_upstream.py) |
+| `status-module-identity` | 1 | 1 | [`tests/fixtures/input-recipes/parity/status-module-identity.yaml`](../tests/fixtures/input-recipes/parity/status-module-identity.yaml) | [`tests/fixtures/workloads/status_module_identity.py`](../tests/fixtures/workloads/status_module_identity.py) |
 | `stream-bare-type-upstream` | 4 | 1 | [`tests/fixtures/input-recipes/parity/stream-bare-type-upstream.yaml`](../tests/fixtures/input-recipes/parity/stream-bare-type-upstream.yaml) | [`tests/fixtures/workloads/stream_bare_type_upstream.py`](../tests/fixtures/workloads/stream_bare_type_upstream.py) |
 | `stream-cancellation` | 2 | 3 | [`tests/fixtures/input-recipes/parity/stream-cancellation.yaml`](../tests/fixtures/input-recipes/parity/stream-cancellation.yaml) | [`tests/fixtures/workloads/stream_cancellation.py`](../tests/fixtures/workloads/stream_cancellation.py) |
 | `stream-data` | 1 | 2 | [`tests/fixtures/input-recipes/parity/stream_data.yaml`](../tests/fixtures/input-recipes/parity/stream_data.yaml) | [`tests/fixtures/workloads/stream_data.py`](../tests/fixtures/workloads/stream_data.py) |
@@ -536,7 +537,7 @@ The merged coverage matrix links each FastAPI test, documented feature, or examp
 |---:|---:|---:|---:|
 | 945 | 2449 | 523 | 6 |
 
-The sibling Starlette-RS manifest, API review, and coverage matrix remain the sole Starlette API inventory. FastAPI's atlas stores only relevant requirement references plus manifest/catalog/review/matrix SHA-256 digests. The inspected Starlette-RS implementation revision is 513016a86032330e83ca768e41669eb173fc9157 (pinned, clean sibling Git commit).
+The sibling Starlette-RS manifest, API review, and coverage matrix remain the sole Starlette API inventory. FastAPI's atlas stores only relevant requirement references plus manifest/catalog/review/matrix SHA-256 digests. The inspected Starlette-RS implementation revision is c3712b66b5d8ea7b77e5c98bd03fc974c6fc0744 (pinned, clean sibling Git commit).
 
 ## Errors, aliases, optional features, and deprecations
 
