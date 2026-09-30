@@ -10,6 +10,8 @@ pub(crate) struct ParameterMetadata {
     alias: Option<String>,
     dependency: Option<Py<PyAny>>,
     default: Option<Py<PyAny>>,
+    media_type: Option<String>,
+    description: Option<String>,
     gt: Option<Py<PyAny>>,
     lt: Option<Py<PyAny>>,
     min_length: Option<Py<PyAny>>,
@@ -40,6 +42,16 @@ impl ParameterMetadata {
     #[getter]
     fn default(&self, py: Python<'_>) -> Option<Py<PyAny>> {
         self.default.as_ref().map(|default| default.clone_ref(py))
+    }
+
+    #[getter]
+    fn media_type(&self) -> Option<String> {
+        self.media_type.clone()
+    }
+
+    #[getter]
+    fn description(&self) -> Option<String> {
+        self.description.clone()
     }
 
     #[getter]
@@ -95,6 +107,8 @@ fn depends(
             alias: None,
             dependency: Some(dependency),
             default: None,
+            media_type: None,
+            description: None,
             gt: None,
             lt: None,
             min_length: None,
@@ -122,6 +136,8 @@ fn header(
             alias,
             dependency: None,
             default,
+            media_type: None,
+            description: None,
             gt: None,
             lt: None,
             min_length: None,
@@ -145,6 +161,8 @@ fn cookie(
             alias,
             dependency: None,
             default,
+            media_type: None,
+            description: None,
             gt: None,
             lt: None,
             min_length: None,
@@ -194,6 +212,8 @@ fn query(
             alias,
             dependency: None,
             default,
+            media_type: None,
+            description: None,
             gt,
             lt,
             min_length,
@@ -213,6 +233,8 @@ fn path(py: Python<'_>, gt: Option<Py<PyAny>>) -> PyResult<Py<ParameterMetadata>
             alias: None,
             dependency: None,
             default: None,
+            media_type: None,
+            description: None,
             gt,
             lt: None,
             min_length: None,
@@ -232,7 +254,105 @@ fn body(py: Python<'_>, gt: Option<Py<PyAny>>) -> PyResult<Py<ParameterMetadata>
             alias: None,
             dependency: None,
             default: None,
+            media_type: None,
+            description: None,
             gt,
+            lt: None,
+            min_length: None,
+            max_length: None,
+            convert_underscores: true,
+            use_cache: true,
+        },
+    )
+}
+
+// lint-exception: Preserve PydanticUndefined as the exact required-default sentinel.
+#[expect(
+    clippy::expect_used,
+    reason = "pydantic-core is a required target runtime dependency"
+)]
+fn form_file_undefined_default() -> Py<PyAny> {
+    Python::attach(|py| {
+        py.import("pydantic_core")
+            .and_then(|module| module.getattr("PydanticUndefined"))
+            .expect("pydantic-core is required for FastAPI parameter defaults")
+            .unbind()
+    })
+}
+
+fn normalize_undefined_default(py: Python<'_>, default: Py<PyAny>) -> PyResult<Option<Py<PyAny>>> {
+    let ellipsis = py.Ellipsis();
+    let undefined = py.import("pydantic_core")?.getattr("PydanticUndefined")?;
+    if default.bind(py).is(ellipsis.bind(py)) || default.bind(py).is(&undefined) {
+        Ok(None)
+    } else {
+        Ok(Some(default))
+    }
+}
+
+#[pyfunction(
+    name = "Form",
+    signature = (
+        default = form_file_undefined_default(),
+        *,
+        media_type = "application/x-www-form-urlencoded",
+        alias = None,
+        description = None
+    )
+)]
+fn form(
+    py: Python<'_>,
+    default: Py<PyAny>,
+    media_type: &str,
+    alias: Option<String>,
+    description: Option<String>,
+) -> PyResult<Py<ParameterMetadata>> {
+    Py::new(
+        py,
+        ParameterMetadata {
+            kind: "form".to_owned(),
+            alias,
+            dependency: None,
+            default: normalize_undefined_default(py, default)?,
+            media_type: Some(media_type.to_owned()),
+            description,
+            gt: None,
+            lt: None,
+            min_length: None,
+            max_length: None,
+            convert_underscores: true,
+            use_cache: true,
+        },
+    )
+}
+
+#[pyfunction(
+    name = "File",
+    signature = (
+        default = form_file_undefined_default(),
+        *,
+        media_type = "multipart/form-data",
+        alias = None,
+        description = None
+    )
+)]
+fn file(
+    py: Python<'_>,
+    default: Py<PyAny>,
+    media_type: &str,
+    alias: Option<String>,
+    description: Option<String>,
+) -> PyResult<Py<ParameterMetadata>> {
+    Py::new(
+        py,
+        ParameterMetadata {
+            kind: "file".to_owned(),
+            alias,
+            dependency: None,
+            default: normalize_undefined_default(py, default)?,
+            media_type: Some(media_type.to_owned()),
+            description,
+            gt: None,
             lt: None,
             min_length: None,
             max_length: None,
@@ -252,6 +372,8 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     module.add_function(wrap_pyfunction!(query, module)?)?;
     module.add_function(wrap_pyfunction!(path, module)?)?;
     module.add_function(wrap_pyfunction!(body, module)?)?;
+    module.add_function(wrap_pyfunction!(form, module)?)?;
+    module.add_function(wrap_pyfunction!(file, module)?)?;
 
     let status = PyModule::new(py, "status")?;
     status.add("HTTP_200_OK", 200)?;

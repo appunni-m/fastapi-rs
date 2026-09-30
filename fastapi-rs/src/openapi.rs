@@ -33,6 +33,9 @@ pub(crate) struct OpenApiOperation {
     pub(crate) request_model_name: Option<String>,
     pub(crate) request_schema: Option<Py<PyAny>>,
     pub(crate) request_required: bool,
+    pub(crate) request_body_present: bool,
+    pub(crate) request_body_content_before_required: bool,
+    pub(crate) request_media_type: String,
     pub(crate) response_model_name: Option<String>,
     pub(crate) response_schema: Option<Py<PyAny>>,
     pub(crate) response_schema_title: String,
@@ -64,11 +67,14 @@ pub(crate) fn openapi_document(
 ) -> PyResult<Py<PyAny>> {
     let mut schemas = BTreeMap::<String, Py<PyAny>>::new();
     for operation in operations {
-        if let (Some(name), Some(schema)) = (
-            operation.request_model_name.as_deref(),
-            operation.request_schema.as_ref(),
-        ) {
-            collect_model_schema(py, &mut schemas, name, schema)?;
+        if operation.request_body_present {
+            if let Some(schema) = operation.request_schema.as_ref() {
+                if let Some(name) = operation.request_model_name.as_deref() {
+                    collect_model_schema(py, &mut schemas, name, schema)?;
+                } else {
+                    collect_schema_definitions(py, &mut schemas, schema)?;
+                }
+            }
         }
         if let Some(schema) = operation.response_schema.as_ref() {
             if let Some(name) = operation.response_model_name.as_deref() {
@@ -129,15 +135,27 @@ pub(crate) fn openapi_document(
             operation_document.set_item("parameters", parameters)?;
         }
 
-        if let Some(model_name) = operation.request_model_name.as_deref() {
+        if operation.request_body_present {
             let request_body = PyDict::new(py);
-            request_body.set_item("required", operation.request_required)?;
+            if operation.request_required && !operation.request_body_content_before_required {
+                request_body.set_item("required", true)?;
+            }
             let content = PyDict::new(py);
             let media_type = PyDict::new(py);
-            let schema = reference_schema(py, model_name)?;
+            let schema = match (
+                operation.request_model_name.as_deref(),
+                operation.request_schema.as_ref(),
+            ) {
+                (Some(model_name), Some(_)) => reference_schema(py, model_name)?.into_any(),
+                (None, Some(schema)) => normalize_schema(py, schema.bind(py), false)?,
+                _ => PyDict::new(py).into_any(),
+            };
             media_type.set_item("schema", schema)?;
-            content.set_item("application/json", media_type)?;
+            content.set_item(&operation.request_media_type, media_type)?;
             request_body.set_item("content", content)?;
+            if operation.request_required && operation.request_body_content_before_required {
+                request_body.set_item("required", true)?;
+            }
             operation_document.set_item("requestBody", request_body)?;
         }
 
@@ -225,7 +243,7 @@ pub(crate) fn openapi_document(
         responses.set_item(status_key, success_response)?;
 
         let needs_validation_response =
-            !operation.parameters.is_empty() || operation.request_model_name.is_some();
+            !operation.parameters.is_empty() || operation.request_body_present;
         if needs_validation_response && operation.status != 422 {
             responses.set_item("422", validation_response(py)?)?;
             schemas
@@ -351,11 +369,23 @@ fn normalize_schema<'py>(
     top_level_model: bool,
 ) -> PyResult<Bound<'py, PyAny>> {
     if let Ok(source) = value.cast::<PyDict>() {
+        let schema_type = source
+            .get_item("type")?
+            .and_then(|item| item.extract::<String>().ok());
+        let schema_format = source
+            .get_item("format")?
+            .and_then(|item| item.extract::<String>().ok());
+        let fastapi_binary_bytes_schema = schema_type.as_deref() == Some("string")
+            && schema_format.as_deref() == Some("binary")
+            && source.get_item("contentMediaType")?.is_none();
         let mut entries = Vec::<(String, Bound<'py, PyAny>)>::new();
         for (key, item) in source.iter() {
             let key: String = key.extract()?;
             // Pydantic's field defaults are excluded from FastAPI's OpenAPI schemas.
-            if key == "default" || key == "$defs" {
+            if key == "default"
+                || key == "$defs"
+                || (fastapi_binary_bytes_schema && key == "format")
+            {
                 continue;
             }
             entries.push((key, item));
@@ -378,7 +408,10 @@ fn normalize_schema<'py>(
                 }
             }
             let item = normalize_schema_value(py, &key, &item)?;
-            result.set_item(key, item)?;
+            result.set_item(&key, item)?;
+            if key == "type" && fastapi_binary_bytes_schema {
+                result.set_item("contentMediaType", "application/octet-stream")?;
+            }
         }
         return Ok(result.into_any());
     }
@@ -442,13 +475,24 @@ fn normalize_schema_value<'py>(
 }
 
 fn schema_key_rank(key: &str, top_level_model: bool) -> (usize, usize) {
-    let model_order = ["$ref", "properties", "type", "required", "title"];
+    let model_order = [
+        "$ref",
+        "properties",
+        "additionalProperties",
+        "type",
+        "contentMediaType",
+        "required",
+        "title",
+    ];
     let field_order = [
         "$ref",
         "anyOf",
         "oneOf",
         "allOf",
+        "additionalProperties",
+        "items",
         "type",
+        "contentMediaType",
         "format",
         "const",
         "enum",
@@ -463,7 +507,6 @@ fn schema_key_rank(key: &str, top_level_model: bool) -> (usize, usize) {
         "minItems",
         "maxItems",
         "uniqueItems",
-        "items",
         "properties",
         "additionalProperties",
         "required",

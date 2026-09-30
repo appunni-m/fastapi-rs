@@ -1,6 +1,6 @@
 //! Rust-owned FastAPI application registration and ASGI request flow.
 
-use std::collections::{BTreeSet, HashMap};
+use std::collections::{BTreeSet, HashMap, VecDeque};
 
 use pyo3::exceptions::{
     PyAssertionError, PyAttributeError, PyNameError, PyNotImplementedError, PyRuntimeError,
@@ -35,6 +35,8 @@ enum InputSource {
     Header,
     Cookie,
     Body,
+    Form,
+    File,
 }
 
 impl InputSource {
@@ -45,11 +47,18 @@ impl InputSource {
             Self::Header => FastApiInputLocation::Header,
             Self::Cookie => FastApiInputLocation::Cookie,
             Self::Body => FastApiInputLocation::Body,
+            Self::Form | Self::File => FastApiInputLocation::Body,
         }
     }
 
     const fn as_str(self) -> &'static str {
-        self.location().as_str()
+        match self {
+            Self::Path => "path",
+            Self::Query => "query",
+            Self::Header => "header",
+            Self::Cookie => "cookie",
+            Self::Body | Self::Form | Self::File => "body",
+        }
     }
 }
 
@@ -70,6 +79,8 @@ struct CallableParameter {
     annotation: Py<PyAny>,
     default: Option<Py<PyAny>>,
     is_sequence: bool,
+    media_type: Option<String>,
+    description: Option<String>,
     source: ParameterSource,
 }
 
@@ -84,6 +95,7 @@ struct InvocationContext<'context, 'py> {
     py: Python<'py>,
     inputs: &'context Bound<'py, PyDict>,
     query_params: &'context QueryParams,
+    form_body_embedded: bool,
     failures: &'context mut Vec<ValidationIssue>,
     dependency_overrides: &'context Bound<'py, PyDict>,
     dependency_cache: &'context mut HashMap<usize, Py<PyAny>>,
@@ -94,10 +106,19 @@ struct InvocationContext<'context, 'py> {
 struct RequestInvocation {
     inputs: Py<PyDict>,
     query_params: QueryParams,
+    form_body_embedded: bool,
     failures: Vec<ValidationIssue>,
     dependency_cache: HashMap<usize, Py<PyAny>>,
     prepared_dependency_values: HashMap<usize, Py<PyAny>>,
     dependency_override_cursor: usize,
+}
+
+struct FormFileReadPlan {
+    name: String,
+    annotation: Py<PyAny>,
+    sequence: bool,
+    awaitables: VecDeque<Py<PyAny>>,
+    values: Vec<Py<PyAny>>,
 }
 
 enum RouteInvocation {
@@ -947,6 +968,13 @@ impl PyFastApi {
                 response_status: 200,
                 response_body: Vec::new(),
                 invocation: None,
+                form_request: None,
+                form_close_started: false,
+                form_body_embedded: false,
+                form_inputs: None,
+                form_query_params: None,
+                form_file_reads: VecDeque::new(),
+                active_form_file_read: None,
             },
         )
     }
@@ -1029,36 +1057,86 @@ impl PyFastApi {
             })
             .collect::<PyResult<Vec<_>>>()?;
 
-        let direct_body_parameters = route.plan.direct_body_parameters();
-        let unique_body_names = direct_body_parameters
-            .iter()
-            .map(|parameter| parameter.name.as_str())
-            .collect::<BTreeSet<_>>();
-        let aggregate_body = unique_body_names.len() > 1;
-        let (request_model_name, request_schema, request_required) = if aggregate_body {
-            let aggregate_name = format!("Body_{operation_id}");
-            let aggregate_model =
-                aggregate_body_model(py, &aggregate_name, &direct_body_parameters)?;
-            let request_schema = pydantic_schema(py, aggregate_model.bind(py), "validation", None)?;
-            let request_required = direct_body_parameters
-                .iter()
-                .any(|parameter| parameter.default.is_none());
-            (Some(aggregate_name), Some(request_schema), request_required)
-        } else {
-            match route.plan.body_parameter() {
-                Some(parameter) => (
-                    model_name(py, parameter.annotation.bind(py))?,
-                    Some(pydantic_schema(
-                        py,
-                        parameter.annotation.bind(py),
-                        "validation",
-                        None,
-                    )?),
-                    parameter.default.is_none(),
-                ),
-                None => (None, None, false),
-            }
-        };
+        let has_form_body = route.plan.has_form_inputs();
+        let (request_model_name, request_schema, request_required, request_media_type) =
+            if has_form_body {
+                let body_parameters = route.plan.all_body_parameters();
+                let aggregate_body = form_body_should_embed(py, &body_parameters)?;
+                if aggregate_body {
+                    let aggregate_name = format!("Body_{operation_id}");
+                    let aggregate_model =
+                        aggregate_body_model(py, &aggregate_name, &body_parameters)?;
+                    let request_schema =
+                        pydantic_schema(py, aggregate_model.bind(py), "validation", None)?;
+                    let request_required = body_parameters
+                        .iter()
+                        .any(|parameter| parameter.default.is_none());
+                    let media_type = aggregate_form_media_type(&body_parameters);
+                    (
+                        Some(aggregate_name),
+                        Some(request_schema),
+                        request_required,
+                        media_type,
+                    )
+                } else {
+                    match body_parameters.first().copied() {
+                        Some(parameter) => (
+                            model_name(py, parameter.annotation.bind(py))?,
+                            Some(pydantic_schema(
+                                py,
+                                parameter.annotation.bind(py),
+                                "validation",
+                                None,
+                            )?),
+                            parameter.default.is_none(),
+                            parameter
+                                .media_type
+                                .as_deref()
+                                .unwrap_or("application/json")
+                                .to_owned(),
+                        ),
+                        None => (None, None, false, "application/json".to_owned()),
+                    }
+                }
+            } else {
+                let direct_body_parameters = route.plan.direct_body_parameters();
+                let unique_body_names = direct_body_parameters
+                    .iter()
+                    .map(|parameter| parameter.name.as_str())
+                    .collect::<BTreeSet<_>>();
+                let aggregate_body = unique_body_names.len() > 1;
+                if aggregate_body {
+                    let aggregate_name = format!("Body_{operation_id}");
+                    let aggregate_model =
+                        aggregate_body_model(py, &aggregate_name, &direct_body_parameters)?;
+                    let request_schema =
+                        pydantic_schema(py, aggregate_model.bind(py), "validation", None)?;
+                    let request_required = direct_body_parameters
+                        .iter()
+                        .any(|parameter| parameter.default.is_none());
+                    (
+                        Some(aggregate_name),
+                        Some(request_schema),
+                        request_required,
+                        "application/json".to_owned(),
+                    )
+                } else {
+                    match route.plan.body_parameter() {
+                        Some(parameter) => (
+                            model_name(py, parameter.annotation.bind(py))?,
+                            Some(pydantic_schema(
+                                py,
+                                parameter.annotation.bind(py),
+                                "validation",
+                                None,
+                            )?),
+                            parameter.default.is_none(),
+                            "application/json".to_owned(),
+                        ),
+                        None => (None, None, false, "application/json".to_owned()),
+                    }
+                }
+            };
         let (response_model_name, response_schema) = match route.response_model.as_ref() {
             Some(model) => {
                 let schema = pydantic_schema(py, model.bind(py), "serialization", None)?;
@@ -1101,6 +1179,8 @@ impl PyFastApi {
         } else {
             (None, None)
         };
+        let request_body_present =
+            request_model_name.is_some() || (has_form_body && request_schema.is_some());
 
         Ok(OpenApiOperation {
             path: route.path.clone(),
@@ -1114,6 +1194,9 @@ impl PyFastApi {
             request_model_name,
             request_schema,
             request_required,
+            request_body_present,
+            request_body_content_before_required: has_form_body,
+            request_media_type,
             response_model_name,
             response_schema,
             response_schema_title: response_field_schema_title(&name, &route.path, &route.method),
@@ -1758,7 +1841,7 @@ impl CallablePlan {
                     };
                 let default_is_parameter_marker = matches!(
                     raw_default_marker_kind.as_deref(),
-                    Some("body" | "depends" | "query")
+                    Some("body" | "depends" | "query" | "form" | "file")
                 );
                 if default_is_parameter_marker {
                     metadata.push(raw_default.clone().unbind());
@@ -1778,6 +1861,8 @@ impl CallablePlan {
                     annotation: validated_annotation,
                     default,
                     is_sequence,
+                    media_type: parameter_media_type(py, &source, &metadata)?,
+                    description: parameter_description(py, &source, &metadata)?,
                     source,
                 })
             })
@@ -1814,6 +1899,8 @@ impl CallablePlan {
                 annotation,
                 default: None,
                 is_sequence: false,
+                media_type: None,
+                description: None,
                 source: ParameterSource::Dependency {
                     plan,
                     use_cache,
@@ -1861,12 +1948,80 @@ impl CallablePlan {
             .collect()
     }
 
+    fn all_body_parameters(&self) -> Vec<&CallableParameter> {
+        let mut parameters = Vec::new();
+        self.collect_body_parameters(&mut parameters);
+        parameters
+    }
+
+    fn collect_body_parameters<'a>(&'a self, parameters: &mut Vec<&'a CallableParameter>) {
+        for parameter in &self.parameters {
+            match &parameter.source {
+                ParameterSource::Input {
+                    source: InputSource::Body | InputSource::Form | InputSource::File,
+                    ..
+                } => parameters.push(parameter),
+                ParameterSource::Input { .. } | ParameterSource::Dependency { .. } => {}
+            }
+        }
+        // FastAPI flattens a dependant's body fields before visiting its child
+        // dependants, retaining dependency declaration order.
+        for parameter in &self.parameters {
+            if let ParameterSource::Dependency { plan, .. } = &parameter.source {
+                plan.collect_body_parameters(parameters);
+            }
+        }
+    }
+
+    fn has_form_inputs(&self) -> bool {
+        self.parameters
+            .iter()
+            .any(|parameter| match &parameter.source {
+                ParameterSource::Input {
+                    source: InputSource::Form | InputSource::File,
+                    ..
+                } => true,
+                ParameterSource::Input { .. } => false,
+                ParameterSource::Dependency { plan, .. } => plan.has_form_inputs(),
+            })
+    }
+
+    fn populate_form_inputs(
+        &self,
+        py: Python<'_>,
+        form: &Bound<'_, PyAny>,
+        inputs: &Bound<'_, PyDict>,
+        form_body_embedded: bool,
+        file_reads: &mut VecDeque<FormFileReadPlan>,
+    ) -> PyResult<()> {
+        for parameter in &self.parameters {
+            if matches!(
+                parameter.source,
+                ParameterSource::Input {
+                    source: InputSource::Form | InputSource::File,
+                    ..
+                }
+            ) {
+                parameter.populate_form_value(py, form, inputs, form_body_embedded, file_reads)?;
+            }
+        }
+        for parameter in &self.parameters {
+            if let ParameterSource::Dependency { plan, .. } = &parameter.source {
+                plan.populate_form_inputs(py, form, inputs, form_body_embedded, file_reads)?;
+            }
+        }
+        Ok(())
+    }
+
     fn openapi_parameters(&self, py: Python<'_>) -> PyResult<Vec<ParameterOpenApiPlan>> {
         let mut parameters = Vec::new();
         for parameter in &self.parameters {
             match &parameter.source {
                 ParameterSource::Input { source, alias }
-                    if !matches!(source, InputSource::Body) =>
+                    if !matches!(
+                        source,
+                        InputSource::Body | InputSource::Form | InputSource::File
+                    ) =>
                 {
                     parameters.push(ParameterOpenApiPlan {
                         name: alias.clone(),
@@ -2237,112 +2392,128 @@ impl CallablePlan {
                 }
             }
         }
+        let mut ordered_input_parameters = Vec::with_capacity(self.parameters.len());
         for source in [
             InputSource::Path,
             InputSource::Query,
             InputSource::Header,
             InputSource::Cookie,
-            InputSource::Body,
         ] {
             for parameter in &self.parameters {
-                let ParameterSource::Input {
-                    source: parameter_source,
-                    alias,
-                } = &parameter.source
-                else {
-                    continue;
-                };
-                if *parameter_source != source {
-                    continue;
+                if matches!(
+                    &parameter.source,
+                    ParameterSource::Input {
+                        source: parameter_source,
+                        ..
+                    } if *parameter_source == source
+                ) {
+                    ordered_input_parameters.push((parameter, source));
                 }
-                let value = if *parameter_source == InputSource::Query {
-                    if parameter.is_sequence {
-                        let query_values = context.query_params.get_list(alias);
-                        if query_values.is_empty() {
-                            None
-                        } else {
-                            let values = PyList::empty(context.py);
-                            for value in query_values {
-                                values.append(PyString::new(context.py, value))?;
-                            }
-                            Some(values.into_any())
-                        }
-                    } else {
-                        context
-                            .query_params
-                            .get(alias)
-                            .map(|value| PyString::new(context.py, value).into_any())
-                    }
-                } else {
-                    context.inputs.get_item(&parameter.name)?
-                };
-                let value = if *parameter_source == InputSource::Body && aggregate_body {
-                    match value {
-                        Some(body) if body.is_instance_of::<PyDict>() => {
-                            body.cast::<PyDict>()?.get_item(alias)?
-                        }
-                        value => value,
-                    }
-                } else {
-                    value
-                };
-                let Some(value) = value else {
-                    if let Some(default) = parameter.default.as_ref() {
-                        let default = context
-                            .py
-                            .import("copy")?
-                            .call_method1("deepcopy", (default.bind(context.py),))?;
-                        if default.is_none() {
-                            kwargs.set_item(&parameter.name, default)?;
-                        } else {
-                            match validate_python_value(
-                                context.py,
-                                parameter.annotation.bind(context.py),
-                                &default,
-                            ) {
-                                Ok(value) => kwargs.set_item(&parameter.name, value)?,
-                                Err(error) if is_pydantic_validation_error(context.py, &error) => {
-                                    context.failures.push(ValidationIssue::Input(Box::new(
-                                        InputValidationFailure {
-                                            error,
-                                            location: source.as_str().to_owned(),
-                                            alias: alias.clone(),
-                                            body_field: *parameter_source == InputSource::Body
-                                                && aggregate_body,
-                                        },
-                                    )));
-                                }
-                                Err(error) => return Err(error),
-                            }
-                        }
-                    } else {
-                        context.failures.push(ValidationIssue::Missing {
-                            location: source.as_str().to_owned(),
-                            alias: alias.clone(),
-                            body_field: *parameter_source == InputSource::Body && aggregate_body,
-                        });
-                    }
-                    continue;
-                };
-                match validate_python_value(
+            }
+        }
+        for parameter in &self.parameters {
+            if let ParameterSource::Input {
+                source: source @ (InputSource::Body | InputSource::Form | InputSource::File),
+                ..
+            } = &parameter.source
+            {
+                ordered_input_parameters.push((parameter, *source));
+            }
+        }
+        for (parameter, source) in ordered_input_parameters {
+            let ParameterSource::Input { alias, .. } = &parameter.source else {
+                continue;
+            };
+            let body_field = match source {
+                InputSource::Body => aggregate_body,
+                InputSource::Form | InputSource::File => !form_parameter_is_unembedded_model(
                     context.py,
                     parameter.annotation.bind(context.py),
-                    &value,
-                ) {
-                    Ok(value) => kwargs.set_item(&parameter.name, value)?,
-                    Err(error) if is_pydantic_validation_error(context.py, &error) => {
-                        context.failures.push(ValidationIssue::Input(Box::new(
-                            InputValidationFailure {
-                                error,
-                                location: source.as_str().to_owned(),
-                                alias: alias.clone(),
-                                body_field: *parameter_source == InputSource::Body
-                                    && aggregate_body,
-                            },
-                        )));
+                    context.form_body_embedded,
+                )?,
+                _ => false,
+            };
+            let value = if source == InputSource::Query {
+                if parameter.is_sequence {
+                    let query_values = context.query_params.get_list(alias);
+                    if query_values.is_empty() {
+                        None
+                    } else {
+                        let values = PyList::empty(context.py);
+                        for value in query_values {
+                            values.append(PyString::new(context.py, value))?;
+                        }
+                        Some(values.into_any())
                     }
-                    Err(error) => return Err(error),
+                } else {
+                    context
+                        .query_params
+                        .get(alias)
+                        .map(|value| PyString::new(context.py, value).into_any())
                 }
+            } else {
+                context.inputs.get_item(&parameter.name)?
+            };
+            let value = if source == InputSource::Body && aggregate_body {
+                match value {
+                    Some(body) if body.is_instance_of::<PyDict>() => {
+                        body.cast::<PyDict>()?.get_item(alias)?
+                    }
+                    value => value,
+                }
+            } else {
+                value
+            };
+            let Some(value) = value else {
+                if let Some(default) = parameter.default.as_ref() {
+                    let default = context
+                        .py
+                        .import("copy")?
+                        .call_method1("deepcopy", (default.bind(context.py),))?;
+                    if default.is_none() {
+                        kwargs.set_item(&parameter.name, default)?;
+                    } else {
+                        match validate_python_value(
+                            context.py,
+                            parameter.annotation.bind(context.py),
+                            &default,
+                        ) {
+                            Ok(value) => kwargs.set_item(&parameter.name, value)?,
+                            Err(error) if is_pydantic_validation_error(context.py, &error) => {
+                                context.failures.push(ValidationIssue::Input(Box::new(
+                                    InputValidationFailure {
+                                        error,
+                                        location: source.as_str().to_owned(),
+                                        alias: alias.clone(),
+                                        body_field,
+                                    },
+                                )));
+                            }
+                            Err(error) => return Err(error),
+                        }
+                    }
+                } else {
+                    context.failures.push(ValidationIssue::Missing {
+                        location: source.as_str().to_owned(),
+                        alias: alias.clone(),
+                        body_field,
+                    });
+                }
+                continue;
+            };
+            match validate_python_value(context.py, parameter.annotation.bind(context.py), &value) {
+                Ok(value) => kwargs.set_item(&parameter.name, value)?,
+                Err(error) if is_pydantic_validation_error(context.py, &error) => {
+                    context.failures.push(ValidationIssue::Input(Box::new(
+                        InputValidationFailure {
+                            error,
+                            location: source.as_str().to_owned(),
+                            alias: alias.clone(),
+                            body_field,
+                        },
+                    )));
+                }
+                Err(error) => return Err(error),
             }
         }
         if context.failures.len() != initial_failure_count {
@@ -2445,9 +2616,17 @@ fn marker_default(py: Python<'_>, metadata: &[Py<PyAny>]) -> PyResult<Option<Py<
             continue;
         }
         let kind = marker.getattr("kind")?.extract::<String>()?;
-        if kind == "header" || kind == "query" || kind == "cookie" || kind == "body" {
+        if kind == "header"
+            || kind == "query"
+            || kind == "cookie"
+            || kind == "body"
+            || kind == "form"
+            || kind == "file"
+        {
             let default = marker.getattr("default")?;
-            let has_default = if kind == "query" && marker.hasattr("default_is_set")? {
+            let has_default = if matches!(kind.as_str(), "query" | "form" | "file")
+                && marker.hasattr("default_is_set")?
+            {
                 marker.getattr("default_is_set")?.extract::<bool>()?
             } else {
                 !default.is_none()
@@ -2461,6 +2640,87 @@ fn marker_default(py: Python<'_>, metadata: &[Py<PyAny>]) -> PyResult<Option<Py<
 }
 
 impl CallableParameter {
+    fn populate_form_value(
+        &self,
+        py: Python<'_>,
+        form: &Bound<'_, PyAny>,
+        inputs: &Bound<'_, PyDict>,
+        form_body_embedded: bool,
+        file_reads: &mut VecDeque<FormFileReadPlan>,
+    ) -> PyResult<()> {
+        let ParameterSource::Input { source, alias } = &self.source else {
+            return Ok(());
+        };
+        if !form_body_embedded && matches!(source, InputSource::Form | InputSource::File) {
+            if is_pydantic_model_annotation(py, self.annotation.bind(py))? {
+                let model_values = form_model_values(py, self.annotation.bind(py), form)?;
+                inputs.set_item(&self.name, model_values)?;
+                return Ok(());
+            }
+            if is_union_of_base_models(py, self.annotation.bind(py))? {
+                let model_values =
+                    form_union_values(py, form, alias, self.default.as_ref(), self.is_sequence)?;
+                inputs.set_item(&self.name, model_values)?;
+                return Ok(());
+            }
+        }
+        let value = if self.is_sequence {
+            let values = form.call_method1("getlist", (alias,))?;
+            if values.len()? == 0 {
+                None
+            } else {
+                Some(values)
+            }
+        } else {
+            let value = form.call_method1("get", (alias,))?;
+            (!value.is_none()).then_some(value)
+        };
+        if let Some(value) = value {
+            if !self.is_sequence
+                && value.is_instance_of::<PyString>()
+                && value.extract::<String>()?.is_empty()
+            {
+                return Ok(());
+            }
+            if *source == InputSource::File
+                && self.is_sequence
+                && is_bytes_sequence_annotation(py, self.annotation.bind(py))?
+            {
+                let awaitables = value
+                    .try_iter()?
+                    .map(|item| item?.call_method0("read").map(Bound::unbind))
+                    .collect::<PyResult<VecDeque<_>>>()?;
+                file_reads.push_back(FormFileReadPlan {
+                    name: self.name.clone(),
+                    annotation: self.annotation.clone_ref(py),
+                    sequence: true,
+                    awaitables,
+                    values: Vec::new(),
+                });
+            } else if *source == InputSource::File
+                && is_bytes_annotation(py, self.annotation.bind(py))?
+            {
+                let upload_file_type = py
+                    .import("starlette.datastructures")?
+                    .getattr("UploadFile")?;
+                if value.is_instance(&upload_file_type)? {
+                    file_reads.push_back(FormFileReadPlan {
+                        name: self.name.clone(),
+                        annotation: self.annotation.clone_ref(py),
+                        sequence: false,
+                        awaitables: VecDeque::from([value.call_method0("read")?.unbind()]),
+                        values: Vec::new(),
+                    });
+                } else {
+                    inputs.set_item(&self.name, value)?;
+                }
+            } else {
+                inputs.set_item(&self.name, value)?;
+            }
+        }
+        Ok(())
+    }
+
     fn input_parameters(&self) -> Vec<FastApiInputParameter> {
         match &self.source {
             ParameterSource::Input { source, alias } => vec![FastApiInputParameter {
@@ -2542,6 +2802,20 @@ fn parameter_source(
                 alias: name.to_owned(),
             });
         }
+        if kind == "form" || kind == "file" {
+            let alias = marker
+                .getattr("alias")?
+                .extract::<Option<String>>()?
+                .unwrap_or_else(|| name.to_owned());
+            return Ok(ParameterSource::Input {
+                source: if kind == "form" {
+                    InputSource::Form
+                } else {
+                    InputSource::File
+                },
+                alias,
+            });
+        }
         if kind == "path" {
             return Ok(ParameterSource::Input {
                 source: InputSource::Path,
@@ -2577,6 +2851,14 @@ fn parameter_source(
             alias: name.to_owned(),
         });
     }
+    if is_uploadfile_annotation(py, annotation)?
+        || is_uploadfile_sequence_annotation(py, annotation)?
+    {
+        return Ok(ParameterSource::Input {
+            source: InputSource::File,
+            alias: name.to_owned(),
+        });
+    }
     if is_pydantic_model(py, annotation)? {
         return Ok(ParameterSource::Input {
             source: InputSource::Body,
@@ -2587,6 +2869,243 @@ fn parameter_source(
         source: InputSource::Query,
         alias: name.to_owned(),
     })
+}
+
+fn parameter_media_type(
+    py: Python<'_>,
+    source: &ParameterSource,
+    metadata: &[Py<PyAny>],
+) -> PyResult<Option<String>> {
+    let expected_kind = match source {
+        ParameterSource::Input {
+            source: InputSource::Form,
+            ..
+        } => "form",
+        ParameterSource::Input {
+            source: InputSource::File,
+            ..
+        } => "file",
+        _ => return Ok(None),
+    };
+    for marker in metadata {
+        let marker = marker.bind(py);
+        if marker.hasattr("kind")? && marker.getattr("kind")?.extract::<String>()? == expected_kind
+        {
+            if let Some(media_type) = marker.getattr("media_type")?.extract::<Option<String>>()? {
+                return Ok(Some(media_type));
+            }
+        }
+    }
+    let default_media_type = match expected_kind {
+        "form" => "application/x-www-form-urlencoded",
+        "file" => "multipart/form-data",
+        _ => return Ok(None),
+    };
+    Ok(Some(default_media_type.to_owned()))
+}
+
+fn parameter_description(
+    py: Python<'_>,
+    source: &ParameterSource,
+    metadata: &[Py<PyAny>],
+) -> PyResult<Option<String>> {
+    let expected_kind = match source {
+        ParameterSource::Input {
+            source: InputSource::Form,
+            ..
+        } => "form",
+        ParameterSource::Input {
+            source: InputSource::File,
+            ..
+        } => "file",
+        _ => return Ok(None),
+    };
+    for marker in metadata {
+        let marker = marker.bind(py);
+        if marker.hasattr("kind")? && marker.getattr("kind")?.extract::<String>()? == expected_kind
+        {
+            return marker.getattr("description")?.extract::<Option<String>>();
+        }
+    }
+    Ok(None)
+}
+
+fn is_pydantic_model_annotation(py: Python<'_>, annotation: &Bound<'_, PyAny>) -> PyResult<bool> {
+    let typing = py.import("typing")?;
+    let origin = typing.getattr("get_origin")?.call1((annotation,))?;
+    if origin.is(&typing.getattr("Annotated")?) {
+        let arguments = typing
+            .getattr("get_args")?
+            .call1((annotation,))?
+            .cast_into::<PyTuple>()?;
+        return is_pydantic_model_annotation(py, &arguments.get_item(0)?);
+    }
+    is_pydantic_model(py, annotation)
+}
+
+fn is_union_of_base_models(py: Python<'_>, annotation: &Bound<'_, PyAny>) -> PyResult<bool> {
+    let typing = py.import("typing")?;
+    let origin = typing.getattr("get_origin")?.call1((annotation,))?;
+    let union = typing.getattr("Union")?;
+    let union_type = py.import("types")?.getattr("UnionType")?;
+    if !origin.is(&union) && !origin.is(&union_type) {
+        return Ok(false);
+    }
+    let arguments = typing
+        .getattr("get_args")?
+        .call1((annotation,))?
+        .cast_into::<PyTuple>()?;
+    if arguments.is_empty() {
+        return Ok(false);
+    }
+    for argument in arguments.iter() {
+        if !is_pydantic_model_annotation(py, &argument)? {
+            return Ok(false);
+        }
+    }
+    Ok(true)
+}
+
+fn form_body_should_embed(
+    py: Python<'_>,
+    body_parameters: &[&CallableParameter],
+) -> PyResult<bool> {
+    if body_parameters.is_empty() {
+        return Ok(false);
+    }
+    let unique_names = body_parameters
+        .iter()
+        .map(|parameter| parameter.name.as_str())
+        .collect::<BTreeSet<_>>();
+    if unique_names.len() > 1 {
+        return Ok(true);
+    }
+
+    let first = body_parameters[0];
+    let is_form_field = matches!(
+        first.source,
+        ParameterSource::Input {
+            source: InputSource::Form | InputSource::File,
+            ..
+        }
+    );
+    if is_form_field
+        && !is_pydantic_model_annotation(py, first.annotation.bind(py))?
+        && !is_union_of_base_models(py, first.annotation.bind(py))?
+    {
+        return Ok(true);
+    }
+    Ok(false)
+}
+
+fn form_parameter_is_unembedded_model(
+    py: Python<'_>,
+    annotation: &Bound<'_, PyAny>,
+    form_body_embedded: bool,
+) -> PyResult<bool> {
+    if form_body_embedded {
+        return Ok(false);
+    }
+    Ok(is_pydantic_model_annotation(py, annotation)? || is_union_of_base_models(py, annotation)?)
+}
+
+fn aggregate_form_media_type(body_parameters: &[&CallableParameter]) -> String {
+    if body_parameters.iter().any(|parameter| {
+        matches!(
+            parameter.source,
+            ParameterSource::Input {
+                source: InputSource::File,
+                ..
+            }
+        )
+    }) {
+        // FastAPI constructs an aggregate File field with File's default media type.
+        "multipart/form-data".to_owned()
+    } else if body_parameters.iter().any(|parameter| {
+        matches!(
+            parameter.source,
+            ParameterSource::Input {
+                source: InputSource::Form,
+                ..
+            }
+        )
+    }) {
+        // FastAPI constructs an aggregate Form field with Form's default media type.
+        "application/x-www-form-urlencoded".to_owned()
+    } else {
+        "application/json".to_owned()
+    }
+}
+
+fn is_uploadfile_annotation(py: Python<'_>, annotation: &Bound<'_, PyAny>) -> PyResult<bool> {
+    let typing = py.import("typing")?;
+    let origin = typing.getattr("get_origin")?.call1((annotation,))?;
+    let types = py.import("types")?;
+    let union = typing.getattr("Union")?;
+    let union_type = types.getattr("UnionType")?;
+    if origin.is(&union) || origin.is(&union_type) {
+        let arguments = typing
+            .getattr("get_args")?
+            .call1((annotation,))?
+            .cast_into::<PyTuple>()?;
+        for argument in arguments.iter() {
+            if is_uploadfile_annotation(py, &argument)? {
+                return Ok(true);
+            }
+        }
+        return Ok(false);
+    }
+    let builtins = py.import("builtins")?;
+    let is_type = builtins
+        .getattr("isinstance")?
+        .call1((annotation, builtins.getattr("type")?))?
+        .extract::<bool>()?;
+    if !is_type {
+        return Ok(false);
+    }
+    let upload_file_type = py
+        .import("starlette.datastructures")?
+        .getattr("UploadFile")?;
+    builtins
+        .getattr("issubclass")?
+        .call1((annotation, upload_file_type))?
+        .extract()
+}
+
+fn is_uploadfile_sequence_annotation(
+    py: Python<'_>,
+    annotation: &Bound<'_, PyAny>,
+) -> PyResult<bool> {
+    let typing = py.import("typing")?;
+    let origin = typing.getattr("get_origin")?.call1((annotation,))?;
+    let types = py.import("types")?;
+    let union = typing.getattr("Union")?;
+    let union_type = types.getattr("UnionType")?;
+    if origin.is(&union) || origin.is(&union_type) {
+        let arguments = typing
+            .getattr("get_args")?
+            .call1((annotation,))?
+            .cast_into::<PyTuple>()?;
+        for argument in arguments.iter() {
+            if is_uploadfile_sequence_annotation(py, &argument)? {
+                return Ok(true);
+            }
+        }
+        return Ok(false);
+    }
+    if !field_annotation_is_sequence(py, annotation)? {
+        return Ok(false);
+    }
+    let arguments = typing
+        .getattr("get_args")?
+        .call1((annotation,))?
+        .cast_into::<PyTuple>()?;
+    for argument in arguments.iter() {
+        if !is_uploadfile_annotation(py, &argument)? {
+            return Ok(false);
+        }
+    }
+    Ok(true)
 }
 
 fn constrained_parameter_annotation(
@@ -2841,7 +3360,23 @@ fn aggregate_body_model(
             .default
             .as_ref()
             .map_or_else(|| required.clone(), |value| value.bind(py).clone());
-        fields.set_item(&parameter.name, (parameter.annotation.bind(py), default))?;
+        let field = match &parameter.source {
+            ParameterSource::Input {
+                source: InputSource::Form | InputSource::File,
+                alias,
+            } => {
+                let kwargs = PyDict::new(py);
+                kwargs.set_item("alias", alias)?;
+                if let Some(description) = parameter.description.as_deref() {
+                    kwargs.set_item("description", description)?;
+                }
+                py.import("pydantic")?
+                    .getattr("Field")?
+                    .call((default,), Some(&kwargs))?
+            }
+            _ => default,
+        };
+        fields.set_item(&parameter.name, (parameter.annotation.bind(py), field))?;
     }
     py.import("pydantic")?
         .getattr("create_model")?
@@ -2986,6 +3521,256 @@ fn is_sequence_class(py: Python<'_>, annotation: &Bound<'_, PyAny>) -> PyResult<
         .getattr("issubclass")?
         .call1((annotation, sequence_types))?
         .extract()
+}
+
+fn is_bytes_annotation(py: Python<'_>, annotation: &Bound<'_, PyAny>) -> PyResult<bool> {
+    let typing = py.import("typing")?;
+    let origin = typing.getattr("get_origin")?.call1((annotation,))?;
+    let types = py.import("types")?;
+    let union = typing.getattr("Union")?;
+    let union_type = types.getattr("UnionType")?;
+    if origin.is(&union) || origin.is(&union_type) {
+        let arguments = typing
+            .getattr("get_args")?
+            .call1((annotation,))?
+            .cast_into::<PyTuple>()?;
+        for argument in arguments.iter() {
+            if is_bytes_annotation(py, &argument)? {
+                return Ok(true);
+            }
+        }
+        return Ok(false);
+    }
+    let builtins = py.import("builtins")?;
+    let is_type = builtins
+        .getattr("isinstance")?
+        .call1((annotation, builtins.getattr("type")?))?
+        .extract::<bool>()?;
+    if is_type {
+        return builtins
+            .getattr("issubclass")?
+            .call1((annotation, builtins.getattr("bytes")?))?
+            .extract();
+    }
+    Ok(false)
+}
+
+fn is_bytes_sequence_annotation(py: Python<'_>, annotation: &Bound<'_, PyAny>) -> PyResult<bool> {
+    let typing = py.import("typing")?;
+    let origin = typing.getattr("get_origin")?.call1((annotation,))?;
+    let types = py.import("types")?;
+    let union = typing.getattr("Union")?;
+    let union_type = types.getattr("UnionType")?;
+    if origin.is(&union) || origin.is(&union_type) {
+        let arguments = typing
+            .getattr("get_args")?
+            .call1((annotation,))?
+            .cast_into::<PyTuple>()?;
+        for argument in arguments.iter() {
+            if is_bytes_sequence_annotation(py, &argument)? {
+                return Ok(true);
+            }
+        }
+        return Ok(false);
+    }
+    if !field_annotation_is_sequence(py, annotation)? {
+        return Ok(false);
+    }
+    let arguments = typing
+        .getattr("get_args")?
+        .call1((annotation,))?
+        .cast_into::<PyTuple>()?;
+    for argument in arguments.iter() {
+        if !is_bytes_annotation(py, &argument)? {
+            return Ok(false);
+        }
+    }
+    Ok(true)
+}
+
+fn sequence_value_for_annotation<'py>(
+    py: Python<'py>,
+    annotation: &Bound<'py, PyAny>,
+    values: &Bound<'py, PyList>,
+) -> PyResult<Bound<'py, PyAny>> {
+    let typing = py.import("typing")?;
+    let origin = typing.getattr("get_origin")?.call1((annotation,))?;
+    let types = py.import("types")?;
+    let union = typing.getattr("Union")?;
+    let union_type = types.getattr("UnionType")?;
+    let sequence_annotation = if origin.is(&union) || origin.is(&union_type) {
+        let arguments = typing
+            .getattr("get_args")?
+            .call1((annotation,))?
+            .cast_into::<PyTuple>()?;
+        let mut found = None;
+        for argument in arguments.iter() {
+            if field_annotation_is_sequence(py, &argument)? {
+                found = Some(argument);
+                break;
+            }
+        }
+        found.ok_or_else(|| {
+            PyValueError::new_err("bytes sequence annotation has no sequence type")
+        })?
+    } else {
+        annotation.clone()
+    };
+    let sequence_origin = typing
+        .getattr("get_origin")?
+        .call1((&sequence_annotation,))?;
+    let sequence_type = if sequence_origin.is_none() {
+        &sequence_annotation
+    } else {
+        &sequence_origin
+    };
+    let sequence_abc = py.import("collections.abc")?.getattr("Sequence")?;
+    let typing_sequence = typing.getattr("Sequence")?;
+    let constructor = if sequence_type.is(&sequence_abc) || sequence_type.is(&typing_sequence) {
+        py.import("builtins")?.getattr("list")?
+    } else {
+        sequence_type.clone()
+    };
+    constructor.call1((values,))
+}
+
+fn pydantic_field_validation_alias(
+    field_name: &Bound<'_, PyAny>,
+    field_info: &Bound<'_, PyAny>,
+) -> PyResult<Py<PyAny>> {
+    let validation_alias = field_info.getattr("validation_alias")?;
+    if validation_alias.is_truthy()? {
+        return Ok(validation_alias.unbind());
+    }
+    let alias = field_info.getattr("alias")?;
+    if alias.is_truthy()? {
+        return Ok(alias.unbind());
+    }
+    Ok(field_name.clone().unbind())
+}
+
+fn copied_pydantic_field_default<'py>(
+    py: Python<'py>,
+    field_info: &Bound<'py, PyAny>,
+) -> PyResult<Option<Bound<'py, PyAny>>> {
+    if field_info.call_method0("is_required")?.extract::<bool>()? {
+        return Ok(None);
+    }
+    field_info
+        .getattr("default")
+        .and_then(|default| py.import("copy")?.call_method1("deepcopy", (default,)))
+        .map(Some)
+}
+
+fn copy_unmatched_form_values(
+    form: &Bound<'_, PyAny>,
+    values: &Bound<'_, PyDict>,
+    processed_aliases: &[String],
+) -> PyResult<()> {
+    for key in form.call_method0("keys")?.try_iter()? {
+        let key = key?;
+        let key_name = key.extract::<String>().ok();
+        if key_name
+            .as_deref()
+            .is_some_and(|name| processed_aliases.iter().any(|alias| alias == name))
+        {
+            continue;
+        }
+        let field_values = form.call_method1("getlist", (&key,))?;
+        let value = if field_values.len()? == 1 {
+            field_values.get_item(0)?
+        } else {
+            field_values
+        };
+        values.set_item(&key, value)?;
+    }
+    Ok(())
+}
+
+fn form_model_values<'py>(
+    py: Python<'py>,
+    annotation: &Bound<'py, PyAny>,
+    form: &Bound<'py, PyAny>,
+) -> PyResult<Bound<'py, PyDict>> {
+    let model_fields = annotation.getattr("model_fields")?.cast_into::<PyDict>()?;
+    let values = PyDict::new(py);
+    let mut processed_aliases = Vec::with_capacity(model_fields.len());
+    for (field_name, field_info) in model_fields.iter() {
+        let alias = pydantic_field_validation_alias(&field_name, &field_info)?;
+        if let Ok(alias_name) = alias.bind(py).extract::<String>() {
+            processed_aliases.push(alias_name);
+        }
+        let field_annotation = field_info.getattr("annotation")?;
+        let mut value = if field_annotation_is_sequence(py, &field_annotation)? {
+            let field_values = form.call_method1("getlist", (alias.bind(py),))?;
+            if field_values.len()? == 0 {
+                None
+            } else {
+                Some(field_values)
+            }
+        } else {
+            let field_value = form.call_method1("get", (alias.bind(py),))?;
+            if field_value.is_none() {
+                None
+            } else {
+                Some(field_value)
+            }
+        };
+        if value.is_none() {
+            value = copied_pydantic_field_default(py, &field_info)?;
+        }
+        if let Some(value) = value.filter(|value| !value.is_none()) {
+            values.set_item(alias.bind(py), value)?;
+        }
+    }
+    copy_unmatched_form_values(form, &values, &processed_aliases)?;
+    Ok(values)
+}
+
+fn form_union_values<'py>(
+    py: Python<'py>,
+    form: &Bound<'py, PyAny>,
+    alias: &str,
+    default: Option<&Py<PyAny>>,
+    sequence: bool,
+) -> PyResult<Bound<'py, PyDict>> {
+    let values = PyDict::new(py);
+    let processed_aliases = [alias.to_owned()];
+    let mut value = if sequence {
+        let field_values = form.call_method1("getlist", (alias,))?;
+        if field_values.len()? == 0 {
+            None
+        } else {
+            Some(field_values.into_any())
+        }
+    } else {
+        let field_value = form.call_method1("get", (alias,))?;
+        if field_value.is_none() {
+            None
+        } else {
+            Some(field_value)
+        }
+    };
+    if value.as_ref().is_some_and(|value| {
+        value.is_instance_of::<PyString>()
+            && value
+                .extract::<String>()
+                .is_ok_and(|value| value.is_empty())
+    }) || value.is_none()
+    {
+        value = match default {
+            Some(default) => Some(
+                py.import("copy")?
+                    .call_method1("deepcopy", (default.bind(py),))?,
+            ),
+            None => None,
+        };
+    }
+    if let Some(value) = value.filter(|value| !value.is_none()) {
+        values.set_item(alias, value)?;
+    }
+    copy_unmatched_form_values(form, &values, &processed_aliases)?;
+    Ok(values)
 }
 
 fn is_json_decode_error(py: Python<'_>, error: &PyErr) -> bool {
@@ -3273,6 +4058,8 @@ fn response_endpoint_context<'py>(
 
 enum PendingAction {
     Receive,
+    FormParse,
+    FormFileRead,
     LifespanReceive,
     LifespanStartupSend,
     LifespanShutdownSend,
@@ -3287,6 +4074,8 @@ enum PendingAction {
         edge_index: usize,
     },
     ReturnedResponse,
+    FormCloseAfterResponse,
+    FormCloseAfterError(PyErr),
     SendStart,
     SendBody,
 }
@@ -3591,6 +4380,13 @@ struct FastApiCall {
     response_status: u16,
     response_body: Vec<u8>,
     invocation: Option<RequestInvocation>,
+    form_request: Option<Py<PyAny>>,
+    form_close_started: bool,
+    form_body_embedded: bool,
+    form_inputs: Option<Py<PyDict>>,
+    form_query_params: Option<QueryParams>,
+    form_file_reads: VecDeque<FormFileReadPlan>,
+    active_form_file_read: Option<FormFileReadPlan>,
 }
 
 impl FastApiCall {
@@ -3642,7 +4438,17 @@ impl FastApiCall {
             } => {
                 self.route_index = Some(operation_index);
                 self.path_params = path_params;
-                self.receive_http_body(py)
+                let has_form_inputs = {
+                    let app = self.app.bind(py).borrow();
+                    app.routes
+                        .get(operation_index)
+                        .is_some_and(|route| route.plan.has_form_inputs())
+                };
+                if has_form_inputs {
+                    self.receive_form(py)
+                } else {
+                    self.receive_http_body(py)
+                }
             }
             FastApiOperationMatch::MethodNotAllowed { .. } => {
                 self.response_status = 405;
@@ -3664,6 +4470,19 @@ impl FastApiCall {
             .call0()
             .map(Bound::unbind)
             .map(MachineAction::Await)
+    }
+
+    fn receive_form(&mut self, py: Python<'_>) -> PyResult<MachineAction> {
+        let request_type = py.import("starlette.requests")?.getattr("Request")?;
+        let request = request_type.call1((
+            self.scope.bind(py),
+            self.receive.bind(py),
+            self.send.bind(py),
+        ))?;
+        let form_awaitable = request.call_method0("form")?;
+        self.form_request = Some(request.unbind());
+        self.pending = Some(PendingAction::FormParse);
+        Ok(MachineAction::Await(form_awaitable.unbind()))
     }
 
     fn receive_lifespan(&mut self, py: Python<'_>) -> PyResult<MachineAction> {
@@ -3774,12 +4593,109 @@ impl FastApiCall {
         self.invocation = Some(RequestInvocation {
             inputs: values,
             query_params,
+            form_body_embedded: false,
             failures: Vec::new(),
             dependency_cache: HashMap::new(),
             prepared_dependency_values: HashMap::new(),
             dependency_override_cursor: 0,
         });
         self.invoke_route(py)
+    }
+
+    fn receive_form_data(&mut self, py: Python<'_>, form: Py<PyAny>) -> PyResult<MachineAction> {
+        let scope = self.scope.bind(py);
+        let path = parse_scope_string(scope, "path", "/")?;
+        let root_path = parse_scope_string(scope, "root_path", "")?;
+        let method = parse_scope_string(scope, "method", "GET")?;
+        let query: Vec<u8> = scope
+            .call_method1("get", ("query_string", PyBytes::new(py, b"")))?
+            .extract()?;
+        let query_params = QueryParams::parse(&query);
+        let headers: Vec<(Vec<u8>, Vec<u8>)> = scope
+            .call_method1("get", ("headers", PyList::empty(py)))?
+            .extract()?;
+        let inputs = self
+            .app
+            .bind(py)
+            .borrow()
+            .router
+            .resolve_inputs(&path, &root_path, &method, &query, headers, &self.body);
+        let values = match decode_input_values(py, inputs, false) {
+            Ok(values) => values,
+            Err(InputDecodeError::Other(error)) => return Err(error),
+            Err(InputDecodeError::JsonValidation(error) | InputDecodeError::BodyParse(error)) => {
+                return Err(error);
+            }
+        };
+        let route_index = self
+            .route_index
+            .ok_or_else(|| PyRuntimeError::new_err("ASGI dispatch has no selected route"))?;
+        {
+            let app = self.app.bind(py).borrow();
+            let route = app
+                .routes
+                .get(route_index)
+                .ok_or_else(|| PyRuntimeError::new_err("selected FastAPI route was lost"))?;
+            self.form_body_embedded =
+                form_body_should_embed(py, &route.plan.all_body_parameters())?;
+            route.plan.populate_form_inputs(
+                py,
+                form.bind(py),
+                values.bind(py),
+                self.form_body_embedded,
+                &mut self.form_file_reads,
+            )?;
+        }
+        self.form_inputs = Some(values);
+        self.form_query_params = Some(query_params);
+        self.advance_form_file_reads(py)
+    }
+
+    fn advance_form_file_reads(&mut self, py: Python<'_>) -> PyResult<MachineAction> {
+        loop {
+            if self.active_form_file_read.is_none() {
+                self.active_form_file_read = self.form_file_reads.pop_front();
+            }
+            let next_awaitable = self
+                .active_form_file_read
+                .as_mut()
+                .and_then(|plan| plan.awaitables.pop_front());
+            if let Some(awaitable) = next_awaitable {
+                self.pending = Some(PendingAction::FormFileRead);
+                return Ok(MachineAction::Await(awaitable));
+            }
+            if let Some(plan) = self.active_form_file_read.take() {
+                let values = PyList::new(py, plan.values.iter().map(|value| value.bind(py)))?;
+                let value = if plan.sequence {
+                    sequence_value_for_annotation(py, plan.annotation.bind(py), &values)?
+                } else {
+                    values.get_item(0)?
+                };
+                self.form_inputs
+                    .as_ref()
+                    .ok_or_else(|| PyRuntimeError::new_err("form inputs were not retained"))?
+                    .bind(py)
+                    .set_item(&plan.name, value)?;
+                continue;
+            }
+            let inputs = self
+                .form_inputs
+                .take()
+                .ok_or_else(|| PyRuntimeError::new_err("form inputs were not retained"))?;
+            let query_params = self.form_query_params.take().ok_or_else(|| {
+                PyRuntimeError::new_err("form query parameters were not retained")
+            })?;
+            self.invocation = Some(RequestInvocation {
+                inputs,
+                query_params,
+                form_body_embedded: self.form_body_embedded,
+                failures: Vec::new(),
+                dependency_cache: HashMap::new(),
+                prepared_dependency_values: HashMap::new(),
+                dependency_override_cursor: 0,
+            });
+            return self.invoke_route(py);
+        }
     }
 
     fn invoke_route(&mut self, py: Python<'_>) -> PyResult<MachineAction> {
@@ -3801,6 +4717,7 @@ impl FastApiCall {
                 py,
                 inputs: invocation.inputs.bind(py),
                 query_params: &invocation.query_params,
+                form_body_embedded: invocation.form_body_embedded,
                 failures: &mut invocation.failures,
                 dependency_overrides,
                 dependency_cache: &mut invocation.dependency_cache,
@@ -3932,6 +4849,7 @@ impl FastApiCall {
                 py,
                 inputs: invocation.inputs.bind(py),
                 query_params: &invocation.query_params,
+                form_body_embedded: invocation.form_body_embedded,
                 failures: &mut invocation.failures,
                 dependency_overrides: app.dependency_overrides.bind(py),
                 dependency_cache: &mut invocation.dependency_cache,
@@ -4173,14 +5091,60 @@ impl FastApiCall {
         self.pending = Some(PendingAction::SendBody);
         response_body(py, self.send.bind(py), &self.response_body).map(MachineAction::Await)
     }
-}
 
-impl AwaitableStateMachine for FastApiCall {
-    fn resume(&mut self, py: Python<'_>, input: MachineResume) -> PyResult<MachineAction> {
+    fn form_parse_failed(&mut self, py: Python<'_>, error: PyErr) -> PyResult<MachineAction> {
+        let value = error.value(py);
+        let http_exception = py
+            .import("starlette.exceptions")?
+            .getattr("HTTPException")?;
+        let detail = if error.matches(py, &http_exception)? {
+            self.response_status = value.getattr("status_code")?.extract::<u16>()?;
+            value.getattr("detail")?
+        } else {
+            let multipart_exception = py
+                .import("starlette.formparsers")?
+                .getattr("MultiPartException")?;
+            if !error.matches(py, &multipart_exception)? {
+                return Err(error);
+            }
+            self.response_status = 400;
+            value.getattr("message")?
+        };
+        let body = PyDict::new(py);
+        body.set_item("detail", detail)?;
+        self.response_body = json_bytes(py, &body)?;
+        self.send_start(py)
+    }
+
+    fn close_form_after_response(&mut self, py: Python<'_>) -> PyResult<MachineAction> {
+        let Some(request) = self.form_request.as_ref() else {
+            return Ok(MachineAction::Complete(py.None()));
+        };
+        if self.form_close_started {
+            return Ok(MachineAction::Complete(py.None()));
+        }
+        self.form_close_started = true;
+        self.pending = Some(PendingAction::FormCloseAfterResponse);
+        request
+            .bind(py)
+            .call_method0("close")
+            .map(Bound::unbind)
+            .map(MachineAction::Await)
+    }
+
+    fn resume_inner(&mut self, py: Python<'_>, input: MachineResume) -> PyResult<MachineAction> {
         match input {
             MachineResume::Start => self.begin(py),
             MachineResume::Value(value) => match self.pending.take() {
                 Some(PendingAction::Receive) => self.receive_body(py, value),
+                Some(PendingAction::FormParse) => self.receive_form_data(py, value),
+                Some(PendingAction::FormFileRead) => {
+                    let active = self.active_form_file_read.as_mut().ok_or_else(|| {
+                        PyRuntimeError::new_err("form file read completed without an active field")
+                    })?;
+                    active.values.push(value);
+                    self.advance_form_file_reads(py)
+                }
                 Some(PendingAction::LifespanReceive) => self.lifespan_message(py, value),
                 Some(PendingAction::LifespanStartupSend) => self.receive_lifespan(py),
                 Some(PendingAction::LifespanShutdownSend) => Ok(MachineAction::Complete(py.None())),
@@ -4200,14 +5164,45 @@ impl AwaitableStateMachine for FastApiCall {
                     edge_index,
                     value,
                 ),
-                Some(PendingAction::ReturnedResponse) => Ok(MachineAction::Complete(py.None())),
+                Some(PendingAction::ReturnedResponse) => self.close_form_after_response(py),
+                Some(PendingAction::FormCloseAfterResponse) => {
+                    Ok(MachineAction::Complete(py.None()))
+                }
+                Some(PendingAction::FormCloseAfterError(error)) => Err(error),
                 Some(PendingAction::SendStart) => self.send_body(py),
-                Some(PendingAction::SendBody) => Ok(MachineAction::Complete(py.None())),
+                Some(PendingAction::SendBody) => self.close_form_after_response(py),
                 None => Err(PyRuntimeError::new_err(
                     "ASGI call resumed without a pending action",
                 )),
             },
-            MachineResume::Error(error) => Err(error),
+            MachineResume::Error(error) => match self.pending.take() {
+                Some(PendingAction::FormParse) => self.form_parse_failed(py, error),
+                Some(PendingAction::FormCloseAfterError(_))
+                | Some(PendingAction::FormCloseAfterResponse) => Err(error),
+                _ => Err(error),
+            },
+        }
+    }
+}
+
+impl AwaitableStateMachine for FastApiCall {
+    fn resume(&mut self, py: Python<'_>, input: MachineResume) -> PyResult<MachineAction> {
+        match self.resume_inner(py, input) {
+            Err(error) if self.form_request.is_some() && !self.form_close_started => {
+                let request = self
+                    .form_request
+                    .as_ref()
+                    .ok_or_else(|| PyRuntimeError::new_err("form request was lost"))?;
+                match request.bind(py).call_method0("close") {
+                    Ok(awaitable) => {
+                        self.form_close_started = true;
+                        self.pending = Some(PendingAction::FormCloseAfterError(error));
+                        Ok(MachineAction::Await(awaitable.unbind()))
+                    }
+                    Err(_) => Err(error),
+                }
+            }
+            result => result,
         }
     }
 }

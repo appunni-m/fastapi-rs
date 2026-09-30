@@ -6,6 +6,7 @@
 
 mod application_runtime;
 mod awaitable;
+mod datastructures;
 mod encoding;
 mod errors;
 mod openapi;
@@ -26,6 +27,7 @@ pub use operation::{
 pub fn register_python_api(module: &Bound<'_, PyModule>) -> PyResult<()> {
     errors::register(module)?;
     parameters::register(module)?;
+    datastructures::register(module)?;
     sse::register(module)?;
     application_runtime::register(module)
 }

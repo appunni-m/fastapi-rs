@@ -30,10 +30,13 @@ PUBLIC_FASTAPI_EXPORTS = [
     "Cookie",
     "Depends",
     "FastAPI",
+    "File",
+    "Form",
     "Header",
     "Path",
     "Query",
     "Response",
+    "UploadFile",
     "__version__",
     "status",
 ]
