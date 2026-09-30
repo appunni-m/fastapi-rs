@@ -14,6 +14,10 @@ from pathlib import Path
 from typing import Any
 
 import yaml
+from public_candidate_review_schema import (
+    PublicCandidateReviewSchemaError,
+    validate_public_candidate_review_schema,
+)
 from source_api_review_schema import (
     SourceApiReviewSchemaError,
     validate_source_api_review_schema,
@@ -215,6 +219,38 @@ def validate_ci_source_checkouts(metadata: dict[str, Any]) -> None:
         raise MetadataError("CI must checkout the project under fastapi-rs beside its sources")
 
 
+def validate_target_runtime_lock(metadata: dict[str, Any], manifest: dict[str, Any]) -> None:
+    authority = metadata["target_runtime"]
+    lock = authority["lock"]
+    target_lock = manifest["target"]["external_python_runtime_lock"]
+    for field in ("path", "sha256", "profile"):
+        require_equal(f"target runtime lock {field}", lock[field], target_lock[field])
+    require_equal("target runtime identity", authority["python"], target_lock["profile"])
+
+    path = artifact_path(lock["path"])
+    digest = hashlib.sha256(path.read_bytes()).hexdigest()
+    require_equal("target runtime lock SHA-256", lock["sha256"], digest)
+    packages: dict[str, str] = {}
+    for line in path.read_text(encoding="utf-8").splitlines():
+        item = line.strip()
+        if not item or item.startswith("#") or "==" not in item:
+            continue
+        name, version = item.split("==", 1)
+        packages[name.lower().replace("_", "-")] = version.split()[0].rstrip("\\")
+
+    pydantic = metadata["authority"]["pydantic"]
+    for package, expected in (
+        ("pydantic", pydantic["version"]),
+        ("pydantic-core", pydantic["pydantic_core_version"]),
+    ):
+        require_equal(f"target runtime package {package}", packages.get(package), expected)
+    for source_distribution in ("fastapi", "starlette"):
+        if source_distribution in packages:
+            raise MetadataError(
+                f"target runtime lock must not install source package {source_distribution}"
+            )
+
+
 def validate() -> None:
     metadata = load_yaml(METADATA_PATH)
     require_equal("metadata schema", metadata.get("schema"), "fastapi-rs/api-source-authority@1")
@@ -222,6 +258,7 @@ def validate() -> None:
     manifest_meta = metadata["manifest"]
     manifest_path = artifact_path(manifest_meta["path"])
     manifest = load_yaml(manifest_path)
+    validate_target_runtime_lock(metadata, manifest)
     authority = metadata["authority"]
     fastapi = authority["source"] if "source" in authority else authority
     starlette = authority["starlette"]
@@ -727,6 +764,146 @@ def validate() -> None:
     }
     require_equal(
         "unreviewed selected source API uncertainty", unreviewed_selected_uncertain, set()
+    )
+
+    public_candidate_meta = metadata["api_public_candidate_classification_review"]
+    public_candidate_path = artifact_path(public_candidate_meta["artifact"])
+    public_candidate_review = load_json(public_candidate_path)
+    expected_public_candidate_identity = {
+        "package": "FastAPI",
+        "version": fastapi["version"],
+        "source_commit": fastapi["commit"],
+    }
+    require_equal(
+        "public candidate review schema",
+        public_candidate_meta["schema"],
+        public_candidate_review.get("schema"),
+    )
+    public_candidate_digest = hashlib.sha256(public_candidate_path.read_bytes()).hexdigest()
+    require_equal(
+        "metadata public candidate review digest",
+        public_candidate_meta["sha256"],
+        public_candidate_digest,
+    )
+    try:
+        validate_public_candidate_review_schema(
+            public_candidate_review,
+            expected_identity=expected_public_candidate_identity,
+        )
+    except PublicCandidateReviewSchemaError as exc:
+        raise MetadataError(f"public candidate review schema is invalid: {exc}") from exc
+    require_equal(
+        "metadata public candidate review identity",
+        public_candidate_meta["source_identity"],
+        expected_public_candidate_identity,
+    )
+    require_equal(
+        "public candidate review identity",
+        public_candidate_review["source_identity"],
+        expected_public_candidate_identity,
+    )
+    public_candidate_scope = public_candidate_review["scope"]
+    public_candidate_rows = public_candidate_review["rows"]
+    public_candidate_ids = [row["id"] for row in public_candidate_rows]
+    public_candidate_recommendations = Counter(
+        row["recommendation"] for row in public_candidate_rows
+    )
+    expected_public_candidate_counts = {
+        "candidates": len(public_candidate_rows),
+        "supported": public_candidate_recommendations.get("supported", 0),
+        "private_or_internal": public_candidate_recommendations.get("private/internal", 0),
+        "uncertain": public_candidate_recommendations.get("uncertain", 0),
+    }
+    require_equal(
+        "metadata public candidate review counts",
+        public_candidate_meta["counts"],
+        expected_public_candidate_counts,
+    )
+    require_equal(
+        "metadata public candidate review ID digest",
+        public_candidate_meta["candidate_ids_sha256"],
+        public_candidate_scope["candidate_ids_sha256"],
+    )
+    public_candidate_link = atlas.get("api_public_candidate_classification_review")
+    expected_public_candidate_link = {
+        "path": public_candidate_meta["artifact"],
+        "schema": public_candidate_meta["schema"],
+        "sha256": public_candidate_digest,
+        "source_identity": expected_public_candidate_identity,
+        "scope": public_candidate_scope,
+    }
+    require_equal(
+        "atlas public candidate review link",
+        public_candidate_link,
+        expected_public_candidate_link,
+    )
+    require_equal(
+        "atlas reviewed public candidate count",
+        atlas.get("counts", {}).get("reviewed_public_candidate_candidates"),
+        len(public_candidate_rows),
+    )
+    atlas_public_candidate_ids = {
+        candidate.get("id")
+        for candidate in candidates
+        if candidate.get("classification_review", {}).get("review_artifact")
+        == "api_public_candidate_classification_review"
+    }
+    require_equal(
+        "atlas public candidate review exact denominator",
+        atlas_public_candidate_ids,
+        set(public_candidate_ids),
+    )
+    for row in public_candidate_rows:
+        identifier = row["id"]
+        candidate = candidates_by_id.get(identifier)
+        if candidate is None:
+            raise MetadataError("public candidate review row is absent from atlas: " + identifier)
+        require_equal(
+            f"atlas public candidate classification {identifier}",
+            candidate.get("classification"),
+            row["recommendation"],
+        )
+        require_equal(
+            f"atlas public candidate kind {identifier}",
+            candidate.get("kind"),
+            row["candidate_kind"],
+        )
+        expected_review = {
+            "review_artifact": "api_public_candidate_classification_review",
+            "source": row["source"],
+            "candidate_kind": row["candidate_kind"],
+            "binding": row.get("binding"),
+            "evidence_basis": row["evidence_basis"],
+            "evidence": row["evidence"],
+            "reason": row["reason"],
+        }
+        require_equal(
+            f"atlas public candidate review evidence {identifier}",
+            candidate.get("classification_review"),
+            expected_review,
+        )
+        if row.get("binding") is not None:
+            require_equal(
+                f"atlas public candidate binding identity {identifier}",
+                {
+                    "module": candidate.get("imported_module"),
+                    "name": candidate.get("imported_name"),
+                    "target": candidate.get("target_path"),
+                },
+                row["binding"],
+            )
+    unreviewed_public_source_candidates = {
+        candidate.get("id")
+        for candidate in candidates
+        if candidate.get("classification") == "uncertain"
+        and candidate.get("visibility") in {"public", "public_candidate"}
+        and candidate.get("kind") in {"class", "field", "import_binding", "value"}
+        and "classification_review" not in candidate
+    }
+    require_equal(
+        "unreviewed public source candidate uncertainty",
+        unreviewed_public_source_candidates,
+        set(),
     )
 
     callable_review_artifact = manifest["source_artifacts"]["api_classification_review"]

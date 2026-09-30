@@ -23,6 +23,10 @@ from pathlib import Path
 from typing import Any
 
 import yaml
+from public_candidate_review_schema import (
+    PublicCandidateReviewSchemaError,
+    validate_public_candidate_review_schema,
+)
 from source_api_review_schema import (
     SourceApiReviewSchemaError,
     validate_source_api_review_schema,
@@ -6852,6 +6856,144 @@ def load_source_api_classification_review(
     return review
 
 
+def load_public_candidate_classification_review(
+    path: Path,
+    *,
+    fastapi_root: Path,
+    fastapi_identity: dict[str, Any],
+    metadata: dict[str, Any],
+) -> dict[str, Any]:
+    """Load the exact source-backed review of public-looking non-callable candidates."""
+    try:
+        review = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+        raise AtlasError("cannot read public candidate classification review: " + str(exc)) from exc
+    expected_identity = {
+        "package": "FastAPI",
+        "version": FASTAPI_VERSION,
+        "source_commit": fastapi_identity["commit"],
+    }
+    try:
+        validate_public_candidate_review_schema(review, expected_identity=expected_identity)
+    except PublicCandidateReviewSchemaError as exc:
+        raise AtlasError(str(exc)) from exc
+    if metadata.get("schema") != review["schema"]:
+        raise AtlasError("metadata.yaml public candidate review schema is stale")
+    if metadata.get("artifact") != path.resolve().relative_to(PROJECT).as_posix():
+        raise AtlasError("metadata.yaml public candidate review path is stale")
+    if metadata.get("source_identity") != expected_identity:
+        raise AtlasError("metadata.yaml public candidate review identity is stale")
+    if metadata.get("sha256") != sha256(path.resolve()):
+        raise AtlasError("metadata.yaml public candidate review digest is stale")
+    scope = review["scope"]
+    recommendations = Counter(row["recommendation"] for row in review["rows"])
+    expected_counts = {
+        "candidates": len(review["rows"]),
+        "supported": recommendations.get("supported", 0),
+        "private_or_internal": recommendations.get("private/internal", 0),
+        "uncertain": recommendations.get("uncertain", 0),
+    }
+    if metadata.get("counts") != expected_counts:
+        raise AtlasError("metadata.yaml public candidate review counts are stale")
+    if metadata.get("candidate_ids_sha256") != scope["candidate_ids_sha256"]:
+        raise AtlasError("metadata.yaml public candidate review ID digest is stale")
+
+    root = fastapi_root.resolve()
+    for row in review["rows"]:
+        references = [row["source"], *row["evidence"]]
+        for reference in references:
+            evidence_path = (root / reference["path"]).resolve()
+            try:
+                evidence_path.relative_to(root)
+            except ValueError as exc:
+                raise AtlasError(
+                    "public candidate review evidence escapes FastAPI: " + row["id"]
+                ) from exc
+            if not evidence_path.is_file():
+                raise AtlasError("public candidate review source is missing: " + reference["path"])
+            source_lines = evidence_path.read_text(encoding="utf-8", errors="replace").splitlines()
+            end_line = reference.get("end_line", reference["line"])
+            if not 1 <= reference["line"] <= end_line <= len(source_lines):
+                raise AtlasError(
+                    "public candidate review source line is out of range: " + row["id"]
+                )
+    return review
+
+
+def apply_public_candidate_classification_review(
+    candidates: dict[str, dict[str, Any]], review: dict[str, Any]
+) -> None:
+    """Apply the exact source review for uncertain, public-looking source candidates."""
+    review_kinds = {"class", "field", "import_binding", "value"}
+    expected = {
+        identifier
+        for identifier, candidate in candidates.items()
+        if candidate.get("classification") == "uncertain"
+        and candidate.get("visibility") in {"public", "public_candidate"}
+        and candidate.get("kind") in review_kinds
+        and "classification_review" not in candidate
+    }
+    rows = {row["id"]: row for row in review["rows"]}
+    if set(rows) != expected:
+        missing = sorted(expected - set(rows))
+        extra = sorted(set(rows) - expected)
+        raise AtlasError(
+            "public candidate review does not match its uncertain source candidate denominator; "
+            f"missing={missing[:5]}, extra={extra[:5]}"
+        )
+    for identifier, row in rows.items():
+        candidate = candidates[identifier]
+        source = row["source"]
+        if row["candidate_kind"] != candidate.get("kind"):
+            raise AtlasError("public candidate review kind differs from inventory: " + identifier)
+        if not any(
+            reference.get("path") == source["path"]
+            and reference.get("line", 0)
+            <= source["line"]
+            <= reference.get("end_line", reference.get("line", 0))
+            for reference in candidate.get("source_evidence", [])
+        ):
+            raise AtlasError("public candidate review source differs from inventory: " + identifier)
+        binding = row.get("binding")
+        if binding is not None and (
+            candidate.get("kind") != "import_binding"
+            or binding.get("module") != candidate.get("imported_module")
+            or binding.get("name") != candidate.get("imported_name")
+            or binding.get("target") != candidate.get("target_path")
+        ):
+            raise AtlasError(
+                "public candidate review binding differs from inventory: " + identifier
+            )
+
+        candidate["classification"] = row["recommendation"]
+        candidate["classification_evidence_rule"] = (
+            "Reviewed pinned FastAPI source/docs evidence; this source classification makes no "
+            "FastAPI-RS support or parity claim."
+        )
+        candidate["classification_review"] = {
+            "review_artifact": "api_public_candidate_classification_review",
+            "source": source,
+            "candidate_kind": row["candidate_kind"],
+            "binding": binding,
+            "evidence_basis": row["evidence_basis"],
+            "evidence": row["evidence"],
+            "reason": row["reason"],
+        }
+        if row["recommendation"] == "supported":
+            for reference in row["evidence"]:
+                if reference["role"] == "fastapi-public-documentation" and reference[
+                    "path"
+                ].startswith("docs/en/docs/"):
+                    public_ref: dict[str, Any] = {
+                        "kind": "reviewed_public_candidate_documentation_contract",
+                        "path": reference["path"],
+                        "line": reference["line"],
+                    }
+                    if reference.get("end_line", reference["line"]) != reference["line"]:
+                        public_ref["end_line"] = reference["end_line"]
+                    candidate["public_evidence"].append(public_ref)
+
+
 def _pinned_review_source_text(
     source: str,
     path_text: str,
@@ -7403,6 +7545,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
     project_metadata = yaml.safe_load((PROJECT / "metadata.yaml").read_text(encoding="utf-8"))
     starlette_rs_revision = project_metadata["starlette_rs"]["commit"]
     source_api_meta = project_metadata["source_api_classification_review"]
+    public_candidate_meta = project_metadata["api_public_candidate_classification_review"]
     try:
         source_api_selection = validate_source_api_selection(source_api_meta["selection"])
     except (KeyError, SourceApiReviewSchemaError) as exc:
@@ -7465,6 +7608,12 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         fastapi_root=fastapi_root,
         fastapi_identity=fastapi_identity,
         selection=source_api_selection,
+    )
+    public_candidate_review = load_public_candidate_classification_review(
+        args.public_candidate_review,
+        fastapi_root=fastapi_root,
+        fastapi_identity=fastapi_identity,
+        metadata=public_candidate_meta,
     )
 
     def starlette_rs_artifact_path(path_text: str) -> Path:
@@ -7756,6 +7905,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
     apply_source_api_classification_review(
         candidates, source_api_review, selection=source_api_selection
     )
+    apply_public_candidate_classification_review(candidates, public_candidate_review)
     for record in candidates.values():
         record["candidate_kinds"].sort()
         record["source_evidence"].sort(key=lambda x: (x["path"], x["line"]))
@@ -9106,7 +9256,12 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                 and record.get("target_path")
                 and record.get("classification") == "uncertain"
             ):
-                warning_review = warning_reviews.get(record["target_path"])
+                target_review = warning_reviews.get(record["target_path"])
+                if (
+                    target_review is not None
+                    and target_review.get("classification") == record["classification"]
+                ):
+                    warning_review = target_review
             if warning_review is not None:
                 if (
                     not is_warning
@@ -9339,6 +9494,13 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             "source_identity": source_api_review["source_identity"],
             "scope": source_api_review["scope"],
         },
+        "api_public_candidate_classification_review": {
+            "path": args.public_candidate_review.resolve().relative_to(PROJECT).as_posix(),
+            "schema": public_candidate_review["schema"],
+            "sha256": sha256(args.public_candidate_review.resolve()),
+            "source_identity": public_candidate_review["source_identity"],
+            "scope": public_candidate_review["scope"],
+        },
         "api_candidates": sorted(candidates.values(), key=lambda x: x["id"]),
         "aliases": aliases,
         "deprecations": deprecations,
@@ -9361,6 +9523,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             "reviewed_callable_candidates": len(callable_review["rows"]),
             "reviewed_import_binding_candidates": len(import_binding_review["rows"]),
             "reviewed_source_api_candidates": len(source_api_review["rows"]),
+            "reviewed_public_candidate_candidates": len(public_candidate_review["rows"]),
             "api_classifications": dict(
                 Counter(record["classification"] for record in candidates.values())
             ),
@@ -9563,9 +9726,12 @@ def render_markdown(atlas: dict[str, Any]) -> str:
         "## Pinned authorities",
         "",
         "- FastAPI: 0.141.1 at `" + atlas["authorities"]["fastapi"]["commit"] + "`.",
-        "- Starlette oracle and Starlette-RS contract: 1.6.0 at `"
+        "- Starlette oracle contract: 1.6.0 at `"
         + atlas["authorities"]["starlette"]["commit"]
         + "` (the sole selected Starlette version).",
+        "- Starlette-RS implementation contract: at `"
+        + atlas["authorities"]["starlette_rs"]["implementation_revision"]
+        + "`.",
         "- FastAPI declares `starlette>=0.46.0`, which admits the selected contract. Its upstream lock graph is dependency-inventory evidence, not another compatibility profile.",
         "- Pydantic: 2.13.4 source-lock baseline; Python support is `"
         + atlas["authorities"]["python"]["requires_python"]
@@ -9945,6 +10111,11 @@ def main(argv: Sequence[str] | None = None) -> int:
         "--source-api-review",
         type=Path,
         default=PROJECT / "tests/fixtures/api-source-classification-review.json",
+    )
+    parser.add_argument(
+        "--public-candidate-review",
+        type=Path,
+        default=PROJECT / "tests/fixtures/api-public-candidate-classification-review.json",
     )
     parser.add_argument(
         "--output", type=Path, default=PROJECT / "tests/fixtures/compatibility-atlas.json"

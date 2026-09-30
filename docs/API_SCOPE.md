@@ -6,9 +6,11 @@ This inventory is grounded in the FastAPI `0.141.1` release tag, commit
 `95f8322ee1dcda7ceace7b1c4f6c9915b36d748f`, from a local source checkout. The
 FastAPI-RS compatibility environment uses
 Starlette `1.6.0` at `4f250d6b814587e20c5365f0a5f0c4d42bcb929f` as its sole
-Starlette contract, plus Pydantic `2.13.4` and HTTPX `0.28.1`. FastAPI declares
-`starlette>=0.46.0`, which admits 1.6.0. The source lock is used for dependency
-inventory only; all compatibility and parity runs use Starlette 1.6.0.
+Starlette oracle contract, plus Pydantic `2.13.4` and HTTPX `0.28.1`. FastAPI
+declares `starlette>=0.46.0`, which admits 1.6.0. Starlette-RS is a separate
+implementation contract pinned in `metadata.yaml`. The source lock is used for
+dependency inventory only; all compatibility and parity runs use Starlette
+1.6.0 as the oracle.
 
 Method: read the pinned package's root imports and Python sources; collect every
 `fastapi.*` `mkdocstrings` target in `docs/en/docs`; cross-check reference
@@ -18,12 +20,12 @@ source files, 24 reference Markdown pages, 61 unique reference autodoc targets,
 and 492 `test_*.py` modules. These are inventory inputs, **not** the number of
 manifest operations. Many targets expand into classes with multiple methods,
 many public names are aliases, and the `status`/OpenAPI-model targets expand to
-large value/model sets. The active manifest indexes 452 required public
+large value/model sets. The active manifest indexes 461 required public
 symbols with source-inventory and runtime-reflection pointers. This is the
-reviewed API denominator, not an implementation-support count. It records 222
+reviewed API denominator, not an implementation-support count. It records 224
 runtime-reflected signatures, one unavailable constructor signature for
 `Example` (`TypedDict(total=False)`), one module object with no call signature,
-and 228 non-callable values/fields. The source inventory records its
+and 234 non-callable values/fields. The source inventory records its
 `total=False` class option; runtime reflection records its required and optional
 keys. Broader operation-level behavior and full implementation coverage remain
 pending.

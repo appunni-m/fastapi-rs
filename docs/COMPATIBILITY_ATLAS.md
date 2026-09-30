@@ -5,7 +5,8 @@ This source-backed compatibility atlas indexes the API denominator and candidate
 ## Pinned authorities
 
 - FastAPI: 0.141.1 at `95f8322ee1dcda7ceace7b1c4f6c9915b36d748f`.
-- Starlette oracle and Starlette-RS contract: 1.6.0 at `4f250d6b814587e20c5365f0a5f0c4d42bcb929f` (the sole selected Starlette version).
+- Starlette oracle contract: 1.6.0 at `4f250d6b814587e20c5365f0a5f0c4d42bcb929f` (the sole selected Starlette version).
+- Starlette-RS implementation contract: at `d1ca5915b43ad62cde8e6cbc2e5007e33c7b089b`.
 - FastAPI declares `starlette>=0.46.0`, which admits the selected contract. Its upstream lock graph is dependency-inventory evidence, not another compatibility profile.
 - Pydantic: 2.13.4 source-lock baseline; Python support is `>=3.10`.
 
@@ -13,20 +14,21 @@ This source-backed compatibility atlas indexes the API denominator and candidate
 
 | Candidates | Supported by source evidence | Private/internal | Uncertain |
 |---:|---:|---:|---:|
-| 1593 | 452 | 749 | 392 |
+| 1593 | 461 | 874 | 258 |
 
 `api_candidates` in the machine-readable atlas carries a FastAPI source path/line for every row plus public evidence or an explicit uncertainty/private rule. `supported` classifies the upstream API surface only; it does not claim target implementation support.
 
 ## Per-symbol API contract in the active manifest
 
-The single `tests/fixtures/manifest.yaml` indexes 452 source-supported symbols, with pointers to the pinned AST inventory and both runtime-reflection profiles. It links alias, deprecation, error, documented-feature, selector, and planned Python import-path evidence; 445 symbols link to a documented-page fixture design. The current Python facade directly re-exports 14 native names; this source contract does not measure their behavioral completeness, and broader operation-level review remains pending.
+The single `tests/fixtures/manifest.yaml` indexes 461 source-supported symbols, with pointers to the pinned AST inventory and both runtime-reflection profiles. It links alias, deprecation, error, documented-feature, selector, and planned Python import-path evidence; 454 symbols link to a documented-page fixture design. The current Python facade directly re-exports 14 native names; this source contract does not measure their behavioral completeness, and broader operation-level review remains pending.
 
 | Signature/shape evidence | Symbols |
 |---|---:|
 | `module-object-no-call-signature` | 1 |
-| `non-callable-surface` | 228 |
-| `runtime-signature-reflected` | 222 |
+| `non-callable-surface` | 234 |
+| `runtime-signature-reflected` | 224 |
 | `runtime-signature-unavailable` | 1 |
+| `signature-not-captured` | 1 |
 
 ## Merged coverage matrix and fixture backlog
 
@@ -34,17 +36,17 @@ The single `tests/fixtures/manifest.yaml` indexes 452 source-supported symbols, 
 |---|---:|---:|---:|---:|---:|
 | Upstream `test_*.py` modules | 492 | 451 | 451 | 0 | 41 |
 | User-facing documentation pages | 155 | 104 | 104 | 0 | 51 |
-| Documentation Python files (examples + support initializers) | 461 | 43 | 43 | 311 | 107 |
+| Documentation Python files (examples + support initializers) | 461 | 73 | 73 | 281 | 107 |
 
-Python-source exclusions include the documented Pydantic Settings configuration file, one debugging/setup example, and 91 package initializers. Of the remaining examples, 43 have a reviewed direct input-workflow link; examples grouped with a documentation page inherit only page-level selectors, which do not claim that each example's behavior was exercised.
+Python-source exclusions include the documented Pydantic Settings configuration file, one debugging/setup example, and 91 package initializers. Of the remaining examples, 73 have a reviewed direct input-workflow link; examples grouped with a documentation page inherit only page-level selectors, which do not claim that each example's behavior was exercised.
 
-Review state is separate from coverage completeness. `reviewed_partial` means pinned source evidence and exact indexed workflows, cases, and selectors were reviewed for the linked behavior; it does not claim complete source behavior or parity. Pending counts identify examples without that direct review. The materialized index has 451 distinct upstream test modules, 104 documentation pages, and 43 exact documentation Python examples linked to workflows; all 1076 mapping rows are partial. No source module, documentation page, or Python example is fully covered by an input workflow.
+Review state is separate from coverage completeness. `reviewed_partial` means pinned source evidence and exact indexed workflows, cases, and selectors were reviewed for the linked behavior; it does not claim complete source behavior or parity. Pending counts identify examples without that direct review. The materialized index has 451 distinct upstream test modules, 104 documentation pages, and 73 exact documentation Python examples linked to workflows; all 1106 mapping rows are partial. No source module, documentation page, or Python example is fully covered by an input workflow.
 
 `mapping_status` labels source-to-feature mapping, while `review_status` and independent workflow links record whether a partial input mapping was reviewed. A row may therefore retain `candidate` while already having `review_status: reviewed_partial` and exact fixture cases/selectors. The documentation denominator is feature pages; `documented_sections` are discovery leads, not separately reviewed workflow units.
 
 Candidate function and section records carry source path/SHA evidence, exact whole-token signals, family IDs, and family-level selectors. Per-function mapping scope distinguishes reviewed source mappings, function-body signals, and filename candidates. Test modules index function names/lines without copying bodies. These records are backlog leads, not independent executable parity cases; linked workflows cover only their declared partial behavior, and additional behavior needs tailored stimuli and selector review. Rows without a signal remain `review_required`; exclusions include a reason. Benchmark modules are routed to correctness-gated benchmark work.
 
-`make parity-validate` checks 1593 API classifications against pinned FastAPI source evidence, every source digest in the coverage matrix, fixture links or exclusion reasons for all 492 test modules and 155 documentation pages, direct Starlette 1.6.0 dependency edges, and all 50 declared observation selectors. It also validates 598 input-only design records, including 2114 per-function test designs, selector evidence, source digests, and the absence of expected result fields. The current materialized-input index contains 467 input-only workflows, 1828 cases, and 1076 partial source mappings. These are oracle inputs, not target parity results; the remaining design candidates still need review and materialization. Selectors marked `planned` in `observation-selectors.json` still need runner support.
+`make parity-validate` checks 1593 API classifications against pinned FastAPI source evidence, every source digest in the coverage matrix, fixture links or exclusion reasons for all 492 test modules and 155 documentation pages, direct Starlette 1.6.0 dependency edges, and all 50 declared observation selectors. It also validates 628 input-only design records, including 2114 per-function test designs, selector evidence, source digests, and the absence of expected result fields. The current materialized-input index contains 471 input-only workflows, 1844 cases, and 1106 partial source mappings. These are oracle inputs, not target parity results; the remaining design candidates still need review and materialization. Selectors marked `planned` in `observation-selectors.json` still need runner support.
 
 ## Independently authored input workflows
 
@@ -352,6 +354,10 @@ Reviewed workflow recipes live in `tests/fixtures/input-recipes/parity/*.yaml`. 
 | `query-header-parameter-query-tutorial006` | 3 | 1 | [`tests/fixtures/input-recipes/parity/query-header-parameter-query-tutorial006.yaml`](../tests/fixtures/input-recipes/parity/query-header-parameter-query-tutorial006.yaml) | [`tests/fixtures/workloads/query_header_parameter_tutorial_review.py`](../tests/fixtures/workloads/query_header_parameter_tutorial_review.py) |
 | `query-param-model-tutorial-edges` | 1 | 1 | [`tests/fixtures/input-recipes/parity/query-param-model-tutorial-edges.yaml`](../tests/fixtures/input-recipes/parity/query-param-model-tutorial-edges.yaml) | [`tests/fixtures/workloads/query_param_models.py`](../tests/fixtures/workloads/query_param_models.py) |
 | `query-param-models` | 4 | 2 | [`tests/fixtures/input-recipes/parity/query-param-models.yaml`](../tests/fixtures/input-recipes/parity/query-param-models.yaml) | [`tests/fixtures/workloads/query_param_models.py`](../tests/fixtures/workloads/query_param_models.py) |
+| `query-params-str-validations-doc-examples` | 11 | 20 | [`tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml`](../tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml) | [`tests/fixtures/workloads/query_params_str_validations_doc_examples.py`](../tests/fixtures/workloads/query_params_str_validations_doc_examples.py) |
+| `query-params-str-validations-doc-exclude-schema-examples` | 1 | 2 | [`tests/fixtures/input-recipes/parity/query-params-str-validations-doc-exclude-schema-examples.yaml`](../tests/fixtures/input-recipes/parity/query-params-str-validations-doc-exclude-schema-examples.yaml) | [`tests/fixtures/workloads/query_params_str_validations_doc_exclude_schema_examples.py`](../tests/fixtures/workloads/query_params_str_validations_doc_exclude_schema_examples.py) |
+| `query-params-str-validations-doc-pattern-examples` | 2 | 4 | [`tests/fixtures/input-recipes/parity/query-params-str-validations-doc-pattern-examples.yaml`](../tests/fixtures/input-recipes/parity/query-params-str-validations-doc-pattern-examples.yaml) | [`tests/fixtures/workloads/query_params_str_validations_doc_pattern_examples.py`](../tests/fixtures/workloads/query_params_str_validations_doc_pattern_examples.py) |
+| `query-params-str-validations-doc-title-description-examples` | 2 | 4 | [`tests/fixtures/input-recipes/parity/query-params-str-validations-doc-title-description-examples.yaml`](../tests/fixtures/input-recipes/parity/query-params-str-validations-doc-title-description-examples.yaml) | [`tests/fixtures/workloads/query_params_str_validations_doc_title_description_examples.py`](../tests/fixtures/workloads/query_params_str_validations_doc_title_description_examples.py) |
 | `query-params-tutorial001-upstream` | 4 | 1 | [`tests/fixtures/input-recipes/parity/query-params-tutorial001-upstream.yaml`](../tests/fixtures/input-recipes/parity/query-params-tutorial001-upstream.yaml) | [`tests/fixtures/workloads/query_params_tutorial001_upstream.py`](../tests/fixtures/workloads/query_params_tutorial001_upstream.py) |
 | `query-params-tutorial002-upstream` | 3 | 2 | [`tests/fixtures/input-recipes/parity/query-params-tutorial002-upstream.yaml`](../tests/fixtures/input-recipes/parity/query-params-tutorial002-upstream.yaml) | [`tests/fixtures/workloads/query_params_tutorial002_upstream.py`](../tests/fixtures/workloads/query_params_tutorial002_upstream.py) |
 | `query-params-tutorial003-upstream` | 4 | 2 | [`tests/fixtures/input-recipes/parity/query-params-tutorial003-upstream.yaml`](../tests/fixtures/input-recipes/parity/query-params-tutorial003-upstream.yaml) | [`tests/fixtures/workloads/query_params_tutorial003_upstream.py`](../tests/fixtures/workloads/query_params_tutorial003_upstream.py) |
@@ -528,7 +534,7 @@ The merged coverage matrix links each FastAPI test, documented feature, or examp
 |---:|---:|---:|---:|
 | 945 | 2449 | 523 | 6 |
 
-The sibling Starlette-RS manifest, API review, and coverage matrix remain the sole Starlette API inventory. FastAPI's atlas stores only relevant requirement references plus manifest/catalog/review/matrix SHA-256 digests. The inspected Starlette-RS implementation revision is 6e1a2c46ee08763b82ca46ab8114f0b61a5848cc (pinned, clean sibling Git commit).
+The sibling Starlette-RS manifest, API review, and coverage matrix remain the sole Starlette API inventory. FastAPI's atlas stores only relevant requirement references plus manifest/catalog/review/matrix SHA-256 digests. The inspected Starlette-RS implementation revision is d1ca5915b43ad62cde8e6cbc2e5007e33c7b089b (pinned, clean sibling Git commit).
 
 ## Errors, aliases, optional features, and deprecations
 

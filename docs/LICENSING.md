@@ -21,8 +21,19 @@ it does not relicense FastAPI, Starlette, Pydantic, or third-party material.
   dependency. Its complete BSD-3-Clause notice is reproduced in
   [`THIRD_PARTY_NOTICES.md`](../THIRD_PARTY_NOTICES.md), which the Python
   package declares as a license file.
-- Pydantic 2.13.4 and `pydantic-core` 2.46.4 are MIT-licensed in the selected
-  oracle environment. Pydantic remains an independent runtime dependency.
+- Pydantic 2.13.4 and `pydantic-core` 2.46.4 are MIT-licensed Python runtime
+  dependencies. Both are explicitly pinned by the target package; Core is a
+  separately distributed wheel with a Rust native extension, and FastAPI-RS
+  calls its APIs directly. Their wheel license files remain with those
+  separately installed distributions; the target package does not relicense
+  or bundle them.
+- The external target Python runtime closure for CPython 3.12.13 is hash-locked
+  in
+  [`requirements/target-runtime-cpython-3.12.13.lock`](../requirements/target-runtime-cpython-3.12.13.lock).
+  It excludes Starlette-RS, which is installed separately from the selected
+  local source revision. This lock covers the external runtime wheels only;
+  it does not lock build tools or establish artifact contents for every
+  supported Python/platform combination.
 - The locked Rust workspace dependency graph, its licenses, enabled features,
   and dependency edges are inventoried in
   [`RUST_TARGET_DEPENDENCIES.md`](RUST_TARGET_DEPENDENCIES.md). The FastAPI
@@ -36,15 +47,18 @@ copied, generated, or bundled; resolve and review the Cargo and Python
 distribution dependency graphs; and include the applicable notices and license
 texts in source and binary distributions. The Starlette-RS BSD text is now
 included, but the selected zlib backend still needs to be recorded for each
-release build. If a source distribution contains bundled zlib source, retain
-its notice and mark altered source; zlib says product-documentation
+release build. The target's external Python runtime wheel closure is now
+hash-locked for CPython 3.12.13; the lock does not cover the separate local
+Starlette-RS checkout or the package build environment. If a source
+distribution contains bundled zlib source, retain its notice and mark altered
+source; zlib says product-documentation
 acknowledgment is appreciated but not required. Cargo.lock does not identify
 whether a platform build uses system or bundled zlib. The inspected local
 macOS arm64 development extension links `/usr/lib/libz.1.dylib` version 1.2.12;
 this does not establish the backend in other platform builds or release
-artifacts. The target Python dependency closure also lacks a committed lock.
-Verify wheel and sdist contents, including their license-file metadata and
-notices, against the versions and native components actually shipped.
+artifacts. Verify wheel and sdist contents, including their license-file
+metadata and notices, against the versions and native components actually
+shipped.
 Upstream tests, docs, examples, and branding must be reviewed separately.
 
 The project should identify itself as an independent implementation and avoid

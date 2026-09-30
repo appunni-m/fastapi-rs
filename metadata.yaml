@@ -18,7 +18,7 @@ authority:
     pydantic_core_version: 2.46.4
     source_lock_version: 2.13.4
     public_layer: Reuse Pydantic's public Python model API.
-    native_layer: pydantic-core is Pydantic's Rust implementation detail; FastAPI-RS has two narrow encoder compatibility probes, not a public API or standalone dependency.
+    native_layer: FastAPI-RS calls the separately built pydantic-core==2.46.4 Python wheel APIs through PyO3; its Rust implementation remains Pydantic-owned and is not a FastAPI-RS Cargo dependency or public API.
   upstream_source_lock:
     file: uv.lock
     purpose: FastAPI source-inventory provenance only; it does not select the oracle profile.
@@ -29,6 +29,13 @@ authority:
     commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
     checkout: ../starlette
     contract: sole Starlette oracle and replacement contract
+
+target_runtime:
+  python: CPython 3.12.13
+  lock:
+    path: requirements/target-runtime-cpython-3.12.13.lock
+    sha256: efb7ca633fc9a9c8587a6f59f8ee9b509151f6f77ceb75a56dd3cdeff2be99f7
+    profile: CPython 3.12.13
 
 manifest:
   path: tests/fixtures/manifest.yaml
@@ -72,14 +79,14 @@ api_inventory:
 import_binding_classification_review:
   artifact: tests/fixtures/api-import-binding-classification-review.json
   schema: fastapi-starlette-import-binding-review/v1
-  sha256: 83943b773b26e26248c6fbe5990860c1a606a7d46a8822b0a0ad660f35c092f7
+  sha256: b0d706ad07dc5c2958dfdae44d7f467b4894cb96c0fd53041a77f691441878ed
   source_identity:
     package: FastAPI
     version: 0.141.1
     source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
     selected_starlette_profile: 1.6.0
     starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
-    starlette_rs_contract_commit: 6e1a2c46ee08763b82ca46ab8114f0b61a5848cc
+    starlette_rs_contract_commit: d1ca5915b43ad62cde8e6cbc2e5007e33c7b089b
   starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
   counts:
     candidates: 97
@@ -90,8 +97,8 @@ import_binding_classification_review:
     starlette_rs_unreviewed_unique_targets: 4
   candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
   pinned_starlette_rs_sources:
-    metadata_sha256: 2fa62dd6460e578680382f29be1f144ebe5910af26d1445dfe8e43578cee6742
-    manifest_sha256: cece32182d142fd5893f5d62158fef4e1df5c3d59528edf6316490c867e7336f
+    metadata_sha256: 87f7421b8d801b03bc0f7274e611fae86e6094152f7a036c9cb20c1232c2b8a6
+    manifest_sha256: 37d28a84c001e222dff2722d87e7e8db012e1a4087e9ab1652830027de05736c
     api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
     api_review_sha256: 1dc0fd8fdef56e672b5e53fb2a04da4b6f3c07e7147f50781b3b804d73d2f68b
 
@@ -112,6 +119,21 @@ source_api_classification_review:
   selection:
     uncertain_imported_modules: [collections.abc, fastapi._compat, typing]
     uncertain_candidate_id_prefixes: [fastapi.exception_handlers., fastapi.responses.EventSourceResponse, fastapi.responses.FastAPIDeprecationWarning, fastapi.responses.deprecated, fastapi.sse.]
+
+api_public_candidate_classification_review:
+  artifact: tests/fixtures/api-public-candidate-classification-review.json
+  schema: fastapi-rs/public-candidate-classification-review@1
+  sha256: 1bc0991330514eeae000b9212d0bac7fd81c4abe5ac7eaa95d9d0ddbd64b2dab
+  source_identity:
+    package: FastAPI
+    version: 0.141.1
+    source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
+  counts:
+    candidates: 137
+    supported: 9
+    private_or_internal: 125
+    uncertain: 3
+  candidate_ids_sha256: 69e78951df8bf49e40555500df2a4d9f61e970f4d5d635fb80ebe852d7126042
 
 classification_atlas:
   artifact: tests/fixtures/compatibility-atlas.json
@@ -159,7 +181,7 @@ classification_atlas:
 starlette_rs:
   owner: ../starlette-rs
   repository: https://github.com/appunni-m/starlette-rs
-  commit: 6e1a2c46ee08763b82ca46ab8114f0b61a5848cc
+  commit: d1ca5915b43ad62cde8e6cbc2e5007e33c7b089b
   distribution_version: 0.1.0
   contract_id: starlette-1.6.0-asgi-http-config-session-slice
   metadata: ../starlette-rs/metadata.yaml
@@ -1526,9 +1548,9 @@ reviewed_api_contract_overlay:
     fastapi.exceptions.FastAPIDeprecationWarning:
       classification: uncertain
       rationale: >-
-        The source defines a custom warning and the release notes announce it,
-        but neither establishes a direct public import contract. Keep the
-        source candidate visible without promoting its classification.
+        The source defines this custom warning and the release notes name it,
+        but do not establish a consumer-facing import path. Keep the candidate
+        uncertain; the separate fastapi.responses alias is private/internal.
       evidence:
         - kind: source-definition
           path: fastapi/exceptions.py

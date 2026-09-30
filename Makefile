@@ -10,6 +10,7 @@ ORACLE_STANDARD_ENV ?= $(CURDIR)/.venv-oracle-standard
 ORACLE_STANDARD_PYTHON ?= $(ORACLE_STANDARD_ENV)/bin/python
 TARGET_ENV ?= $(CURDIR)/.venv-target
 TARGET_PYTHON ?= $(TARGET_ENV)/bin/python
+TARGET_RUNTIME_LOCK ?= $(CURDIR)/requirements/target-runtime-cpython-3.12.13.lock
 FASTAPI_SOURCE ?= $(abspath ../fastapi)
 STARLETTE_SOURCE ?= $(abspath ../starlette)
 STARLETTE_RS_SOURCE ?= $(abspath ../starlette-rs)
@@ -117,12 +118,10 @@ parity-prepare-oracle-standard: ## Prepare standard FastAPI extras and TestClien
 	$(UV) pip install --python "$(ORACLE_STANDARD_PYTHON)" --no-deps --editable "$(STARLETTE_SOURCE)"
 	$(UV) pip check --python "$(ORACLE_STANDARD_PYTHON)"
 
-parity-prepare-target: ## Prepare .venv-target with FastAPI-RS and sibling Starlette-RS only
-	test -x "$(TARGET_PYTHON)" || $(UV) venv --python "$(PYTHON)" "$(TARGET_ENV)"
-	$(UV) pip install --python "$(TARGET_PYTHON)" \
-	  "annotated-doc==0.0.4" "annotated-types==0.7.0" "anyio==4.12.1" \
-	  "idna==3.18" "pydantic==2.13.4" "pydantic-core==2.46.4" \
-	  "typing-extensions==4.16.0" "typing-inspection==0.4.2"
+parity-prepare-target: ## Prepare hash-locked CPython 3.12.13 target and sibling Starlette-RS
+	test -x "$(TARGET_PYTHON)" || $(UV) venv --python 3.12.13 "$(TARGET_ENV)"
+	$(TARGET_PYTHON) -c 'import platform, sys; (platform.python_implementation() == "CPython" and sys.version_info[:3] == (3, 12, 13)) or sys.exit("target runtime lock requires CPython 3.12.13")'
+	$(UV) pip sync --python "$(TARGET_PYTHON)" --require-hashes "$(TARGET_RUNTIME_LOCK)"
 	PYO3_PYTHON="$(TARGET_PYTHON)" $(UV) pip install --python "$(TARGET_PYTHON)" --no-deps --editable "$(STARLETTE_RS_SOURCE)"
 	$(PYTHON) scripts/build_target_extension.py --python "$(TARGET_PYTHON)" --uv "$(UV)" --starlette-rs-source "$(STARLETTE_RS_SOURCE)"
 	$(UV) pip check --python "$(TARGET_PYTHON)"

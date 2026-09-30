@@ -15,16 +15,27 @@ authorities, not included source trees in this distribution.
 - PyO3 0.29.2 and its Cargo dependency closure declare MIT OR Apache-2.0 or the
   package-specific expressions recorded in
   [`docs/RUST_TARGET_DEPENDENCIES.md`](docs/RUST_TARGET_DEPENDENCIES.md).
-- The Python package pins Pydantic `==2.13.4`; Pydantic and
-  `pydantic-core==2.46.4` are MIT-licensed. Pydantic's public model API is
-  Python, while `pydantic-core` provides its Rust validation/serialization
-  engine. `starlette-rs-py==0.1.0` is separately licensed under BSD-3-Clause
-  and brings its own Python runtime dependencies.
+- The Python package pins Pydantic `==2.13.4` and directly pins
+  `pydantic-core==2.46.4`; both are MIT-licensed separate Python distributions.
+  Pydantic's public model API is Python, while the Core wheel provides its Rust
+  validation/serialization engine and FastAPI-RS calls its runtime APIs
+  directly. Each distribution carries its own license file. These wheels are
+  not bundled into the FastAPI-RS package; if a release bundles or redistributes
+  them, preserve their notices and review the Core wheel's native-component
+  obligations.
+- `requirements/target-runtime-cpython-3.12.13.lock` hash-locks the external
+  runtime wheel closure for the parity profile. It includes MIT-licensed
+  `annotated-doc==0.0.4` only to preserve the comparator's shared source/target
+  package identity; FastAPI-RS does not import or declare it as a package
+  dependency. The lock excludes the local Starlette-RS checkout, which is
+  installed separately from the manifest's selected commit. `starlette-rs-py==0.1.0`
+  remains a separately licensed BSD-3-Clause package and declares AnyIO as an
+  external runtime dependency.
 
 The locked Cargo inventory includes each resolved crate's license expression,
-version, enabled features, purpose, and dependency edges. The Python project
-has no target lockfile yet, so its resolved distribution closure must be
-recorded from the release environment. Starlette-RS is statically linked into
+version, enabled features, purpose, and dependency edges. The target Python
+lock covers only CPython 3.12.13 runtime wheels, not build tools or every
+supported platform. Starlette-RS is statically linked into
 the extension and carries Starlette-derived BSD-3-Clause material; this
 full license notice is reproduced below. The selected zlib backend
 uses the pinned `flate2` zlib feature and `libz-sys` 1.1.29. Its build may link

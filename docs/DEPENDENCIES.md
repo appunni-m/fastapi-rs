@@ -39,7 +39,7 @@ AnyIO 4.12.1's exact runtime edges are `idna>=2.8`, `typing_extensions>=4.5; pyt
 
 Pydantic is **not all Rust**. Its Python package defines user models, inspects annotations, and generates core schemas; `pydantic-core` executes validation and serialization in Rust. FastAPI-RS keeps Pydantic as a separate model/schema dependency for arbitrary user-defined Python model classes. FastAPI-specific orchestration remains in the `fastapi-rs` Rust crate, exposed through direct native re-exports. FastAPI 0.141.1's compatibility helpers explicitly reject Pydantic v1 models.
 
-The separately versioned `pydantic-core 2.46.4` Cargo manifest resolves these direct native dependencies in its own Rust graph. This is **not** an extra Python runtime requirement of FastAPI-RS if it consumes the published Pydantic wheel; it becomes part of the Rust SBOM if the project vendors or rebuilds that engine.
+The separately versioned `pydantic-core 2.46.4` Cargo manifest resolves these direct native dependencies in its own Rust graph. The published wheel is a Python runtime dependency; FastAPI-RS explicitly declares it because its Rust runtime imports `pydantic_core` APIs. Its Cargo crates are not FastAPI-RS Cargo dependencies when the published wheel is consumed; they become a separate native-build SBOM if the project vendors or rebuilds that engine.
 
 | Pydantic Core Rust dependency group (locked versions) | Role / requested feature | License |
 |---|---|---|
@@ -53,6 +53,13 @@ The separately versioned `pydantic-core 2.46.4` Cargo manifest resolves these di
 | `ahash 0.8.12`, `hashbrown 0.16.1`, `smallvec 1.15.1` | Hash tables/sets and compact inline storage in validation/serialization structures; `hashbrown` enables `inline-more` without its defaults. | MIT OR Apache-2.0 |
 | `enum_dispatch 0.3.13` | Generate dispatch for validator, serializer, and GC-traversal enums. | MIT OR Apache-2.0 |
 | Build only: `pyo3-build-config 0.28.3`, `version_check 0.9.5` | Select Python ABI/build configuration and check compiler/toolchain versions. | MIT OR Apache-2.0; MIT OR Apache-2.0 |
+
+The tagged Cargo manifest also declares `pyo3 0.28` with `auto-initialize` as a
+dev dependency. That test-only edge belongs to Pydantic Core's source project,
+not to the FastAPI-RS target runtime or its build. Conversely,
+`pyo3-build-config` and `version_check` are needed only when building Pydantic
+Core from source; FastAPI-RS consumes the separately built wheel. Keep these
+upstream build/dev roles separate from the target workspace's Cargo roles.
 
 Versions/features above come from the tagged Pydantic source and its `Cargo.lock`; source use is in `pydantic-core/src/{validators,serializers,url.rs,py_gc.rs}`. See [Pydantic Core Cargo manifest](https://github.com/pydantic/pydantic/blob/v2.13.4/pydantic-core/Cargo.toml) and [Pydantic Core Cargo lock](https://github.com/pydantic/pydantic/blob/v2.13.4/pydantic-core/Cargo.lock). Transitive Rust crates under these dependencies must be included in a generated native SBOM if this subtree is shipped or copied.
 
@@ -95,10 +102,10 @@ These groups and their recursive lock closure are development inputs, not depend
 
 ## Implications for FastAPI-RS
 
-1. Reproduce FastAPI's observable Pydantic v2 behavior. Pydantic may be a separately pinned FastAPI-RS runtime dependency for model APIs and Rust-backed validation/serialization; FastAPI-level validation orchestration and schema flow remain in Rust, with Python bindings passing through user model objects. This oracle graph does not require Pydantic or any other upstream package in the target manifest.
+1. Reproduce FastAPI's observable Pydantic v2 behavior. Pydantic remains the public Python model API used by FastAPI-RS, and `pydantic-core` is separately pinned as a Python runtime dependency because target Rust code imports its sentinel and schema APIs. FastAPI-level validation orchestration and schema flow remain in Rust, with Python bindings passing user model objects to Pydantic. This oracle graph does not dictate the target dependency declarations.
 2. Treat the Starlette boundary as a full replacement: FastAPI subclasses `Starlette` and imports routes, middleware, ASGI types, and private Starlette helpers. The required `starlette` import namespace and user-visible object identity must be satisfied by Starlette-RS as established in its own contract.
 3. Keep FastAPI's optional features optional in FastAPI-RS. HTTPX, Uvicorn, Jinja2, multipart parsing, email validation, settings/types, CLI, sessions, and YAML schema support each add independent user-visible behaviors and license obligations.
-4. Pin the oracle package versions, Starlette-RS revision, Pydantic version, and Python implementation/version for each parity lane. Separately cover FastAPI's declared lower bounds; the broad `>=` requirements do not mean every future version is an oracle.
+4. Pin the oracle package versions, Starlette-RS revision, Pydantic and pydantic-core versions, and Python implementation/version for each parity lane. The target CPython 3.12.13 external runtime wheels are hash-locked separately at [`requirements/target-runtime-cpython-3.12.13.lock`](../requirements/target-runtime-cpython-3.12.13.lock); it includes `annotated-doc` only to preserve the comparator's shared package identity, not as a FastAPI-RS dependency. Starlette-RS stays a separately pinned local source install. Separately cover FastAPI's declared lower bounds; the broad `>=` requirements do not mean every future version is an oracle.
 
 ## Sources and license scope
 

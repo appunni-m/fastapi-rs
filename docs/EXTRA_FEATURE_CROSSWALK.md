@@ -7,8 +7,9 @@ Resolved versions, recursive edges, languages/native parts, and license evidence
 are in the [dependency atlas](dependency-atlas.md) and
 [dependency graph](DEPENDENCY_GRAPH.md).
 
-FastAPI-RS declares only `pydantic==2.13.4` and `starlette-rs-py==0.1.0` as
-runtime dependencies ([target metadata](../pyproject.toml#L5-L16)); it has no
+FastAPI-RS declares `pydantic==2.13.4`, `pydantic-core==2.46.4`, and
+`starlette-rs-py==0.1.0` as runtime dependencies
+([target metadata](../pyproject.toml#L5-L16)); it has no
 project extras, dependency groups, or CLI script. “Absent” below means no target
 package/feature mapping is declared, not an explicit exclusion. No explicit
 exclusions were found. Presence in a parity/dev environment is not support.
@@ -17,7 +18,7 @@ exclusions were found. Presence in a parity/dev environment is not support.
 
 | FastAPI surface | Direct packages and purpose | Owner; FastAPI-RS status |
 |---|---|---|
-| Base | `starlette>=0.46.0`; `pydantic>=2.9.0`; `typing-extensions>=4.8.0`; `typing-inspection>=0.4.2`; `annotated-doc>=0.0.2` | FastAPI orchestration, Pydantic models/schemas, Starlette ASGI behavior. Target has direct Pydantic and Starlette-RS; other packages are not direct target requirements. Contract incomplete. |
+| Base | `starlette>=0.46.0`; `pydantic>=2.9.0`; `typing-extensions>=4.8.0`; `typing-inspection>=0.4.2`; `annotated-doc>=0.0.2` | FastAPI orchestration, Pydantic models/schemas, Starlette ASGI behavior. Target directly depends on Pydantic, Pydantic Core, and Starlette-RS; other packages are not direct target requirements. Contract incomplete. |
 | `standard` | `fastapi-cli[standard]>=0.0.32`; `fastar>=0.9.0`; `httpx>=0.23.0,<1.0.0`; `jinja2>=3.1.5`; `python-multipart>=0.0.18`; `email-validator>=2.0.0`; `uvicorn[standard]>=0.12.0`; `pydantic-settings>=2.0.0`; `pydantic-extra-types>=2.0.0` | CLI/deployment, TestClient, templates, forms/uploads, email validation, server, settings, extra Pydantic types. No matching target optional extra; Form/File has a Rust-backed implementation slice, while other optional integrations remain unmapped. |
 | `standard-no-fastapi-cloud-cli` | `fastapi-cli[standard-no-fastapi-cloud-cli]>=0.0.32`; `httpx>=0.23.0,<1.0.0`; `jinja2>=3.1.5`; `python-multipart>=0.0.18`; `email-validator>=2.0.0`; `uvicorn[standard]>=0.12.0`; `pydantic-settings>=2.0.0`; `pydantic-extra-types>=2.0.0` | Same integration categories as `standard`, without Cloud CLI. No matching target optional extra; Form/File has a Rust-backed implementation slice, while other optional integrations remain unmapped. |
 | `all` | `fastapi-cli[standard]>=0.0.32`; `httpx>=0.23.0,<1.0.0`; `jinja2>=3.1.5`; `python-multipart>=0.0.18`; `itsdangerous>=1.1.0`; `pyyaml>=5.3.1`; `email-validator>=2.0.0`; `uvicorn[standard]>=0.12.0`; `pydantic-settings>=2.0.0`; `pydantic-extra-types>=2.0.0` | Adds Starlette session signing and schema support (FastAPI says these are not commonly used with FastAPI). No target extra or mapping; not explicitly excluded. |
@@ -27,11 +28,11 @@ exclusions were found. Presence in a parity/dev environment is not support.
 | Package / source-backed feature | Owner | FastAPI-RS target status |
 |---|---|---|
 | `starlette`: app, routes, requests, responses, middleware, WebSockets, lifespan | Starlette-RS owns generic ASGI behavior | `starlette-rs-py==0.1.0` is direct. Sibling contract is incomplete; see `metadata.yaml`. |
-| `pydantic`: Python models, fields, schemas, validation/serialization primitives | Pydantic; FastAPI owns orchestration | Pinned direct dependency `2.13.4`; this does not complete FastAPI parity. |
+| `pydantic` / `pydantic-core`: Python models, fields, schemas, validation/serialization primitives | Pydantic; FastAPI owns orchestration | Pinned direct dependencies `2.13.4` and `2.46.4`; Rust calls the Pydantic Core wheel API through PyO3. This does not complete FastAPI parity. |
 | `typing-extensions`, `typing-inspection`, `annotated-doc`: typing/`Doc` metadata | FastAPI annotation and dependency inspection | Not direct target requirements; pinned in parity setup or present transitively. No optional mapping. |
 | `fastapi-cli` / `fastapi-cloud-cli`: command and cloud deployment | Project tooling | No target script, CLI package, or extra. |
 | `fastar`: CLI archive creation | Project tooling; resolved Cloud CLI deployment consumer, not FastAPI request handling | No target CLI/deployment extra or package mapping. |
-| `httpx`: optional FastAPI test client | Starlette-RS owns TestClient transport | Latest pinned Starlette-RS provides `starlette.testclient.TestClient` through its `testclient` extra (`httpx>=0.27,<0.29` and `httpx2>=2`). FastAPI-RS does not enable that extra or expose `fastapi.testclient.TestClient`; the FastAPI target binding remains `full-contract-not-established`. |
+| `httpx`: optional FastAPI test client | Starlette-RS owns TestClient transport | Pinned Starlette-RS `d1ca591` adds context-managed lifespan behavior and parity inputs under its `testclient` extra (`httpx>=0.27,<0.29` and `httpx2>=2`); its Rust-native TestClient binding remains unimplemented. FastAPI-RS does not enable that extra or expose `fastapi.testclient.TestClient`; the FastAPI target binding remains `full-contract-not-established`. |
 | `jinja2`: FastAPI re-exports Starlette `Jinja2Templates` | Starlette-RS owns templates | No target extra; pinned sibling source has no `starlette/templating.py`. |
 | `python-multipart`: optional upstream form/upload parser for `Form` and `File` | FastAPI owns parameter interpretation; Starlette-RS provides the Rust-backed `Request.form()` boundary | FastAPI-RS has no Python `python-multipart` runtime dependency. Form/File request extraction is implemented in Rust through Starlette-RS; constructor options and full behavior parity remain incomplete. |
 | `email-validator`: enables Pydantic `EmailStr`; FastAPI fallback warns and treats values as strings | Pydantic validation with FastAPI fallback | No target optional mapping; target email behavior unresolved. |
@@ -77,4 +78,4 @@ in `standard`. Its concrete consumer is CLI archive creation.
 
 - [FastAPI extras, groups, and script](https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L44-L187).
 - Feature sources: [multipart guard](https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/fastapi/dependencies/utils.py#L88-L129), [EmailStr fallback](https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/fastapi/openapi/models.py#L16-L55), [TestClient](https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/fastapi/testclient.py#L1), [templates](https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/fastapi/templating.py#L1), [extra Color import](https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/fastapi/encoders.py#L34-L49), [Color encoder registration](https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/fastapi/encoders.py#L84-L87).
-- [Dependency atlas](dependency-atlas.md), [recursive graph](DEPENDENCY_GRAPH.md), [target manifest](../metadata.yaml), and [Starlette-RS package/extra](https://github.com/appunni-m/starlette-rs/blob/6e1a2c46ee08763b82ca46ab8114f0b61a5848cc/pyproject.toml#L30-L34).
+- [Dependency atlas](dependency-atlas.md), [recursive graph](DEPENDENCY_GRAPH.md), [target manifest](../metadata.yaml), and [Starlette-RS package/extra](https://github.com/appunni-m/starlette-rs/blob/d1ca5915b43ad62cde8e6cbc2e5007e33c7b089b/pyproject.toml#L30-L34).

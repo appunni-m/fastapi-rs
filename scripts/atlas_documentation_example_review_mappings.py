@@ -1170,3 +1170,977 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
         ],
     },
 }
+
+
+# Query parameter tutorial examples: exact source-to-input workflow links.
+DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
+    {
+        "docs_src/query_params_str_validations/tutorial001_py310.py": {
+            "rationale": "The exact source "
+            "example declares an "
+            "optional plain query "
+            "string. The "
+            "independent echo "
+            "route observes "
+            "supplied-value "
+            "extraction and its "
+            "OpenAPI parameter "
+            "entry; the source "
+            "example’s fixed "
+            "catalog response is "
+            "application-owned "
+            "and not reproduced.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/query_params_str_validations/tutorial001_py310.py",
+                    "start_line": 6,
+                    "end_line": 7,
+                    "role": "documented query parameter declaration and route signature",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml",
+                    "case_ids": ["fastapi.docs-example.query-params-str-validations.tutorial001"],
+                    "observation_selectors": ["http.body.bytes", "http.status", "openapi.document"],
+                }
+            ],
+        },
+        "docs_src/query_params_str_validations/tutorial002_py310.py": {
+            "rationale": "The exact source "
+            "example declares an "
+            "optional query with "
+            "a 50-character "
+            "maximum. The "
+            "independent case "
+            "submits an "
+            "over-limit value to "
+            "its direct or "
+            "Annotated "
+            "declaration and "
+            "observes status/body "
+            "plus the selected "
+            "OpenAPI parameter. "
+            "The source catalog "
+            "response is not "
+            "claimed.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/query_params_str_validations/tutorial002_py310.py",
+                    "start_line": 6,
+                    "end_line": 7,
+                    "role": "documented query parameter declaration and route signature",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml",
+                    "case_ids": ["fastapi.docs-example.query-params-str-validations.tutorial002"],
+                    "observation_selectors": ["http.body.bytes", "http.status", "openapi.document"],
+                }
+            ],
+        },
+        "docs_src/query_params_str_validations/tutorial002_an_py310.py": {
+            "rationale": "The exact source "
+            "example declares "
+            "an optional query "
+            "with a "
+            "50-character "
+            "maximum. The "
+            "independent case "
+            "submits an "
+            "over-limit value "
+            "to its direct or "
+            "Annotated "
+            "declaration and "
+            "observes "
+            "status/body plus "
+            "the selected "
+            "OpenAPI "
+            "parameter. The "
+            "source catalog "
+            "response is not "
+            "claimed.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/query_params_str_validations/tutorial002_an_py310.py",
+                    "start_line": 8,
+                    "end_line": 9,
+                    "role": "documented query parameter declaration and route signature",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml",
+                    "case_ids": ["fastapi.docs-example.query-params-str-validations.tutorial002"],
+                    "observation_selectors": ["http.body.bytes", "http.status", "openapi.document"],
+                }
+            ],
+        },
+        "docs_src/query_params_str_validations/tutorial003_py310.py": {
+            "rationale": "The exact source "
+            "example declares an "
+            "optional query with "
+            "3-to-50-character "
+            "bounds. The "
+            "independent case "
+            "submits a value "
+            "below the minimum "
+            "through each "
+            "declaration and "
+            "observes status/body "
+            "plus the selected "
+            "OpenAPI parameter.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/query_params_str_validations/tutorial003_py310.py",
+                    "start_line": 6,
+                    "end_line": 7,
+                    "role": "documented query parameter declaration and route signature",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml",
+                    "case_ids": ["fastapi.docs-example.query-params-str-validations.tutorial003"],
+                    "observation_selectors": ["http.body.bytes", "http.status", "openapi.document"],
+                }
+            ],
+        },
+        "docs_src/query_params_str_validations/tutorial003_an_py310.py": {
+            "rationale": "The exact source "
+            "example declares "
+            "an optional query "
+            "with "
+            "3-to-50-character "
+            "bounds. The "
+            "independent case "
+            "submits a value "
+            "below the minimum "
+            "through each "
+            "declaration and "
+            "observes "
+            "status/body plus "
+            "the selected "
+            "OpenAPI "
+            "parameter.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/query_params_str_validations/tutorial003_an_py310.py",
+                    "start_line": 8,
+                    "end_line": 11,
+                    "role": "documented query parameter declaration and route signature",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml",
+                    "case_ids": ["fastapi.docs-example.query-params-str-validations.tutorial003"],
+                    "observation_selectors": ["http.body.bytes", "http.status", "openapi.document"],
+                }
+            ],
+        },
+        "docs_src/query_params_str_validations/tutorial004_py310.py": {
+            "rationale": "The exact source "
+            "example adds the "
+            "anchored fixedquery "
+            "pattern to its "
+            "optional "
+            "3-to-50-character "
+            "query. The "
+            "independent case "
+            "submits a "
+            "length-valid pattern "
+            "mismatch and "
+            "observes validation "
+            "response plus the "
+            "selected OpenAPI "
+            "parameter.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/query_params_str_validations/tutorial004_py310.py",
+                    "start_line": 6,
+                    "end_line": 11,
+                    "role": "documented query parameter declaration and route signature",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/query-params-str-validations-doc-pattern-examples.yaml",
+                    "case_ids": ["fastapi.docs-example.query-params-str-validations.tutorial004"],
+                    "observation_selectors": ["http.body.bytes", "http.status", "openapi.document"],
+                }
+            ],
+        },
+        "docs_src/query_params_str_validations/tutorial004_an_py310.py": {
+            "rationale": "The exact source "
+            "example adds the "
+            "anchored "
+            "fixedquery "
+            "pattern to its "
+            "optional "
+            "3-to-50-character "
+            "query. The "
+            "independent case "
+            "submits a "
+            "length-valid "
+            "pattern mismatch "
+            "and observes "
+            "validation "
+            "response plus the "
+            "selected OpenAPI "
+            "parameter.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/query_params_str_validations/tutorial004_an_py310.py",
+                    "start_line": 8,
+                    "end_line": 13,
+                    "role": "documented query parameter declaration and route signature",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/query-params-str-validations-doc-pattern-examples.yaml",
+                    "case_ids": ["fastapi.docs-example.query-params-str-validations.tutorial004"],
+                    "observation_selectors": ["http.body.bytes", "http.status", "openapi.document"],
+                }
+            ],
+        },
+        "docs_src/query_params_str_validations/tutorial005_py310.py": {
+            "rationale": "The exact source "
+            "example declares a "
+            "query with a literal "
+            "default and minimum "
+            "length. The "
+            "independent case "
+            "omits the query to "
+            "observe default "
+            "selection and the "
+            "parameter schema; "
+            "the independent "
+            "default text differs "
+            "from the docs "
+            "example.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/query_params_str_validations/tutorial005_py310.py",
+                    "start_line": 6,
+                    "end_line": 7,
+                    "role": "documented query parameter declaration and route signature",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml",
+                    "case_ids": ["fastapi.docs-example.query-params-str-validations.tutorial005"],
+                    "observation_selectors": ["http.body.bytes", "http.status", "openapi.document"],
+                }
+            ],
+        },
+        "docs_src/query_params_str_validations/tutorial005_an_py310.py": {
+            "rationale": "The exact source "
+            "example declares "
+            "a query with a "
+            "literal default "
+            "and minimum "
+            "length. The "
+            "independent case "
+            "omits the query "
+            "to observe "
+            "default selection "
+            "and the parameter "
+            "schema; the "
+            "independent "
+            "default text "
+            "differs from the "
+            "docs example.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/query_params_str_validations/tutorial005_an_py310.py",
+                    "start_line": 8,
+                    "end_line": 9,
+                    "role": "documented query parameter declaration and route signature",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml",
+                    "case_ids": ["fastapi.docs-example.query-params-str-validations.tutorial005"],
+                    "observation_selectors": ["http.body.bytes", "http.status", "openapi.document"],
+                }
+            ],
+        },
+        "docs_src/query_params_str_validations/tutorial006_py310.py": {
+            "rationale": "The exact source "
+            "example declares a "
+            "required string "
+            "query with a minimum "
+            "length. The "
+            "independent case "
+            "omits it to observe "
+            "required-query "
+            "validation and the "
+            "selected OpenAPI "
+            "parameter.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/query_params_str_validations/tutorial006_py310.py",
+                    "start_line": 6,
+                    "end_line": 7,
+                    "role": "documented query parameter declaration and route signature",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml",
+                    "case_ids": ["fastapi.docs-example.query-params-str-validations.tutorial006"],
+                    "observation_selectors": ["http.body.bytes", "http.status", "openapi.document"],
+                }
+            ],
+        },
+        "docs_src/query_params_str_validations/tutorial006_an_py310.py": {
+            "rationale": "The exact source "
+            "example declares "
+            "a required string "
+            "query with a "
+            "minimum length. "
+            "The independent "
+            "case omits it to "
+            "observe "
+            "required-query "
+            "validation and "
+            "the selected "
+            "OpenAPI "
+            "parameter.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/query_params_str_validations/tutorial006_an_py310.py",
+                    "start_line": 8,
+                    "end_line": 9,
+                    "role": "documented query parameter declaration and route signature",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml",
+                    "case_ids": ["fastapi.docs-example.query-params-str-validations.tutorial006"],
+                    "observation_selectors": ["http.body.bytes", "http.status", "openapi.document"],
+                }
+            ],
+        },
+        "docs_src/query_params_str_validations/tutorial006c_py310.py": {
+            "rationale": "The exact source "
+            "example declares a "
+            "nullable-typed "
+            "query without a "
+            "default, so the "
+            "request still "
+            "requires it, with a "
+            "minimum length. The "
+            "independent case "
+            "observes that "
+            "missing-value "
+            "behavior and the "
+            "selected OpenAPI "
+            "parameter.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/query_params_str_validations/tutorial006c_py310.py",
+                    "start_line": 6,
+                    "end_line": 7,
+                    "role": "documented query parameter declaration and route signature",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml",
+                    "case_ids": ["fastapi.docs-example.query-params-str-validations.tutorial006c"],
+                    "observation_selectors": ["http.body.bytes", "http.status", "openapi.document"],
+                }
+            ],
+        },
+        "docs_src/query_params_str_validations/tutorial006c_an_py310.py": {
+            "rationale": "The exact source "
+            "example declares "
+            "a nullable-typed "
+            "query without a "
+            "default, so the "
+            "request still "
+            "requires it, "
+            "with a minimum "
+            "length. The "
+            "independent case "
+            "observes that "
+            "missing-value "
+            "behavior and the "
+            "selected OpenAPI "
+            "parameter.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/query_params_str_validations/tutorial006c_an_py310.py",
+                    "start_line": 8,
+                    "end_line": 9,
+                    "role": "documented query parameter declaration and route signature",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml",
+                    "case_ids": ["fastapi.docs-example.query-params-str-validations.tutorial006c"],
+                    "observation_selectors": ["http.body.bytes", "http.status", "openapi.document"],
+                }
+            ],
+        },
+        "docs_src/query_params_str_validations/tutorial007_py310.py": {
+            "rationale": "The exact source "
+            "example adds title "
+            "metadata and a "
+            "minimum length to an "
+            "optional query. The "
+            "independent case "
+            "submits a too-short "
+            "value and selects "
+            "the generated "
+            "parameter schema; "
+            "its title text and "
+            "response object are "
+            "independently "
+            "chosen.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/query_params_str_validations/tutorial007_py310.py",
+                    "start_line": 6,
+                    "end_line": 9,
+                    "role": "documented query parameter declaration and route signature",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/query-params-str-validations-doc-title-description-examples.yaml",
+                    "case_ids": ["fastapi.docs-example.query-params-str-validations.tutorial007"],
+                    "observation_selectors": ["http.body.bytes", "http.status", "openapi.document"],
+                }
+            ],
+        },
+        "docs_src/query_params_str_validations/tutorial007_an_py310.py": {
+            "rationale": "The exact source "
+            "example adds "
+            "title metadata "
+            "and a minimum "
+            "length to an "
+            "optional query. "
+            "The independent "
+            "case submits a "
+            "too-short value "
+            "and selects the "
+            "generated "
+            "parameter schema; "
+            "its title text "
+            "and response "
+            "object are "
+            "independently "
+            "chosen.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/query_params_str_validations/tutorial007_an_py310.py",
+                    "start_line": 8,
+                    "end_line": 11,
+                    "role": "documented query parameter declaration and route signature",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/query-params-str-validations-doc-title-description-examples.yaml",
+                    "case_ids": ["fastapi.docs-example.query-params-str-validations.tutorial007"],
+                    "observation_selectors": ["http.body.bytes", "http.status", "openapi.document"],
+                }
+            ],
+        },
+        "docs_src/query_params_str_validations/tutorial008_py310.py": {
+            "rationale": "The exact source "
+            "example adds title, "
+            "description, and a "
+            "minimum length to an "
+            "optional query. The "
+            "independent case "
+            "submits a too-short "
+            "value and selects "
+            "the generated "
+            "parameter schema "
+            "using independent "
+            "metadata text.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/query_params_str_validations/tutorial008_py310.py",
+                    "start_line": 6,
+                    "end_line": 14,
+                    "role": "documented query parameter declaration and route signature",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/query-params-str-validations-doc-title-description-examples.yaml",
+                    "case_ids": ["fastapi.docs-example.query-params-str-validations.tutorial008"],
+                    "observation_selectors": ["http.body.bytes", "http.status", "openapi.document"],
+                }
+            ],
+        },
+        "docs_src/query_params_str_validations/tutorial008_an_py310.py": {
+            "rationale": "The exact source "
+            "example adds "
+            "title, "
+            "description, and "
+            "a minimum length "
+            "to an optional "
+            "query. The "
+            "independent case "
+            "submits a "
+            "too-short value "
+            "and selects the "
+            "generated "
+            "parameter schema "
+            "using independent "
+            "metadata text.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/query_params_str_validations/tutorial008_an_py310.py",
+                    "start_line": 8,
+                    "end_line": 18,
+                    "role": "documented query parameter declaration and route signature",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/query-params-str-validations-doc-title-description-examples.yaml",
+                    "case_ids": ["fastapi.docs-example.query-params-str-validations.tutorial008"],
+                    "observation_selectors": ["http.body.bytes", "http.status", "openapi.document"],
+                }
+            ],
+        },
+        "docs_src/query_params_str_validations/tutorial009_py310.py": {
+            "rationale": "The exact source "
+            "example binds a "
+            "Python argument "
+            "through the "
+            "item-query alias. "
+            "The independent case "
+            "supplies that alias "
+            "and selects its "
+            "generated parameter "
+            "schema; its response "
+            "object is an "
+            "independent echo.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/query_params_str_validations/tutorial009_py310.py",
+                    "start_line": 6,
+                    "end_line": 7,
+                    "role": "documented query parameter declaration and route signature",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml",
+                    "case_ids": ["fastapi.docs-example.query-params-str-validations.tutorial009"],
+                    "observation_selectors": ["http.body.bytes", "http.status", "openapi.document"],
+                }
+            ],
+        },
+        "docs_src/query_params_str_validations/tutorial009_an_py310.py": {
+            "rationale": "The exact source "
+            "example binds a "
+            "Python argument "
+            "through the "
+            "item-query alias. "
+            "The independent "
+            "case supplies "
+            "that alias and "
+            "selects its "
+            "generated "
+            "parameter schema; "
+            "its response "
+            "object is an "
+            "independent echo.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/query_params_str_validations/tutorial009_an_py310.py",
+                    "start_line": 8,
+                    "end_line": 9,
+                    "role": "documented query parameter declaration and route signature",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml",
+                    "case_ids": ["fastapi.docs-example.query-params-str-validations.tutorial009"],
+                    "observation_selectors": ["http.body.bytes", "http.status", "openapi.document"],
+                }
+            ],
+        },
+        "docs_src/query_params_str_validations/tutorial010_py310.py": {
+            "rationale": "The exact source "
+            "example combines the "
+            "item-query alias, "
+            "title/description, "
+            "bounds, pattern, and "
+            "deprecated metadata. "
+            "The independent case "
+            "submits an aliased "
+            "pattern mismatch and "
+            "selects the "
+            "generated parameter "
+            "schema; descriptive "
+            "text and response "
+            "object are "
+            "independent.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/query_params_str_validations/tutorial010_py310.py",
+                    "start_line": 6,
+                    "end_line": 18,
+                    "role": "documented query parameter declaration and route signature",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/query-params-str-validations-doc-pattern-examples.yaml",
+                    "case_ids": ["fastapi.docs-example.query-params-str-validations.tutorial010"],
+                    "observation_selectors": ["http.body.bytes", "http.status", "openapi.document"],
+                }
+            ],
+        },
+        "docs_src/query_params_str_validations/tutorial010_an_py310.py": {
+            "rationale": "The exact source "
+            "example combines "
+            "the item-query "
+            "alias, "
+            "title/description, "
+            "bounds, pattern, "
+            "and deprecated "
+            "metadata. The "
+            "independent case "
+            "submits an "
+            "aliased pattern "
+            "mismatch and "
+            "selects the "
+            "generated "
+            "parameter schema; "
+            "descriptive text "
+            "and response "
+            "object are "
+            "independent.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/query_params_str_validations/tutorial010_an_py310.py",
+                    "start_line": 8,
+                    "end_line": 22,
+                    "role": "documented query parameter declaration and route signature",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/query-params-str-validations-doc-pattern-examples.yaml",
+                    "case_ids": ["fastapi.docs-example.query-params-str-validations.tutorial010"],
+                    "observation_selectors": ["http.body.bytes", "http.status", "openapi.document"],
+                }
+            ],
+        },
+        "docs_src/query_params_str_validations/tutorial011_py310.py": {
+            "rationale": "The exact source "
+            "example declares an "
+            "optional list-valued "
+            "query. The "
+            "independent case "
+            "sends repeated query "
+            "keys to exercise "
+            "list extraction and "
+            "selects the "
+            "generated parameter "
+            "schema; response "
+            "formatting is an "
+            "independent echo.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/query_params_str_validations/tutorial011_py310.py",
+                    "start_line": 6,
+                    "end_line": 7,
+                    "role": "documented query parameter declaration and route signature",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml",
+                    "case_ids": ["fastapi.docs-example.query-params-str-validations.tutorial011"],
+                    "observation_selectors": ["http.body.bytes", "http.status", "openapi.document"],
+                }
+            ],
+        },
+        "docs_src/query_params_str_validations/tutorial011_an_py310.py": {
+            "rationale": "The exact source "
+            "example declares "
+            "an optional "
+            "list-valued "
+            "query. The "
+            "independent case "
+            "sends repeated "
+            "query keys to "
+            "exercise list "
+            "extraction and "
+            "selects the "
+            "generated "
+            "parameter schema; "
+            "response "
+            "formatting is an "
+            "independent echo.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/query_params_str_validations/tutorial011_an_py310.py",
+                    "start_line": 8,
+                    "end_line": 9,
+                    "role": "documented query parameter declaration and route signature",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml",
+                    "case_ids": ["fastapi.docs-example.query-params-str-validations.tutorial011"],
+                    "observation_selectors": ["http.body.bytes", "http.status", "openapi.document"],
+                }
+            ],
+        },
+        "docs_src/query_params_str_validations/tutorial012_py310.py": {
+            "rationale": "The exact source "
+            "example declares a "
+            "list-valued query "
+            "with a default list. "
+            "The independent case "
+            "observes both the "
+            "omitted-query "
+            "default and "
+            "repeated-key list "
+            "extraction, along "
+            "with the generated "
+            "parameter schema; "
+            "the default values "
+            "differ from the docs "
+            "example.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/query_params_str_validations/tutorial012_py310.py",
+                    "start_line": 6,
+                    "end_line": 7,
+                    "role": "documented query parameter declaration and route signature",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml",
+                    "case_ids": ["fastapi.docs-example.query-params-str-validations.tutorial012"],
+                    "observation_selectors": ["http.body.bytes", "http.status", "openapi.document"],
+                }
+            ],
+        },
+        "docs_src/query_params_str_validations/tutorial012_an_py310.py": {
+            "rationale": "The exact source "
+            "example declares "
+            "a list-valued "
+            "query with a "
+            "default list. The "
+            "independent case "
+            "observes both the "
+            "omitted-query "
+            "default and "
+            "repeated-key list "
+            "extraction, along "
+            "with the "
+            "generated "
+            "parameter schema; "
+            "the default "
+            "values differ "
+            "from the docs "
+            "example.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/query_params_str_validations/tutorial012_an_py310.py",
+                    "start_line": 8,
+                    "end_line": 9,
+                    "role": "documented query parameter declaration and route signature",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml",
+                    "case_ids": ["fastapi.docs-example.query-params-str-validations.tutorial012"],
+                    "observation_selectors": ["http.body.bytes", "http.status", "openapi.document"],
+                }
+            ],
+        },
+        "docs_src/query_params_str_validations/tutorial013_py310.py": {
+            "rationale": "The exact source "
+            "example declares a "
+            "bare list query with "
+            "an empty-list "
+            "default. The "
+            "independent case "
+            "observes the omitted "
+            "default and "
+            "repeated-key "
+            "extraction, plus its "
+            "generated parameter "
+            "schema.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/query_params_str_validations/tutorial013_py310.py",
+                    "start_line": 6,
+                    "end_line": 7,
+                    "role": "documented query parameter declaration and route signature",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml",
+                    "case_ids": ["fastapi.docs-example.query-params-str-validations.tutorial013"],
+                    "observation_selectors": ["http.body.bytes", "http.status", "openapi.document"],
+                }
+            ],
+        },
+        "docs_src/query_params_str_validations/tutorial013_an_py310.py": {
+            "rationale": "The exact source "
+            "example declares "
+            "a bare list query "
+            "with an "
+            "empty-list "
+            "default. The "
+            "independent case "
+            "observes the "
+            "omitted default "
+            "and repeated-key "
+            "extraction, plus "
+            "its generated "
+            "parameter schema.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/query_params_str_validations/tutorial013_an_py310.py",
+                    "start_line": 8,
+                    "end_line": 9,
+                    "role": "documented query parameter declaration and route signature",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml",
+                    "case_ids": ["fastapi.docs-example.query-params-str-validations.tutorial013"],
+                    "observation_selectors": ["http.body.bytes", "http.status", "openapi.document"],
+                }
+            ],
+        },
+        "docs_src/query_params_str_validations/tutorial014_py310.py": {
+            "rationale": "The exact source "
+            "example declares an "
+            "optional query "
+            "excluded from "
+            "OpenAPI. The "
+            "independent case "
+            "supplies it and "
+            "selects the whole "
+            "operation object to "
+            "observe that the "
+            "parameter is absent "
+            "from the schema; the "
+            "docs branch’s "
+            "fallback text is "
+            "application-owned.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/query_params_str_validations/tutorial014_py310.py",
+                    "start_line": 6,
+                    "end_line": 9,
+                    "role": "documented query parameter declaration and route signature",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/query-params-str-validations-doc-exclude-schema-examples.yaml",
+                    "case_ids": ["fastapi.docs-example.query-params-str-validations.tutorial014"],
+                    "observation_selectors": ["http.body.bytes", "http.status", "openapi.document"],
+                }
+            ],
+        },
+        "docs_src/query_params_str_validations/tutorial014_an_py310.py": {
+            "rationale": "The exact source "
+            "example declares "
+            "an optional query "
+            "excluded from "
+            "OpenAPI. The "
+            "independent case "
+            "supplies it and "
+            "selects the whole "
+            "operation object "
+            "to observe that "
+            "the parameter is "
+            "absent from the "
+            "schema; the docs "
+            "branch’s fallback "
+            "text is "
+            "application-owned.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/query_params_str_validations/tutorial014_an_py310.py",
+                    "start_line": 8,
+                    "end_line": 11,
+                    "role": "documented query parameter declaration and route signature",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/query-params-str-validations-doc-exclude-schema-examples.yaml",
+                    "case_ids": ["fastapi.docs-example.query-params-str-validations.tutorial014"],
+                    "observation_selectors": ["http.body.bytes", "http.status", "openapi.document"],
+                }
+            ],
+        },
+        "docs_src/query_params_str_validations/tutorial015_an_py310.py": {
+            "rationale": "The exact source "
+            "example applies "
+            "an AfterValidator "
+            "requiring an "
+            "isbn- or imdb- "
+            "prefix. The "
+            "independent case "
+            "observes valid "
+            "and invalid "
+            "prefixes plus the "
+            "selected OpenAPI "
+            "projection. The "
+            "source app’s "
+            "omitted-ID "
+            "random.choice "
+            "branch and item "
+            "database lookup "
+            "are "
+            "application-owned "
+            "and excluded.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/query_params_str_validations/tutorial015_an_py310.py",
+                    "start_line": 16,
+                    "end_line": 19,
+                    "role": "documented AfterValidator prefix rule",
+                },
+                {
+                    "path": "docs_src/query_params_str_validations/tutorial015_an_py310.py",
+                    "start_line": 22,
+                    "end_line": 25,
+                    "role": "documented query parameter declaration and route signature",
+                },
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml",
+                    "case_ids": ["fastapi.docs-example.query-params-str-validations.tutorial015"],
+                    "observation_selectors": ["http.body.bytes", "http.status", "openapi.document"],
+                }
+            ],
+        },
+    }
+)
