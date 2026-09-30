@@ -8019,6 +8019,26 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             "relationship": relationship,
         }
 
+    def has_middleware_registration_source(coverage_item: dict[str, Any]) -> bool:
+        source_path = coverage_item.get("source_path")
+        if not isinstance(source_path, str):
+            return False
+        relative_path = Path(source_path)
+        if relative_path.is_absolute() or ".." in relative_path.parts:
+            return False
+        source = (fastapi_root / relative_path).resolve()
+        try:
+            source.relative_to(fastapi_root.resolve())
+        except ValueError:
+            return False
+        if not source.is_file():
+            return False
+        source_text = source.read_text(encoding="utf-8", errors="replace")
+        return bool(
+            re.search(r"\badd_middleware\s*\(", source_text)
+            or re.search(r"\.\s*middleware\s*\(", source_text)
+        )
+
     def starlette_contract_mappings_for(coverage_item: dict[str, Any]) -> list[dict[str, Any]]:
         source_path = str(coverage_item.get("source_path", "")).lower()
         mappings = []
@@ -8169,6 +8189,23 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                                     "starlette.middleware.gzip.GZipMiddleware.pathsend",
                                     "starlette.middleware.gzip.GZipMiddleware.existing-encoding-stream-bypass",
                                     "starlette.middleware.gzip.GZipMiddleware.partial-response-stream-bypass",
+                                ],
+                            ),
+                        ],
+                    )
+                elif has_middleware_registration_source(coverage_item):
+                    specs = (
+                        "shared Starlette middleware registration boundary",
+                        "The FastAPI source directly calls or documents middleware registration. Starlette-RS owns generic argument forwarding, insertion order, per-application stack caching, and the post-start error; FastAPI owns its middleware decorator, stack composition, and exception integration. The Rust-native sibling binding is currently unimplemented, so this link records ownership and a parity contract rather than support.",
+                        [
+                            (
+                                "starlette.applications.Starlette",
+                                "add_middleware",
+                                [
+                                    "starlette.applications.Starlette.add_middleware.positional-order-and-cache",
+                                    "starlette.applications.Starlette.add_middleware.factory-keyword-arguments",
+                                    "starlette.applications.Starlette.add_middleware.after-start-error",
+                                    "starlette.applications.Starlette.add_middleware.per-application-stack-cache",
                                 ],
                             ),
                         ],
