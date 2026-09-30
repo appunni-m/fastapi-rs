@@ -2710,6 +2710,18 @@
       ]
     },
     {
+      "id": "openapi-webhook-route-separation-source-review",
+      "input_path": "tests/fixtures/inputs/parity/openapi-webhook-route-separation-source-review.json",
+      "input_sha256": "c53e322ab5f7c5146a674e0e1b2d625b99d7e941754078d1a4d38fd41527a69b",
+      "recipe_path": "tests/fixtures/input-recipes/parity/openapi-webhook-route-separation-source-review.yaml",
+      "recipe_sha256": "4d4518db2c3aea3b3d3dcd4b51e4ce8acbc472bcbcd76f7341fab0b9aab296ef",
+      "workload_path": "tests/fixtures/workloads/openapi_webhook_route_separation_source_review.py",
+      "workload_sha256": "28c1093f4fcb5085262959a533358e9bbd7c2d58be5b950982c3182b60984675",
+      "case_ids": [
+        "fastapi.openapi.webhooks.event-identifier-is-not-route"
+      ]
+    },
+    {
       "id": "operation-signatures-upstream",
       "input_path": "tests/fixtures/inputs/parity/operation-signatures-upstream.json",
       "input_sha256": "f443a7d99f2daa521bdd36f34377497c06dc4a5618da74d286815a19858cc930",
@@ -5055,6 +5067,18 @@
       "case_ids": [
         "fastapi.response-directly.tutorial001.path-response",
         "fastapi.response-directly.tutorial001.openapi-document"
+      ]
+    },
+    {
+      "id": "response-model-data-filter-no-inheritance-review",
+      "input_path": "tests/fixtures/inputs/parity/response-model-data-filter-no-inheritance-review.json",
+      "input_sha256": "e03956449fcbad6f1cedf6df917cad4bbd8cd9987ad6fa74d3af8d2b276a6e76",
+      "recipe_path": "tests/fixtures/input-recipes/parity/response-model-data-filter-no-inheritance-review.yaml",
+      "recipe_sha256": "fec3bd4a62a50c51c51fd282a3117584be641e4661b22caabcf00ff1323cf23b",
+      "workload_path": "tests/fixtures/workloads/response_model_data_filter_no_inheritance_review.py",
+      "workload_sha256": "fb52e5e5f0cdf173420aa0cd747a453f084b9a17ecb5da32edbbbae389cb521b",
+      "case_ids": [
+        "fastapi.response-model-data-filter-no-inheritance.nested-model"
       ]
     },
     {
@@ -13921,6 +13945,36 @@
       ]
     },
     {
+      "source_item_id": "documented-page:advanced/openapi-webhooks.md",
+      "fixture_id": "fastapi.docs.advanced-openapi-webhooks",
+      "workflow_id": "openapi-webhook-route-separation-source-review",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.openapi.webhooks.event-identifier-is-not-route"
+      ],
+      "observation_selectors": [
+        "docs.response.status",
+        "http.status",
+        "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_webhooks_security.py",
+      "fixture_id": "fastapi.test.test-webhooks-security",
+      "workflow_id": "openapi-webhook-route-separation-source-review",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.openapi.webhooks.event-identifier-is-not-route"
+      ],
+      "observation_selectors": [
+        "docs.response.status",
+        "http.status",
+        "openapi.document"
+      ]
+    },
+    {
       "source_item_id": "upstream-test:tests/test_operations_signatures.py",
       "fixture_id": "fastapi.test.test-operations-signatures",
       "workflow_id": "operation-signatures-upstream",
@@ -19279,6 +19333,34 @@
         "http.headers.ordered",
         "http.status",
         "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/response-model.md",
+      "fixture_id": "fastapi.docs.tutorial-response-model",
+      "workflow_id": "response-model-data-filter-no-inheritance-review",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.response-model-data-filter-no-inheritance.nested-model"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_response_model_data_filter_no_inheritance.py",
+      "fixture_id": "fastapi.test.test-response-model-data-filter-no-inheritance",
+      "workflow_id": "response-model-data-filter-no-inheritance-review",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.response-model-data-filter-no-inheritance.nested-model"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
       ]
     },
     {

@@ -129,6 +129,9 @@ def _module(rationale: str, functions: dict[str, dict[str, Any]]) -> dict[str, A
 _RECIPE = "tests/fixtures/input-recipes/parity/response-model-tutorials-upstream.yaml"
 _REVIEW_RECIPE = "tests/fixtures/input-recipes/parity/response-model-tutorial-review.yaml"
 _PYDANTIC_RECIPE = "tests/fixtures/input-recipes/parity/pydantic-response-serialization-wave.yaml"
+_NO_INHERITANCE_RECIPE = (
+    "tests/fixtures/input-recipes/parity/response-model-data-filter-no-inheritance-review.yaml"
+)
 _JSON = ("http.status", "http.body.bytes")
 _RESPONSE = ("http.status", "http.headers.ordered", "http.body.bytes")
 _OPENAPI = ("openapi.document",)
@@ -1074,6 +1077,44 @@ RESPONSE_MODEL_TUTORIAL_TEST_REVIEW_MAPPINGS = {
                     ),
                     *_OPENAPI_RESPONSE,
                     *_TESTCLIENT,
+                ),
+            ),
+        },
+    ),
+    "tests/test_response_model_data_filter_no_inheritance.py": _module(
+        "The nested no-inheritance case checks that a declared response model filters fields from an unrelated returned model and its nested owner model.",
+        {
+            "test_filter_second_level_model": _function(
+                "tests/test_response_model_data_filter_no_inheritance.py",
+                68,
+                74,
+                ("response-serialization",),
+                _JSON,
+                "The declared PetOut/User response models project a nested PetDB/UserDB result even though neither returned class inherits from its declared counterpart.",
+                (
+                    _link(
+                        _NO_INHERITANCE_RECIPE,
+                        "fastapi.response-model-data-filter-no-inheritance.nested-model",
+                        ("filter-unrelated-nested-model-fields",),
+                        _JSON,
+                    ),
+                ),
+                "The source parses response.json(); this workflow observes status and exact body bytes, which additionally constrain JSON formatting and key order. The sample covers one nested model result, not the sibling list and top-level variants.",
+                (
+                    _source(
+                        "tests/test_response_model_data_filter_no_inheritance.py",
+                        8,
+                        55,
+                        "Unrelated returned and declared Pydantic model classes plus the nested response-model route",
+                    ),
+                    _source(
+                        "docs/en/docs/tutorial/response-model.md",
+                        135,
+                        165,
+                        "FastAPI documents response-model filtering and explains its treatment of model inheritance",
+                    ),
+                    *_ROUTING_SERIALIZATION,
+                    *_STARLETTE_RESPONSES,
                 ),
             ),
         },

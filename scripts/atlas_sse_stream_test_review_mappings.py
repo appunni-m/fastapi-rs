@@ -1,4 +1,4 @@
-"""Source-reviewed mappings for the SSE and stream-data tutorial tests.
+"""Source-reviewed mappings for SSE and streaming behavior tests.
 
 The test sources are pinned to FastAPI 0.141.1. Recipes contain independent
 ASGI requests, not copied pytest bodies or expected results. Generic response
@@ -106,6 +106,11 @@ def _module(rationale, docs_source, implementation_sources, functions):
 
 _HTTP = ["http.status", "http.headers.ordered", "http.body.bytes"]
 _OPENAPI = ["openapi.document"]
+_STREAM_CANCELLATION = [
+    "asgi.cancellation.cancelled_caught",
+    "http.status",
+    "http.headers.ordered",
+]
 
 _SSE_STREAM = _source(
     "fastapi/routing.py",
@@ -762,4 +767,130 @@ SSE_STREAM_TEST_REVIEW_MAPPINGS = {
             ),
         },
     ),
+    "tests/test_stream_cancellation.py": {
+        **_module(
+            "The module directly invokes the FastAPI ASGI app with infinite async streams and cancels the call from an outer timeout. It covers raw StreamingResponse and FastAPI JSON Lines generator paths without TestClient.",
+            _source(
+                "docs/en/docs/advanced/stream-data.md",
+                21,
+                28,
+                "A StreamingResponse route yields chunks that FastAPI passes through without JSON conversion",
+            ),
+            [
+                _source(
+                    "docs/en/docs/advanced/custom-response.md",
+                    180,
+                    194,
+                    "The documentation explains cancellation checkpoints for async streams and recommends FastAPI's stream-data and JSON Lines patterns",
+                ),
+                _source(
+                    "fastapi/routing.py",
+                    656,
+                    662,
+                    "FastAPI inserts a cancellation checkpoint after each async JSON Lines item",
+                ),
+                _source(
+                    "fastapi/routing.py",
+                    683,
+                    704,
+                    "FastAPI wraps raw async generator streams with a cancellation checkpoint",
+                ),
+                _source(
+                    "fastapi/responses.py",
+                    5,
+                    12,
+                    "FastAPI publicly re-exports StreamingResponse from Starlette",
+                ),
+                _source(
+                    "starlette/responses.py",
+                    242,
+                    280,
+                    "Starlette iterates streamed chunks and coordinates stream sending with disconnect listening for ASGI 2.0",
+                ),
+            ],
+            {
+                "test_raw_stream_cancellation": _function(
+                    ["response-serialization"],
+                    _STREAM_CANCELLATION,
+                    "The source's raw async generator has no internal await and is invoked through a direct ASGI call bounded by an external cancellation scope.",
+                    [
+                        _link(
+                            "tests/fixtures/input-recipes/parity/stream-cancellation.yaml",
+                            "fastapi.stream-cancellation.raw-async-generator",
+                            ["cancel-raw-stream"],
+                            _STREAM_CANCELLATION,
+                        )
+                    ],
+                    [
+                        _source(
+                            "tests/test_stream_cancellation.py",
+                            24,
+                            30,
+                            "The raw StreamingResponse route yields indefinitely without an internal await",
+                        ),
+                        _source(
+                            "tests/test_stream_cancellation.py",
+                            42,
+                            75,
+                            "The source directly calls the ASGI app, leaves receive pending, and cancels the call under a timeout",
+                        ),
+                        _source(
+                            "tests/test_stream_cancellation.py",
+                            78,
+                            83,
+                            "The source asserts that cancellation returns instead of hanging",
+                        ),
+                    ],
+                    "The upstream test asserts only that the call returns within three seconds. The independent recipe cancels after 0.05 seconds and observes response status, ordered headers, and the cancellation outcome; it does not observe stream bytes, individual yields, finite completion, an http.disconnect event, backpressure, or network-client behavior. Generic StreamingResponse transport belongs to Starlette 1.6.0.",
+                )
+                | {
+                    "stimulus_notes": "Independent direct-ASGI cancellation input: tests/fixtures/input-recipes/parity/stream-cancellation.yaml::fastapi.stream-cancellation.raw-async-generator (action cancel-raw-stream). The recipe records no expected output and observes only response status, headers, and the outer cancellation outcome."
+                },
+                "test_jsonl_stream_cancellation": _function(
+                    ["response-serialization"],
+                    _STREAM_CANCELLATION,
+                    "The source's async JSON Lines generator has no internal await and is invoked through the same direct ASGI timeout harness.",
+                    [
+                        _link(
+                            "tests/fixtures/input-recipes/parity/stream-cancellation.yaml",
+                            "fastapi.stream-cancellation.jsonl-async-generator",
+                            ["cancel-jsonl-stream"],
+                            _STREAM_CANCELLATION,
+                        )
+                    ],
+                    [
+                        _source(
+                            "tests/test_stream_cancellation.py",
+                            33,
+                            39,
+                            "The JSON Lines route yields integer items indefinitely without an internal await",
+                        ),
+                        _source(
+                            "tests/test_stream_cancellation.py",
+                            42,
+                            75,
+                            "The source directly calls the ASGI app, leaves receive pending, and cancels the call under a timeout",
+                        ),
+                        _source(
+                            "tests/test_stream_cancellation.py",
+                            86,
+                            89,
+                            "The source asserts that JSON Lines cancellation returns instead of hanging",
+                        ),
+                        _source(
+                            "docs/en/docs/tutorial/stream-json-lines.md",
+                            75,
+                            85,
+                            "The JSON Lines documentation describes async generator routes and streamed serialization",
+                        ),
+                    ],
+                    "The upstream test asserts only that the call returns within three seconds. The independent recipe cancels after 0.05 seconds and observes response status, ordered headers, and the cancellation outcome; it does not observe stream bytes, individual yields, finite completion, an http.disconnect event, backpressure, or network-client behavior. Generic StreamingResponse transport belongs to Starlette 1.6.0.",
+                )
+                | {
+                    "stimulus_notes": "Independent direct-ASGI cancellation input: tests/fixtures/input-recipes/parity/stream-cancellation.yaml::fastapi.stream-cancellation.jsonl-async-generator (action cancel-jsonl-stream). The recipe records no expected output and observes only response status, headers, and the outer cancellation outcome."
+                },
+            },
+        ),
+        "stimulus_notes": "Two independent direct-ASGI workflows exercise FastAPI's raw and JSON Lines async generator routes with an outer cancellation timeout. They record no expected output. Starlette 1.6.0 owns generic StreamingResponse send and disconnect mechanics; the recipes do not model TestClient, network transport, body bytes, stream completion, chunk boundaries, or backpressure.",
+    },
 }

@@ -1,0 +1,82 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/openapi_webhook_route_separation_source_review.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.openapi.webhooks.event-identifier-is-not-route
+  actions:
+  - action_id: request-event-identifier-as-inbound-path
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /catalog-rebuilt
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"snapshot_id":"snap-73","item_count":12}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+  - action_id: inspect-separate-path-and-webhook-collections
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /paths
+      - /webhooks/catalog-rebuilt
+      comparison: exact
+  source_evidence:
+  - path: tests/test_webhooks_security.py
+    kind: upstream_test
+  - path: docs/en/docs/advanced/openapi-webhooks.md
+    kind: upstream_documentation

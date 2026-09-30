@@ -37,6 +37,9 @@ _OPENAPI_SCHEMAS = "tests/fixtures/input-recipes/parity/openapi-schemas.yaml"
 _OPENAPI_OPERATIONS = "tests/fixtures/input-recipes/parity/openapi-operations.yaml"
 _SECURITY_RECIPE = "tests/fixtures/input-recipes/parity/security_oauth_openapi_upstream.yaml"
 _WEBHOOKS_RECIPE = "tests/fixtures/input-recipes/parity/webhooks-security.yaml"
+_WEBHOOK_ROUTE_SEPARATION_RECIPE = (
+    "tests/fixtures/input-recipes/parity/openapi-webhook-route-separation-source-review.yaml"
+)
 _EXAMPLES_RECIPE = (
     "tests/fixtures/input-recipes/parity/openapi-parameter-examples-source-review.yaml"
 )
@@ -186,6 +189,12 @@ _FASTAPI_WEBHOOK_REGISTRATION = _source(
     948,
     "FastAPI exposes a dedicated APIRouter for OpenAPI-only webhook operations",
 )
+_FASTAPI_APP_ROUTER = _source(
+    "fastapi/applications.py",
+    984,
+    999,
+    "FastAPI constructs the request router separately from its documentation-only webhook router",
+)
 _FASTAPI_ROUTE_OPENAPI_EXTRA = _source(
     "fastapi/routing.py",
     1188,
@@ -285,6 +294,16 @@ _EXAMPLES_PARAMETER_OPENAPI = _workflow(
     ["inspect-parameter-examples"],
     ["http.status", "openapi.document", "openapi.paths", "openapi.request_schema"],
     "Selected requestBody and parameter pointers for Body, Path, Query, Header, and Cookie examples.",
+)
+_WEBHOOK_ROUTE_SEPARATION = _workflow(
+    _WEBHOOK_ROUTE_SEPARATION_RECIPE,
+    "fastapi.openapi.webhooks.event-identifier-is-not-route",
+    [
+        "request-event-identifier-as-inbound-path",
+        "inspect-separate-path-and-webhook-collections",
+    ],
+    ["http.status", "openapi.document", "openapi.paths"],
+    "Probe the named webhook identifier as an inbound URL and inspect its separate OpenAPI webhook entry and path collection.",
 )
 
 
@@ -802,19 +821,29 @@ OPENAPI_EXAMPLES_SECURITY_SOURCE_REVIEW = {
                                 "openapi.security",
                             ],
                             "Selected webhook requestBody, operation security, and HTTPBearer component pointers.",
-                        )
+                        ),
+                        _WEBHOOK_ROUTE_SEPARATION,
                     ],
                     rationale=(
-                        "The existing input registers a named webhook with a Pydantic request model and an HTTPBearer dependency, then selects its webhook operation, request body, and security components."
+                        "The existing input registers a named webhook with a Pydantic request model and an HTTPBearer dependency, then selects its webhook operation, request body, and security components. A second independent input checks the documented distinction between webhook event identifiers and routable paths."
                     ),
                     contract_gate=(
-                        "The workflow selects requestBody/security pointers rather than the source's full OpenAPI document or Subscription field definitions. FastAPI owns webhook route inclusion/security projection; Pydantic owns the referenced model schema and Starlette owns only generic HTTP transport."
+                        "The security workflow selects requestBody/security pointers rather than the source's full OpenAPI document or Subscription field definitions. The additional workflow samples one event identifier, its absence from OpenAPI paths, and generic HTTP dispatch for that URL; it does not cover webhook delivery or all HTTP methods. FastAPI owns webhook registration and OpenAPI projection, Pydantic owns the referenced model schema, and Starlette 1.6.0 owns generic route misses and HTTP transport."
                     ),
                     supporting_sources=(
                         _FASTAPI_WEBHOOK_REGISTRATION,
+                        _FASTAPI_APP_ROUTER,
                         _FASTAPI_OPENAPI_ENTRY,
                         _OPENAPI_PATHS_AND_SCHEMAS,
                         _OPENAPI_SECURITY,
+                        _source(
+                            "docs/en/docs/advanced/openapi-webhooks.md",
+                            33,
+                            47,
+                            "The documented webhook identifier belongs to OpenAPI; users configure the actual receiving URL separately.",
+                        ),
+                        _STARLETTE_ROUTE_MATCHING,
+                        _STARLETTE_ROUTER_DISPATCH,
                     ),
                 )
             },
