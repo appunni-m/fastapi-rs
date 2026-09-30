@@ -834,9 +834,9 @@ def validate_api_workflow_public_surface(
             ):
                 raise ContractError(f"manifest symbol has no source inventory refs: {symbol_id}")
             inventory_rows = _resolve_inventory_refs(inventory, source_refs)
-            if any(row.get("id") != symbol_id for row in inventory_rows):
+            if not any(row.get("id") == symbol_id for row in inventory_rows):
                 raise ContractError(
-                    "API definition evidence inventory identity differs from the manifest symbol: "
+                    "API definition evidence inventory refs do not resolve the manifest symbol: "
                     f"{symbol_id}"
                 )
             source_paths = {

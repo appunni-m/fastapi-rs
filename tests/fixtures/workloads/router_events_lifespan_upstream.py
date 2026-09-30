@@ -1,8 +1,8 @@
 """Independent lifecycle workload for FastAPI router and app behavior.
 
 FastAPI 0.141.1 declares Python >=3.10; parity execution uses the pinned CPython
-3.12.13 oracle profile. The workflow schema has no construction-warning observation,
-so warnings from deprecated ``on_event`` registration remain an explicit gap.
+3.12.13 oracle profile. The v4 workflow selects warning sidecars while constructing
+the legacy ``on_event`` app and running its lifespan and HTTP actions.
 """
 
 from __future__ import annotations

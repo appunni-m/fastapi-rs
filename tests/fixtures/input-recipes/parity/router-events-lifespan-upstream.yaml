@@ -1,6 +1,6 @@
 # FastAPI 0.141.1 requires Python >=3.10; the pinned oracle profile uses CPython 3.12.13.
-# The v3 workflow has no construction-warning selector, so deprecation warning capture is an explicit gap.
-schema: fastapi-rs/python-asgi-workflow@3
+# The v4 workflow captures warnings emitted by legacy on_event registration.
+schema: fastapi-rs/python-asgi-workflow@4
 workload:
   file: tests/fixtures/workloads/router_events_lifespan_upstream.py
   factory: create_app
@@ -43,9 +43,11 @@ cases:
     - exception_class
     - exception_message
     comparison: exact
+    capture_warnings: true
   actions:
   - action_id: lifespan
     kind: lifespan
+    capture_warnings: true
     events:
     - lifespan.startup
     - lifespan.shutdown
@@ -67,6 +69,7 @@ cases:
       comparison: ordered
   - action_id: request
     kind: http_request
+    capture_warnings: true
     scope:
       type: http
       asgi:

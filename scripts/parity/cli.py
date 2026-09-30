@@ -30,6 +30,7 @@ from scripts.parity.contract import (
     ROOT,
     WORKFLOW_SCHEMA_ID,
     WORKFLOW_SCHEMA_V3_ID,
+    WORKFLOW_SCHEMA_V4_ID,
     ContractError,
     load_workflow,
     read_json,
@@ -359,8 +360,12 @@ def oracle_command(args: argparse.Namespace) -> dict[str, Any]:
 
 def target_command(args: argparse.Namespace) -> dict[str, Any]:
     workflow, workflow_path, input_digest, workload_path = load_workflow(args.input)
-    if workflow["schema"] not in {WORKFLOW_SCHEMA_ID, WORKFLOW_SCHEMA_V3_ID}:
-        raise ContractError("target requires a Python/ASGI v2 or v3 workflow")
+    if workflow["schema"] not in {
+        WORKFLOW_SCHEMA_ID,
+        WORKFLOW_SCHEMA_V3_ID,
+        WORKFLOW_SCHEMA_V4_ID,
+    }:
+        raise ContractError("target requires a Python/ASGI v2, v3, or v4 workflow")
     python = args.python.absolute()
     if not python.is_file():
         raise ContractError(

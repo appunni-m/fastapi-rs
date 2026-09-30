@@ -134,7 +134,11 @@ def run_target(
             factory,
             TARGET_IMPORT_ROOT,
             supported_symbols,
-            allow_nonfinite_floats=workflow["schema"] == api_worker.WORKFLOW_SCHEMA_V2_ID,
+            allow_nonfinite_floats=workflow["schema"]
+            in {
+                api_worker.WORKFLOW_SCHEMA_V2_ID,
+                api_worker.WORKFLOW_SCHEMA_V3_ID,
+            },
         )
     )
     api_worker._validate_result_consistency(cases)

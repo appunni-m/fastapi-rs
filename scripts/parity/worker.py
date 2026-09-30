@@ -13,10 +13,12 @@ import importlib.util
 import inspect
 import json
 import platform
+import re
 import subprocess
 import sys
 import uuid
-from pathlib import Path
+import warnings
+from pathlib import Path, PurePosixPath
 from typing import Any
 
 from starlette.websockets import WebSocketDisconnect
@@ -24,8 +26,10 @@ from starlette.websockets import WebSocketDisconnect
 ROOT = Path(__file__).resolve().parents[2]
 WORKFLOW_SCHEMA_ID = "fastapi-rs/python-asgi-workflow@2"
 WORKFLOW_SCHEMA_V3_ID = "fastapi-rs/python-asgi-workflow@3"
+WORKFLOW_SCHEMA_V4_ID = "fastapi-rs/python-asgi-workflow@4"
 RESULT_SCHEMA_ID = "fastapi-rs/python-asgi-workflow-result@2"
 RESULT_SCHEMA_V3_ID = "fastapi-rs/python-asgi-workflow-result@3"
+RESULT_SCHEMA_V4_ID = "fastapi-rs/python-asgi-workflow-result@4"
 ORACLE_PROFILE_ID = "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13"
 ORACLE_PROFILE_PACKAGE_EXTENSIONS = {
     "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-standard-multipart-0.0.32": {
@@ -641,12 +645,84 @@ def _observe_lifespan(
     return result
 
 
+def _warning_filename(filename: str, package_roots: list[tuple[str, Path]]) -> str:
+    """Normalize warning paths to stable repository or package-relative names."""
+    warning_path = Path(filename)
+    resolved_path = warning_path.resolve()
+    for package_name, package_root in package_roots:
+        try:
+            package_relative = resolved_path.relative_to(package_root.resolve())
+        except ValueError:
+            continue
+        return PurePosixPath(package_name, *package_relative.parts).as_posix()
+
+    try:
+        repository_relative = resolved_path.relative_to(ROOT.resolve())
+    except ValueError:
+        pass
+    else:
+        return PurePosixPath(*repository_relative.parts).as_posix()
+
+    if not warning_path.is_absolute():
+        return PurePosixPath(*warning_path.parts).as_posix()
+    parts = resolved_path.parts
+    for marker in ("site-packages", "dist-packages"):
+        if marker in parts:
+            return PurePosixPath(*parts[parts.index(marker) + 1 :]).as_posix()
+    for index, part in enumerate(parts):
+        if re.fullmatch(r"python\d+\.\d+", part):
+            return PurePosixPath("python", *parts[index + 1 :]).as_posix()
+    return resolved_path.name
+
+
+def _warning_records(
+    emitted: list[warnings.WarningMessage], package_roots: list[tuple[str, Path]]
+) -> list[dict[str, Any]]:
+    records = []
+    for warning in emitted:
+        category = warning.category
+        records.append(
+            {
+                "category": f"{category.__module__}.{category.__qualname__}",
+                "message": str(warning.message),
+                "filename": _warning_filename(warning.filename, package_roots),
+                "lineno": warning.lineno,
+            }
+        )
+    return records
+
+
+async def _await_with_warning_capture(
+    awaitable: Any, emitted: list[warnings.WarningMessage]
+) -> Any:
+    """Await one phase while retaining warnings even when it raises."""
+    with warnings.catch_warnings(record=True) as captured:
+        warnings.simplefilter("always")
+        try:
+            return await awaitable
+        finally:
+            emitted.extend(captured)
+
+
+def _add_warning_sidecar(
+    result: dict[str, Any],
+    *,
+    selected: bool,
+    emitted: list[warnings.WarningMessage],
+    package_roots: list[tuple[str, Path]],
+) -> dict[str, Any]:
+    if selected:
+        result["warnings"] = _warning_records(emitted, package_roots)
+    return result
+
+
 async def _run_action_v3(
     action: dict[str, Any],
     app: Any,
     *,
     lifespan_state: dict[str, Any] | None = None,
     workload_trace: list[str],
+    warning_package_roots: list[tuple[str, Path]],
 ) -> dict[str, Any]:
     scope = _make_scope(action["scope"])
     if lifespan_state is not None:
@@ -659,19 +735,32 @@ async def _run_action_v3(
         observation["kind"] == "application_error" for observation in action["observations"]
     )
 
-    dispatch_error: Exception | None = None
-    try:
-        await app(scope, receive, _make_send(messages, event_trace))
-    except Exception as exc:
-        dispatch_error = None if _is_expected_websocket_disconnect(exc, scope, event_trace) else exc
+    async def dispatch_app() -> Exception | None:
+        try:
+            await app(scope, receive, _make_send(messages, event_trace))
+        except Exception as exc:
+            return None if _is_expected_websocket_disconnect(exc, scope, event_trace) else exc
+        return None
+
+    capture_warnings = action.get("capture_warnings", False)
+    emitted_warnings: list[warnings.WarningMessage] = []
+    if capture_warnings:
+        dispatch_error = await _await_with_warning_capture(dispatch_app(), emitted_warnings)
+    else:
+        dispatch_error = await dispatch_app()
 
     if dispatch_error is not None and not captures_application_error:
-        return {
-            "action_id": action["action_id"],
-            "status": "product_error",
-            "error": {"class": type(dispatch_error).__name__, "message": str(dispatch_error)},
-            "observations": [],
-        }
+        return _add_warning_sidecar(
+            {
+                "action_id": action["action_id"],
+                "status": "product_error",
+                "error": {"class": type(dispatch_error).__name__, "message": str(dispatch_error)},
+                "observations": [],
+            },
+            selected=capture_warnings,
+            emitted=emitted_warnings,
+            package_roots=warning_package_roots,
+        )
 
     try:
         qualified_error_class = None
@@ -695,17 +784,27 @@ async def _run_action_v3(
             include_selectors=True,
         )
     except Exception as exc:
-        return {
+        return _add_warning_sidecar(
+            {
+                "action_id": action["action_id"],
+                "status": "product_error",
+                "error": {"class": type(exc).__name__, "message": str(exc)},
+                "observations": [],
+            },
+            selected=capture_warnings,
+            emitted=emitted_warnings,
+            package_roots=warning_package_roots,
+        )
+    return _add_warning_sidecar(
+        {
             "action_id": action["action_id"],
-            "status": "product_error",
-            "error": {"class": type(exc).__name__, "message": str(exc)},
-            "observations": [],
-        }
-    return {
-        "action_id": action["action_id"],
-        "status": "completed",
-        "observations": observations,
-    }
+            "status": "completed",
+            "observations": observations,
+        },
+        selected=capture_warnings,
+        emitted=emitted_warnings,
+        package_roots=warning_package_roots,
+    )
 
 
 async def _run_lifespan_action_v3(
@@ -713,6 +812,7 @@ async def _run_lifespan_action_v3(
     app: Any,
     request_actions: list[dict[str, Any]],
     workload_trace: list[str],
+    warning_package_roots: list[tuple[str, Path]],
 ) -> tuple[dict[str, Any], dict[str, dict[str, Any]]]:
     """Run ASGI lifespan around request actions and always signal shutdown after startup."""
     incoming: asyncio.Queue[dict[str, Any]] = asyncio.Queue()
@@ -754,7 +854,16 @@ async def _run_lifespan_action_v3(
         "asgi": {"version": "3.0", "spec_version": "2.0"},
         "state": copy.deepcopy(action.get("initial_state", {})),
     }
-    application_task = asyncio.create_task(app(scope, receive, send))
+    capture_warnings = action.get("capture_warnings", False)
+    emitted_warnings: list[warnings.WarningMessage] = []
+
+    async def launch_application() -> asyncio.Task[Any]:
+        return asyncio.create_task(app(scope, receive, send))
+
+    if capture_warnings:
+        application_task = await _await_with_warning_capture(launch_application(), emitted_warnings)
+    else:
+        application_task = asyncio.create_task(app(scope, receive, send))
 
     async def exchange(stage_name: str, event_type: str) -> dict[str, Any] | None:
         nonlocal stage
@@ -804,7 +913,12 @@ async def _run_lifespan_action_v3(
         return response
 
     lifecycle_state: dict[str, Any] | None = {}
-    startup_response = await exchange("startup", "lifespan.startup")
+    if capture_warnings:
+        startup_response = await _await_with_warning_capture(
+            exchange("startup", "lifespan.startup"), emitted_warnings
+        )
+    else:
+        startup_response = await exchange("startup", "lifespan.startup")
     startup_succeeded = (
         startup_response is not None and startup_response.get("type") == "lifespan.startup.complete"
     )
@@ -826,20 +940,27 @@ async def _run_lifespan_action_v3(
                     app,
                     lifespan_state=lifecycle_state,
                     workload_trace=workload_trace,
+                    warning_package_roots=warning_package_roots,
                 )
         finally:
             # The same application and lifespan task stay live until request actions
             # finish. Cleanup executes even when a request action raises unexpectedly.
-            await exchange("shutdown", "lifespan.shutdown")
-            if not application_task.done():
-                try:
-                    await application_task
-                except Exception as exc:
-                    if id(exc) not in reported_exception_ids:
-                        reported_exception_ids.add(id(exc))
-                        application_errors.append(
-                            {"stage": "shutdown", **_qualified_exception(exc)}
-                        )
+            async def shutdown_and_wait() -> None:
+                await exchange("shutdown", "lifespan.shutdown")
+                if not application_task.done():
+                    try:
+                        await application_task
+                    except Exception as exc:
+                        if id(exc) not in reported_exception_ids:
+                            reported_exception_ids.add(id(exc))
+                            application_errors.append(
+                                {"stage": "shutdown", **_qualified_exception(exc)}
+                            )
+
+            if capture_warnings:
+                await _await_with_warning_capture(shutdown_and_wait(), emitted_warnings)
+            else:
+                await shutdown_and_wait()
     else:
         for request_action in request_actions:
             action_results[request_action["action_id"]] = {
@@ -848,33 +969,61 @@ async def _run_lifespan_action_v3(
                 "reason": "ASGI lifespan startup did not complete",
                 "observations": [],
             }
-        if not application_task.done():
-            application_task.cancel()
-        await asyncio.gather(application_task, return_exceptions=True)
+            if request_action.get("capture_warnings", False):
+                action_results[request_action["action_id"]]["warnings"] = []
 
-    lifespan_result = {
-        "action_id": action["action_id"],
-        "status": "completed",
-        "observations": _observe_lifespan(
-            action["observations"],
-            protocol_event_trace,
-            lifecycle_results,
-            application_errors,
-            workload_trace,
-        ),
-    }
+        async def cancel_application() -> None:
+            if not application_task.done():
+                application_task.cancel()
+            await asyncio.gather(application_task, return_exceptions=True)
+
+        if capture_warnings:
+            await _await_with_warning_capture(cancel_application(), emitted_warnings)
+        else:
+            await cancel_application()
+
+    lifespan_result = _add_warning_sidecar(
+        {
+            "action_id": action["action_id"],
+            "status": "completed",
+            "observations": _observe_lifespan(
+                action["observations"],
+                protocol_event_trace,
+                lifecycle_results,
+                application_errors,
+                workload_trace,
+            ),
+        },
+        selected=capture_warnings,
+        emitted=emitted_warnings,
+        package_roots=warning_package_roots,
+    )
     action_results[action["action_id"]] = lifespan_result
     return lifespan_result, action_results
 
 
-async def _run_case_v3(case: dict[str, Any], factory: Any) -> dict[str, Any]:
+async def _run_case_v3(
+    case: dict[str, Any],
+    factory: Any,
+    warning_package_roots: list[tuple[str, Path]],
+) -> dict[str, Any]:
     workload_trace: list[str] = []
-    try:
+    capture_construction_warnings = case["construction_observation"].get("capture_warnings", False)
+    construction_warnings: list[warnings.WarningMessage] = []
+
+    async def construct_app() -> Any:
         app = factory(copy.deepcopy(case["factory_input"]), workload_trace)
         if inspect.isawaitable(app):
             app = await app
         if not callable(app):
             raise TypeError("workload factory did not return an ASGI callable")
+        return app
+
+    try:
+        if capture_construction_warnings:
+            app = await _await_with_warning_capture(construct_app(), construction_warnings)
+        else:
+            app = await construct_app()
     except Exception as exc:
         error = _qualified_exception(exc)
         construction = {
@@ -886,13 +1035,24 @@ async def _run_case_v3(case: dict[str, Any], factory: Any) -> dict[str, Any]:
                 "exception_message": error["message"],
             },
         }
+        _add_warning_sidecar(
+            construction,
+            selected=capture_construction_warnings,
+            emitted=construction_warnings,
+            package_roots=warning_package_roots,
+        )
         action_results = [
-            {
-                "action_id": action["action_id"],
-                "status": "not_run",
-                "reason": "application construction failed",
-                "observations": [],
-            }
+            _add_warning_sidecar(
+                {
+                    "action_id": action["action_id"],
+                    "status": "not_run",
+                    "reason": "application construction failed",
+                    "observations": [],
+                },
+                selected=action.get("capture_warnings", False),
+                emitted=[],
+                package_roots=warning_package_roots,
+            )
             for action in case["actions"]
         ]
         return {
@@ -911,16 +1071,32 @@ async def _run_case_v3(case: dict[str, Any], factory: Any) -> dict[str, Any]:
             "exception_message": None,
         },
     }
+    _add_warning_sidecar(
+        construction,
+        selected=capture_construction_warnings,
+        emitted=construction_warnings,
+        package_roots=warning_package_roots,
+    )
     actions = case["actions"]
     if actions and actions[0]["kind"] == "lifespan":
         lifespan_action = actions[0]
         _, action_results = await _run_lifespan_action_v3(
-            app, lifespan_action, actions[1:], workload_trace
+            lifespan_action,
+            app,
+            actions[1:],
+            workload_trace,
+            warning_package_roots,
         )
         ordered_results = [action_results[action["action_id"]] for action in actions]
     else:
         ordered_results = [
-            await _run_action_v3(action, app, workload_trace=workload_trace) for action in actions
+            await _run_action_v3(
+                action,
+                app,
+                workload_trace=workload_trace,
+                warning_package_roots=warning_package_roots,
+            )
+            for action in actions
         ]
     return {
         "case_id": case["case_id"],
@@ -949,10 +1125,15 @@ async def _run_cases(workflow: dict[str, Any], factory: Any) -> list[dict[str, A
     return results
 
 
-async def _run_cases_v3(workflow: dict[str, Any], factory: Any) -> list[dict[str, Any]]:
+async def _run_cases_v3(
+    workflow: dict[str, Any],
+    factory: Any,
+    warning_package_roots: list[tuple[str, Path]] | None = None,
+) -> list[dict[str, Any]]:
+    package_roots = warning_package_roots or []
     results = []
     for case in workflow["cases"]:
-        results.append(await _run_case_v3(case, factory))
+        results.append(await _run_case_v3(case, factory, package_roots))
     return results
 
 
@@ -982,6 +1163,7 @@ def run_oracle(
     if not isinstance(workflow, dict) or workflow.get("schema") not in {
         WORKFLOW_SCHEMA_ID,
         WORKFLOW_SCHEMA_V3_ID,
+        WORKFLOW_SCHEMA_V4_ID,
     }:
         raise WorkerError("workflow schema identity changed after host-side validation")
     fastapi_root = fastapi_root.resolve()
@@ -996,9 +1178,18 @@ def run_oracle(
     started = dt.datetime.now(dt.UTC)
     identity = _oracle_identity(fastapi_root, starlette_root, profile)
     factory = _load_workload(workload_path, input_sha256, workflow["workload"]["factory"])
-    if workflow["schema"] == WORKFLOW_SCHEMA_V3_ID:
-        cases = asyncio.run(_run_cases_v3(workflow, factory))
-        result_schema_id = RESULT_SCHEMA_V3_ID
+    if workflow["schema"] in {WORKFLOW_SCHEMA_V3_ID, WORKFLOW_SCHEMA_V4_ID}:
+        warning_package_roots = (
+            [("fastapi", fastapi_root / "fastapi"), ("starlette", starlette_root / "starlette")]
+            if workflow["schema"] == WORKFLOW_SCHEMA_V4_ID
+            else []
+        )
+        cases = asyncio.run(_run_cases_v3(workflow, factory, warning_package_roots))
+        result_schema_id = (
+            RESULT_SCHEMA_V4_ID
+            if workflow["schema"] == WORKFLOW_SCHEMA_V4_ID
+            else RESULT_SCHEMA_V3_ID
+        )
     else:
         cases = asyncio.run(_run_cases(workflow, factory))
         result_schema_id = RESULT_SCHEMA_ID

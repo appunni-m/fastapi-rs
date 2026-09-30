@@ -9,8 +9,10 @@ from jsonschema import Draft202012Validator
 
 from scripts.build_parity_inputs import read_recipe
 from scripts.parity.contract import (
+    API_WORKFLOW_SCHEMA_V3_ID,
     ROOT,
     WORKFLOW_SCHEMA_V3_ID,
+    WORKFLOW_SCHEMA_V4_ID,
     ContractError,
     load_workflow,
     read_json,
@@ -29,6 +31,11 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
     selectors: set[str] = set()
     if "probes" in case:
         for probe in case["probes"]:
+            if (
+                workflow_schema == API_WORKFLOW_SCHEMA_V3_ID
+                and probe.get("capture_warnings") is True
+            ):
+                selectors.add("python.warnings")
             for observation in probe["observations"]:
                 if observation["kind"] == "python_return_value":
                     selectors.add("python.attribute_value")
@@ -40,11 +47,18 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
                     selectors.add("python.call_outcome")
         return selectors
 
-    if workflow_schema == WORKFLOW_SCHEMA_V3_ID:
+    if workflow_schema in {WORKFLOW_SCHEMA_V3_ID, WORKFLOW_SCHEMA_V4_ID}:
         selectors.update(
             f"construction.{selector}" for selector in case["construction_observation"]["selectors"]
         )
+    if (
+        workflow_schema == WORKFLOW_SCHEMA_V4_ID
+        and case.get("construction_observation", {}).get("capture_warnings") is True
+    ):
+        selectors.add("python.warnings")
     for action in case["actions"]:
+        if workflow_schema == WORKFLOW_SCHEMA_V4_ID and action.get("capture_warnings") is True:
+            selectors.add("warnings.category_message")
         if action["kind"] == "lifespan":
             selectors.update(
                 f"asgi.lifespan.{observation['selector']}" for observation in action["observations"]

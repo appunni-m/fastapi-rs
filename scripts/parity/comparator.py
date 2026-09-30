@@ -14,6 +14,8 @@ from scripts.parity.contract import (
     ContractError,
 )
 
+WORKFLOW_SCHEMA_V4_ID = "fastapi-rs/python-asgi-workflow@4"
+
 SHARED_ORACLE_PACKAGES = {
     "annotated-doc",
     "annotated-types",
@@ -361,6 +363,122 @@ def _compare_case_v3(
     return {"case_id": case_id, "outcome": "fail" if diffs else "pass", "diffs": diffs}
 
 
+def _compare_warning_sidecar(
+    phase_spec: dict[str, Any],
+    source_phase: dict[str, Any] | None,
+    target_phase: dict[str, Any] | None,
+    *,
+    phase_id: str,
+) -> list[dict[str, Any]]:
+    if source_phase is None or target_phase is None:
+        return []
+
+    selected = phase_spec.get("capture_warnings") is True
+    source_has_warnings = "warnings" in source_phase
+    target_has_warnings = "warnings" in target_phase
+    if not selected:
+        if source_has_warnings or target_has_warnings:
+            raise ComparisonError("warning sidecar was emitted for a phase that did not select it")
+        return []
+
+    source_warnings = source_phase.get("warnings")
+    target_warnings = target_phase.get("warnings")
+    if not isinstance(source_warnings, list) or not isinstance(target_warnings, list):
+        raise ComparisonError("selected warning sidecar is missing from a source or target phase")
+    if source_warnings == target_warnings:
+        return []
+    return [
+        {
+            "action_id": phase_id,
+            "path": "warnings",
+            "comparison": "ordered",
+            "source": source_warnings,
+            "target": target_warnings,
+        }
+    ]
+
+
+def _compare_case_v4(
+    case_spec: dict[str, Any],
+    source_case: dict[str, Any] | None,
+    target_case: dict[str, Any] | None,
+) -> dict[str, Any]:
+    case_id = case_spec["case_id"]
+    if source_case is None or target_case is None:
+        return {
+            "case_id": case_id,
+            "outcome": "not_run",
+            "reason": "a product result is missing this input case",
+            "diffs": [],
+        }
+
+    source_construction = {
+        key: value
+        for key, value in source_case["construction_observation"].items()
+        if key != "warnings"
+    }
+    target_construction = {
+        key: value
+        for key, value in target_case["construction_observation"].items()
+        if key != "warnings"
+    }
+    diffs = _compare_error(
+        source_construction,
+        target_construction,
+        "construction_observation",
+        "<construction>",
+    )
+    diffs.extend(
+        _compare_warning_sidecar(
+            case_spec["construction_observation"],
+            source_case["construction_observation"],
+            target_case["construction_observation"],
+            phase_id="<construction>",
+        )
+    )
+
+    source_actions = {action["action_id"]: action for action in source_case["actions"]}
+    target_actions = {action["action_id"]: action for action in target_case["actions"]}
+    expected_action_ids = [action["action_id"] for action in case_spec["actions"]]
+    if len(source_actions) != len(source_case["actions"]) or len(target_actions) != len(
+        target_case["actions"]
+    ):
+        raise ComparisonError(f"duplicate action result id in case {case_id}")
+    for action_spec in case_spec["actions"]:
+        action_id = action_spec["action_id"]
+        source_action = source_actions.get(action_id)
+        target_action = target_actions.get(action_id)
+        diffs.extend(
+            _compare_warning_sidecar(
+                action_spec,
+                source_action,
+                target_action,
+                phase_id=action_id,
+            )
+        )
+        diffs.extend(
+            _compare_action(
+                action_spec,
+                source_action,
+                target_action,
+                require_selector_match=True,
+            )
+        )
+    unexpected_source = set(source_actions) - set(expected_action_ids)
+    unexpected_target = set(target_actions) - set(expected_action_ids)
+    for action_id in sorted(unexpected_source | unexpected_target):
+        diffs.append(
+            {
+                "action_id": action_id,
+                "path": "unexpected_action",
+                "comparison": "exact",
+                "source": action_id in source_actions,
+                "target": action_id in target_actions,
+            }
+        )
+    return {"case_id": case_id, "outcome": "fail" if diffs else "pass", "diffs": diffs}
+
+
 def compare_workflow_results(
     *,
     workflow: dict[str, Any],
@@ -416,9 +534,12 @@ def compare_workflow_results(
     expected_case_ids = {case["case_id"] for case in workflow["cases"]}
     if set(source_cases) - expected_case_ids or set(target_cases) - expected_case_ids:
         raise ComparisonError("a result artifact contains a case absent from the input workflow")
-    compare_case = (
-        _compare_case_v3 if workflow["schema"] == WORKFLOW_SCHEMA_V3_ID else _compare_case
-    )
+    if workflow["schema"] == WORKFLOW_SCHEMA_V4_ID:
+        compare_case = _compare_case_v4
+    elif workflow["schema"] == WORKFLOW_SCHEMA_V3_ID:
+        compare_case = _compare_case_v3
+    else:
+        compare_case = _compare_case
     case_results = [
         compare_case(case, source_cases.get(case["case_id"]), target_cases.get(case["case_id"]))
         for case in workflow["cases"]

@@ -167,7 +167,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@2
-    sha256: 07493132cfc6586c1719c7b4c974ed68347c1a042367c6053f7f661e4203cfb3
+    sha256: c9ac5eeaa7d5be125dcc237f14c2c71e05a7c099f0b67af3d962f2109763dd3d
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -198,7 +198,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 3ac3a54e00f8b1ddd50b057ccd531e977b77e9fbce72e6c0bff1affb03ee8e88
+    sha256: 0c5b29113c3aceca0b6e72882481ff0002e502753073ec8033b0af48b85fd4da
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 596
@@ -207,7 +207,7 @@ source_artifacts:
   observation_selector_catalog:
     path: tests/fixtures/observation-selectors.json
     schema: fastapi-rs/observation-selector-catalog@1
-    sha256: f0c7cf9d7beb5ea6132853c549a8e270632065971c8bd8beb8441acd442a298f
+    sha256: a940e65d8c268586305ce0124a870b2f8e905c0d188ee6c43086a7d5119abb8c
     purpose: Exact projection semantics for the atlas and fixture selectors
     counts:
       selectors: 49
@@ -235,13 +235,13 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@1
-    sha256: bba89a9ebf7679bd270dc841954fda762f1f923ca26d780026deb02996e07854
+    sha256: 3ea0b603e3bd4ef29c8c3eab5edc3af8bb88e89e5d0e74a9fa6fb9a30c7bd7c2
     schema_path: tests/fixtures/schemas/materialized-input-index.schema.json
     schema_sha256: b0a2ec32c63dc82ec43cb4c5ffaf41590e951526de305865a24301ea42e947d2
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 450
-      cases: 1769
+      workflows: 451
+      cases: 1771
       partial_source_mappings: 1045
 
 contract_metadata:
@@ -365,7 +365,21 @@ unresolved:
     comparison_schema_path: tests/fixtures/schemas/python-asgi-comparison-v3.schema.json
     comparison_schema_sha256: 26d107e919e8aa276ffc29c20d6d1f58df8e8b1a158a25d3e0e018901a0cc8bc
     coverage: constructor observations, explicit HTTP/WebSocket ASGI actions, and lifespan startup/request/shutdown workflows
-    warning_capture: planned; no workflow selector observes Python warning category/message
+    warning_capture: absent from v3; v4 supplies per-phase Python warning capture
+  python_asgi_workflow_v4:
+    state: warning-aware-construction-and-actions; v1-v3-remain-supported
+    schema_id: fastapi-rs/python-asgi-workflow@4
+    schema_path: tests/fixtures/schemas/python-asgi-workflow-v4.schema.json
+    schema_sha256: 51afdf6dd28544876cf92cf4d66c4d0d69e87030b790dcc8fca0a97d48553902
+    result_schema_id: fastapi-rs/python-asgi-workflow-result@4
+    result_schema_path: tests/fixtures/schemas/python-asgi-workflow-result-v4.schema.json
+    result_schema_sha256: 07028d687b1ee71d2bb93a0cd9f57e14e3f963ad2d925f1ad902b128a60a442c
+    comparison_schema_id: fastapi-rs/python-asgi-comparison@4
+    comparison_schema_path: tests/fixtures/schemas/python-asgi-comparison-v4.schema.json
+    comparison_schema_sha256: 862b6bbdcab6bd00ffdc7bd402de5f33d361c7b0c391df67ca9b19746403d5ab
+    coverage: >-
+      Captures ordered warning records at selected app-construction, HTTP,
+      WebSocket, and lifespan phases, including error and not-run results.
   python_api_workflow:
     state: isolated-oracle-and-target-workers-and-exact-comparator-present; broader-public-api-parity-pending
     schema_id: fastapi-rs/python-api-workflow@1
@@ -408,6 +422,20 @@ unresolved:
     coverage: >-
       Adds explicit direct-call return-versus-exception outcomes and a lossless
       JSON-pointer sidecar for NaN and positive or negative infinity values.
+  python_api_workflow_v3:
+    state: warning-aware-probe-results; v1-and-v2-remain-supported
+    schema_id: fastapi-rs/python-api-workflow@3
+    schema_path: tests/fixtures/schemas/python-api-workflow-v3.schema.json
+    schema_sha256: 83738105baf605ccac8b30968f7afe27a6871983d028e232be1ab189609d92ec
+    result_schema_id: fastapi-rs/python-api-workflow-result@4
+    result_schema_path: tests/fixtures/schemas/python-api-workflow-result-v4.schema.json
+    result_schema_sha256: 3522f0c36a8a9736f202256303b7ef16a45dae152b5315910809e46e0687acd2
+    comparison_schema_id: fastapi-rs/python-api-comparison@3
+    comparison_schema_path: tests/fixtures/schemas/python-api-comparison-v3.schema.json
+    comparison_schema_sha256: f1e746d93339c6029fee9094bdd1ec527a7956192aac321c5c0cd3ef5da7be64
+    coverage: >-
+      Adds ordered warning category, exact message, stable filename, and line
+      observations on selected direct-call probes, including probes that raise.
   fixture_backlog_integrity:
     state: source-linked-designs-validated; incremental-materialization-indexed; full-backlog-pending
     source_artifacts: [compatibility_atlas, fixture_backlog, materialized_input_index]

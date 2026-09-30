@@ -12,8 +12,9 @@ import math
 import re
 import sys
 import uuid
+import warnings
 from collections.abc import Mapping
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Any
 
 from scripts.parity.worker import (
@@ -29,12 +30,15 @@ from scripts.parity.worker import (
 
 WORKFLOW_SCHEMA_ID = "fastapi-rs/python-api-workflow@1"
 WORKFLOW_SCHEMA_V2_ID = "fastapi-rs/python-api-workflow@2"
-WORKFLOW_SCHEMA_IDS = frozenset({WORKFLOW_SCHEMA_ID, WORKFLOW_SCHEMA_V2_ID})
+WORKFLOW_SCHEMA_V3_ID = "fastapi-rs/python-api-workflow@3"
+WORKFLOW_SCHEMA_IDS = frozenset({WORKFLOW_SCHEMA_ID, WORKFLOW_SCHEMA_V2_ID, WORKFLOW_SCHEMA_V3_ID})
 RESULT_SCHEMA_ID = "fastapi-rs/python-api-workflow-result@2"
 RESULT_SCHEMA_V3_ID = "fastapi-rs/python-api-workflow-result@3"
+RESULT_SCHEMA_V4_ID = "fastapi-rs/python-api-workflow-result@4"
 RESULT_SCHEMA_IDS_BY_WORKFLOW = {
     WORKFLOW_SCHEMA_ID: RESULT_SCHEMA_ID,
     WORKFLOW_SCHEMA_V2_ID: RESULT_SCHEMA_V3_ID,
+    WORKFLOW_SCHEMA_V3_ID: RESULT_SCHEMA_V4_ID,
 }
 MANIFEST_PATH = ROOT / "tests/fixtures/manifest.yaml"
 ATLAS_SCHEMA_ID = "fastapi-rs/compatibility-atlas@2"
@@ -59,6 +63,69 @@ def _error_record(error: Exception) -> dict[str, str]:
         "class": f"{error_type.__module__}.{error_type.__qualname__}",
         "message": str(error),
     }
+
+
+def _warning_filename(filename: str, fastapi_root: Path) -> str:
+    """Normalize warning paths to stable repository or package-relative names."""
+    warning_path = Path(filename)
+    resolved_path = warning_path.resolve()
+    package_root = (fastapi_root / "fastapi").resolve()
+    try:
+        package_relative = resolved_path.relative_to(package_root)
+    except ValueError:
+        pass
+    else:
+        return PurePosixPath("fastapi", *package_relative.parts).as_posix()
+
+    try:
+        repository_relative = resolved_path.relative_to(ROOT.resolve())
+    except ValueError:
+        pass
+    else:
+        return PurePosixPath(*repository_relative.parts).as_posix()
+
+    if not warning_path.is_absolute():
+        return PurePosixPath(*warning_path.parts).as_posix()
+    parts = resolved_path.parts
+    for marker in ("site-packages", "dist-packages"):
+        if marker in parts:
+            return PurePosixPath(*parts[parts.index(marker) + 1 :]).as_posix()
+    for index, part in enumerate(parts):
+        if re.fullmatch(r"python\d+\.\d+", part):
+            return PurePosixPath("python", *parts[index + 1 :]).as_posix()
+    return resolved_path.name
+
+
+def _warning_record(warning: warnings.WarningMessage, fastapi_root: Path) -> dict[str, Any]:
+    category = warning.category
+    return {
+        "category": f"{category.__module__}.{category.__qualname__}",
+        "message": str(warning.message),
+        "filename": _warning_filename(warning.filename, fastapi_root),
+        "lineno": warning.lineno,
+    }
+
+
+async def _invoke_public_callable(
+    function: Any,
+    args: list[Any] | tuple[Any, ...],
+    kwargs: dict[str, Any],
+    *,
+    capture_warnings: bool,
+    captured_warnings: list[dict[str, Any]],
+    fastapi_root: Path,
+) -> Any:
+    if not capture_warnings:
+        result = function(*args, **kwargs)
+        return await result if inspect.isawaitable(result) else result
+
+    with warnings.catch_warnings(record=True) as emitted:
+        warnings.simplefilter("always")
+        try:
+            result = function(*args, **kwargs)
+            return await result if inspect.isawaitable(result) else result
+        finally:
+            captured_warnings.extend(_warning_record(warning, fastapi_root) for warning in emitted)
 
 
 def _json_safe(value: Any) -> Any:
@@ -352,6 +419,8 @@ async def _run_probe(
     *,
     allow_nonfinite_floats: bool = False,
 ) -> dict[str, Any]:
+    capture_warnings = probe.get("capture_warnings") is True
+    captured_warnings: list[dict[str, Any]] = []
     try:
         attribute_value = None
         if "public_attribute" in probe:
@@ -380,19 +449,39 @@ async def _run_probe(
         call_outcome = None
         if has_return_value_observation:
             args, kwargs = _get_arguments(bundles, probe["argument_bundle"])
-            result = function(*args, **kwargs)
-            if inspect.isawaitable(result):
-                result = await result
+            result = await _invoke_public_callable(
+                function,
+                args,
+                kwargs,
+                capture_warnings=capture_warnings,
+                captured_warnings=captured_warnings,
+                fastapi_root=fastapi_root,
+            )
         elif has_call_outcome_observation:
             args, kwargs = _get_arguments(bundles, probe["argument_bundle"])
             try:
-                result = function(*args, **kwargs)
-                if inspect.isawaitable(result):
-                    result = await result
+                result = await _invoke_public_callable(
+                    function,
+                    args,
+                    kwargs,
+                    capture_warnings=capture_warnings,
+                    captured_warnings=captured_warnings,
+                    fastapi_root=fastapi_root,
+                )
             except Exception as exc:
                 call_outcome = {"status": "raised", "error": _error_record(exc)}
             else:
                 call_outcome = {"status": "returned"}
+        elif capture_warnings:
+            args, kwargs = _get_arguments(bundles, probe["argument_bundle"])
+            result = await _invoke_public_callable(
+                function,
+                args,
+                kwargs,
+                capture_warnings=True,
+                captured_warnings=captured_warnings,
+                fastapi_root=fastapi_root,
+            )
 
         observations = []
         for index, observation in enumerate(probe["observations"]):
@@ -417,16 +506,26 @@ async def _run_probe(
             else:
                 raise WorkerError(f"unsupported direct API observation: {observation['kind']}")
             observations.append({"index": index, "kind": observation["kind"], "values": values})
-        return {"probe_id": probe["probe_id"], "status": "completed", "observations": observations}
+        probe_result = {
+            "probe_id": probe["probe_id"],
+            "status": "completed",
+            "observations": observations,
+        }
+        if capture_warnings:
+            probe_result["warnings"] = captured_warnings
+        return probe_result
     except WorkerError:
         raise
     except Exception as exc:
-        return {
+        probe_result = {
             "probe_id": probe["probe_id"],
             "status": "product_error",
             "error": _error_record(exc),
             "observations": [],
         }
+        if capture_warnings:
+            probe_result["warnings"] = captured_warnings
+        return probe_result
 
 
 async def _run_case(
@@ -790,7 +889,8 @@ def run_oracle(
             factory,
             fastapi_root,
             supported_symbols,
-            allow_nonfinite_floats=workflow["schema"] == WORKFLOW_SCHEMA_V2_ID,
+            allow_nonfinite_floats=workflow["schema"]
+            in {WORKFLOW_SCHEMA_V2_ID, WORKFLOW_SCHEMA_V3_ID},
         )
     )
     _validate_result_consistency(cases)

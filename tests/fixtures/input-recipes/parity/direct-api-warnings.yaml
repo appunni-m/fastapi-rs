@@ -1,0 +1,46 @@
+schema: fastapi-rs/python-api-workflow@3
+workload:
+  file: tests/fixtures/workloads/direct_api_warnings.py
+  factory: create_argument_bundles
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.deprecation.query-example-warning
+  probes:
+  - probe_id: query-example
+    public_callable:
+      module: fastapi
+      attribute: Query
+    argument_bundle: query-example
+    capture_warnings: true
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence:
+  - path: tests/test_schema_extra_examples.py
+    kind: upstream_test
+    sha256: 2d65521abfc513ebafbe3ec72e27d7f2e0634ce52274fe8958e0b916a6c5a4fa
+  - path: fastapi/param_functions.py
+    kind: upstream_api_definition
+    sha256: e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc
+    symbol_id: fastapi.Query
+- case_id: fastapi.deprecation.query-regex-warning
+  probes:
+  - probe_id: query-regex
+    public_callable:
+      module: fastapi
+      attribute: Query
+    argument_bundle: query-regex
+    capture_warnings: true
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence:
+  - path: tests/test_regex_deprecated_params.py
+    kind: upstream_test
+    sha256: 002d2a8e97d40c665d159f187b4533f4b490173a3019a2bbf0225baa79f2ccb8
+  - path: fastapi/param_functions.py
+    kind: upstream_api_definition
+    sha256: e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc
+    symbol_id: fastapi.Query

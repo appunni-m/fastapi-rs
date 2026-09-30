@@ -70,9 +70,10 @@ TEST_REVIEW_MAPPINGS = {
             "http.status",
             "http.body.bytes",
             "python.warnings",
+            "warnings.category_message",
         ],
-        "rationale": "FastAPI app and included-router lifecycle callbacks are driven through the public ASGI lifespan protocol; TestClient behavior belongs to Starlette-RS, while on_event warning parity remains a separately tracked selector.",
-        "stimulus_notes": "Construct the app and nested routers from the input recipe, drive ASGI lifespan startup/request/shutdown, and record callback order and request-visible lifespan state. This does not claim TestClient.app_state or warning coverage.",
+        "rationale": "FastAPI app and included-router lifecycle callbacks are driven through the public ASGI lifespan protocol, and the legacy on_event case selects construction and action warning records. TestClient behavior belongs to Starlette-RS.",
+        "stimulus_notes": "Construct the app and nested routers from the input recipe, drive ASGI lifespan startup/request/shutdown, record callback order and request-visible lifespan state, and capture selected warnings from legacy on_event registration and actions. This does not claim TestClient.app_state.",
         "supporting_sources": [
             {
                 "path": "tests/test_router_events.py",
@@ -716,8 +717,8 @@ TEST_EXCLUSIONS = {
     ),
     "tests/test_deprecated_responses.py": (
         "The module exercises optional ORJSONResponse/UJSONResponse integrations through needs_orjson and "
-        "needs_ujson, neither dependency is in a selected locked oracle profile. Its deprecation assertions "
-        "also require exact warning capture, and warnings.category_message is still a planned selector."
+        "needs_ujson; neither dependency is in a selected locked oracle profile. Warning capture is now "
+        "supported, but these optional integrations remain unavailable in the selected profiles."
     ),
     "tests/test_stream_cancellation.py": (
         "Both cases stream from an infinite async generator and use anyio.move_on_after(3.0) to verify "

@@ -23,9 +23,11 @@ from urllib.parse import unquote, urlsplit
 from scripts.parity.worker import (
     RESULT_SCHEMA_ID,
     RESULT_SCHEMA_V3_ID,
+    RESULT_SCHEMA_V4_ID,
     ROOT,
     WORKFLOW_SCHEMA_ID,
     WORKFLOW_SCHEMA_V3_ID,
+    WORKFLOW_SCHEMA_V4_ID,
     WorkerError,
     _assert_clean_source_tree,
     _git_commit,
@@ -460,8 +462,12 @@ def run_target(
     if _sha256_file(workflow_path) != input_sha256:
         raise WorkerError("workflow input digest changed after host-side validation")
     workflow = _read_workflow(workflow_path)
-    if workflow["schema"] not in {WORKFLOW_SCHEMA_ID, WORKFLOW_SCHEMA_V3_ID}:
-        raise WorkerError("target worker accepts only Python/ASGI v2 and v3 workflows")
+    if workflow["schema"] not in {
+        WORKFLOW_SCHEMA_ID,
+        WORKFLOW_SCHEMA_V3_ID,
+        WORKFLOW_SCHEMA_V4_ID,
+    }:
+        raise WorkerError("target worker accepts only Python/ASGI v2, v3, and v4 workflows")
     workload_relative_path = workflow["workload"]["file"]
     if not isinstance(workload_relative_path, str):
         raise WorkerError("workflow workload file reference is malformed")
@@ -481,9 +487,21 @@ def run_target(
         target_profile=target_profile,
     )
     factory = _load_workload(resolved_workload, input_sha256, workflow["workload"]["factory"])
-    if workflow["schema"] == WORKFLOW_SCHEMA_V3_ID:
-        cases = asyncio.run(_run_cases_v3(workflow, factory))
-        result_schema_id = RESULT_SCHEMA_V3_ID
+    if workflow["schema"] in {WORKFLOW_SCHEMA_V3_ID, WORKFLOW_SCHEMA_V4_ID}:
+        warning_package_roots = (
+            [
+                ("fastapi", TARGET_PACKAGE_ROOT),
+                ("starlette", starlette_rs_source / STARLETTE_PACKAGE_RELATIVE_PATH),
+            ]
+            if workflow["schema"] == WORKFLOW_SCHEMA_V4_ID
+            else []
+        )
+        cases = asyncio.run(_run_cases_v3(workflow, factory, warning_package_roots))
+        result_schema_id = (
+            RESULT_SCHEMA_V4_ID
+            if workflow["schema"] == WORKFLOW_SCHEMA_V4_ID
+            else RESULT_SCHEMA_V3_ID
+        )
     else:
         cases = asyncio.run(_run_cases(workflow, factory))
         result_schema_id = RESULT_SCHEMA_ID

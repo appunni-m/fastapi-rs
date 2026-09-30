@@ -1468,6 +1468,33 @@
       ]
     },
     {
+      "id": "direct-api-warnings",
+      "input_path": "tests/fixtures/inputs/parity/direct-api-warnings.json",
+      "input_sha256": "2b3e4a4d5bf8d145bdf034a474790d53894872bee5c72071446cce3611c5cd18",
+      "recipe_path": "tests/fixtures/input-recipes/parity/direct-api-warnings.yaml",
+      "recipe_sha256": "18a42ff6f86c3b3f4c55f6d66f21f379c0a8c03a9dbebb1b7d1427e52bde66c5",
+      "workload_path": "tests/fixtures/workloads/direct_api_warnings.py",
+      "workload_sha256": "4a7d2446d3dd4893eb8eacb3ff97868ca3bccba1829b8cc01808525b4f2b9d11",
+      "case_ids": [
+        "fastapi.deprecation.query-example-warning",
+        "fastapi.deprecation.query-regex-warning"
+      ],
+      "api_definitions": [
+        {
+          "case_id": "fastapi.deprecation.query-example-warning",
+          "symbol_id": "fastapi.Query",
+          "path": "fastapi/param_functions.py",
+          "sha256": "e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc"
+        },
+        {
+          "case_id": "fastapi.deprecation.query-regex-warning",
+          "symbol_id": "fastapi.Query",
+          "path": "fastapi/param_functions.py",
+          "sha256": "e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc"
+        }
+      ]
+    },
+    {
       "id": "docs-async-handlers",
       "input_path": "tests/fixtures/inputs/parity/docs-async-handlers.json",
       "input_sha256": "679f8fbea62f99495607b87c426e9f52d956141d4e60d2e2e99d7e4c93eda701",
@@ -5326,11 +5353,11 @@
     {
       "id": "router-events-lifespan-upstream",
       "input_path": "tests/fixtures/inputs/parity/router-events-lifespan-upstream.json",
-      "input_sha256": "30ead153e14459d8199c6ffe8cb55182d107ea8646e94b4d8634402e16482673",
+      "input_sha256": "1c41a5b9ed8d64cca11dcfb432e6448ef20ecc44dfc7a1390fc49817ba2a7b47",
       "recipe_path": "tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml",
-      "recipe_sha256": "5da138156507fc6c84a2ad57b6925d5b5dd68ec29beb3d5333ee7e144443a56a",
+      "recipe_sha256": "735c85ed6a6c282db43c7aec3c04cf9bf6fcdf136f164b33920d10707a6a8320",
       "workload_path": "tests/fixtures/workloads/router_events_lifespan_upstream.py",
-      "workload_sha256": "a0abe210e7ee7e6ab20e0dde8a3098e0fd278b72806ff16831ed1a2366016546",
+      "workload_sha256": "7c44e28b80c90f47d913855048cef67827644c56b40c7d345837329d6060939b",
       "case_ids": [
         "fastapi.lifecycle.router-events-legacy",
         "fastapi.lifecycle.app-lifespan-state",
@@ -20438,7 +20465,7 @@
       "fixture_id": "fastapi.docs.advanced-events",
       "workflow_id": "router-events-lifespan-upstream",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 11 case(s); observes asgi.lifespan.application_errors, asgi.lifespan.event_order, asgi.lifespan.shutdown, asgi.lifespan.startup, asgi.lifespan.workload_trace, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 11 case(s); observes asgi.lifespan.application_errors, asgi.lifespan.event_order, asgi.lifespan.shutdown, asgi.lifespan.startup, asgi.lifespan.workload_trace, http.body.bytes, http.status, warnings.category_message. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.lifecycle.app-lifespan-state",
         "fastapi.lifecycle.async-generator-lifespan",
@@ -20459,7 +20486,8 @@
         "asgi.lifespan.startup",
         "asgi.lifespan.workload_trace",
         "http.body.bytes",
-        "http.status"
+        "http.status",
+        "warnings.category_message"
       ]
     },
     {
@@ -20467,7 +20495,7 @@
       "fixture_id": "fastapi.docs.advanced-testing-events",
       "workflow_id": "router-events-lifespan-upstream",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 10 case(s); observes asgi.lifespan.application_errors, asgi.lifespan.event_order, asgi.lifespan.shutdown, asgi.lifespan.startup, asgi.lifespan.workload_trace. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 10 case(s); observes asgi.lifespan.application_errors, asgi.lifespan.event_order, asgi.lifespan.shutdown, asgi.lifespan.startup, asgi.lifespan.workload_trace, warnings.category_message. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.lifecycle.app-lifespan-state",
         "fastapi.lifecycle.async-generator-lifespan",
@@ -20485,7 +20513,8 @@
         "asgi.lifespan.event_order",
         "asgi.lifespan.shutdown",
         "asgi.lifespan.startup",
-        "asgi.lifespan.workload_trace"
+        "asgi.lifespan.workload_trace",
+        "warnings.category_message"
       ]
     },
     {
@@ -20493,7 +20522,7 @@
       "fixture_id": "fastapi.test.test-router-events",
       "workflow_id": "router-events-lifespan-upstream",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 10 case(s); observes asgi.lifespan.application_errors, asgi.lifespan.event_order, asgi.lifespan.shutdown, asgi.lifespan.startup, asgi.lifespan.workload_trace, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 10 case(s); observes asgi.lifespan.application_errors, asgi.lifespan.event_order, asgi.lifespan.shutdown, asgi.lifespan.startup, asgi.lifespan.workload_trace, http.body.bytes, http.status, python.warnings, warnings.category_message. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.lifecycle.app-lifespan-state",
         "fastapi.lifecycle.async-generator-lifespan",
@@ -20513,7 +20542,9 @@
         "asgi.lifespan.startup",
         "asgi.lifespan.workload_trace",
         "http.body.bytes",
-        "http.status"
+        "http.status",
+        "python.warnings",
+        "warnings.category_message"
       ]
     },
     {

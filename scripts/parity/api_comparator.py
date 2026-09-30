@@ -14,6 +14,8 @@ from scripts.parity.contract import (
     ContractError,
 )
 
+WORKFLOW_SCHEMA_V3_ID = "fastapi-rs/python-api-workflow@3"
+
 
 def _diff(probe_id: str, path: str, source: Any, target: Any) -> dict[str, Any]:
     return {
@@ -148,6 +150,29 @@ def compare_api_workflow_results(
             base = f"/probes/{probe_id}"
             if source_status != target_status:
                 diffs.append(_diff(probe_id, f"{base}/status", source_status, target_status))
+            if workflow_schema_id == WORKFLOW_SCHEMA_V3_ID:
+                if probe_spec.get("capture_warnings") is True:
+                    source_warnings = source_probe.get("warnings")
+                    target_warnings = target_probe.get("warnings")
+                    if not isinstance(source_warnings, list) or not isinstance(
+                        target_warnings, list
+                    ):
+                        raise ContractError(
+                            f"direct API warning sidecars are missing: {case_id}/{probe_id}"
+                        )
+                    if not _json_exact_equal(source_warnings, target_warnings):
+                        diffs.append(
+                            _diff(
+                                probe_id,
+                                f"{base}/warnings",
+                                source_warnings,
+                                target_warnings,
+                            )
+                        )
+                elif "warnings" in source_probe or "warnings" in target_probe:
+                    raise ContractError(
+                        f"direct API warning sidecar was not selected: {case_id}/{probe_id}"
+                    )
             if source_status == "product_error" and target_status == "product_error":
                 if source_probe.get("error") != target_probe.get("error"):
                     diffs.append(
