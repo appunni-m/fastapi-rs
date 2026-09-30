@@ -1111,7 +1111,7 @@ impl PyFastApi {
             .into_iter()
             .map(|parameter| {
                 let title = if parameter.location == "header" {
-                    parameter.name.clone()
+                    title_case(&parameter.name).replace('_', " ")
                 } else {
                     title_case(&parameter.name.replace('_', " "))
                 };
