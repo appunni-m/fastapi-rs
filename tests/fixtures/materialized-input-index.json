@@ -1470,16 +1470,44 @@
     {
       "id": "direct-api-warnings",
       "input_path": "tests/fixtures/inputs/parity/direct-api-warnings.json",
-      "input_sha256": "2b3e4a4d5bf8d145bdf034a474790d53894872bee5c72071446cce3611c5cd18",
+      "input_sha256": "54399a24fbfa2d847eb2eb93ec1e8ce54c022a79ebc8d1bc63e4daf2e6ac19db",
       "recipe_path": "tests/fixtures/input-recipes/parity/direct-api-warnings.yaml",
-      "recipe_sha256": "18a42ff6f86c3b3f4c55f6d66f21f379c0a8c03a9dbebb1b7d1427e52bde66c5",
+      "recipe_sha256": "4ff4c0d49bed10ababa8e96ce75240e39a103129f9b83690b716f449735538c4",
       "workload_path": "tests/fixtures/workloads/direct_api_warnings.py",
-      "workload_sha256": "4a7d2446d3dd4893eb8eacb3ff97868ca3bccba1829b8cc01808525b4f2b9d11",
+      "workload_sha256": "5d24a9c9a8d66bb096105f157bbc86c1d83e0ccfa3fb7a09090ff384f1930125",
       "case_ids": [
         "fastapi.deprecation.query-example-warning",
-        "fastapi.deprecation.query-regex-warning"
+        "fastapi.deprecation.query-regex-warning",
+        "fastapi.deprecation.body-example-warning",
+        "fastapi.deprecation.path-example-warning",
+        "fastapi.deprecation.header-example-warning",
+        "fastapi.deprecation.cookie-example-warning"
       ],
       "api_definitions": [
+        {
+          "case_id": "fastapi.deprecation.body-example-warning",
+          "symbol_id": "fastapi.Body",
+          "path": "fastapi/param_functions.py",
+          "sha256": "e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc"
+        },
+        {
+          "case_id": "fastapi.deprecation.cookie-example-warning",
+          "symbol_id": "fastapi.Cookie",
+          "path": "fastapi/param_functions.py",
+          "sha256": "e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc"
+        },
+        {
+          "case_id": "fastapi.deprecation.header-example-warning",
+          "symbol_id": "fastapi.Header",
+          "path": "fastapi/param_functions.py",
+          "sha256": "e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc"
+        },
+        {
+          "case_id": "fastapi.deprecation.path-example-warning",
+          "symbol_id": "fastapi.Path",
+          "path": "fastapi/param_functions.py",
+          "sha256": "e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc"
+        },
         {
           "case_id": "fastapi.deprecation.query-example-warning",
           "symbol_id": "fastapi.Query",
@@ -6113,13 +6141,14 @@
     {
       "id": "sse",
       "input_path": "tests/fixtures/inputs/parity/sse.json",
-      "input_sha256": "2303d07365b85b189a998cf78f26bd8734cc00cefaa9c01e7c17ba75de486c83",
+      "input_sha256": "14a837d3e11f1882b97baf8963fce2d4d1106bb1e523c17b8dc604bbf629c0e2",
       "recipe_path": "tests/fixtures/input-recipes/parity/sse.yaml",
-      "recipe_sha256": "da762968b09539e594d17d8a1aee9c8a704f2d118fcac16ef38fcc2f50902b86",
+      "recipe_sha256": "69086f4c97a7954810e1f2de59bc29a94b84c903197e9916cde868e4e0f774a6",
       "workload_path": "tests/fixtures/workloads/sse.py",
-      "workload_sha256": "cd237fdc44f0eaa65a03609cce8df89b0cc8da83508a91ba9134900759ed4f34",
+      "workload_sha256": "b0ef4ef20b3e1dbcafec8004d020a1cbb0bd3e2acf787866c74393be4f534ce1",
       "case_ids": [
         "fastapi.test.test-sse.test-sse-events-with-fields",
+        "fastapi.test.test-sse.test-async-generator-with-model",
         "fastapi.test.test-sse.test-raw-data-sent-without-json-encoding"
       ]
     },
@@ -6248,9 +6277,9 @@
     {
       "id": "stream-json-validation-error-wave",
       "input_path": "tests/fixtures/inputs/parity/stream-json-validation-error-wave.json",
-      "input_sha256": "6a612ba2921663d9ddbfb75d1323a638a128c18559f85a2b68c4e3ac9a14f70d",
+      "input_sha256": "f0c6a096b756349a560739ca5cd9bc7c3043dbf9feea473c9f84091ca3121ce8",
       "recipe_path": "tests/fixtures/input-recipes/parity/stream-json-validation-error-wave.yaml",
-      "recipe_sha256": "909429f3198a312287fd45ee3e31dbcdf9efedb0c7a1b2c5e0e8ff7d30482560",
+      "recipe_sha256": "99e0fc72e65473d956820bf589c25cf677f6ef96033b2ed1312e4ea8a10029c6",
       "workload_path": "tests/fixtures/workloads/stream_json_validation_error_wave.py",
       "workload_sha256": "b1bf5d23d308060b985da081c19ddba7cb4fce7158fb1cf85dd5a7139d1b8d3f",
       "case_ids": [
@@ -10167,6 +10196,24 @@
       "observation_selectors": [
         "python.attribute_value",
         "python.signature"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_schema_extra_examples.py",
+      "fixture_id": "fastapi.test.test-schema-extra-examples",
+      "workflow_id": "direct-api-warnings",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 5 case(s); observes python.call_outcome, python.warnings. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.deprecation.body-example-warning",
+        "fastapi.deprecation.cookie-example-warning",
+        "fastapi.deprecation.header-example-warning",
+        "fastapi.deprecation.path-example-warning",
+        "fastapi.deprecation.query-example-warning"
+      ],
+      "observation_selectors": [
+        "python.call_outcome",
+        "python.warnings"
       ]
     },
     {
@@ -22774,13 +22821,15 @@
       "fixture_id": "fastapi.docs.reference-sse",
       "workflow_id": "sse",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
+        "fastapi.test.test-sse.test-async-generator-with-model",
         "fastapi.test.test-sse.test-raw-data-sent-without-json-encoding",
         "fastapi.test.test-sse.test-sse-events-with-fields"
       ],
       "observation_selectors": [
         "http.body.bytes",
+        "http.headers.ordered",
         "http.status"
       ]
     },
@@ -22789,13 +22838,15 @@
       "fixture_id": "fastapi.test.test-sse",
       "workflow_id": "sse",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
+        "fastapi.test.test-sse.test-async-generator-with-model",
         "fastapi.test.test-sse.test-raw-data-sent-without-json-encoding",
         "fastapi.test.test-sse.test-sse-events-with-fields"
       ],
       "observation_selectors": [
         "http.body.bytes",
+        "http.headers.ordered",
         "http.status"
       ]
     },
@@ -23118,12 +23169,15 @@
       "fixture_id": "fastapi.test.test-stream-json-validation-error",
       "workflow_id": "stream-json-validation-error-wave",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 2 case(s); observes validation.error_class. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.send.message_types, http.body.bytes, http.status, validation.error_class. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.response-stream.validation-error.async",
         "fastapi.response-stream.validation-error.sync"
       ],
       "observation_selectors": [
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.status",
         "validation.error_class"
       ]
     },

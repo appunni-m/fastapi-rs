@@ -44,3 +44,95 @@ cases:
     kind: upstream_api_definition
     sha256: e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc
     symbol_id: fastapi.Query
+- case_id: fastapi.deprecation.body-example-warning
+  probes:
+  - probe_id: body-example
+    public_callable:
+      module: fastapi
+      attribute: Body
+    argument_bundle: body-example
+    capture_warnings: true
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence:
+  - path: tests/test_schema_extra_examples.py
+    kind: upstream_test
+    sha256: 2d65521abfc513ebafbe3ec72e27d7f2e0634ce52274fe8958e0b916a6c5a4fa
+  - path: fastapi/param_functions.py
+    kind: upstream_api_definition
+    sha256: e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc
+    symbol_id: fastapi.Body
+  - path: docs/en/docs/tutorial/schema-extra-example.md
+    kind: upstream_documentation
+    sha256: 1bc9e50ddfa28bc8c6057ebdeafafae8069ab9d05e2a1674555122ede3a263a0
+- case_id: fastapi.deprecation.path-example-warning
+  probes:
+  - probe_id: path-example
+    public_callable:
+      module: fastapi
+      attribute: Path
+    argument_bundle: path-example
+    capture_warnings: true
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence:
+  - path: tests/test_schema_extra_examples.py
+    kind: upstream_test
+    sha256: 2d65521abfc513ebafbe3ec72e27d7f2e0634ce52274fe8958e0b916a6c5a4fa
+  - path: fastapi/param_functions.py
+    kind: upstream_api_definition
+    sha256: e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc
+    symbol_id: fastapi.Path
+  - path: docs/en/docs/tutorial/schema-extra-example.md
+    kind: upstream_documentation
+    sha256: 1bc9e50ddfa28bc8c6057ebdeafafae8069ab9d05e2a1674555122ede3a263a0
+- case_id: fastapi.deprecation.header-example-warning
+  probes:
+  - probe_id: header-example
+    public_callable:
+      module: fastapi
+      attribute: Header
+    argument_bundle: header-example
+    capture_warnings: true
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence:
+  - path: tests/test_schema_extra_examples.py
+    kind: upstream_test
+    sha256: 2d65521abfc513ebafbe3ec72e27d7f2e0634ce52274fe8958e0b916a6c5a4fa
+  - path: fastapi/param_functions.py
+    kind: upstream_api_definition
+    sha256: e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc
+    symbol_id: fastapi.Header
+  - path: docs/en/docs/tutorial/schema-extra-example.md
+    kind: upstream_documentation
+    sha256: 1bc9e50ddfa28bc8c6057ebdeafafae8069ab9d05e2a1674555122ede3a263a0
+- case_id: fastapi.deprecation.cookie-example-warning
+  probes:
+  - probe_id: cookie-example
+    public_callable:
+      module: fastapi
+      attribute: Cookie
+    argument_bundle: cookie-example
+    capture_warnings: true
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence:
+  - path: tests/test_schema_extra_examples.py
+    kind: upstream_test
+    sha256: 2d65521abfc513ebafbe3ec72e27d7f2e0634ce52274fe8958e0b916a6c5a4fa
+  - path: fastapi/param_functions.py
+    kind: upstream_api_definition
+    sha256: e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc
+    symbol_id: fastapi.Cookie
+  - path: docs/en/docs/tutorial/schema-extra-example.md
+    kind: upstream_documentation
+    sha256: 1bc9e50ddfa28bc8c6057ebdeafafae8069ab9d05e2a1674555122ede3a263a0

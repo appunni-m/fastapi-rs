@@ -33,6 +33,14 @@ cases:
       body: ''
       more_body: false
     observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
     - kind: application_error
       selector: validation_error_class
       comparison: exact
@@ -68,6 +76,14 @@ cases:
       body: ''
       more_body: false
     observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
     - kind: application_error
       selector: validation_error_class
       comparison: exact

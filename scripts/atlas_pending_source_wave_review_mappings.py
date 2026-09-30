@@ -170,6 +170,7 @@ _HTTP_JSON = ("http.status", "http.body.json")
 _HTTP_STATUS = ("http.status",)
 _HTTP_HTML = ("http.body.bytes",)
 _HTTP_STREAM = ("http.status", "http.headers.ordered", "http.body.bytes")
+_PYTHON_DIRECT_API_WARNING = ("python.call_outcome", "python.warnings")
 
 _ROUTE_ID = _source(
     "fastapi/utils.py",
@@ -700,13 +701,27 @@ PENDING_SOURCE_WAVE_REVIEW_MAPPINGS = {
                 "tests/test_schema_extra_examples.py",
                 "test_call_api",
                 features=("request-validation", "response-serialization"),
-                selectors=_HTTP_STATUS,
-                rationale="Valid independent requests reach representative body, path, query, header, and cookie declarations that carry example metadata.",
+                selectors=(*_HTTP_STATUS, *_PYTHON_DIRECT_API_WARNING),
+                rationale="Valid requests sample parameter locations with example metadata, and direct public-call probes observe their deprecated-example warnings.",
                 links=(
                     _link(
                         _OPENAPI_RECIPE,
                         "fastapi.pending.openapi-source-wave.examples-request-smoke",
                         _HTTP_STATUS,
+                    ),
+                    *(
+                        _link(
+                            "tests/fixtures/input-recipes/parity/direct-api-warnings.yaml",
+                            case_id,
+                            _PYTHON_DIRECT_API_WARNING,
+                        )
+                        for case_id in (
+                            "fastapi.deprecation.body-example-warning",
+                            "fastapi.deprecation.path-example-warning",
+                            "fastapi.deprecation.query-example-warning",
+                            "fastapi.deprecation.header-example-warning",
+                            "fastapi.deprecation.cookie-example-warning",
+                        )
                     ),
                 ),
                 sources=(
@@ -717,7 +732,7 @@ PENDING_SOURCE_WAVE_REVIEW_MAPPINGS = {
                         "Source route declarations use Pydantic schema_extra and FastAPI parameter example fields",
                     ),
                 ),
-                gate="The selected input covers representative supported parameter locations; it omits the source test's complete legacy example deprecation-warning matrix.",
+                gate="The direct API cases cover one legacy example warning per public parameter factory; example-plus-examples precedence combinations and the complete route matrix remain partial.",
             ),
             "test_openapi_schema": _function(
                 "tests/test_schema_extra_examples.py",
@@ -733,33 +748,9 @@ PENDING_SOURCE_WAVE_REVIEW_MAPPINGS = {
                     ),
                 ),
                 sources=(_OPENAPI_PARAMETERS, _OPENAPI_REQUEST_BODY, _PYDANTIC_OPENAPI),
-                gate="The independent recipe selects modern examples and model extra metadata; it does not claim every deprecated example/example precedence combination or its warning behavior.",
+                gate="The independent recipe selects modern examples and model extra metadata, not every deprecated example-plus-examples precedence combination; representative constructor warnings are linked from the create_app warning assertions.",
             ),
         },
-        exclusions=(
-            {
-                "scope": "deprecated-example warning assertions only",
-                "test_functions": {
-                    name: _test_span("tests/test_schema_extra_examples.py", name)
-                    for name in ("test_call_api", "test_openapi_schema")
-                },
-                "reason": "The source fixture verifies FastAPIDeprecationWarning around legacy example declarations. The ASGI input schema has no Python warning selector; selected modern examples and resulting OpenAPI fields are mapped.",
-                "supporting_sources": [
-                    _source(
-                        "fastapi/params.py",
-                        60,
-                        82,
-                        "FastAPI Param constructor stores openapi_examples and marks legacy example usage",
-                    ),
-                    _source(
-                        "fastapi/params.py",
-                        503,
-                        528,
-                        "FastAPI Body constructor handles deprecated example metadata",
-                    ),
-                ],
-            },
-        ),
     ),
     "tests/test_sub_callbacks.py": _module(
         "A subrouter route and inherited callbacks are represented in request behavior and OpenAPI callback entries.",

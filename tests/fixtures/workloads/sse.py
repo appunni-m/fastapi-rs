@@ -6,6 +6,19 @@ from collections.abc import AsyncIterator
 
 from fastapi import FastAPI
 from fastapi.sse import EventSourceResponse, ServerSentEvent
+from pydantic import BaseModel
+
+
+class Item(BaseModel):
+    name: str
+    description: str | None = None
+
+
+ITEMS = [
+    Item(name="Plumbus", description="A multi-purpose household device."),
+    Item(name="Portal Gun", description="A portal opening device."),
+    Item(name="Meeseeks Box", description="A box that summons a Meeseeks."),
+]
 
 
 def create_app() -> FastAPI:
@@ -18,6 +31,11 @@ def create_app() -> FastAPI:
         yield ServerSentEvent(data={"key": "value"}, event="json-data", id="2")
         yield ServerSentEvent(comment="just a comment")
         yield ServerSentEvent(data="retry-test", retry=5000)
+
+    @app.get("/items/stream", response_class=EventSourceResponse)
+    async def stream_models() -> AsyncIterator[Item]:
+        for item in ITEMS:
+            yield item
 
     @app.get("/items/stream-raw", response_class=EventSourceResponse)
     async def stream_raw_data() -> AsyncIterator[ServerSentEvent]:
