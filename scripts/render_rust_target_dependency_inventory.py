@@ -5,11 +5,14 @@ from __future__ import annotations
 
 import argparse
 import json
+import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 from typing import Any
 
+import tomllib
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -24,10 +27,32 @@ ROLE_ORDER = (
 )
 
 
-def cargo_metadata(*, offline: bool) -> dict[str, Any]:
+def cargo_metadata(*, offline: bool, starlette_rs_source: Path) -> dict[str, Any]:
+    """Read Cargo's resolved graph with the reviewed Starlette-RS source path.
+
+    The checkout's normal workspace manifest points at the sibling development
+    checkout. Build a short-lived manifest overlay so inventory checks can use
+    the pinned clean source without editing Cargo.toml or touching that sibling.
+    """
+    workspace_manifest = ROOT / "Cargo.toml"
+    manifest_text = workspace_manifest.read_text(encoding="utf-8")
+    manifest_data = tomllib.loads(manifest_text)
+    workspace = manifest_data.get("workspace", {})
+    starlette_dependency = workspace.get("dependencies", {}).get("starlette-rs")
+    if not isinstance(starlette_dependency, dict) or not starlette_dependency.get("path"):
+        raise RuntimeError("Cargo.toml must declare starlette-rs as a workspace path dependency")
+    declared_path = starlette_dependency["path"]
+    old_path = f"path = {json.dumps(declared_path)}"
+    if manifest_text.count(old_path) != 1:
+        raise RuntimeError("Cargo.toml starlette-rs workspace dependency path is ambiguous")
+    pinned_path = starlette_rs_source.resolve() / "starlette-rs"
+    overlay_text = manifest_text.replace(old_path, f"path = {json.dumps(str(pinned_path))}", 1)
+
     command = [
         "cargo",
         "metadata",
+        "--manifest-path",
+        "Cargo.toml",
         "--locked",
         "--format-version",
         "1",
@@ -36,13 +61,30 @@ def cargo_metadata(*, offline: bool) -> dict[str, Any]:
     ]
     if offline:
         command.append("--offline")
-    result = subprocess.run(
-        command,
-        cwd=ROOT,
-        check=False,
-        capture_output=True,
-        text=True,
-    )
+    with tempfile.TemporaryDirectory(prefix=".fastapi-rs-cargo-metadata-", dir=ROOT) as tmp:
+        overlay_root = Path(tmp)
+        (overlay_root / "Cargo.toml").write_text(overlay_text, encoding="utf-8")
+        shutil.copy2(ROOT / "Cargo.lock", overlay_root / "Cargo.lock")
+        members = workspace.get("members", [])
+        if not members:
+            raise RuntimeError("Cargo.toml does not declare workspace members")
+        for member in members:
+            member_path = Path(member)
+            if member_path.is_absolute() or ".." in member_path.parts:
+                raise RuntimeError(f"unsupported non-workspace Cargo member path: {member}")
+            source_member = ROOT / member_path
+            if not source_member.exists():
+                raise RuntimeError(f"Cargo workspace member does not exist: {member}")
+            link_path = overlay_root / member_path
+            link_path.parent.mkdir(parents=True, exist_ok=True)
+            link_path.symlink_to(source_member, target_is_directory=source_member.is_dir())
+        result = subprocess.run(
+            command,
+            cwd=overlay_root,
+            check=False,
+            capture_output=True,
+            text=True,
+        )
     if result.returncode:
         raise RuntimeError(result.stderr.strip() or "cargo metadata failed")
     return json.loads(result.stdout)
@@ -450,7 +492,9 @@ def main() -> int:
     args = parser.parse_args()
     try:
         revision = validate_starlette_rs_revision(args.starlette_rs_source)
-        metadata = cargo_metadata(offline=args.offline)
+        metadata = cargo_metadata(
+            offline=args.offline, starlette_rs_source=args.starlette_rs_source
+        )
         validate_cargo_source(metadata, args.starlette_rs_source)
         output = render(metadata, revision)
     except (RuntimeError, json.JSONDecodeError, subprocess.CalledProcessError) as error:
