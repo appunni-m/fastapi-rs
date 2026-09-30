@@ -1,4 +1,5 @@
 from fastapi_rs._core import (
+    HTTPException,
     RequestValidationError,
     ResponseValidationError,
     ValidationException,
@@ -6,6 +7,7 @@ from fastapi_rs._core import (
 )
 
 __all__ = [
+    "HTTPException",
     "RequestValidationError",
     "ResponseValidationError",
     "ValidationException",

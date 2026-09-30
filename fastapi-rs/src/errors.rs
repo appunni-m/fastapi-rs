@@ -3,7 +3,7 @@
 use pyo3::create_exception;
 use pyo3::exceptions::{PyException, PyRuntimeError};
 use pyo3::prelude::*;
-use pyo3::types::{PyDict, PyList, PyString, PyTuple};
+use pyo3::types::{PyDict, PyInt, PyList, PyString, PyTuple};
 
 create_exception!(
     fastapi.exceptions,
@@ -324,6 +324,26 @@ fn initialize_validation_exception(
 
 pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     let py = module.py();
+    let http_exception_base = py
+        .import("starlette.exceptions")?
+        .getattr("HTTPException")?;
+    let http_exception_bases = PyTuple::new(py, [http_exception_base])?;
+    let http_exception_namespace = PyDict::new(py);
+    http_exception_namespace.set_item("__module__", "fastapi.exceptions")?;
+    http_exception_namespace.set_item(
+        "__doc__",
+        "An HTTP exception you can raise in your own code to show errors to the client.\n\n\
+         This is for client errors, invalid authentication, invalid data, etc. Not for server\n\
+         errors in your code.\n\n\
+         Read more about it in the FastAPI docs for Handling Errors.",
+    )?;
+    let http_exception_type = py.import("builtins")?.getattr("type")?.call1((
+        "HTTPException",
+        http_exception_bases,
+        http_exception_namespace,
+    ))?;
+    set_http_exception_signature(py, &http_exception_type)?;
+
     let validation_exception_type = py.get_type::<ValidationException>();
     validation_exception_type.setattr(
         "__init__",
@@ -390,10 +410,79 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
         websocket_exception_namespace,
     ))?;
     set_websocket_exception_signature(py, &websocket_exception_type)?;
+    module.add("HTTPException", http_exception_type)?;
     module.add("ValidationException", validation_exception_type)?;
     module.add("RequestValidationError", request_exception_type)?;
     module.add("ResponseValidationError", exception_type)?;
     module.add("WebSocketException", websocket_exception_type)
+}
+
+fn set_http_exception_signature(py: Python<'_>, exception_type: &Bound<'_, PyAny>) -> PyResult<()> {
+    let inspect = py.import("inspect")?;
+    let annotated_doc = py.import("annotated_doc")?.getattr("Doc")?;
+    let annotated = py.import("typing")?.getattr("Annotated")?;
+    let status_doc = annotated_doc.call1((
+        "\n                HTTP status code to send to the client.\n\n                Read more about it in the\n                [FastAPI docs for Handling Errors](https://fastapi.tiangolo.com/tutorial/handling-errors/#use-httpexception)\n                ",
+    ))?;
+    let detail_doc = annotated_doc.call1((
+        "\n                Any data to be sent to the client in the `detail` key of the JSON\n                response.\n\n                Read more about it in the\n                [FastAPI docs for Handling Errors](https://fastapi.tiangolo.com/tutorial/handling-errors/#use-httpexception)\n                ",
+    ))?;
+    let headers_doc = annotated_doc.call1((
+        "\n                Any headers to send to the client in the response.\n\n                Read more about it in the\n                [FastAPI docs for Handling Errors](https://fastapi.tiangolo.com/tutorial/handling-errors/#add-custom-headers)\n\n                ",
+    ))?;
+    let status_annotation = annotated
+        .getattr("__class_getitem__")?
+        .call1((PyTuple::new(
+            py,
+            [py.get_type::<PyInt>().as_any(), status_doc.as_any()],
+        )?,))?;
+    let any = py.import("typing")?.getattr("Any")?;
+    let detail_annotation = annotated
+        .getattr("__class_getitem__")?
+        .call1((PyTuple::new(py, [any.as_any(), detail_doc.as_any()])?,))?;
+    let mapping = py.import("collections.abc")?.getattr("Mapping")?;
+    let mapping_arguments = PyTuple::new(
+        py,
+        [
+            py.get_type::<PyString>().as_any(),
+            py.get_type::<PyString>().as_any(),
+        ],
+    )?;
+    let mapping = mapping
+        .getattr("__class_getitem__")?
+        .call1((mapping_arguments,))?;
+    let none_type = py.None().bind(py).get_type();
+    let optional_mapping = py
+        .import("operator")?
+        .getattr("or_")?
+        .call1((mapping, none_type))?;
+    let headers_annotation = annotated
+        .getattr("__class_getitem__")?
+        .call1((PyTuple::new(
+            py,
+            [optional_mapping.as_any(), headers_doc.as_any()],
+        )?,))?;
+
+    let parameter_type = inspect.getattr("Parameter")?;
+    let kind = parameter_type.getattr("POSITIONAL_OR_KEYWORD")?;
+    let status_kwargs = PyDict::new(py);
+    status_kwargs.set_item("annotation", status_annotation)?;
+    let status = parameter_type.call(("status_code", &kind), Some(&status_kwargs))?;
+    let detail_kwargs = PyDict::new(py);
+    detail_kwargs.set_item("annotation", detail_annotation)?;
+    detail_kwargs.set_item("default", py.None())?;
+    let detail = parameter_type.call(("detail", &kind), Some(&detail_kwargs))?;
+    let headers_kwargs = PyDict::new(py);
+    headers_kwargs.set_item("annotation", headers_annotation)?;
+    headers_kwargs.set_item("default", py.None())?;
+    let headers = parameter_type.call(("headers", &kind), Some(&headers_kwargs))?;
+    let parameters = PyList::new(py, [status, detail, headers])?;
+    let signature_kwargs = PyDict::new(py);
+    signature_kwargs.set_item("return_annotation", py.None())?;
+    let signature = inspect
+        .getattr("Signature")?
+        .call((parameters,), Some(&signature_kwargs))?;
+    exception_type.setattr("__signature__", signature)
 }
 
 fn set_websocket_exception_signature(

@@ -4448,6 +4448,7 @@ enum PendingAction {
     LifespanShutdownSend,
     WebSocketEndpoint,
     WebSocketClose,
+    RouteInvocation,
     Endpoint,
     Dependency {
         cache_key: usize,
@@ -5223,6 +5224,7 @@ impl FastApiCall {
                 "ASGI dispatch has no selected route",
             ));
         }
+        self.pending = Some(PendingAction::RouteInvocation);
         let websocket = self.websocket.as_ref().map(|socket| socket.bind(py));
         let request = self.request.as_ref().map(|request| request.bind(py));
         let invocation = self
@@ -5400,6 +5402,7 @@ impl FastApiCall {
         edge_index: usize,
         subdependency_value: Py<PyAny>,
     ) -> PyResult<MachineAction> {
+        self.pending = Some(PendingAction::RouteInvocation);
         let mut prepared_dependencies = HashMap::new();
         prepared_dependencies.insert(0, subdependency_value);
         let request = self.request.as_ref().map(|request| request.bind(py));
@@ -5660,6 +5663,9 @@ impl FastApiCall {
     }
 
     fn form_parse_failed(&mut self, py: Python<'_>, error: PyErr) -> PyResult<MachineAction> {
+        if let Some(action) = self.http_exception_response(py, &error)? {
+            return Ok(action);
+        }
         let value = error.value(py);
         let http_exception = py
             .import("starlette.exceptions")?
@@ -5681,6 +5687,52 @@ impl FastApiCall {
         body.set_item("detail", detail)?;
         self.response_body = json_bytes(py, &body)?;
         self.send_start(py)
+    }
+
+    fn route_exception(&mut self, py: Python<'_>, error: PyErr) -> PyResult<MachineAction> {
+        if self.websocket_route_index.is_some() {
+            return self.close_websocket_exception(py, error);
+        }
+        match self.http_exception_response(py, &error)? {
+            Some(action) => Ok(action),
+            None => Err(error),
+        }
+    }
+
+    fn http_exception_response(
+        &mut self,
+        py: Python<'_>,
+        error: &PyErr,
+    ) -> PyResult<Option<MachineAction>> {
+        let http_exception = py
+            .import("starlette.exceptions")?
+            .getattr("HTTPException")?;
+        if !error.matches(py, &http_exception)? {
+            return Ok(None);
+        }
+
+        let value = error.value(py);
+        let status_code = value.getattr("status_code")?;
+        let status = status_code.extract::<i64>()?;
+        let response_type = py.import("starlette.responses")?.getattr(
+            if status < 200 || matches!(status, 204 | 205 | 304) {
+                "Response"
+            } else {
+                "JSONResponse"
+            },
+        )?;
+        let kwargs = PyDict::new(py);
+        kwargs.set_item("status_code", status_code)?;
+        kwargs.set_item("headers", value.getattr("headers")?)?;
+
+        let response = if status < 200 || matches!(status, 204 | 205 | 304) {
+            response_type.call((), Some(&kwargs))?
+        } else {
+            let content = PyDict::new(py);
+            content.set_item("detail", value.getattr("detail")?)?;
+            response_type.call((content,), Some(&kwargs))?
+        };
+        self.start_returned_response(py, &response).map(Some)
     }
 
     fn close_form_after_response(&mut self, py: Python<'_>) -> PyResult<MachineAction> {
@@ -5741,6 +5793,9 @@ impl FastApiCall {
                 Some(PendingAction::FormCloseAfterError(error)) => Err(error),
                 Some(PendingAction::SendStart) => self.send_body(py),
                 Some(PendingAction::SendBody) => self.close_form_after_response(py),
+                Some(PendingAction::RouteInvocation) => Err(PyRuntimeError::new_err(
+                    "FastAPI route invocation resumed without a pending awaitable",
+                )),
                 None => Err(PyRuntimeError::new_err(
                     "ASGI call resumed without a pending action",
                 )),
@@ -5749,9 +5804,12 @@ impl FastApiCall {
                 Some(PendingAction::FormParse) => self.form_parse_failed(py, error),
                 Some(
                     PendingAction::WebSocketEndpoint
+                    | PendingAction::WebSocketClose
+                    | PendingAction::RouteInvocation
+                    | PendingAction::Endpoint
                     | PendingAction::Dependency { .. }
                     | PendingAction::OverrideSubdependency { .. },
-                ) => self.close_websocket_exception(py, error),
+                ) => self.route_exception(py, error),
                 Some(PendingAction::FormCloseAfterError(_))
                 | Some(PendingAction::FormCloseAfterResponse) => Err(error),
                 _ => Err(error),
@@ -5763,6 +5821,29 @@ impl FastApiCall {
 impl AwaitableStateMachine for FastApiCall {
     fn resume(&mut self, py: Python<'_>, input: MachineResume) -> PyResult<MachineAction> {
         match self.resume_inner(py, input) {
+            Err(error) if matches!(self.pending, Some(PendingAction::RouteInvocation)) => {
+                match self.route_exception(py, error) {
+                    Ok(action) => Ok(action),
+                    Err(error) => {
+                        if self.form_request.is_some() && !self.form_close_started {
+                            let request = self
+                                .form_request
+                                .as_ref()
+                                .ok_or_else(|| PyRuntimeError::new_err("form request was lost"))?;
+                            match request.bind(py).call_method0("close") {
+                                Ok(awaitable) => {
+                                    self.form_close_started = true;
+                                    self.pending = Some(PendingAction::FormCloseAfterError(error));
+                                    Ok(MachineAction::Await(awaitable.unbind()))
+                                }
+                                Err(_) => Err(error),
+                            }
+                        } else {
+                            Err(error)
+                        }
+                    }
+                }
+            }
             Err(error) if self.form_request.is_some() && !self.form_close_started => {
                 let request = self
                     .form_request

@@ -33,6 +33,7 @@ PUBLIC_FASTAPI_EXPORTS = [
     "File",
     "Form",
     "Header",
+    "HTTPException",
     "Path",
     "Query",
     "Request",
