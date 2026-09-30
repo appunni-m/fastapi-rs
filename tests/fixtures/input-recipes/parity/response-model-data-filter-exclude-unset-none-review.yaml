@@ -1,0 +1,46 @@
+# Source: FastAPI 0.141.1 at 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f.
+# Starlette 1.6.0 at 4f250d6b814587e20c5365f0a5f0c4d42bcb929f owns generic response transport.
+# Starlette-RS target contract: f6a5890e5ab35cc9e45ac63cd0762e671defaa8d.
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/response_model_data_filter_exclude_unset_none_review.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.response-model-data-filter.exclude-unset-none
+  actions:
+  - action_id: apply-combined-unset-and-null-filter
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /projection/state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_skip_defaults.py
+    kind: upstream_test

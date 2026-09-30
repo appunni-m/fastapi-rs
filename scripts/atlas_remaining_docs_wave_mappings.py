@@ -405,7 +405,18 @@ DOC_PAGE_REVIEW_MAPPINGS = {
                 "openapi.document, "
                 "openapi.paths, "
                 "openapi.security.",
-            }
+            },
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/security-scopes-dont-propagate-openapi-source-review.yaml",
+                "case_ids": [
+                    "fastapi.security.scopes-dont-propagate.nested-openapi-sibling-scopes",
+                ],
+                "observation_selectors": [
+                    "http.status",
+                    "openapi.security",
+                ],
+                "coverage": "A nested parent-plus-sibling OAuth2 scope graph selects the generated flow scope map and operation security requirements.",
+            },
         ],
         "contract_gate": "Linked cases cover selected bearer "
         "handling and OpenAPI pointers. Missing: "

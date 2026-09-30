@@ -7,6 +7,7 @@ alter the compatibility-atlas builder, manifest, or generated artifacts.
 from __future__ import annotations
 
 import ast
+import hashlib
 from pathlib import Path
 from typing import Any
 
@@ -15,6 +16,7 @@ FASTAPI_ROOT = PROJECT_ROOT.parent / "fastapi"
 RECIPE_PATH = "tests/fixtures/input-recipes/parity/request-form-upload-source-review-2026.yaml"
 WORKLOAD_PATH = "tests/fixtures/workloads/request_form_upload_source_review_independent.py"
 OPENAPI_CASE = "fastapi.request-form-upload.source-review.openapi-all-routes"
+UPLOADFILE_READ_SEEK_CASE = "fastapi.request-form-upload.uploadfile.read-seek-replay"
 
 SOURCE_IDENTITIES = {
     "fastapi": {
@@ -58,6 +60,59 @@ SOURCE_IDENTITIES = {
         "resolved_source_profile": "0.28.1",
         "role": "upstream TestClient transport dependency from the FastAPI standard extra; generic transport contract remains Starlette-RS-owned",
     },
+}
+
+# Focused source evidence for the new ASGI workflow. Digests pin the cited
+# source files; line spans identify the documented and tested method sequence.
+UPLOADFILE_READ_SEEK_REVIEW = {
+    "case_id": UPLOADFILE_READ_SEEK_CASE,
+    "recipe_path": RECIPE_PATH,
+    "workload_path": WORKLOAD_PATH,
+    "source_identity": {
+        "fastapi": SOURCE_IDENTITIES["fastapi"],
+        "starlette": SOURCE_IDENTITIES["starlette"],
+    },
+    "action_ids": ["plain-request", "annotated-request"],
+    "observation_selectors": ["http.status", "http.body.bytes"],
+    "source_evidence": [
+        {
+            "repository": "fastapi",
+            "path": "docs/en/docs/tutorial/request-files.md",
+            "start_line": 77,
+            "end_line": 92,
+            "sha256": "4faafb4853d46b41cb9bc4c7c57e3ab293bcb9ce318b3b369162c4e239425ab6",
+            "role": "documents async UploadFile.read(size), seek(0), and reading the contents again",
+        },
+        {
+            "repository": "fastapi",
+            "path": "tests/test_datastructures.py",
+            "start_line": 55,
+            "end_line": 66,
+            "sha256": "ae154958b8f4b6926a55ca7ad815f9d93695794eb1a778fc31dabb245295c8ca",
+            "role": "pinned test exercises UploadFile read, EOF, seek, and reread",
+        },
+        {
+            "repository": "fastapi",
+            "path": "fastapi/datastructures.py",
+            "start_line": 86,
+            "end_line": 122,
+            "sha256": "5cfba09e88c7738374ede1795e9d534e774fda032fd5f1b893ed0be1576beca7",
+            "role": "FastAPI UploadFile exposes awaitable read(size) and seek(offset) methods",
+        },
+        {
+            "repository": "starlette",
+            "path": "starlette/datastructures.py",
+            "start_line": 461,
+            "end_line": 470,
+            "sha256": "f9e310036299d6a427443ca96ba118e58486e5927cd4c3bac0ffb815626e52cd",
+            "role": "Starlette 1.6.0 owns generic UploadFile byte reads and cursor seeking",
+        },
+    ],
+    "scope": (
+        "The recipe uploads one multipart file through plain and Annotated FastAPI route declarations. "
+        "The independent workload reads a prefix and remainder, rewinds with seek(0), and rereads. "
+        "The recipe contains request bytes only; no response value is stored as an expectation."
+    ),
 }
 
 OWNER_BOUNDARY = {
@@ -160,7 +215,10 @@ _TEST_MODULES = {
         "features": ["openapi-docs", "request-validation", "response-serialization"],
         "tests": {
             "test_post_file": "fastapi.request-form-upload.described-file.bytes-present",
-            "test_post_upload_file": "fastapi.request-form-upload.described-file.upload-present",
+            "test_post_upload_file": [
+                "fastapi.request-form-upload.described-file.upload-present",
+                UPLOADFILE_READ_SEEK_CASE,
+            ],
             "test_openapi_schema": OPENAPI_CASE,
         },
         "helpers": ["get_client"],
@@ -265,6 +323,7 @@ _CASE_ACTIONS: dict[str, tuple[str, ...]] = {
         "plain-request",
         "annotated-request",
     ),
+    UPLOADFILE_READ_SEEK_CASE: ("plain-request", "annotated-request"),
     "fastapi.request-form-upload.optional-file.bytes-absent": (
         "plain-request",
         "annotated-request",
@@ -571,6 +630,15 @@ def _function_review(
             "app schema. The linked input records the HTTP status, exact response "
             "bytes, and full OpenAPI document for the independent combined route set."
         )
+    elif UPLOADFILE_READ_SEEK_CASE in case_ids:
+        rationale = (
+            "The source test establishes a multipart request parameter typed as "
+            "UploadFile. The additional read(size)/seek(0)/reread sequence is "
+            "grounded in the focused documentation and test spans recorded in "
+            "UPLOADFILE_READ_SEEK_REVIEW. The independent workflow uses a new "
+            "request body and route paths and sends the same input through plain "
+            "and Annotated declarations."
+        )
     else:
         rationale = (
             f"The source function {function_name} exercises {title}. Its input-only "
@@ -598,9 +666,12 @@ def _build_review_mappings() -> dict[str, dict[str, Any]]:
     modules: dict[str, dict[str, Any]] = {}
     for test_path, spec in _TEST_MODULES.items():
         function_case_ids: dict[str, list[str]] = {
-            name: [case_id] for name, case_id in spec["tests"].items()
+            name: [case_id] if isinstance(case_id, str) else list(case_id)
+            for name, case_id in spec["tests"].items()
         }
-        all_test_case_ids = list(spec["tests"].values())
+        all_test_case_ids = [
+            case_id for case_ids in function_case_ids.values() for case_id in case_ids
+        ]
         for helper in spec["helpers"]:
             function_case_ids[helper] = all_test_case_ids
 
@@ -676,6 +747,8 @@ __all__ = [
     "OWNER_BOUNDARY",
     "RECIPE_PATH",
     "SOURCE_IDENTITIES",
+    "UPLOADFILE_READ_SEEK_CASE",
+    "UPLOADFILE_READ_SEEK_REVIEW",
     "WORKLOAD_PATH",
     "validate_static_review",
 ]
@@ -792,6 +865,43 @@ def validate_static_review() -> dict[str, int]:
         if not (1 <= source["start_line"] <= source["end_line"] <= len(source_lines)):
             raise ValueError(f"source line span is outside {source_path}")
 
+    read_seek_case = case_by_id.get(UPLOADFILE_READ_SEEK_CASE)
+    if read_seek_case is None:
+        raise ValueError("missing UploadFile read/seek workflow case")
+    if [action["action_id"] for action in read_seek_case["actions"]] != list(
+        UPLOADFILE_READ_SEEK_REVIEW["action_ids"]
+    ):
+        raise ValueError("UploadFile read/seek action mapping is stale")
+    case_sources = {source["path"] for source in read_seek_case["source_evidence"]}
+    required_sources = {
+        "tests/test_tutorial/test_request_files/test_tutorial001_03.py",
+        "tests/test_datastructures.py",
+        "docs/en/docs/tutorial/request-files.md",
+    }
+    if not required_sources.issubset(case_sources):
+        raise ValueError("UploadFile read/seek case omits a reviewed source citation")
+    case_selectors = set().union(
+        *(
+            selectors_by_case_action[UPLOADFILE_READ_SEEK_CASE][action_id]
+            for action_id in UPLOADFILE_READ_SEEK_REVIEW["action_ids"]
+        )
+    )
+    if case_selectors != set(UPLOADFILE_READ_SEEK_REVIEW["observation_selectors"]):
+        raise ValueError("UploadFile read/seek selectors differ from the focused review")
+
+    source_roots = {
+        "fastapi": FASTAPI_ROOT,
+        "starlette": PROJECT_ROOT.parent / "starlette",
+    }
+    for source in UPLOADFILE_READ_SEEK_REVIEW["source_evidence"]:
+        source_path = source_roots[source["repository"]] / source["path"]
+        source_bytes = source_path.read_bytes()
+        if hashlib.sha256(source_bytes).hexdigest() != source["sha256"]:
+            raise ValueError(f"source digest changed for {source['path']}")
+        source_lines = source_bytes.decode("utf-8").splitlines()
+        if not (1 <= source["start_line"] <= source["end_line"] <= len(source_lines)):
+            raise ValueError(f"source line span is outside {source['path']}")
+
     workload_file = PROJECT_ROOT / WORKLOAD_PATH
     workload_tree = ast.parse(workload_file.read_text(encoding="utf-8"))
     workload_factories = {
@@ -823,4 +933,5 @@ def validate_static_review() -> dict[str, int]:
         "recipes": 1,
         "cases": len(case_by_id),
         "workloads": 1,
+        "read_seek_source_spans": len(UPLOADFILE_READ_SEEK_REVIEW["source_evidence"]),
     }

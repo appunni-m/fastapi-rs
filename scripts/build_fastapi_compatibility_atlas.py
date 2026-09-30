@@ -2972,6 +2972,15 @@ from atlas_security_wave_mappings import SECURITY_TEST_REVIEW_MAPPINGS  # noqa: 
 merge_test_review_mappings(RESPONSE_OPENAPI_TEST_REVIEW_MAPPINGS)
 merge_test_review_mappings(SECURITY_TEST_REVIEW_MAPPINGS)
 
+# Add the OpenAPI scope-projection case to the existing non-propagation test
+# mapping. The security wave has module-level evidence but no function row for
+# this test, so the supplemental function mapping can coexist without replacing it.
+from atlas_security_scopes_dont_propagate_openapi_source_review_mappings import (  # noqa: E402
+    SECURITY_SCOPE_NONPROPAGATION_OPENAPI_ATLAS_MAPPINGS,
+)
+
+merge_test_review_mappings(SECURITY_SCOPE_NONPROPAGATION_OPENAPI_ATLAS_MAPPINGS)
+
 for test_path, exclusions in RESPONSE_OPENAPI_TEST_EXCLUSIONS.items():
     TEST_FUNCTION_EXCLUSIONS.setdefault(test_path, {}).update(
         {function_name: evidence["reason"] for function_name, evidence in exclusions.items()}
@@ -5321,6 +5330,14 @@ def _normalize_source_review_workflow_mappings(
         normalized_modules[test_path] = normalized_module
     return normalized_modules
 
+
+from atlas_response_model_data_filter_policy_review_mappings import (  # noqa: E402
+    RESPONSE_MODEL_DATA_FILTER_POLICY_REVIEW_MAPPINGS,
+)
+
+merge_test_review_mappings(
+    _normalize_source_review_workflow_mappings(RESPONSE_MODEL_DATA_FILTER_POLICY_REVIEW_MAPPINGS)
+)
 
 from atlas_request_body_tutorial_review_mappings import (  # noqa: E402
     REQUEST_BODY_TUTORIAL_TEST_REVIEW_MAPPINGS,

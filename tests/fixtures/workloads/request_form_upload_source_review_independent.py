@@ -43,7 +43,7 @@ def create_app() -> FastAPI:
 
     @app.post("/review/annotated/files/optional-bytes")
     async def optional_file_bytes_annotated(
-        file: Annotated[bytes | None, File(default=None)],
+        file: Annotated[bytes | None, File()] = None,
     ) -> dict[str, int | str]:
         if not file:
             return {"state": "absent"}
@@ -59,6 +59,32 @@ def create_app() -> FastAPI:
     ) -> dict[str, str | None]:
         return {"filename": file.filename}
 
+    @app.post("/review/plain/files/upload-read-seek")
+    async def upload_read_seek_plain(file: UploadFile) -> dict[str, str]:
+        prefix = await file.read(4)
+        remainder = await file.read()
+        await file.seek(0)
+        replay = await file.read()
+        return {
+            "prefix": prefix.decode("ascii"),
+            "remainder": remainder.decode("ascii"),
+            "replay": replay.decode("ascii"),
+        }
+
+    @app.post("/review/annotated/files/upload-read-seek")
+    async def upload_read_seek_annotated(
+        file: Annotated[UploadFile, File()],
+    ) -> dict[str, str]:
+        prefix = await file.read(4)
+        remainder = await file.read()
+        await file.seek(0)
+        replay = await file.read()
+        return {
+            "prefix": prefix.decode("ascii"),
+            "remainder": remainder.decode("ascii"),
+            "replay": replay.decode("ascii"),
+        }
+
     @app.post("/review/plain/files/optional-upload")
     async def optional_upload_plain(
         file: UploadFile | None = None,
@@ -69,7 +95,7 @@ def create_app() -> FastAPI:
 
     @app.post("/review/annotated/files/optional-upload")
     async def optional_upload_annotated(
-        file: Annotated[UploadFile | None, File(default=None)],
+        file: Annotated[UploadFile | None, File()] = None,
     ) -> dict[str, str | None]:
         if not file:
             return {"state": "absent"}

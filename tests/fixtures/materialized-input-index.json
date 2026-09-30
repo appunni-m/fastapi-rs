@@ -4602,17 +4602,18 @@
     {
       "id": "request-form-upload-source-review-2026",
       "input_path": "tests/fixtures/inputs/parity/request-form-upload-source-review-2026.json",
-      "input_sha256": "b8fcb27cdd52de2e708477a4e785b11249ef2be86ac4e849df33705e75d19f58",
+      "input_sha256": "9d4f8a0af410cc03bce2142a5a2c7bff325031cf712b7c3462195cec71faa5f6",
       "recipe_path": "tests/fixtures/input-recipes/parity/request-form-upload-source-review-2026.yaml",
-      "recipe_sha256": "f097126cdd0ce88c95ca1d3e686bad304eb60b7cd1e50e88b8e3e894e325983a",
+      "recipe_sha256": "a47a8eb810f71cec225c38bf95e4709dbafcafcd23a7fbd76a34da67885b6948",
       "workload_path": "tests/fixtures/workloads/request_form_upload_source_review_independent.py",
-      "workload_sha256": "6ca68df01d5deddc4c9cd4e007a55c132f162e2ce20ca6cce72484330de8a5ca",
+      "workload_sha256": "00cd859a11778c412757f2a0c2ad603310a839a9a64f1f0b94c0d2d0579ae5ed",
       "case_ids": [
         "fastapi.request-form-upload.required-file.no-body",
         "fastapi.request-form-upload.required-file.json-body",
         "fastapi.request-form-upload.required-file.bytes-present",
         "fastapi.request-form-upload.required-file.large-bytes-present",
         "fastapi.request-form-upload.required-file.upload-present",
+        "fastapi.request-form-upload.uploadfile.read-seek-replay",
         "fastapi.request-form-upload.optional-file.bytes-absent",
         "fastapi.request-form-upload.optional-file.upload-absent",
         "fastapi.request-form-upload.optional-file.bytes-present",
@@ -5079,6 +5080,18 @@
       "case_ids": [
         "fastapi.response-directly.tutorial001.path-response",
         "fastapi.response-directly.tutorial001.openapi-document"
+      ]
+    },
+    {
+      "id": "response-model-data-filter-exclude-unset-none-review",
+      "input_path": "tests/fixtures/inputs/parity/response-model-data-filter-exclude-unset-none-review.json",
+      "input_sha256": "e8df817a4df31b3f2f646068c8a9286416ff13577822d1fc572bbc5d8eb34a17",
+      "recipe_path": "tests/fixtures/input-recipes/parity/response-model-data-filter-exclude-unset-none-review.yaml",
+      "recipe_sha256": "403ba667a158e145b27d2d885eb8c7b2f428a14b2273ef9ca2781390b8f79826",
+      "workload_path": "tests/fixtures/workloads/response_model_data_filter_exclude_unset_none_review.py",
+      "workload_sha256": "24b60f06b2472a0254c9ae15d0b208e0edd99d3cb8a3833696d343bacd0c13cd",
+      "case_ids": [
+        "fastapi.response-model-data-filter.exclude-unset-none"
       ]
     },
     {
@@ -6015,6 +6028,18 @@
         "fastapi.security-gap.oauth2-strict-required.test-openapi-schema"
       ],
       "oracle_profile_extension": "standard-multipart"
+    },
+    {
+      "id": "security-scopes-dont-propagate-openapi-source-review",
+      "input_path": "tests/fixtures/inputs/parity/security-scopes-dont-propagate-openapi-source-review.json",
+      "input_sha256": "b0d16cdc8b92e8506455d5025abce2a4e1c077a3c2263f9bd50e84d2d56242af",
+      "recipe_path": "tests/fixtures/input-recipes/parity/security-scopes-dont-propagate-openapi-source-review.yaml",
+      "recipe_sha256": "f4b45328925ad88679ef83d89bcfbf9d8003155cebf2860dc30db7083ac0c666",
+      "workload_path": "tests/fixtures/workloads/security_scopes_dont_propagate_openapi_source_review.py",
+      "workload_sha256": "85c07d39a4c570ebde9fa107e34bdd11581498fe71a432d9a51888ccbca50791",
+      "case_ids": [
+        "fastapi.security.scopes-dont-propagate.nested-openapi-sibling-scopes"
+      ]
     },
     {
       "id": "security-scopes-upstream",
@@ -17547,6 +17572,34 @@
       ]
     },
     {
+      "source_item_id": "documented-page:tutorial/request-files.md",
+      "fixture_id": "fastapi.docs.tutorial-request-files",
+      "workflow_id": "request-form-upload-source-review-2026",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.request-form-upload.uploadfile.read-seek-replay"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_datastructures.py",
+      "fixture_id": "fastapi.test.test-datastructures",
+      "workflow_id": "request-form-upload-source-review-2026",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.request-form-upload.uploadfile.read-seek-replay"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
       "source_item_id": "upstream-test:tests/test_tutorial/test_request_files/test_tutorial001.py",
       "fixture_id": "fastapi.test.test-tutorial-test-request-files-test-tutorial001",
       "workflow_id": "request-form-upload-source-review-2026",
@@ -17594,11 +17647,12 @@
       "fixture_id": "fastapi.test.test-tutorial-test-request-files-test-tutorial001-03",
       "workflow_id": "request-form-upload-source-review-2026",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 3 case(s); observes docs.response.body.bytes, docs.response.status, http.body.bytes, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 4 case(s); observes docs.response.body.bytes, docs.response.status, http.body.bytes, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.request-form-upload.described-file.bytes-present",
         "fastapi.request-form-upload.described-file.upload-present",
-        "fastapi.request-form-upload.source-review.openapi-all-routes"
+        "fastapi.request-form-upload.source-review.openapi-all-routes",
+        "fastapi.request-form-upload.uploadfile.read-seek-replay"
       ],
       "observation_selectors": [
         "docs.response.body.bytes",
@@ -19360,6 +19414,20 @@
         "http.headers.ordered",
         "http.status",
         "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_skip_defaults.py",
+      "fixture_id": "fastapi.test.test-skip-defaults",
+      "workflow_id": "response-model-data-filter-exclude-unset-none-review",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.response-model-data-filter.exclude-unset-none"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
       ]
     },
     {
@@ -22540,6 +22608,35 @@
         "http.headers.ordered",
         "http.status",
         "openapi.document",
+        "openapi.security"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:advanced/security/oauth2-scopes.md",
+      "fixture_id": "fastapi.docs.advanced-security-oauth2-scopes",
+      "workflow_id": "security-scopes-dont-propagate-openapi-source-review",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.status, openapi.security. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.security.scopes-dont-propagate.nested-openapi-sibling-scopes"
+      ],
+      "observation_selectors": [
+        "http.status",
+        "openapi.security"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_security_scopes_dont_propagate.py",
+      "fixture_id": "fastapi.test.test-security-scopes-dont-propagate",
+      "workflow_id": "security-scopes-dont-propagate-openapi-source-review",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.status, openapi.security. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.security.scopes-dont-propagate.nested-openapi-sibling-scopes"
+      ],
+      "observation_selectors": [
+        "docs.response.status",
+        "http.status",
         "openapi.security"
       ]
     },
