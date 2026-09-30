@@ -10,6 +10,9 @@ pub(crate) struct OpenApiParameter {
     pub(crate) name: String,
     pub(crate) location: String,
     pub(crate) required: bool,
+    pub(crate) description: Option<String>,
+    pub(crate) deprecated: bool,
+    pub(crate) default: Option<Py<PyAny>>,
     pub(crate) schema: Py<PyAny>,
 }
 
@@ -30,6 +33,7 @@ pub(crate) struct OpenApiOperation {
     pub(crate) tags: Option<Vec<String>>,
     pub(crate) status: u16,
     pub(crate) parameters: Vec<OpenApiParameter>,
+    pub(crate) validation_parameters_present: bool,
     pub(crate) request_model_name: Option<String>,
     pub(crate) request_schema: Option<Py<PyAny>>,
     pub(crate) request_required: bool,
@@ -128,7 +132,25 @@ pub(crate) fn openapi_document(
                 parameter_document.set_item("name", &parameter.name)?;
                 parameter_document.set_item("in", &parameter.location)?;
                 parameter_document.set_item("required", parameter.required)?;
-                let schema = normalize_schema(py, parameter.schema.bind(py), false)?;
+                if let Some(description) = parameter.description.as_deref() {
+                    parameter_document.set_item("description", description)?;
+                }
+                if parameter.deprecated {
+                    parameter_document.set_item("deprecated", true)?;
+                }
+                let mut schema = normalize_schema(py, parameter.schema.bind(py), false)?;
+                if let Some(default) = parameter.default.as_ref() {
+                    if let Ok(schema) = schema.cast::<PyDict>() {
+                        schema.set_item("default", default.bind(py))?;
+                    } else {
+                        let wrapped_schema = PyDict::new(py);
+                        let all_of = PyList::empty(py);
+                        all_of.append(&schema)?;
+                        wrapped_schema.set_item("allOf", all_of)?;
+                        wrapped_schema.set_item("default", default.bind(py))?;
+                        schema = wrapped_schema.into_any();
+                    }
+                }
                 parameter_document.set_item("schema", schema)?;
                 parameters.append(parameter_document)?;
             }
@@ -243,7 +265,7 @@ pub(crate) fn openapi_document(
         responses.set_item(status_key, success_response)?;
 
         let needs_validation_response =
-            !operation.parameters.is_empty() || operation.request_body_present;
+            operation.validation_parameters_present || operation.request_body_present;
         if needs_validation_response && operation.status != 422 {
             responses.set_item("422", validation_response(py)?)?;
             schemas

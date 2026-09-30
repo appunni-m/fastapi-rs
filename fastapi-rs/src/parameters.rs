@@ -11,7 +11,11 @@ pub(crate) struct ParameterMetadata {
     dependency: Option<Py<PyAny>>,
     default: Option<Py<PyAny>>,
     media_type: Option<String>,
+    title: Option<String>,
     description: Option<String>,
+    pattern: Option<String>,
+    deprecated: Option<Py<PyAny>>,
+    include_in_schema: bool,
     gt: Option<Py<PyAny>>,
     lt: Option<Py<PyAny>>,
     min_length: Option<Py<PyAny>>,
@@ -50,8 +54,30 @@ impl ParameterMetadata {
     }
 
     #[getter]
+    fn title(&self) -> Option<String> {
+        self.title.clone()
+    }
+
+    #[getter]
     fn description(&self) -> Option<String> {
         self.description.clone()
+    }
+
+    #[getter]
+    fn pattern(&self) -> Option<String> {
+        self.pattern.clone()
+    }
+
+    #[getter]
+    fn deprecated(&self, py: Python<'_>) -> Option<Py<PyAny>> {
+        self.deprecated
+            .as_ref()
+            .map(|deprecated| deprecated.clone_ref(py))
+    }
+
+    #[getter]
+    fn include_in_schema(&self) -> bool {
+        self.include_in_schema
     }
 
     #[getter]
@@ -108,7 +134,11 @@ fn depends(
             dependency: Some(dependency),
             default: None,
             media_type: None,
+            title: None,
             description: None,
+            pattern: None,
+            deprecated: None,
+            include_in_schema: true,
             gt: None,
             lt: None,
             min_length: None,
@@ -137,7 +167,11 @@ fn header(
             dependency: None,
             default,
             media_type: None,
+            title: None,
             description: None,
+            pattern: None,
+            deprecated: None,
+            include_in_schema: true,
             gt: None,
             lt: None,
             min_length: None,
@@ -162,7 +196,11 @@ fn cookie(
             dependency: None,
             default,
             media_type: None,
+            title: None,
             description: None,
+            pattern: None,
+            deprecated: None,
+            include_in_schema: true,
             gt: None,
             lt: None,
             min_length: None,
@@ -180,23 +218,38 @@ fn query_ellipsis_default() -> Py<PyAny> {
 #[pyfunction(
     name = "Query",
     signature = (
+        default = query_ellipsis_default(),
         *,
         alias = None,
-        default = query_ellipsis_default(),
+        title = None,
+        description = None,
         gt = None,
         lt = None,
         min_length = None,
-        max_length = None
+        max_length = None,
+        pattern = None,
+        deprecated = None,
+        include_in_schema = true
     )
+)]
+// lint-exception: PyO3 needs one Rust argument per FastAPI-compatible Query keyword.
+#[allow(
+    clippy::too_many_arguments,
+    reason = "preserve FastAPI Query's positional default and named option signature"
 )]
 fn query(
     py: Python<'_>,
-    alias: Option<String>,
     default: Py<PyAny>,
+    alias: Option<String>,
+    title: Option<String>,
+    description: Option<String>,
     gt: Option<Py<PyAny>>,
     lt: Option<Py<PyAny>>,
     min_length: Option<Py<PyAny>>,
     max_length: Option<Py<PyAny>>,
+    pattern: Option<String>,
+    deprecated: Option<Py<PyAny>>,
+    include_in_schema: bool,
 ) -> PyResult<Py<ParameterMetadata>> {
     let ellipsis = py.Ellipsis();
     let undefined = py.import("pydantic_core")?.getattr("PydanticUndefined")?;
@@ -213,7 +266,11 @@ fn query(
             dependency: None,
             default,
             media_type: None,
-            description: None,
+            title,
+            description,
+            pattern,
+            deprecated,
+            include_in_schema,
             gt,
             lt,
             min_length,
@@ -234,7 +291,11 @@ fn path(py: Python<'_>, gt: Option<Py<PyAny>>) -> PyResult<Py<ParameterMetadata>
             dependency: None,
             default: None,
             media_type: None,
+            title: None,
             description: None,
+            pattern: None,
+            deprecated: None,
+            include_in_schema: true,
             gt,
             lt: None,
             min_length: None,
@@ -255,7 +316,11 @@ fn body(py: Python<'_>, gt: Option<Py<PyAny>>) -> PyResult<Py<ParameterMetadata>
             dependency: None,
             default: None,
             media_type: None,
+            title: None,
             description: None,
+            pattern: None,
+            deprecated: None,
+            include_in_schema: true,
             gt,
             lt: None,
             min_length: None,
@@ -315,7 +380,11 @@ fn form(
             dependency: None,
             default: normalize_undefined_default(py, default)?,
             media_type: Some(media_type.to_owned()),
+            title: None,
             description,
+            pattern: None,
+            deprecated: None,
+            include_in_schema: true,
             gt: None,
             lt: None,
             min_length: None,
@@ -351,7 +420,11 @@ fn file(
             dependency: None,
             default: normalize_undefined_default(py, default)?,
             media_type: Some(media_type.to_owned()),
+            title: None,
             description,
+            pattern: None,
+            deprecated: None,
+            include_in_schema: true,
             gt: None,
             lt: None,
             min_length: None,

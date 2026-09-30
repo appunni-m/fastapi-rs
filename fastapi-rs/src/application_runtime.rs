@@ -80,7 +80,10 @@ struct CallableParameter {
     default: Option<Py<PyAny>>,
     is_sequence: bool,
     media_type: Option<String>,
+    title: Option<String>,
     description: Option<String>,
+    deprecated: bool,
+    include_in_schema: bool,
     source: ParameterSource,
 }
 
@@ -224,6 +227,10 @@ struct ParameterOpenApiPlan {
     location: String,
     required: bool,
     annotation: Py<PyAny>,
+    default: Option<Py<PyAny>>,
+    title: Option<String>,
+    description: Option<String>,
+    deprecated: bool,
 }
 
 #[pyclass(name = "FastAPI", module = "fastapi_rs._core")]
@@ -1046,16 +1053,20 @@ impl PyFastApi {
                     py,
                     parameter.annotation.bind(py),
                     "validation",
-                    Some(&title),
+                    parameter.title.as_deref().or(Some(&title)),
                 )?;
                 Ok(OpenApiParameter {
                     name: parameter.name,
                     location: parameter.location,
                     required: parameter.required,
+                    description: parameter.description,
+                    deprecated: parameter.deprecated,
+                    default: parameter.default,
                     schema,
                 })
             })
             .collect::<PyResult<Vec<_>>>()?;
+        let validation_parameters_present = route.plan.has_openapi_parameter_inputs();
 
         let has_form_body = route.plan.has_form_inputs();
         let (request_model_name, request_schema, request_required, request_media_type) =
@@ -1191,6 +1202,7 @@ impl PyFastApi {
             operation_id,
             status: route.status_code,
             parameters,
+            validation_parameters_present,
             request_model_name,
             request_schema,
             request_required,
@@ -1851,8 +1863,12 @@ impl CallablePlan {
                 } else {
                     Some(raw_default.unbind())
                 };
-                let validated_annotation =
-                    constrained_parameter_annotation(py, annotation.bind(py), &metadata)?;
+                let validated_annotation = constrained_parameter_annotation(
+                    py,
+                    annotation.bind(py),
+                    &metadata,
+                    default.as_ref().map(|value| value.bind(py)),
+                )?;
                 let is_sequence = field_annotation_is_sequence(py, validated_annotation.bind(py))?;
                 let source =
                     parameter_source(py, &name, annotation.bind(py), &metadata, path_parameters)?;
@@ -1862,7 +1878,10 @@ impl CallablePlan {
                     default,
                     is_sequence,
                     media_type: parameter_media_type(py, &source, &metadata)?,
+                    title: parameter_title(py, &source, &metadata)?,
                     description: parameter_description(py, &source, &metadata)?,
+                    deprecated: parameter_deprecated(py, &source, &metadata)?,
+                    include_in_schema: parameter_include_in_schema(py, &source, &metadata)?,
                     source,
                 })
             })
@@ -1900,7 +1919,10 @@ impl CallablePlan {
                 default: None,
                 is_sequence: false,
                 media_type: None,
+                title: None,
                 description: None,
+                deprecated: false,
+                include_in_schema: true,
                 source: ParameterSource::Dependency {
                     plan,
                     use_cache,
@@ -1952,6 +1974,18 @@ impl CallablePlan {
         let mut parameters = Vec::new();
         self.collect_body_parameters(&mut parameters);
         parameters
+    }
+
+    fn has_openapi_parameter_inputs(&self) -> bool {
+        self.parameters
+            .iter()
+            .any(|parameter| match &parameter.source {
+                ParameterSource::Input { source, .. } => !matches!(
+                    source,
+                    InputSource::Body | InputSource::Form | InputSource::File
+                ),
+                ParameterSource::Dependency { plan, .. } => plan.has_openapi_parameter_inputs(),
+            })
     }
 
     fn collect_body_parameters<'a>(&'a self, parameters: &mut Vec<&'a CallableParameter>) {
@@ -2018,16 +2052,25 @@ impl CallablePlan {
         for parameter in &self.parameters {
             match &parameter.source {
                 ParameterSource::Input { source, alias }
-                    if !matches!(
-                        source,
-                        InputSource::Body | InputSource::Form | InputSource::File
-                    ) =>
+                    if parameter.include_in_schema
+                        && !matches!(
+                            source,
+                            InputSource::Body | InputSource::Form | InputSource::File
+                        ) =>
                 {
                     parameters.push(ParameterOpenApiPlan {
                         name: alias.clone(),
                         location: source.as_str().to_owned(),
                         required: parameter.default.is_none(),
                         annotation: parameter.annotation.clone_ref(py),
+                        default: parameter
+                            .default
+                            .as_ref()
+                            .filter(|value| !value.bind(py).is_none())
+                            .map(|value| value.clone_ref(py)),
+                        title: parameter.title.clone(),
+                        description: parameter.description.clone(),
+                        deprecated: parameter.deprecated,
                     });
                 }
                 ParameterSource::Dependency { plan, .. } => {
@@ -2911,6 +2954,10 @@ fn parameter_description(
 ) -> PyResult<Option<String>> {
     let expected_kind = match source {
         ParameterSource::Input {
+            source: InputSource::Query,
+            ..
+        } => "query",
+        ParameterSource::Input {
             source: InputSource::Form,
             ..
         } => "form",
@@ -2928,6 +2975,76 @@ fn parameter_description(
         }
     }
     Ok(None)
+}
+
+fn parameter_title(
+    py: Python<'_>,
+    source: &ParameterSource,
+    metadata: &[Py<PyAny>],
+) -> PyResult<Option<String>> {
+    if !matches!(
+        source,
+        ParameterSource::Input {
+            source: InputSource::Query,
+            ..
+        }
+    ) {
+        return Ok(None);
+    }
+    for marker in metadata {
+        let marker = marker.bind(py);
+        if marker.hasattr("kind")? && marker.getattr("kind")?.extract::<String>()? == "query" {
+            return marker.getattr("title")?.extract::<Option<String>>();
+        }
+    }
+    Ok(None)
+}
+
+fn parameter_deprecated(
+    py: Python<'_>,
+    source: &ParameterSource,
+    metadata: &[Py<PyAny>],
+) -> PyResult<bool> {
+    if !matches!(
+        source,
+        ParameterSource::Input {
+            source: InputSource::Query,
+            ..
+        }
+    ) {
+        return Ok(false);
+    }
+    for marker in metadata {
+        let marker = marker.bind(py);
+        if marker.hasattr("kind")? && marker.getattr("kind")?.extract::<String>()? == "query" {
+            let deprecated = marker.getattr("deprecated")?;
+            return Ok(!deprecated.is_none() && deprecated.is_truthy()?);
+        }
+    }
+    Ok(false)
+}
+
+fn parameter_include_in_schema(
+    py: Python<'_>,
+    source: &ParameterSource,
+    metadata: &[Py<PyAny>],
+) -> PyResult<bool> {
+    if !matches!(
+        source,
+        ParameterSource::Input {
+            source: InputSource::Query,
+            ..
+        }
+    ) {
+        return Ok(true);
+    }
+    for marker in metadata {
+        let marker = marker.bind(py);
+        if marker.hasattr("kind")? && marker.getattr("kind")?.extract::<String>()? == "query" {
+            return marker.getattr("include_in_schema")?.extract::<bool>();
+        }
+    }
+    Ok(true)
 }
 
 fn is_pydantic_model_annotation(py: Python<'_>, annotation: &Bound<'_, PyAny>) -> PyResult<bool> {
@@ -3112,62 +3229,61 @@ fn constrained_parameter_annotation(
     py: Python<'_>,
     annotation: &Bound<'_, PyAny>,
     metadata: &[Py<PyAny>],
+    default: Option<&Bound<'_, PyAny>>,
 ) -> PyResult<Py<PyAny>> {
+    let mut annotated_arguments = vec![annotation.clone().unbind()];
     for marker in metadata {
         let marker = marker.bind(py);
         if !marker.hasattr("kind")? {
+            annotated_arguments.push(marker.clone().unbind());
             continue;
         }
         let kind = marker.getattr("kind")?.extract::<String>()?;
         if kind != "body" && kind != "query" && kind != "path" {
             continue;
         }
-        let gt = marker.getattr("gt")?;
-        let lt = if kind == "query" {
-            let lt = marker.getattr("lt")?;
-            (!lt.is_none()).then_some(lt)
-        } else {
-            None
-        };
-        let min_length = if kind == "query" {
-            let min_length = marker.getattr("min_length")?;
-            (!min_length.is_none()).then_some(min_length)
-        } else {
-            None
-        };
-        let max_length = if kind == "query" {
-            let max_length = marker.getattr("max_length")?;
-            (!max_length.is_none()).then_some(max_length)
-        } else {
-            None
-        };
-        if gt.is_none() && lt.is_none() && min_length.is_none() && max_length.is_none() {
-            continue;
-        }
         let kwargs = PyDict::new(py);
-        if !gt.is_none() {
-            kwargs.set_item("gt", gt)?;
+        let mut has_field_metadata = false;
+        for name in ["gt", "lt", "min_length", "max_length"] {
+            if name != "gt" && kind != "query" {
+                continue;
+            }
+            let value = marker.getattr(name)?;
+            if !value.is_none() {
+                kwargs.set_item(name, value)?;
+                has_field_metadata = true;
+            }
         }
-        if let Some(lt) = lt {
-            kwargs.set_item("lt", lt)?;
+        if kind == "query" {
+            for name in ["title", "description", "pattern", "deprecated"] {
+                let value = marker.getattr(name)?;
+                if value.is_none() || (name == "pattern" && value.extract::<String>()?.is_empty()) {
+                    continue;
+                }
+                kwargs.set_item(name, value)?;
+                has_field_metadata = true;
+            }
+            if let Some(default) = default {
+                kwargs.set_item("default", default)?;
+                has_field_metadata = true;
+            }
         }
-        if let Some(min_length) = min_length {
-            kwargs.set_item("min_length", min_length)?;
+        if has_field_metadata {
+            let field = py
+                .import("pydantic")?
+                .getattr("Field")?
+                .call((), Some(&kwargs))?;
+            annotated_arguments.push(field.unbind());
         }
-        if let Some(max_length) = max_length {
-            kwargs.set_item("max_length", max_length)?;
-        }
-        let field = py
-            .import("pydantic")?
-            .getattr("Field")?
-            .call((), Some(&kwargs))?;
-        return py
-            .import("typing")?
-            .getattr("Annotated")?
-            .get_item((annotation, field))
-            .map(Bound::unbind);
     }
-    Ok(annotation.clone().unbind())
+    if annotated_arguments.len() == 1 {
+        return Ok(annotated_arguments.remove(0));
+    }
+    let arguments = PyTuple::new(py, annotated_arguments)?;
+    py.import("typing")?
+        .getattr("Annotated")?
+        .get_item(arguments)
+        .map(Bound::unbind)
 }
 
 fn is_pydantic_model(py: Python<'_>, annotation: &Bound<'_, PyAny>) -> PyResult<bool> {
@@ -3399,8 +3515,10 @@ fn pydantic_schema(
     let schema = adapter
         .call_method("json_schema", (), Some(&kwargs))?
         .cast_into::<PyDict>()?;
-    if let Some(title) = title {
-        schema.set_item("title", title)?;
+    if schema.get_item("title")?.is_none() {
+        if let Some(title) = title {
+            schema.set_item("title", title)?;
+        }
     }
     Ok(schema.into_any().unbind())
 }
@@ -3797,7 +3915,7 @@ fn validation_response_body(py: Python<'_>, failures: &[ValidationIssue]) -> PyR
     }
     let result = PyDict::new(py);
     result.set_item("detail", details)?;
-    Ok(result.into_any().unbind())
+    Ok(jsonable_encoder_default(py, &result)?.unbind())
 }
 
 fn append_input_validation_details(
