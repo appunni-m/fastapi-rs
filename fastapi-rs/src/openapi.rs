@@ -346,13 +346,15 @@ pub(crate) fn openapi_document(
         }
     }
 
-    let components = PyDict::new(py);
-    let component_schemas = PyDict::new(py);
-    for (name, schema) in schemas {
-        component_schemas.set_item(name, schema.bind(py))?;
+    if !schemas.is_empty() {
+        let components = PyDict::new(py);
+        let component_schemas = PyDict::new(py);
+        for (name, schema) in schemas {
+            component_schemas.set_item(name, schema.bind(py))?;
+        }
+        components.set_item("schemas", component_schemas)?;
+        document.set_item("components", components)?;
     }
-    components.set_item("schemas", component_schemas)?;
-    document.set_item("components", components)?;
 
     Ok(document.into_any().unbind())
 }

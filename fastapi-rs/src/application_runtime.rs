@@ -264,6 +264,73 @@ pub(crate) struct PyFastApi {
     named_routes: NamedRouteTable,
     routes: Vec<FastApiRoute>,
     websocket_routes: Vec<FastApiWebSocketRoute>,
+    user_middleware: Vec<Py<PyAny>>,
+    middleware_stack: Option<Py<PyAny>>,
+}
+
+#[pyclass(name = "_FastAPIAsgiApp", module = "fastapi_rs._core")]
+struct PyFastApiAsgiApp {
+    app: Py<PyFastApi>,
+}
+
+#[pyclass(name = "_MiddlewareDecorator", module = "fastapi_rs._core")]
+struct PyMiddlewareDecorator {
+    app: Py<PyFastApi>,
+}
+
+#[pyclass(
+    name = "_FastAPIHTTPMiddleware",
+    module = "fastapi_rs._core",
+    unsendable
+)]
+struct PyFastApiHttpMiddleware {
+    app: Py<PyAny>,
+    dispatch: Py<PyAny>,
+}
+
+#[pyclass(
+    name = "_FastAPIMessageCapture",
+    module = "fastapi_rs._core",
+    unsendable
+)]
+struct PyFastApiMessageCapture {
+    messages: Py<PyList>,
+}
+
+#[pyclass(name = "_FastAPIHTTPExceptionHandler", module = "fastapi_rs._core")]
+struct PyFastApiHttpExceptionHandler;
+
+#[pyclass(name = "_FastAPICallNext", module = "fastapi_rs._core", unsendable)]
+struct PyFastApiCallNext {
+    app: Py<PyAny>,
+    scope: Py<PyAny>,
+    receive: Py<PyAny>,
+}
+
+#[pymethods]
+impl PyFastApiAsgiApp {
+    fn __call__(
+        &self,
+        py: Python<'_>,
+        scope: Py<PyAny>,
+        receive: Py<PyAny>,
+        send: Py<PyAny>,
+    ) -> PyResult<Py<PyAny>> {
+        fastapi_core_call(py, self.app.clone_ref(py), scope, receive, send)
+    }
+}
+
+#[pymethods]
+impl PyMiddlewareDecorator {
+    fn __call__(&self, py: Python<'_>, dispatch: Py<PyAny>) -> PyResult<Py<PyAny>> {
+        let middleware_class = py.get_type::<PyFastApiHttpMiddleware>();
+        let kwargs = PyDict::new(py);
+        kwargs.set_item("dispatch", dispatch.bind(py))?;
+        self.app
+            .bind(py)
+            .call_method("add_middleware", (middleware_class,), Some(&kwargs))?;
+        Ok(dispatch)
+    }
 }
 
 #[pyclass(name = "_WebSocketDecorator", module = "fastapi_rs._core")]
@@ -332,6 +399,8 @@ impl PyFastApi {
             named_routes: NamedRouteTable::new(),
             routes: Vec::new(),
             websocket_routes: Vec::new(),
+            user_middleware: Vec::new(),
+            middleware_stack: None,
         }
     }
 
@@ -343,6 +412,37 @@ impl PyFastApi {
     #[setter]
     fn set_dependency_overrides(&mut self, dependency_overrides: Py<PyDict>) {
         self.dependency_overrides = dependency_overrides;
+    }
+
+    #[pyo3(signature = (middleware_class, *args, **kwargs))]
+    fn add_middleware(
+        &mut self,
+        py: Python<'_>,
+        middleware_class: Py<PyAny>,
+        args: &Bound<'_, PyTuple>,
+        kwargs: Option<&Bound<'_, PyDict>>,
+    ) -> PyResult<()> {
+        if self.middleware_stack.is_some() {
+            return Err(PyRuntimeError::new_err(
+                "Cannot add middleware after an application has started",
+            ));
+        }
+        let middleware_type = py.import("starlette.middleware")?.getattr("Middleware")?;
+        let mut argument_values = Vec::with_capacity(args.len() + 1);
+        argument_values.push(middleware_class.bind(py).clone());
+        argument_values.extend(args.iter());
+        let arguments = PyTuple::new(py, argument_values)?;
+        let registration = middleware_type.call(&arguments, kwargs)?;
+        self.user_middleware.insert(0, registration.unbind());
+        Ok(())
+    }
+
+    fn middleware(
+        slf: Py<Self>,
+        py: Python<'_>,
+        _middleware_type: &str,
+    ) -> PyResult<Py<PyMiddlewareDecorator>> {
+        Py::new(py, PyMiddlewareDecorator { app: slf })
     }
 
     // lint-exception: PyO3 needs one Rust argument per FastAPI-compatible keyword.
@@ -1025,35 +1125,345 @@ impl PyFastApi {
         receive: Py<PyAny>,
         send: Py<PyAny>,
     ) -> PyResult<Py<PyAny>> {
+        scope.bind(py).set_item("app", slf.clone_ref(py))?;
+        Self::middleware_stack_for(slf, py)?
+            .bind(py)
+            .call1((scope, receive, send))
+            .map(Bound::unbind)
+    }
+}
+
+#[pymethods]
+impl PyFastApiHttpMiddleware {
+    #[new]
+    #[pyo3(signature = (app, *, dispatch))]
+    fn new(app: Py<PyAny>, dispatch: Py<PyAny>) -> Self {
+        Self { app, dispatch }
+    }
+
+    fn __call__(
+        &self,
+        py: Python<'_>,
+        scope: Py<PyAny>,
+        receive: Py<PyAny>,
+        send: Py<PyAny>,
+    ) -> PyResult<Py<PyAny>> {
+        if scope.bind(py).get_item("type")?.extract::<String>()? != "http" {
+            return self
+                .app
+                .bind(py)
+                .call1((scope, receive, send))
+                .map(Bound::unbind);
+        }
         into_python_awaitable(
             py,
-            FastApiCall {
-                app: slf,
+            FastApiHttpMiddlewareCall {
+                app: self.app.clone_ref(py),
+                dispatch: self.dispatch.clone_ref(py),
                 scope,
                 receive,
                 send,
-                route_index: None,
-                websocket_route_index: None,
-                request: None,
-                websocket: None,
-                path_params: Vec::new(),
                 pending: None,
-                response_status: 200,
-                response_body: Vec::new(),
-                invocation: None,
-                form_request: None,
-                form_close_started: false,
-                form_body_embedded: false,
-                form_inputs: None,
-                form_query_params: None,
-                form_file_reads: VecDeque::new(),
-                active_form_file_read: None,
             },
         )
     }
 }
 
+#[pymethods]
+impl PyFastApiMessageCapture {
+    fn __call__(&self, py: Python<'_>, message: Py<PyAny>) -> PyResult<Py<PyAny>> {
+        self.messages.bind(py).append(message)?;
+        into_python_awaitable(py, FastApiImmediateAwaitable { result: py.None() })
+    }
+}
+
+#[pymethods]
+impl PyFastApiHttpExceptionHandler {
+    fn __call__(
+        &self,
+        py: Python<'_>,
+        _request: Py<PyAny>,
+        exception: Py<PyAny>,
+    ) -> PyResult<Py<PyAny>> {
+        let exception = exception.bind(py);
+        let status_code = exception.getattr("status_code")?.extract::<u16>()?;
+        let response_module = py.import("starlette.responses")?;
+        let has_body = status_code >= 200 && !matches!(status_code, 204 | 205 | 304);
+        let response_type = if has_body {
+            response_module.getattr("JSONResponse")?
+        } else {
+            response_module.getattr("Response")?
+        };
+        let kwargs = PyDict::new(py);
+        kwargs.set_item("status_code", status_code)?;
+        let headers = exception.getattr("headers")?;
+        if !headers.is_none() {
+            kwargs.set_item("headers", headers)?;
+        }
+        if has_body {
+            let content = PyDict::new(py);
+            content.set_item("detail", exception.getattr("detail")?)?;
+            response_type
+                .call((content,), Some(&kwargs))
+                .map(Bound::unbind)
+        } else {
+            response_type.call((), Some(&kwargs)).map(Bound::unbind)
+        }
+    }
+}
+
+#[pymethods]
+impl PyFastApiCallNext {
+    fn __call__(&self, py: Python<'_>, _request: Py<PyAny>) -> PyResult<Py<PyAny>> {
+        let messages = PyList::empty(py).unbind();
+        into_python_awaitable(
+            py,
+            FastApiCallNextMachine {
+                app: self.app.clone_ref(py),
+                scope: self.scope.clone_ref(py),
+                receive: self.receive.clone_ref(py),
+                messages,
+                pending: false,
+            },
+        )
+    }
+}
+
+enum FastApiHttpMiddlewarePending {
+    Dispatch,
+    Response,
+}
+
+struct FastApiHttpMiddlewareCall {
+    app: Py<PyAny>,
+    dispatch: Py<PyAny>,
+    scope: Py<PyAny>,
+    receive: Py<PyAny>,
+    send: Py<PyAny>,
+    pending: Option<FastApiHttpMiddlewarePending>,
+}
+
+impl AwaitableStateMachine for FastApiHttpMiddlewareCall {
+    fn resume(&mut self, py: Python<'_>, input: MachineResume) -> PyResult<MachineAction> {
+        match input {
+            MachineResume::Start if self.pending.is_none() => {
+                let request_type = py.import("starlette.requests")?.getattr("Request")?;
+                let request = request_type.call1((self.scope.bind(py), self.receive.bind(py)))?;
+                let call_next = Py::new(
+                    py,
+                    PyFastApiCallNext {
+                        app: self.app.clone_ref(py),
+                        scope: self.scope.clone_ref(py),
+                        receive: self.receive.clone_ref(py),
+                    },
+                )?
+                .into_any();
+                let response = self.dispatch.bind(py).call1((request, call_next))?.unbind();
+                self.pending = Some(FastApiHttpMiddlewarePending::Dispatch);
+                Ok(MachineAction::Await(response))
+            }
+            MachineResume::Value(response) => match self.pending.take() {
+                Some(FastApiHttpMiddlewarePending::Dispatch) => {
+                    let awaitable = response.bind(py).call1((
+                        self.scope.bind(py),
+                        self.receive.bind(py),
+                        self.send.bind(py),
+                    ))?;
+                    self.pending = Some(FastApiHttpMiddlewarePending::Response);
+                    Ok(MachineAction::Await(awaitable.unbind()))
+                }
+                Some(FastApiHttpMiddlewarePending::Response) => {
+                    Ok(MachineAction::Complete(py.None()))
+                }
+                None => Err(PyRuntimeError::new_err(
+                    "HTTP middleware resumed without a pending operation",
+                )),
+            },
+            MachineResume::Error(error) => {
+                self.pending = None;
+                Err(error)
+            }
+            MachineResume::Start => Err(PyRuntimeError::new_err(
+                "HTTP middleware received a duplicate start signal",
+            )),
+        }
+    }
+}
+
+struct FastApiImmediateAwaitable {
+    result: Py<PyAny>,
+}
+
+impl AwaitableStateMachine for FastApiImmediateAwaitable {
+    fn resume(&mut self, py: Python<'_>, input: MachineResume) -> PyResult<MachineAction> {
+        match input {
+            MachineResume::Start => Ok(MachineAction::Complete(self.result.clone_ref(py))),
+            MachineResume::Value(_) | MachineResume::Error(_) => Err(PyRuntimeError::new_err(
+                "immediate awaitable resumed more than once",
+            )),
+        }
+    }
+}
+
+struct FastApiCallNextMachine {
+    app: Py<PyAny>,
+    scope: Py<PyAny>,
+    receive: Py<PyAny>,
+    messages: Py<PyList>,
+    pending: bool,
+}
+
+impl AwaitableStateMachine for FastApiCallNextMachine {
+    fn resume(&mut self, py: Python<'_>, input: MachineResume) -> PyResult<MachineAction> {
+        match input {
+            MachineResume::Start if !self.pending => {
+                let send = Py::new(
+                    py,
+                    PyFastApiMessageCapture {
+                        messages: self.messages.clone_ref(py),
+                    },
+                )?
+                .into_any();
+                let awaitable =
+                    self.app
+                        .bind(py)
+                        .call1((self.scope.bind(py), self.receive.bind(py), send))?;
+                self.pending = true;
+                Ok(MachineAction::Await(awaitable.unbind()))
+            }
+            MachineResume::Value(_) if self.pending => {
+                self.pending = false;
+                let response = response_from_captured_messages(py, self.messages.bind(py))?;
+                Ok(MachineAction::Complete(response))
+            }
+            MachineResume::Error(error) if self.pending => {
+                self.pending = false;
+                Err(error)
+            }
+            MachineResume::Value(_) | MachineResume::Error(_) | MachineResume::Start => Err(
+                PyRuntimeError::new_err("call_next resumed without a pending application call"),
+            ),
+        }
+    }
+}
+
+fn response_from_captured_messages(
+    py: Python<'_>,
+    messages: &Bound<'_, PyList>,
+) -> PyResult<Py<PyAny>> {
+    let mut status_code = None;
+    let headers = PyDict::new(py);
+    let mut body = Vec::new();
+
+    for message in messages.iter() {
+        let message = message.cast::<PyDict>()?;
+        match message
+            .get_item("type")?
+            .ok_or_else(|| PyValueError::new_err("ASGI response message has no type"))?
+            .extract::<String>()?
+            .as_str()
+        {
+            "http.response.start" => {
+                status_code = Some(
+                    message
+                        .get_item("status")?
+                        .ok_or_else(|| PyValueError::new_err("ASGI response start has no status"))?
+                        .extract::<u16>()?,
+                );
+                if let Some(raw_headers) = message.get_item("headers")? {
+                    for header in raw_headers.try_iter()? {
+                        let header = header?.cast_into::<PyTuple>()?;
+                        let name = header.get_item(0)?.call_method1("decode", ("latin-1",))?;
+                        let value = header.get_item(1)?.call_method1("decode", ("latin-1",))?;
+                        headers.set_item(name, value)?;
+                    }
+                }
+            }
+            "http.response.body" => {
+                if let Some(chunk) = message.get_item("body")? {
+                    body.extend(chunk.extract::<Vec<u8>>()?);
+                }
+            }
+            "http.response.debug" => {}
+            other => {
+                return Err(PyValueError::new_err(format!(
+                    "unsupported ASGI message in HTTP middleware response: {other}"
+                )));
+            }
+        }
+    }
+
+    let status_code = status_code
+        .ok_or_else(|| PyRuntimeError::new_err("downstream ASGI app returned no response"))?;
+    let kwargs = PyDict::new(py);
+    kwargs.set_item("status_code", status_code)?;
+    kwargs.set_item("headers", headers)?;
+    py.import("starlette.responses")?
+        .getattr("Response")?
+        .call((PyBytes::new(py, &body),), Some(&kwargs))
+        .map(Bound::unbind)
+}
+
 impl PyFastApi {
+    fn middleware_stack_for(slf: Py<Self>, py: Python<'_>) -> PyResult<Py<PyAny>> {
+        let (cached, registrations) = {
+            let app = slf.bind(py).borrow();
+            (
+                app.middleware_stack
+                    .as_ref()
+                    .map(|stack| stack.clone_ref(py)),
+                app.user_middleware
+                    .iter()
+                    .map(|registration| registration.clone_ref(py))
+                    .collect::<Vec<_>>(),
+            )
+        };
+        if let Some(cached) = cached {
+            return Ok(cached);
+        }
+
+        let mut stack = Py::new(
+            py,
+            PyFastApiAsgiApp {
+                app: slf.clone_ref(py),
+            },
+        )?
+        .into_any();
+        let exception_middleware = py
+            .import("starlette.middleware.exceptions")?
+            .getattr("ExceptionMiddleware")?;
+        let handlers = PyDict::new(py);
+        let http_exception_type = py.import("fastapi_rs._core")?.getattr("HTTPException")?;
+        let http_exception_handler = Py::new(py, PyFastApiHttpExceptionHandler)?.into_any();
+        handlers.set_item(http_exception_type, http_exception_handler)?;
+        let exception_kwargs = PyDict::new(py);
+        exception_kwargs.set_item("handlers", handlers)?;
+        stack = exception_middleware
+            .call((stack.bind(py),), Some(&exception_kwargs))?
+            .unbind();
+        for registration in registrations.iter().rev() {
+            let registration = registration.bind(py);
+            let middleware_class = registration.getattr("cls")?;
+            let arguments = registration.getattr("args")?.cast_into::<PyTuple>()?;
+            let keywords = registration.getattr("kwargs")?.cast_into::<PyDict>()?;
+            let mut argument_values = Vec::with_capacity(arguments.len() + 1);
+            argument_values.push(stack.bind(py).clone());
+            argument_values.extend(arguments.iter());
+            let arguments = PyTuple::new(py, argument_values)?;
+            stack = middleware_class.call(&arguments, Some(&keywords))?.unbind();
+        }
+        let server_error_middleware = py
+            .import("starlette.middleware.errors")?
+            .getattr("ServerErrorMiddleware")?;
+        stack = server_error_middleware.call1((stack.bind(py),))?.unbind();
+
+        let mut app = slf.bind(py).borrow_mut();
+        if app.middleware_stack.is_none() {
+            app.middleware_stack = Some(stack.clone_ref(py));
+        }
+        Ok(stack)
+    }
+
     fn openapi_document(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
         let operations = self
             .routes
@@ -4786,6 +5196,40 @@ impl AwaitableStateMachine for FastApiStreamNext {
     }
 }
 
+fn fastapi_core_call(
+    py: Python<'_>,
+    app: Py<PyFastApi>,
+    scope: Py<PyAny>,
+    receive: Py<PyAny>,
+    send: Py<PyAny>,
+) -> PyResult<Py<PyAny>> {
+    into_python_awaitable(
+        py,
+        FastApiCall {
+            app,
+            scope,
+            receive,
+            send,
+            route_index: None,
+            websocket_route_index: None,
+            request: None,
+            websocket: None,
+            path_params: Vec::new(),
+            pending: None,
+            response_status: 200,
+            response_body: Vec::new(),
+            invocation: None,
+            form_request: None,
+            form_close_started: false,
+            form_body_embedded: false,
+            form_inputs: None,
+            form_query_params: None,
+            form_file_reads: VecDeque::new(),
+            active_form_file_read: None,
+        },
+    )
+}
+
 struct FastApiCall {
     app: Py<PyFastApi>,
     scope: Py<PyAny>,
@@ -5898,6 +6342,12 @@ impl AwaitableStateMachine for FastApiCall {
 /// Registers FastAPI's Rust-owned application type and request markers.
 pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     module.add_class::<PyFastApi>()?;
+    module.add_class::<PyFastApiAsgiApp>()?;
+    module.add_class::<PyMiddlewareDecorator>()?;
+    module.add_class::<PyFastApiHttpMiddleware>()?;
+    module.add_class::<PyFastApiMessageCapture>()?;
+    module.add_class::<PyFastApiHttpExceptionHandler>()?;
+    module.add_class::<PyFastApiCallNext>()?;
     module.add_class::<PyApiRouter>()?;
     module.add_class::<PyOperationDecorator>()?;
     module.add_class::<PyWebSocketDecorator>()?;
@@ -5926,6 +6376,19 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     let websockets = module.py().import("starlette.websockets")?;
     for name in ["WebSocket", "WebSocketDisconnect", "WebSocketState"] {
         module.add(name, websockets.getattr(name)?)?;
+    }
+    for (name, module_path) in [
+        ("Middleware", "starlette.middleware"),
+        ("CORSMiddleware", "starlette.middleware.cors"),
+        ("GZipMiddleware", "starlette.middleware.gzip"),
+        (
+            "HTTPSRedirectMiddleware",
+            "starlette.middleware.httpsredirect",
+        ),
+        ("TrustedHostMiddleware", "starlette.middleware.trustedhost"),
+        ("WSGIMiddleware", "starlette.middleware.wsgi"),
+    ] {
+        module.add(name, module.py().import(module_path)?.getattr(name)?)?;
     }
     Ok(())
 }

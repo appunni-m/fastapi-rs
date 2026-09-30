@@ -61,6 +61,17 @@ where
     Py::new(py, NativeAwaitable::new(machine)).map(|value| value.into_any())
 }
 
+/// Register the native continuation as a coroutine for task-group integrations.
+///
+/// The object already implements `send`, `throw`, `close`, and `__await__`; the
+/// virtual registration lets asyncio and AnyIO recognize it as a coroutine.
+pub(crate) fn register_coroutine_protocol(py: Python<'_>) -> PyResult<()> {
+    py.import("collections.abc")?
+        .getattr("Coroutine")?
+        .call_method1("register", (py.get_type::<NativeAwaitable>(),))?;
+    Ok(())
+}
+
 #[pyclass(unsendable)]
 struct NativeAwaitable {
     machine: Option<Box<dyn AwaitableStateMachine>>,
