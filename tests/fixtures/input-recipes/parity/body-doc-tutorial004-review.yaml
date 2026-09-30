@@ -1,0 +1,84 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/body_doc_tutorial004_review.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.docs-example.body.tutorial004.path-query-body
+  actions:
+  - action_id: replace-revision-with-comment
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: PUT
+      scheme: http
+      path: /revisions/71
+      query_string: comment=verified
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"title":"Night shift","score":9.25,"note":"revised"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs_src/body/tutorial004_py310.py
+    kind: upstream_documentation_example
+- case_id: fastapi.docs-example.body.tutorial004.optional-query-absent
+  actions:
+  - action_id: replace-revision-without-comment
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: PUT
+      scheme: http
+      path: /revisions/72
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"title":"Night shift","score":9.25}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs_src/body/tutorial004_py310.py
+    kind: upstream_documentation_example

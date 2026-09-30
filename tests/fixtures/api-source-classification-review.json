@@ -1964,6 +1964,191 @@
     },
     {
       "binding": {
+        "module": "fastapi.exceptions",
+        "name": "RequestValidationError",
+        "target": "fastapi.exceptions.RequestValidationError"
+      },
+      "candidate_kind": "import_binding",
+      "evidence": [
+        {
+          "line": 2,
+          "path": "fastapi/exception_handlers.py",
+          "role": "fastapi-source-binding"
+        },
+        {
+          "line": 21,
+          "path": "fastapi/exception_handlers.py",
+          "role": "fastapi-implementation-use"
+        },
+        {
+          "line": 240,
+          "end_line": 242,
+          "path": "docs/en/docs/tutorial/handling-errors.md",
+          "role": "fastapi-public-documentation"
+        }
+      ],
+      "evidence_basis": [
+        "implementation-only"
+      ],
+      "id": "fastapi.exception_handlers.RequestValidationError",
+      "reason": "This import binding is used as an annotation for FastAPI's request-validation handler. The docs for this module show reuse of default handler functions; the example imports RequestValidationError from fastapi.exceptions, not through fastapi.exception_handlers. Classify this alias path as private/internal; the exception's canonical path is reviewed separately.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 2,
+        "path": "fastapi/exception_handlers.py"
+      }
+    },
+    {
+      "binding": {
+        "module": "fastapi.websockets",
+        "name": "WebSocket",
+        "target": "fastapi.websockets.WebSocket"
+      },
+      "candidate_kind": "import_binding",
+      "evidence": [
+        {
+          "line": 4,
+          "path": "fastapi/exception_handlers.py",
+          "role": "fastapi-source-binding"
+        },
+        {
+          "line": 30,
+          "path": "fastapi/exception_handlers.py",
+          "role": "fastapi-implementation-use"
+        },
+        {
+          "line": 240,
+          "end_line": 242,
+          "path": "docs/en/docs/tutorial/handling-errors.md",
+          "role": "fastapi-public-documentation"
+        }
+      ],
+      "evidence_basis": [
+        "implementation-only"
+      ],
+      "id": "fastapi.exception_handlers.WebSocket",
+      "reason": "This import binding supplies the WebSocket annotation for FastAPI's built-in WebSocket validation handler. The documented module use is to reuse default handler functions; it does not document WebSocket as an import from fastapi.exception_handlers. Classify this alias path as private/internal.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 4,
+        "path": "fastapi/exception_handlers.py"
+      }
+    },
+    {
+      "binding": {
+        "module": "fastapi.exceptions",
+        "name": "WebSocketRequestValidationError",
+        "target": "fastapi.exceptions.WebSocketRequestValidationError"
+      },
+      "candidate_kind": "import_binding",
+      "evidence": [
+        {
+          "line": 2,
+          "path": "fastapi/exception_handlers.py",
+          "role": "fastapi-source-binding"
+        },
+        {
+          "line": 30,
+          "path": "fastapi/exception_handlers.py",
+          "role": "fastapi-implementation-use"
+        },
+        {
+          "line": 240,
+          "end_line": 242,
+          "path": "docs/en/docs/tutorial/handling-errors.md",
+          "role": "fastapi-public-documentation"
+        }
+      ],
+      "evidence_basis": [
+        "implementation-only"
+      ],
+      "id": "fastapi.exception_handlers.WebSocketRequestValidationError",
+      "reason": "This import binding is used as an annotation for FastAPI's built-in WebSocket validation handler. The documented module use is to reuse default handler functions; tests import WebSocketRequestValidationError from fastapi.exceptions. Classify this alias path as private/internal; the exception's canonical path is reviewed separately.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 2,
+        "path": "fastapi/exception_handlers.py"
+      }
+    },
+    {
+      "binding": {
+        "module": "fastapi.utils",
+        "name": "is_body_allowed_for_status_code",
+        "target": "fastapi.utils.is_body_allowed_for_status_code"
+      },
+      "candidate_kind": "import_binding",
+      "evidence": [
+        {
+          "line": 3,
+          "path": "fastapi/exception_handlers.py",
+          "role": "fastapi-source-binding"
+        },
+        {
+          "line": 13,
+          "path": "fastapi/exception_handlers.py",
+          "role": "fastapi-implementation-use"
+        },
+        {
+          "line": 240,
+          "end_line": 242,
+          "path": "docs/en/docs/tutorial/handling-errors.md",
+          "role": "fastapi-public-documentation"
+        }
+      ],
+      "evidence_basis": [
+        "implementation-only"
+      ],
+      "id": "fastapi.exception_handlers.is_body_allowed_for_status_code",
+      "reason": "This helper binding is used inside the default HTTP exception handler to decide whether to return a body. The docs for fastapi.exception_handlers describe reusing handler functions, not importing this helper. Classify this alias path as private/internal.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 3,
+        "path": "fastapi/exception_handlers.py"
+      }
+    },
+    {
+      "binding": {
+        "module": "fastapi.encoders",
+        "name": "jsonable_encoder",
+        "target": "fastapi.encoders.jsonable_encoder"
+      },
+      "candidate_kind": "import_binding",
+      "evidence": [
+        {
+          "line": 1,
+          "path": "fastapi/exception_handlers.py",
+          "role": "fastapi-source-binding"
+        },
+        {
+          "line": 25,
+          "path": "fastapi/exception_handlers.py",
+          "role": "fastapi-implementation-use"
+        },
+        {
+          "line": 33,
+          "path": "fastapi/exception_handlers.py",
+          "role": "fastapi-implementation-use"
+        },
+        {
+          "line": 240,
+          "end_line": 242,
+          "path": "docs/en/docs/tutorial/handling-errors.md",
+          "role": "fastapi-public-documentation"
+        }
+      ],
+      "evidence_basis": [
+        "implementation-only"
+      ],
+      "id": "fastapi.exception_handlers.jsonable_encoder",
+      "reason": "This binding is used internally to encode error payloads in FastAPI's default handlers. FastAPI documents jsonable_encoder through fastapi.encoders, while the exception-handlers guide documents reusing handler functions. Classify this alias path as private/internal; the encoder's canonical path is reviewed separately.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 1,
+        "path": "fastapi/exception_handlers.py"
+      }
+    },
+    {
+      "binding": {
         "module": "typing",
         "name": "Annotated",
         "target": "typing.Annotated"
@@ -3110,6 +3295,72 @@
     },
     {
       "binding": {
+        "module": "fastapi.sse",
+        "name": "EventSourceResponse",
+        "target": "fastapi.sse.EventSourceResponse"
+      },
+      "candidate_kind": "import_binding",
+      "evidence": [
+        {
+          "line": 5,
+          "path": "fastapi/responses.py",
+          "role": "fastapi-source-binding"
+        },
+        {
+          "line": 9,
+          "end_line": 15,
+          "path": "docs/en/docs/reference/sse.md",
+          "role": "fastapi-public-documentation"
+        }
+      ],
+      "evidence_basis": [
+        "member-exposure-unresolved"
+      ],
+      "id": "fastapi.responses.EventSourceResponse",
+      "reason": "FastAPI 0.141.1 explicitly aliases fastapi.sse.EventSourceResponse into fastapi.responses, and tests/test_sse.py:8 imports it from fastapi.responses. The reference docs identify fastapi.sse as the direct import path at lines 9-15. Keep the alternate module path uncertain: explicit import and test use do not resolve whether fastapi.responses.EventSourceResponse is part of the supported public contract.",
+      "recommendation": "uncertain",
+      "source": {
+        "line": 5,
+        "path": "fastapi/responses.py"
+      }
+    },
+    {
+      "binding": {
+        "module": "fastapi.exceptions",
+        "name": "FastAPIDeprecationWarning",
+        "target": "fastapi.exceptions.FastAPIDeprecationWarning"
+      },
+      "candidate_kind": "import_binding",
+      "evidence": [
+        {
+          "line": 4,
+          "path": "fastapi/responses.py",
+          "role": "fastapi-source-binding"
+        },
+        {
+          "line": 45,
+          "path": "fastapi/responses.py",
+          "role": "fastapi-implementation-use"
+        },
+        {
+          "line": 75,
+          "path": "fastapi/responses.py",
+          "role": "fastapi-implementation-use"
+        }
+      ],
+      "evidence_basis": [
+        "implementation-only"
+      ],
+      "id": "fastapi.responses.FastAPIDeprecationWarning",
+      "reason": "FastAPI 0.141.1 imports this warning class to set the category for the internal deprecation decorators on UJSONResponse and ORJSONResponse. The tests import the warning from fastapi.exceptions, and no FastAPI docs establish the fastapi.responses alias path. Classify this binding as private/internal; the canonical exception path is reviewed separately.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 4,
+        "path": "fastapi/responses.py"
+      }
+    },
+    {
+      "binding": {
         "module": "typing",
         "name": "Protocol",
         "target": "typing.Protocol"
@@ -3165,6 +3416,41 @@
       "recommendation": "private/internal",
       "source": {
         "line": 2,
+        "path": "fastapi/responses.py"
+      }
+    },
+    {
+      "binding": {
+        "module": "typing_extensions",
+        "name": "deprecated",
+        "target": "typing_extensions.deprecated"
+      },
+      "candidate_kind": "import_binding",
+      "evidence": [
+        {
+          "line": 13,
+          "path": "fastapi/responses.py",
+          "role": "fastapi-source-binding"
+        },
+        {
+          "line": 39,
+          "path": "fastapi/responses.py",
+          "role": "fastapi-implementation-use"
+        },
+        {
+          "line": 69,
+          "path": "fastapi/responses.py",
+          "role": "fastapi-implementation-use"
+        }
+      ],
+      "evidence_basis": [
+        "implementation-only"
+      ],
+      "id": "fastapi.responses.deprecated",
+      "reason": "FastAPI 0.141.1 imports typing_extensions.deprecated and applies it to its two deprecated response classes. This decorator binding is implementation machinery and is not presented as a FastAPI API. Classify the fastapi.responses alias as private/internal.",
+      "recommendation": "private/internal",
+      "source": {
+        "line": 13,
         "path": "fastapi/responses.py"
       }
     },
@@ -4685,15 +4971,19 @@
   ],
   "schema": "fastapi-rs/source-api-classification-review@1",
   "scope": {
-    "candidate_count": 154,
-    "candidate_ids_sha256": "293940327e85349574d3033dabe2767fa97597e4fb533bead82664f2bc2f3805",
+    "candidate_count": 162,
+    "candidate_ids_sha256": "a8d5f9a23ffdff2c1c8c9712f7482a9d5788bdea82ddb2f618f4e181f927d22c",
     "recommendation_counts": {
-      "private/internal": 147,
+      "private/internal": 154,
       "supported": 6,
-      "uncertain": 1
+      "uncertain": 2
     },
     "selection": {
       "uncertain_candidate_id_prefixes": [
+        "fastapi.exception_handlers.",
+        "fastapi.responses.EventSourceResponse",
+        "fastapi.responses.FastAPIDeprecationWarning",
+        "fastapi.responses.deprecated",
         "fastapi.sse."
       ],
       "uncertain_imported_modules": [

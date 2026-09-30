@@ -1,0 +1,84 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/body_doc_tutorial001_review.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.docs-example.body.tutorial001.complete-entry
+  actions:
+  - action_id: create-entry-with-optionals
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /catalog/entries
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"title":"Desk lamp","details":"Adjustable neck","amount":"34.5","fee":2.0}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs_src/body/tutorial001_py310.py
+    kind: upstream_documentation_example
+- case_id: fastapi.docs-example.body.tutorial001.required-fields-only
+  actions:
+  - action_id: create-entry-with-required-fields
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /catalog/entries
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"title":"Desk lamp","amount":34.5}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs_src/body/tutorial001_py310.py
+    kind: upstream_documentation_example

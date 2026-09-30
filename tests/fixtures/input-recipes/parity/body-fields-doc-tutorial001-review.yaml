@@ -1,0 +1,124 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/body_fields_doc_tutorial001_review.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.docs-example.body-fields.tutorial001.embedded-model-valid
+  actions:
+  - action_id: replace-supply-with-embedded-model
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: PUT
+      scheme: http
+      path: /supplies/93
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"supply":{"title":"Cotton gloves","amount":14.25}}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs_src/body_fields/tutorial001_py310.py
+    kind: upstream_documentation_example
+- case_id: fastapi.docs-example.body-fields.tutorial001.embedded-model-invalid-amount
+  actions:
+  - action_id: replace-supply-with-nonpositive-amount
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: PUT
+      scheme: http
+      path: /supplies/93
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"supply":{"title":"Cotton gloves","amount":0}}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs_src/body_fields/tutorial001_py310.py
+    kind: upstream_documentation_example
+- case_id: fastapi.docs-example.body-fields.tutorial001.openapi-embedded-schema
+  actions:
+  - action_id: inspect-supply-request-schema
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /paths/~1supplies~1{supply_id}/put/requestBody/content/application~1json/schema/properties/supply
+      comparison: exact
+  source_evidence:
+  - path: docs_src/body_fields/tutorial001_py310.py
+    kind: upstream_documentation_example

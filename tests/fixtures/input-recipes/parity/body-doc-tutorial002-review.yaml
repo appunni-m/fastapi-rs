@@ -1,0 +1,84 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/body_doc_tutorial002_review.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.docs-example.body.tutorial002.optional-surcharge-present
+  actions:
+  - action_id: quote-with-surcharge
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /quotes
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"title":"Workshop ticket","amount":80.0,"surcharge":6.5}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs_src/body/tutorial002_py310.py
+    kind: upstream_documentation_example
+- case_id: fastapi.docs-example.body.tutorial002.optional-surcharge-absent
+  actions:
+  - action_id: quote-without-surcharge
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /quotes
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"title":"Workshop ticket","amount":80.0}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs_src/body/tutorial002_py310.py
+    kind: upstream_documentation_example

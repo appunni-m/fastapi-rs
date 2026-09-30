@@ -9030,7 +9030,11 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                 "observation_selectors": observation_selectors,
             }
             warning_review = warning_reviews.get(record["id"])
-            if warning_review is None and record.get("target_path"):
+            if (
+                warning_review is None
+                and record.get("target_path")
+                and record.get("classification") == "uncertain"
+            ):
                 warning_review = warning_reviews.get(record["target_path"])
             if warning_review is not None:
                 if (
@@ -9739,6 +9743,28 @@ def _sync_manifest_artifact_metadata(
             "documentation_python_examples_excluded": counts[
                 "documentation_python_examples_excluded"
             ],
+        },
+    )
+    source_api_review = atlas["api_source_classification_review"]
+    source_api_scope = source_api_review["scope"]
+    source_api_counts = source_api_scope["recommendation_counts"]
+    source_api_selection = source_api_scope["selection"]
+    manifest_text = _replace_manifest_artifact_block(
+        manifest_text,
+        "api_source_classification_review",
+        {
+            "sha256": source_api_review["sha256"],
+            "candidates": source_api_scope["candidate_count"],
+            "supported": source_api_counts["supported"],
+            "private_or_internal": source_api_counts["private/internal"],
+            "uncertain": source_api_counts["uncertain"],
+            "candidate_ids_sha256": source_api_scope["candidate_ids_sha256"],
+            "uncertain_imported_modules": json.dumps(
+                source_api_selection["uncertain_imported_modules"]
+            ),
+            "uncertain_candidate_id_prefixes": json.dumps(
+                source_api_selection["uncertain_candidate_id_prefixes"]
+            ),
         },
     )
     manifest_text = _replace_manifest_artifact_block(

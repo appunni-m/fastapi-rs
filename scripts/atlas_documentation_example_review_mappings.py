@@ -7,6 +7,122 @@ page.
 """
 
 DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
+    "docs_src/handling_errors/tutorial001_py310.py": {
+        "rationale": (
+            "The FastAPI 0.141.1 example returns an existing item and raises HTTPException "
+            "for an unknown item. The independent cases sample those success and default-error "
+            "response paths on an entries route; they observe status and body only and do not "
+            "claim the source route, literal values, or OpenAPI snapshot."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/handling_errors/tutorial001_py310.py",
+                "start_line": 8,
+                "end_line": 12,
+                "role": "documented item route with success and HTTPException branches",
+            }
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/handling-errors-doc-tutorial001-review.yaml",
+                "case_ids": [
+                    "fastapi.docs-example.handling-errors.tutorial001.success",
+                    "fastapi.docs-example.handling-errors.tutorial001.not-found",
+                ],
+                "observation_selectors": ["http.body.bytes", "http.status"],
+            }
+        ],
+    },
+    "docs_src/handling_errors/tutorial002_py310.py": {
+        "rationale": (
+            "The FastAPI 0.141.1 example supplies custom headers on an HTTPException. The "
+            "independent case samples status, response headers, and body on a different archive "
+            "route with another header name and value; it does not claim the source literals, "
+            "success branch, or OpenAPI snapshot."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/handling_errors/tutorial002_py310.py",
+                "start_line": 8,
+                "end_line": 16,
+                "role": "documented route and HTTPException custom headers",
+            }
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/handling-errors-doc-tutorial002-review.yaml",
+                "case_ids": ["fastapi.docs-example.handling-errors.tutorial002.forwarded-header"],
+                "observation_selectors": [
+                    "http.body.bytes",
+                    "http.headers.ordered",
+                    "http.status",
+                ],
+            }
+        ],
+    },
+    "docs_src/handling_errors/tutorial003_py310.py": {
+        "rationale": (
+            "The FastAPI 0.141.1 example registers a handler for an application-defined "
+            "exception and returns JSON with a non-default status. The independent case samples "
+            "registered exception dispatch and the resulting status/body using a separate "
+            "exception type, route, and payload; it does not cover the exact interpolated text "
+            "or OpenAPI snapshot."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/handling_errors/tutorial003_py310.py",
+                "start_line": 5,
+                "end_line": 18,
+                "role": "documented custom exception class and JSONResponse handler",
+            },
+            {
+                "path": "docs_src/handling_errors/tutorial003_py310.py",
+                "start_line": 21,
+                "end_line": 25,
+                "role": "documented route branch that raises the custom exception",
+            },
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/handling-errors-doc-tutorial003-review.yaml",
+                "case_ids": ["fastapi.docs-example.handling-errors.tutorial003.custom-exception"],
+                "observation_selectors": ["http.body.bytes", "http.status"],
+            }
+        ],
+    },
+    "docs_src/handling_errors/tutorial006_py310.py": {
+        "rationale": (
+            "The FastAPI 0.141.1 example registers HTTP and request-validation handlers that "
+            "delegate to FastAPI's defaults. The independent cases trigger those two handler "
+            "categories and observe response status/body only. The workflow does not observe "
+            "the printed messages or separately prove the delegation call path, and it uses a "
+            "different typed route and error details."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/handling_errors/tutorial006_py310.py",
+                "start_line": 12,
+                "end_line": 21,
+                "role": "documented custom HTTP and validation handlers delegating to defaults",
+            },
+            {
+                "path": "docs_src/handling_errors/tutorial006_py310.py",
+                "start_line": 24,
+                "end_line": 28,
+                "role": "documented typed item route with HTTP and success branches",
+            },
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/handling-errors-doc-tutorial006-review.yaml",
+                "case_ids": [
+                    "fastapi.docs-example.handling-errors.tutorial006.delegated-http-error",
+                    "fastapi.docs-example.handling-errors.tutorial006.delegated-validation-error",
+                ],
+                "observation_selectors": ["http.body.bytes", "http.status"],
+            }
+        ],
+    },
     "docs_src/behind_a_proxy/tutorial002_py310.py": {
         "rationale": (
             "FastAPI 0.141.1 configures this app with root_path=/api/v1. The listed input cases "
@@ -907,6 +1023,121 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
                 "recipe_path": "tests/fixtures/input-recipes/parity/body-tutorial003-model-upstream.yaml",
                 "case_ids": ["fastapi.body.tutorial003.complete-model"],
                 "observation_selectors": ["http.body.bytes", "http.status"],
+            }
+        ],
+    },
+    "docs_src/body/tutorial001_py310.py": {
+        "rationale": (
+            "The FastAPI 0.141.1 example accepts a typed model body with two required and two "
+            "optional fields, then returns that model. The independent catalog cases exercise "
+            "a complete body and the required-fields-only form on another route, observing "
+            "response status and body only; they do not claim the source field names, exact "
+            "values, validation boundaries, or OpenAPI document."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/body/tutorial001_py310.py",
+                "start_line": 5,
+                "end_line": 17,
+                "role": "documented Pydantic body model and POST route",
+            }
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/body-doc-tutorial001-review.yaml",
+                "case_ids": [
+                    "fastapi.docs-example.body.tutorial001.complete-entry",
+                    "fastapi.docs-example.body.tutorial001.required-fields-only",
+                ],
+                "observation_selectors": ["http.body.bytes", "http.status"],
+            }
+        ],
+    },
+    "docs_src/body/tutorial002_py310.py": {
+        "rationale": (
+            "The FastAPI 0.141.1 example binds a model body, dumps its fields, and conditionally "
+            "adds a computed response field when the optional tax value is supplied. The "
+            "independent quote cases sample both optional-value branches with another model "
+            "and route, observing status/body only. The arithmetic is application-owned and "
+            "is not claimed as FastAPI behavior; source field names, values, and OpenAPI are "
+            "also outside this mapping."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/body/tutorial002_py310.py",
+                "start_line": 5,
+                "end_line": 21,
+                "role": "documented Pydantic body model and optional-tax response branch",
+            }
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/body-doc-tutorial002-review.yaml",
+                "case_ids": [
+                    "fastapi.docs-example.body.tutorial002.optional-surcharge-present",
+                    "fastapi.docs-example.body.tutorial002.optional-surcharge-absent",
+                ],
+                "observation_selectors": ["http.body.bytes", "http.status"],
+            }
+        ],
+    },
+    "docs_src/body/tutorial004_py310.py": {
+        "rationale": (
+            "The FastAPI 0.141.1 example binds an integer path parameter, a Pydantic request "
+            "body, and an optional query value. The independent revision cases exercise those "
+            "three request inputs with and without the optional query value, observing response "
+            "status/body only. The route's result assembly is application-owned; exact source "
+            "names, values, and OpenAPI are outside this mapping."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/body/tutorial004_py310.py",
+                "start_line": 5,
+                "end_line": 20,
+                "role": "documented Pydantic model and path/body/query route",
+            }
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/body-doc-tutorial004-review.yaml",
+                "case_ids": [
+                    "fastapi.docs-example.body.tutorial004.path-query-body",
+                    "fastapi.docs-example.body.tutorial004.optional-query-absent",
+                ],
+                "observation_selectors": ["http.body.bytes", "http.status"],
+            }
+        ],
+    },
+    "docs_src/body_fields/tutorial001_py310.py": {
+        "rationale": (
+            "The FastAPI 0.141.1 example embeds a model body under a named property and uses "
+            "Pydantic field constraints. The independent supply cases exercise the embedded "
+            "JSON envelope, positive-value validation, and the generated request schema on a "
+            "different route/model. They observe status/body and a selected OpenAPI path "
+            "projection; they do not claim the source field names, limit values, descriptions, "
+            "or complete document."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/body_fields/tutorial001_py310.py",
+                "start_line": 7,
+                "end_line": 19,
+                "role": "documented constrained model and Body(embed=True) path operation",
+            }
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/body-fields-doc-tutorial001-review.yaml",
+                "case_ids": [
+                    "fastapi.docs-example.body-fields.tutorial001.embedded-model-valid",
+                    "fastapi.docs-example.body-fields.tutorial001.embedded-model-invalid-amount",
+                    "fastapi.docs-example.body-fields.tutorial001.openapi-embedded-schema",
+                ],
+                "observation_selectors": [
+                    "http.body.bytes",
+                    "http.status",
+                    "openapi.document",
+                ],
             }
         ],
     },
