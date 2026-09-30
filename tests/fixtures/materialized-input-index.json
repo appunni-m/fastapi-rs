@@ -7046,6 +7046,19 @@
       ]
     },
     {
+      "id": "websocket-router-dependency-slice",
+      "input_path": "tests/fixtures/inputs/parity/websocket-router-dependency-slice.json",
+      "input_sha256": "38fb19e813408a872c8fd395ea2e423b60dc815c375de7bab71940759aee40ef",
+      "recipe_path": "tests/fixtures/input-recipes/parity/websocket-router-dependency-slice.yaml",
+      "recipe_sha256": "d8faed9cf690ca1928f53c423af37129414bd042ac17d0451e97016d1d0b8533",
+      "workload_path": "tests/fixtures/workloads/websocket_router_dependency_slice.py",
+      "workload_sha256": "d4fb929c4d443a1be25b80d34b6e582ec680680f41992849b5e460b884b897e7",
+      "case_ids": [
+        "fastapi.websocket-router-dependency.default",
+        "fastapi.websocket-router-dependency.override"
+      ]
+    },
+    {
       "id": "websocket-router-routes-errors-upstream",
       "input_path": "tests/fixtures/inputs/parity/websocket-router-routes-errors-upstream.json",
       "input_sha256": "07e9c9e6adc507203cfd2d52d370c0e1b094ce0fcf502b48a94d7f20856c9535",
@@ -25094,6 +25107,22 @@
       "case_ids": [
         "fastapi.test.test-ws-router.test-router-ws-depends",
         "fastapi.test.test-ws-router.test-router-ws-depends-with-override"
+      ],
+      "observation_selectors": [
+        "websocket.close_code",
+        "websocket.event_order",
+        "websocket.messages"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_ws_router.py",
+      "fixture_id": "fastapi.test.test-ws-router",
+      "workflow_id": "websocket-router-dependency-slice",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes websocket.close_code, websocket.event_order, websocket.messages. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.websocket-router-dependency.default",
+        "fastapi.websocket-router-dependency.override"
       ],
       "observation_selectors": [
         "websocket.close_code",

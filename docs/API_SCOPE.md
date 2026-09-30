@@ -82,12 +82,12 @@ remain significant.
 
 ### Current target facade availability
 
-The root facade currently exposes 14 of the 21 source bindings:
+The root facade currently exposes 16 of the 21 source bindings:
 `__version__`, `APIRouter`, `Body`, `Cookie`, `Depends`, `FastAPI`, `File`,
 `Form`, `Header`, `Path`, `Query`, `Response`, `UploadFile`, and `status`.
-The missing exports are `BackgroundTasks`, `HTTPException`,
-`WebSocketException`, `Security`, `Request`, `WebSocket`, and
-`WebSocketDisconnect`. Availability here means import-level presence; it does
+It also exposes `WebSocket` and `WebSocketDisconnect`. The missing exports are
+`BackgroundTasks`, `HTTPException`, `WebSocketException`, `Security`, and
+`Request`. Availability here means import-level presence; it does
 not prove source object identity, full signatures, or behavior. The generated
 manifest's `target_binding.public_python_path` records the required spelling,
 and target status remains `full-contract-not-established` until live interface

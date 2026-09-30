@@ -2223,7 +2223,7 @@ impl CallablePlan {
         context: &mut InvocationContext<'_, '_>,
     ) -> PyResult<OverridePreparation> {
         let mut has_direct_dependency = false;
-        let mut has_async_override = false;
+        let mut has_async_dependency = false;
         let mut direct_dependencies = Vec::new();
         let mut dependency_edge_index = 0;
 
@@ -2251,7 +2251,7 @@ impl CallablePlan {
                             ));
                         }
                         DependencyOverrideCallable::CoroutineFunction => {
-                            has_async_override = true;
+                            has_async_dependency = true;
                         }
                         DependencyOverrideCallable::Sync => {}
                     }
@@ -2261,6 +2261,8 @@ impl CallablePlan {
                     let callable = plan.callable.clone_ref(context.py);
                     let callable_kind =
                         dependency_override_callable(context.py, callable.bind(context.py))?;
+                    has_async_dependency |=
+                        callable_kind == DependencyOverrideCallable::CoroutineFunction;
                     (callable, callable_kind)
                 }
             };
@@ -2274,7 +2276,7 @@ impl CallablePlan {
             ));
         }
 
-        if !has_async_override {
+        if !has_async_dependency {
             return Ok(OverridePreparation::Ready);
         }
 
@@ -2285,7 +2287,7 @@ impl CallablePlan {
             )
         {
             return Err(PyNotImplementedError::new_err(
-                "async dependency overrides require flat direct dependencies; async callable-instance endpoints are not supported",
+                "async dependencies require flat direct dependencies; async callable-instance endpoints are not supported",
             ));
         }
 
@@ -2332,7 +2334,7 @@ impl CallablePlan {
                 || callable_kind != DependencyOverrideCallable::CoroutineFunction
             {
                 return Err(PyNotImplementedError::new_err(
-                    "async nested override support is limited to one coroutine override with one coroutine query dependency",
+                    "async nested dependency support is limited to one coroutine dependency with one coroutine query dependency",
                 ));
             }
             let nested_plan = nested_dependencies[0];
@@ -2352,7 +2354,7 @@ impl CallablePlan {
                 || dependency_callable_is_generator(context.py, nested_callable.bind(context.py))?
             {
                 return Err(PyNotImplementedError::new_err(
-                    "async nested override support requires a coroutine query dependency",
+                    "async nested dependency support requires a coroutine query dependency",
                 ));
             }
             let subdependency_plan =
@@ -2384,7 +2386,7 @@ impl CallablePlan {
             }
             if !required_query_parameters {
                 return Err(PyNotImplementedError::new_err(
-                    "async nested override support requires one or more required scalar query parameters",
+                    "async nested dependency support requires one or more required scalar query parameters",
                 ));
             }
             nested_override = Some((
