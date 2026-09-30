@@ -21,7 +21,7 @@ PARITY_API_INPUT ?= tests/fixtures/inputs/parity/encoding.json
 BENCHMARK_WORKLOAD ?= benchmarks/workloads/first-slice-valid-asgi.yaml
 
 .DEFAULT_GOAL := help
-.PHONY: help fmt format clippy build build-rust build-python python-facade-check rust-policy-check compatibility-atlas-update api-contract-update api-contract-check metadata-check dependency-inventory-update dependency-inventory-check dependency-graph-check parity-inputs parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-target parity-api-runtime parity-validate parity-index-update parity-index-check parity-oracle parity-oracle-standard parity-target parity-compare parity-api-validate parity-api-oracle parity-api-target parity-api-compare parity-first-slice benchmark-contract-check benchmark-first-slice verify clean
+.PHONY: help fmt format clippy build build-rust build-python python-facade-check rust-policy-check compatibility-atlas-update api-contract-update api-contract-check metadata-check dependency-inventory-update dependency-inventory-check dependency-graph-update dependency-graph-check parity-inputs parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-target parity-api-runtime parity-validate parity-index-update parity-index-check parity-oracle parity-oracle-standard parity-target parity-compare parity-api-validate parity-api-oracle parity-api-target parity-api-compare parity-first-slice benchmark-contract-check benchmark-first-slice verify clean
 
 help: ## Show common development commands
 	@printf '%s\n' \
@@ -40,6 +40,7 @@ help: ## Show common development commands
 	  '  make metadata-check   Check the human-maintained API source authority' \
 	  '  make dependency-inventory-update Regenerate the pinned target dependency/license report' \
 	  '  make dependency-inventory-check Check the pinned target dependency/license report' \
+	  '  make dependency-graph-update Regenerate FastAPI lock-derived dependency edges and surfaces' \
 	  '  make dependency-graph-check Check Python dependency rows against FastAPI 0.141.1 uv.lock' \
 	  '  make parity-inputs    Materialize ignored JSON workflows from YAML recipes' \
 	  '  make parity-prepare-oracle Prepare pinned FastAPI 0.141.1 / Starlette 1.6.0 Python env' \
@@ -111,6 +112,9 @@ dependency-inventory-check: ## Check the pinned Cargo/Python target dependency i
 
 dependency-graph-check: ## Check Python dependency graph rows against the pinned FastAPI lock
 	$(PYTHON) scripts/check_fastapi_dependency_graph.py
+
+dependency-graph-update: ## Regenerate lock-derived FastAPI Python dependency edges and surfaces
+	$(PYTHON) scripts/check_fastapi_dependency_graph.py --update
 
 parity-prepare-oracle: ## Create the locked source oracle and select local Starlette 1.6.0
 	UV_PROJECT_ENVIRONMENT="$(CURDIR)/.venv-oracle" $(UV) sync --project "$(FASTAPI_SOURCE)" --locked --no-dev --no-install-package starlette --python "$(PYTHON)"
