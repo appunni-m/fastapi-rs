@@ -153,7 +153,53 @@ TEST_REVIEW_MAPPINGS = {
     },
     "tests/test_stream_cancellation.py": {
         "feature_ids": ["response-serialization"],
-        "rationale": "StreamingResponse and async-iterable cancellation are observed through the ASGI request path.",
+        "module_observation_selectors": [
+            "asgi.cancellation.cancelled_caught",
+            "http.status",
+            "http.headers.ordered",
+        ],
+        "rationale": "FastAPI's raw StreamingResponse and JSON Lines async-generator paths must remain cancellable when their generators contain no await.",
+        "stimulus_notes": "Build each independent infinite stream through the public route API, keep the ASGI receive channel open, cancel the request inside the declared timeout, and compare the selected cancellation outcome plus response status and headers. This does not claim stream completion or byte-for-byte partial bodies.",
+        "supporting_sources": [
+            {
+                "path": "tests/test_stream_cancellation.py",
+                "start_line": 24,
+                "end_line": 39,
+                "role": "raw and JSONL async generators with no internal await",
+            },
+            {
+                "path": "tests/test_stream_cancellation.py",
+                "start_line": 42,
+                "end_line": 75,
+                "role": "ASGI request harness and bounded cancellation observation",
+            },
+            {
+                "path": "docs/en/docs/advanced/custom-response.md",
+                "start_line": 174,
+                "end_line": 194,
+                "role": "StreamingResponse and cancellation checkpoints for infinite streams",
+            },
+            {
+                "path": "docs/en/docs/tutorial/stream-json-lines.md",
+                "start_line": 75,
+                "end_line": 85,
+                "role": "FastAPI async iterable JSON Lines response behavior",
+            },
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/stream-cancellation.yaml",
+                "case_ids": [
+                    "fastapi.stream-cancellation.raw-async-generator",
+                    "fastapi.stream-cancellation.jsonl-async-generator",
+                ],
+                "observation_selectors": [
+                    "asgi.cancellation.cancelled_caught",
+                    "http.headers.ordered",
+                    "http.status",
+                ],
+            },
+        ],
     },
     "tests/test_tutorial/test_async_tests/test_main_a.py": {
         "feature_ids": ["app-routing"],
@@ -719,11 +765,6 @@ TEST_EXCLUSIONS = {
         "The module exercises optional ORJSONResponse/UJSONResponse integrations through needs_orjson and "
         "needs_ujson; neither dependency is in a selected locked oracle profile. Warning capture is now "
         "supported, but these optional integrations remain unavailable in the selected profiles."
-    ),
-    "tests/test_stream_cancellation.py": (
-        "Both cases stream from an infinite async generator and use anyio.move_on_after(3.0) to verify "
-        "cancellation completion. The fixed ASGI workflow cannot express a timeout/cancel action or its "
-        "completion observation, so finite streaming fixtures do not claim this behavior."
     ),
     "tests/test_stringified_annotation_dependency_py314.py": (
         "The sole test is guarded by needs_py314 and uses Python 3.14 runtime annotation evaluation. "

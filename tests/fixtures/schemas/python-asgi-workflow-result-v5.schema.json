@@ -1,0 +1,1593 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fastapi-rs.dev/schemas/python-asgi-workflow-result/5",
+  "title": "FastAPI-RS live workflow result v5",
+  "description": "Version 5 retains v4 ordered warning sidecars and records exact cancellation observations for cancellation-aware HTTP actions.",
+  "type": "object",
+  "required": [
+    "schema",
+    "run_id",
+    "started_at",
+    "finished_at",
+    "product",
+    "identity",
+    "manifest",
+    "input",
+    "workload",
+    "command",
+    "status",
+    "cases",
+    "infrastructure_errors"
+  ],
+  "properties": {
+    "schema": {
+      "const": "fastapi-rs/python-asgi-workflow-result@5"
+    },
+    "run_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "finished_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "product": {
+      "enum": [
+        "oracle",
+        "target"
+      ]
+    },
+    "identity": {
+      "$ref": "#/$defs/identity"
+    },
+    "manifest": {
+      "$ref": "#/$defs/digestRef"
+    },
+    "input": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/digestRef"
+        },
+        {
+          "type": "object",
+          "required": [
+            "schema"
+          ],
+          "properties": {
+            "schema": {
+              "const": "fastapi-rs/python-asgi-workflow@5"
+            }
+          }
+        }
+      ]
+    },
+    "workload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256",
+        "factory"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "factory": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "command": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "argv",
+        "cwd"
+      ],
+      "properties": {
+        "argv": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "cwd": {
+          "const": "."
+        }
+      }
+    },
+    "status": {
+      "enum": [
+        "completed",
+        "infrastructure_failed"
+      ]
+    },
+    "cases": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/case"
+      }
+    },
+    "infrastructure_errors": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/infrastructureError"
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "product": {
+            "const": "oracle"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "identity": {
+            "properties": {
+              "distribution": {
+                "const": "fastapi"
+              },
+              "repositories": {
+                "properties": {
+                  "fastapi_source": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "starlette_source": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              },
+              "target_revision": {
+                "type": "null"
+              },
+              "source_tree_sha256": {
+                "type": "null"
+              },
+              "target_binary_sha256": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "product": {
+            "const": "target"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "identity": {
+            "properties": {
+              "distribution": {
+                "const": "fastapi-rs"
+              },
+              "repositories": {
+                "properties": {
+                  "fastapi_rs": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "starlette_rs": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              },
+              "target_revision": {
+                "type": "string",
+                "minLength": 1
+              },
+              "source_tree_sha256": {
+                "$ref": "#/$defs/sha256"
+              },
+              "target_binary_sha256": {
+                "$ref": "#/$defs/sha256"
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "digestRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "schema": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "distribution",
+        "version",
+        "python",
+        "platform",
+        "repositories",
+        "target_revision",
+        "source_tree_sha256",
+        "target_binary_sha256",
+        "packages"
+      ],
+      "properties": {
+        "distribution": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "python": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "implementation",
+            "version"
+          ],
+          "properties": {
+            "implementation": {
+              "type": "string",
+              "minLength": 1
+            },
+            "version": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "platform": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "system",
+            "release",
+            "machine"
+          ],
+          "properties": {
+            "system": {
+              "type": "string",
+              "minLength": 1
+            },
+            "release": {
+              "type": "string",
+              "minLength": 1
+            },
+            "machine": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "repositories": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "fastapi_source",
+            "starlette_source",
+            "fastapi_rs",
+            "starlette_rs"
+          ],
+          "properties": {
+            "fastapi_source": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "starlette_source": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "fastapi_rs": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "starlette_rs": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        },
+        "target_revision": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source_tree_sha256": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/sha256"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "target_binary_sha256": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/sha256"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "packages": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "bytes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "encoding",
+        "data"
+      ],
+      "properties": {
+        "encoding": {
+          "const": "base64"
+        },
+        "data": {
+          "type": "string",
+          "contentEncoding": "base64",
+          "pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
+        }
+      }
+    },
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "case_id",
+        "status",
+        "construction_observation",
+        "actions"
+      ],
+      "properties": {
+        "case_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "const": "completed"
+        },
+        "error": {
+          "$ref": "#/$defs/productError"
+        },
+        "actions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/action"
+          }
+        },
+        "construction_observation": {
+          "$ref": "#/$defs/constructionObservation"
+        }
+      }
+    },
+    "action": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action_id",
+        "status",
+        "observations"
+      ],
+      "properties": {
+        "action_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "enum": [
+            "completed",
+            "product_error",
+            "not_run"
+          ]
+        },
+        "error": {
+          "$ref": "#/$defs/productError"
+        },
+        "observations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/observation"
+          }
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "warnings": {
+          "$ref": "#/$defs/warnings"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "product_error"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "error"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "completed"
+              }
+            }
+          },
+          "then": {
+            "not": {
+              "required": [
+                "error"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "not_run"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "reason"
+            ],
+            "not": {
+              "required": [
+                "error"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "completed"
+              }
+            }
+          },
+          "then": {
+            "not": {
+              "required": [
+                "reason"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "product_error"
+              }
+            }
+          },
+          "then": {
+            "not": {
+              "required": [
+                "reason"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "productError": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "class",
+        "message"
+      ],
+      "properties": {
+        "class": {
+          "type": "string",
+          "minLength": 1
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "observation": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/httpResponseObservation"
+        },
+        {
+          "$ref": "#/$defs/openapiObservation"
+        },
+        {
+          "$ref": "#/$defs/asgiSendObservation"
+        },
+        {
+          "$ref": "#/$defs/applicationErrorObservation"
+        },
+        {
+          "$ref": "#/$defs/websocketObservation"
+        },
+        {
+          "$ref": "#/$defs/asgiLifespanObservation"
+        },
+        {
+          "$ref": "#/$defs/asgiCancellationObservation"
+        }
+      ]
+    },
+    "httpResponseObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "index",
+        "kind",
+        "values"
+      ],
+      "properties": {
+        "index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "kind": {
+          "const": "http_response"
+        },
+        "values": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": false,
+          "properties": {
+            "status": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 100,
+              "maximum": 599
+            },
+            "headers": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "prefixItems": [
+                  {
+                    "type": "string",
+                    "contentEncoding": "base64"
+                  },
+                  {
+                    "type": "string",
+                    "contentEncoding": "base64"
+                  }
+                ],
+                "minItems": 2,
+                "maxItems": 2,
+                "items": false
+              }
+            },
+            "body": {
+              "$ref": "#/$defs/bytes"
+            }
+          }
+        }
+      }
+    },
+    "openapiObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "index",
+        "kind",
+        "values"
+      ],
+      "properties": {
+        "index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "kind": {
+          "const": "openapi"
+        },
+        "values": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "body_status",
+            "pointers"
+          ],
+          "properties": {
+            "body_status": {
+              "enum": [
+                "parsed",
+                "invalid-json"
+              ]
+            },
+            "pointers": {
+              "type": "array",
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "pointer",
+                      "present",
+                      "value"
+                    ],
+                    "properties": {
+                      "pointer": {
+                        "oneOf": [
+                          {
+                            "const": ""
+                          },
+                          {
+                            "type": "string",
+                            "pattern": "^/"
+                          }
+                        ]
+                      },
+                      "present": {
+                        "const": true
+                      },
+                      "value": {
+                        "type": [
+                          "null",
+                          "boolean",
+                          "number",
+                          "string",
+                          "array",
+                          "object"
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "pointer",
+                      "present"
+                    ],
+                    "properties": {
+                      "pointer": {
+                        "oneOf": [
+                          {
+                            "const": ""
+                          },
+                          {
+                            "type": "string",
+                            "pattern": "^/"
+                          }
+                        ]
+                      },
+                      "present": {
+                        "const": false
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "asgiSendObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "index",
+        "kind",
+        "values"
+      ],
+      "properties": {
+        "index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "kind": {
+          "const": "asgi_send"
+        },
+        "values": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "message_types"
+          ],
+          "properties": {
+            "message_types": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    "applicationErrorObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "index",
+        "kind",
+        "selector",
+        "values"
+      ],
+      "properties": {
+        "index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "kind": {
+          "const": "application_error"
+        },
+        "selector": {
+          "enum": [
+            "validation_error_class",
+            "exception",
+            "validation_error_details",
+            "error_public_attributes"
+          ]
+        },
+        "values": {
+          "type": "object"
+        }
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "selector": {
+              "const": "validation_error_class"
+            },
+            "values": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "class"
+              ],
+              "properties": {
+                "class": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "minLength": 1,
+                  "description": "Fully qualified exception class for an ASGI-dispatch exception; null means dispatch returned without raising."
+                }
+              }
+            }
+          }
+        },
+        {
+          "properties": {
+            "selector": {
+              "const": "exception"
+            },
+            "values": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "exception_class",
+                "exception_message"
+              ],
+              "properties": {
+                "exception_class": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "minLength": 1,
+                  "description": "Fully qualified exception class for an ASGI-dispatch exception; null means dispatch returned without raising."
+                },
+                "exception_message": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "description": "Exact str(exception) for an ASGI-dispatch exception; null means dispatch returned without raising."
+                }
+              }
+            }
+          }
+        },
+        {
+          "properties": {
+            "selector": {
+              "const": "validation_error_details"
+            },
+            "values": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "error_details"
+              ],
+              "properties": {
+                "error_details": {
+                  "oneOf": [
+                    {
+                      "type": "null"
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/$defs/validationErrorDetail"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          "properties": {
+            "selector": {
+              "const": "error_public_attributes"
+            },
+            "values": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "attributes"
+              ],
+              "properties": {
+                "attributes": {
+                  "type": "object",
+                  "minProperties": 1,
+                  "additionalProperties": {
+                    "$ref": "#/$defs/jsonValue"
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "validationErrorDetail": {
+      "type": "object",
+      "required": [
+        "loc",
+        "msg",
+        "type"
+      ],
+      "properties": {
+        "loc": {
+          "type": "array",
+          "items": {
+            "type": [
+              "integer",
+              "string"
+            ]
+          }
+        },
+        "msg": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "input": {
+          "$ref": "#/$defs/jsonValue"
+        },
+        "ctx": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/jsonValue"
+          }
+        },
+        "url": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "jsonValue": {
+      "oneOf": [
+        {
+          "type": [
+            "null",
+            "boolean",
+            "number",
+            "string"
+          ]
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/jsonValue"
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/jsonValue"
+          }
+        }
+      ]
+    },
+    "infrastructureError": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "stage",
+        "message"
+      ],
+      "properties": {
+        "stage": {
+          "type": "string",
+          "minLength": 1
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "websocketMessage": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "direction",
+            "kind",
+            "value"
+          ],
+          "properties": {
+            "direction": {
+              "enum": [
+                "receive",
+                "send"
+              ]
+            },
+            "kind": {
+              "const": "text"
+            },
+            "value": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "direction",
+            "kind",
+            "value"
+          ],
+          "properties": {
+            "direction": {
+              "enum": [
+                "receive",
+                "send"
+              ]
+            },
+            "kind": {
+              "const": "bytes"
+            },
+            "value": {
+              "$ref": "#/$defs/bytes"
+            }
+          }
+        }
+      ]
+    },
+    "websocketObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "index",
+        "kind",
+        "selector",
+        "values"
+      ],
+      "properties": {
+        "index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "kind": {
+          "const": "websocket"
+        },
+        "selector": {
+          "enum": [
+            "close_code",
+            "close_reason",
+            "event_order",
+            "messages",
+            "workload_trace"
+          ]
+        },
+        "values": {
+          "type": "object"
+        }
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "selector": {
+              "const": "close_code"
+            },
+            "values": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "close_code"
+              ],
+              "properties": {
+                "close_code": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 65535
+                }
+              }
+            }
+          }
+        },
+        {
+          "properties": {
+            "selector": {
+              "const": "close_reason"
+            },
+            "values": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "close_reason"
+              ],
+              "properties": {
+                "close_reason": {
+                  "type": [
+                    "string",
+                    "number",
+                    "boolean",
+                    "object",
+                    "array",
+                    "null"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          "properties": {
+            "selector": {
+              "const": "event_order"
+            },
+            "values": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "event_order"
+              ],
+              "properties": {
+                "event_order": {
+                  "type": "array",
+                  "items": {
+                    "enum": [
+                      "websocket.connect",
+                      "websocket.accept",
+                      "websocket.receive",
+                      "websocket.send",
+                      "websocket.close",
+                      "websocket.disconnect"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "properties": {
+            "selector": {
+              "const": "messages"
+            },
+            "values": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "messages"
+              ],
+              "properties": {
+                "messages": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/websocketMessage"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "properties": {
+            "selector": {
+              "const": "workload_trace"
+            },
+            "values": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "workload_trace"
+              ],
+              "properties": {
+                "workload_trace": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "constructionObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "selectors",
+        "values"
+      ],
+      "properties": {
+        "kind": {
+          "const": "construction"
+        },
+        "selectors": {
+          "const": [
+            "outcome",
+            "exception_class",
+            "exception_message"
+          ],
+          "description": "The v4 construction observation always compares outcome, exception class, and exception message."
+        },
+        "values": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "outcome",
+            "exception_class",
+            "exception_message"
+          ],
+          "properties": {
+            "outcome": {
+              "enum": [
+                "ok",
+                "error"
+              ]
+            },
+            "exception_class": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "exception_message": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "outcome": {
+                    "const": "ok"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "exception_class": {
+                    "const": null
+                  },
+                  "exception_message": {
+                    "const": null
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "outcome": {
+                    "const": "error"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "exception_class": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "exception_message": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "warnings": {
+          "$ref": "#/$defs/warnings"
+        }
+      }
+    },
+    "asgiLifespanObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "index",
+        "kind",
+        "selector",
+        "values"
+      ],
+      "properties": {
+        "index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "kind": {
+          "const": "asgi_lifespan"
+        },
+        "selector": {
+          "enum": [
+            "event_order",
+            "startup",
+            "shutdown",
+            "application_errors",
+            "workload_trace"
+          ]
+        },
+        "values": {
+          "type": "object"
+        }
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "selector": {
+              "const": "event_order"
+            },
+            "values": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "event_order"
+              ],
+              "properties": {
+                "event_order": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "properties": {
+            "selector": {
+              "const": "startup"
+            },
+            "values": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "startup"
+              ],
+              "properties": {
+                "startup": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "outcome",
+                    "response_type",
+                    "message"
+                  ],
+                  "properties": {
+                    "outcome": {
+                      "enum": [
+                        "complete",
+                        "failed",
+                        "error",
+                        "no_response",
+                        "unexpected"
+                      ]
+                    },
+                    "response_type": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "message": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "properties": {
+            "selector": {
+              "const": "shutdown"
+            },
+            "values": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "shutdown"
+              ],
+              "properties": {
+                "shutdown": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "outcome",
+                    "response_type",
+                    "message"
+                  ],
+                  "properties": {
+                    "outcome": {
+                      "enum": [
+                        "complete",
+                        "failed",
+                        "error",
+                        "no_response",
+                        "unexpected",
+                        "not_sent"
+                      ]
+                    },
+                    "response_type": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "message": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "properties": {
+            "selector": {
+              "const": "application_errors"
+            },
+            "values": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "application_errors"
+              ],
+              "properties": {
+                "application_errors": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/lifespanApplicationError"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "properties": {
+            "selector": {
+              "const": "workload_trace"
+            },
+            "values": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "workload_trace"
+              ],
+              "properties": {
+                "workload_trace": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "lifespanApplicationError": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "stage",
+        "class",
+        "message"
+      ],
+      "properties": {
+        "stage": {
+          "enum": [
+            "startup",
+            "shutdown"
+          ]
+        },
+        "class": {
+          "type": "string",
+          "minLength": 1
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "warning": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "category",
+        "message",
+        "filename",
+        "lineno"
+      ],
+      "properties": {
+        "category": {
+          "type": "string",
+          "minLength": 1
+        },
+        "message": {
+          "type": "string"
+        },
+        "filename": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Repository-relative when under the repository; otherwise source-package-relative with its package name as the leading path component."
+        },
+        "lineno": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/warning"
+      },
+      "description": "Warning records in emission order for the selected phase."
+    },
+    "asgiCancellationObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "index",
+        "kind",
+        "selector",
+        "values"
+      ],
+      "properties": {
+        "index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "kind": {
+          "const": "asgi_cancellation"
+        },
+        "selector": {
+          "const": "cancelled_caught"
+        },
+        "values": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "cancelled_caught"
+          ],
+          "properties": {
+            "cancelled_caught": {
+              "type": "boolean",
+              "description": "Whether the action-level AnyIO cancellation scope caught cancellation during ASGI HTTP dispatch."
+            }
+          }
+        }
+      }
+    }
+  }
+}

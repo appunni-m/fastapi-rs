@@ -6206,6 +6206,19 @@
       ]
     },
     {
+      "id": "stream-cancellation",
+      "input_path": "tests/fixtures/inputs/parity/stream-cancellation.json",
+      "input_sha256": "336c8377979de2cb01471c5dc4cbb708aea3a0255a5a6d1d268fd7086fc8610a",
+      "recipe_path": "tests/fixtures/input-recipes/parity/stream-cancellation.yaml",
+      "recipe_sha256": "08836b5ef7d2751300f9376822e896cb22207005aa9fa29fd1dade69c8a5eed4",
+      "workload_path": "tests/fixtures/workloads/stream_cancellation.py",
+      "workload_sha256": "dcce47bd4c1189c7c90c9746fe16181d8a77c7758f889d7514e0e728ae819164",
+      "case_ids": [
+        "fastapi.stream-cancellation.raw-async-generator",
+        "fastapi.stream-cancellation.jsonl-async-generator"
+      ]
+    },
+    {
       "id": "stream-data",
       "input_path": "tests/fixtures/inputs/parity/stream_data.json",
       "input_sha256": "b7f30b8fe0a91427ed957141ec8d2bc0dca71b5b095cf7bf9119381c51b62156",
@@ -22973,6 +22986,51 @@
         "http.status",
         "openapi.document",
         "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:advanced/custom-response.md",
+      "fixture_id": "fastapi.docs.advanced-custom-response",
+      "workflow_id": "stream-cancellation",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.stream-cancellation.jsonl-async-generator",
+        "fastapi.stream-cancellation.raw-async-generator"
+      ],
+      "observation_selectors": [
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/stream-json-lines.md",
+      "fixture_id": "fastapi.docs.tutorial-stream-json-lines",
+      "workflow_id": "stream-cancellation",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.stream-cancellation.jsonl-async-generator"
+      ],
+      "observation_selectors": [
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_stream_cancellation.py",
+      "fixture_id": "fastapi.test.test-stream-cancellation",
+      "workflow_id": "stream-cancellation",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.cancellation.cancelled_caught, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.stream-cancellation.jsonl-async-generator",
+        "fastapi.stream-cancellation.raw-async-generator"
+      ],
+      "observation_selectors": [
+        "asgi.cancellation.cancelled_caught",
+        "http.headers.ordered",
+        "http.status"
       ]
     },
     {

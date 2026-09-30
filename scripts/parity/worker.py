@@ -21,15 +21,18 @@ import warnings
 from pathlib import Path, PurePosixPath
 from typing import Any
 
+import anyio
 from starlette.websockets import WebSocketDisconnect
 
 ROOT = Path(__file__).resolve().parents[2]
 WORKFLOW_SCHEMA_ID = "fastapi-rs/python-asgi-workflow@2"
 WORKFLOW_SCHEMA_V3_ID = "fastapi-rs/python-asgi-workflow@3"
 WORKFLOW_SCHEMA_V4_ID = "fastapi-rs/python-asgi-workflow@4"
+WORKFLOW_SCHEMA_V5_ID = "fastapi-rs/python-asgi-workflow@5"
 RESULT_SCHEMA_ID = "fastapi-rs/python-asgi-workflow-result@2"
 RESULT_SCHEMA_V3_ID = "fastapi-rs/python-asgi-workflow-result@3"
 RESULT_SCHEMA_V4_ID = "fastapi-rs/python-asgi-workflow-result@4"
+RESULT_SCHEMA_V5_ID = "fastapi-rs/python-asgi-workflow-result@5"
 ORACLE_PROFILE_ID = "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13"
 ORACLE_PROFILE_PACKAGE_EXTENSIONS = {
     "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-standard-multipart-0.0.32": {
@@ -262,7 +265,10 @@ def _make_scope(encoded_scope: dict[str, Any]) -> dict[str, Any]:
 
 
 def _make_receive(
-    events: list[dict[str, Any]], event_trace: list[dict[str, Any]] | None = None
+    events: list[dict[str, Any]],
+    event_trace: list[dict[str, Any]] | None = None,
+    *,
+    wait_until_cancelled: bool = False,
 ) -> Any:
     messages = []
     for event in events:
@@ -288,6 +294,10 @@ def _make_receive(
         elif messages and messages[0]["type"] == "websocket.connect":
             # Workflows are validated to carry a terminal disconnect event.
             raise WorkerError("validated WebSocket input lost its terminal disconnect event")
+        elif wait_until_cancelled:
+            # ASGI v5 models a request whose peer remains connected indefinitely.
+            # The action-level cancel scope is the only way this wait completes.
+            await asyncio.Event().wait()
         else:
             message = {"type": "http.disconnect"}
         if event_trace is not None:
@@ -383,6 +393,7 @@ def _observe(
     application_exception: Exception | None = None,
     event_trace: list[dict[str, Any]] | None = None,
     workload_trace: list[str] | None = None,
+    cancelled_caught: bool | None = None,
     include_selectors: bool = False,
 ) -> list[dict[str, Any]]:
     starts = [message for message in messages if message.get("type") == "http.response.start"]
@@ -426,6 +437,18 @@ def _observe(
         elif kind == "asgi_send":
             result.append(
                 {"index": index, "kind": kind, "values": {"message_types": message_types}}
+            )
+        elif kind == "asgi_cancellation":
+            selector = observation["selector"]
+            if selector != "cancelled_caught" or cancelled_caught is None:
+                raise WorkerError(f"worker does not support ASGI cancellation selector: {selector}")
+            result.append(
+                {
+                    "index": index,
+                    "kind": kind,
+                    "selector": selector,
+                    "values": {selector: cancelled_caught},
+                }
             )
         elif kind == "application_error":
             selector = observation["selector"]
@@ -729,7 +752,12 @@ async def _run_action_v3(
         # ASGI servers make a shallow copy of lifespan state for each request scope.
         scope["state"] = copy.copy(lifespan_state)
     event_trace: list[dict[str, Any]] = []
-    receive = _make_receive(action["receive_events"], event_trace)
+    cancellation_mode = action.get("receive_mode") == "wait_until_cancelled"
+    receive = _make_receive(
+        action["receive_events"],
+        event_trace,
+        wait_until_cancelled=cancellation_mode and scope.get("type") == "http",
+    )
     messages: list[dict[str, Any]] = []
     captures_application_error = any(
         observation["kind"] == "application_error" for observation in action["observations"]
@@ -744,7 +772,16 @@ async def _run_action_v3(
 
     capture_warnings = action.get("capture_warnings", False)
     emitted_warnings: list[warnings.WarningMessage] = []
-    if capture_warnings:
+    cancelled_caught: bool | None = None
+    dispatch_error: Exception | None = None
+    if cancellation_mode:
+        with anyio.move_on_after(action["cancel_after_seconds"]) as cancel_scope:
+            if capture_warnings:
+                dispatch_error = await _await_with_warning_capture(dispatch_app(), emitted_warnings)
+            else:
+                dispatch_error = await dispatch_app()
+        cancelled_caught = cancel_scope.cancelled_caught
+    elif capture_warnings:
         dispatch_error = await _await_with_warning_capture(dispatch_app(), emitted_warnings)
     else:
         dispatch_error = await dispatch_app()
@@ -781,6 +818,7 @@ async def _run_action_v3(
             application_exception=dispatch_error,
             event_trace=event_trace,
             workload_trace=workload_trace,
+            cancelled_caught=cancelled_caught,
             include_selectors=True,
         )
     except Exception as exc:
@@ -1164,6 +1202,7 @@ def run_oracle(
         WORKFLOW_SCHEMA_ID,
         WORKFLOW_SCHEMA_V3_ID,
         WORKFLOW_SCHEMA_V4_ID,
+        WORKFLOW_SCHEMA_V5_ID,
     }:
         raise WorkerError("workflow schema identity changed after host-side validation")
     fastapi_root = fastapi_root.resolve()
@@ -1178,15 +1217,21 @@ def run_oracle(
     started = dt.datetime.now(dt.UTC)
     identity = _oracle_identity(fastapi_root, starlette_root, profile)
     factory = _load_workload(workload_path, input_sha256, workflow["workload"]["factory"])
-    if workflow["schema"] in {WORKFLOW_SCHEMA_V3_ID, WORKFLOW_SCHEMA_V4_ID}:
+    if workflow["schema"] in {
+        WORKFLOW_SCHEMA_V3_ID,
+        WORKFLOW_SCHEMA_V4_ID,
+        WORKFLOW_SCHEMA_V5_ID,
+    }:
         warning_package_roots = (
             [("fastapi", fastapi_root / "fastapi"), ("starlette", starlette_root / "starlette")]
-            if workflow["schema"] == WORKFLOW_SCHEMA_V4_ID
+            if workflow["schema"] in {WORKFLOW_SCHEMA_V4_ID, WORKFLOW_SCHEMA_V5_ID}
             else []
         )
         cases = asyncio.run(_run_cases_v3(workflow, factory, warning_package_roots))
         result_schema_id = (
-            RESULT_SCHEMA_V4_ID
+            RESULT_SCHEMA_V5_ID
+            if workflow["schema"] == WORKFLOW_SCHEMA_V5_ID
+            else RESULT_SCHEMA_V4_ID
             if workflow["schema"] == WORKFLOW_SCHEMA_V4_ID
             else RESULT_SCHEMA_V3_ID
         )

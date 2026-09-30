@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 from pathlib import Path
 from typing import Any
 
@@ -15,6 +16,7 @@ ROOT = Path(__file__).resolve().parents[2]
 WORKFLOW_SCHEMA = ROOT / "tests/fixtures/schemas/python-asgi-workflow-v2.schema.json"
 WORKFLOW_SCHEMA_V3 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-v3.schema.json"
 WORKFLOW_SCHEMA_V4 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-v4.schema.json"
+WORKFLOW_SCHEMA_V5 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-v5.schema.json"
 API_WORKFLOW_SCHEMA = ROOT / "tests/fixtures/schemas/python-api-workflow.schema.json"
 API_WORKFLOW_SCHEMA_V2 = ROOT / "tests/fixtures/schemas/python-api-workflow-v2.schema.json"
 API_WORKFLOW_SCHEMA_V3 = ROOT / "tests/fixtures/schemas/python-api-workflow-v3.schema.json"
@@ -27,12 +29,15 @@ API_COMPARISON_SCHEMA_V3 = ROOT / "tests/fixtures/schemas/python-api-comparison-
 RESULT_SCHEMA = ROOT / "tests/fixtures/schemas/python-asgi-workflow-result-v2.schema.json"
 RESULT_SCHEMA_V3 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-result-v3.schema.json"
 RESULT_SCHEMA_V4 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-result-v4.schema.json"
+RESULT_SCHEMA_V5 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-result-v5.schema.json"
 COMPARISON_SCHEMA = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v2.schema.json"
 COMPARISON_SCHEMA_V3 = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v3.schema.json"
 COMPARISON_SCHEMA_V4 = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v4.schema.json"
+COMPARISON_SCHEMA_V5 = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v5.schema.json"
 WORKFLOW_SCHEMA_ID = "fastapi-rs/python-asgi-workflow@2"
 WORKFLOW_SCHEMA_V3_ID = "fastapi-rs/python-asgi-workflow@3"
 WORKFLOW_SCHEMA_V4_ID = "fastapi-rs/python-asgi-workflow@4"
+WORKFLOW_SCHEMA_V5_ID = "fastapi-rs/python-asgi-workflow@5"
 API_WORKFLOW_SCHEMA_ID = "fastapi-rs/python-api-workflow@1"
 API_WORKFLOW_SCHEMA_V2_ID = "fastapi-rs/python-api-workflow@2"
 API_WORKFLOW_SCHEMA_V3_ID = "fastapi-rs/python-api-workflow@3"
@@ -68,14 +73,17 @@ API_COMPARISON_SCHEMAS_BY_ID = {
 RESULT_SCHEMA_ID = "fastapi-rs/python-asgi-workflow-result@2"
 RESULT_SCHEMA_V3_ID = "fastapi-rs/python-asgi-workflow-result@3"
 RESULT_SCHEMA_V4_ID = "fastapi-rs/python-asgi-workflow-result@4"
+RESULT_SCHEMA_V5_ID = "fastapi-rs/python-asgi-workflow-result@5"
 COMPARISON_SCHEMA_ID = "fastapi-rs/python-asgi-comparison@2"
 COMPARISON_SCHEMA_V3_ID = "fastapi-rs/python-asgi-comparison@3"
 COMPARISON_SCHEMA_V4_ID = "fastapi-rs/python-asgi-comparison@4"
+COMPARISON_SCHEMA_V5_ID = "fastapi-rs/python-asgi-comparison@5"
 
 WORKFLOW_SCHEMAS = {
     WORKFLOW_SCHEMA_ID: WORKFLOW_SCHEMA,
     WORKFLOW_SCHEMA_V3_ID: WORKFLOW_SCHEMA_V3,
     WORKFLOW_SCHEMA_V4_ID: WORKFLOW_SCHEMA_V4,
+    WORKFLOW_SCHEMA_V5_ID: WORKFLOW_SCHEMA_V5,
     API_WORKFLOW_SCHEMA_ID: API_WORKFLOW_SCHEMA,
     API_WORKFLOW_SCHEMA_V2_ID: API_WORKFLOW_SCHEMA_V2,
     API_WORKFLOW_SCHEMA_V3_ID: API_WORKFLOW_SCHEMA_V3,
@@ -84,6 +92,7 @@ RESULT_SCHEMAS = {
     RESULT_SCHEMA_ID: RESULT_SCHEMA,
     RESULT_SCHEMA_V3_ID: RESULT_SCHEMA_V3,
     RESULT_SCHEMA_V4_ID: RESULT_SCHEMA_V4,
+    RESULT_SCHEMA_V5_ID: RESULT_SCHEMA_V5,
     API_RESULT_SCHEMA_ID: API_RESULT_SCHEMA,
     API_RESULT_SCHEMA_V3_ID: API_RESULT_SCHEMA_V3,
     API_RESULT_SCHEMA_V4_ID: API_RESULT_SCHEMA_V4,
@@ -92,6 +101,7 @@ COMPARISON_SCHEMAS = {
     COMPARISON_SCHEMA_ID: COMPARISON_SCHEMA,
     COMPARISON_SCHEMA_V3_ID: COMPARISON_SCHEMA_V3,
     COMPARISON_SCHEMA_V4_ID: COMPARISON_SCHEMA_V4,
+    COMPARISON_SCHEMA_V5_ID: COMPARISON_SCHEMA_V5,
     API_COMPARISON_SCHEMA_ID: API_COMPARISON_SCHEMA,
     API_COMPARISON_SCHEMA_V2_ID: API_COMPARISON_SCHEMA_V2,
     API_COMPARISON_SCHEMA_V3_ID: API_COMPARISON_SCHEMA_V3,
@@ -100,12 +110,14 @@ RESULT_SCHEMA_IDS_BY_WORKFLOW = {
     WORKFLOW_SCHEMA_ID: RESULT_SCHEMA_ID,
     WORKFLOW_SCHEMA_V3_ID: RESULT_SCHEMA_V3_ID,
     WORKFLOW_SCHEMA_V4_ID: RESULT_SCHEMA_V4_ID,
+    WORKFLOW_SCHEMA_V5_ID: RESULT_SCHEMA_V5_ID,
     **API_RESULT_SCHEMA_IDS_BY_WORKFLOW,
 }
 COMPARISON_SCHEMA_IDS_BY_WORKFLOW = {
     WORKFLOW_SCHEMA_ID: COMPARISON_SCHEMA_ID,
     WORKFLOW_SCHEMA_V3_ID: COMPARISON_SCHEMA_V3_ID,
     WORKFLOW_SCHEMA_V4_ID: COMPARISON_SCHEMA_V4_ID,
+    WORKFLOW_SCHEMA_V5_ID: COMPARISON_SCHEMA_V5_ID,
     **API_COMPARISON_SCHEMA_IDS_BY_WORKFLOW,
 }
 
@@ -402,6 +414,26 @@ def read_manifest() -> dict[str, Any]:
             workflow_v4_contract.get(digest_key),
             label,
         )
+    workflow_v5_contract = unresolved.get("python_asgi_workflow_v5")
+    if not isinstance(workflow_v5_contract, dict):
+        raise ContractError("manifest Python/ASGI v5 workflow contract is missing")
+    if (
+        workflow_v5_contract.get("schema_id") != WORKFLOW_SCHEMA_V5_ID
+        or workflow_v5_contract.get("result_schema_id") != RESULT_SCHEMA_V5_ID
+        or workflow_v5_contract.get("comparison_schema_id") != COMPARISON_SCHEMA_V5_ID
+    ):
+        raise ContractError("manifest Python/ASGI v5 schema identities are unsupported")
+    workflow_v5_schema_refs = (
+        ("schema_path", "schema_sha256", "python-asgi-workflow v5 schema"),
+        ("result_schema_path", "result_schema_sha256", "workflow result v5 schema"),
+        ("comparison_schema_path", "comparison_schema_sha256", "comparison v5 schema"),
+    )
+    for path_key, digest_key, label in workflow_v5_schema_refs:
+        _verify_digest_ref(
+            workflow_v5_contract.get(path_key),
+            workflow_v5_contract.get(digest_key),
+            label,
+        )
     api_workflow_contract = (
         unresolved.get("python_api_workflow") if isinstance(unresolved, dict) else None
     )
@@ -597,9 +629,14 @@ def load_workflow(
             WORKFLOW_SCHEMA_ID,
             WORKFLOW_SCHEMA_V3_ID,
             WORKFLOW_SCHEMA_V4_ID,
+            WORKFLOW_SCHEMA_V5_ID,
         }:
             _validate_unique_ids(case["actions"], "action_id", f"actions in {case['case_id']}")
-            if workflow_schema_id in {WORKFLOW_SCHEMA_V3_ID, WORKFLOW_SCHEMA_V4_ID}:
+            if workflow_schema_id in {
+                WORKFLOW_SCHEMA_V3_ID,
+                WORKFLOW_SCHEMA_V4_ID,
+                WORKFLOW_SCHEMA_V5_ID,
+            }:
                 lifespan_positions = [
                     index
                     for index, action in enumerate(case["actions"])
@@ -614,6 +651,39 @@ def load_workflow(
             for action in case["actions"]:
                 if action["kind"] == "lifespan":
                     continue
+                if workflow_schema_id == WORKFLOW_SCHEMA_V5_ID and action["kind"] == "http_request":
+                    receive_mode = action.get("receive_mode")
+                    timeout_present = "cancel_after_seconds" in action
+                    has_cancellation_observation = any(
+                        observation["kind"] == "asgi_cancellation"
+                        for observation in action["observations"]
+                    )
+                    if receive_mode == "wait_until_cancelled" and not timeout_present:
+                        raise ContractError(
+                            "wait_until_cancelled requires a finite cancel_after_seconds timeout"
+                        )
+                    if timeout_present:
+                        timeout = action["cancel_after_seconds"]
+                        if isinstance(timeout, bool) or not isinstance(timeout, (int, float)):
+                            raise ContractError(
+                                "cancel_after_seconds must be a positive finite number"
+                            )
+                        try:
+                            finite_timeout = math.isfinite(float(timeout))
+                        except (OverflowError, ValueError):
+                            finite_timeout = False
+                        if not finite_timeout or float(timeout) <= 0:
+                            raise ContractError(
+                                "cancel_after_seconds must be a positive finite number"
+                            )
+                    if timeout_present and receive_mode != "wait_until_cancelled":
+                        raise ContractError(
+                            "cancel_after_seconds is permitted only with wait_until_cancelled"
+                        )
+                    if has_cancellation_observation and receive_mode != "wait_until_cancelled":
+                        raise ContractError(
+                            "asgi_cancellation observations require wait_until_cancelled"
+                        )
                 if (
                     action["kind"] == "websocket_session"
                     and action["receive_events"][-1]["type"] != "websocket.disconnect"

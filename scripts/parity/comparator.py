@@ -11,6 +11,7 @@ from scripts.parity.contract import (
     COMPARISON_SCHEMA_IDS_BY_WORKFLOW,
     RESULT_SCHEMA_IDS_BY_WORKFLOW,
     WORKFLOW_SCHEMA_V3_ID,
+    WORKFLOW_SCHEMA_V5_ID,
     ContractError,
 )
 
@@ -534,7 +535,7 @@ def compare_workflow_results(
     expected_case_ids = {case["case_id"] for case in workflow["cases"]}
     if set(source_cases) - expected_case_ids or set(target_cases) - expected_case_ids:
         raise ComparisonError("a result artifact contains a case absent from the input workflow")
-    if workflow["schema"] == WORKFLOW_SCHEMA_V4_ID:
+    if workflow["schema"] in {WORKFLOW_SCHEMA_V4_ID, WORKFLOW_SCHEMA_V5_ID}:
         compare_case = _compare_case_v4
     elif workflow["schema"] == WORKFLOW_SCHEMA_V3_ID:
         compare_case = _compare_case_v3

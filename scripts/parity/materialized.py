@@ -13,6 +13,7 @@ from scripts.parity.contract import (
     ROOT,
     WORKFLOW_SCHEMA_V3_ID,
     WORKFLOW_SCHEMA_V4_ID,
+    WORKFLOW_SCHEMA_V5_ID,
     ContractError,
     load_workflow,
     read_json,
@@ -47,17 +48,24 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
                     selectors.add("python.call_outcome")
         return selectors
 
-    if workflow_schema in {WORKFLOW_SCHEMA_V3_ID, WORKFLOW_SCHEMA_V4_ID}:
+    if workflow_schema in {
+        WORKFLOW_SCHEMA_V3_ID,
+        WORKFLOW_SCHEMA_V4_ID,
+        WORKFLOW_SCHEMA_V5_ID,
+    }:
         selectors.update(
             f"construction.{selector}" for selector in case["construction_observation"]["selectors"]
         )
     if (
-        workflow_schema == WORKFLOW_SCHEMA_V4_ID
+        workflow_schema in {WORKFLOW_SCHEMA_V4_ID, WORKFLOW_SCHEMA_V5_ID}
         and case.get("construction_observation", {}).get("capture_warnings") is True
     ):
         selectors.add("python.warnings")
     for action in case["actions"]:
-        if workflow_schema == WORKFLOW_SCHEMA_V4_ID and action.get("capture_warnings") is True:
+        if (
+            workflow_schema in {WORKFLOW_SCHEMA_V4_ID, WORKFLOW_SCHEMA_V5_ID}
+            and action.get("capture_warnings") is True
+        ):
             selectors.add("warnings.category_message")
         if action["kind"] == "lifespan":
             selectors.update(
@@ -107,6 +115,8 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
                     selectors.add("validation.error_details")
                 elif observation["selector"] == "error_public_attributes":
                     selectors.add("error.public_attributes")
+            elif observation["kind"] == "asgi_cancellation":
+                selectors.add("asgi.cancellation.cancelled_caught")
     return selectors
 
 

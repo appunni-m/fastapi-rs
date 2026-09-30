@@ -167,7 +167,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@2
-    sha256: c9ac5eeaa7d5be125dcc237f14c2c71e05a7c099f0b67af3d962f2109763dd3d
+    sha256: 2efafd47f14f4b9db7f7dca72dd037e8ed5beccf415ba95bb652b4dafb713c0e
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -198,19 +198,19 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 0c5b29113c3aceca0b6e72882481ff0002e502753073ec8033b0af48b85fd4da
+    sha256: c2df0c6c9a286c8e738e5916090953fee5d93441ad6ca2242de73bfd706f3226
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
-      designs: 596
-      test_case_designs: 2108
+      designs: 597
+      test_case_designs: 2110
     source_artifact_pointer: /fixture_backlog_ref
   observation_selector_catalog:
     path: tests/fixtures/observation-selectors.json
     schema: fastapi-rs/observation-selector-catalog@1
-    sha256: a940e65d8c268586305ce0124a870b2f8e905c0d188ee6c43086a7d5119abb8c
+    sha256: 14183963d5a5a86f379997fb2c236e5d94a9d940ca36555f623fce20f77e02de
     purpose: Exact projection semantics for the atlas and fixture selectors
     counts:
-      selectors: 49
+      selectors: 50
       parameterized_selectors: 1
   runtime_api_surface_core:
     path: tests/fixtures/runtime-api-surface-core.json
@@ -235,14 +235,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@1
-    sha256: 3ea0b603e3bd4ef29c8c3eab5edc3af8bb88e89e5d0e74a9fa6fb9a30c7bd7c2
+    sha256: 06b3514c67a48504c8dba3c5c62985a059b23bc74e0080e1b3a689d2221b0d39
     schema_path: tests/fixtures/schemas/materialized-input-index.schema.json
     schema_sha256: b0a2ec32c63dc82ec43cb4c5ffaf41590e951526de305865a24301ea42e947d2
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 451
-      cases: 1771
-      partial_source_mappings: 1045
+      workflows: 452
+      cases: 1773
+      partial_source_mappings: 1048
 
 contract_metadata:
   aliases:
@@ -380,6 +380,21 @@ unresolved:
     coverage: >-
       Captures ordered warning records at selected app-construction, HTTP,
       WebSocket, and lifespan phases, including error and not-run results.
+  python_asgi_workflow_v5:
+    state: cancellation-aware-http-receive-and-observation; v1-v4-remain-supported
+    schema_id: fastapi-rs/python-asgi-workflow@5
+    schema_path: tests/fixtures/schemas/python-asgi-workflow-v5.schema.json
+    schema_sha256: 1fe650270854dbd935daafb1e5f0655e62b446dc604e3b5fc9d41cb23506d0cb
+    result_schema_id: fastapi-rs/python-asgi-workflow-result@5
+    result_schema_path: tests/fixtures/schemas/python-asgi-workflow-result-v5.schema.json
+    result_schema_sha256: 68f5f7e758d095a81d64eb78d56c5ad5991bebb7e1399a803e0468ffcde00744
+    comparison_schema_id: fastapi-rs/python-asgi-comparison@5
+    comparison_schema_path: tests/fixtures/schemas/python-asgi-comparison-v5.schema.json
+    comparison_schema_sha256: 394148f625215c75bcb96c7a8a336c2eab2d818764c36f6aa3958aa1ddf9e4be
+    coverage: >-
+      Keeps an HTTP receive channel pending through a declared AnyIO timeout and
+      records whether cancellation interrupted dispatch; warning capture remains
+      available from v4.
   python_api_workflow:
     state: isolated-oracle-and-target-workers-and-exact-comparator-present; broader-public-api-parity-pending
     schema_id: fastapi-rs/python-api-workflow@1
