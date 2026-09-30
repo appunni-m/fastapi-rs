@@ -626,6 +626,24 @@ reviewed_api_contract_overlay:
         invalid values are not part of this slice.
         Other constructor options and override cache behavior beyond the
         reviewed Depends slice remain outside this reviewed slice.
+    fastapi.applications.FastAPI:
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::url_path_for
+      source_evidence:
+        - {path: fastapi/applications.py, symbol: FastAPI}
+        - {path: tests/test_starlette_urlconvertors.py, symbol: test_url_path_for_path_convertor}
+      feature_ids: [app-routing]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      supported_slice: >-
+        The source-backed FastAPI URLPath operation inherits
+        Starlette.Application.url_path_for(name, /, **path_params). This native
+        slice resolves a directly registered FastAPI route by its default
+        endpoint name and exact path-parameter names, formats values through
+        the pinned Starlette converter boundary and Starlette-RS named-route
+        table, and returns Starlette's URLPath class. The mapped
+        test_url_path_for_path_convertor workflow observes the formatted path
+        through an HTTP response. Direct URLPath metadata, explicit route-name
+        overrides, non-path converter values, Router/APIRouter lookups, and
+        nested Host or Mount routes remain unverified.
     fastapi.applications.FastAPI.__call__:
       rust_binding: fastapi-rs/src/application_runtime.rs::FastApiCall::finish_endpoint
       source_evidence:

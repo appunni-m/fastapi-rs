@@ -8,7 +8,7 @@ use pyo3::exceptions::{
 };
 use pyo3::prelude::*;
 use pyo3::types::{PyBool, PyBytes, PyDict, PyInt, PyList, PyModule, PyString, PyTuple, PyType};
-use starlette_rs::QueryParams;
+use starlette_rs::{NamedRouteError, NamedRouteTable, QueryParams};
 
 use crate::awaitable::{
     AwaitableStateMachine, MachineAction, MachineResume, into_python_awaitable,
@@ -140,6 +140,8 @@ enum DependencyOverrideCallable {
 struct FastApiRoute {
     path: String,
     method: String,
+    name: String,
+    param_convertors: Py<PyDict>,
     summary: Option<String>,
     response_description: String,
     additional_responses: Vec<OpenApiAdditionalResponse>,
@@ -196,6 +198,7 @@ pub(crate) struct PyFastApi {
     openapi_external_docs: Option<Py<PyAny>>,
     dependency_overrides: Py<PyDict>,
     router: FastApiOperationRouter,
+    named_routes: NamedRouteTable,
     routes: Vec<FastApiRoute>,
 }
 
@@ -250,6 +253,7 @@ impl PyFastApi {
             openapi_external_docs,
             dependency_overrides: PyDict::new(py).unbind(),
             router: FastApiOperationRouter::new(),
+            named_routes: NamedRouteTable::new(),
             routes: Vec::new(),
         }
     }
@@ -789,6 +793,74 @@ impl PyFastApi {
         self.openapi_document(py)
     }
 
+    #[pyo3(
+        signature = (name, /, **path_params),
+        text_signature = "($self, name, /, **path_params)"
+    )]
+    fn url_path_for(
+        &self,
+        py: Python<'_>,
+        name: &str,
+        path_params: Option<&Bound<'_, PyDict>>,
+    ) -> PyResult<Py<PyAny>> {
+        let empty_path_params = PyDict::new(py);
+        let path_params = path_params.unwrap_or(&empty_path_params);
+        let mut supplied_names = path_params.keys().extract::<Vec<String>>()?;
+        supplied_names.sort();
+
+        let mut matching_route = None;
+        for route in &self.routes {
+            if route.name != name {
+                continue;
+            }
+            let mut expected_names = route
+                .param_convertors
+                .bind(py)
+                .keys()
+                .extract::<Vec<String>>()?;
+            expected_names.sort();
+            if expected_names == supplied_names {
+                matching_route = Some(route);
+                break;
+            }
+        }
+
+        let Some(route) = matching_route else {
+            let no_match_type = py.import("starlette.routing")?.getattr("NoMatchFound")?;
+            let exception = no_match_type.call1((name, path_params))?;
+            return Err(PyErr::from_value(exception));
+        };
+
+        let convertors = route.param_convertors.bind(py);
+        let mut formatted_path_params = Vec::with_capacity(path_params.len());
+        for (parameter_name, value) in path_params.iter() {
+            let parameter_name = parameter_name.extract::<String>()?;
+            let convertor = convertors.get_item(&parameter_name)?.ok_or_else(|| {
+                PyRuntimeError::new_err("matched route is missing a path parameter convertor")
+            })?;
+            let formatted_value = convertor
+                .call_method1("to_string", (value,))?
+                .extract::<String>()?;
+            formatted_path_params.push((parameter_name, formatted_value));
+        }
+
+        let route_path = match self.named_routes.url_path_for(name, &formatted_path_params) {
+            Ok(path) => path,
+            Err(NamedRouteError::NoMatchFound { .. }) => {
+                let no_match_type = py.import("starlette.routing")?.getattr("NoMatchFound")?;
+                let exception = no_match_type.call1((name, path_params))?;
+                return Err(PyErr::from_value(exception));
+            }
+            Err(NamedRouteError::RouteFormatting(error)) => {
+                return Err(PyValueError::new_err(error.to_string()));
+            }
+        };
+        py.import("starlette.datastructures")?
+            .getattr("URLPath")?
+            .call1((route_path.path, route_path.protocol, route_path.host))
+            .map(Bound::unbind)
+    }
+
     fn __call__(
         slf: Py<Self>,
         py: Python<'_>,
@@ -1157,9 +1229,13 @@ fn merge_router_routes(
             &path_parameter_names(&path),
         )?;
         plan.prepend_dependencies(py, &route_dependencies)?;
+        let param_convertors = route_param_convertors(py, &path)?;
         let index = app
             .router
             .add_operation(&path, &source_route.method, source_route.status_code)
+            .map_err(|error| PyValueError::new_err(error.to_string()))?;
+        app.named_routes
+            .add_route(&path, &source_route.name)
             .map_err(|error| PyValueError::new_err(error.to_string()))?;
         app.router
             .set_parameters(index, plan.input_parameters())
@@ -1167,6 +1243,8 @@ fn merge_router_routes(
         app.routes.push(FastApiRoute {
             path,
             method: source_route.method.clone(),
+            name: source_route.name.clone(),
+            param_convertors,
             summary: source_route.summary.clone(),
             response_description: source_route.response_description.clone(),
             additional_responses: source_route.additional_responses.clone(),
@@ -1307,6 +1385,7 @@ impl PyOperationDecorator {
     fn __call__(&self, py: Python<'_>, endpoint: Py<PyAny>) -> PyResult<Py<PyAny>> {
         let path_parameters = path_parameter_names(&self.path);
         let plan = CallablePlan::build(py, endpoint.clone_ref(py), &path_parameters)?;
+        let (name, param_convertors) = route_reverse_metadata(py, &self.path, endpoint.bind(py))?;
         let default_response_model = py.NotImplemented();
         let response_model = match self.response_model.as_ref() {
             Some(response_model) if response_model.bind(py).is(default_response_model.bind(py)) => {
@@ -1325,12 +1404,17 @@ impl PyOperationDecorator {
             .router
             .add_operation(&self.path, &self.method, self.status_code)
             .map_err(|error| PyValueError::new_err(error.to_string()))?;
+        app.named_routes
+            .add_route(&self.path, &name)
+            .map_err(|error| PyValueError::new_err(error.to_string()))?;
         app.router
             .set_parameters(index, inputs)
             .ok_or_else(|| PyRuntimeError::new_err("registered FastAPI operation was lost"))?;
         app.routes.push(FastApiRoute {
             path: self.path.clone(),
             method: self.method.clone(),
+            name,
+            param_convertors,
             summary: self.summary.clone(),
             response_description: self.response_description.clone(),
             additional_responses: self.additional_responses.clone(),
@@ -2354,6 +2438,32 @@ fn typed_return_annotation(
     } else {
         Ok(Some(evaluated.unbind()))
     }
+}
+
+fn route_reverse_metadata(
+    py: Python<'_>,
+    path: &str,
+    endpoint: &Bound<'_, PyAny>,
+) -> PyResult<(String, Py<PyDict>)> {
+    let routing = py.import("starlette.routing")?;
+    let name = routing
+        .getattr("_get_name")?
+        .call1((endpoint,))?
+        .extract::<String>()?;
+    let param_convertors = route_param_convertors(py, path)?;
+    Ok((name, param_convertors))
+}
+
+fn route_param_convertors(py: Python<'_>, path: &str) -> PyResult<Py<PyDict>> {
+    let compiled_path = py
+        .import("starlette.routing")?
+        .getattr("compile_path")?
+        .call1((path,))?;
+    Ok(compiled_path
+        .get_item(2)?
+        .cast::<PyDict>()?
+        .clone()
+        .unbind())
 }
 
 fn path_parameter_names(path: &str) -> Vec<String> {
