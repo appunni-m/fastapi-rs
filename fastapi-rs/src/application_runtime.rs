@@ -3104,7 +3104,19 @@ fn parameter_source(
             });
         }
         if kind == "header" || kind == "query" || kind == "cookie" {
-            let alias = match marker.getattr("alias")?.extract::<Option<String>>()? {
+            let declared_alias = marker.getattr("alias")?.extract::<Option<String>>()?;
+            let validation_alias = if kind == "query" {
+                let validation_alias = marker.getattr("validation_alias")?;
+                if validation_alias.is_instance_of::<PyString>() {
+                    let validation_alias = validation_alias.extract::<String>()?;
+                    (!validation_alias.is_empty()).then_some(validation_alias)
+                } else {
+                    None
+                }
+            } else {
+                None
+            };
+            let alias = match validation_alias.or(declared_alias) {
                 Some(alias) => alias,
                 None if kind == "header"
                     && marker.getattr("convert_underscores")?.extract::<bool>()? =>

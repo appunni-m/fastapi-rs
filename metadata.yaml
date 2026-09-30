@@ -521,11 +521,15 @@ reviewed_api_contract_overlay:
         query-params-str-validations-doc-title-description-examples, and
         query-params-str-validations-doc-exclude-schema-examples. Other Query and
         FieldInfo options remain outside this reviewed slice. Identity-checked
-        query-validation-alias-direct and query-validation-alias-model workflows
-        document an unsupported boundary: Query(validation_alias=...) currently
-        raises TypeError, while Query() around a Pydantic model is treated as one
-        object parameter instead of expanding its fields and OpenAPI parameters.
-        Neither workflow currently reaches exact parity.
+        Identity-checked query-validation-alias-direct workflow covers string
+        validation_alias behavior: the nonempty validation alias takes
+        precedence over alias and the Python name for query lookup,
+        required-error location, and OpenAPI name. Non-string
+        AliasPath/AliasChoices values remain outside this reviewed slice. The
+        query-validation-alias-model workflow remains unsupported: Query()
+        around a Pydantic model is treated as one object parameter instead of
+        expanding its fields and OpenAPI parameters, and does not reach exact
+        parity.
     fastapi.Request:
       rust_binding: fastapi-rs/src/application_runtime.rs::parameter_source
       source_evidence:

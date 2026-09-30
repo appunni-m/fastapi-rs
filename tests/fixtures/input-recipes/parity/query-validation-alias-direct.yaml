@@ -41,6 +41,43 @@ cases:
   source_evidence:
   - path: tests/test_request_params/test_query/test_required_str.py
     kind: upstream_test
+- case_id: fastapi.request-parameters.query.validation-alias.direct.rejects-parameter-name
+  actions:
+  - action_id: direct-parameter-name
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /required-alias-and-validation-alias
+      query_string: p=hello
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_query/test_required_str.py
+    kind: upstream_test
 - case_id: fastapi.request-parameters.query.validation-alias.direct.accepts-validation-alias
   actions:
   - action_id: direct-validation-alias

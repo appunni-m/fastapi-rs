@@ -8,6 +8,7 @@ use pyo3::types::PyModule;
 pub(crate) struct ParameterMetadata {
     kind: String,
     alias: Option<String>,
+    validation_alias: Option<Py<PyAny>>,
     dependency: Option<Py<PyAny>>,
     default: Option<Py<PyAny>>,
     media_type: Option<String>,
@@ -34,6 +35,13 @@ impl ParameterMetadata {
     #[getter]
     fn alias(&self) -> Option<String> {
         self.alias.clone()
+    }
+
+    #[getter]
+    fn validation_alias(&self, py: Python<'_>) -> Option<Py<PyAny>> {
+        self.validation_alias
+            .as_ref()
+            .map(|validation_alias| validation_alias.clone_ref(py))
     }
 
     #[getter]
@@ -131,6 +139,7 @@ fn depends(
         ParameterMetadata {
             kind: "depends".to_owned(),
             alias: None,
+            validation_alias: None,
             dependency: Some(dependency),
             default: None,
             media_type: None,
@@ -165,6 +174,7 @@ fn header(
         ParameterMetadata {
             kind: "header".to_owned(),
             alias,
+            validation_alias: None,
             dependency: None,
             default,
             media_type: None,
@@ -195,6 +205,7 @@ fn cookie(
         ParameterMetadata {
             kind: "cookie".to_owned(),
             alias,
+            validation_alias: None,
             dependency: None,
             default,
             media_type: None,
@@ -234,6 +245,7 @@ fn optional_parameter_default(py: Python<'_>, default: Py<PyAny>) -> PyResult<Op
         default = query_ellipsis_default(),
         *,
         alias = None,
+        validation_alias = None,
         title = None,
         description = None,
         gt = None,
@@ -254,6 +266,7 @@ fn query(
     py: Python<'_>,
     default: Py<PyAny>,
     alias: Option<String>,
+    validation_alias: Option<Py<PyAny>>,
     title: Option<String>,
     description: Option<String>,
     gt: Option<Py<PyAny>>,
@@ -276,6 +289,7 @@ fn query(
         ParameterMetadata {
             kind: "query".to_owned(),
             alias,
+            validation_alias,
             dependency: None,
             default,
             media_type: None,
@@ -301,6 +315,7 @@ fn path(py: Python<'_>, gt: Option<Py<PyAny>>) -> PyResult<Py<ParameterMetadata>
         ParameterMetadata {
             kind: "path".to_owned(),
             alias: None,
+            validation_alias: None,
             dependency: None,
             default: None,
             media_type: None,
@@ -326,6 +341,7 @@ fn body(py: Python<'_>, gt: Option<Py<PyAny>>) -> PyResult<Py<ParameterMetadata>
         ParameterMetadata {
             kind: "body".to_owned(),
             alias: None,
+            validation_alias: None,
             dependency: None,
             default: None,
             media_type: None,
@@ -390,6 +406,7 @@ fn form(
         ParameterMetadata {
             kind: "form".to_owned(),
             alias,
+            validation_alias: None,
             dependency: None,
             default: normalize_undefined_default(py, default)?,
             media_type: Some(media_type.to_owned()),
@@ -430,6 +447,7 @@ fn file(
         ParameterMetadata {
             kind: "file".to_owned(),
             alias,
+            validation_alias: None,
             dependency: None,
             default: normalize_undefined_default(py, default)?,
             media_type: Some(media_type.to_owned()),
