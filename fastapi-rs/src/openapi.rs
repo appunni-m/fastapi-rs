@@ -36,6 +36,9 @@ pub(crate) struct OpenApiOperation {
     pub(crate) response_model_name: Option<String>,
     pub(crate) response_schema: Option<Py<PyAny>>,
     pub(crate) response_schema_title: String,
+    pub(crate) jsonl_stream: bool,
+    pub(crate) stream_item_model_name: Option<String>,
+    pub(crate) stream_item_schema: Option<Py<PyAny>>,
     pub(crate) additional_responses: Vec<OpenApiAdditionalResponse>,
 }
 
@@ -68,6 +71,13 @@ pub(crate) fn openapi_document(
         }
         if let Some(schema) = operation.response_schema.as_ref() {
             if let Some(name) = operation.response_model_name.as_deref() {
+                collect_model_schema(py, &mut schemas, name, schema)?;
+            } else {
+                collect_schema_definitions(py, &mut schemas, schema)?;
+            }
+        }
+        if let Some(schema) = operation.stream_item_schema.as_ref() {
+            if let Some(name) = operation.stream_item_model_name.as_deref() {
                 collect_model_schema(py, &mut schemas, name, schema)?;
             } else {
                 collect_schema_definitions(py, &mut schemas, schema)?;
@@ -134,27 +144,43 @@ pub(crate) fn openapi_document(
         let success_response = PyDict::new(py);
         success_response.set_item("description", &operation.response_description)?;
         if body_allowed_for_status_code(operation.status) {
-            let response_schema = match (
-                operation.response_model_name.as_deref(),
-                operation.response_schema.as_ref(),
-            ) {
-                (Some(model_name), Some(_)) => reference_schema(py, model_name)?.into_any(),
-                (None, Some(schema)) => {
-                    let schema = normalize_schema(py, schema.bind(py), false)?;
-                    if let Ok(schema_dict) = schema.cast::<PyDict>() {
-                        if schema_dict.get_item("$ref")?.is_none() {
-                            schema_dict.set_item("title", &operation.response_schema_title)?;
+            if operation.jsonl_stream {
+                let item_schema = match (
+                    operation.stream_item_model_name.as_deref(),
+                    operation.stream_item_schema.as_ref(),
+                ) {
+                    (Some(model_name), Some(_)) => reference_schema(py, model_name)?.into_any(),
+                    (None, Some(schema)) => normalize_schema(py, schema.bind(py), false)?,
+                    _ => PyDict::new(py).into_any(),
+                };
+                let media_type = PyDict::new(py);
+                media_type.set_item("itemSchema", item_schema)?;
+                let content = PyDict::new(py);
+                content.set_item("application/jsonl", media_type)?;
+                success_response.set_item("content", content)?;
+            } else {
+                let response_schema = match (
+                    operation.response_model_name.as_deref(),
+                    operation.response_schema.as_ref(),
+                ) {
+                    (Some(model_name), Some(_)) => reference_schema(py, model_name)?.into_any(),
+                    (None, Some(schema)) => {
+                        let schema = normalize_schema(py, schema.bind(py), false)?;
+                        if let Ok(schema_dict) = schema.cast::<PyDict>() {
+                            if schema_dict.get_item("$ref")?.is_none() {
+                                schema_dict.set_item("title", &operation.response_schema_title)?;
+                            }
                         }
+                        schema
                     }
-                    schema
-                }
-                _ => PyDict::new(py).into_any(),
-            };
-            let content = PyDict::new(py);
-            let media_type = PyDict::new(py);
-            media_type.set_item("schema", response_schema)?;
-            content.set_item("application/json", media_type)?;
-            success_response.set_item("content", content)?;
+                    _ => PyDict::new(py).into_any(),
+                };
+                let content = PyDict::new(py);
+                let media_type = PyDict::new(py);
+                media_type.set_item("schema", response_schema)?;
+                content.set_item("application/json", media_type)?;
+                success_response.set_item("content", content)?;
+            }
         }
         let status_key = operation.status.to_string();
         responses.set_item(status_key, success_response)?;
