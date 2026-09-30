@@ -19,7 +19,7 @@ This source-backed compatibility atlas indexes the API denominator and candidate
 
 ## Per-symbol API contract in the active manifest
 
-The single `tests/fixtures/manifest.yaml` indexes 452 source-supported symbols, with pointers to the pinned AST inventory and both runtime-reflection profiles. It links alias, deprecation, error, documented-feature, selector, and planned Python import-path evidence; 445 symbols link to a documented-page fixture design. The current Python facade directly re-exports 11 native names; this source contract does not measure their behavioral completeness, and broader operation-level review remains pending.
+The single `tests/fixtures/manifest.yaml` indexes 452 source-supported symbols, with pointers to the pinned AST inventory and both runtime-reflection profiles. It links alias, deprecation, error, documented-feature, selector, and planned Python import-path evidence; 445 symbols link to a documented-page fixture design. The current Python facade directly re-exports 14 native names; this source contract does not measure their behavioral completeness, and broader operation-level review remains pending.
 
 | Signature/shape evidence | Symbols |
 |---|---:|
@@ -528,7 +528,7 @@ The merged coverage matrix links each FastAPI test, documented feature, or examp
 |---:|---:|---:|---:|
 | 945 | 2449 | 523 | 6 |
 
-The sibling Starlette-RS manifest, API review, and coverage matrix remain the sole Starlette API inventory. FastAPI's atlas stores only relevant requirement references plus manifest/catalog/review/matrix SHA-256 digests. The inspected Starlette-RS implementation revision is d8b2e452b0a8e2eda502f74b3ee207e139375766 (pinned, clean sibling Git commit).
+The sibling Starlette-RS manifest, API review, and coverage matrix remain the sole Starlette API inventory. FastAPI's atlas stores only relevant requirement references plus manifest/catalog/review/matrix SHA-256 digests. The inspected Starlette-RS implementation revision is 73dc6da38b340e8282191d958ac9deeecdf71f8b (pinned, clean sibling Git commit).
 
 ## Errors, aliases, optional features, and deprecations
 

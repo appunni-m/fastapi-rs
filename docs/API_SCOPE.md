@@ -80,16 +80,16 @@ remain significant.
 
 ### Current target facade availability
 
-The root facade exposes 11 of the 21 source bindings: `__version__`,
-`APIRouter`, `Body`, `Cookie`, `Depends`, `FastAPI`, `Header`, `Path`,
-`Query`, `Response`, and `status`. The missing exports are
-`BackgroundTasks`, `UploadFile`, `HTTPException`,
-`WebSocketException`, `File`, `Form`, `Security`, `Request`, `WebSocket`, and
-`WebSocketDisconnect`. The generated manifest's
-`target_binding.public_python_path` records the required import spelling; it
-does not assert that the current target exports it. Target status remains
-`full-contract-not-established` until live interface and behavior parity are
-recorded.
+The root facade currently exposes 14 of the 21 source bindings:
+`__version__`, `APIRouter`, `Body`, `Cookie`, `Depends`, `FastAPI`, `File`,
+`Form`, `Header`, `Path`, `Query`, `Response`, `UploadFile`, and `status`.
+The missing exports are `BackgroundTasks`, `HTTPException`,
+`WebSocketException`, `Security`, `Request`, `WebSocket`, and
+`WebSocketDisconnect`. Availability here means import-level presence; it does
+not prove source object identity, full signatures, or behavior. The generated
+manifest's `target_binding.public_python_path` records the required spelling,
+and target status remains `full-contract-not-established` until live interface
+and behavior parity are recorded.
 
 `fastapi.status` is a Starlette module reexport in the oracle. The current
 target builds a smaller status module in FastAPI-RS, so module presence alone
