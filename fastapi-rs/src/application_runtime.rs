@@ -4769,7 +4769,7 @@ impl FastApiCall {
                 let convertor = convertors.get_item(name)?.ok_or_else(|| {
                     PyRuntimeError::new_err("matched WebSocket route is missing a path convertor")
                 })?;
-                let converted = convertor.call_method1("to_python", (value.as_str(),))?;
+                let converted = convertor.call_method1("convert", (value.as_str(),))?;
                 native_path_params.set_item(name, converted)?;
             }
             scope.set_item("path_params", native_path_params)?;
