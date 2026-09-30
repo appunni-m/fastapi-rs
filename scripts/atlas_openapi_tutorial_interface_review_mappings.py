@@ -34,7 +34,7 @@ SOURCE_IDENTITIES = {
     },
     "starlette_rs": {
         "version": "0.1.0",
-        "commit": "7cdaad022233e2aa55008bab9309a29803f4e26d",
+        "commit": "add562adb73f6e88ac63b0e9567e1ba49f0c1399",
         "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
         "role": "generic Starlette contract implementation owned by the sibling project",
     },
@@ -53,7 +53,7 @@ SOURCE_IDENTITIES = {
 VERSION_CONSTRAINTS = {
     "source_oracle": "FastAPI 0.141.1 at 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
     "generic_contract": "Starlette 1.6.0 at 4f250d6b814587e20c5365f0a5f0c4d42bcb929f",
-    "generic_target_contract": "Starlette-RS 0.1.0 at 7cdaad022233e2aa55008bab9309a29803f4e26d",
+    "generic_target_contract": "Starlette-RS 0.1.0 at add562adb73f6e88ac63b0e9567e1ba49f0c1399",
     "python": "CPython 3.12.13 oracle; selected _py310 documentation apps require Python >=3.10",
     "pydantic": "Pydantic 2.13.4 with pydantic-core 2.46.4",
     "separate_input_output_schemas": "FastAPI support is documented as added in 0.102.0; this review pins 0.141.1",
