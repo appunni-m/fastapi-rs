@@ -327,6 +327,76 @@ TUTORIAL_TEST_REVIEW_MAPPINGS = {
         module_observation_selectors=["http.status", "http.headers.ordered", "http.body.bytes"],
         stimulus_notes="The mapped upstream test imports docs_src/response_cookies/tutorial001_py310.py, and FastAPI 0.141.1 declares Python >=3.10 in pyproject.toml. Run this source/tutorial workflow on Python 3.10 or newer; the `constraints` field records the same minimum for the mapped case.",
     ),
+    "tests/test_tutorial/test_background_tasks/test_tutorial001.py": _module(
+        [
+            {
+                "path": "tests/test_tutorial/test_background_tasks/test_tutorial001.py",
+                "start_line": 13,
+                "end_line": 21,
+                "role": "FastAPI 0.141.1 tutorial test asserts the response and the task-written effect",
+            },
+            {
+                "path": "docs/en/docs/tutorial/background-tasks.md",
+                "start_line": 13,
+                "end_line": 39,
+                "role": "FastAPI 0.141.1 docs specify BackgroundTasks injection and positional plus keyword add_task arguments",
+            },
+            {
+                "path": "docs/en/docs/tutorial/background-tasks.md",
+                "start_line": 56,
+                "end_line": 61,
+                "role": "FastAPI 0.141.1 docs distinguish the FastAPI-injected BackgroundTasks surface from Starlette response-attached BackgroundTask use",
+            },
+            {
+                "path": "docs_src/background_tasks/tutorial001_py310.py",
+                "start_line": 1,
+                "end_line": 15,
+                "role": "FastAPI 0.141.1 tutorial source passes the path value positionally and message by keyword",
+            },
+            {
+                "path": "fastapi/background.py",
+                "start_line": 5,
+                "end_line": 61,
+                "role": "FastAPI 0.141.1 BackgroundTasks subclass forwards task function arguments to Starlette",
+            },
+            {
+                "path": "fastapi/routing.py",
+                "start_line": 330,
+                "end_line": 345,
+                "role": "FastAPI 0.141.1 places solved background tasks on the response arguments",
+            },
+            {
+                "path": "starlette/responses.py",
+                "start_line": 150,
+                "end_line": 157,
+                "role": "Starlette 1.6.0 emits the response start and body before awaiting attached background work",
+            },
+            {
+                "path": "starlette/background.py",
+                "start_line": 11,
+                "end_line": 33,
+                "role": "Starlette 1.6.0 preserves positional and keyword task arguments and runs collected tasks sequentially",
+            },
+        ],
+        {
+            "test": _case(
+                "tests/test_tutorial/test_background_tasks/test_tutorial001.py",
+                13,
+                21,
+                ["app-routing", "dependency-security", "response-serialization"],
+                ["http.status", "http.headers.ordered", "http.body.bytes"],
+                "FastAPI injects BackgroundTasks into the route and carries the collected work into its response. The independent route passes a positional target and keyword label to the task, then a second request exposes the recorded effect in its response body. Starlette owns the generic task invocation and response emission boundary.",
+                contract_gate="Partial: the source uses TestClient.post(), compares parsed JSON, and reads the task-written file. This direct-ASGI sample compares response status, ordered headers, and body bytes, then exposes an independently recorded in-memory task effect through a follow-up route. It exercises keyword forwarding without claiming file I/O or HTTPX response.json() decoding.",
+                stimulus_notes="Use tests/fixtures/input-recipes/parity/background-task-keyword-arguments-tutorial-review.yaml case fastapi.test.test-tutorial-test-background-tasks-test-tutorial001.keyword-argument-forwarding. The separately named route, target, task label, and in-memory follow-up projection are independent stimuli; the recipe contains no expected outputs or copied upstream test code.",
+            )
+        },
+        module_observation_selectors=[
+            "http.status",
+            "http.headers.ordered",
+            "http.body.bytes",
+        ],
+        stimulus_notes="FastAPI 0.141.1 owns dependency injection and propagation of BackgroundTasks to the response. Starlette 1.6.0 owns the generic attached-task invocation and runs it after sending the response messages.",
+    ),
     "tests/test_tutorial/test_authentication_error_status_code/test_tutorial001.py": _module(
         [
             {
