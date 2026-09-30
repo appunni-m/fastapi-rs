@@ -1863,25 +1863,33 @@ merge_test_review_mappings(
                 ),
                 "test_server_sent_event_null_id_rejected": reviewed_case(
                     ["response-serialization"],
-                    ["error.class", "error.args"],
+                    [
+                        "construction.outcome",
+                        "construction.exception_class",
+                        "construction.exception_message",
+                    ],
                     "Constructing a public ServerSentEvent with a null ID raises a value error with its message.",
                     contract_gate="Requires the ServerSentEvent constructor and its validation behavior in the full API manifest.",
                 ),
                 "test_server_sent_event_single_line_fields_reject_newlines": reviewed_case(
                     ["response-serialization"],
-                    ["error.class", "error.args"],
+                    [
+                        "construction.outcome",
+                        "construction.exception_class",
+                        "construction.exception_message",
+                    ],
                     "Constructing a ServerSentEvent with newline-containing single-line fields raises a value error.",
                     contract_gate="Requires the ServerSentEvent constructor and its validation behavior in the full API manifest.",
                 ),
                 "test_server_sent_event_negative_retry_rejected": reviewed_case(
                     ["response-serialization"],
-                    ["error.class"],
+                    ["construction.outcome", "construction.exception_class"],
                     "A negative retry value is rejected by the public ServerSentEvent constructor.",
                     contract_gate="Requires the ServerSentEvent constructor and its validation behavior in the full API manifest.",
                 ),
                 "test_server_sent_event_float_retry_rejected": reviewed_case(
                     ["response-serialization"],
-                    ["error.class"],
+                    ["construction.outcome", "construction.exception_class"],
                     "A non-integer retry value is rejected by the public ServerSentEvent constructor.",
                     contract_gate="Requires the ServerSentEvent constructor and its validation behavior in the full API manifest.",
                 ),
@@ -1892,7 +1900,11 @@ merge_test_review_mappings(
                 ),
                 "test_data_and_raw_data_mutually_exclusive": reviewed_case(
                     ["response-serialization"],
-                    ["error.class", "error.args"],
+                    [
+                        "construction.outcome",
+                        "construction.exception_class",
+                        "construction.exception_message",
+                    ],
                     "A ServerSentEvent rejects simultaneous data and raw_data constructor inputs.",
                     contract_gate="Requires the ServerSentEvent constructor and its validation behavior in the full API manifest.",
                 ),
@@ -1918,14 +1930,14 @@ merge_test_review_mappings(
                 ),
                 "test_format_sse_event_splitlines_behavior_in_data": reviewed_case(
                     ["response-serialization"],
-                    ["python.attribute_value"],
-                    "format_sse_event converts embedded data newlines into SSE data lines.",
+                    ["http.body.bytes"],
+                    "The workload returns the exact bytes from format_sse_event as the ASGI response body, without a JSON or text transformation.",
                     contract_gate="Requires fastapi.sse.format_sse_event to be explicitly included in the full API manifest.",
                 ),
                 "test_format_sse_event_splitlines_behavior_in_comment": reviewed_case(
                     ["response-serialization"],
-                    ["python.attribute_value"],
-                    "format_sse_event converts embedded comment newlines into SSE comment lines.",
+                    ["http.body.bytes"],
+                    "The workload returns the exact bytes from format_sse_event as the ASGI response body, without a JSON or text transformation.",
                     contract_gate="Requires fastapi.sse.format_sse_event to be explicitly included in the full API manifest.",
                 ),
                 "test_default_response_class_on_app_stream": reviewed_case(

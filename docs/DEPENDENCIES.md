@@ -14,7 +14,7 @@ upstream packages target dependencies. FastAPI-specific routing, dependency
 resolution, validation orchestration, serialization/OpenAPI, middleware,
 lifecycle, and protocol control flow stay in Rust.
 
-The lock resolves the following core packages for CPython 3.11. For this interpreter, the normal Python runtime closure is **nine packages**. On Python 3.10, add `exceptiongroup` (ten total). The lock is multi-Python and does not pin the interpreter itself.
+The selected oracle profile resolves the following core packages for CPython 3.12.13. Its normal Python runtime closure is **nine packages**. On Python 3.10, add `exceptiongroup` (ten total). The lock is multi-Python and does not pin the interpreter itself.
 
 This table preserves FastAPI 0.141.1's source lock exactly for dependency
 analysis. Every compatibility and parity run uses Starlette 1.6.0 alone, which

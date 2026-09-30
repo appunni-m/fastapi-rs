@@ -1,124 +1,674 @@
-schema: fastapi-rs/python-asgi-workflow@2
+schema: fastapi-rs/python-asgi-workflow@3
 workload:
   file: tests/fixtures/workloads/sse.py
   factory: create_app
   instantiate_per_case: true
 cases:
 - case_id: fastapi.test.test-sse.test-sse-events-with-fields
+  factory_input: {}
+  construction_observation: &construction_ok
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
   actions:
   - action_id: get-event-fields
     kind: http_request
     scope:
       type: http
-      asgi:
-        version: '3.0'
-        spec_version: '2.4'
+      asgi: {version: '3.0', spec_version: '2.4'}
       http_version: '1.1'
       method: GET
       scheme: http
       path: /items/stream-sse-event
       query_string: ''
       root_path: ''
-      headers:
-      - - host
-        - testserver
-      client:
-      - 127.0.0.1
-      - 123
-      server:
-      - testserver
-      - 80
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
     receive_events:
-    - type: http.request
-      body: ''
-      more_body: false
+    - {type: http.request, body: '', more_body: false}
     observations:
-    - kind: http_response
-      selectors:
-      - status
-      - body
-      comparison: exact
-  source_evidence:
-  - path: tests/test_sse.py
-    kind: upstream_test
-  - path: docs/en/docs/reference/sse.md
-    kind: upstream_documentation
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence: &sse_test_evidence
+  - {path: tests/test_sse.py, kind: upstream_test}
+  - {path: docs/en/docs/reference/sse.md, kind: upstream_documentation}
 - case_id: fastapi.test.test-sse.test-async-generator-with-model
+  factory_input: {}
+  construction_observation: *construction_ok
   actions:
   - action_id: get-typed-model-stream
     kind: http_request
     scope:
       type: http
-      asgi:
-        version: '3.0'
-        spec_version: '2.4'
+      asgi: {version: '3.0', spec_version: '2.4'}
       http_version: '1.1'
       method: GET
       scheme: http
       path: /items/stream
       query_string: ''
       root_path: ''
-      headers:
-      - - host
-        - testserver
-      client:
-      - 127.0.0.1
-      - 123
-      server:
-      - testserver
-      - 80
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
     receive_events:
-    - type: http.request
-      body: ''
-      more_body: false
+    - {type: http.request, body: '', more_body: false}
     observations:
-    - kind: http_response
-      selectors:
-      - status
-      - headers
-      - body
-      comparison: exact
-  source_evidence:
-  - path: tests/test_sse.py
-    kind: upstream_test
-  - path: docs/en/docs/reference/sse.md
-    kind: upstream_documentation
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+  source_evidence: *sse_test_evidence
+- case_id: fastapi.test.test-sse.test-no-keepalive-when-fast
+  factory_input: {}
+  construction_observation: *construction_ok
+  actions:
+  - action_id: get-fast-stream-without-keepalive
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/stream
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence: *sse_test_evidence
 - case_id: fastapi.test.test-sse.test-raw-data-sent-without-json-encoding
+  factory_input: {}
+  construction_observation: *construction_ok
   actions:
   - action_id: get-raw-data
     kind: http_request
     scope:
       type: http
-      asgi:
-        version: '3.0'
-        spec_version: '2.4'
+      asgi: {version: '3.0', spec_version: '2.4'}
       http_version: '1.1'
       method: GET
       scheme: http
       path: /items/stream-raw
       query_string: ''
       root_path: ''
-      headers:
-      - - host
-        - testserver
-      client:
-      - 127.0.0.1
-      - 123
-      server:
-      - testserver
-      - 80
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
     receive_events:
-    - type: http.request
-      body: ''
-      more_body: false
+    - {type: http.request, body: '', more_body: false}
     observations:
-    - kind: http_response
-      selectors:
-      - status
-      - body
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence: *sse_test_evidence
+- case_id: fastapi.test.test-sse.test-sync-generator-with-model
+  factory_input: {}
+  construction_observation: *construction_ok
+  actions:
+  - action_id: get-sync-model-stream
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/stream-sync
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+  source_evidence: *sse_test_evidence
+- case_id: fastapi.test.test-sse.test-async-generator-no-annotation
+  factory_input: {}
+  construction_observation: *construction_ok
+  actions:
+  - action_id: get-async-unannotated-stream
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/stream-no-annotation
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+  source_evidence: *sse_test_evidence
+- case_id: fastapi.test.test-sse.test-sync-generator-no-annotation
+  factory_input: {}
+  construction_observation: *construction_ok
+  actions:
+  - action_id: get-sync-unannotated-stream
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/stream-sync-no-annotation
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+  source_evidence: *sse_test_evidence
+- case_id: fastapi.test.test-sse.test-dict-items
+  factory_input: {}
+  construction_observation: *construction_ok
+  actions:
+  - action_id: get-dict-stream
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/stream-dict
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence: *sse_test_evidence
+- case_id: fastapi.test.test-sse.test-post-method-sse
+  factory_input: {}
+  construction_observation: *construction_ok
+  actions:
+  - action_id: post-model-stream
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /items/stream-post
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+  source_evidence: *sse_test_evidence
+- case_id: fastapi.test.test-sse.test-mixed-plain-and-sse-events
+  factory_input: {}
+  construction_observation: *construction_ok
+  actions:
+  - action_id: get-mixed-stream
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/stream-mixed
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence: *sse_test_evidence
+- case_id: fastapi.test.test-sse.test-string-data-json-encoded
+  factory_input: {}
+  construction_observation: *construction_ok
+  actions:
+  - action_id: get-string-data-stream
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/stream-string
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence: *sse_test_evidence
+- case_id: fastapi.test.test-sse.test-sse-on-router-included-in-app
+  factory_input: {}
+  construction_observation: *construction_ok
+  actions:
+  - action_id: get-router-events
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /api/events
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+  source_evidence: *sse_test_evidence
+- case_id: fastapi.test.test-sse.test-sse-router-typed-stream
+  factory_input: {}
+  construction_observation: *construction_ok
+  actions:
+  - action_id: get-router-typed-stream
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /api/events-typed
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+  source_evidence: *sse_test_evidence
+- case_id: fastapi.test.test-sse.test-sse-router-typed-openapi-schema
+  factory_input: {}
+  construction_observation: *construction_ok
+  actions:
+  - action_id: get-router-typed-openapi-schema
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status], comparison: exact}
+    - kind: openapi
+      json_pointers: [/paths/~1api~1events-typed/get/responses/200]
       comparison: exact
-  source_evidence:
-  - path: tests/test_sse.py
-    kind: upstream_test
-  - path: docs/en/docs/reference/sse.md
-    kind: upstream_documentation
+  source_evidence: *sse_test_evidence
+- case_id: fastapi.test.test-sse.test-default-response-class-on-app-stream
+  factory_input: {variant: default-app-response-class}
+  construction_observation: *construction_ok
+  actions:
+  - action_id: get-app-default-sse-stream
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /api/stream
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+  source_evidence: *sse_test_evidence
+- case_id: fastapi.test.test-sse.test-default-response-class-on-app-openapi-schema
+  factory_input: {variant: default-app-response-class}
+  construction_observation: *construction_ok
+  actions:
+  - action_id: get-app-default-sse-openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status], comparison: exact}
+    - kind: openapi
+      json_pointers: [/paths/~1api~1stream/get/responses/200]
+      comparison: exact
+  source_evidence: *sse_test_evidence
+- case_id: fastapi.test.test-sse.test-default-response-class-on-parent-router-stream
+  factory_input: {variant: default-parent-router-response-class}
+  construction_observation: *construction_ok
+  actions:
+  - action_id: get-parent-router-default-sse-stream
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /api/stream
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+  source_evidence: *sse_test_evidence
+- case_id: fastapi.test.test-sse.test-default-response-class-on-parent-router-openapi-schema
+  factory_input: {variant: default-parent-router-response-class}
+  construction_observation: *construction_ok
+  actions:
+  - action_id: get-parent-router-default-sse-openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status], comparison: exact}
+    - kind: openapi
+      json_pointers: [/paths/~1api~1stream/get/responses/200]
+      comparison: exact
+  source_evidence: *sse_test_evidence
+- case_id: fastapi.test.test-sse.test-format-sse-event-splitlines-behavior-in-data
+  factory_input:
+    variant: formatter
+    data_cases:
+    - {case_id: trailing-lf, data_str: "Hello\n"}
+    - {case_id: two-trailing-lf, data_str: "Hello\n\n"}
+    - {case_id: only-lf, data_str: "\n"}
+    - {case_id: crlf, data_str: "Hello\r\nWorld"}
+    - {case_id: cr, data_str: "Hello\rWorld"}
+    - {case_id: unicode-line-separator, data_str: "A\u2028B"}
+    - {case_id: vertical-tab, data_str: "A\u000bB"}
+    - {case_id: empty, data_str: ''}
+    comment_cases: []
+  construction_observation: *construction_ok
+  actions:
+  - action_id: trailing-lf
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /format-data/trailing-lf
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [body], comparison: exact}
+  - action_id: two-trailing-lf
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /format-data/two-trailing-lf
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [body], comparison: exact}
+  - action_id: only-lf
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /format-data/only-lf
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [body], comparison: exact}
+  - action_id: crlf
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /format-data/crlf
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [body], comparison: exact}
+  - action_id: cr
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /format-data/cr
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [body], comparison: exact}
+  - action_id: unicode-line-separator
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /format-data/unicode-line-separator
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [body], comparison: exact}
+  - action_id: vertical-tab
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /format-data/vertical-tab
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [body], comparison: exact}
+  - action_id: empty
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /format-data/empty
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [body], comparison: exact}
+  source_evidence: *sse_test_evidence
+- case_id: fastapi.test.test-sse.test-format-sse-event-splitlines-behavior-in-comment
+  factory_input:
+    variant: formatter
+    data_cases: []
+    comment_cases:
+    - {case_id: trailing-lf, comment: "hi\n"}
+  construction_observation: *construction_ok
+  actions:
+  - action_id: comment-trailing-lf
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /format-comment/trailing-lf
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [body], comparison: exact}
+  source_evidence: *sse_test_evidence
+- case_id: fastapi.test.test-sse.test-server-sent-event-null-id-rejected
+  factory_input: {validation: null-id, value: "has\u0000null"}
+  construction_observation: &construction_error
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions: []
+  source_evidence: *sse_test_evidence
+- case_id: fastapi.test.test-sse.test-server-sent-event-single-line-fields-reject-newlines.event-lf
+  factory_input: {validation: single-line-field, field_name: event, value: "first\nsecond"}
+  construction_observation: *construction_error
+  actions: []
+  source_evidence: *sse_test_evidence
+- case_id: fastapi.test.test-sse.test-server-sent-event-single-line-fields-reject-newlines.event-cr
+  factory_input: {validation: single-line-field, field_name: event, value: "first\rsecond"}
+  construction_observation: *construction_error
+  actions: []
+  source_evidence: *sse_test_evidence
+- case_id: fastapi.test.test-sse.test-server-sent-event-single-line-fields-reject-newlines.event-crlf
+  factory_input: {validation: single-line-field, field_name: event, value: "first\r\nsecond"}
+  construction_observation: *construction_error
+  actions: []
+  source_evidence: *sse_test_evidence
+- case_id: fastapi.test.test-sse.test-server-sent-event-single-line-fields-reject-newlines.id-lf
+  factory_input: {validation: single-line-field, field_name: id, value: "first\nsecond"}
+  construction_observation: *construction_error
+  actions: []
+  source_evidence: *sse_test_evidence
+- case_id: fastapi.test.test-sse.test-server-sent-event-single-line-fields-reject-newlines.id-cr
+  factory_input: {validation: single-line-field, field_name: id, value: "first\rsecond"}
+  construction_observation: *construction_error
+  actions: []
+  source_evidence: *sse_test_evidence
+- case_id: fastapi.test.test-sse.test-server-sent-event-single-line-fields-reject-newlines.id-crlf
+  factory_input: {validation: single-line-field, field_name: id, value: "first\r\nsecond"}
+  construction_observation: *construction_error
+  actions: []
+  source_evidence: *sse_test_evidence
+- case_id: fastapi.test.test-sse.test-server-sent-event-negative-retry-rejected
+  factory_input: {validation: negative-retry, value: -1}
+  construction_observation: *construction_error
+  actions: []
+  source_evidence: *sse_test_evidence
+- case_id: fastapi.test.test-sse.test-server-sent-event-float-retry-rejected
+  factory_input: {validation: float-retry, value: 1.5}
+  construction_observation: *construction_error
+  actions: []
+  source_evidence: *sse_test_evidence
+- case_id: fastapi.test.test-sse.test-data-and-raw-data-mutually-exclusive
+  factory_input: {validation: mutually-exclusive-data, data: json, raw_data: raw}
+  construction_observation: *construction_error
+  actions: []
+  source_evidence: *sse_test_evidence

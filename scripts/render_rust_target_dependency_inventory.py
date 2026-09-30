@@ -387,7 +387,7 @@ path dependency.
 | `md-5` 0.11.0 | Starlette-RS normal dependency | Computes the ETag for file responses in `starlette-rs/src/file_response.rs`. |
 | `mime_guess` 2.0.5 | Starlette-RS normal dependency | Infers file-response media types from paths in `starlette-rs/src/file_response.rs`. |
 | `serde_json` 1.0.151 | Starlette-RS normal dependency | JSON protocol parsing and output in `starlette-rs/src/bin/starlette-rs-parity-adapter.rs`. |
-| `sha2` 0.10.9 | Starlette-RS normal dependency | SHA-256 dependency-lock identity check in the same parity adapter. |
+| `sha2` 0.11.0 | Starlette-RS normal dependency | SHA-256 dependency-lock identity check in the same parity adapter. |
 
 The four file-response dependencies are used by the Starlette-RS library.
 `serde_json` and `sha2` are used by its parity-adapter binary but are currently

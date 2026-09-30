@@ -21,6 +21,10 @@ def create_app() -> FastAPI:
     def path_convertor(param: Annotated[str, Path()]):
         return {"path": param}
 
+    @app.get("/custom-path/{param:path}", name="custom_path")
+    def custom_path_convertor(param: Annotated[str, Path()]):
+        return {"path": param}
+
     @app.get("/query/")
     def query_convertor(param: Annotated[str, Query()]):
         return {"query": param}
@@ -28,5 +32,9 @@ def create_app() -> FastAPI:
     @app.get("/generated-path")
     def generated_path():
         return PlainTextResponse(str(app.url_path_for("path_convertor", param="some/example")))
+
+    @app.get("/generated-custom-path")
+    def generated_custom_path():
+        return PlainTextResponse(str(app.url_path_for("custom_path", param="some/example")))
 
     return app

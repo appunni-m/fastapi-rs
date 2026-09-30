@@ -194,3 +194,41 @@ cases:
   source_evidence:
   - path: tests/test_starlette_urlconvertors.py
     kind: upstream_test
+- case_id: fastapi.test.test-starlette-urlconvertors.test-url-path-for-explicit-name
+  actions:
+  - action_id: url-path-for-explicit-name
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /generated-custom-path
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_starlette_urlconvertors.py
+    kind: upstream_test
