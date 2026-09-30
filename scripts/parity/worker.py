@@ -29,10 +29,12 @@ WORKFLOW_SCHEMA_ID = "fastapi-rs/python-asgi-workflow@2"
 WORKFLOW_SCHEMA_V3_ID = "fastapi-rs/python-asgi-workflow@3"
 WORKFLOW_SCHEMA_V4_ID = "fastapi-rs/python-asgi-workflow@4"
 WORKFLOW_SCHEMA_V5_ID = "fastapi-rs/python-asgi-workflow@5"
+WORKFLOW_SCHEMA_V6_ID = "fastapi-rs/python-asgi-workflow@6"
 RESULT_SCHEMA_ID = "fastapi-rs/python-asgi-workflow-result@2"
 RESULT_SCHEMA_V3_ID = "fastapi-rs/python-asgi-workflow-result@3"
 RESULT_SCHEMA_V4_ID = "fastapi-rs/python-asgi-workflow-result@4"
 RESULT_SCHEMA_V5_ID = "fastapi-rs/python-asgi-workflow-result@5"
+RESULT_SCHEMA_V6_ID = "fastapi-rs/python-asgi-workflow-result@6"
 ORACLE_PROFILE_ID = "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13"
 ORACLE_PROFILE_PACKAGE_EXTENSIONS = {
     "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-standard-multipart-0.0.32": {
@@ -505,21 +507,23 @@ def _observe(
                     if event.get("type") not in {"websocket.receive", "websocket.send"}:
                         continue
                     if "text" in event:
-                        payloads.append(
-                            {
-                                "direction": event["direction"],
-                                "kind": "text",
-                                "value": event["text"],
-                            }
-                        )
+                        payload = {
+                            "direction": event["direction"],
+                            "kind": "text",
+                            "value": event["text"],
+                        }
+                        if "session_id" in event:
+                            payload["session_id"] = event["session_id"]
+                        payloads.append(payload)
                     elif "bytes" in event:
-                        payloads.append(
-                            {
-                                "direction": event["direction"],
-                                "kind": "bytes",
-                                "value": _encoded_bytes(event["bytes"]),
-                            }
-                        )
+                        payload = {
+                            "direction": event["direction"],
+                            "kind": "bytes",
+                            "value": _encoded_bytes(event["bytes"]),
+                        }
+                        if "session_id" in event:
+                            payload["session_id"] = event["session_id"]
+                        payloads.append(payload)
                 values = {"messages": payloads}
             elif selector == "workload_trace":
                 if workload_trace is None:
@@ -739,6 +743,192 @@ def _add_warning_sidecar(
     return result
 
 
+async def _run_websocket_conversation_v6(
+    action: dict[str, Any],
+    app: Any,
+    lifespan_state: dict[str, Any] | None,
+    warning_package_roots: list[tuple[str, Path]],
+) -> dict[str, Any]:
+    """Run independent ASGI sessions under the action's explicit client schedule."""
+    sessions: dict[str, dict[str, Any]] = {}
+    transcript: list[dict[str, Any]] = []
+    emitted_warnings: list[warnings.WarningMessage] = []
+    capture_warnings = action.get("capture_warnings", False)
+
+    async def next_outgoing(session: dict[str, Any]) -> dict[str, Any]:
+        outgoing = session["outgoing"]
+        application_task = session["task"]
+        if not outgoing.empty():
+            return outgoing.get_nowait()
+        if application_task.done():
+            error = application_task.exception()
+            if error is not None and not _is_expected_websocket_disconnect(
+                error, session["scope"], session["trace"]
+            ):
+                raise error
+            raise WorkerError("WebSocket application ended before the scheduled receive")
+        queued_message = asyncio.create_task(outgoing.get())
+        done, _ = await asyncio.wait(
+            {queued_message, application_task},
+            timeout=10.0,
+            return_when=asyncio.FIRST_COMPLETED,
+        )
+        if queued_message in done:
+            return queued_message.result()
+        queued_message.cancel()
+        await asyncio.gather(queued_message, return_exceptions=True)
+        if application_task in done:
+            error = application_task.exception()
+            if error is not None and not _is_expected_websocket_disconnect(
+                error, session["scope"], session["trace"]
+            ):
+                raise error
+            raise WorkerError("WebSocket application ended before the scheduled receive")
+        raise WorkerError("timed out waiting for a scheduled WebSocket application event")
+
+    async def execute_schedule() -> None:
+        for session_spec in action["sessions"]:
+            session_id = session_spec["session_id"]
+            scope = _make_scope(session_spec["scope"])
+            if lifespan_state is not None:
+                # ASGI servers make a shallow copy of lifespan state per connection scope.
+                scope["state"] = copy.copy(lifespan_state)
+            incoming: asyncio.Queue[dict[str, Any]] = asyncio.Queue()
+            outgoing: asyncio.Queue[dict[str, Any]] = asyncio.Queue()
+            trace: list[dict[str, Any]] = []
+            session: dict[str, Any] = {
+                "scope": scope,
+                "incoming": incoming,
+                "outgoing": outgoing,
+                "trace": trace,
+                "disconnect": None,
+            }
+
+            async def receive(
+                *,
+                input_queue: asyncio.Queue[dict[str, Any]] = incoming,
+                receive_trace: list[dict[str, Any]] = trace,
+                session_state: dict[str, Any] = session,
+                conversation_session_id: str = session_id,
+            ) -> dict[str, Any]:
+                if input_queue.empty() and session_state["disconnect"] is not None:
+                    message = session_state["disconnect"]
+                else:
+                    message = await input_queue.get()
+                event = {
+                    "session_id": conversation_session_id,
+                    "direction": "receive",
+                    **copy.deepcopy(message),
+                }
+                receive_trace.append(event)
+                transcript.append(copy.deepcopy(event))
+                return message
+
+            async def send(
+                message: dict[str, Any],
+                *,
+                output_queue: asyncio.Queue[dict[str, Any]] = outgoing,
+                send_trace: list[dict[str, Any]] = trace,
+                conversation_session_id: str = session_id,
+            ) -> None:
+                captured = copy.deepcopy(message)
+                event = {
+                    "session_id": conversation_session_id,
+                    "direction": "send",
+                    **copy.deepcopy(captured),
+                }
+                send_trace.append(event)
+                transcript.append(copy.deepcopy(event))
+                await output_queue.put(captured)
+
+            session["task"] = asyncio.create_task(app(scope, receive, send))
+            sessions[session_id] = session
+
+        try:
+            for step in action["steps"]:
+                session_id = step["session_id"]
+                session = sessions[session_id]
+                kind = step["kind"]
+                if kind == "connect":
+                    await session["incoming"].put({"type": "websocket.connect"})
+                    handshake = await next_outgoing(session)
+                    if handshake.get("type") not in {"websocket.accept", "websocket.close"}:
+                        raise WorkerError(
+                            "WebSocket connection produced no ASGI accept or close handshake"
+                        )
+                    session["handshake"] = handshake
+                elif kind in {"send_text", "send_bytes"}:
+                    if kind == "send_text":
+                        message = {"type": "websocket.receive", "text": step["text"]}
+                    else:
+                        payload = base64.b64decode(step["bytes_base64"], validate=True)
+                        message = {"type": "websocket.receive", "bytes": payload}
+                    await session["incoming"].put(message)
+                elif kind == "receive_next":
+                    message = await next_outgoing(session)
+                    if message.get("type") not in {"websocket.send", "websocket.close"}:
+                        raise WorkerError(
+                            "scheduled WebSocket receive did not produce an ASGI send or close"
+                        )
+                elif kind == "disconnect":
+                    message = {
+                        "type": "websocket.disconnect",
+                        "code": step["code"],
+                        "reason": step.get("reason", ""),
+                    }
+                    session["disconnect"] = message
+                    await session["incoming"].put(message)
+                    try:
+                        await asyncio.wait_for(asyncio.shield(session["task"]), timeout=10.0)
+                    except TimeoutError as exc:
+                        raise WorkerError(
+                            "WebSocket application did not finish after client disconnect"
+                        ) from exc
+                    except Exception as exc:
+                        if not _is_expected_websocket_disconnect(
+                            exc, session["scope"], session["trace"]
+                        ):
+                            raise
+        finally:
+            pending = [
+                session["task"] for session in sessions.values() if not session["task"].done()
+            ]
+            for task in pending:
+                task.cancel()
+            if pending:
+                await asyncio.gather(*pending, return_exceptions=True)
+
+    try:
+        if capture_warnings:
+            await _await_with_warning_capture(execute_schedule(), emitted_warnings)
+        else:
+            await execute_schedule()
+        observations = _observe(
+            action["observations"],
+            [],
+            event_trace=transcript,
+            include_selectors=True,
+        )
+        result = {
+            "action_id": action["action_id"],
+            "status": "completed",
+            "observations": observations,
+        }
+    except Exception as exc:
+        result = {
+            "action_id": action["action_id"],
+            "status": "product_error",
+            "error": {"class": type(exc).__name__, "message": str(exc)},
+            "observations": [],
+        }
+    return _add_warning_sidecar(
+        result,
+        selected=capture_warnings,
+        emitted=emitted_warnings,
+        package_roots=warning_package_roots,
+    )
+
+
 async def _run_action_v3(
     action: dict[str, Any],
     app: Any,
@@ -747,6 +937,10 @@ async def _run_action_v3(
     workload_trace: list[str],
     warning_package_roots: list[tuple[str, Path]],
 ) -> dict[str, Any]:
+    if action["kind"] == "websocket_conversation":
+        return await _run_websocket_conversation_v6(
+            action, app, lifespan_state, warning_package_roots
+        )
     scope = _make_scope(action["scope"])
     if lifespan_state is not None:
         # ASGI servers make a shallow copy of lifespan state for each request scope.
@@ -1203,6 +1397,7 @@ def run_oracle(
         WORKFLOW_SCHEMA_V3_ID,
         WORKFLOW_SCHEMA_V4_ID,
         WORKFLOW_SCHEMA_V5_ID,
+        WORKFLOW_SCHEMA_V6_ID,
     }:
         raise WorkerError("workflow schema identity changed after host-side validation")
     fastapi_root = fastapi_root.resolve()
@@ -1221,15 +1416,23 @@ def run_oracle(
         WORKFLOW_SCHEMA_V3_ID,
         WORKFLOW_SCHEMA_V4_ID,
         WORKFLOW_SCHEMA_V5_ID,
+        WORKFLOW_SCHEMA_V6_ID,
     }:
         warning_package_roots = (
             [("fastapi", fastapi_root / "fastapi"), ("starlette", starlette_root / "starlette")]
-            if workflow["schema"] in {WORKFLOW_SCHEMA_V4_ID, WORKFLOW_SCHEMA_V5_ID}
+            if workflow["schema"]
+            in {
+                WORKFLOW_SCHEMA_V4_ID,
+                WORKFLOW_SCHEMA_V5_ID,
+                WORKFLOW_SCHEMA_V6_ID,
+            }
             else []
         )
         cases = asyncio.run(_run_cases_v3(workflow, factory, warning_package_roots))
         result_schema_id = (
-            RESULT_SCHEMA_V5_ID
+            RESULT_SCHEMA_V6_ID
+            if workflow["schema"] == WORKFLOW_SCHEMA_V6_ID
+            else RESULT_SCHEMA_V5_ID
             if workflow["schema"] == WORKFLOW_SCHEMA_V5_ID
             else RESULT_SCHEMA_V4_ID
             if workflow["schema"] == WORKFLOW_SCHEMA_V4_ID

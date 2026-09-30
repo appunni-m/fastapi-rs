@@ -1,10 +1,15 @@
-schema: fastapi-rs/python-asgi-workflow@2
+schema: fastapi-rs/python-asgi-workflow@6
 workload:
-  file: tests/fixtures/workloads/websockets_tutorial003_single_session_subset.py
+  file: tests/fixtures/workloads/websockets_tutorial003_multi_session_subset.py
   factory: create_app
   instantiate_per_case: true
 cases:
 - case_id: fastapi.websockets.tutorial003.home
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
   actions:
   - action_id: home
     kind: http_request
@@ -43,6 +48,12 @@ cases:
   - path: docs_src/websockets_/tutorial003_py310.py
     kind: upstream_documentation
 - case_id: fastapi.websockets.tutorial003.single-client-session
+  factory_input:
+    websocket: true
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
   actions:
   - action_id: single-client-session
     kind: websocket_session
@@ -74,6 +85,85 @@ cases:
       code: 1000
       reason: client complete
     observations:
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
+    - kind: websocket
+      selector: messages
+      comparison: ordered
+  - action_id: two-client-broadcast-and-disconnect
+    kind: websocket_conversation
+    sessions:
+    - session_id: client-1234
+      scope:
+        type: websocket
+        asgi:
+          version: '3.0'
+          spec_version: '2.5'
+        http_version: '1.1'
+        scheme: ws
+        path: /ws/1234
+        query_string: ''
+        root_path: ''
+        headers:
+        - - host
+          - testserver
+        client:
+        - 127.0.0.1
+        - 123
+        server:
+        - testserver
+        - 80
+        subprotocols: []
+    - session_id: client-5678
+      scope:
+        type: websocket
+        asgi:
+          version: '3.0'
+          spec_version: '2.5'
+        http_version: '1.1'
+        scheme: ws
+        path: /ws/5678
+        query_string: ''
+        root_path: ''
+        headers:
+        - - host
+          - testserver
+        client:
+        - 127.0.0.1
+        - 124
+        server:
+        - testserver
+        - 80
+        subprotocols: []
+    steps:
+    - session_id: client-1234
+      kind: connect
+    - session_id: client-5678
+      kind: connect
+    - session_id: client-1234
+      kind: send_text
+      text: Hello from 1234
+    - session_id: client-1234
+      kind: receive_next
+    - session_id: client-5678
+      kind: receive_next
+    - session_id: client-1234
+      kind: receive_next
+    - session_id: client-5678
+      kind: disconnect
+      code: 1000
+      reason: client complete
+    - session_id: client-1234
+      kind: receive_next
+    - session_id: client-1234
+      kind: disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
     - kind: websocket
       selector: messages
       comparison: ordered

@@ -14,6 +14,7 @@ from scripts.parity.contract import (
     WORKFLOW_SCHEMA_V3_ID,
     WORKFLOW_SCHEMA_V4_ID,
     WORKFLOW_SCHEMA_V5_ID,
+    WORKFLOW_SCHEMA_V6_ID,
     ContractError,
     load_workflow,
     read_json,
@@ -52,18 +53,19 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
         WORKFLOW_SCHEMA_V3_ID,
         WORKFLOW_SCHEMA_V4_ID,
         WORKFLOW_SCHEMA_V5_ID,
+        WORKFLOW_SCHEMA_V6_ID,
     }:
         selectors.update(
             f"construction.{selector}" for selector in case["construction_observation"]["selectors"]
         )
     if (
-        workflow_schema in {WORKFLOW_SCHEMA_V4_ID, WORKFLOW_SCHEMA_V5_ID}
+        workflow_schema in {WORKFLOW_SCHEMA_V4_ID, WORKFLOW_SCHEMA_V5_ID, WORKFLOW_SCHEMA_V6_ID}
         and case.get("construction_observation", {}).get("capture_warnings") is True
     ):
         selectors.add("python.warnings")
     for action in case["actions"]:
         if (
-            workflow_schema in {WORKFLOW_SCHEMA_V4_ID, WORKFLOW_SCHEMA_V5_ID}
+            workflow_schema in {WORKFLOW_SCHEMA_V4_ID, WORKFLOW_SCHEMA_V5_ID, WORKFLOW_SCHEMA_V6_ID}
             and action.get("capture_warnings") is True
         ):
             selectors.add("warnings.category_message")
@@ -71,6 +73,11 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
             selectors.update(
                 f"asgi.lifespan.{observation['selector']}" for observation in action["observations"]
             )
+            continue
+        if action["kind"] == "websocket_conversation":
+            for observation in action["observations"]:
+                if observation["kind"] == "websocket":
+                    selectors.add(f"websocket.{observation['selector']}")
             continue
         path = action["scope"]["path"]
         openapi_endpoint = path == "/openapi.json"

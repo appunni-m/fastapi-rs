@@ -12,6 +12,7 @@ from scripts.parity.contract import (
     RESULT_SCHEMA_IDS_BY_WORKFLOW,
     WORKFLOW_SCHEMA_V3_ID,
     WORKFLOW_SCHEMA_V5_ID,
+    WORKFLOW_SCHEMA_V6_ID,
     ContractError,
 )
 
@@ -240,6 +241,31 @@ def _compare_action(
                     "target": target_observation["values"],
                 }
             )
+        if (
+            action_spec["kind"] == "websocket_conversation"
+            and observation_spec.get("selector") == "messages"
+        ):
+            allowed_session_ids = {session["session_id"] for session in action_spec["sessions"]}
+            for side, observation in (
+                ("source", source_observation),
+                ("target", target_observation),
+            ):
+                messages = observation["values"].get("messages", [])
+                for message_index, message in enumerate(messages):
+                    session_id = message.get("session_id") if isinstance(message, dict) else None
+                    if session_id not in allowed_session_ids:
+                        diffs.append(
+                            {
+                                "action_id": action_id,
+                                "path": (
+                                    f"{path}.values.messages[{message_index}]"
+                                    f".{side}_session_id_contract"
+                                ),
+                                "comparison": "exact",
+                                "source": session_id,
+                                "target": {"allowed_session_ids": sorted(allowed_session_ids)},
+                            }
+                        )
 
     expected_indices = set(range(len(action_spec["observations"])))
     for side, observations in (("source", source_observations), ("target", target_observations)):
@@ -538,7 +564,11 @@ def compare_workflow_results(
     expected_case_ids = {case["case_id"] for case in workflow["cases"]}
     if set(source_cases) - expected_case_ids or set(target_cases) - expected_case_ids:
         raise ComparisonError("a result artifact contains a case absent from the input workflow")
-    if workflow["schema"] in {WORKFLOW_SCHEMA_V4_ID, WORKFLOW_SCHEMA_V5_ID}:
+    if workflow["schema"] in {
+        WORKFLOW_SCHEMA_V4_ID,
+        WORKFLOW_SCHEMA_V5_ID,
+        WORKFLOW_SCHEMA_V6_ID,
+    }:
         compare_case = _compare_case_v4
     elif workflow["schema"] == WORKFLOW_SCHEMA_V3_ID:
         compare_case = _compare_case_v3

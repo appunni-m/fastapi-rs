@@ -21,7 +21,7 @@ PARITY_API_INPUT ?= tests/fixtures/inputs/parity/encoding.json
 BENCHMARK_WORKLOAD ?= benchmarks/workloads/first-slice-valid-asgi.yaml
 
 .DEFAULT_GOAL := help
-.PHONY: help fmt format clippy build build-rust build-python python-facade-check rust-policy-check compatibility-atlas-update api-contract-update api-contract-check metadata-check dependency-inventory-update dependency-inventory-check parity-inputs parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-target parity-api-runtime parity-validate parity-index-update parity-index-check parity-oracle parity-oracle-standard parity-target parity-compare parity-api-validate parity-api-oracle parity-api-target parity-api-compare parity-first-slice benchmark-contract-check benchmark-first-slice verify clean
+.PHONY: help fmt format clippy build build-rust build-python python-facade-check rust-policy-check compatibility-atlas-update api-contract-update api-contract-check metadata-check dependency-inventory-update dependency-inventory-check dependency-graph-check parity-inputs parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-target parity-api-runtime parity-validate parity-index-update parity-index-check parity-oracle parity-oracle-standard parity-target parity-compare parity-api-validate parity-api-oracle parity-api-target parity-api-compare parity-first-slice benchmark-contract-check benchmark-first-slice verify clean
 
 help: ## Show common development commands
 	@printf '%s\n' \
@@ -40,6 +40,7 @@ help: ## Show common development commands
 	  '  make metadata-check   Check the human-maintained API source authority' \
 	  '  make dependency-inventory-update Regenerate the pinned target dependency/license report' \
 	  '  make dependency-inventory-check Check the pinned target dependency/license report' \
+	  '  make dependency-graph-check Check Python dependency rows against FastAPI 0.141.1 uv.lock' \
 	  '  make parity-inputs    Materialize ignored JSON workflows from YAML recipes' \
 	  '  make parity-prepare-oracle Prepare pinned FastAPI 0.141.1 / Starlette 1.6.0 Python env' \
 	  '  make parity-prepare-oracle-standard Prepare the locked optional-feature reflection profile' \
@@ -107,6 +108,9 @@ dependency-inventory-update: ## Regenerate the pinned Cargo/Python target depend
 
 dependency-inventory-check: ## Check the pinned Cargo/Python target dependency inventory
 	$(PYTHON) scripts/render_rust_target_dependency_inventory.py --offline --check --starlette-rs-source "$(STARLETTE_RS_SOURCE)"
+
+dependency-graph-check: ## Check Python dependency graph rows against the pinned FastAPI lock
+	$(PYTHON) scripts/check_fastapi_dependency_graph.py
 
 parity-prepare-oracle: ## Create the locked source oracle and select local Starlette 1.6.0
 	UV_PROJECT_ENVIRONMENT="$(CURDIR)/.venv-oracle" $(UV) sync --project "$(FASTAPI_SOURCE)" --locked --no-dev --no-install-package starlette --python "$(PYTHON)"
@@ -199,7 +203,7 @@ benchmark-first-slice: benchmark-contract-check ## Gate parity and measure the s
 
 build: build-rust build-python ## Build the Rust crates and Python wheel
 
-verify: fmt clippy parity-index-check api-contract-check metadata-check dependency-inventory-check benchmark-contract-check parity-validate build-python ## Run formatting, lint, static contracts, and package checks
+verify: fmt clippy parity-index-check api-contract-check metadata-check dependency-inventory-check dependency-graph-check benchmark-contract-check parity-validate build-python ## Run formatting, lint, static contracts, and package checks
 
 clean: ## Remove Cargo outputs under target/
 	$(CARGO) clean

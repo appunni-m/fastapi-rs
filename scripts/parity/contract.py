@@ -17,6 +17,7 @@ WORKFLOW_SCHEMA = ROOT / "tests/fixtures/schemas/python-asgi-workflow-v2.schema.
 WORKFLOW_SCHEMA_V3 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-v3.schema.json"
 WORKFLOW_SCHEMA_V4 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-v4.schema.json"
 WORKFLOW_SCHEMA_V5 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-v5.schema.json"
+WORKFLOW_SCHEMA_V6 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-v6.schema.json"
 API_WORKFLOW_SCHEMA = ROOT / "tests/fixtures/schemas/python-api-workflow.schema.json"
 API_WORKFLOW_SCHEMA_V2 = ROOT / "tests/fixtures/schemas/python-api-workflow-v2.schema.json"
 API_WORKFLOW_SCHEMA_V3 = ROOT / "tests/fixtures/schemas/python-api-workflow-v3.schema.json"
@@ -30,14 +31,17 @@ RESULT_SCHEMA = ROOT / "tests/fixtures/schemas/python-asgi-workflow-result-v2.sc
 RESULT_SCHEMA_V3 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-result-v3.schema.json"
 RESULT_SCHEMA_V4 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-result-v4.schema.json"
 RESULT_SCHEMA_V5 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-result-v5.schema.json"
+RESULT_SCHEMA_V6 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-result-v6.schema.json"
 COMPARISON_SCHEMA = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v2.schema.json"
 COMPARISON_SCHEMA_V3 = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v3.schema.json"
 COMPARISON_SCHEMA_V4 = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v4.schema.json"
 COMPARISON_SCHEMA_V5 = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v5.schema.json"
+COMPARISON_SCHEMA_V6 = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v6.schema.json"
 WORKFLOW_SCHEMA_ID = "fastapi-rs/python-asgi-workflow@2"
 WORKFLOW_SCHEMA_V3_ID = "fastapi-rs/python-asgi-workflow@3"
 WORKFLOW_SCHEMA_V4_ID = "fastapi-rs/python-asgi-workflow@4"
 WORKFLOW_SCHEMA_V5_ID = "fastapi-rs/python-asgi-workflow@5"
+WORKFLOW_SCHEMA_V6_ID = "fastapi-rs/python-asgi-workflow@6"
 API_WORKFLOW_SCHEMA_ID = "fastapi-rs/python-api-workflow@1"
 API_WORKFLOW_SCHEMA_V2_ID = "fastapi-rs/python-api-workflow@2"
 API_WORKFLOW_SCHEMA_V3_ID = "fastapi-rs/python-api-workflow@3"
@@ -74,16 +78,19 @@ RESULT_SCHEMA_ID = "fastapi-rs/python-asgi-workflow-result@2"
 RESULT_SCHEMA_V3_ID = "fastapi-rs/python-asgi-workflow-result@3"
 RESULT_SCHEMA_V4_ID = "fastapi-rs/python-asgi-workflow-result@4"
 RESULT_SCHEMA_V5_ID = "fastapi-rs/python-asgi-workflow-result@5"
+RESULT_SCHEMA_V6_ID = "fastapi-rs/python-asgi-workflow-result@6"
 COMPARISON_SCHEMA_ID = "fastapi-rs/python-asgi-comparison@2"
 COMPARISON_SCHEMA_V3_ID = "fastapi-rs/python-asgi-comparison@3"
 COMPARISON_SCHEMA_V4_ID = "fastapi-rs/python-asgi-comparison@4"
 COMPARISON_SCHEMA_V5_ID = "fastapi-rs/python-asgi-comparison@5"
+COMPARISON_SCHEMA_V6_ID = "fastapi-rs/python-asgi-comparison@6"
 
 WORKFLOW_SCHEMAS = {
     WORKFLOW_SCHEMA_ID: WORKFLOW_SCHEMA,
     WORKFLOW_SCHEMA_V3_ID: WORKFLOW_SCHEMA_V3,
     WORKFLOW_SCHEMA_V4_ID: WORKFLOW_SCHEMA_V4,
     WORKFLOW_SCHEMA_V5_ID: WORKFLOW_SCHEMA_V5,
+    WORKFLOW_SCHEMA_V6_ID: WORKFLOW_SCHEMA_V6,
     API_WORKFLOW_SCHEMA_ID: API_WORKFLOW_SCHEMA,
     API_WORKFLOW_SCHEMA_V2_ID: API_WORKFLOW_SCHEMA_V2,
     API_WORKFLOW_SCHEMA_V3_ID: API_WORKFLOW_SCHEMA_V3,
@@ -93,6 +100,7 @@ RESULT_SCHEMAS = {
     RESULT_SCHEMA_V3_ID: RESULT_SCHEMA_V3,
     RESULT_SCHEMA_V4_ID: RESULT_SCHEMA_V4,
     RESULT_SCHEMA_V5_ID: RESULT_SCHEMA_V5,
+    RESULT_SCHEMA_V6_ID: RESULT_SCHEMA_V6,
     API_RESULT_SCHEMA_ID: API_RESULT_SCHEMA,
     API_RESULT_SCHEMA_V3_ID: API_RESULT_SCHEMA_V3,
     API_RESULT_SCHEMA_V4_ID: API_RESULT_SCHEMA_V4,
@@ -102,6 +110,7 @@ COMPARISON_SCHEMAS = {
     COMPARISON_SCHEMA_V3_ID: COMPARISON_SCHEMA_V3,
     COMPARISON_SCHEMA_V4_ID: COMPARISON_SCHEMA_V4,
     COMPARISON_SCHEMA_V5_ID: COMPARISON_SCHEMA_V5,
+    COMPARISON_SCHEMA_V6_ID: COMPARISON_SCHEMA_V6,
     API_COMPARISON_SCHEMA_ID: API_COMPARISON_SCHEMA,
     API_COMPARISON_SCHEMA_V2_ID: API_COMPARISON_SCHEMA_V2,
     API_COMPARISON_SCHEMA_V3_ID: API_COMPARISON_SCHEMA_V3,
@@ -111,6 +120,7 @@ RESULT_SCHEMA_IDS_BY_WORKFLOW = {
     WORKFLOW_SCHEMA_V3_ID: RESULT_SCHEMA_V3_ID,
     WORKFLOW_SCHEMA_V4_ID: RESULT_SCHEMA_V4_ID,
     WORKFLOW_SCHEMA_V5_ID: RESULT_SCHEMA_V5_ID,
+    WORKFLOW_SCHEMA_V6_ID: RESULT_SCHEMA_V6_ID,
     **API_RESULT_SCHEMA_IDS_BY_WORKFLOW,
 }
 COMPARISON_SCHEMA_IDS_BY_WORKFLOW = {
@@ -118,6 +128,7 @@ COMPARISON_SCHEMA_IDS_BY_WORKFLOW = {
     WORKFLOW_SCHEMA_V3_ID: COMPARISON_SCHEMA_V3_ID,
     WORKFLOW_SCHEMA_V4_ID: COMPARISON_SCHEMA_V4_ID,
     WORKFLOW_SCHEMA_V5_ID: COMPARISON_SCHEMA_V5_ID,
+    WORKFLOW_SCHEMA_V6_ID: COMPARISON_SCHEMA_V6_ID,
     **API_COMPARISON_SCHEMA_IDS_BY_WORKFLOW,
 }
 
@@ -257,7 +268,7 @@ def read_manifest() -> dict[str, Any]:
         "name": "starlette-rs-py",
         "version": "0.1.0",
         "starlette_contract": "1.6.0",
-        "commit": "8730d0af2616cd3edc874737601726155886c660",
+        "commit": "bf3ff745536547dff1177a29e1c2fe9b21202f14",
     }:
         raise ContractError("manifest target must select Starlette-RS 0.1.0 for the 1.6.0 contract")
     source_artifacts = manifest.get("source_artifacts")
@@ -432,6 +443,26 @@ def read_manifest() -> dict[str, Any]:
         _verify_digest_ref(
             workflow_v5_contract.get(path_key),
             workflow_v5_contract.get(digest_key),
+            label,
+        )
+    workflow_v6_contract = unresolved.get("python_asgi_workflow_v6")
+    if not isinstance(workflow_v6_contract, dict):
+        raise ContractError("manifest Python/ASGI v6 workflow contract is missing")
+    if (
+        workflow_v6_contract.get("schema_id") != WORKFLOW_SCHEMA_V6_ID
+        or workflow_v6_contract.get("result_schema_id") != RESULT_SCHEMA_V6_ID
+        or workflow_v6_contract.get("comparison_schema_id") != COMPARISON_SCHEMA_V6_ID
+    ):
+        raise ContractError("manifest Python/ASGI v6 schema identities are unsupported")
+    workflow_v6_schema_refs = (
+        ("schema_path", "schema_sha256", "python-asgi-workflow v6 schema"),
+        ("result_schema_path", "result_schema_sha256", "workflow result v6 schema"),
+        ("comparison_schema_path", "comparison_schema_sha256", "comparison v6 schema"),
+    )
+    for path_key, digest_key, label in workflow_v6_schema_refs:
+        _verify_digest_ref(
+            workflow_v6_contract.get(path_key),
+            workflow_v6_contract.get(digest_key),
             label,
         )
     api_workflow_contract = (
@@ -630,12 +661,14 @@ def load_workflow(
             WORKFLOW_SCHEMA_V3_ID,
             WORKFLOW_SCHEMA_V4_ID,
             WORKFLOW_SCHEMA_V5_ID,
+            WORKFLOW_SCHEMA_V6_ID,
         }:
             _validate_unique_ids(case["actions"], "action_id", f"actions in {case['case_id']}")
             if workflow_schema_id in {
                 WORKFLOW_SCHEMA_V3_ID,
                 WORKFLOW_SCHEMA_V4_ID,
                 WORKFLOW_SCHEMA_V5_ID,
+                WORKFLOW_SCHEMA_V6_ID,
             }:
                 lifespan_positions = [
                     index
@@ -691,6 +724,72 @@ def load_workflow(
                     raise ContractError(
                         "WebSocket receive events must end with an explicit websocket.disconnect"
                     )
+                if (
+                    workflow_schema_id == WORKFLOW_SCHEMA_V6_ID
+                    and action["kind"] == "websocket_conversation"
+                ):
+                    sessions = {session["session_id"] for session in action["sessions"]}
+                    if len(sessions) != len(action["sessions"]):
+                        raise ContractError(
+                            "WebSocket conversation session IDs must be unique in "
+                            f"{case['case_id']}"
+                        )
+                    selectors = {
+                        observation["selector"]
+                        for observation in action["observations"]
+                        if observation["kind"] == "websocket"
+                    }
+                    if selectors != {"event_order", "messages"}:
+                        raise ContractError(
+                            "WebSocket conversations must compare both event_order and messages"
+                        )
+                    received_sessions = {
+                        step["session_id"]
+                        for step in action["steps"]
+                        if step["kind"] == "receive_next"
+                    }
+                    if received_sessions != sessions:
+                        raise ContractError(
+                            "WebSocket conversations must receive an observable event from each "
+                            "session"
+                        )
+                    states = {session_id: "new" for session_id in sessions}
+                    for step in action["steps"]:
+                        session_id = step["session_id"]
+                        if session_id not in states:
+                            raise ContractError(
+                                "WebSocket conversation step references unknown session "
+                                f"{session_id!r}"
+                            )
+                        state = states[session_id]
+                        kind = step["kind"]
+                        if kind == "connect":
+                            if state != "new":
+                                raise ContractError(
+                                    f"WebSocket session {session_id!r} connects more than once "
+                                    "or after activity"
+                                )
+                            states[session_id] = "connected"
+                        elif kind == "disconnect":
+                            if state != "connected":
+                                raise ContractError(
+                                    f"WebSocket session {session_id!r} disconnects outside "
+                                    "its active interval"
+                                )
+                            states[session_id] = "closed"
+                        elif state != "connected":
+                            raise ContractError(
+                                f"WebSocket session {session_id!r} has activity before "
+                                "connect or after disconnect"
+                            )
+                    incomplete = sorted(
+                        session_id for session_id, state in states.items() if state != "closed"
+                    )
+                    if incomplete:
+                        raise ContractError(
+                            "WebSocket conversation sessions must each connect and disconnect: "
+                            + ", ".join(incomplete)
+                        )
                 for observation in action["observations"]:
                     if observation["kind"] == "openapi":
                         for pointer in observation["json_pointers"]:

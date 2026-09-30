@@ -22,6 +22,7 @@ authority:
   upstream_source_lock:
     file: uv.lock
     purpose: FastAPI source-inventory provenance only; it does not select the oracle profile.
+    sha256: 96ae079a121e11b4cc0d260df5b7f77189bb90fa23a2da368f607418c2d98165
     components: {pydantic: 2.13.4, starlette: 1.3.1, httpx: 0.28.1}
   starlette:
     repository: https://github.com/Kludex/starlette
@@ -79,14 +80,14 @@ api_inventory:
 import_binding_classification_review:
   artifact: tests/fixtures/api-import-binding-classification-review.json
   schema: fastapi-starlette-import-binding-review/v1
-  sha256: baab52c6a60da2970c80b60e2730cddf2592c8196ea465258c8a5e9f0f60f01e
+  sha256: 30bfeae67d75cca01f63d2c2957afcfd4e7e7f4a195ab5a1a1cebc7b52a6c62f
   source_identity:
     package: FastAPI
     version: 0.141.1
     source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
     selected_starlette_profile: 1.6.0
     starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
-    starlette_rs_contract_commit: 8730d0af2616cd3edc874737601726155886c660
+    starlette_rs_contract_commit: bf3ff745536547dff1177a29e1c2fe9b21202f14
   starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
   counts:
     candidates: 97
@@ -98,9 +99,9 @@ import_binding_classification_review:
   candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
   pinned_starlette_rs_sources:
     metadata_sha256: 398b9c070c03cc9ff78cd9ec879a95f40144548efefaf3ad76b999cd31c6f217
-    manifest_sha256: 39f582b91a11f209b99d0a1411259cffe79e972c10e2e43f8f24ada827f6ccdb
+    manifest_sha256: 45e3e478790e0f00a53360586f441cbce3e7236ad1ce227ac769802baada10b5
     api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
-    api_review_sha256: 1dc0fd8fdef56e672b5e53fb2a04da4b6f3c07e7147f50781b3b804d73d2f68b
+    api_review_sha256: 822503a4b91afc8b61f1b668d286cedfb3378d96be02f4ebb6c84c9210208325
 
 source_api_classification_review:
   artifact: tests/fixtures/api-source-classification-review.json
@@ -181,7 +182,7 @@ classification_atlas:
 starlette_rs:
   owner: ../starlette-rs
   repository: https://github.com/appunni-m/starlette-rs
-  commit: 8730d0af2616cd3edc874737601726155886c660
+  commit: bf3ff745536547dff1177a29e1c2fe9b21202f14
   distribution_version: 0.1.0
   contract_id: starlette-1.6.0-asgi-http-config-session-slice
   metadata: ../starlette-rs/metadata.yaml
@@ -489,17 +490,33 @@ reviewed_api_contract_overlay:
         - {path: tests/test_tutorial/test_query_params_str_validations/test_tutorial003.py, symbol: test_query_params_str_validations_q_query}
         - {path: tests/test_tutorial/test_query_params_str_validations/test_tutorial003.py, symbol: test_query_params_str_validations_q_too_long}
         - {path: tests/test_tutorial/test_query_params_str_validations/test_tutorial003.py, symbol: test_openapi_schema}
+        - {path: docs_src/query_params_str_validations/tutorial004_py310.py}
+        - {path: docs_src/query_params_str_validations/tutorial010_py310.py}
+        - {path: tests/test_tutorial/test_query_params_str_validations/test_tutorial004.py}
+        - {path: tests/test_tutorial/test_query_params_str_validations/test_tutorial007.py}
+        - {path: tests/test_tutorial/test_query_params_str_validations/test_tutorial008.py}
+        - {path: tests/test_tutorial/test_query_params_str_validations/test_tutorial010.py}
+        - {path: docs_src/query_params_str_validations/tutorial014_py310.py}
+        - {path: docs_src/query_params_str_validations/tutorial014_an_py310.py}
+        - {path: tests/test_tutorial/test_query_params_str_validations/test_tutorial014.py}
+        - {path: docs_src/query_params_str_validations/tutorial015_an_py310.py}
+        - {path: tests/test_tutorial/test_query_params_str_validations/test_tutorial015.py}
       feature_ids: [request-validation, openapi-docs]
-      observation_selectors: [http.status, http.body.bytes, openapi.request_schema]
+      observation_selectors: [http.status, http.body.bytes, openapi.document]
       supported_slice: >-
-        Partial native slice: Annotated numeric query parameters using Query(gt=...)
-        and Query(lt=...) apply strict exclusive lower and upper bounds, including
-        both bounds together. Required scalar string query parameters using
-        Query(min_length=...) and Query(max_length=...) enforce inclusive length
-        bounds and expose minLength/maxLength in OpenAPI. Focused workflows cover
-        both string boundaries and the schema. Optional/default length-constrained
-        parameters, Path length constraints, other Query constructor parameters,
-        and other FieldInfo options remain outside this reviewed slice.
+        Partial native slice: direct and Annotated Query declarations apply
+        exclusive gt/lt and inclusive min_length/max_length validation and project
+        those constraints into OpenAPI. Reviewed workflows also cover Query
+        default=None, alias, title, description, and pattern; include_in_schema=False
+        keeps runtime validation while omitting the parameter from OpenAPI and
+        retaining the inferred 422 response. Annotated custom validation metadata
+        remains in the runtime validation path. Inputs and exact source selectors
+        are in query-params-str-validations-doc-examples,
+        query-params-str-validations-doc-pattern-examples,
+        query-params-str-validations-doc-title-description-examples, and
+        query-params-str-validations-doc-exclude-schema-examples. Other Query and
+        FieldInfo options, including deprecated, remain outside this reviewed
+        slice.
     fastapi.Header:
       rust_binding: fastapi-rs/src/parameters.rs::header
       source_evidence:

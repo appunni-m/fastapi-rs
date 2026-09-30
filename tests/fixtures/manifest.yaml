@@ -91,7 +91,7 @@ target:
     name: starlette-rs-py
     version: 0.1.0
     starlette_contract: 1.6.0
-    commit: 8730d0af2616cd3edc874737601726155886c660
+    commit: bf3ff745536547dff1177a29e1c2fe9b21202f14
   external_python_runtime_lock:
     path: requirements/target-runtime-cpython-3.12.13.lock
     sha256: efb7ca633fc9a9c8587a6f59f8ee9b509151f6f77ceb75a56dd3cdeff2be99f7
@@ -128,7 +128,7 @@ source_artifacts:
   api_import_binding_classification_review:
     path: tests/fixtures/api-import-binding-classification-review.json
     schema: fastapi-starlette-import-binding-review/v1
-    sha256: baab52c6a60da2970c80b60e2730cddf2592c8196ea465258c8a5e9f0f60f01e
+    sha256: 30bfeae67d75cca01f63d2c2957afcfd4e7e7f4a195ab5a1a1cebc7b52a6c62f
     purpose: Reviewed source-backed disposition of uncertain FastAPI import bindings from the selected Starlette profile
     source_identity:
       package: FastAPI
@@ -136,7 +136,7 @@ source_artifacts:
       source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
       selected_starlette_profile: 1.6.0
       starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
-      starlette_rs_contract_commit: 8730d0af2616cd3edc874737601726155886c660
+      starlette_rs_contract_commit: bf3ff745536547dff1177a29e1c2fe9b21202f14
     starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
     counts:
       candidates: 97
@@ -148,9 +148,9 @@ source_artifacts:
     candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
     pinned_starlette_rs_sources:
       metadata_sha256: 398b9c070c03cc9ff78cd9ec879a95f40144548efefaf3ad76b999cd31c6f217
-      manifest_sha256: 39f582b91a11f209b99d0a1411259cffe79e972c10e2e43f8f24ada827f6ccdb
+      manifest_sha256: 45e3e478790e0f00a53360586f441cbce3e7236ad1ce227ac769802baada10b5
       api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
-      api_review_sha256: 1dc0fd8fdef56e672b5e53fb2a04da4b6f3c07e7147f50781b3b804d73d2f68b
+      api_review_sha256: 822503a4b91afc8b61f1b668d286cedfb3378d96be02f4ebb6c84c9210208325
   api_source_classification_review:
     path: tests/fixtures/api-source-classification-review.json
     schema: fastapi-rs/source-api-classification-review@1
@@ -172,7 +172,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@2
-    sha256: b4323fb19c692918810af647a2b7b3fa2cada0dff2bad152fb855a26077a84df
+    sha256: 87ba912475c3f31009c715ee96198e558084f4145cf3b708698238da0ba8fb70
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -203,7 +203,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: c5457f95ee45ebcab958c30330b340802274327205e6409d21c24af5d932f3bc
+    sha256: 9a02e0b87aaf5e62124e637ac44bcba3c362a014e72e75a564891d65f208c269
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 628
@@ -240,7 +240,7 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@1
-    sha256: 6d367bc257879554fd92bf67fd2a6ce9747970dd6f4ff8416da446b10588fff2
+    sha256: ab1139ba98d7ba6cfa0a2b19d2386914fe16e051b7aae284d9cec97712214482
     schema_path: tests/fixtures/schemas/materialized-input-index.schema.json
     schema_sha256: b0a2ec32c63dc82ec43cb4c5ffaf41590e951526de305865a24301ea42e947d2
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
@@ -400,6 +400,21 @@ unresolved:
       Keeps an HTTP receive channel pending through a declared AnyIO timeout and
       records whether cancellation interrupted dispatch; warning capture remains
       available from v4.
+  python_asgi_workflow_v6:
+    state: deterministic-multi-client-websocket-conversations; v1-v5-remain-supported
+    schema_id: fastapi-rs/python-asgi-workflow@6
+    schema_path: tests/fixtures/schemas/python-asgi-workflow-v6.schema.json
+    schema_sha256: cb7ee6d25dac8c8acf8c714e9f852a5309065269d7f9a6209eaf93f6ae0fdf35
+    result_schema_id: fastapi-rs/python-asgi-workflow-result@6
+    result_schema_path: tests/fixtures/schemas/python-asgi-workflow-result-v6.schema.json
+    result_schema_sha256: 020d7f569b5713fc680d285becb47ea66488b9e0e10546509f0db2a5b9159dcc
+    comparison_schema_id: fastapi-rs/python-asgi-comparison@6
+    comparison_schema_path: tests/fixtures/schemas/python-asgi-comparison-v6.schema.json
+    comparison_schema_sha256: ef3907a6d1970ecf4c5e2c8b388ee87460f5132caaafcdab55b3b2e64f731e8d
+    coverage: >-
+      Models deterministic concurrent WebSocket sessions as an ordered client
+      schedule; every conversation compares handshake event order and
+      session-tagged message streams.
   python_api_workflow:
     state: isolated-oracle-and-target-workers-and-exact-comparator-present; broader-public-api-parity-pending
     schema_id: fastapi-rs/python-api-workflow@1
@@ -1368,8 +1383,8 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
+    - openapi.document
     - openapi.paths
-    - openapi.request_schema
     behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer

@@ -6,7 +6,7 @@ This source-backed compatibility atlas indexes the API denominator and candidate
 
 - FastAPI: 0.141.1 at `95f8322ee1dcda7ceace7b1c4f6c9915b36d748f`.
 - Starlette oracle contract: 1.6.0 at `4f250d6b814587e20c5365f0a5f0c4d42bcb929f` (the sole selected Starlette version).
-- Starlette-RS implementation contract: at `8730d0af2616cd3edc874737601726155886c660`.
+- Starlette-RS implementation contract: at `bf3ff745536547dff1177a29e1c2fe9b21202f14`.
 - FastAPI declares `starlette>=0.46.0`, which admits the selected contract. Its upstream lock graph is dependency-inventory evidence, not another compatibility profile.
 - Pydantic: 2.13.4 source-lock baseline; Python support is `>=3.10`.
 
@@ -522,7 +522,7 @@ Reviewed workflow recipes live in `tests/fixtures/input-recipes/parity/*.yaml`. 
 | `websocket-frontend-route-priority-upstream` | 1 | 1 | [`tests/fixtures/input-recipes/parity/websocket-frontend-route-priority-upstream.yaml`](../tests/fixtures/input-recipes/parity/websocket-frontend-route-priority-upstream.yaml) | [`tests/fixtures/workloads/websocket_frontend_route_priority_upstream.py`](../tests/fixtures/workloads/websocket_frontend_route_priority_upstream.py) |
 | `websocket-router-dependencies-upstream` | 2 | 1 | [`tests/fixtures/input-recipes/parity/websocket-router-dependencies-upstream.yaml`](../tests/fixtures/input-recipes/parity/websocket-router-dependencies-upstream.yaml) | [`tests/fixtures/workloads/websocket_router_dependencies_upstream.py`](../tests/fixtures/workloads/websocket_router_dependencies_upstream.py) |
 | `websocket-router-routes-errors-upstream` | 9 | 1 | [`tests/fixtures/input-recipes/parity/websocket-router-routes-errors-upstream.yaml`](../tests/fixtures/input-recipes/parity/websocket-router-routes-errors-upstream.yaml) | [`tests/fixtures/workloads/websocket_router_dependencies_upstream.py`](../tests/fixtures/workloads/websocket_router_dependencies_upstream.py) |
-| `websockets-tutorial003-upstream-subset` | 2 | 1 | [`tests/fixtures/input-recipes/parity/websockets-tutorial003-upstream-subset.yaml`](../tests/fixtures/input-recipes/parity/websockets-tutorial003-upstream-subset.yaml) | [`tests/fixtures/workloads/websockets_tutorial003_single_session_subset.py`](../tests/fixtures/workloads/websockets_tutorial003_single_session_subset.py) |
+| `websockets-tutorial003-upstream-subset` | 2 | 1 | [`tests/fixtures/input-recipes/parity/websockets-tutorial003-upstream-subset.yaml`](../tests/fixtures/input-recipes/parity/websockets-tutorial003-upstream-subset.yaml) | [`tests/fixtures/workloads/websockets_tutorial003_multi_session_subset.py`](../tests/fixtures/workloads/websockets_tutorial003_multi_session_subset.py) |
 | `websockets-upstream` | 10 | 3 | [`tests/fixtures/input-recipes/parity/websockets-upstream.yaml`](../tests/fixtures/input-recipes/parity/websockets-upstream.yaml) | [`tests/fixtures/workloads/websockets_upstream.py`](../tests/fixtures/workloads/websockets_upstream.py) |
 | `wrapped-method-forward-reference-upstream` | 1 | 1 | [`tests/fixtures/input-recipes/parity/wrapped-method-forward-reference-upstream.yaml`](../tests/fixtures/input-recipes/parity/wrapped-method-forward-reference-upstream.yaml) | [`tests/fixtures/workloads/wrapped_method_forward_reference_upstream.py`](../tests/fixtures/workloads/wrapped_method_forward_reference_upstream.py) |
 
@@ -534,7 +534,7 @@ The merged coverage matrix links each FastAPI test, documented feature, or examp
 |---:|---:|---:|---:|
 | 945 | 2449 | 523 | 6 |
 
-The sibling Starlette-RS manifest, API review, and coverage matrix remain the sole Starlette API inventory. FastAPI's atlas stores only relevant requirement references plus manifest/catalog/review/matrix SHA-256 digests. The inspected Starlette-RS implementation revision is 8730d0af2616cd3edc874737601726155886c660 (pinned, clean sibling Git commit).
+The sibling Starlette-RS manifest, API review, and coverage matrix remain the sole Starlette API inventory. FastAPI's atlas stores only relevant requirement references plus manifest/catalog/review/matrix SHA-256 digests. The inspected Starlette-RS implementation revision is bf3ff745536547dff1177a29e1c2fe9b21202f14 (pinned, clean sibling Git commit).
 
 ## Errors, aliases, optional features, and deprecations
 
