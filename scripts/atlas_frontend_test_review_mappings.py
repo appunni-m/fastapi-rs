@@ -85,6 +85,12 @@ _LOW_PRIORITY_DISPATCH = _source(
     2781,
     "FastAPI Router dispatches ordinary routes before its low-priority route collection",
 )
+_FRONTEND_WEBSOCKET_FILTER = _source(
+    "fastapi/routing.py",
+    2069,
+    2083,
+    "FastAPI frontend route matching excludes WebSocket scopes, allowing an explicit WebSocket route at the same path to win",
+)
 _FRONTEND_GROUP = _source(
     "fastapi/routing.py",
     2103,
@@ -326,6 +332,25 @@ FRONTEND_TEST_REVIEW_MAPPINGS = {
                 rationale="An ordinary included API route wins at a path that also names a static file below the frontend root.",
                 sources=[_LOW_PRIORITY_DISPATCH, _DOC_FALLBACK],
                 gate=_ASGI_GATE,
+            ),
+            "test_websocket_route_wins_over_frontend": _candidate(
+                start=987,
+                end=1003,
+                case_id="fastapi.test.test-frontend.test-websocket-route-wins-over-frontend",
+                action_ids=["colliding-websocket-path"],
+                selectors=[
+                    "websocket.event_order",
+                    "websocket.messages",
+                    "websocket.close_code",
+                ],
+                rationale="An explicitly registered FastAPI WebSocket route handles a path that also names a static frontend file.",
+                sources=[_LOW_PRIORITY_DISPATCH, _FRONTEND_WEBSOCKET_FILTER],
+                feature_ids=["app-routing", "websocket-lifecycle"],
+                gate=(
+                    "FastAPI route matching and frontend WebSocket exclusion are sampled here. "
+                    "WebSocket handshake, message framing, and close protocol remain assigned "
+                    "to the Starlette 1.6.0 / Starlette-RS contract."
+                ),
             ),
             "test_api_route_404_is_not_replaced_by_frontend_fallback": _candidate(
                 start=635,

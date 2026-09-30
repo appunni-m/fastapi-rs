@@ -983,7 +983,7 @@ APP_DEPENDENCY_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
         },
     ),
     "tests/test_dependency_contextmanager.py": _module(
-        "The existing lifecycle recipe provides nested generator-dependency and post-response cleanup samples. The full sync/async exception matrix and background-task ordering are not claimed.",
+        "Independent lifecycle recipes cover nested generator-dependency cleanup on success and endpoint failure. The full sync/async exception matrix and background-task ordering are not claimed.",
         {
             "test_context_b": _review(
                 "tests/test_dependency_contextmanager.py",
@@ -999,6 +999,30 @@ APP_DEPENDENCY_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                     )
                 ],
                 "Partial: the case uses an independent pair of context-managed dependencies and response state. It does not establish the module's complete sync/async exception matrix.",
+                (_DEPENDENCY_SOLVER,),
+            ),
+            "test_context_b_raise": _review(
+                "tests/test_dependency_contextmanager.py",
+                "test_context_b_raise",
+                ["dependency-security"],
+                [
+                    "asgi.application_error.exception",
+                    "http.status",
+                    "http.body.bytes",
+                ],
+                "Nested async yield dependencies unwind in reverse order after an endpoint raises, and the application exception propagates.",
+                [
+                    _case_link(
+                        "tests/fixtures/input-recipes/parity/dependency-yield-lifo-endpoint-error-upstream.yaml",
+                        "fastapi.dependencies.yield-cleanup-lifo-after-endpoint-exception",
+                        [
+                            "asgi.application_error.exception",
+                            "http.status",
+                            "http.body.bytes",
+                        ],
+                    )
+                ],
+                "Partial: the independent case observes one async nested dependency failure and its cleanup trace; sync variants, alternate exception classes, middleware state, and background-task ordering remain outside this sample.",
                 (_DEPENDENCY_SOLVER,),
             ),
             "test_async_state": _review(
@@ -1464,7 +1488,6 @@ APP_DEPENDENCY_TEST_FUNCTION_EXCLUSIONS: dict[str, dict[str, dict[str, object]]]
             "test_sync_raise_raises": "The assertion is specifically TestClient re-raising a server exception after ASGI dispatch; TestClient behavior is Starlette-RS-owned.",
             "test_async_raise_other": "This is an additional exception-class variant of the yield-cleanup matrix; the selected independent case does not reproduce its class/message.",
             "test_sync_raise_other": "This is an additional exception-class variant of the yield-cleanup matrix; the selected independent case does not reproduce its class/message.",
-            "test_context_b_raise": "The function asserts propagation of an application exception through nested context managers, which is not selected by the linked successful nesting case.",
             "test_sync_async_state": "The function adds a sync endpoint with async cleanup to the sync/async matrix; no distinct case is linked in this bounded wave.",
             "test_sync_sync_state": "The function adds a sync endpoint with sync cleanup to the sync/async matrix; no distinct case is linked in this bounded wave.",
             "test_sync_async_raise_other": "The function adds a sync endpoint/async cleanup error combination; no distinct case is linked in this bounded wave.",

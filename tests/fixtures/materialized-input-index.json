@@ -1410,6 +1410,18 @@
       ]
     },
     {
+      "id": "dependency-yield-lifo-endpoint-error-upstream",
+      "input_path": "tests/fixtures/inputs/parity/dependency-yield-lifo-endpoint-error-upstream.json",
+      "input_sha256": "638dbb26262558a607b8083c2a1f45aaf06067524da0056f4be8e401ed40dc15",
+      "recipe_path": "tests/fixtures/input-recipes/parity/dependency-yield-lifo-endpoint-error-upstream.yaml",
+      "recipe_sha256": "7d28715f53491017ed2258ed012d4e281720853232e45d640efef0f8e24ab283",
+      "workload_path": "tests/fixtures/workloads/dependency_yield_lifo_endpoint_error_upstream.py",
+      "workload_sha256": "c83d9031392cd9940003b7f6d95d950f197ad03c04ae235c7222ffb8ef000e0e",
+      "case_ids": [
+        "fastapi.dependencies.yield-cleanup-lifo-after-endpoint-exception"
+      ]
+    },
+    {
       "id": "dependency-yield-transaction-upstream",
       "input_path": "tests/fixtures/inputs/parity/dependency-yield-transaction-upstream.json",
       "input_sha256": "3874f7875de8d9551d8acde9c3ed5b913d8c1480dab21d630fc6ab608e01a4b6",
@@ -5262,6 +5274,18 @@
       ]
     },
     {
+      "id": "response-validation-multi-error-exact-review",
+      "input_path": "tests/fixtures/inputs/parity/response-validation-multi-error-exact-review.json",
+      "input_sha256": "dc61a778e26ed81850dc3e65654e8edf47469aaf3703aa8fd50fe4d641658c66",
+      "recipe_path": "tests/fixtures/input-recipes/parity/response-validation-multi-error-exact-review.yaml",
+      "recipe_sha256": "b4866dad76b25dd70b9c082d860b88cfec7bc92786b57cee8179636ea4aedf96",
+      "workload_path": "tests/fixtures/workloads/response_validation_multi_error_exact_review.py",
+      "workload_sha256": "3a5888015a186d3b47a441882b5968a3966e131094d1545c1e574d39b33521d0",
+      "case_ids": [
+        "fastapi.response-validation-error.multiple-invalid-output-values"
+      ]
+    },
+    {
       "id": "response-validation-uncovered-wave",
       "input_path": "tests/fixtures/inputs/parity/response-validation-uncovered-wave.json",
       "input_sha256": "c4e2a77baef4e7c1d1526f2f7033c49b73efd53c72814c3b1624fcecc0e4eed4",
@@ -6773,6 +6797,18 @@
       "workload_sha256": "80b17cc3cfa8edce786613940e882cf439becaed01c5af498a6b214159fcff89",
       "case_ids": [
         "fastapi.websocket.echo-text"
+      ]
+    },
+    {
+      "id": "websocket-frontend-route-priority-upstream",
+      "input_path": "tests/fixtures/inputs/parity/websocket-frontend-route-priority-upstream.json",
+      "input_sha256": "6a7167e27f179e2b1c4aa51575bf60a251e1996f89dc21fdf029c111cce2ad3b",
+      "recipe_path": "tests/fixtures/input-recipes/parity/websocket-frontend-route-priority-upstream.yaml",
+      "recipe_sha256": "f066db507cb6b351ce6dce5498baa9a8a72eee2d937dfd2350f3bec3be0999c3",
+      "workload_path": "tests/fixtures/workloads/websocket_frontend_route_priority_upstream.py",
+      "workload_sha256": "5b35f1a6cb4c0432fdde8c657180a9234acadc232069695e736bd07aa759bb51",
+      "case_ids": [
+        "fastapi.test.test-frontend.test-websocket-route-wins-over-frontend"
       ]
     },
     {
@@ -10098,6 +10134,21 @@
         "http.body.bytes",
         "http.status",
         "validation.error_class"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_dependency_contextmanager.py",
+      "fixture_id": "fastapi.test.test-dependency-contextmanager",
+      "workflow_id": "dependency-yield-lifo-endpoint-error-upstream",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.application_error.exception, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.dependencies.yield-cleanup-lifo-after-endpoint-exception"
+      ],
+      "observation_selectors": [
+        "asgi.application_error.exception",
+        "http.body.bytes",
+        "http.status"
       ]
     },
     {
@@ -20274,6 +20325,21 @@
     {
       "source_item_id": "upstream-test:tests/test_validate_response.py",
       "fixture_id": "fastapi.test.test-validate-response",
+      "workflow_id": "response-validation-multi-error-exact-review",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes error.public_attributes, validation.error_class, validation.error_details. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.response-validation-error.multiple-invalid-output-values"
+      ],
+      "observation_selectors": [
+        "error.public_attributes",
+        "validation.error_class",
+        "validation.error_details"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_validate_response.py",
+      "fixture_id": "fastapi.test.test-validate-response",
       "workflow_id": "response-validation-uncovered-wave",
       "coverage_status": "partial",
       "coverage_scope": "Partial independent sample across 6 case(s); observes http.body.bytes, http.status, validation.error_class. Unlisted functions, branches, configurations, and edge cases are not claimed.",
@@ -24020,6 +24086,21 @@
         "fastapi.websocket.echo-text"
       ],
       "observation_selectors": [
+        "websocket.event_order",
+        "websocket.messages"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_frontend.py",
+      "fixture_id": "fastapi.test.test-frontend",
+      "workflow_id": "websocket-frontend-route-priority-upstream",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes websocket.close_code, websocket.event_order, websocket.messages. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.test.test-frontend.test-websocket-route-wins-over-frontend"
+      ],
+      "observation_selectors": [
+        "websocket.close_code",
         "websocket.event_order",
         "websocket.messages"
       ]

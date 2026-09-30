@@ -1,0 +1,41 @@
+schema: fastapi-rs/python-asgi-workflow@3
+workload:
+  file: tests/fixtures/workloads/response_validation_multi_error_exact_review.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.response-validation-error.multiple-invalid-output-values
+  # FastAPI 0.141.1 source selector: test_double_invalid in
+  # tests/test_validate_response.py. The source asserts ResponseValidationError;
+  # this workflow also compares its ordered details and original body.
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: invalid-output-field-and-list-items
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/innerinvalid
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: application_error, selector: validation_error_class, comparison: exact}
+    - {kind: application_error, selector: validation_error_details, comparison: exact}
+    - kind: application_error
+      selector: error_public_attributes
+      attributes: [body]
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_validate_response.py, kind: upstream_test}

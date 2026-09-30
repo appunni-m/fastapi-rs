@@ -1,0 +1,80 @@
+# Captures exception propagation and reverse-order teardown for nested FastAPI
+# yield dependencies when the endpoint raises.
+schema: fastapi-rs/python-asgi-workflow@3
+workload:
+  file: tests/fixtures/workloads/dependency_yield_lifo_endpoint_error_upstream.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.dependencies.yield-cleanup-lifo-after-endpoint-exception
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: endpoint-exception-propagates-through-cleanup
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /nested-failure
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: application_error
+      selector: exception
+      comparison: exact
+  - action_id: nested-cleanup-order-after-exception
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /events
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_dependency_contextmanager.py
+    kind: upstream_test
