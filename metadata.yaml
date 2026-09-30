@@ -80,14 +80,14 @@ api_inventory:
 import_binding_classification_review:
   artifact: tests/fixtures/api-import-binding-classification-review.json
   schema: fastapi-starlette-import-binding-review/v1
-  sha256: 30bfeae67d75cca01f63d2c2957afcfd4e7e7f4a195ab5a1a1cebc7b52a6c62f
+  sha256: 4789484775a146921bf1e7e7b2857d2314058119cb0455d22da12a00a2728377
   source_identity:
     package: FastAPI
     version: 0.141.1
     source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
     selected_starlette_profile: 1.6.0
     starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
-    starlette_rs_contract_commit: bf3ff745536547dff1177a29e1c2fe9b21202f14
+    starlette_rs_contract_commit: 7293140ebe9d8e27dc879710a0d7426cbd8f392c
   starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
   counts:
     candidates: 97
@@ -99,7 +99,7 @@ import_binding_classification_review:
   candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
   pinned_starlette_rs_sources:
     metadata_sha256: 398b9c070c03cc9ff78cd9ec879a95f40144548efefaf3ad76b999cd31c6f217
-    manifest_sha256: 45e3e478790e0f00a53360586f441cbce3e7236ad1ce227ac769802baada10b5
+    manifest_sha256: a43b747f32efba88eda8fa9612a5d3d6581576e1cbc50908fbe29819b32ffb0a
     api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
     api_review_sha256: 822503a4b91afc8b61f1b668d286cedfb3378d96be02f4ebb6c84c9210208325
 
@@ -182,7 +182,7 @@ classification_atlas:
 starlette_rs:
   owner: ../starlette-rs
   repository: https://github.com/appunni-m/starlette-rs
-  commit: bf3ff745536547dff1177a29e1c2fe9b21202f14
+  commit: 7293140ebe9d8e27dc879710a0d7426cbd8f392c
   distribution_version: 0.1.0
   contract_id: starlette-1.6.0-asgi-http-config-session-slice
   metadata: ../starlette-rs/metadata.yaml
@@ -578,6 +578,7 @@ reviewed_api_contract_overlay:
       source_evidence:
         - {path: fastapi/applications.py, symbol: websocket}
         - {path: fastapi/routing.py, symbol: get_websocket_app}
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::websocket
       feature_ids: [request-validation, websocket-lifecycle]
       observation_selectors:
         - validation.error_class
@@ -589,6 +590,7 @@ reviewed_api_contract_overlay:
       source_evidence:
         - {path: fastapi/routing.py, symbol: websocket}
         - {path: fastapi/routing.py, symbol: get_websocket_app}
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::__getattr__ and PyFastApi::websocket
       feature_ids: [request-validation, websocket-lifecycle]
       observation_selectors:
         - validation.error_class

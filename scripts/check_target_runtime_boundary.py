@@ -37,6 +37,8 @@ PUBLIC_FASTAPI_EXPORTS = [
     "Query",
     "Response",
     "UploadFile",
+    "WebSocket",
+    "WebSocketDisconnect",
     "__version__",
     "status",
 ]

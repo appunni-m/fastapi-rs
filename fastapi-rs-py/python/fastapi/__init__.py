@@ -11,6 +11,8 @@ from fastapi_rs._core import (
     Query,
     Response,
     UploadFile,
+    WebSocket,
+    WebSocketDisconnect,
     __version__,
     status,
 )
@@ -28,6 +30,8 @@ __all__ = [
     "Query",
     "Response",
     "UploadFile",
+    "WebSocket",
+    "WebSocketDisconnect",
     "__version__",
     "status",
 ]

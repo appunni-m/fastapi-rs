@@ -4,7 +4,7 @@ use std::collections::{BTreeSet, HashMap, VecDeque};
 
 use pyo3::exceptions::{
     PyAssertionError, PyAttributeError, PyNameError, PyNotImplementedError, PyRuntimeError,
-    PyStopAsyncIteration, PyValueError,
+    PyStopAsyncIteration, PyTypeError, PyValueError,
 };
 use pyo3::prelude::*;
 use pyo3::types::{PyBool, PyBytes, PyDict, PyInt, PyList, PyModule, PyString, PyTuple, PyType};
@@ -67,6 +67,7 @@ enum ParameterSource {
         source: InputSource,
         alias: String,
     },
+    WebSocket,
     Dependency {
         plan: Box<CallablePlan>,
         use_cache: bool,
@@ -97,6 +98,7 @@ struct CallablePlan {
 struct InvocationContext<'context, 'py> {
     py: Python<'py>,
     inputs: &'context Bound<'py, PyDict>,
+    websocket: Option<&'context Bound<'py, PyAny>>,
     query_params: &'context QueryParams,
     form_body_embedded: bool,
     failures: &'context mut Vec<ValidationIssue>,
@@ -204,6 +206,14 @@ struct FastApiRoute {
     plan: CallablePlan,
 }
 
+struct FastApiWebSocketRoute {
+    path: String,
+    param_convertors: Py<PyDict>,
+    route_dependencies: Vec<Py<PyAny>>,
+    endpoint: Py<PyAny>,
+    plan: CallablePlan,
+}
+
 struct ResponseModelOptions {
     include: Option<Py<PyAny>>,
     exclude: Option<Py<PyAny>>,
@@ -247,8 +257,17 @@ pub(crate) struct PyFastApi {
     default_response_class: Option<Py<PyAny>>,
     dependency_overrides: Py<PyDict>,
     router: FastApiOperationRouter,
+    websocket_router: FastApiOperationRouter,
     named_routes: NamedRouteTable,
     routes: Vec<FastApiRoute>,
+    websocket_routes: Vec<FastApiWebSocketRoute>,
+}
+
+#[pyclass(name = "_WebSocketDecorator", module = "fastapi_rs._core")]
+struct PyWebSocketDecorator {
+    app: Py<PyFastApi>,
+    path: String,
+    dependencies: Vec<Py<PyAny>>,
 }
 
 #[pyclass(name = "APIRouter", module = "fastapi_rs._core", unsendable)]
@@ -304,8 +323,10 @@ impl PyFastApi {
             default_response_class,
             dependency_overrides: PyDict::new(py).unbind(),
             router: FastApiOperationRouter::new(),
+            websocket_router: FastApiOperationRouter::new(),
             named_routes: NamedRouteTable::new(),
             routes: Vec::new(),
+            websocket_routes: Vec::new(),
         }
     }
 
@@ -839,6 +860,39 @@ impl PyFastApi {
         Ok(())
     }
 
+    #[pyo3(signature = (path, name = None, *, dependencies = None))]
+    fn websocket(
+        slf: Py<Self>,
+        py: Python<'_>,
+        path: &str,
+        name: Option<String>,
+        dependencies: Option<Vec<Py<PyAny>>>,
+    ) -> PyResult<Py<PyWebSocketDecorator>> {
+        let _ = name;
+        Py::new(
+            py,
+            PyWebSocketDecorator {
+                app: slf,
+                path: path.to_owned(),
+                dependencies: dependencies.unwrap_or_default(),
+            },
+        )
+    }
+
+    #[pyo3(signature = (path, endpoint, name = None, *, dependencies = None))]
+    fn add_api_websocket_route(
+        slf: Py<Self>,
+        py: Python<'_>,
+        path: &str,
+        endpoint: Py<PyAny>,
+        name: Option<String>,
+        dependencies: Option<Vec<Py<PyAny>>>,
+    ) -> PyResult<()> {
+        let decorator = Self::websocket(slf, py, path, name, dependencies)?;
+        decorator.bind(py).call1((endpoint,))?;
+        Ok(())
+    }
+
     #[pyo3(signature = (router, *, prefix = "", tags = None, dependencies = None, deprecated = None, include_in_schema = true))]
     // lint-exception: preserve FastAPI's include_router keyword signature.
     #[allow(
@@ -969,6 +1023,8 @@ impl PyFastApi {
                 receive,
                 send,
                 route_index: None,
+                websocket_route_index: None,
+                websocket: None,
                 path_params: Vec::new(),
                 pending: None,
                 body: Vec::new(),
@@ -1329,6 +1385,8 @@ impl PyApiRouter {
                 | "trace"
                 | "api_route"
                 | "add_api_route"
+                | "websocket"
+                | "add_api_websocket_route"
         ) {
             return Err(PyAttributeError::new_err(format!(
                 "'APIRouter' object has no attribute '{name}'"
@@ -1483,6 +1541,40 @@ fn merge_router_routes(
             response_model_exclude_defaults: source_route.response_model_exclude_defaults,
             response_model_exclude_none: source_route.response_model_exclude_none,
             router_dependencies: route_dependencies,
+            plan,
+        });
+    }
+    for source_route in &source.websocket_routes {
+        let path = format!("{prefix}{}", source_route.path);
+        let mut route_dependencies = inherited_dependencies
+            .iter()
+            .map(|dependency| dependency.clone_ref(py))
+            .collect::<Vec<_>>();
+        route_dependencies.extend(
+            source_route
+                .route_dependencies
+                .iter()
+                .map(|dependency| dependency.clone_ref(py)),
+        );
+        let mut plan = CallablePlan::build(
+            py,
+            source_route.endpoint.clone_ref(py),
+            &path_parameter_names(&path),
+        )?;
+        plan.prepend_dependencies(py, &route_dependencies)?;
+        let param_convertors = route_param_convertors(py, &path)?;
+        let index = app
+            .websocket_router
+            .add_operation(&path, "GET", 200)
+            .map_err(|error| PyValueError::new_err(error.to_string()))?;
+        app.websocket_router
+            .set_parameters(index, plan.input_parameters())
+            .ok_or_else(|| PyRuntimeError::new_err("included FastAPI WebSocket route was lost"))?;
+        app.websocket_routes.push(FastApiWebSocketRoute {
+            path,
+            param_convertors,
+            route_dependencies,
+            endpoint: source_route.endpoint.clone_ref(py),
             plan,
         });
     }
@@ -1814,6 +1906,39 @@ impl PyOperationDecorator {
     }
 }
 
+#[pymethods]
+impl PyWebSocketDecorator {
+    fn __call__(&self, py: Python<'_>, endpoint: Py<PyAny>) -> PyResult<Py<PyAny>> {
+        let path_parameters = path_parameter_names(&self.path);
+        let mut plan = CallablePlan::build(py, endpoint.clone_ref(py), &path_parameters)?;
+        plan.prepend_dependencies(py, &self.dependencies)?;
+        let param_convertors = route_param_convertors(py, &self.path)?;
+        let inputs = plan.input_parameters();
+        let mut app = self.app.bind(py).borrow_mut();
+        let index = app
+            .websocket_router
+            .add_operation(&self.path, "GET", 200)
+            .map_err(|error| PyValueError::new_err(error.to_string()))?;
+        app.websocket_router
+            .set_parameters(index, inputs)
+            .ok_or_else(|| {
+                PyRuntimeError::new_err("registered FastAPI WebSocket route was lost")
+            })?;
+        app.websocket_routes.push(FastApiWebSocketRoute {
+            path: self.path.clone(),
+            param_convertors,
+            route_dependencies: self
+                .dependencies
+                .iter()
+                .map(|dependency| dependency.clone_ref(py))
+                .collect(),
+            endpoint: endpoint.clone_ref(py),
+            plan,
+        });
+        Ok(endpoint)
+    }
+}
+
 impl CallablePlan {
     fn build(py: Python<'_>, callable: Py<PyAny>, path_parameters: &[String]) -> PyResult<Self> {
         let inspect = py.import("inspect")?;
@@ -1984,6 +2109,7 @@ impl CallablePlan {
                     source,
                     InputSource::Body | InputSource::Form | InputSource::File
                 ),
+                ParameterSource::WebSocket => false,
                 ParameterSource::Dependency { plan, .. } => plan.has_openapi_parameter_inputs(),
             })
     }
@@ -1995,7 +2121,9 @@ impl CallablePlan {
                     source: InputSource::Body | InputSource::Form | InputSource::File,
                     ..
                 } => parameters.push(parameter),
-                ParameterSource::Input { .. } | ParameterSource::Dependency { .. } => {}
+                ParameterSource::Input { .. }
+                | ParameterSource::WebSocket
+                | ParameterSource::Dependency { .. } => {}
             }
         }
         // FastAPI flattens a dependant's body fields before visiting its child
@@ -2016,6 +2144,7 @@ impl CallablePlan {
                     ..
                 } => true,
                 ParameterSource::Input { .. } => false,
+                ParameterSource::WebSocket => false,
                 ParameterSource::Dependency { plan, .. } => plan.has_form_inputs(),
             })
     }
@@ -2076,7 +2205,7 @@ impl CallablePlan {
                 ParameterSource::Dependency { plan, .. } => {
                     parameters.extend(plan.openapi_parameters(py)?);
                 }
-                ParameterSource::Input { .. } => {}
+                ParameterSource::Input { .. } | ParameterSource::WebSocket => {}
             }
         }
         parameters.sort_by_key(|parameter| match parameter.location.as_str() {
@@ -2183,7 +2312,7 @@ impl CallablePlan {
                 .iter()
                 .filter_map(|parameter| match &parameter.source {
                     ParameterSource::Dependency { plan, .. } => Some(plan.as_ref()),
-                    ParameterSource::Input { .. } => None,
+                    ParameterSource::Input { .. } | ParameterSource::WebSocket => None,
                 })
                 .collect::<Vec<_>>();
             if nested_dependencies.is_empty() {
@@ -2238,7 +2367,9 @@ impl CallablePlan {
                         source: InputSource::Query,
                         ..
                     } => true,
-                    ParameterSource::Input { .. } | ParameterSource::Dependency { .. } => false,
+                    ParameterSource::Input { .. }
+                    | ParameterSource::WebSocket
+                    | ParameterSource::Dependency { .. } => false,
                 };
                 if parameter.default.is_some()
                     || !query_name_matches
@@ -2391,6 +2522,14 @@ impl CallablePlan {
             .filter(|parameter| parameter.location == FastApiInputLocation::Body)
             .count()
             > 1;
+        for parameter in &self.parameters {
+            if matches!(&parameter.source, ParameterSource::WebSocket) {
+                let websocket = context.websocket.ok_or_else(|| {
+                    PyRuntimeError::new_err("WebSocket parameter requires a WebSocket scope")
+                })?;
+                kwargs.set_item(&parameter.name, websocket)?;
+            }
+        }
         let mut dependency_edge_index = 0;
         for parameter in &self.parameters {
             if let ParameterSource::Dependency {
@@ -2773,6 +2912,7 @@ impl CallableParameter {
                 required: self.default.is_none(),
             }],
             ParameterSource::Dependency { plan, .. } => plan.input_parameters(),
+            ParameterSource::WebSocket => Vec::new(),
         }
     }
 }
@@ -2821,6 +2961,10 @@ fn parameter_source(
     metadata: &[Py<PyAny>],
     path_parameters: &[String],
 ) -> PyResult<ParameterSource> {
+    let websocket_type = py.import("starlette.websockets")?.getattr("WebSocket")?;
+    if annotation.is(&websocket_type) {
+        return Ok(ParameterSource::WebSocket);
+    }
     for marker in metadata {
         let marker = marker.bind(py);
         if !marker.hasattr("kind")? {
@@ -4181,6 +4325,8 @@ enum PendingAction {
     LifespanReceive,
     LifespanStartupSend,
     LifespanShutdownSend,
+    WebSocketEndpoint,
+    WebSocketClose,
     Endpoint,
     Dependency {
         cache_key: usize,
@@ -4492,6 +4638,8 @@ struct FastApiCall {
     receive: Py<PyAny>,
     send: Py<PyAny>,
     route_index: Option<usize>,
+    websocket_route_index: Option<usize>,
+    websocket: Option<Py<PyAny>>,
     path_params: Vec<(String, String)>,
     pending: Option<PendingAction>,
     body: Vec<u8>,
@@ -4527,6 +4675,9 @@ impl FastApiCall {
         let scope_type = parse_scope_string(scope, "type", "http")?;
         if scope_type == "lifespan" {
             return self.receive_lifespan(py);
+        }
+        if scope_type == "websocket" {
+            return self.begin_websocket(py);
         }
         if scope_type != "http" {
             return Err(PyValueError::new_err(format!(
@@ -4579,6 +4730,89 @@ impl FastApiCall {
                 self.send_start(py)
             }
         }
+    }
+
+    fn begin_websocket(&mut self, py: Python<'_>) -> PyResult<MachineAction> {
+        let scope = self.scope.bind(py);
+        let path = parse_scope_string(scope, "path", "/")?;
+        let root_path = parse_scope_string(scope, "root_path", "")?;
+        let match_result = self
+            .app
+            .bind(py)
+            .borrow()
+            .websocket_router
+            .matches(&path, &root_path, "GET");
+        let FastApiOperationMatch::Matched {
+            operation_index,
+            path_params,
+        } = match_result
+        else {
+            return self.close_unmatched_websocket(py);
+        };
+        self.websocket_route_index = Some(operation_index);
+        self.path_params = path_params.clone();
+
+        let query: Vec<u8> = scope
+            .call_method1("get", ("query_string", PyBytes::new(py, b"")))?
+            .extract()?;
+        let headers: Vec<(Vec<u8>, Vec<u8>)> = scope
+            .call_method1("get", ("headers", PyList::empty(py)))?
+            .extract()?;
+        let inputs = {
+            let app = self.app.bind(py).borrow();
+            let route = app.websocket_routes.get(operation_index).ok_or_else(|| {
+                PyRuntimeError::new_err("selected FastAPI WebSocket route was lost")
+            })?;
+            let convertors = route.param_convertors.bind(py);
+            let native_path_params = PyDict::new(py);
+            for (name, value) in &path_params {
+                let convertor = convertors.get_item(name)?.ok_or_else(|| {
+                    PyRuntimeError::new_err("matched WebSocket route is missing a path convertor")
+                })?;
+                let converted = convertor.call_method1("to_python", (value.as_str(),))?;
+                native_path_params.set_item(name, converted)?;
+            }
+            scope.set_item("path_params", native_path_params)?;
+            app.websocket_router
+                .resolve_inputs(&path, &root_path, "GET", &query, headers, &[])
+        };
+        let websocket_type = py.import("starlette.websockets")?.getattr("WebSocket")?;
+        self.websocket = Some(
+            websocket_type
+                .call1((scope, self.receive.bind(py), self.send.bind(py)))?
+                .unbind(),
+        );
+        let values = match decode_input_values(py, inputs, false) {
+            Ok(values) => values,
+            Err(InputDecodeError::Other(error)) => return Err(error),
+            Err(InputDecodeError::JsonValidation(error) | InputDecodeError::BodyParse(error)) => {
+                return Err(error);
+            }
+        };
+        self.invocation = Some(RequestInvocation {
+            inputs: values,
+            query_params: QueryParams::parse(&query),
+            form_body_embedded: false,
+            failures: Vec::new(),
+            dependency_cache: HashMap::new(),
+            prepared_dependency_values: HashMap::new(),
+            dependency_override_cursor: 0,
+        });
+        self.invoke_route(py)
+    }
+
+    fn close_unmatched_websocket(&mut self, py: Python<'_>) -> PyResult<MachineAction> {
+        let close_type = py
+            .import("starlette.websockets")?
+            .getattr("WebSocketClose")?;
+        let close = close_type.call0()?;
+        let awaitable = close.call1((
+            self.scope.bind(py),
+            self.receive.bind(py),
+            self.send.bind(py),
+        ))?;
+        self.pending = Some(PendingAction::WebSocketClose);
+        Ok(MachineAction::Await(awaitable.unbind()))
     }
 
     fn receive_http_body(&mut self, py: Python<'_>) -> PyResult<MachineAction> {
@@ -4817,23 +5051,39 @@ impl FastApiCall {
     }
 
     fn invoke_route(&mut self, py: Python<'_>) -> PyResult<MachineAction> {
-        let route_index = self
-            .route_index
-            .ok_or_else(|| PyRuntimeError::new_err("ASGI dispatch has no selected route"))?;
+        if self.websocket_route_index.is_none() && self.route_index.is_none() {
+            return Err(PyRuntimeError::new_err(
+                "ASGI dispatch has no selected route",
+            ));
+        }
+        let websocket = self.websocket.as_ref().map(|socket| socket.bind(py));
         let invocation = self
             .invocation
             .as_mut()
             .ok_or_else(|| PyRuntimeError::new_err("request invocation state was lost"))?;
         let route_invocation = {
             let app = self.app.bind(py).borrow();
-            let route = app
-                .routes
-                .get(route_index)
-                .ok_or_else(|| PyRuntimeError::new_err("selected FastAPI route was lost"))?;
+            let plan = if let Some(route_index) = self.websocket_route_index {
+                &app.websocket_routes
+                    .get(route_index)
+                    .ok_or_else(|| {
+                        PyRuntimeError::new_err("selected FastAPI WebSocket route was lost")
+                    })?
+                    .plan
+            } else {
+                let route_index = self.route_index.ok_or_else(|| {
+                    PyRuntimeError::new_err("ASGI dispatch has no selected HTTP route")
+                })?;
+                &app.routes
+                    .get(route_index)
+                    .ok_or_else(|| PyRuntimeError::new_err("selected FastAPI route was lost"))?
+                    .plan
+            };
             let dependency_overrides = app.dependency_overrides.bind(py);
             let mut context = InvocationContext {
                 py,
                 inputs: invocation.inputs.bind(py),
+                websocket,
                 query_params: &invocation.query_params,
                 form_body_embedded: invocation.form_body_embedded,
                 failures: &mut invocation.failures,
@@ -4842,10 +5092,7 @@ impl FastApiCall {
                 prepared_dependency_values: &mut invocation.prepared_dependency_values,
                 dependency_override_cursor: &mut invocation.dependency_override_cursor,
             };
-            match route
-                .plan
-                .prepare_direct_dependency_overrides(&mut context)?
-            {
+            match plan.prepare_direct_dependency_overrides(&mut context)? {
                 OverridePreparation::Await {
                     awaitable,
                     cache_key,
@@ -4868,7 +5115,7 @@ impl FastApiCall {
                 },
                 OverridePreparation::Invalid => RouteInvocation::Ready(None),
                 OverridePreparation::Ready => {
-                    RouteInvocation::Ready(route.plan.invoke(&mut context, None, None)?)
+                    RouteInvocation::Ready(plan.invoke(&mut context, None, None)?)
                 }
             }
         };
@@ -4898,11 +5145,22 @@ impl FastApiCall {
                 Ok(MachineAction::Await(awaitable))
             }
             RouteInvocation::Ready(Some(endpoint_result)) => {
-                self.pending = Some(PendingAction::Endpoint);
-                if is_awaitable(py, endpoint_result.bind(py))? {
-                    Ok(MachineAction::Await(endpoint_result))
+                if self.websocket_route_index.is_some() {
+                    if is_awaitable(py, endpoint_result.bind(py))? {
+                        self.pending = Some(PendingAction::WebSocketEndpoint);
+                        Ok(MachineAction::Await(endpoint_result))
+                    } else {
+                        Err(PyTypeError::new_err(
+                            "FastAPI WebSocket endpoints must return an awaitable",
+                        ))
+                    }
                 } else {
-                    self.finish_endpoint(py, endpoint_result)
+                    self.pending = Some(PendingAction::Endpoint);
+                    if is_awaitable(py, endpoint_result.bind(py))? {
+                        Ok(MachineAction::Await(endpoint_result))
+                    } else {
+                        self.finish_endpoint(py, endpoint_result)
+                    }
                 }
             }
             RouteInvocation::Ready(None) => {
@@ -4911,6 +5169,11 @@ impl FastApiCall {
                     .as_ref()
                     .ok_or_else(|| PyRuntimeError::new_err("request invocation state was lost"))?;
                 if !invocation.failures.is_empty() {
+                    if self.websocket_route_index.is_some() {
+                        return Err(PyValueError::new_err(
+                            "FastAPI WebSocket validation failure handling is not in the current target slice",
+                        ));
+                    }
                     self.response_status = 422;
                     self.response_body = json_bytes(
                         py,
@@ -4957,6 +5220,7 @@ impl FastApiCall {
     ) -> PyResult<MachineAction> {
         let mut prepared_dependencies = HashMap::new();
         prepared_dependencies.insert(0, subdependency_value);
+        let websocket = self.websocket.as_ref().map(|socket| socket.bind(py));
         let parent_result = {
             let invocation = self
                 .invocation
@@ -4966,6 +5230,7 @@ impl FastApiCall {
             let mut context = InvocationContext {
                 py,
                 inputs: invocation.inputs.bind(py),
+                websocket,
                 query_params: &invocation.query_params,
                 form_body_embedded: invocation.form_body_embedded,
                 failures: &mut invocation.failures,
@@ -5266,6 +5531,9 @@ impl FastApiCall {
                 Some(PendingAction::LifespanReceive) => self.lifespan_message(py, value),
                 Some(PendingAction::LifespanStartupSend) => self.receive_lifespan(py),
                 Some(PendingAction::LifespanShutdownSend) => Ok(MachineAction::Complete(py.None())),
+                Some(PendingAction::WebSocketEndpoint | PendingAction::WebSocketClose) => {
+                    Ok(MachineAction::Complete(py.None()))
+                }
                 Some(PendingAction::Endpoint) => self.finish_endpoint(py, value),
                 Some(PendingAction::Dependency {
                     cache_key,
@@ -5330,6 +5598,7 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     module.add_class::<PyFastApi>()?;
     module.add_class::<PyApiRouter>()?;
     module.add_class::<PyOperationDecorator>()?;
+    module.add_class::<PyWebSocketDecorator>()?;
     module.add_class::<PyFastApiAsyncStream>()?;
     let response = module
         .py()
@@ -5346,6 +5615,10 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
         "StreamingResponse",
     ] {
         module.add(name, responses.getattr(name)?)?;
+    }
+    let websockets = module.py().import("starlette.websockets")?;
+    for name in ["WebSocket", "WebSocketDisconnect", "WebSocketState"] {
+        module.add(name, websockets.getattr(name)?)?;
     }
     Ok(())
 }
