@@ -1,5 +1,9 @@
 # FastAPI → Starlette-RS consumption review
 
+> Historical snapshot for Starlette-RS `56beb29876e040b8a59afecdf4750d55432c006d`.
+> The current pin is `83a7f6b9f4024483231c3509f3211dd05f6726ac`; see
+> [the 83a7f6b crosswalk delta](starlette-rs-surface-review-83a7f6b.md).
+
 ## Reviewed revisions
 
 - FastAPI 0.141.1: `95f8322ee1dcda7ceace7b1c4f6c9915b36d748f`.
@@ -7,7 +11,7 @@
 - Starlette-RS target: `56beb29876e040b8a59afecdf4750d55432c006d`.
 - FastAPI-RS call sites inspected at HEAD `05c6bfaf9cce3912bd21d5a4806d3943cf2c2d9c`.
 
-The current FastAPI-RS metadata and source digests point to this Starlette-RS revision (`metadata.yaml:82–96, 159–173` in the shared worktree). The generated FastAPI→Starlette edge map has 133 relationships: 32 direct re-exports, 86 internal dependencies, and 15 subclass edges (`tests/fixtures/compatibility-atlas.json#/starlette_integration_edges`). These counts describe source relationships, not support or runtime behavior. Starlette-RS declares a bounded `slice` contract with separate Rust-native and Python-package targets (`tests/fixtures/manifest.yaml:3–8, 39–53 @56beb29876e040b8a59afecdf4750d55432c006d`).
+At the time of this review, FastAPI-RS metadata and source digests pointed to this Starlette-RS revision (`metadata.yaml:82–96, 159–173` in the shared worktree). The generated FastAPI→Starlette edge map had 133 relationships: 32 direct re-exports, 86 internal dependencies, and 15 subclass edges (`tests/fixtures/compatibility-atlas.json#/starlette_integration_edges`). These counts describe source relationships, not support or runtime behavior. Starlette-RS declares a bounded `slice` contract with separate Rust-native and Python-package targets (`tests/fixtures/manifest.yaml:3–8, 39–53 @56beb29876e040b8a59afecdf4750d55432c006d`).
 
 The 56beb commit adds the route body-limit manifest contract and input recipe, parity adapter/contract updates, metadata, and docs. Its changed-file list contains no Starlette-RS runtime files under `starlette-rs/` or `starlette-rs-py/python/starlette/`. The Python wrapper parameters cited below were already present; the new commit adds contract and fixture coverage, not new runtime implementation. This review did not run parity and treats the manifest/fixture as declared coverage, not executed behavior.
 
@@ -41,7 +45,7 @@ For FastAPI-RS, classify body limits as no FastAPI app/operation option in the p
 
 ## Recommended crosswalk treatment
 
-1. Keep the current 56beb target pin and source digests synchronized in metadata. Keep the 133 relations classified as mappings until each has a lane-specific contract.
+1. At this historical review point, keep the 56beb target pin and source digests synchronized in metadata. The current pin and digest update are recorded in the linked 83a7f6b review. Keep the 133 relations classified as mappings until each has a lane-specific contract.
 2. Preserve the `add_route` gap explicitly: FastAPI calls it during setup, while Starlette-RS declares Python-package support and Rust-native unimplemented.
 3. Limit current native delegation claims to the call sites that exist: route matching/capture, query/header/cookie lookup, and scope classification. Add contracts and FastAPI-RS call paths before claiming form/file parsing, response/background execution, lifecycle/middleware, exception, or WebSocket delegation.
 4. Record the `max_body_size` boundary as described above; do not expose Starlette’s target-only app default as a FastAPI 0.141.1 constructor behavior. Preserve the source distinction between direct raw route objects and included generic `Route` projection if `routes=` support is claimed.
