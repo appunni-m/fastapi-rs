@@ -9849,10 +9849,20 @@ def _sync_manifest_artifact_metadata(
         },
     )
     inventory_path = PROJECT / "tests/fixtures/api-inventory.json"
+    inventory = json.loads(inventory_path.read_text(encoding="utf-8"))
+    inventory_counts = inventory["counts"]
     manifest_text = _replace_manifest_artifact_block(
         manifest_text,
         "api_inventory",
-        {"sha256": sha256(inventory_path)},
+        {
+            "sha256": sha256(inventory_path),
+            "root_exports": inventory_counts["root_exports"],
+            "documented_targets": inventory_counts["documented_target_names"],
+            "python_source_modules": inventory_counts["python_source_modules"],
+            "source_defined_callables": inventory_counts["source_defined_callables"],
+            "import_bindings": inventory_counts["import_bindings"],
+            "source_deprecations": inventory_counts["symbols_with_source_deprecation_evidence"],
+        },
     )
     runtime_core_path = PROJECT / "tests/fixtures/runtime-api-surface-core.json"
     manifest_text = _replace_manifest_artifact_block(

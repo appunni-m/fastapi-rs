@@ -100,7 +100,7 @@ source_artifacts:
   api_inventory:
     path: tests/fixtures/api-inventory.json
     schema: fastapi-rs/source-api-inventory@1
-    sha256: 311676f53a14f1f585060575152ea646198a21c2fabf5d693cb6182ad105aaba
+    sha256: a254f1f13052c1adb6d5017b87575236db02be5c211cb22e1a2bd20833a89e54
     purpose: pinned-source inventory input; not support or parity evidence
     counts:
       root_exports: 21
@@ -108,7 +108,7 @@ source_artifacts:
       python_source_modules: 48
       source_defined_callables: 350
       import_bindings: 651
-      source_deprecations: 19
+      source_deprecations: 21
     source_identity_pointer: /source_identity
   api_classification_review:
     path: tests/fixtures/api-classification-review.json
@@ -167,7 +167,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@2
-    sha256: 15857fbcf545fc498309142e2b76a56ddfb3084b648a8040bca289bc36341c00
+    sha256: 07ada452e93be5ee4f4c3b42c77571804d3e9f77fb88bf33ccbce20b89c34b8f
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -178,7 +178,7 @@ source_artifacts:
         private_or_internal: 749
         uncertain: 392
       alias_records: 69
-      source_deprecations: 19
+      source_deprecations: 21
       error_candidates: 42
       optional_features: 3
       starlette_integration_edges: 133
@@ -198,7 +198,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 4aa0bfff6a05882529bd7656ba0d4b18ae71182b558972737d7cc35a0e4aae5b
+    sha256: 36fb7de8de3768810cd8f611b4864fe2c077b95c6583b66f38596e72a69617b7
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 598
@@ -215,7 +215,7 @@ source_artifacts:
   runtime_api_surface_core:
     path: tests/fixtures/runtime-api-surface-core.json
     schema: fastapi-rs/runtime-api-surface@1
-    sha256: 9abbb73304e52ed0d1180f22c766f9a4ff36a7750a55bbe8ef25f86c916cbda9
+    sha256: 5664ecf0cae5eac06ce30a6f98623e3e4af0e21bc0531e0b037fb4e3e13e3159
     purpose: CPython 3.12.13 reflection with FastAPI core runtime dependencies only
     counts:
       source_symbols_reflected: 1590
@@ -225,7 +225,7 @@ source_artifacts:
   runtime_api_surface_standard:
     path: tests/fixtures/runtime-api-surface-standard.json
     schema: fastapi-rs/runtime-api-surface@1
-    sha256: b017d6a7ecc388457fe2c890a976d86d038c3bf0b80ccc120f873d8cbe2a37f3
+    sha256: 9c2b56e4e7c523e6317d3f26ed6d96c2ac8cad00643c0a0c03dd0992ef7f1732
     purpose: CPython 3.12.13 reflection with locked standard and docs-tests extras
     counts:
       source_symbols_reflected: 1592
@@ -235,14 +235,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@1
-    sha256: 82a7dbd8ee730eba845cfbc987d1f0729c59094a29ad087617e8548769b3e412
+    sha256: 99cbf6b4c4db63516c8bc4b46397e4981d7613a357a3bd498aedc0cb6f36088b
     schema_path: tests/fixtures/schemas/materialized-input-index.schema.json
     schema_sha256: b0a2ec32c63dc82ec43cb4c5ffaf41590e951526de305865a24301ea42e947d2
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 466
-      cases: 1796
-      partial_source_mappings: 1074
+      workflows: 467
+      cases: 1800
+      partial_source_mappings: 1076
 
 contract_metadata:
   aliases:
@@ -522,7 +522,7 @@ api_surface_contract:
       starlette-rs: 31
     symbols_with_documented_feature_refs: 445
     symbols_with_alias_refs: 46
-    symbols_with_deprecation_refs: 13
+    symbols_with_deprecation_refs: 15
     symbols_with_error_contract_refs: 12
   symbols:
   - id: fastapi.APIRouter
@@ -17312,12 +17312,15 @@ api_surface_contract:
         signature_status: available
     signature_contract_state: runtime-signature-reflected
     alias_refs: []
-    deprecation_refs: []
+    deprecation_refs:
+    - /deprecations/1
     error_contract_refs: []
     documentation_contract_refs: []
-    feature_ids: []
-    observation_selectors: []
-    behavior_contract_state: source-evidence-only; fixture link pending
+    feature_ids:
+    - openapi-docs
+    observation_selectors:
+    - python.call_outcome
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.openapi.utils.generate_operation_id
@@ -17389,7 +17392,7 @@ api_surface_contract:
     signature_contract_state: runtime-signature-reflected
     alias_refs: []
     deprecation_refs:
-    - /deprecations/5
+    - /deprecations/6
     error_contract_refs: []
     documentation_contract_refs:
     - coverage_matrix_ref: /coverage_matrix/548
@@ -17442,7 +17445,7 @@ api_surface_contract:
     signature_contract_state: runtime-signature-reflected
     alias_refs: []
     deprecation_refs:
-    - /deprecations/4
+    - /deprecations/5
     error_contract_refs: []
     documentation_contract_refs:
     - coverage_matrix_ref: /coverage_matrix/548
@@ -17548,7 +17551,7 @@ api_surface_contract:
     signature_contract_state: runtime-signature-reflected
     alias_refs: []
     deprecation_refs:
-    - /deprecations/7
+    - /deprecations/8
     error_contract_refs: []
     documentation_contract_refs:
     - coverage_matrix_ref: /coverage_matrix/548
@@ -17601,7 +17604,7 @@ api_surface_contract:
     signature_contract_state: runtime-signature-reflected
     alias_refs: []
     deprecation_refs:
-    - /deprecations/6
+    - /deprecations/7
     error_contract_refs: []
     documentation_contract_refs:
     - coverage_matrix_ref: /coverage_matrix/548
@@ -17654,7 +17657,7 @@ api_surface_contract:
     signature_contract_state: runtime-signature-reflected
     alias_refs: []
     deprecation_refs:
-    - /deprecations/3
+    - /deprecations/4
     error_contract_refs: []
     documentation_contract_refs:
     - coverage_matrix_ref: /coverage_matrix/548
@@ -17707,7 +17710,7 @@ api_surface_contract:
     signature_contract_state: runtime-signature-reflected
     alias_refs: []
     deprecation_refs:
-    - /deprecations/1
+    - /deprecations/2
     error_contract_refs: []
     documentation_contract_refs:
     - coverage_matrix_ref: /coverage_matrix/548
@@ -17760,7 +17763,7 @@ api_surface_contract:
     signature_contract_state: runtime-signature-reflected
     alias_refs: []
     deprecation_refs:
-    - /deprecations/2
+    - /deprecations/3
     error_contract_refs: []
     documentation_contract_refs:
     - coverage_matrix_ref: /coverage_matrix/548
@@ -18503,7 +18506,7 @@ api_surface_contract:
     signature_contract_state: runtime-signature-reflected
     alias_refs: []
     deprecation_refs:
-    - /deprecations/17
+    - /deprecations/18
     error_contract_refs: []
     documentation_contract_refs:
     - coverage_matrix_ref: /coverage_matrix/551
@@ -18837,7 +18840,7 @@ api_surface_contract:
     signature_contract_state: runtime-signature-reflected
     alias_refs: []
     deprecation_refs:
-    - /deprecations/16
+    - /deprecations/17
     error_contract_refs: []
     documentation_contract_refs:
     - coverage_matrix_ref: /coverage_matrix/551
@@ -19042,7 +19045,7 @@ api_surface_contract:
     signature_contract_state: runtime-signature-reflected
     alias_refs: []
     deprecation_refs:
-    - /deprecations/18
+    - /deprecations/19
     error_contract_refs: []
     documentation_contract_refs:
     - coverage_matrix_ref: /coverage_matrix/536
@@ -19527,7 +19530,7 @@ api_surface_contract:
     signature_contract_state: runtime-signature-reflected
     alias_refs: []
     deprecation_refs:
-    - /deprecations/18
+    - /deprecations/19
     error_contract_refs: []
     documentation_contract_refs:
     - coverage_matrix_ref: /coverage_matrix/536
@@ -23990,12 +23993,15 @@ api_surface_contract:
         signature_status: available
     signature_contract_state: runtime-signature-reflected
     alias_refs: []
-    deprecation_refs: []
+    deprecation_refs:
+    - /deprecations/20
     error_contract_refs: []
     documentation_contract_refs: []
-    feature_ids: []
-    observation_selectors: []
-    behavior_contract_state: source-evidence-only; fixture link pending
+    feature_ids:
+    - openapi-docs
+    observation_selectors:
+    - python.call_outcome
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.utils.generate_operation_id_for_path

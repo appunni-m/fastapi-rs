@@ -136,3 +136,54 @@ cases:
   - path: docs/en/docs/tutorial/schema-extra-example.md
     kind: upstream_documentation
     sha256: 1bc9e50ddfa28bc8c6057ebdeafafae8069ab9d05e2a1674555122ede3a263a0
+- case_id: fastapi.deprecation.generate-operation-id-explicit-route
+  probes:
+  - probe_id: generate-operation-id-explicit
+    public_callable:
+      module: fastapi.openapi.utils
+      attribute: generate_operation_id
+    argument_bundle: operation-id-explicit
+    capture_warnings: true
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  source_evidence:
+  - path: fastapi/openapi/utils.py
+    kind: upstream_api_definition
+    sha256: 81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527
+    symbol_id: fastapi.openapi.utils.generate_operation_id
+- case_id: fastapi.deprecation.generate-operation-id-fallback-route
+  probes:
+  - probe_id: generate-operation-id-fallback
+    public_callable:
+      module: fastapi.openapi.utils
+      attribute: generate_operation_id
+    argument_bundle: operation-id-fallback
+    capture_warnings: true
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  source_evidence:
+  - path: fastapi/openapi/utils.py
+    kind: upstream_api_definition
+    sha256: 81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527
+    symbol_id: fastapi.openapi.utils.generate_operation_id
+- case_id: fastapi.deprecation.generate-operation-id-for-path
+  probes:
+  - probe_id: generate-operation-id-for-path
+    public_callable:
+      module: fastapi.utils
+      attribute: generate_operation_id_for_path
+    argument_bundle: operation-id-for-path
+    capture_warnings: true
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  source_evidence:
+  - path: fastapi/utils.py
+    kind: upstream_api_definition
+    sha256: 0d7d15ae73307d5b19c51cfc222b50e36736fbef9f0f398566479131947650ca
+    symbol_id: fastapi.utils.generate_operation_id_for_path

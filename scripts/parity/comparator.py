@@ -208,9 +208,12 @@ def _compare_action(
             )
             continue
         expected_selector = observation_spec.get("selector")
+        # ASGI send observations have a single schema-fixed selector; result
+        # artifacts carry only the resulting message_types value.
         if (
             require_selector_match
             and expected_selector is not None
+            and expected_kind != "asgi_send"
             and (
                 source_observation.get("selector") != expected_selector
                 or target_observation.get("selector") != expected_selector

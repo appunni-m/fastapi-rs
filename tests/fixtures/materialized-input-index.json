@@ -1531,18 +1531,21 @@
     {
       "id": "direct-api-warnings",
       "input_path": "tests/fixtures/inputs/parity/direct-api-warnings.json",
-      "input_sha256": "54399a24fbfa2d847eb2eb93ec1e8ce54c022a79ebc8d1bc63e4daf2e6ac19db",
+      "input_sha256": "0d9efeba873fe77fb012f7102afd38ac9c36e190c07f42d8453ab353aeb115d7",
       "recipe_path": "tests/fixtures/input-recipes/parity/direct-api-warnings.yaml",
-      "recipe_sha256": "4ff4c0d49bed10ababa8e96ce75240e39a103129f9b83690b716f449735538c4",
+      "recipe_sha256": "1c7bf0bd78e0c72f14830f7d16c5e7a9b23ef6b37a632c718342d0894bd31876",
       "workload_path": "tests/fixtures/workloads/direct_api_warnings.py",
-      "workload_sha256": "5d24a9c9a8d66bb096105f157bbc86c1d83e0ccfa3fb7a09090ff384f1930125",
+      "workload_sha256": "61c6a2588aa6fc6efe244c24ba32ef94611ae90879b54142b9d64dff347c0753",
       "case_ids": [
         "fastapi.deprecation.query-example-warning",
         "fastapi.deprecation.query-regex-warning",
         "fastapi.deprecation.body-example-warning",
         "fastapi.deprecation.path-example-warning",
         "fastapi.deprecation.header-example-warning",
-        "fastapi.deprecation.cookie-example-warning"
+        "fastapi.deprecation.cookie-example-warning",
+        "fastapi.deprecation.generate-operation-id-explicit-route",
+        "fastapi.deprecation.generate-operation-id-fallback-route",
+        "fastapi.deprecation.generate-operation-id-for-path"
       ],
       "api_definitions": [
         {
@@ -1556,6 +1559,24 @@
           "symbol_id": "fastapi.Cookie",
           "path": "fastapi/param_functions.py",
           "sha256": "e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc"
+        },
+        {
+          "case_id": "fastapi.deprecation.generate-operation-id-explicit-route",
+          "symbol_id": "fastapi.openapi.utils.generate_operation_id",
+          "path": "fastapi/openapi/utils.py",
+          "sha256": "81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527"
+        },
+        {
+          "case_id": "fastapi.deprecation.generate-operation-id-fallback-route",
+          "symbol_id": "fastapi.openapi.utils.generate_operation_id",
+          "path": "fastapi/openapi/utils.py",
+          "sha256": "81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527"
+        },
+        {
+          "case_id": "fastapi.deprecation.generate-operation-id-for-path",
+          "symbol_id": "fastapi.utils.generate_operation_id_for_path",
+          "path": "fastapi/utils.py",
+          "sha256": "0d7d15ae73307d5b19c51cfc222b50e36736fbef9f0f398566479131947650ca"
         },
         {
           "case_id": "fastapi.deprecation.header-example-warning",
@@ -2184,6 +2205,18 @@
       "workload_sha256": "049705cfea5709fd1df58d332e273e6be9180d3acfe4a7e0cde1ee61bb4e870c",
       "case_ids": [
         "fastapi.path-operation.include-in-schema.all-http-methods"
+      ]
+    },
+    {
+      "id": "inferred-optional-router-prefix-upstream",
+      "input_path": "tests/fixtures/inputs/parity/inferred-optional-router-prefix-upstream.json",
+      "input_sha256": "6e649373ddae1664b1ef9a5fbea62421e966ee6bba63e7a1ed50d0a90d37db03",
+      "recipe_path": "tests/fixtures/input-recipes/parity/inferred-optional-router-prefix-upstream.yaml",
+      "recipe_sha256": "13d14ee87cad925732c2153e4e2ad6a861dc192a9b6477b63e1a1898c774003b",
+      "workload_path": "tests/fixtures/workloads/inferred_optional_router_prefix_upstream.py",
+      "workload_sha256": "734988a1f6b419e480f0e4530e20ac6b3274ef9d50788cd26f4424eecf70b833",
+      "case_ids": [
+        "fastapi.infer-param-optionality.router-prefix-path-parameter"
       ]
     },
     {
@@ -12361,6 +12394,42 @@
         "http.body.bytes",
         "http.status",
         "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/bigger-applications.md",
+      "fixture_id": "fastapi.docs.tutorial-bigger-applications",
+      "workflow_id": "inferred-optional-router-prefix-upstream",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.infer-param-optionality.router-prefix-path-parameter"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status",
+        "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_infer_param_optionality.py",
+      "fixture_id": "fastapi.test.test-infer-param-optionality",
+      "workflow_id": "inferred-optional-router-prefix-upstream",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.infer-param-optionality.router-prefix-path-parameter"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "docs.response.status",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status",
+        "openapi.document",
+        "openapi.paths"
       ]
     },
     {

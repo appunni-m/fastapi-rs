@@ -439,7 +439,11 @@ def deprecation_evidence(module: ParsedModule, node: ast.AST) -> list[dict[str, 
         )
         for call in calls:
             leaf = call_leaf(call.func)
-            message = literal_message(call.args[0] if call.args else None)
+            message_node = next(
+                (keyword.value for keyword in call.keywords if keyword.arg in {"message", "msg"}),
+                call.args[0] if call.args else None,
+            )
+            message = literal_message(message_node)
             category = next(
                 (keyword.value for keyword in call.keywords if keyword.arg == "category"), None
             )

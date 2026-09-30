@@ -1,0 +1,92 @@
+# Pinned FastAPI 0.141.1 source: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f.
+# Independent requests compare the same optional endpoint parameter as a query
+# field under /items and as a required path field under an included prefix.
+schema: fastapi-rs/python-asgi-workflow@5
+workload:
+  file: tests/fixtures/workloads/inferred_optional_router_prefix_upstream.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.infer-param-optionality.router-prefix-path-parameter
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: ordinary-query-parameter
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/
+      query_string: user_id=query-value
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - kind: http_response
+      selectors: [status, headers, body]
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+  - action_id: inherited-path-parameter
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /users/path-value/items/
+      query_string: user_id=query-shadow
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - kind: http_response
+      selectors: [status, headers, body]
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+  - action_id: openapi-parameter-locations
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - kind: http_response
+      selectors: [status]
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /paths/~1items~1/get/parameters
+      - /paths/~1users~1{user_id}~1items~1/get/parameters
+      comparison: exact
+  source_evidence:
+  - path: tests/test_infer_param_optionality.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/bigger-applications.md
+    kind: upstream_documentation

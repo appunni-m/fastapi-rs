@@ -63,12 +63,13 @@ Primary source checks: [FastAPI 0.141.1 metadata](https://github.com/fastapi/fas
    the repository has no target Python lock. Keep the FastAPI source-oracle
    lock separate from this product lock.
 2. **P1 — default Starlette-RS source path.** Make dependency-inventory and
-   parity commands resolve the reviewed `e60b8f1...` source by default, or
+   parity commands resolve the reviewed `83a7f6b...` source by default, or
    make the required override explicit in the developer workflow. In this
-   checkout `STARLETTE_RS_SOURCE` defaults to `../starlette-rs`, which is at a
-   different dirty commit; an explicit clean pinned checkout was required for
-   the successful inventory check. Do not regenerate the active inventory from
-   the dirty path.
+   checkout `STARLETTE_RS_SOURCE` defaults to `../starlette-rs`, whose HEAD is
+   pinned but whose working tree has additional uncommitted files; an explicit
+   clean checkout of `83a7f6b...` was required for the successful inventory
+   and parity checks. Do not regenerate the active inventory from the dirty
+   path.
 3. **P2 — native Pydantic Core closure, conditional on shipping/rebuilding it.**
    The current target consumes the Pydantic wheel, so its native dependency
    tree belongs to that distribution rather than the target `Cargo.lock`.

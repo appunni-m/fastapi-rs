@@ -573,6 +573,16 @@ reviewed_api_contract_overlay:
         - {path: fastapi/encoders.py, symbol: jsonable_encoder}
       feature_ids: [python-data-encoding]
       observation_selectors: [python.attribute_value, python.signature, python.call_outcome]
+    fastapi.openapi.utils.generate_operation_id:
+      source_evidence:
+        - {path: fastapi/openapi/utils.py, symbol: generate_operation_id}
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.call_outcome]
+    fastapi.utils.generate_operation_id_for_path:
+      source_evidence:
+        - {path: fastapi/utils.py, symbol: generate_operation_id_for_path}
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.call_outcome]
     fastapi.applications.FastAPI.__init__:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::new
       source_evidence:

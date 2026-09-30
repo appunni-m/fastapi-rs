@@ -6,9 +6,11 @@ relative to that stable runner call site rather than an application file.
 
 from __future__ import annotations
 
+from types import SimpleNamespace
+
 
 def create_argument_bundles() -> dict[str, dict[str, object]]:
-    """Return independent inputs for deprecated parameter factory calls."""
+    """Return independent inputs for deprecated direct API calls."""
     return {
         "query-example": {
             "args": [],
@@ -27,5 +29,35 @@ def create_argument_bundles() -> dict[str, dict[str, object]]:
         "cookie-example": {
             "args": [],
             "kwargs": {"default": None, "example": "cookie1"},
+        },
+        "operation-id-explicit": {
+            "args": [],
+            "kwargs": {
+                "route": SimpleNamespace(
+                    operation_id="explicit-operation",
+                    name="ignored_name",
+                    path_format="/ignored/{value}",
+                ),
+                "method": "GET",
+            },
+        },
+        "operation-id-fallback": {
+            "args": [],
+            "kwargs": {
+                "route": SimpleNamespace(
+                    operation_id=None,
+                    name="read_item",
+                    path_format="/items/{item_id}",
+                ),
+                "method": "POST",
+            },
+        },
+        "operation-id-for-path": {
+            "args": [],
+            "kwargs": {
+                "name": "read-item",
+                "path": "/v1/items/{item_id}",
+                "method": "PATCH",
+            },
         },
     }
