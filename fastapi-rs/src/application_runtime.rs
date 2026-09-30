@@ -1231,6 +1231,24 @@ impl PyFastApi {
             }
             None => (None, None),
         };
+        let (response_media_type, response_class_is_json) =
+            if let Some(response_class) = route.response_class.as_ref() {
+                let response_class = response_class.bind(py);
+                let media_type = response_class.getattr("media_type")?;
+                let media_type = if media_type.is_none() {
+                    None
+                } else {
+                    Some(media_type.extract::<String>()?)
+                };
+                let json_response = py.import("starlette.responses")?.getattr("JSONResponse")?;
+                (
+                    media_type,
+                    annotation_is_subclass(py, response_class, &json_response)?,
+                )
+            } else {
+                // FastAPI's implicit response class is JSONResponse.
+                (Some("application/json".to_owned()), true)
+            };
         let sse_stream = route.sse_stream;
         let jsonl_stream =
             route.generator_kind.is_generator() && route.response_class.is_none() && !sse_stream;
@@ -1278,6 +1296,8 @@ impl PyFastApi {
             response_model_name,
             response_schema,
             response_schema_title: response_field_schema_title(&name, &route.path, &route.method),
+            response_media_type,
+            response_class_is_json,
             jsonl_stream,
             sse_stream,
             stream_item_model_name,

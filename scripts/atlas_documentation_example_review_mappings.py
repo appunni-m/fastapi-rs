@@ -1009,6 +1009,43 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
             }
         ],
     },
+    "docs_src/custom_response/tutorial002_py310.py": {
+        "rationale": (
+            "The documented GET /items/ route declares response_class=HTMLResponse and returns "
+            "HTML text. The linked cases observe response status/body/headers, including the "
+            "text/html media type, and the OpenAPI 200 response content with a string schema, "
+            "as asserted by the upstream test. They do not claim broader custom-response behavior."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/custom_response/tutorial002_py310.py",
+                "start_line": 7,
+                "end_line": 18,
+                "role": "documented response_class=HTMLResponse route and HTML content",
+            },
+            {
+                "path": "tests/test_tutorial/test_custom_response/test_tutorial002_tutorial003_tutorial004.py",
+                "start_line": 38,
+                "end_line": 68,
+                "role": "upstream response and text/html string-schema OpenAPI assertions",
+            },
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/custom-response-tutorial002-upstream.yaml",
+                "case_ids": [
+                    "fastapi.custom-response.tutorial002.items-response",
+                    "fastapi.custom-response.tutorial002.openapi",
+                ],
+                "observation_selectors": [
+                    "http.body.bytes",
+                    "http.headers.ordered",
+                    "http.status",
+                    "openapi.document",
+                ],
+            }
+        ],
+    },
     "docs_src/custom_response/tutorial003_py310.py": {
         "rationale": (
             "The documented GET /items/ handler directly returns HTMLResponse with the "
@@ -1021,13 +1058,51 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
                 "start_line": 7,
                 "end_line": 19,
                 "role": "documented direct HTMLResponse return",
-            }
+            },
         ],
         "workflow_cases": [
             {
                 "recipe_path": "tests/fixtures/input-recipes/parity/custom-response-tutorial003-upstream.yaml",
                 "case_ids": ["fastapi.custom-response.tutorial003.items-response"],
                 "observation_selectors": ["http.body.bytes", "http.status"],
+            }
+        ],
+    },
+    "docs_src/custom_response/tutorial004_py310.py": {
+        "rationale": (
+            "The documented GET /items/ route declares response_class=HTMLResponse and returns an "
+            "explicit HTMLResponse with status code 200. The linked cases observe response "
+            "status/body/headers, including the text/html media type, and the OpenAPI 200 response "
+            "content with a string schema, as asserted by the upstream test. They do not claim "
+            "broader custom-response behavior."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/custom_response/tutorial004_py310.py",
+                "start_line": 7,
+                "end_line": 23,
+                "role": "documented HTMLResponse factory and route returning it",
+            },
+            {
+                "path": "tests/test_tutorial/test_custom_response/test_tutorial002_tutorial003_tutorial004.py",
+                "start_line": 38,
+                "end_line": 68,
+                "role": "upstream response and text/html string-schema OpenAPI assertions",
+            },
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/custom-response-tutorial004-upstream.yaml",
+                "case_ids": [
+                    "fastapi.custom-response.tutorial004.items-response",
+                    "fastapi.custom-response.tutorial004.openapi",
+                ],
+                "observation_selectors": [
+                    "http.body.bytes",
+                    "http.headers.ordered",
+                    "http.status",
+                    "openapi.document",
+                ],
             }
         ],
     },
