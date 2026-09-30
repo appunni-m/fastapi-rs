@@ -4759,6 +4759,20 @@
       "oracle_profile_extension": "standard-multipart"
     },
     {
+      "id": "request-injection-slice",
+      "input_path": "tests/fixtures/inputs/parity/request-injection-slice.json",
+      "input_sha256": "8fee02f07ab3893ece6b8925d37a549b7c853cc2b36b2db6b7c9479ae42fd720",
+      "recipe_path": "tests/fixtures/input-recipes/parity/request-injection-slice.yaml",
+      "recipe_sha256": "a2319087a619ed77c52ab7b76394aca2cef47a683ed77509b1bd0c8d0456017b",
+      "workload_path": "tests/fixtures/workloads/request_injection_slice.py",
+      "workload_sha256": "005b9358f6c8e836d2a6216c489148945d915e7caecf9b95405ba69087d2022e",
+      "case_ids": [
+        "fastapi.request-injection-slice.raw-body",
+        "fastapi.request-injection-slice.cached-parsed-body",
+        "fastapi.request-injection-slice.dependency-body"
+      ]
+    },
+    {
       "id": "request-models",
       "input_path": "tests/fixtures/inputs/parity/request-models.json",
       "input_sha256": "1a315f493eb7d1e8a6322a85c8034b675c0cd83a879bae25ac42bb7231f3abf3",
@@ -5180,7 +5194,7 @@
       "input_path": "tests/fixtures/inputs/parity/response-model-data-filter-exclude-unset-none-review.json",
       "input_sha256": "e8df817a4df31b3f2f646068c8a9286416ff13577822d1fc572bbc5d8eb34a17",
       "recipe_path": "tests/fixtures/input-recipes/parity/response-model-data-filter-exclude-unset-none-review.yaml",
-      "recipe_sha256": "c7056dd40086261f17aea35ff2a7027caa4789157300d06eb662f7e0ea1193ca",
+      "recipe_sha256": "329cd16cf7a92ed0d8823f42f7643b41df31eee1d4c6232d07697d0961d5866c",
       "workload_path": "tests/fixtures/workloads/response_model_data_filter_exclude_unset_none_review.py",
       "workload_sha256": "24b60f06b2472a0254c9ae15d0b208e0edd99d3cb8a3833696d343bacd0c13cd",
       "case_ids": [
@@ -6951,9 +6965,9 @@
     {
       "id": "using-request-directly",
       "input_path": "tests/fixtures/inputs/parity/using_request_directly.json",
-      "input_sha256": "12263514d5c7816a29d548366ed151aa4778adcdbfbc20177f9d8cf4a30d2a1f",
+      "input_sha256": "e819ce26f2453e8fe51351b832ae93472d2dab29ff6b887aa2472d4ff5e4ca55",
       "recipe_path": "tests/fixtures/input-recipes/parity/using_request_directly.yaml",
-      "recipe_sha256": "ef5712f229b49cc009ae6dfb6b2ffc4652798710c52b9704a172430e2458ebcd",
+      "recipe_sha256": "740a60a7f805361d9e57d66e70622b871ab72dd4124da8646c697d3cb6b179f1",
       "workload_path": "tests/fixtures/workloads/using_request_directly.py",
       "workload_sha256": "173363917411070e9c1c925a64c14570a99e2bcee6beca72ea5e3c554c610f28",
       "case_ids": [
@@ -18498,6 +18512,53 @@
       ]
     },
     {
+      "source_item_id": "documented-page:advanced/using-request-directly.md",
+      "fixture_id": "fastapi.docs.advanced-using-request-directly",
+      "workflow_id": "request-injection-slice",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.request-injection-slice.cached-parsed-body",
+        "fastapi.request-injection-slice.dependency-body",
+        "fastapi.request-injection-slice.raw-body"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_response_dependency.py",
+      "fixture_id": "fastapi.test.test-response-dependency",
+      "workflow_id": "request-injection-slice",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.request-injection-slice.dependency-body"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_body/test_tutorial001.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-body-test-tutorial001",
+      "workflow_id": "request-injection-slice",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.request-injection-slice.cached-parsed-body"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
       "source_item_id": "upstream-test:tests/test_multi_body_errors.py",
       "fixture_id": "fastapi.test.test-multi-body-errors",
       "workflow_id": "request-models",
@@ -24959,12 +25020,11 @@
       "fixture_id": "fastapi.docs.advanced-using-request-directly",
       "workflow_id": "using-request-directly",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.docs.using-request-directly.client-host"
       ],
       "observation_selectors": [
-        "docs.response.body.bytes",
         "docs.response.headers",
         "docs.response.status",
         "http.body.bytes",
@@ -24978,18 +25038,18 @@
       "fixture_id": "fastapi.test.test-tutorial-test-using-request-directly-test-tutorial001",
       "workflow_id": "using-request-directly",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.docs.using-request-directly.client-host"
       ],
       "observation_selectors": [
-        "docs.response.body.bytes",
         "docs.response.headers",
         "docs.response.status",
         "http.body.bytes",
         "http.headers.ordered",
         "http.status",
-        "openapi.document"
+        "openapi.document",
+        "openapi.paths"
       ]
     },
     {

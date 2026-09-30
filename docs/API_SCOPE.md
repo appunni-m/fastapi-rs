@@ -82,15 +82,17 @@ remain significant.
 
 ### Current target facade availability
 
-The root facade currently exposes 16 of the 21 source bindings:
+The root facade currently exposes 17 of the 21 source bindings:
 `__version__`, `APIRouter`, `Body`, `Cookie`, `Depends`, `FastAPI`, `File`,
 `Form`, `Header`, `Path`, `Query`, `Response`, `UploadFile`, and `status`.
-It also exposes `WebSocket` and `WebSocketDisconnect`. The missing exports are
-`BackgroundTasks`, `HTTPException`, `WebSocketException`, `Security`, and
-`Request`. Availability here means import-level presence; it does
-not prove source object identity, full signatures, or behavior. The generated
+It also exposes `Request`, `WebSocket`, and `WebSocketDisconnect`. The missing
+exports are `BackgroundTasks`, `HTTPException`, `WebSocketException`, and
+`Security`. Request injection has a partial identity-checked ASGI workflow;
+generic Request API parity remains owned by Starlette-RS and is not established
+by that FastAPI integration case. Other availability here means import-level
+presence; it does not prove full signatures or behavior. The generated
 manifest's `target_binding.public_python_path` records the required spelling,
-and target status remains `full-contract-not-established` until live interface
+and target status remains `full-contract-not-established` until full interface
 and behavior parity are recorded.
 
 `fastapi.status` is a Starlette module reexport in the oracle. The current
@@ -326,7 +328,7 @@ exports:
 
 | FastAPI module path | Reexported API |
 | --- | --- |
-| `fastapi.requests` | `HTTPConnection`, `Request` |
+| `fastapi.requests` | `Request`; `HTTPConnection` remains unavailable in the target |
 | `fastapi.datastructures` | `URL`, `Address`, `FormData`, `Headers`, `QueryParams`, `State`; plus FastAPI's `UploadFile` subclass |
 | `fastapi.responses` | Starlette `FileResponse`, `HTMLResponse`, `JSONResponse`, `PlainTextResponse`, `RedirectResponse`, `Response`, `StreamingResponse`; FastAPI `EventSourceResponse`, deprecated `UJSONResponse` and `ORJSONResponse` |
 | `fastapi.websockets` | `WebSocket`, `WebSocketDisconnect`, `WebSocketState` |

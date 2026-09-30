@@ -35,6 +35,7 @@ PUBLIC_FASTAPI_EXPORTS = [
     "Header",
     "Path",
     "Query",
+    "Request",
     "Response",
     "UploadFile",
     "WebSocket",

@@ -68,6 +68,7 @@ enum ParameterSource {
         alias: String,
     },
     WebSocket,
+    Request,
     Dependency {
         plan: Box<CallablePlan>,
         use_cache: bool,
@@ -98,6 +99,7 @@ struct CallablePlan {
 struct InvocationContext<'context, 'py> {
     py: Python<'py>,
     inputs: &'context Bound<'py, PyDict>,
+    request: Option<&'context Bound<'py, PyAny>>,
     websocket: Option<&'context Bound<'py, PyAny>>,
     query_params: &'context QueryParams,
     form_body_embedded: bool,
@@ -1024,10 +1026,10 @@ impl PyFastApi {
                 send,
                 route_index: None,
                 websocket_route_index: None,
+                request: None,
                 websocket: None,
                 path_params: Vec::new(),
                 pending: None,
-                body: Vec::new(),
                 response_status: 200,
                 response_body: Vec::new(),
                 invocation: None,
@@ -2110,6 +2112,7 @@ impl CallablePlan {
                     InputSource::Body | InputSource::Form | InputSource::File
                 ),
                 ParameterSource::WebSocket => false,
+                ParameterSource::Request => false,
                 ParameterSource::Dependency { plan, .. } => plan.has_openapi_parameter_inputs(),
             })
     }
@@ -2123,6 +2126,7 @@ impl CallablePlan {
                 } => parameters.push(parameter),
                 ParameterSource::Input { .. }
                 | ParameterSource::WebSocket
+                | ParameterSource::Request
                 | ParameterSource::Dependency { .. } => {}
             }
         }
@@ -2145,6 +2149,7 @@ impl CallablePlan {
                 } => true,
                 ParameterSource::Input { .. } => false,
                 ParameterSource::WebSocket => false,
+                ParameterSource::Request => false,
                 ParameterSource::Dependency { plan, .. } => plan.has_form_inputs(),
             })
     }
@@ -2205,7 +2210,9 @@ impl CallablePlan {
                 ParameterSource::Dependency { plan, .. } => {
                     parameters.extend(plan.openapi_parameters(py)?);
                 }
-                ParameterSource::Input { .. } | ParameterSource::WebSocket => {}
+                ParameterSource::Input { .. }
+                | ParameterSource::WebSocket
+                | ParameterSource::Request => {}
             }
         }
         parameters.sort_by_key(|parameter| match parameter.location.as_str() {
@@ -2314,7 +2321,9 @@ impl CallablePlan {
                 .iter()
                 .filter_map(|parameter| match &parameter.source {
                     ParameterSource::Dependency { plan, .. } => Some(plan.as_ref()),
-                    ParameterSource::Input { .. } | ParameterSource::WebSocket => None,
+                    ParameterSource::Input { .. }
+                    | ParameterSource::WebSocket
+                    | ParameterSource::Request => None,
                 })
                 .collect::<Vec<_>>();
             if nested_dependencies.is_empty() {
@@ -2371,6 +2380,7 @@ impl CallablePlan {
                     } => true,
                     ParameterSource::Input { .. }
                     | ParameterSource::WebSocket
+                    | ParameterSource::Request
                     | ParameterSource::Dependency { .. } => false,
                 };
                 if parameter.default.is_some()
@@ -2525,11 +2535,19 @@ impl CallablePlan {
             .count()
             > 1;
         for parameter in &self.parameters {
-            if matches!(&parameter.source, ParameterSource::WebSocket) {
-                let websocket = context.websocket.ok_or_else(|| {
-                    PyRuntimeError::new_err("WebSocket parameter requires a WebSocket scope")
-                })?;
-                kwargs.set_item(&parameter.name, websocket)?;
+            match &parameter.source {
+                ParameterSource::WebSocket => {
+                    let websocket = context.websocket.ok_or_else(|| {
+                        PyRuntimeError::new_err("WebSocket parameter requires a WebSocket scope")
+                    })?;
+                    kwargs.set_item(&parameter.name, websocket)?;
+                }
+                ParameterSource::Request => {
+                    if let Some(request) = context.request {
+                        kwargs.set_item(&parameter.name, request)?;
+                    }
+                }
+                ParameterSource::Input { .. } | ParameterSource::Dependency { .. } => {}
             }
         }
         let mut dependency_edge_index = 0;
@@ -2914,7 +2932,7 @@ impl CallableParameter {
                 required: self.default.is_none(),
             }],
             ParameterSource::Dependency { plan, .. } => plan.input_parameters(),
-            ParameterSource::WebSocket => Vec::new(),
+            ParameterSource::WebSocket | ParameterSource::Request => Vec::new(),
         }
     }
 }
@@ -2963,6 +2981,10 @@ fn parameter_source(
     metadata: &[Py<PyAny>],
     path_parameters: &[String],
 ) -> PyResult<ParameterSource> {
+    let request_type = py.import("starlette.requests")?.getattr("Request")?;
+    if annotation_is_subclass(py, annotation, &request_type)? {
+        return Ok(ParameterSource::Request);
+    }
     let websocket_type = py.import("starlette.websockets")?.getattr("WebSocket")?;
     if annotation.is(&websocket_type) {
         return Ok(ParameterSource::WebSocket);
@@ -3058,6 +3080,25 @@ fn parameter_source(
         source: InputSource::Query,
         alias: name.to_owned(),
     })
+}
+
+fn annotation_is_subclass(
+    py: Python<'_>,
+    annotation: &Bound<'_, PyAny>,
+    parent: &Bound<'_, PyAny>,
+) -> PyResult<bool> {
+    let inspect = py.import("inspect")?;
+    if !inspect
+        .getattr("isclass")?
+        .call1((annotation,))?
+        .extract::<bool>()?
+    {
+        return Ok(false);
+    }
+    py.import("builtins")?
+        .getattr("issubclass")?
+        .call1((annotation, parent))?
+        .extract()
 }
 
 fn parameter_media_type(
@@ -4321,7 +4362,7 @@ fn response_endpoint_context<'py>(
 }
 
 enum PendingAction {
-    Receive,
+    RequestBody,
     FormParse,
     FormFileRead,
     LifespanReceive,
@@ -4641,10 +4682,10 @@ struct FastApiCall {
     send: Py<PyAny>,
     route_index: Option<usize>,
     websocket_route_index: Option<usize>,
+    request: Option<Py<PyAny>>,
     websocket: Option<Py<PyAny>>,
     path_params: Vec<(String, String)>,
     pending: Option<PendingAction>,
-    body: Vec<u8>,
     response_status: u16,
     response_body: Vec<u8>,
     invocation: Option<RequestInvocation>,
@@ -4709,16 +4750,46 @@ impl FastApiCall {
             } => {
                 self.route_index = Some(operation_index);
                 self.path_params = path_params;
-                let has_form_inputs = {
+                let converted_path_params = PyDict::new(py);
+                {
                     let app = self.app.bind(py).borrow();
-                    app.routes
-                        .get(operation_index)
-                        .is_some_and(|route| route.plan.has_form_inputs())
+                    let route = app.routes.get(operation_index).ok_or_else(|| {
+                        PyRuntimeError::new_err("selected FastAPI route was lost")
+                    })?;
+                    let convertors = route.param_convertors.bind(py);
+                    for (name, value) in &self.path_params {
+                        let convertor = convertors.get_item(name)?.ok_or_else(|| {
+                            PyRuntimeError::new_err(
+                                "matched FastAPI route is missing a path convertor",
+                            )
+                        })?;
+                        converted_path_params
+                            .set_item(name, convertor.call_method1("convert", (value,))?)?;
+                    }
+                }
+                scope.set_item("path_params", converted_path_params)?;
+                let request_type = py.import("starlette.requests")?.getattr("Request")?;
+                self.request = Some(
+                    request_type
+                        .call1((scope, self.receive.bind(py), self.send.bind(py)))?
+                        .unbind(),
+                );
+                let (has_form_inputs, has_body_inputs) = {
+                    let app = self.app.bind(py).borrow();
+                    let route = app.routes.get(operation_index).ok_or_else(|| {
+                        PyRuntimeError::new_err("selected FastAPI route was lost")
+                    })?;
+                    (
+                        route.plan.has_form_inputs(),
+                        !route.plan.all_body_parameters().is_empty(),
+                    )
                 };
                 if has_form_inputs {
                     self.receive_form(py)
-                } else {
+                } else if has_body_inputs {
                     self.receive_http_body(py)
+                } else {
+                    self.invoke_http_route(py, &[], false)
                 }
             }
             FastApiOperationMatch::MethodNotAllowed { .. } => {
@@ -4818,23 +4889,26 @@ impl FastApiCall {
     }
 
     fn receive_http_body(&mut self, py: Python<'_>) -> PyResult<MachineAction> {
-        self.pending = Some(PendingAction::Receive);
-        self.receive
+        let request = self
+            .request
+            .as_ref()
+            .ok_or_else(|| PyRuntimeError::new_err("HTTP request was not initialized"))?;
+        self.pending = Some(PendingAction::RequestBody);
+        request
             .bind(py)
-            .call0()
+            .call_method0("body")
             .map(Bound::unbind)
             .map(MachineAction::Await)
     }
 
     fn receive_form(&mut self, py: Python<'_>) -> PyResult<MachineAction> {
-        let request_type = py.import("starlette.requests")?.getattr("Request")?;
-        let request = request_type.call1((
-            self.scope.bind(py),
-            self.receive.bind(py),
-            self.send.bind(py),
-        ))?;
+        let request = self
+            .request
+            .as_ref()
+            .ok_or_else(|| PyRuntimeError::new_err("HTTP request was not initialized"))?
+            .bind(py);
         let form_awaitable = request.call_method0("form")?;
-        self.form_request = Some(request.unbind());
+        self.form_request = Some(request.clone().unbind());
         self.pending = Some(PendingAction::FormParse);
         Ok(MachineAction::Await(form_awaitable.unbind()))
     }
@@ -4878,37 +4952,21 @@ impl FastApiCall {
             .map(MachineAction::Await)
     }
 
-    fn receive_body(&mut self, py: Python<'_>, message: Py<PyAny>) -> PyResult<MachineAction> {
-        let message = message.bind(py);
-        let event_type = message
-            .call_method1("get", ("type", ""))?
-            .extract::<String>()?;
-        if event_type == "http.disconnect" {
-            return Err(PyRuntimeError::new_err(
-                "client disconnected during request body",
-            ));
-        }
-        if event_type != "http.request" {
-            return Err(PyValueError::new_err(format!(
-                "unsupported ASGI HTTP request event {event_type:?}"
-            )));
-        }
-        let chunk: Vec<u8> = message
-            .call_method1("get", ("body", PyBytes::new(py, b"")))?
+    fn receive_request_body(&mut self, py: Python<'_>, body: Py<PyAny>) -> PyResult<MachineAction> {
+        let body = body.bind(py).extract::<Vec<u8>>()?;
+        let scope = self.scope.bind(py);
+        let headers: Vec<(Vec<u8>, Vec<u8>)> = scope
+            .call_method1("get", ("headers", PyList::empty(py)))?
             .extract()?;
-        self.body.extend(chunk);
-        let more_body = message
-            .call_method1("get", ("more_body", false))?
-            .extract::<bool>()?;
-        if more_body {
-            self.pending = Some(PendingAction::Receive);
-            return self
-                .receive
-                .bind(py)
-                .call0()
-                .map(Bound::unbind)
-                .map(MachineAction::Await);
-        }
+        self.invoke_http_route(py, &body, should_parse_json_body(&headers))
+    }
+
+    fn invoke_http_route(
+        &mut self,
+        py: Python<'_>,
+        body: &[u8],
+        parse_json_body: bool,
+    ) -> PyResult<MachineAction> {
         let scope = self.scope.bind(py);
         let path = parse_scope_string(scope, "path", "/")?;
         let root_path = parse_scope_string(scope, "root_path", "")?;
@@ -4920,13 +4978,12 @@ impl FastApiCall {
         let headers: Vec<(Vec<u8>, Vec<u8>)> = scope
             .call_method1("get", ("headers", PyList::empty(py)))?
             .extract()?;
-        let parse_json_body = should_parse_json_body(&headers);
         let inputs = self
             .app
             .bind(py)
             .borrow()
             .router
-            .resolve_inputs(&path, &root_path, &method, &query, headers, &self.body);
+            .resolve_inputs(&path, &root_path, &method, &query, headers, body);
         let values = match decode_input_values(py, inputs, parse_json_body) {
             Ok(values) => values,
             Err(InputDecodeError::JsonValidation(error)) => {
@@ -4968,12 +5025,14 @@ impl FastApiCall {
         let headers: Vec<(Vec<u8>, Vec<u8>)> = scope
             .call_method1("get", ("headers", PyList::empty(py)))?
             .extract()?;
-        let inputs = self
-            .app
-            .bind(py)
-            .borrow()
-            .router
-            .resolve_inputs(&path, &root_path, &method, &query, headers, &self.body);
+        let inputs = self.app.bind(py).borrow().router.resolve_inputs(
+            &path,
+            &root_path,
+            &method,
+            &query,
+            headers,
+            &[],
+        );
         let values = match decode_input_values(py, inputs, false) {
             Ok(values) => values,
             Err(InputDecodeError::Other(error)) => return Err(error),
@@ -5059,6 +5118,7 @@ impl FastApiCall {
             ));
         }
         let websocket = self.websocket.as_ref().map(|socket| socket.bind(py));
+        let request = self.request.as_ref().map(|request| request.bind(py));
         let invocation = self
             .invocation
             .as_mut()
@@ -5085,6 +5145,7 @@ impl FastApiCall {
             let mut context = InvocationContext {
                 py,
                 inputs: invocation.inputs.bind(py),
+                request,
                 websocket,
                 query_params: &invocation.query_params,
                 form_body_embedded: invocation.form_body_embedded,
@@ -5222,6 +5283,7 @@ impl FastApiCall {
     ) -> PyResult<MachineAction> {
         let mut prepared_dependencies = HashMap::new();
         prepared_dependencies.insert(0, subdependency_value);
+        let request = self.request.as_ref().map(|request| request.bind(py));
         let websocket = self.websocket.as_ref().map(|socket| socket.bind(py));
         let parent_result = {
             let invocation = self
@@ -5232,6 +5294,7 @@ impl FastApiCall {
             let mut context = InvocationContext {
                 py,
                 inputs: invocation.inputs.bind(py),
+                request,
                 websocket,
                 query_params: &invocation.query_params,
                 form_body_embedded: invocation.form_body_embedded,
@@ -5521,7 +5584,7 @@ impl FastApiCall {
         match input {
             MachineResume::Start => self.begin(py),
             MachineResume::Value(value) => match self.pending.take() {
-                Some(PendingAction::Receive) => self.receive_body(py, value),
+                Some(PendingAction::RequestBody) => self.receive_request_body(py, value),
                 Some(PendingAction::FormParse) => self.receive_form_data(py, value),
                 Some(PendingAction::FormFileRead) => {
                     let active = self.active_form_file_read.as_mut().ok_or_else(|| {
@@ -5607,6 +5670,11 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
         .import("starlette.responses")?
         .getattr("Response")?;
     module.add("Response", &response)?;
+    let request = module
+        .py()
+        .import("starlette.requests")?
+        .getattr("Request")?;
+    module.add("Request", &request)?;
     let responses = module.py().import("starlette.responses")?;
     for name in [
         "FileResponse",

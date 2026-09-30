@@ -80,14 +80,14 @@ api_inventory:
 import_binding_classification_review:
   artifact: tests/fixtures/api-import-binding-classification-review.json
   schema: fastapi-starlette-import-binding-review/v1
-  sha256: 4789484775a146921bf1e7e7b2857d2314058119cb0455d22da12a00a2728377
+  sha256: 734560410239ed00d816091302e578b8544942ea3c2d3e7e3577ccbf7aacfd6f
   source_identity:
     package: FastAPI
     version: 0.141.1
     source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
     selected_starlette_profile: 1.6.0
     starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
-    starlette_rs_contract_commit: 7293140ebe9d8e27dc879710a0d7426cbd8f392c
+    starlette_rs_contract_commit: 513016a86032330e83ca768e41669eb173fc9157
   starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
   counts:
     candidates: 97
@@ -99,7 +99,7 @@ import_binding_classification_review:
   candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
   pinned_starlette_rs_sources:
     metadata_sha256: 398b9c070c03cc9ff78cd9ec879a95f40144548efefaf3ad76b999cd31c6f217
-    manifest_sha256: a43b747f32efba88eda8fa9612a5d3d6581576e1cbc50908fbe29819b32ffb0a
+    manifest_sha256: 8babb9a7c3758c9aaf1931a8d2132eb783965b28fd3a1435c738a5835f06ef23
     api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
     api_review_sha256: 822503a4b91afc8b61f1b668d286cedfb3378d96be02f4ebb6c84c9210208325
 
@@ -182,7 +182,7 @@ classification_atlas:
 starlette_rs:
   owner: ../starlette-rs
   repository: https://github.com/appunni-m/starlette-rs
-  commit: 7293140ebe9d8e27dc879710a0d7426cbd8f392c
+  commit: 513016a86032330e83ca768e41669eb173fc9157
   distribution_version: 0.1.0
   contract_id: starlette-1.6.0-asgi-http-config-session-slice
   metadata: ../starlette-rs/metadata.yaml
@@ -517,6 +517,23 @@ reviewed_api_contract_overlay:
         query-params-str-validations-doc-exclude-schema-examples. Other Query and
         FieldInfo options, including deprecated, remain outside this reviewed
         slice.
+    fastapi.Request:
+      rust_binding: fastapi-rs/src/application_runtime.rs::parameter_source
+      source_evidence:
+        - {path: fastapi/requests.py}
+        - {path: fastapi/dependencies/utils.py, symbol: add_non_field_param_to_dependency}
+        - {path: docs/en/docs/advanced/using-request-directly.md}
+        - {path: tests/test_tutorial/test_using_request_directly/test_tutorial001.py}
+      feature_ids: [app-routing, request-validation]
+      observation_selectors: [http.status, http.body.bytes, openapi.document]
+      supported_slice: >-
+        Partial native integration: root and fastapi.requests imports alias the
+        Starlette-RS Request object; HTTP path-operation and dependency parameters
+        annotated as Request receive the live per-call Request object, which is
+        omitted from input validation and OpenAPI. Body parsing uses the same
+        Request body state so raw body access remains available to the endpoint.
+        Generic Request API parity remains owned by Starlette-RS and is not
+        established by these FastAPI integration cases.
     fastapi.Header:
       rust_binding: fastapi-rs/src/parameters.rs::header
       source_evidence:

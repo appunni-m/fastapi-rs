@@ -1,0 +1,132 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/request_injection_slice.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.request-injection-slice.raw-body
+  actions:
+  - action_id: post-raw-body
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /raw-body/chair
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"message":"raw"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/advanced/using-request-directly.md
+    kind: upstream_documentation
+  - path: docs_src/using_request_directly/tutorial001_py310.py
+    kind: upstream_documentation
+- case_id: fastapi.request-injection-slice.cached-parsed-body
+  actions:
+  - action_id: post-parsed-body
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /parsed-body
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"message":"parsed"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/advanced/using-request-directly.md
+    kind: upstream_documentation
+  - path: tests/test_tutorial/test_body/test_tutorial001.py
+    kind: upstream_test
+- case_id: fastapi.request-injection-slice.dependency-body
+  actions:
+  - action_id: post-dependency-body
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /dependency-body
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"message":"dependency"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_response_dependency.py
+    kind: upstream_test
+  - path: docs/en/docs/advanced/using-request-directly.md
+    kind: upstream_documentation
