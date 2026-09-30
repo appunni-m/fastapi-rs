@@ -43,10 +43,18 @@ TEST_MODULES = (
 
 NEW_RECIPE = "tests/fixtures/input-recipes/parity/dependency-lifecycle-security-review.yaml"
 NEW_WORKLOAD = "tests/fixtures/workloads/dependency_lifecycle_security_review.py"
+CONSTRUCTION_RECIPE = (
+    "tests/fixtures/input-recipes/parity/dependency-scope-construction-errors.yaml"
+)
 HTTP = ["http.status", "http.body.bytes"]
 HTTP_JSON = ["http.status", "http.body.json"]
 HTTP_AND_APP_ERROR = ["http.status", "http.body.bytes", "validation.error_class"]
 WEBSOCKET = ["websocket.messages", "websocket.event_order", "websocket.close_code"]
+CONSTRUCTION = [
+    "construction.outcome",
+    "construction.exception_class",
+    "construction.exception_message",
+]
 
 
 def _source(path: str, start: int, end: int, role: str) -> dict[str, Any]:
@@ -156,6 +164,12 @@ _DEPENDENCY_SCOPE_BUILD = _source(
     279,
     320,
     "FastAPI builds dependency nodes, enforces valid yield-scope nesting, and propagates security scopes",
+)
+_DEPENDENCY_SCOPE_ERROR_CLASS = _source(
+    "fastapi/exceptions.py",
+    161,
+    171,
+    "FastAPI exposes DependencyScopeError as a FastAPIError subclass",
 )
 _DEPENDENCY_SOLVER = _source(
     "fastapi/dependencies/utils.py",
@@ -673,17 +687,22 @@ _FUNCTIONS: dict[str, dict[str, dict[str, Any]]] = {
                 _STARLETTE_STREAMING,
             ),
         ),
-        "test_broken_scope": _excluded(
+        "test_broken_scope": _reviewed(
             "tests/test_dependency_yield_scope.py",
             "test_broken_scope",
             features=["dependency-security", "public-api-errors"],
-            selectors=[
-                "construction.outcome",
-                "construction.exception_class",
-                "construction.exception_message",
+            selectors=CONSTRUCTION,
+            rationale="A request-scoped yielded dependency cannot depend on a function-scoped yielded dependency; the route-registration case compares the construction error without dispatching an ASGI request.",
+            links=[
+                _link(
+                    CONSTRUCTION_RECIPE,
+                    "fastapi.dependencies.invalid-request-scope-depends-on-function-http",
+                    [],
+                    CONSTRUCTION,
+                )
             ],
-            reason="The function expects FastAPI to raise DependencyScopeError while registering an invalid route before any ASGI request exists. Workflow v2 has no construction action, so the registration-time exception is retained as an explicit exclusion.",
-            evidence=(_DEPENDENCY_SCOPE_BUILD,),
+            gate="Partial: this input samples FastAPI's registration-time dependency-scope rejection for one invalid graph. It does not cover other dependency scope combinations or claim runtime parity until the identity-checked target comparison passes.",
+            evidence=(_DEPENDENCY_SCOPE_BUILD, _DEPENDENCY_SCOPE_ERROR_CLASS),
         ),
         "test_named_function_scope": _reviewed(
             "tests/test_dependency_yield_scope.py",
@@ -897,17 +916,22 @@ _FUNCTIONS: dict[str, dict[str, dict[str, Any]]] = {
                 _WEBSOCKET_DEPENDENCY_SOLVER,
             ),
         ),
-        "test_broken_scope": _excluded(
+        "test_broken_scope": _reviewed(
             "tests/test_dependency_yield_scope_websockets.py",
             "test_broken_scope",
-            features=["dependency-security", "public-api-errors", "websocket-lifecycle"],
-            selectors=[
-                "construction.outcome",
-                "construction.exception_class",
-                "construction.exception_message",
+            features=["dependency-security", "public-api-errors"],
+            selectors=CONSTRUCTION,
+            rationale="A WebSocket route with a request-scoped yielded dependency over a function-scoped yielded dependency fails during route registration, before a WebSocket session exists.",
+            links=[
+                _link(
+                    CONSTRUCTION_RECIPE,
+                    "fastapi.dependencies.invalid-request-scope-depends-on-function-websocket",
+                    [],
+                    CONSTRUCTION,
+                )
             ],
-            reason="The function expects FastAPI to raise DependencyScopeError while registering an invalid WebSocket route before ASGI connection events exist. Workflow v2 has no construction action, so registration-time scope rejection is recorded as an exclusion.",
-            evidence=(_DEPENDENCY_SCOPE_BUILD,),
+            gate="Partial: this input samples FastAPI's registration-time dependency-scope rejection for one invalid WebSocket dependency graph. It does not cover WebSocket session behavior or other scope combinations.",
+            evidence=(_DEPENDENCY_SCOPE_BUILD, _DEPENDENCY_SCOPE_ERROR_CLASS),
         ),
         "test_named_function_scope": _reviewed(
             "tests/test_dependency_yield_scope_websockets.py",

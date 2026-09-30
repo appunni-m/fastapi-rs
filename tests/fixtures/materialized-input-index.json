@@ -1268,6 +1268,19 @@
       ]
     },
     {
+      "id": "dependency-scope-construction-errors",
+      "input_path": "tests/fixtures/inputs/parity/dependency-scope-construction-errors.json",
+      "input_sha256": "3010b0948dd9c62512084655100fdca1dbbe2a40a86b27aff791b63824874413",
+      "recipe_path": "tests/fixtures/input-recipes/parity/dependency-scope-construction-errors.yaml",
+      "recipe_sha256": "60ed7e4c936c1c48a81049ab9822284c4855065eb20dbcacac4d552970e722ed",
+      "workload_path": "tests/fixtures/workloads/dependency_scope_construction_errors.py",
+      "workload_sha256": "1313e5a6f88ded5c080b983437afe693823d1cfa03abeef564194ec4c65723f5",
+      "case_ids": [
+        "fastapi.dependencies.invalid-request-scope-depends-on-function-http",
+        "fastapi.dependencies.invalid-request-scope-depends-on-function-websocket"
+      ]
+    },
+    {
       "id": "dependency-tutorial-review-upstream",
       "input_path": "tests/fixtures/inputs/parity/dependency-tutorial-review-upstream.json",
       "input_sha256": "b3998eabe103ef5cd2cef9a6ac43efdd3e0202e0e3495e97e2ba74d678101023",
@@ -9562,6 +9575,36 @@
         "http.status",
         "openapi.document",
         "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_dependency_yield_scope.py",
+      "fixture_id": "fastapi.test.test-dependency-yield-scope",
+      "workflow_id": "dependency-scope-construction-errors",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes construction.exception_class, construction.exception_message, construction.outcome. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.dependencies.invalid-request-scope-depends-on-function-http"
+      ],
+      "observation_selectors": [
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_dependency_yield_scope_websockets.py",
+      "fixture_id": "fastapi.test.test-dependency-yield-scope-websockets",
+      "workflow_id": "dependency-scope-construction-errors",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes construction.exception_class, construction.exception_message, construction.outcome. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.dependencies.invalid-request-scope-depends-on-function-websocket"
+      ],
+      "observation_selectors": [
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome"
       ]
     },
     {

@@ -1,0 +1,34 @@
+schema: fastapi-rs/python-asgi-workflow@3
+workload:
+  file: tests/fixtures/workloads/dependency_scope_construction_errors.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.dependencies.invalid-request-scope-depends-on-function-http
+  factory_input:
+    route_kind: http
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions: []
+  source_evidence:
+  - path: tests/test_dependency_yield_scope.py
+    kind: upstream_test
+- case_id: fastapi.dependencies.invalid-request-scope-depends-on-function-websocket
+  factory_input:
+    route_kind: websocket
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions: []
+  source_evidence:
+  - path: tests/test_dependency_yield_scope_websockets.py
+    kind: upstream_test

@@ -76,7 +76,7 @@ format: ## Apply Rust formatting
 	$(PYTHON) -m ruff format fastapi-rs-py/python scripts tests/fixtures/workloads
 
 clippy: rust-policy-check ## Run strict workspace Clippy
-	$(CARGO) clippy --workspace --all-targets --all-features --locked -- -D warnings
+	$(PYTHON) scripts/build_target_extension.py --clippy --cargo "$(CARGO)" --starlette-rs-source "$(STARLETTE_RS_SOURCE)"
 
 build-rust: ## Build all Rust workspace crates
 	$(CARGO) build --workspace --all-features --locked
@@ -124,8 +124,7 @@ parity-prepare-target: ## Prepare .venv-target with FastAPI-RS and sibling Starl
 	  "idna==3.18" "pydantic==2.13.4" "pydantic-core==2.46.4" \
 	  "typing-extensions==4.16.0" "typing-inspection==0.4.2"
 	PYO3_PYTHON="$(TARGET_PYTHON)" $(UV) pip install --python "$(TARGET_PYTHON)" --no-deps --editable "$(STARLETTE_RS_SOURCE)"
-	PYO3_PYTHON="$(TARGET_PYTHON)" $(UV) pip install --python "$(TARGET_PYTHON)" --no-deps --editable "$(CURDIR)"
-	VIRTUAL_ENV="$(TARGET_ENV)" PYO3_PYTHON="$(TARGET_PYTHON)" $(MATURIN) develop --release --skip-install --manifest-path fastapi-rs-py/Cargo.toml --locked --features pyo3/extension-module
+	$(PYTHON) scripts/build_target_extension.py --python "$(TARGET_PYTHON)" --uv "$(UV)" --starlette-rs-source "$(STARLETTE_RS_SOURCE)"
 	$(UV) pip check --python "$(TARGET_PYTHON)"
 	$(TARGET_PYTHON) scripts/check_target_runtime_boundary.py
 

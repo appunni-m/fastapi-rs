@@ -3,7 +3,8 @@
 use std::collections::{BTreeSet, HashMap};
 
 use pyo3::exceptions::{
-    PyAssertionError, PyAttributeError, PyNotImplementedError, PyRuntimeError, PyValueError,
+    PyAssertionError, PyAttributeError, PyNameError, PyNotImplementedError, PyRuntimeError,
+    PyValueError,
 };
 use pyo3::prelude::*;
 use pyo3::types::{PyBool, PyBytes, PyDict, PyInt, PyList, PyModule, PyString, PyTuple, PyType};
@@ -21,6 +22,10 @@ use crate::{
 };
 
 const DEFAULT_RESPONSE_DESCRIPTION: &str = "Successful Response";
+
+fn omitted_response_model() -> Py<PyAny> {
+    Python::attach(|py| py.NotImplemented())
+}
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum InputSource {
@@ -71,6 +76,7 @@ struct CallablePlan {
     callable: Py<PyAny>,
     parameters: Vec<CallableParameter>,
     path_parameters: Vec<String>,
+    return_annotation: Option<Py<PyAny>>,
 }
 
 struct InvocationContext<'context, 'py> {
@@ -263,7 +269,11 @@ impl PyFastApi {
         clippy::too_many_arguments,
         reason = "preserve the Python route decorator keyword signature"
     )]
-    #[pyo3(signature = (path, *, response_model = None, status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None))]
+    // Distinguish omission (infer from the endpoint return annotation) from explicit None (opt out).
+    #[pyo3(
+        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None),
+        text_signature = "($self, path, *, response_model=None, status_code=None, response_model_include=None, response_model_exclude=None, response_model_by_alias=True, response_model_exclude_unset=False, response_model_exclude_defaults=False, response_model_exclude_none=False, tags=None, summary=None, response_description=\"Successful Response\", responses=None, include_in_schema=True, deprecated=None, operation_id=None)"
+    )]
     fn post(
         slf: Py<Self>,
         py: Python<'_>,
@@ -314,7 +324,10 @@ impl PyFastApi {
         clippy::too_many_arguments,
         reason = "preserve the Python route decorator keyword signature"
     )]
-    #[pyo3(signature = (path, *, response_model = None, status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None))]
+    #[pyo3(
+        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None),
+        text_signature = "($self, path, *, response_model=None, status_code=None, response_model_include=None, response_model_exclude=None, response_model_by_alias=True, response_model_exclude_unset=False, response_model_exclude_defaults=False, response_model_exclude_none=False, tags=None, summary=None, response_description=\"Successful Response\", responses=None, include_in_schema=True, deprecated=None, operation_id=None)"
+    )]
     fn get(
         slf: Py<Self>,
         py: Python<'_>,
@@ -365,7 +378,10 @@ impl PyFastApi {
         clippy::too_many_arguments,
         reason = "preserve the Python route decorator keyword signature"
     )]
-    #[pyo3(signature = (path, *, response_model = None, status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None))]
+    #[pyo3(
+        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None),
+        text_signature = "($self, path, *, response_model=None, status_code=None, response_model_include=None, response_model_exclude=None, response_model_by_alias=True, response_model_exclude_unset=False, response_model_exclude_defaults=False, response_model_exclude_none=False, tags=None, summary=None, response_description=\"Successful Response\", responses=None, include_in_schema=True, deprecated=None, operation_id=None)"
+    )]
     fn put(
         slf: Py<Self>,
         py: Python<'_>,
@@ -416,7 +432,10 @@ impl PyFastApi {
         clippy::too_many_arguments,
         reason = "preserve the Python route decorator keyword signature"
     )]
-    #[pyo3(signature = (path, *, response_model = None, status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None))]
+    #[pyo3(
+        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None),
+        text_signature = "($self, path, *, response_model=None, status_code=None, response_model_include=None, response_model_exclude=None, response_model_by_alias=True, response_model_exclude_unset=False, response_model_exclude_defaults=False, response_model_exclude_none=False, tags=None, summary=None, response_description=\"Successful Response\", responses=None, include_in_schema=True, deprecated=None, operation_id=None)"
+    )]
     fn delete(
         slf: Py<Self>,
         py: Python<'_>,
@@ -467,7 +486,10 @@ impl PyFastApi {
         clippy::too_many_arguments,
         reason = "preserve the Python route decorator keyword signature"
     )]
-    #[pyo3(signature = (path, *, response_model = None, status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None))]
+    #[pyo3(
+        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None),
+        text_signature = "($self, path, *, response_model=None, status_code=None, response_model_include=None, response_model_exclude=None, response_model_by_alias=True, response_model_exclude_unset=False, response_model_exclude_defaults=False, response_model_exclude_none=False, tags=None, summary=None, response_description=\"Successful Response\", responses=None, include_in_schema=True, deprecated=None, operation_id=None)"
+    )]
     fn patch(
         slf: Py<Self>,
         py: Python<'_>,
@@ -518,7 +540,10 @@ impl PyFastApi {
         clippy::too_many_arguments,
         reason = "preserve the Python route decorator keyword signature"
     )]
-    #[pyo3(signature = (path, *, response_model = None, status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None))]
+    #[pyo3(
+        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None),
+        text_signature = "($self, path, *, response_model=None, status_code=None, response_model_include=None, response_model_exclude=None, response_model_by_alias=True, response_model_exclude_unset=False, response_model_exclude_defaults=False, response_model_exclude_none=False, tags=None, summary=None, response_description=\"Successful Response\", responses=None, include_in_schema=True, deprecated=None, operation_id=None)"
+    )]
     fn head(
         slf: Py<Self>,
         py: Python<'_>,
@@ -569,7 +594,10 @@ impl PyFastApi {
         clippy::too_many_arguments,
         reason = "preserve the Python route decorator keyword signature"
     )]
-    #[pyo3(signature = (path, *, response_model = None, status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None))]
+    #[pyo3(
+        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None),
+        text_signature = "($self, path, *, response_model=None, status_code=None, response_model_include=None, response_model_exclude=None, response_model_by_alias=True, response_model_exclude_unset=False, response_model_exclude_defaults=False, response_model_exclude_none=False, tags=None, summary=None, response_description=\"Successful Response\", responses=None, include_in_schema=True, deprecated=None, operation_id=None)"
+    )]
     fn options(
         slf: Py<Self>,
         py: Python<'_>,
@@ -620,7 +648,10 @@ impl PyFastApi {
         clippy::too_many_arguments,
         reason = "preserve the Python route decorator keyword signature"
     )]
-    #[pyo3(signature = (path, *, response_model = None, status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None))]
+    #[pyo3(
+        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None),
+        text_signature = "($self, path, *, response_model=None, status_code=None, response_model_include=None, response_model_exclude=None, response_model_by_alias=True, response_model_exclude_unset=False, response_model_exclude_defaults=False, response_model_exclude_none=False, tags=None, summary=None, response_description=\"Successful Response\", responses=None, include_in_schema=True, deprecated=None, operation_id=None)"
+    )]
     fn trace(
         slf: Py<Self>,
         py: Python<'_>,
@@ -678,7 +709,7 @@ impl PyFastApi {
             py,
             path,
             "GET",
-            None,
+            Some(py.NotImplemented()),
             None,
             ResponseModelOptions {
                 include: None,
@@ -1276,6 +1307,18 @@ impl PyOperationDecorator {
     fn __call__(&self, py: Python<'_>, endpoint: Py<PyAny>) -> PyResult<Py<PyAny>> {
         let path_parameters = path_parameter_names(&self.path);
         let plan = CallablePlan::build(py, endpoint.clone_ref(py), &path_parameters)?;
+        let default_response_model = py.NotImplemented();
+        let response_model = match self.response_model.as_ref() {
+            Some(response_model) if response_model.bind(py).is(default_response_model.bind(py)) => {
+                match plan.return_annotation.as_ref() {
+                    Some(annotation) if is_response_annotation(py, annotation.bind(py))? => None,
+                    Some(annotation) => Some(annotation.clone_ref(py)),
+                    None => None,
+                }
+            }
+            Some(response_model) => Some(response_model.clone_ref(py)),
+            None => None,
+        };
         let inputs = plan.input_parameters();
         let mut app = self.app.bind(py).borrow_mut();
         let index = app
@@ -1297,10 +1340,7 @@ impl PyOperationDecorator {
             status_code: self.status_code,
             include_in_schema: self.include_in_schema,
             endpoint: endpoint.clone_ref(py),
-            response_model: self
-                .response_model
-                .as_ref()
-                .map(|model| model.clone_ref(py)),
+            response_model,
             response_model_include: self
                 .response_model_include
                 .as_ref()
@@ -1331,6 +1371,9 @@ impl CallablePlan {
             .getattr("get_type_hints")?
             .call((callable.bind(py),), Some(&hints_kwargs))?;
         let empty = inspect.getattr("_empty")?;
+        let raw_return_annotation = signature.getattr("return_annotation")?;
+        let return_annotation =
+            typed_return_annotation(py, callable.bind(py), &raw_return_annotation, &empty)?;
         let parameters = signature
             .getattr("parameters")?
             .call_method0("values")?
@@ -1384,6 +1427,7 @@ impl CallablePlan {
             callable,
             parameters,
             path_parameters: path_parameters.to_vec(),
+            return_annotation,
         })
     }
 
@@ -2257,6 +2301,59 @@ fn is_pydantic_model(py: Python<'_>, annotation: &Bound<'_, PyAny>) -> PyResult<
     issubclass
         .call1((annotation_type, base_model))?
         .extract::<bool>()
+}
+
+fn is_response_annotation(py: Python<'_>, annotation: &Bound<'_, PyAny>) -> PyResult<bool> {
+    let Ok(annotation_type) = annotation.cast::<PyType>() else {
+        return Ok(false);
+    };
+    let response_type = py.import("starlette.responses")?.getattr("Response")?;
+    py.import("builtins")?
+        .getattr("issubclass")?
+        .call1((annotation_type, response_type))?
+        .extract::<bool>()
+}
+
+fn typed_return_annotation(
+    py: Python<'_>,
+    callable: &Bound<'_, PyAny>,
+    annotation: &Bound<'_, PyAny>,
+    empty: &Bound<'_, PyAny>,
+) -> PyResult<Option<Py<PyAny>>> {
+    if annotation.is(empty) || annotation.is_none() {
+        return Ok(None);
+    }
+    let Ok(annotation_string) = annotation.cast::<PyString>() else {
+        return Ok(Some(annotation.clone().unbind()));
+    };
+
+    let inspect = py.import("inspect")?;
+    let unwrapped = inspect.getattr("unwrap")?.call1((callable,))?;
+    let globalns = match unwrapped.getattr("__globals__") {
+        Ok(globalns) => globalns,
+        Err(error) if error.is_instance_of::<PyAttributeError>(py) => PyDict::new(py).into_any(),
+        Err(error) => return Err(error),
+    };
+    let evaluated =
+        py.import("builtins")?
+            .getattr("eval")?
+            .call1((annotation_string, &globalns, &globalns));
+    let evaluated = match evaluated {
+        Ok(evaluated) => evaluated,
+        Err(error) if error.is_instance_of::<PyNameError>(py) => {
+            return py
+                .import("typing")?
+                .getattr("ForwardRef")?
+                .call1((annotation_string,))
+                .map(|forward_ref| Some(forward_ref.unbind()));
+        }
+        Err(error) => return Err(error),
+    };
+    if evaluated.is_none() {
+        Ok(None)
+    } else {
+        Ok(Some(evaluated.unbind()))
+    }
 }
 
 fn path_parameter_names(path: &str) -> Vec<String> {

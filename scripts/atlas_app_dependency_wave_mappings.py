@@ -899,7 +899,7 @@ APP_DEPENDENCY_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
         },
     ),
     "tests/test_dependency_yield_scope.py": _module(
-        "The dependency lifecycle input covers function/request scope cleanup; additional app/router scope combinations and invalid-scope errors remain unrepresented.",
+        "The dependency lifecycle inputs cover function/request scope cleanup and registration-time invalid-scope errors; additional nested scope combinations remain unrepresented.",
         {
             "test_function_scope": _review(
                 "tests/test_dependency_yield_scope.py",
@@ -1510,7 +1510,6 @@ APP_DEPENDENCY_TEST_FUNCTION_EXCLUSIONS: dict[str, dict[str, dict[str, object]]]
         for name in (
             "test_two_scopes",
             "test_sub",
-            "test_broken_scope",
             "test_named_function_scope",
             "test_regular_function_scope",
             "test_router_level_dep_scope_function",
@@ -1529,7 +1528,6 @@ APP_DEPENDENCY_TEST_FUNCTION_EXCLUSIONS: dict[str, dict[str, dict[str, object]]]
         for name in (
             "test_two_scopes",
             "test_sub",
-            "test_broken_scope",
             "test_named_function_scope",
             "test_regular_function_scope",
         )

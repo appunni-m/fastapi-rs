@@ -12,13 +12,17 @@ import json
 import os
 import platform
 import re
+import shutil
 import subprocess
 import sys
+import tempfile
 import uuid
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 from urllib.parse import unquote, urlsplit
+
+import tomllib
 
 from scripts.parity.worker import (
     RESULT_SCHEMA_ID,
@@ -209,55 +213,120 @@ def _combine_digests(entries: dict[str, str]) -> str:
     return digest.hexdigest()
 
 
-def _cargo_starlette_rs_source(target_source: Path) -> Path:
+def _cargo_starlette_rs_source(target_source: Path, starlette_rs_source: Path) -> Path:
     """Resolve the Starlette-RS crate Cargo actually links into FastAPI-RS."""
-    completed = subprocess.run(
-        ["cargo", "metadata", "--locked", "--format-version", "1", "--offline"],
-        cwd=target_source,
-        check=False,
-        capture_output=True,
-        text=True,
-        timeout=120,
-    )
-    if completed.returncode != 0:
-        raise WorkerError(
-            "cannot resolve target Cargo dependencies: "
-            + (completed.stderr.strip() or "cargo metadata failed")
-        )
+    workspace_manifest = target_source / "Cargo.toml"
     try:
-        metadata = json.loads(completed.stdout)
-    except json.JSONDecodeError as exc:
-        raise WorkerError(f"Cargo returned malformed dependency metadata: {exc}") from exc
+        manifest_text = workspace_manifest.read_text(encoding="utf-8")
+        manifest_data = tomllib.loads(manifest_text)
+    except (OSError, tomllib.TOMLDecodeError) as exc:
+        raise WorkerError(f"cannot read target Cargo workspace manifest: {exc}") from exc
+    workspace = manifest_data.get("workspace", {})
+    starlette_dependency = workspace.get("dependencies", {}).get("starlette-rs")
+    if not isinstance(starlette_dependency, dict) or not starlette_dependency.get("path"):
+        raise WorkerError("Cargo.toml must declare starlette-rs as a workspace path dependency")
+    declared_path = starlette_dependency["path"]
+    old_path = f"path = {json.dumps(declared_path)}"
+    if manifest_text.count(old_path) != 1:
+        raise WorkerError("Cargo.toml starlette-rs workspace dependency path is ambiguous")
+    pinned_path = starlette_rs_source.resolve() / "starlette-rs"
+    overlay_text = manifest_text.replace(old_path, f"path = {json.dumps(str(pinned_path))}", 1)
 
-    packages = {package["id"]: package for package in metadata.get("packages", [])}
-    root_manifest = (target_source / "fastapi-rs/Cargo.toml").resolve()
-    root_packages = [
-        package
-        for package in packages.values()
-        if package.get("name") == "fastapi-rs"
-        and Path(package.get("manifest_path", "")).resolve() == root_manifest
+    command = [
+        "cargo",
+        "metadata",
+        "--manifest-path",
+        "Cargo.toml",
+        "--locked",
+        "--format-version",
+        "1",
+        "--features",
+        "pyo3/extension-module",
+        "--offline",
     ]
-    if len(root_packages) != 1:
-        raise WorkerError("Cargo metadata does not identify one FastAPI-RS implementation crate")
-    root_node = next(
-        (
-            node
-            for node in metadata.get("resolve", {}).get("nodes", [])
-            if node["id"] == root_packages[0]["id"]
-        ),
-        None,
-    )
-    if root_node is None:
-        raise WorkerError("Cargo metadata omitted the FastAPI-RS dependency node")
-    starlette_packages = [
-        packages[dependency["pkg"]]
-        for dependency in root_node.get("deps", [])
-        if packages.get(dependency.get("pkg"), {}).get("name") == "starlette-rs"
-    ]
-    if len(starlette_packages) != 1:
-        raise WorkerError("FastAPI-RS must resolve exactly one Starlette-RS Cargo dependency")
-    manifest_path = Path(starlette_packages[0]["manifest_path"]).resolve()
-    return manifest_path.parent.parent.resolve()
+    with tempfile.TemporaryDirectory(
+        prefix=".fastapi-rs-cargo-metadata-", dir=target_source
+    ) as tmp:
+        overlay_root = Path(tmp)
+        (overlay_root / "Cargo.toml").write_text(overlay_text, encoding="utf-8")
+        shutil.copy2(target_source / "Cargo.lock", overlay_root / "Cargo.lock")
+        for filename in ("README.md", "LICENSE.md", "THIRD_PARTY_NOTICES.md"):
+            shutil.copy2(target_source / filename, overlay_root / filename)
+        members = workspace.get("members", [])
+        if not members:
+            raise WorkerError("Cargo.toml does not declare workspace members")
+        for member in members:
+            member_path = Path(member)
+            if member_path.is_absolute() or ".." in member_path.parts:
+                raise WorkerError(f"unsupported non-workspace Cargo member path: {member}")
+            source_member = target_source / member_path
+            if not source_member.exists():
+                raise WorkerError(f"Cargo workspace member does not exist: {member}")
+            link_path = overlay_root / member_path
+            link_path.parent.mkdir(parents=True, exist_ok=True)
+            link_path.symlink_to(source_member, target_is_directory=source_member.is_dir())
+        completed = subprocess.run(
+            command,
+            cwd=overlay_root,
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=120,
+        )
+        if completed.returncode != 0:
+            raise WorkerError(
+                "cannot resolve target Cargo dependencies: "
+                + (completed.stderr.strip() or "cargo metadata failed")
+            )
+        try:
+            metadata = json.loads(completed.stdout)
+        except json.JSONDecodeError as exc:
+            raise WorkerError(f"Cargo returned malformed dependency metadata: {exc}") from exc
+
+        if Path(metadata.get("workspace_root", "")).resolve() != overlay_root.resolve():
+            raise WorkerError(
+                "Cargo metadata did not resolve this FastAPI overlay as its workspace"
+            )
+        packages = {package["id"]: package for package in metadata.get("packages", [])}
+        workspace_members = set(metadata.get("workspace_members", []))
+        expected_members = {
+            "fastapi-rs": target_source / "fastapi-rs/Cargo.toml",
+            "fastapi-rs-py": target_source / "fastapi-rs-py/Cargo.toml",
+        }
+        root_packages: dict[str, dict[str, Any]] = {}
+        for name, member_manifest in expected_members.items():
+            matches = [
+                package
+                for package in packages.values()
+                if package.get("name") == name
+                and Path(package.get("manifest_path", "")).resolve() == member_manifest.resolve()
+                and package.get("id") in workspace_members
+            ]
+            if len(matches) != 1:
+                raise WorkerError(
+                    "Cargo metadata does not prove the overlay contains FastAPI workspace member "
+                    f"{name}"
+                )
+            root_packages[name] = matches[0]
+        root_node = next(
+            (
+                node
+                for node in metadata.get("resolve", {}).get("nodes", [])
+                if node["id"] == root_packages["fastapi-rs"]["id"]
+            ),
+            None,
+        )
+        if root_node is None:
+            raise WorkerError("Cargo metadata omitted the FastAPI-RS dependency node")
+        starlette_packages = [
+            packages[dependency["pkg"]]
+            for dependency in root_node.get("deps", [])
+            if packages.get(dependency.get("pkg"), {}).get("name") == "starlette-rs"
+        ]
+        if len(starlette_packages) != 1:
+            raise WorkerError("FastAPI-RS must resolve exactly one Starlette-RS Cargo dependency")
+        manifest_path = Path(starlette_packages[0]["manifest_path"]).resolve()
+        return manifest_path.parent.parent.resolve()
 
 
 def _target_identity(
@@ -291,7 +360,7 @@ def _target_identity(
     starlette_rs_source = starlette_rs_source.resolve()
     if target_source != ROOT.resolve():
         raise WorkerError(f"target worker must identify this FastAPI-RS checkout: {ROOT}")
-    cargo_starlette_rs_source = _cargo_starlette_rs_source(target_source)
+    cargo_starlette_rs_source = _cargo_starlette_rs_source(target_source, starlette_rs_source)
     if cargo_starlette_rs_source != starlette_rs_source:
         raise WorkerError(
             "FastAPI-RS Cargo links a different Starlette-RS source than the target Python "
