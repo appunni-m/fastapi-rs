@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, FastAPI
-from fastapi.responses import PlainTextResponse
+from starlette.responses import PlainTextResponse
 from starlette.routing import Host, Mount, Route, Router
 
 
@@ -68,9 +68,13 @@ def create_app() -> FastAPI:
             subdomain="api",
             item_id=request.path_params["item_id"],
         )
-        return PlainTextResponse(f"hosted:{request.path_params['subdomain']}:{url_path}")
+        return PlainTextResponse(
+            f"hosted:{request.path_params['subdomain']}:{url_path}:{url_path.host}"
+        )
 
     hosted_app = Router(routes=[Route("/items/{item_id}", hosted_endpoint, name="read_item")])
-    host_router = APIRouter(routes=[Host("{subdomain}.example.com", hosted_app, name="hosted")])
+    host_router = APIRouter(
+        routes=[Host("{subdomain}.example.com:3600", hosted_app, name="hosted")]
+    )
     app.include_router(host_router, prefix="/api")
     return app

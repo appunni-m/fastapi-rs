@@ -34,6 +34,7 @@ SOURCE_IDENTITIES = {
 }
 
 ROUTER_RECIPE = "tests/fixtures/input-recipes/parity/source-wave-b-router-config.yaml"
+URL_PATH_FOR_RECIPE = "tests/fixtures/input-recipes/parity/starlette-url-converters-upstream.yaml"
 ANNOTATION_RECIPE = "tests/fixtures/input-recipes/parity/source-wave-b-annotations.yaml"
 STARLETTE_RECIPE = "tests/fixtures/input-recipes/parity/source-wave-b-starlette-integration.yaml"
 CUSTOM_ROUTE_RECIPE = "tests/fixtures/input-recipes/parity/source-wave-b-custom-routes.yaml"
@@ -768,10 +769,20 @@ _CONVERTOR_MAPPINGS = _module(
             ],
             (_DEPENDANT_SIGNATURES,),
         ),
-        "test_url_path_for_path_convertor": _excluded(
+        "test_url_path_for_path_convertor": _mapped(
             _CONVERTOR_TEST,
             "test_url_path_for_path_convertor",
-            "Excluded from this FastAPI source wave: FastAPI inherits url_path_for from Starlette and delegates it to Router, while Route and the path converter implement URL formatting. Keep this direct Python API behavior in the Starlette-RS sibling contract.",
+            ["app-routing"],
+            "The source asserts that FastAPI's inherited url_path_for formats a named route using Starlette's path converter.",
+            "The ASGI projection returns the direct route's URLPath as response text. Starlette-RS native Router lookup is partial for flat, named HTTP routes with built-in converters; FastAPI-RS must bridge its public API, converter values, and URLPath result.",
+            [
+                _link(
+                    URL_PATH_FOR_RECIPE,
+                    "fastapi.test.test-starlette-urlconvertors.test-url-path-for-path-convertor",
+                    ["url-path-for"],
+                    _HTTP_HEADERS,
+                )
+            ],
             (
                 _STARLETTE_URL_PATH,
                 _STARLETTE_ROUTER_URL_PATH,

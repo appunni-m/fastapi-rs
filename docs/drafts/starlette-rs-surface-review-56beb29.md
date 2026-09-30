@@ -1,8 +1,8 @@
 # FastAPI → Starlette-RS consumption review
 
 > Historical snapshot for Starlette-RS `56beb29876e040b8a59afecdf4750d55432c006d`.
-> The current pin is `83a7f6b9f4024483231c3509f3211dd05f6726ac`; see
-> [the 83a7f6b crosswalk delta](starlette-rs-surface-review-83a7f6b.md).
+> The current pin is `7cdaad022233e2aa55008bab9309a29803f4e26d`; see
+> [the 7cdaad0 crosswalk delta](starlette-rs-surface-review-7cdaad0.md).
 
 ## Reviewed revisions
 
@@ -45,7 +45,7 @@ For FastAPI-RS, classify body limits as no FastAPI app/operation option in the p
 
 ## Recommended crosswalk treatment
 
-1. At this historical review point, keep the 56beb target pin and source digests synchronized in metadata. The current pin and digest update are recorded in the linked 83a7f6b review. Keep the 133 relations classified as mappings until each has a lane-specific contract.
+1. At this historical review point, keep the 56beb target pin and source digests synchronized in metadata. The current pin and digest update are recorded in the linked 7cdaad0 review. Keep the 133 relations classified as mappings until each has a lane-specific contract.
 2. Preserve the `add_route` gap explicitly: FastAPI calls it during setup, while Starlette-RS declares Python-package support and Rust-native unimplemented.
 3. Limit current native delegation claims to the call sites that exist: route matching/capture, query/header/cookie lookup, and scope classification. Add contracts and FastAPI-RS call paths before claiming form/file parsing, response/background execution, lifecycle/middleware, exception, or WebSocket delegation.
 4. Record the `max_body_size` boundary as described above; do not expose Starlette’s target-only app default as a FastAPI 0.141.1 constructor behavior. Preserve the source distinction between direct raw route objects and included generic `Route` projection if `routes=` support is claimed.

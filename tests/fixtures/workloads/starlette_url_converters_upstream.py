@@ -3,7 +3,7 @@
 from typing import Annotated
 
 from fastapi import FastAPI, Path, Query
-from fastapi.responses import PlainTextResponse
+from starlette.responses import PlainTextResponse
 
 
 def create_app() -> FastAPI:

@@ -23,7 +23,7 @@ The source identities agree with reviewed metadata:
 | FastAPI source at `../fastapi` | Clean checkout at `95f8322ee1dcda7ceace7b1c4f6c9915b36d748f`; `pyproject.toml` declares five runtime requirements and Python `>=3.10`. |
 | FastAPI source lock | `../fastapi/uv.lock` SHA-256 is `96ae079a121e11b4cc0d260df5b7f77189bb90fa23a2da368f607418c2d98165`; it resolves FastAPI's source graph to Pydantic 2.13.4, pydantic-core 2.46.4, and Starlette 1.3.1. |
 | Selected Starlette contract | Clean `../starlette` checkout is tag 1.6.0, commit `4f250d6b814587e20c5365f0a5f0c4d42bcb929f`. This is the sole Starlette compatibility contract. The upstream lock's 1.3.1 row is provenance only. The parity preparation explicitly omits that locked package and installs the selected source checkout. |
-| Starlette-RS source | `metadata.yaml` selects commit `83a7f6b9f4024483231c3509f3211dd05f6726ac`. A clean detached helper checkout at `/private/tmp/fastapi-rs-atlas-starlette-rs` is pinned to that commit. The shared `../starlette-rs` checkout has the same HEAD but contains concurrent working-tree changes, so reproducible checks and benchmarks use the clean helper through `STARLETTE_RS_SOURCE`. |
+| Starlette-RS source | `metadata.yaml` selects commit `7cdaad022233e2aa55008bab9309a29803f4e26d`. A clean detached helper checkout at `/private/tmp/fastapi-rs-atlas-starlette-rs` is pinned to that commit. The shared `../starlette-rs` checkout remains on 83a7 with concurrent working-tree changes, so reproducible checks and benchmarks use the clean helper through `STARLETTE_RS_SOURCE`. |
 
 ### Pydantic and Rust finding
 
@@ -63,11 +63,11 @@ Primary source checks: [FastAPI 0.141.1 metadata](https://github.com/fastapi/fas
    the repository has no target Python lock. Keep the FastAPI source-oracle
    lock separate from this product lock.
 2. **P1 — default Starlette-RS source path.** Make dependency-inventory and
-   parity commands resolve the reviewed `83a7f6b...` source by default, or
+   parity commands resolve the reviewed `7cdaad0...` source by default, or
    make the required override explicit in the developer workflow. In this
    checkout `STARLETTE_RS_SOURCE` defaults to `../starlette-rs`, whose HEAD is
-   pinned but whose working tree has additional uncommitted files; an explicit
-   clean checkout of `83a7f6b...` was required for the successful inventory
+   pinned at 83a7 but whose working tree has additional uncommitted files; a
+   clean checkout of `7cdaad0...` was required for the successful inventory
    and parity checks. Do not regenerate the active inventory from the dirty
    path.
 3. **P2 — native Pydantic Core closure, conditional on shipping/rebuilding it.**

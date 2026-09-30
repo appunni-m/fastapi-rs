@@ -1,4 +1,4 @@
-# FastAPI-RS crosswalk delta for Starlette-RS 83a7f6b
+# Historical FastAPI-RS crosswalk delta for Starlette-RS 83a7f6b
 
 ## Reviewed revisions
 
@@ -6,7 +6,7 @@
 - Starlette 1.6.0 oracle: `4f250d6b814587e20c5365f0a5f0c4d42bcb929f`.
 - Starlette-RS target: `83a7f6b9f4024483231c3509f3211dd05f6726ac`.
 
-## Latest contract delta
+## Contract delta at the 83a7f6b snapshot
 
 The latest Starlette-RS commit adds an input-only Python-package case for an
 unmatched HTTP route whose `HTTPException(404)` is handled by a registered
