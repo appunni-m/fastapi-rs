@@ -1,0 +1,116 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/query_validation_alias_model.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.request-parameters.query.validation-alias.model.rejects-declared-alias
+  actions:
+  - action_id: model-declared-alias
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /model-required-alias-and-validation-alias
+      query_string: p_alias=hello
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_query/test_required_str.py
+    kind: upstream_test
+- case_id: fastapi.request-parameters.query.validation-alias.model.accepts-validation-alias
+  actions:
+  - action_id: model-validation-alias
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /model-required-alias-and-validation-alias
+      query_string: p_val_alias=hello
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_query/test_required_str.py
+    kind: upstream_test
+- case_id: fastapi.request-parameters.query.validation-alias.model.openapi
+  actions:
+  - action_id: model-openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths/~1model-required-alias-and-validation-alias/get/parameters
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_query/test_required_str.py
+    kind: upstream_test

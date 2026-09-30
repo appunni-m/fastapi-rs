@@ -4569,6 +4569,34 @@
       ]
     },
     {
+      "id": "query-validation-alias-direct",
+      "input_path": "tests/fixtures/inputs/parity/query-validation-alias-direct.json",
+      "input_sha256": "24e7b9ba6879673a4eba1bc7d88350089b73a4d0c8c2b7e36e1854f23b9537f3",
+      "recipe_path": "tests/fixtures/input-recipes/parity/query-validation-alias-direct.yaml",
+      "recipe_sha256": "0b17a41fb9d04c9c2f6e29a8ee4e3fd8857231f84888623ee8bcd2945f99042b",
+      "workload_path": "tests/fixtures/workloads/query_validation_alias_direct.py",
+      "workload_sha256": "6a9b7f53a0eb121ad277064224f95ee517423bc7dccc82e5807ce7012728c38f",
+      "case_ids": [
+        "fastapi.request-parameters.query.validation-alias.direct.rejects-declared-alias",
+        "fastapi.request-parameters.query.validation-alias.direct.accepts-validation-alias",
+        "fastapi.request-parameters.query.validation-alias.direct.openapi"
+      ]
+    },
+    {
+      "id": "query-validation-alias-model",
+      "input_path": "tests/fixtures/inputs/parity/query-validation-alias-model.json",
+      "input_sha256": "ae5d303ccc530a8b20e048967fe9ff466da11a05fabc5e9448b4f97e3fc40a94",
+      "recipe_path": "tests/fixtures/input-recipes/parity/query-validation-alias-model.yaml",
+      "recipe_sha256": "fe63a45748155894afc18db0095eaef373d03de462abe18a1c18681de0c1424b",
+      "workload_path": "tests/fixtures/workloads/query_validation_alias_model.py",
+      "workload_sha256": "7a4c5b5145e46f7e46faa377d2e2f6d3f2fa5b42c7d8980efb51c8bb5800c789",
+      "case_ids": [
+        "fastapi.request-parameters.query.validation-alias.model.rejects-declared-alias",
+        "fastapi.request-parameters.query.validation-alias.model.accepts-validation-alias",
+        "fastapi.request-parameters.query.validation-alias.model.openapi"
+      ]
+    },
+    {
       "id": "repeated-cookie-headers-upstream",
       "input_path": "tests/fixtures/inputs/parity/repeated-cookie-headers-upstream.json",
       "input_sha256": "c9fae3e34238bfb7580a939cdabc3fc3b381e72ba1c401abc38e46e7c6be96ae",
@@ -5194,7 +5222,7 @@
       "input_path": "tests/fixtures/inputs/parity/response-model-data-filter-exclude-unset-none-review.json",
       "input_sha256": "e8df817a4df31b3f2f646068c8a9286416ff13577822d1fc572bbc5d8eb34a17",
       "recipe_path": "tests/fixtures/input-recipes/parity/response-model-data-filter-exclude-unset-none-review.yaml",
-      "recipe_sha256": "d5131053ce7107dff81c9d02cdc1436bdccdccf1edfdf792db2fc0f4b66c78e1",
+      "recipe_sha256": "71850082eb935d0c310df4b110d2c872bbd5dbfbacd89819edec6ef1f1943bbc",
       "workload_path": "tests/fixtures/workloads/response_model_data_filter_exclude_unset_none_review.py",
       "workload_sha256": "24b60f06b2472a0254c9ae15d0b208e0edd99d3cb8a3833696d343bacd0c13cd",
       "case_ids": [
@@ -17857,6 +17885,42 @@
       "observation_selectors": [
         "http.body.bytes",
         "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_request_params/test_query/test_required_str.py",
+      "fixture_id": "fastapi.test.test-request-params-test-query-test-required-str",
+      "workflow_id": "query-validation-alias-direct",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.request-parameters.query.validation-alias.direct.accepts-validation-alias",
+        "fastapi.request-parameters.query.validation-alias.direct.openapi",
+        "fastapi.request-parameters.query.validation-alias.direct.rejects-declared-alias"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status",
+        "openapi.document",
+        "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_request_params/test_query/test_required_str.py",
+      "fixture_id": "fastapi.test.test-request-params-test-query-test-required-str",
+      "workflow_id": "query-validation-alias-model",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.request-parameters.query.validation-alias.model.accepts-validation-alias",
+        "fastapi.request-parameters.query.validation-alias.model.openapi",
+        "fastapi.request-parameters.query.validation-alias.model.rejects-declared-alias"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status",
+        "openapi.document",
+        "openapi.paths"
       ]
     },
     {
