@@ -73,6 +73,7 @@ enum ParameterSource {
     Request,
     HttpConnection,
     Response,
+    BackgroundTasks,
     Dependency {
         plan: Box<CallablePlan>,
         use_cache: bool,
@@ -121,6 +122,7 @@ struct InvocationContext<'context, 'py> {
     dependency_override_cursor: &'context mut usize,
     dependency_exit_stack: &'context Bound<'py, PyAny>,
     function_dependency_exit_stack: &'context Bound<'py, PyAny>,
+    background_tasks: &'context mut Option<Py<PyAny>>,
 }
 
 struct RequestInvocation {
@@ -135,6 +137,7 @@ struct RequestInvocation {
     dependency_exit_stack_closed: bool,
     function_dependency_exit_stack: Py<PyAny>,
     function_dependency_exit_stack_closed: bool,
+    background_tasks: Option<Py<PyAny>>,
 }
 
 struct FormFileReadPlan {
@@ -2967,6 +2970,7 @@ impl CallablePlan {
                 ParameterSource::Request => false,
                 ParameterSource::HttpConnection => false,
                 ParameterSource::Response => false,
+                ParameterSource::BackgroundTasks => false,
                 ParameterSource::Dependency { plan, .. } => plan.has_openapi_parameter_inputs(),
             })
     }
@@ -2983,6 +2987,7 @@ impl CallablePlan {
                 | ParameterSource::Request
                 | ParameterSource::HttpConnection
                 | ParameterSource::Response
+                | ParameterSource::BackgroundTasks
                 | ParameterSource::Dependency { .. } => {}
             }
         }
@@ -3008,6 +3013,7 @@ impl CallablePlan {
                 ParameterSource::Request => false,
                 ParameterSource::HttpConnection => false,
                 ParameterSource::Response => false,
+                ParameterSource::BackgroundTasks => false,
                 ParameterSource::Dependency { plan, .. } => plan.has_form_inputs(),
             })
     }
@@ -3072,7 +3078,8 @@ impl CallablePlan {
                 | ParameterSource::WebSocket
                 | ParameterSource::Request
                 | ParameterSource::HttpConnection
-                | ParameterSource::Response => {}
+                | ParameterSource::Response
+                | ParameterSource::BackgroundTasks => {}
             }
         }
         parameters.sort_by_key(|parameter| match parameter.location.as_str() {
@@ -3204,7 +3211,8 @@ impl CallablePlan {
                     | ParameterSource::WebSocket
                     | ParameterSource::Request
                     | ParameterSource::HttpConnection
-                    | ParameterSource::Response => None,
+                    | ParameterSource::Response
+                    | ParameterSource::BackgroundTasks => None,
                 })
                 .collect::<Vec<_>>();
             if let Some(generator_kind) = generator_kind {
@@ -3307,6 +3315,7 @@ impl CallablePlan {
                     | ParameterSource::Request
                     | ParameterSource::HttpConnection
                     | ParameterSource::Response
+                    | ParameterSource::BackgroundTasks
                     | ParameterSource::Dependency { .. } => false,
                 };
                 if parameter.default.is_some()
@@ -3512,6 +3521,21 @@ impl CallablePlan {
                         )
                     })?;
                     kwargs.set_item(&parameter.name, response)?;
+                }
+                ParameterSource::BackgroundTasks => {
+                    let tasks = if let Some(tasks) = context.background_tasks.as_ref() {
+                        tasks.clone_ref(context.py)
+                    } else {
+                        let tasks = context
+                            .py
+                            .import("fastapi_rs._core")?
+                            .getattr("BackgroundTasks")?
+                            .call0()?
+                            .unbind();
+                        *context.background_tasks = Some(tasks.clone_ref(context.py));
+                        tasks
+                    };
+                    kwargs.set_item(&parameter.name, tasks.bind(context.py))?;
                 }
                 ParameterSource::Input { .. } | ParameterSource::Dependency { .. } => {}
             }
@@ -3942,7 +3966,8 @@ impl CallableParameter {
             ParameterSource::WebSocket
             | ParameterSource::Request
             | ParameterSource::HttpConnection
-            | ParameterSource::Response => Vec::new(),
+            | ParameterSource::Response
+            | ParameterSource::BackgroundTasks => Vec::new(),
         }
     }
 }
@@ -4030,6 +4055,12 @@ fn parameter_source(
     let response_type = py.import("starlette.responses")?.getattr("Response")?;
     if annotation_is_subclass(py, annotation, &response_type)? {
         return Ok(ParameterSource::Response);
+    }
+    let background_tasks_type = py
+        .import("starlette.background")?
+        .getattr("BackgroundTasks")?;
+    if annotation_is_subclass(py, annotation, &background_tasks_type)? {
+        return Ok(ParameterSource::BackgroundTasks);
     }
     for marker in metadata {
         let marker = marker.bind(py);
@@ -5513,6 +5544,18 @@ fn merge_injected_response_state(
     Ok(())
 }
 
+fn attach_response_background_if_missing(
+    response: &Bound<'_, PyAny>,
+    background_tasks: Option<&Bound<'_, PyAny>>,
+) -> PyResult<()> {
+    if response.getattr("background")?.is_none()
+        && let Some(background_tasks) = background_tasks
+    {
+        response.setattr("background", background_tasks)?;
+    }
+    Ok(())
+}
+
 fn response_body(py: Python<'_>, send: &Bound<'_, PyAny>, body: &[u8]) -> PyResult<Py<PyAny>> {
     let message = PyDict::new(py);
     message.set_item("type", "http.response.body")?;
@@ -5594,6 +5637,7 @@ enum PendingAction {
     FormCloseAfterError(PyErr),
     SendStart,
     SendBody,
+    BackgroundTasks,
 }
 
 enum FunctionCloseContinuation {
@@ -5951,6 +5995,13 @@ struct FastApiCall {
 }
 
 impl FastApiCall {
+    fn request_background_tasks(&self, py: Python<'_>) -> Option<Py<PyAny>> {
+        self.invocation
+            .as_ref()
+            .and_then(|invocation| invocation.background_tasks.as_ref())
+            .map(|tasks| tasks.clone_ref(py))
+    }
+
     fn start_returned_response(
         &mut self,
         py: Python<'_>,
@@ -6321,6 +6372,7 @@ impl FastApiCall {
             dependency_exit_stack_closed: false,
             function_dependency_exit_stack: new_dependency_exit_stack(py)?,
             function_dependency_exit_stack_closed: false,
+            background_tasks: None,
         });
         self.invoke_route(py)
     }
@@ -6468,6 +6520,7 @@ impl FastApiCall {
             dependency_exit_stack_closed: false,
             function_dependency_exit_stack: new_dependency_exit_stack(py)?,
             function_dependency_exit_stack_closed: false,
+            background_tasks: None,
         });
         self.invoke_route(py)
     }
@@ -6569,6 +6622,7 @@ impl FastApiCall {
                 dependency_exit_stack_closed: false,
                 function_dependency_exit_stack: new_dependency_exit_stack(py)?,
                 function_dependency_exit_stack_closed: false,
+                background_tasks: None,
             });
             return self.invoke_route(py);
         }
@@ -6648,6 +6702,7 @@ impl FastApiCall {
                 dependency_override_cursor: &mut invocation.dependency_override_cursor,
                 dependency_exit_stack: invocation.dependency_exit_stack.bind(py),
                 function_dependency_exit_stack: invocation.function_dependency_exit_stack.bind(py),
+                background_tasks: &mut invocation.background_tasks,
             };
             match plan.prepare_direct_dependency_overrides(&mut context)? {
                 OverridePreparation::Await {
@@ -6820,6 +6875,7 @@ impl FastApiCall {
                 dependency_override_cursor: &mut invocation.dependency_override_cursor,
                 dependency_exit_stack: invocation.dependency_exit_stack.bind(py),
                 function_dependency_exit_stack: invocation.function_dependency_exit_stack.bind(py),
+                background_tasks: &mut invocation.background_tasks,
             };
             parent_plan.invoke_with_prepared_dependencies(&mut context, &prepared_dependencies)?
         };
@@ -6841,6 +6897,11 @@ impl FastApiCall {
         let response_type = py.import("starlette.responses")?.getattr("Response")?;
         if result.bind(py).is_instance(&response_type)? {
             // Starlette responses own their status, headers, body, and ASGI send path.
+            let background_tasks = self.request_background_tasks(py);
+            attach_response_background_if_missing(
+                result.bind(py),
+                background_tasks.as_ref().map(|tasks| tasks.bind(py)),
+            )?;
             return self.start_returned_response(py, result.bind(py));
         }
 
@@ -6947,6 +7008,12 @@ impl FastApiCall {
             let kwargs = PyDict::new(py);
             kwargs.set_item("content", stream.bind(py))?;
             kwargs.set_item("status_code", status_code)?;
+            let background_tasks = self.request_background_tasks(py);
+            if let Some(background_tasks) = background_tasks.as_ref() {
+                kwargs.set_item("background", background_tasks.bind(py))?;
+            } else {
+                kwargs.set_item("background", py.None())?;
+            }
             if json_lines {
                 kwargs.set_item("media_type", "application/jsonl")?;
             } else if sse_stream {
@@ -7039,6 +7106,12 @@ impl FastApiCall {
         if let Some(response_class) = response_class {
             let kwargs = PyDict::new(py);
             kwargs.set_item("status_code", status_code)?;
+            let background_tasks = self.request_background_tasks(py);
+            if let Some(background_tasks) = background_tasks.as_ref() {
+                kwargs.set_item("background", background_tasks.bind(py))?;
+            } else {
+                kwargs.set_item("background", py.None())?;
+            }
             let response = response_class
                 .bind(py)
                 .call((response_value,), Some(&kwargs))?;
@@ -7110,6 +7183,15 @@ impl FastApiCall {
     fn send_body(&mut self, py: Python<'_>) -> PyResult<MachineAction> {
         self.pending = Some(PendingAction::SendBody);
         response_body(py, self.send.bind(py), &self.response_body).map(MachineAction::Await)
+    }
+
+    fn run_background_tasks_after_send(&mut self, py: Python<'_>) -> PyResult<MachineAction> {
+        let Some(background_tasks) = self.request_background_tasks(py) else {
+            return self.close_form_after_response(py);
+        };
+        let awaitable = background_tasks.bind(py).call0()?;
+        self.pending = Some(PendingAction::BackgroundTasks);
+        Ok(MachineAction::Await(awaitable.unbind()))
     }
 
     fn form_parse_failed(&mut self, py: Python<'_>, error: PyErr) -> PyResult<MachineAction> {
@@ -7356,7 +7438,8 @@ impl FastApiCall {
                 }
                 Some(PendingAction::FormCloseAfterError(error)) => Err(error),
                 Some(PendingAction::SendStart) => self.send_body(py),
-                Some(PendingAction::SendBody) => self.close_form_after_response(py),
+                Some(PendingAction::SendBody) => self.run_background_tasks_after_send(py),
+                Some(PendingAction::BackgroundTasks) => self.close_form_after_response(py),
                 Some(PendingAction::RouteInvocation) => Err(PyRuntimeError::new_err(
                     "FastAPI route invocation resumed without a pending awaitable",
                 )),
@@ -7376,6 +7459,7 @@ impl FastApiCall {
                     | PendingAction::FunctionDependencyCloseAfterResponse
                     | PendingAction::SendStart
                     | PendingAction::SendBody
+                    | PendingAction::BackgroundTasks
                     | PendingAction::Dependency { .. }
                     | PendingAction::OverrideSubdependency { .. },
                 ) => self.route_exception(py, error),

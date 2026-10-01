@@ -26,6 +26,7 @@ DYNAMIC_PYTHON_EXECUTION = re.compile(
 )
 PUBLIC_FASTAPI_EXPORTS = [
     "APIRouter",
+    "BackgroundTasks",
     "Body",
     "Cookie",
     "Depends",

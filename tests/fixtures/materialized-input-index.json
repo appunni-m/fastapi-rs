@@ -461,6 +461,19 @@
       ]
     },
     {
+      "id": "background-tasks-injection-precedence",
+      "input_path": "tests/fixtures/inputs/parity/background-tasks-injection-precedence.json",
+      "input_sha256": "4c253504f028cb554e6cdcf8b6cbf400439ba761cb7fb046d85c65e5b2c0c8c4",
+      "recipe_path": "tests/fixtures/input-recipes/parity/background-tasks-injection-precedence.yaml",
+      "recipe_sha256": "ee53f7d7cb990f8f6101598b6b918f109c6f20f1ed88ab5a4d65653e419b524d",
+      "workload_path": "tests/fixtures/workloads/background_tasks_injection_precedence.py",
+      "workload_sha256": "c9e6dbacb6901125e3f322a7178b907b386ac66806adedd1cd0d4729c09272db",
+      "case_ids": [
+        "fastapi.test.test-response-dependency.test-background-tasks-with-depends-annotated.normal-response",
+        "fastapi.test.test-response-dependency.test-background-tasks-with-depends-annotated.explicit-response-background"
+      ]
+    },
+    {
       "id": "behind-proxy-tutorial002-upstream",
       "input_path": "tests/fixtures/inputs/parity/behind-proxy-tutorial002-upstream.json",
       "input_sha256": "a546141081b060e4f27544c7a15b59ec57e6ff96ce59cd890ad80c97929d10d0",
@@ -5321,7 +5334,7 @@
       "input_path": "tests/fixtures/inputs/parity/response-model-data-filter-exclude-unset-none-review.json",
       "input_sha256": "e8df817a4df31b3f2f646068c8a9286416ff13577822d1fc572bbc5d8eb34a17",
       "recipe_path": "tests/fixtures/input-recipes/parity/response-model-data-filter-exclude-unset-none-review.yaml",
-      "recipe_sha256": "3872c9fb0bd16adb76773b2d0e284e5b9bf7e5b6840b49bfd63312555c6d7098",
+      "recipe_sha256": "3f4d2188b18c2a73a0606584ca3da8b628dab755705e9fd5c97a246345b72231",
       "workload_path": "tests/fixtures/workloads/response_model_data_filter_exclude_unset_none_review.py",
       "workload_sha256": "24b60f06b2472a0254c9ae15d0b208e0edd99d3cb8a3833696d343bacd0c13cd",
       "case_ids": [
@@ -8271,6 +8284,21 @@
       "observation_selectors": [
         "http.body.bytes",
         "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_response_dependency.py",
+      "fixture_id": "fastapi.test.test-response-dependency",
+      "workflow_id": "background-tasks-injection-precedence",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.test.test-response-dependency.test-background-tasks-with-depends-annotated.explicit-response-background",
+        "fastapi.test.test-response-dependency.test-background-tasks-with-depends-annotated.normal-response"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
         "http.status"
       ]
     },

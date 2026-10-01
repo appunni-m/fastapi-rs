@@ -1,5 +1,6 @@
 from fastapi_rs._core import (
     APIRouter,
+    BackgroundTasks,
     Body,
     Cookie,
     Depends,
@@ -22,6 +23,7 @@ from fastapi_rs._core import (
 
 __all__ = [
     "APIRouter",
+    "BackgroundTasks",
     "Body",
     "Cookie",
     "Depends",

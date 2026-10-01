@@ -101,5 +101,27 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
         py.import("builtins")?
             .getattr("type")?
             .call1(("UploadFile", bases, attributes))?;
-    module.add("UploadFile", upload_file)
+    module.add("UploadFile", upload_file)?;
+    register_background_tasks(module)
+}
+
+/// Register FastAPI's public subclass over Starlette-RS background task support.
+fn register_background_tasks(module: &Bound<'_, PyModule>) -> PyResult<()> {
+    let py = module.py();
+    let attributes = PyDict::new(py);
+    attributes.set_item("__module__", "fastapi.background")?;
+    attributes.set_item(
+        "__doc__",
+        "A collection of background tasks that will be called after a response has been sent to the client.",
+    )?;
+
+    let starlette_background_tasks = py
+        .import("starlette.background")?
+        .getattr("BackgroundTasks")?;
+    let bases = PyTuple::new(py, [starlette_background_tasks])?;
+    let background_tasks =
+        py.import("builtins")?
+            .getattr("type")?
+            .call1(("BackgroundTasks", bases, attributes))?;
+    module.add("BackgroundTasks", background_tasks)
 }
