@@ -7,6 +7,7 @@
 mod application_runtime;
 mod awaitable;
 mod datastructures;
+mod deprecated_api;
 mod docs;
 mod encoding;
 mod errors;
@@ -31,6 +32,7 @@ pub fn register_python_api(module: &Bound<'_, PyModule>) -> PyResult<()> {
     errors::register(module)?;
     parameters::register(module)?;
     datastructures::register(module)?;
+    deprecated_api::register(module)?;
     sse::register(module)?;
     application_runtime::register(module)
 }

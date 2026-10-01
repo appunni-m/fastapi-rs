@@ -1,7 +1,23 @@
 //! Rust-owned Python metadata for FastAPI parameters and dependencies.
 
 use pyo3::prelude::*;
+use pyo3::sync::PyOnceLock;
 use pyo3::types::{PyDict, PyList, PyModule, PyString, PyTuple};
+
+static EXAMPLE_UNSET: PyOnceLock<Py<PyAny>> = PyOnceLock::new();
+const EXAMPLE_DEPRECATION_WARNING: &str =
+    "`example` has been deprecated, please use `examples` instead";
+const REGEX_DEPRECATION_WARNING: &str = "`regex` has been deprecated, please use `pattern` instead";
+
+#[pyclass(name = "_ParameterUnset", module = "fastapi_rs._core")]
+struct ParameterUnset;
+
+#[pymethods]
+impl ParameterUnset {
+    fn __repr__(&self) -> &'static str {
+        "_Unset"
+    }
+}
 
 /// Metadata attached to an endpoint annotation through `typing.Annotated`.
 #[pyclass(name = "_ParameterMetadata", module = "fastapi_rs._core")]
@@ -17,6 +33,8 @@ pub(crate) struct ParameterMetadata {
     title: Option<String>,
     description: Option<String>,
     pattern: Option<String>,
+    example: Option<Py<PyAny>>,
+    examples: Option<Py<PyAny>>,
     deprecated: Option<Py<PyAny>>,
     include_in_schema: bool,
     gt: Option<Py<PyAny>>,
@@ -91,6 +109,18 @@ impl ParameterMetadata {
     }
 
     #[getter]
+    fn example(&self, py: Python<'_>) -> Option<Py<PyAny>> {
+        self.example.as_ref().map(|example| example.clone_ref(py))
+    }
+
+    #[getter]
+    fn examples(&self, py: Python<'_>) -> Option<Py<PyAny>> {
+        self.examples
+            .as_ref()
+            .map(|examples| examples.clone_ref(py))
+    }
+
+    #[getter]
     fn deprecated(&self, py: Python<'_>) -> Option<Py<PyAny>> {
         self.deprecated
             .as_ref()
@@ -152,6 +182,67 @@ impl ParameterMetadata {
     }
 }
 
+// lint-exception: this sentinel is initialized before any constructor defaults are created.
+#[expect(
+    clippy::expect_used,
+    reason = "constructor signatures are registered after the sentinel is initialized"
+)]
+fn example_unset_default() -> Py<PyAny> {
+    Python::attach(|py| {
+        EXAMPLE_UNSET
+            .get(py)
+            .expect("parameter example sentinel must be initialized before registration")
+            .clone_ref(py)
+    })
+}
+
+fn warn_parameter_deprecation(py: Python<'_>, message: &str) -> PyResult<()> {
+    warn_parameter_deprecation_at_level(py, message, 1)
+}
+
+fn warn_body_parameter_deprecation(py: Python<'_>, message: &str) -> PyResult<()> {
+    warn_parameter_deprecation_at_level(py, message, 2)
+}
+
+fn warn_parameter_deprecation_at_level(
+    py: Python<'_>,
+    message: &str,
+    stacklevel: usize,
+) -> PyResult<()> {
+    let warnings = py.import("warnings")?;
+    let category = crate::errors::fastapi_deprecation_warning_type(py);
+    let kwargs = PyDict::new(py);
+    kwargs.set_item("stacklevel", stacklevel)?;
+    warnings
+        .getattr("warn")?
+        .call((message, category), Some(&kwargs))?;
+    Ok(())
+}
+
+fn normalize_pattern(pattern: Option<String>, regex: Option<String>) -> Option<String> {
+    pattern.filter(|value| !value.is_empty()).or(regex)
+}
+
+// lint-exception: every exposed constructor is registered after the sentinel initialization.
+#[expect(
+    clippy::expect_used,
+    reason = "parameter calls cannot run before constructor registration completes"
+)]
+fn is_example_unset(py: Python<'_>, example: &Py<PyAny>) -> bool {
+    let unset = EXAMPLE_UNSET
+        .get(py)
+        .expect("parameter example sentinel must be initialized before use");
+    example.bind(py).is(unset.bind(py))
+}
+
+fn normalized_example(example: Py<PyAny>, py: Python<'_>) -> Option<Py<PyAny>> {
+    if is_example_unset(py, &example) {
+        None
+    } else {
+        Some(example)
+    }
+}
+
 #[pyfunction(name = "Depends", signature = (dependency = None, *, use_cache = true, scope = None))]
 fn depends(
     py: Python<'_>,
@@ -173,6 +264,8 @@ fn depends(
             title: None,
             description: None,
             pattern: None,
+            example: None,
+            examples: None,
             deprecated: None,
             include_in_schema: true,
             gt: None,
@@ -189,15 +282,39 @@ fn depends(
 
 #[pyfunction(
     name = "Header",
-    signature = (default = query_ellipsis_default(), *, alias = None, convert_underscores = true)
+    signature = (
+        default = query_ellipsis_default(),
+        *,
+        alias = None,
+        convert_underscores = true,
+        pattern = None,
+        regex = None,
+        example = example_unset_default(),
+        examples = None
+    )
+)]
+// lint-exception: PyO3 needs one Rust argument per FastAPI-compatible Header keyword.
+#[allow(
+    clippy::too_many_arguments,
+    reason = "preserve FastAPI Header's public keyword signature"
 )]
 fn header(
     py: Python<'_>,
     default: Py<PyAny>,
     alias: Option<String>,
     convert_underscores: bool,
+    pattern: Option<String>,
+    regex: Option<String>,
+    example: Py<PyAny>,
+    examples: Option<Py<PyAny>>,
 ) -> PyResult<Py<ParameterMetadata>> {
     let default = optional_parameter_default(py, default)?;
+    if !is_example_unset(py, &example) {
+        warn_parameter_deprecation(py, EXAMPLE_DEPRECATION_WARNING)?;
+    }
+    if regex.is_some() {
+        warn_parameter_deprecation(py, REGEX_DEPRECATION_WARNING)?;
+    }
     Py::new(
         py,
         ParameterMetadata {
@@ -211,7 +328,9 @@ fn header(
             media_type: None,
             title: None,
             description: None,
-            pattern: None,
+            pattern: normalize_pattern(pattern, regex),
+            example: normalized_example(example, py),
+            examples,
             deprecated: None,
             include_in_schema: true,
             gt: None,
@@ -226,13 +345,34 @@ fn header(
     )
 }
 
-#[pyfunction(name = "Cookie", signature = (default = query_ellipsis_default(), *, alias = None))]
+#[pyfunction(
+    name = "Cookie",
+    signature = (
+        default = query_ellipsis_default(),
+        *,
+        alias = None,
+        pattern = None,
+        regex = None,
+        example = example_unset_default(),
+        examples = None
+    )
+)]
 fn cookie(
     py: Python<'_>,
     default: Py<PyAny>,
     alias: Option<String>,
+    pattern: Option<String>,
+    regex: Option<String>,
+    example: Py<PyAny>,
+    examples: Option<Py<PyAny>>,
 ) -> PyResult<Py<ParameterMetadata>> {
     let default = optional_parameter_default(py, default)?;
+    if !is_example_unset(py, &example) {
+        warn_parameter_deprecation(py, EXAMPLE_DEPRECATION_WARNING)?;
+    }
+    if regex.is_some() {
+        warn_parameter_deprecation(py, REGEX_DEPRECATION_WARNING)?;
+    }
     Py::new(
         py,
         ParameterMetadata {
@@ -246,7 +386,9 @@ fn cookie(
             media_type: None,
             title: None,
             description: None,
-            pattern: None,
+            pattern: normalize_pattern(pattern, regex),
+            example: normalized_example(example, py),
+            examples,
             deprecated: None,
             include_in_schema: true,
             gt: None,
@@ -291,7 +433,10 @@ fn optional_parameter_default(py: Python<'_>, default: Py<PyAny>) -> PyResult<Op
         max_length = None,
         pattern = None,
         deprecated = None,
-        include_in_schema = true
+        include_in_schema = true,
+        regex = None,
+        example = example_unset_default(),
+        examples = None
     )
 )]
 // lint-exception: PyO3 needs one Rust argument per FastAPI-compatible Query keyword.
@@ -313,7 +458,16 @@ fn query(
     pattern: Option<String>,
     deprecated: Option<Py<PyAny>>,
     include_in_schema: bool,
+    regex: Option<String>,
+    example: Py<PyAny>,
+    examples: Option<Py<PyAny>>,
 ) -> PyResult<Py<ParameterMetadata>> {
+    if !is_example_unset(py, &example) {
+        warn_parameter_deprecation(py, EXAMPLE_DEPRECATION_WARNING)?;
+    }
+    if regex.is_some() {
+        warn_parameter_deprecation(py, REGEX_DEPRECATION_WARNING)?;
+    }
     let ellipsis = py.Ellipsis();
     let undefined = py.import("pydantic_core")?.getattr("PydanticUndefined")?;
     let default = if default.bind(py).is(ellipsis.bind(py)) || default.bind(py).is(&undefined) {
@@ -334,7 +488,9 @@ fn query(
             media_type: None,
             title,
             description,
-            pattern,
+            pattern: normalize_pattern(pattern, regex),
+            example: normalized_example(example, py),
+            examples,
             deprecated,
             include_in_schema,
             gt,
@@ -349,14 +505,42 @@ fn query(
     )
 }
 
-#[pyfunction(name = "Path", signature = (*, gt = None, ge = None, lt = None, le = None))]
+#[pyfunction(
+    name = "Path",
+    signature = (
+        *,
+        gt = None,
+        ge = None,
+        lt = None,
+        le = None,
+        pattern = None,
+        regex = None,
+        example = example_unset_default(),
+        examples = None
+    )
+)]
+// lint-exception: PyO3 needs one Rust argument per FastAPI-compatible Path keyword.
+#[allow(
+    clippy::too_many_arguments,
+    reason = "preserve FastAPI Path's public keyword signature"
+)]
 fn path(
     py: Python<'_>,
     gt: Option<Py<PyAny>>,
     ge: Option<Py<PyAny>>,
     lt: Option<Py<PyAny>>,
     le: Option<Py<PyAny>>,
+    pattern: Option<String>,
+    regex: Option<String>,
+    example: Py<PyAny>,
+    examples: Option<Py<PyAny>>,
 ) -> PyResult<Py<ParameterMetadata>> {
+    if !is_example_unset(py, &example) {
+        warn_parameter_deprecation(py, EXAMPLE_DEPRECATION_WARNING)?;
+    }
+    if regex.is_some() {
+        warn_parameter_deprecation(py, REGEX_DEPRECATION_WARNING)?;
+    }
     Py::new(
         py,
         ParameterMetadata {
@@ -370,7 +554,9 @@ fn path(
             media_type: None,
             title: None,
             description: None,
-            pattern: None,
+            pattern: normalize_pattern(pattern, regex),
+            example: normalized_example(example, py),
+            examples,
             deprecated: None,
             include_in_schema: true,
             gt,
@@ -387,7 +573,22 @@ fn path(
 
 #[pyfunction(
     name = "Body",
-    signature = (*, embed = None, alias = None, validation_alias = None, gt = None)
+    signature = (
+        *,
+        embed = None,
+        alias = None,
+        validation_alias = None,
+        gt = None,
+        pattern = None,
+        regex = None,
+        example = example_unset_default(),
+        examples = None
+    )
+)]
+// lint-exception: retain the directly callable FastAPI Body option names.
+#[allow(
+    clippy::too_many_arguments,
+    reason = "preserve FastAPI Body keyword compatibility"
 )]
 fn body(
     py: Python<'_>,
@@ -395,7 +596,17 @@ fn body(
     alias: Option<String>,
     validation_alias: Option<Py<PyAny>>,
     gt: Option<Py<PyAny>>,
+    pattern: Option<String>,
+    regex: Option<String>,
+    example: Py<PyAny>,
+    examples: Option<Py<PyAny>>,
 ) -> PyResult<Py<ParameterMetadata>> {
+    if !is_example_unset(py, &example) {
+        warn_body_parameter_deprecation(py, EXAMPLE_DEPRECATION_WARNING)?;
+    }
+    if regex.is_some() {
+        warn_body_parameter_deprecation(py, REGEX_DEPRECATION_WARNING)?;
+    }
     Py::new(
         py,
         ParameterMetadata {
@@ -409,7 +620,9 @@ fn body(
             media_type: None,
             title: None,
             description: None,
-            pattern: None,
+            pattern: normalize_pattern(pattern, regex),
+            example: normalized_example(example, py),
+            examples,
             deprecated: None,
             include_in_schema: true,
             gt,
@@ -455,8 +668,17 @@ fn normalize_undefined_default(py: Python<'_>, default: Py<PyAny>) -> PyResult<O
         *,
         media_type = "application/x-www-form-urlencoded",
         alias = None,
-        description = None
+        description = None,
+        pattern = None,
+        regex = None,
+        example = example_unset_default(),
+        examples = None
     )
+)]
+// lint-exception: retain FastAPI Form's directly callable compatibility options.
+#[allow(
+    clippy::too_many_arguments,
+    reason = "preserve FastAPI Form keyword compatibility"
 )]
 fn form(
     py: Python<'_>,
@@ -464,7 +686,17 @@ fn form(
     media_type: &str,
     alias: Option<String>,
     description: Option<String>,
+    pattern: Option<String>,
+    regex: Option<String>,
+    example: Py<PyAny>,
+    examples: Option<Py<PyAny>>,
 ) -> PyResult<Py<ParameterMetadata>> {
+    if !is_example_unset(py, &example) {
+        warn_parameter_deprecation(py, EXAMPLE_DEPRECATION_WARNING)?;
+    }
+    if regex.is_some() {
+        warn_parameter_deprecation(py, REGEX_DEPRECATION_WARNING)?;
+    }
     Py::new(
         py,
         ParameterMetadata {
@@ -478,7 +710,9 @@ fn form(
             media_type: Some(media_type.to_owned()),
             title: None,
             description,
-            pattern: None,
+            pattern: normalize_pattern(pattern, regex),
+            example: normalized_example(example, py),
+            examples,
             deprecated: None,
             include_in_schema: true,
             gt: None,
@@ -500,8 +734,17 @@ fn form(
         *,
         media_type = "multipart/form-data",
         alias = None,
-        description = None
+        description = None,
+        pattern = None,
+        regex = None,
+        example = example_unset_default(),
+        examples = None
     )
+)]
+// lint-exception: retain FastAPI File's directly callable compatibility options.
+#[allow(
+    clippy::too_many_arguments,
+    reason = "preserve FastAPI File keyword compatibility"
 )]
 fn file(
     py: Python<'_>,
@@ -509,7 +752,17 @@ fn file(
     media_type: &str,
     alias: Option<String>,
     description: Option<String>,
+    pattern: Option<String>,
+    regex: Option<String>,
+    example: Py<PyAny>,
+    examples: Option<Py<PyAny>>,
 ) -> PyResult<Py<ParameterMetadata>> {
+    if !is_example_unset(py, &example) {
+        warn_parameter_deprecation(py, EXAMPLE_DEPRECATION_WARNING)?;
+    }
+    if regex.is_some() {
+        warn_parameter_deprecation(py, REGEX_DEPRECATION_WARNING)?;
+    }
     Py::new(
         py,
         ParameterMetadata {
@@ -523,7 +776,9 @@ fn file(
             media_type: Some(media_type.to_owned()),
             title: None,
             description,
-            pattern: None,
+            pattern: normalize_pattern(pattern, regex),
+            example: normalized_example(example, py),
+            examples,
             deprecated: None,
             include_in_schema: true,
             gt: None,
@@ -541,6 +796,8 @@ fn file(
 /// Registers parameter metadata constructors and the HTTP status namespace.
 pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     let py = module.py();
+    module.add_class::<ParameterUnset>()?;
+    EXAMPLE_UNSET.get_or_try_init(py, || Py::new(py, ParameterUnset).map(Py::into_any))?;
     module.add_class::<ParameterMetadata>()?;
     let depends_function = wrap_pyfunction!(depends, module)?;
     let depends = py

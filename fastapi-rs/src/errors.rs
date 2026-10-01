@@ -1,7 +1,7 @@
 //! Rust-owned exception identities used by FastAPI behavior.
 
 use pyo3::create_exception;
-use pyo3::exceptions::{PyException, PyRuntimeError};
+use pyo3::exceptions::{PyException, PyRuntimeError, PyUserWarning};
 use pyo3::prelude::*;
 use pyo3::types::{PyDict, PyInt, PyList, PyString, PyTuple};
 
@@ -22,6 +22,12 @@ create_exception!(
     PydanticV1NotSupportedError,
     FastAPIError,
     "A pydantic.v1 model is used, which is no longer supported."
+);
+create_exception!(
+    fastapi.exceptions,
+    FastAPIDeprecationWarning,
+    PyUserWarning,
+    "A deprecation warning emitted by FastAPI."
 );
 
 create_exception!(
@@ -422,10 +428,18 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     module.add("ResponseValidationError", exception_type)?;
     module.add("_FastAPIError", py.get_type::<FastAPIError>())?;
     module.add(
+        "_FastAPIDeprecationWarning",
+        py.get_type::<FastAPIDeprecationWarning>(),
+    )?;
+    module.add(
         "_DependencyScopeError",
         py.get_type::<DependencyScopeError>(),
     )?;
     module.add("WebSocketException", websocket_exception_type)
+}
+
+pub(crate) fn fastapi_deprecation_warning_type<'py>(py: Python<'py>) -> Bound<'py, PyAny> {
+    py.get_type::<FastAPIDeprecationWarning>().into_any()
 }
 
 pub(crate) fn dependency_scope_error(message: &str) -> PyErr {
