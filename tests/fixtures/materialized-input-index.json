@@ -1710,7 +1710,7 @@
       "recipe_path": "tests/fixtures/input-recipes/parity/docs-reference-asgi.yaml",
       "recipe_sha256": "4586c92415b5eaaf7999dc2c06e9dd6a37535bf17dfff4a9381c04ee5b32d717",
       "workload_path": "tests/fixtures/workloads/docs_reference_asgi.py",
-      "workload_sha256": "be8f5fab4c8ee0f004f5f68c7baec661ad25168e36aa6b6f44d5f67f867cc408",
+      "workload_sha256": "44f6e205d08a395fc571b7a6054bef397ccc6b6dfeae30b49e88f87f5a619fb0",
       "case_ids": [
         "fastapi.test.test-http-connection-injection.test-value-extracting-by-http",
         "fastapi.test.test-http-connection-injection.test-value-extracting-by-ws",
@@ -2192,12 +2192,13 @@
     {
       "id": "http-connection-injection-websocket",
       "input_path": "tests/fixtures/inputs/parity/http-connection-injection-websocket.json",
-      "input_sha256": "7654f75d7d31ea275b79eff5d51c4eef5f3d2c56b3b52e4e9f6b466e06e0d26d",
+      "input_sha256": "ac68ce8e22494528a53cd6ab9116a0d657fdeccc79a1a43ae60193d6612e2bab",
       "recipe_path": "tests/fixtures/input-recipes/parity/http-connection-injection-websocket.yaml",
-      "recipe_sha256": "6d359bd38560c968951033796eeb72abf94329981b2e42c0f9e90cc3b2895f51",
+      "recipe_sha256": "02f8414d2f8fca0e6e420ec594e918b5065fc0b0e530fbb40e0812506b1ada4d",
       "workload_path": "tests/fixtures/workloads/http_connection_injection_websocket.py",
-      "workload_sha256": "b742c3afaee6a76c4cb877fb3883362eb6fd6e8364876bdccba108f18a419b50",
+      "workload_sha256": "ce6c9db9956dab2dfdf2f1458aecdb6bda9c47aaa1030d2093040e13740fa33c",
       "case_ids": [
+        "fastapi.http-connection-injection.http-app-state",
         "fastapi.http-connection-injection.websocket-app-state"
       ]
     },
@@ -12658,15 +12659,32 @@
       ]
     },
     {
+      "source_item_id": "documented-page:reference/httpconnection.md",
+      "fixture_id": "fastapi.docs.reference-httpconnection",
+      "workflow_id": "http-connection-injection-websocket",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.http-connection-injection.http-app-state"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
       "source_item_id": "upstream-test:tests/test_http_connection_injection.py",
       "fixture_id": "fastapi.test.test-http-connection-injection",
       "workflow_id": "http-connection-injection-websocket",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes websocket.messages. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status, websocket.messages. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
+        "fastapi.http-connection-injection.http-app-state",
         "fastapi.http-connection-injection.websocket-app-state"
       ],
       "observation_selectors": [
+        "http.body.bytes",
+        "http.status",
         "websocket.messages"
       ]
     },

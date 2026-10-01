@@ -572,6 +572,25 @@ reviewed_api_contract_overlay:
         Request body state so raw body access remains available to the endpoint.
         Generic Request API parity remains owned by Starlette-RS and is not
         established by these FastAPI integration cases.
+    fastapi.requests.HTTPConnection:
+      rust_binding: fastapi-rs/src/application_runtime.rs::parameter_source
+      source_evidence:
+        - {path: fastapi/requests.py}
+        - {path: fastapi/dependencies/utils.py, symbol: add_non_field_param_to_dependency}
+        - {path: fastapi/dependencies/utils.py, symbol: solve_dependencies}
+        - {path: tests/test_http_connection_injection.py, symbol: test_value_extracting_by_http}
+        - {path: tests/test_http_connection_injection.py, symbol: test_value_extracting_by_ws}
+        - {path: docs/en/docs/reference/httpconnection.md}
+      feature_ids: [app-routing, dependency-security, websocket-lifecycle]
+      observation_selectors: [http.status, http.body.bytes, websocket.messages]
+      supported_slice: >-
+        fastapi.requests.HTTPConnection re-exports the exact Starlette-RS
+        connection class object. HTTP path operations and dependencies annotated
+        with HTTPConnection receive the live Request, while WebSocket operations
+        and dependencies receive the live WebSocket connection. The parameter is
+        omitted from request validation and OpenAPI. Identity-checked parity
+        covers the pinned HTTP and WebSocket app-state injection cases; the
+        broader HTTPConnection behavior remains owned by Starlette-RS.
     fastapi.status:
       rust_binding: fastapi-rs/src/parameters.rs::register
       source_evidence:

@@ -1,3 +1,3 @@
-from fastapi_rs._core import Request
+from fastapi_rs._core import HTTPConnection, Request
 
-__all__ = ["Request"]
+__all__ = ["HTTPConnection", "Request"]

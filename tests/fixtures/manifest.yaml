@@ -172,7 +172,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@3
-    sha256: 5ffdb46deb9a97ed985e94c4820f9efc89a43af336e62240751e0c051c3bc5b4
+    sha256: d7ed97b6e609e8b1bee0573ebf6849f1179fb93644fb3754bfe4ca188ff3d8e5
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -205,7 +205,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: c1838fb7d82b96b8d79f466129507d361343a09c180b873385ca18ce46ef8099
+    sha256: de9167722b6d66f2a88fe1e864de00531bc2ae281433154bf16f721b6588e011
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 632
@@ -242,14 +242,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@1
-    sha256: 0c7b71b6656992af783bcc186a6b8541c8a39341a7f822b15b0050b0f7d1d24a
+    sha256: 781020b73359eb6332272319353d7e906ea908aa959bbc490775c10b60266b96
     schema_path: tests/fixtures/schemas/materialized-input-index.schema.json
     schema_sha256: b0a2ec32c63dc82ec43cb4c5ffaf41590e951526de305865a24301ea42e947d2
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
       workflows: 479
-      cases: 1883
-      partial_source_mappings: 1129
+      cases: 1884
+      partial_source_mappings: 1130
 
 contract_metadata:
   aliases:
@@ -18332,12 +18332,14 @@ api_surface_contract:
       - http.body.bytes
       - websocket.messages
     feature_ids:
+    - app-routing
     - dependency-security
+    - websocket-lifecycle
     observation_selectors:
     - http.body.bytes
     - http.status
     - websocket.messages
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.requests.HTTPConnection
@@ -18347,7 +18349,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/994
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/application_runtime.rs::parameter_source
   - id: fastapi.requests.Request
     kind: import_binding
     source_candidate_ref: /api_candidates/995

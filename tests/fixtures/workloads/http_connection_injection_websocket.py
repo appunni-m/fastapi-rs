@@ -12,6 +12,12 @@ def create_app() -> FastAPI:
     app = FastAPI()
     app.state.marker = 91
 
+    @app.get("/state-http")
+    async def read_http_connection_marker(
+        marker: Annotated[int, Depends(read_connection_marker)],
+    ) -> int:
+        return marker
+
     @app.websocket("/state-stream")
     async def send_connection_marker(
         websocket: WebSocket,

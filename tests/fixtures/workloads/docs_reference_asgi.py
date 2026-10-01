@@ -12,13 +12,13 @@ def create_app() -> FastAPI:
     app = FastAPI()
     app.state.value = 42
 
-    @app.get("/connection")
+    @app.get("/http")
     async def read_connection(
         value: Annotated[int, Depends(read_connection_state)],
     ) -> int:
         return value
 
-    @app.websocket("/connection/ws")
+    @app.websocket("/ws")
     async def websocket_connection(
         websocket: WebSocket,
         value: Annotated[int, Depends(read_connection_state)],

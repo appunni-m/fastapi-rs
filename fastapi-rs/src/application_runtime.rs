@@ -70,6 +70,7 @@ enum ParameterSource {
     },
     WebSocket,
     Request,
+    HttpConnection,
     Response,
     Dependency {
         plan: Box<CallablePlan>,
@@ -2725,6 +2726,7 @@ impl CallablePlan {
                 ),
                 ParameterSource::WebSocket => false,
                 ParameterSource::Request => false,
+                ParameterSource::HttpConnection => false,
                 ParameterSource::Response => false,
                 ParameterSource::Dependency { plan, .. } => plan.has_openapi_parameter_inputs(),
             })
@@ -2740,6 +2742,7 @@ impl CallablePlan {
                 ParameterSource::Input { .. }
                 | ParameterSource::WebSocket
                 | ParameterSource::Request
+                | ParameterSource::HttpConnection
                 | ParameterSource::Response
                 | ParameterSource::Dependency { .. } => {}
             }
@@ -2764,6 +2767,7 @@ impl CallablePlan {
                 ParameterSource::Input { .. } => false,
                 ParameterSource::WebSocket => false,
                 ParameterSource::Request => false,
+                ParameterSource::HttpConnection => false,
                 ParameterSource::Response => false,
                 ParameterSource::Dependency { plan, .. } => plan.has_form_inputs(),
             })
@@ -2828,6 +2832,7 @@ impl CallablePlan {
                 ParameterSource::Input { .. }
                 | ParameterSource::WebSocket
                 | ParameterSource::Request
+                | ParameterSource::HttpConnection
                 | ParameterSource::Response => {}
             }
         }
@@ -2940,6 +2945,7 @@ impl CallablePlan {
                     ParameterSource::Input { .. }
                     | ParameterSource::WebSocket
                     | ParameterSource::Request
+                    | ParameterSource::HttpConnection
                     | ParameterSource::Response => None,
                 })
                 .collect::<Vec<_>>();
@@ -3011,6 +3017,7 @@ impl CallablePlan {
                     ParameterSource::Input { .. }
                     | ParameterSource::WebSocket
                     | ParameterSource::Request
+                    | ParameterSource::HttpConnection
                     | ParameterSource::Response
                     | ParameterSource::Dependency { .. } => false,
                 };
@@ -3171,6 +3178,11 @@ impl CallablePlan {
                 ParameterSource::Request => {
                     if let Some(request) = context.request {
                         kwargs.set_item(&parameter.name, request)?;
+                    }
+                }
+                ParameterSource::HttpConnection => {
+                    if let Some(connection) = context.request.or(context.websocket) {
+                        kwargs.set_item(&parameter.name, connection)?;
                     }
                 }
                 ParameterSource::Response => {
@@ -3568,9 +3580,10 @@ impl CallableParameter {
                 required: self.default.is_none(),
             }],
             ParameterSource::Dependency { plan, .. } => plan.input_parameters(),
-            ParameterSource::WebSocket | ParameterSource::Request | ParameterSource::Response => {
-                Vec::new()
-            }
+            ParameterSource::WebSocket
+            | ParameterSource::Request
+            | ParameterSource::HttpConnection
+            | ParameterSource::Response => Vec::new(),
         }
     }
 }
@@ -3640,13 +3653,17 @@ fn parameter_source(
     if annotation_is_subclass(py, annotation, &request_type)? {
         return Ok(ParameterSource::Request);
     }
-    let response_type = py.import("starlette.responses")?.getattr("Response")?;
-    if annotation_is_subclass(py, annotation, &response_type)? {
-        return Ok(ParameterSource::Response);
-    }
     let websocket_type = py.import("starlette.websockets")?.getattr("WebSocket")?;
     if annotation.is(&websocket_type) {
         return Ok(ParameterSource::WebSocket);
+    }
+    let connection_type = py.import("starlette.requests")?.getattr("HTTPConnection")?;
+    if annotation_is_subclass(py, annotation, &connection_type)? {
+        return Ok(ParameterSource::HttpConnection);
+    }
+    let response_type = py.import("starlette.responses")?.getattr("Response")?;
+    if annotation_is_subclass(py, annotation, &response_type)? {
+        return Ok(ParameterSource::Response);
     }
     for marker in metadata {
         let marker = marker.bind(py);
@@ -6889,6 +6906,11 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
         .import("starlette.requests")?
         .getattr("Request")?;
     module.add("Request", &request)?;
+    let http_connection = module
+        .py()
+        .import("starlette.requests")?
+        .getattr("HTTPConnection")?;
+    module.add("HTTPConnection", &http_connection)?;
     let responses = module.py().import("starlette.responses")?;
     for name in [
         "FileResponse",
