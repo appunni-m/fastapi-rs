@@ -1,12 +1,12 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://fastapi-rs.dev/schemas/materialized-input-index/1",
+  "$id": "https://fastapi-rs.dev/schemas/materialized-input-index/2",
   "title": "FastAPI-RS materialized fixture index",
   "description": "Maps independently authored, input-only workflows and their concrete cases to selected source backlog items or directly referenced public API definitions. A partial mapping does not claim full source-suite coverage.",
   "type": "object",
   "required": ["schema", "authority", "workflows", "mappings"],
   "properties": {
-    "schema": {"const": "fastapi-rs/materialized-input-index@1"},
+    "schema": {"const": "fastapi-rs/materialized-input-index@2"},
     "authority": {
       "type": "object",
       "required": ["fastapi", "starlette"],
@@ -62,6 +62,12 @@
           "uniqueItems": true,
           "items": {"$ref": "#/$defs/apiDefinition"}
         },
+        "api_probes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/apiProbe"}
+        },
         "case_ids": {
           "type": "array",
           "minItems": 1,
@@ -111,6 +117,23 @@
         "symbol_id": {"type": "string", "pattern": "^fastapi(?:\\.[A-Za-z_][A-Za-z0-9_]*)+$"},
         "path": {"$ref": "#/$defs/relativePath"},
         "sha256": {"$ref": "#/$defs/sha256"}
+      },
+      "additionalProperties": false
+    },
+    "apiProbe": {
+      "type": "object",
+      "required": ["case_id", "probe_id", "symbol_id", "probe_kind", "observation_selectors"],
+      "properties": {
+        "case_id": {"type": "string", "pattern": "^fastapi(?:\\.[a-z0-9][a-z0-9-]*){2,}$"},
+        "probe_id": {"type": "string", "pattern": "^[a-z][a-z0-9-]*$"},
+        "symbol_id": {"type": "string", "pattern": "^fastapi(?:\\.[A-Za-z_][A-Za-z0-9_]*)+$"},
+        "probe_kind": {"enum": ["attribute", "callable"]},
+        "observation_selectors": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        }
       },
       "additionalProperties": false
     }

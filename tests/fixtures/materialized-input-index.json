@@ -1,5 +1,5 @@
 {
-  "schema": "fastapi-rs/materialized-input-index@1",
+  "schema": "fastapi-rs/materialized-input-index@2",
   "authority": {
     "fastapi": "0.141.1",
     "starlette": "1.6.0"
@@ -1552,6 +1552,17 @@
       "workload_sha256": "57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741",
       "case_ids": [
         "fastapi.dependencies.depends-yield-scope-signature"
+      ],
+      "api_probes": [
+        {
+          "case_id": "fastapi.dependencies.depends-yield-scope-signature",
+          "probe_id": "depends-yield-scope-signature",
+          "symbol_id": "fastapi.Depends",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        }
       ]
     },
     {
@@ -1596,6 +1607,63 @@
         "fastapi.direct-api-reference-wave.encoder-reference-dataclass",
         "fastapi.direct-api-reference-wave.openapi-model-signature",
         "fastapi.direct-api-reference-wave.openapi-info-signature"
+      ],
+      "api_probes": [
+        {
+          "case_id": "fastapi.direct-api-reference-wave.encoder-reference-dataclass",
+          "probe_id": "encode-dataclass-record",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value",
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.direct-api-reference-wave.http-exception-signature",
+          "probe_id": "http-exception-signature",
+          "symbol_id": "fastapi.HTTPException",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.direct-api-reference-wave.openapi-info-signature",
+          "probe_id": "openapi-info-signature",
+          "symbol_id": "fastapi.openapi.models.Info",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.direct-api-reference-wave.openapi-model-signature",
+          "probe_id": "openapi-model-signature",
+          "symbol_id": "fastapi.openapi.models.OpenAPI",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.direct-api-reference-wave.openapi-schema-signature",
+          "probe_id": "openapi-schema-signature",
+          "symbol_id": "fastapi.openapi.models.Schema",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.direct-api-reference-wave.websocket-exception-signature",
+          "probe_id": "websocket-exception-signature",
+          "symbol_id": "fastapi.WebSocketException",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        }
       ]
     },
     {
@@ -1671,6 +1739,98 @@
           "symbol_id": "fastapi.Query",
           "path": "fastapi/param_functions.py",
           "sha256": "e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc"
+        }
+      ],
+      "api_probes": [
+        {
+          "case_id": "fastapi.deprecation.body-example-warning",
+          "probe_id": "body-example",
+          "symbol_id": "fastapi.Body",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome",
+            "python.warnings"
+          ]
+        },
+        {
+          "case_id": "fastapi.deprecation.cookie-example-warning",
+          "probe_id": "cookie-example",
+          "symbol_id": "fastapi.Cookie",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome",
+            "python.warnings"
+          ]
+        },
+        {
+          "case_id": "fastapi.deprecation.generate-operation-id-explicit-route",
+          "probe_id": "generate-operation-id-explicit",
+          "symbol_id": "fastapi.openapi.utils.generate_operation_id",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value",
+            "python.warnings"
+          ]
+        },
+        {
+          "case_id": "fastapi.deprecation.generate-operation-id-fallback-route",
+          "probe_id": "generate-operation-id-fallback",
+          "symbol_id": "fastapi.openapi.utils.generate_operation_id",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value",
+            "python.warnings"
+          ]
+        },
+        {
+          "case_id": "fastapi.deprecation.generate-operation-id-for-path",
+          "probe_id": "generate-operation-id-for-path",
+          "symbol_id": "fastapi.utils.generate_operation_id_for_path",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value",
+            "python.warnings"
+          ]
+        },
+        {
+          "case_id": "fastapi.deprecation.header-example-warning",
+          "probe_id": "header-example",
+          "symbol_id": "fastapi.Header",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome",
+            "python.warnings"
+          ]
+        },
+        {
+          "case_id": "fastapi.deprecation.path-example-warning",
+          "probe_id": "path-example",
+          "symbol_id": "fastapi.Path",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome",
+            "python.warnings"
+          ]
+        },
+        {
+          "case_id": "fastapi.deprecation.query-example-warning",
+          "probe_id": "query-example",
+          "symbol_id": "fastapi.Query",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome",
+            "python.warnings"
+          ]
+        },
+        {
+          "case_id": "fastapi.deprecation.query-regex-warning",
+          "probe_id": "query-regex",
+          "symbol_id": "fastapi.Query",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome",
+            "python.warnings"
+          ]
         }
       ]
     },
@@ -1933,6 +2093,98 @@
         "fastapi.jsonable-encoder.model.exclude-defaults",
         "fastapi.jsonable-encoder.custom-encoder.exact-type",
         "fastapi.jsonable-encoder.custom-encoder.base-type"
+      ],
+      "api_probes": [
+        {
+          "case_id": "fastapi.jsonable-encoder.custom-encoder.base-type",
+          "probe_id": "invoke-jsonable-encoder",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value",
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder.custom-encoder.exact-type",
+          "probe_id": "invoke-jsonable-encoder",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value",
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder.mapping.exclude",
+          "probe_id": "invoke-jsonable-encoder",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value",
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder.mapping.include",
+          "probe_id": "invoke-jsonable-encoder",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value",
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder.model.alias",
+          "probe_id": "invoke-jsonable-encoder",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value",
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder.model.defaults",
+          "probe_id": "invoke-jsonable-encoder",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value",
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder.model.exclude-defaults",
+          "probe_id": "invoke-jsonable-encoder",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value",
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder.model.exclude-unset",
+          "probe_id": "invoke-jsonable-encoder",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value",
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder.tutorial.datetime-model",
+          "probe_id": "invoke-jsonable-encoder",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value",
+            "python.signature"
+          ]
+        }
       ]
     },
     {
@@ -1997,6 +2249,17 @@
           "symbol_id": "fastapi.__version__",
           "path": "fastapi/__init__.py",
           "sha256": "036406d9f615d215ac92794c38c799eee6b498935659ce0335debfd47815d7b9"
+        }
+      ],
+      "api_probes": [
+        {
+          "case_id": "fastapi.public-api.package-version-value",
+          "probe_id": "package-version",
+          "symbol_id": "fastapi.__version__",
+          "probe_kind": "attribute",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
         }
       ]
     },
@@ -2371,6 +2634,575 @@
         "fastapi.jsonable-encoder-atlas-wave.output-matrix",
         "fastapi.jsonable-encoder-atlas-wave.unsupported-value-error",
         "fastapi.jsonable-encoder-atlas-wave.pydantic-v1-model-rejection"
+      ],
+      "api_probes": [
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "custom-class",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "custom-class-empty-exclude",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "custom-class-empty-include",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "custom-class-exclude",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "custom-class-include",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "custom-encoder-default",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "custom-encoder-exact-subtype",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "custom-encoder-parent-type",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "custom-enum-encoder",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "custom-field-serializer",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "dataclass",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "dataclass-empty-exclude",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "dataclass-empty-include",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "dataclass-exclude",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "dataclass-include",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "decimal-finite-float",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "decimal-integer",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "decimal-nan",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "decimal-negative-infinity",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "decimal-positive-infinity",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "deque-child-model",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "dict-default",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "dict-empty-exclude",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "dict-empty-exclude-list",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "dict-empty-include",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "dict-empty-include-list",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "dict-exclude-list",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "dict-exclude-set",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "dict-include-list",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "dict-include-set",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "dict-items-override",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "dict-sqlalchemy-safe-falsy",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "dictable-object",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "dictable-object-empty-exclude",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "dictable-object-empty-include",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "dictable-object-exclude",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "dictable-object-include",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "list-exclude-generator",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "list-include-generator",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "model-alias",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "model-combined-filters",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "model-defaults",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "model-dump-keyword-presence",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "model-empty-exclude-set",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "model-empty-include-set",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "model-enum-config",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "model-exclude-defaults",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "model-exclude-set",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "model-exclude-unset",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "model-include-set",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "model-subclass-custom-serializer",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "nested-model-dict",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "nested-model-dict-list",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "nested-model-dict-unfiltered",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "nested-model-list",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "pure-path-in-model",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "pure-path-value",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "pure-posix-path-in-model",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "pure-windows-path-in-model",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "pydantic-color",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.output-matrix",
+          "probe_id": "undefined-value",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.pydantic-v1-model-rejection",
+          "probe_id": "pydantic-v1-model-rejection",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder-atlas-wave.unsupported-value-error",
+          "probe_id": "unsupported-value-error",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        }
       ]
     },
     {
@@ -2877,6 +3709,152 @@
       "workload_sha256": "8de486419aca3d08631bdc68dbfbd0195dfb58cf9db3f3b68c6b54d7eca31306",
       "case_ids": [
         "fastapi.test.test-operations-signatures.test-signatures-consistency"
+      ],
+      "api_probes": [
+        {
+          "case_id": "fastapi.test.test-operations-signatures.test-signatures-consistency",
+          "probe_id": "apirouter-delete-signature",
+          "symbol_id": "fastapi.routing.APIRouter.delete",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.test.test-operations-signatures.test-signatures-consistency",
+          "probe_id": "apirouter-get-signature",
+          "symbol_id": "fastapi.routing.APIRouter.get",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.test.test-operations-signatures.test-signatures-consistency",
+          "probe_id": "apirouter-head-signature",
+          "symbol_id": "fastapi.routing.APIRouter.head",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.test.test-operations-signatures.test-signatures-consistency",
+          "probe_id": "apirouter-options-signature",
+          "symbol_id": "fastapi.routing.APIRouter.options",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.test.test-operations-signatures.test-signatures-consistency",
+          "probe_id": "apirouter-patch-signature",
+          "symbol_id": "fastapi.routing.APIRouter.patch",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.test.test-operations-signatures.test-signatures-consistency",
+          "probe_id": "apirouter-post-signature",
+          "symbol_id": "fastapi.routing.APIRouter.post",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.test.test-operations-signatures.test-signatures-consistency",
+          "probe_id": "apirouter-put-signature",
+          "symbol_id": "fastapi.routing.APIRouter.put",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.test.test-operations-signatures.test-signatures-consistency",
+          "probe_id": "apirouter-trace-signature",
+          "symbol_id": "fastapi.routing.APIRouter.trace",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.test.test-operations-signatures.test-signatures-consistency",
+          "probe_id": "fastapi-delete-signature",
+          "symbol_id": "fastapi.applications.FastAPI.delete",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.test.test-operations-signatures.test-signatures-consistency",
+          "probe_id": "fastapi-get-signature",
+          "symbol_id": "fastapi.applications.FastAPI.get",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.test.test-operations-signatures.test-signatures-consistency",
+          "probe_id": "fastapi-head-signature",
+          "symbol_id": "fastapi.applications.FastAPI.head",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.test.test-operations-signatures.test-signatures-consistency",
+          "probe_id": "fastapi-options-signature",
+          "symbol_id": "fastapi.applications.FastAPI.options",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.test.test-operations-signatures.test-signatures-consistency",
+          "probe_id": "fastapi-patch-signature",
+          "symbol_id": "fastapi.applications.FastAPI.patch",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.test.test-operations-signatures.test-signatures-consistency",
+          "probe_id": "fastapi-post-signature",
+          "symbol_id": "fastapi.applications.FastAPI.post",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.test.test-operations-signatures.test-signatures-consistency",
+          "probe_id": "fastapi-put-signature",
+          "symbol_id": "fastapi.applications.FastAPI.put",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.test.test-operations-signatures.test-signatures-consistency",
+          "probe_id": "fastapi-trace-signature",
+          "symbol_id": "fastapi.applications.FastAPI.trace",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        }
       ]
     },
     {
@@ -4110,6 +5088,35 @@
       "case_ids": [
         "fastapi.jsonable-encoder.pydantic-undefined",
         "fastapi.jsonable-encoder.pydantic-core-urls"
+      ],
+      "api_probes": [
+        {
+          "case_id": "fastapi.jsonable-encoder.pydantic-core-urls",
+          "probe_id": "public-any-url",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder.pydantic-core-urls",
+          "probe_id": "raw-core-url",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.jsonable-encoder.pydantic-undefined",
+          "probe_id": "undefined-sentinel",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        }
       ]
     },
     {
@@ -5363,7 +6370,7 @@
       "input_path": "tests/fixtures/inputs/parity/response-model-data-filter-exclude-unset-none-review.json",
       "input_sha256": "e8df817a4df31b3f2f646068c8a9286416ff13577822d1fc572bbc5d8eb34a17",
       "recipe_path": "tests/fixtures/input-recipes/parity/response-model-data-filter-exclude-unset-none-review.yaml",
-      "recipe_sha256": "615dc104c83299132f20ea3934fa33f274545a4074239cdfcfe3028f2df10e19",
+      "recipe_sha256": "44c4fbde108c8f1ab10f6d1125f11db9bc4761d203ceb79d26862f2c02bcf7ed",
       "workload_path": "tests/fixtures/workloads/response_model_data_filter_exclude_unset_none_review.py",
       "workload_sha256": "24b60f06b2472a0254c9ae15d0b208e0edd99d3cb8a3833696d343bacd0c13cd",
       "case_ids": [

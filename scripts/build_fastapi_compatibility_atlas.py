@@ -9804,6 +9804,7 @@ def render_markdown(atlas: dict[str, Any]) -> str:
     if api_contract.get("schema") not in {
         "fastapi-rs/public-api-contract@1",
         "fastapi-rs/public-api-contract@2",
+        "fastapi-rs/public-api-contract@3",
     }:
         raise AtlasError("manifest has no generated per-symbol source API contract")
     required_public_symbols = api_contract_counts.get("required_public_symbols", 0)
@@ -9819,6 +9820,9 @@ def render_markdown(atlas: dict[str, Any]) -> str:
     )
     symbols_with_documented_refs = api_contract_counts.get(
         "symbols_with_documented_feature_refs", 0
+    )
+    symbols_with_api_workflow_refs = api_contract_counts.get(
+        "symbols_with_direct_api_input_workflow_refs", 0
     )
     materialized_index = json.loads(
         (PROJECT / "tests/fixtures/materialized-input-index.json").read_text(encoding="utf-8")
@@ -9908,12 +9912,13 @@ def render_markdown(atlas: dict[str, Any]) -> str:
         "",
         "## Per-symbol API contract in the active manifest",
         "",
-        "The single `tests/fixtures/manifest.yaml` indexes %d source-supported symbols and %d separately reviewed inherited API candidates (%d public API candidates total). Direct symbols link to the pinned AST inventory and both runtime-reflection profiles; inherited candidates either delegate to a canonical Starlette-RS operation or record a pinned source signature and explicit sibling-contract gap, without treating registration as ASGI dispatch. The contract links alias, deprecation, error, documented-feature, selector, and planned Python import-path evidence; %d direct symbols link to a documented-page fixture design. The current Python facade directly re-exports %d native names; this source contract does not measure behavioral completeness, and broader operation-level review remains pending."
+        "The single `tests/fixtures/manifest.yaml` indexes %d source-supported symbols and %d separately reviewed inherited API candidates (%d public API candidates total). Direct symbols link to the pinned AST inventory and both runtime-reflection profiles; inherited candidates either delegate to a canonical Starlette-RS operation or record a pinned source signature and explicit sibling-contract gap, without treating registration as ASGI dispatch. The contract links alias, deprecation, error, documented-feature, direct API workflow, selector, and planned Python import-path evidence; %d direct symbols link to a documented-page fixture design and %d to a direct API input workflow. The current Python facade directly re-exports %d native names; this source contract does not measure behavioral completeness, and broader operation-level review remains pending."
         % (
             required_public_symbols,
             required_inherited_operations,
             required_public_api_candidates,
             symbols_with_documented_refs,
+            symbols_with_api_workflow_refs,
             native_facade_exports,
         ),
         "",

@@ -147,6 +147,7 @@ def validate_command(args: argparse.Namespace) -> dict[str, Any]:
         inventory=read_json(inventory_path),
         atlas=read_json(atlas_path),
         backlog=read_json(backlog_path),
+        materialized_input_index=read_json(materialized_path),
         runtime_core=read_json(runtime_core_path),
         runtime_standard=read_json(runtime_standard_path),
     )
@@ -498,6 +499,7 @@ def api_validate_command(args: argparse.Namespace) -> dict[str, Any]:
         workflow,
         manifest.get("api_surface_contract", {}),
         _manifest_api_inventory(manifest),
+        input_path=_relative_path(workflow_path),
     )
     return {
         "status": "valid",
@@ -600,6 +602,7 @@ def api_oracle_command(args: argparse.Namespace) -> dict[str, Any]:
         workflow,
         manifest.get("api_surface_contract", {}),
         _manifest_api_inventory(manifest),
+        input_path=_relative_path(workflow_path),
     )
     oracle_profile = manifest["oracle_profile"]
     command = [
@@ -694,6 +697,7 @@ def api_target_command(args: argparse.Namespace) -> dict[str, Any]:
         workflow,
         manifest.get("api_surface_contract", {}),
         _manifest_api_inventory(manifest),
+        input_path=_relative_path(workflow_path),
     )
     target_profile = {
         "python": manifest["oracle_profile"]["python"],

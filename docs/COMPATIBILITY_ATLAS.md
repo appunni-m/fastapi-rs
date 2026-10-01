@@ -6,7 +6,7 @@ This source-backed compatibility atlas indexes the API denominator and candidate
 
 - FastAPI: 0.141.1 at `95f8322ee1dcda7ceace7b1c4f6c9915b36d748f`.
 - Starlette oracle contract: 1.6.0 at `4f250d6b814587e20c5365f0a5f0c4d42bcb929f` (the sole selected Starlette version).
-- Starlette-RS implementation contract: at `7005dbcabab50efa464b4229ac31497c7fd4dd12`.
+- Starlette-RS implementation contract: at `0aa2ddb04fa792ac3a57d04ce8f0763c0c64e007`.
 - FastAPI declares `starlette>=0.46.0`, which admits the selected contract. Its upstream lock graph is dependency-inventory evidence, not another compatibility profile.
 - Pydantic: 2.13.4 source-lock baseline; Python support is `>=3.10`.
 
@@ -20,7 +20,7 @@ This source-backed compatibility atlas indexes the API denominator and candidate
 
 ## Per-symbol API contract in the active manifest
 
-The single `tests/fixtures/manifest.yaml` indexes 461 source-supported symbols and 3 separately reviewed inherited API candidates (464 public API candidates total). Direct symbols link to the pinned AST inventory and both runtime-reflection profiles; inherited candidates either delegate to a canonical Starlette-RS operation or record a pinned source signature and explicit sibling-contract gap, without treating registration as ASGI dispatch. The contract links alias, deprecation, error, documented-feature, selector, and planned Python import-path evidence; 454 direct symbols link to a documented-page fixture design. The current Python facade directly re-exports 20 native names; this source contract does not measure behavioral completeness, and broader operation-level review remains pending.
+The single `tests/fixtures/manifest.yaml` indexes 461 source-supported symbols and 3 separately reviewed inherited API candidates (464 public API candidates total). Direct symbols link to the pinned AST inventory and both runtime-reflection profiles; inherited candidates either delegate to a canonical Starlette-RS operation or record a pinned source signature and explicit sibling-contract gap, without treating registration as ASGI dispatch. The contract links alias, deprecation, error, documented-feature, direct API workflow, selector, and planned Python import-path evidence; 454 direct symbols link to a documented-page fixture design and 31 to a direct API input workflow. The current Python facade directly re-exports 20 native names; this source contract does not measure behavioral completeness, and broader operation-level review remains pending.
 
 | Signature/shape evidence | Symbols |
 |---|---:|
@@ -548,7 +548,7 @@ The merged coverage matrix links each FastAPI test, documented feature, or examp
 |---:|---:|---:|---:|
 | 945 | 2461 | 511 | 8 |
 
-The sibling Starlette-RS manifest, API review, and coverage matrix remain the sole Starlette API inventory. FastAPI's atlas stores only relevant requirement references plus manifest/catalog/review/matrix SHA-256 digests. The inspected Starlette-RS implementation revision is 7005dbcabab50efa464b4229ac31497c7fd4dd12 (pinned, clean sibling Git commit).
+The sibling Starlette-RS manifest, API review, and coverage matrix remain the sole Starlette API inventory. FastAPI's atlas stores only relevant requirement references plus manifest/catalog/review/matrix SHA-256 digests. The inspected Starlette-RS implementation revision is 0aa2ddb04fa792ac3a57d04ce8f0763c0c64e007 (pinned, clean sibling Git commit).
 
 ## Errors, aliases, optional features, and deprecations
 

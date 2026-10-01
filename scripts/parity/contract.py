@@ -45,6 +45,7 @@ WORKFLOW_SCHEMA_V6_ID = "fastapi-rs/python-asgi-workflow@6"
 API_WORKFLOW_SCHEMA_ID = "fastapi-rs/python-api-workflow@1"
 API_WORKFLOW_SCHEMA_V2_ID = "fastapi-rs/python-api-workflow@2"
 API_WORKFLOW_SCHEMA_V3_ID = "fastapi-rs/python-api-workflow@3"
+MATERIALIZED_INPUT_INDEX_SCHEMA_ID = "fastapi-rs/materialized-input-index@2"
 API_RESULT_SCHEMA_ID = "fastapi-rs/python-api-workflow-result@2"
 API_RESULT_SCHEMA_V3_ID = "fastapi-rs/python-api-workflow-result@3"
 API_RESULT_SCHEMA_V4_ID = "fastapi-rs/python-api-workflow-result@4"
@@ -268,7 +269,7 @@ def read_manifest() -> dict[str, Any]:
         "name": "starlette-rs-py",
         "version": "0.1.0",
         "starlette_contract": "1.6.0",
-        "commit": "7005dbcabab50efa464b4229ac31497c7fd4dd12",
+        "commit": "0aa2ddb04fa792ac3a57d04ce8f0763c0c64e007",
     }:
         raise ContractError("manifest target must select Starlette-RS 0.1.0 for the 1.6.0 contract")
     source_artifacts = manifest.get("source_artifacts")
@@ -290,7 +291,7 @@ def read_manifest() -> dict[str, Any]:
             raise ContractError(f"manifest {artifact_name} reference is missing")
         _verify_digest_ref(artifact.get("path"), artifact.get("sha256"), artifact_name)
         if artifact_name == "materialized_input_index":
-            if artifact.get("schema") != "fastapi-rs/materialized-input-index@1":
+            if artifact.get("schema") != MATERIALIZED_INPUT_INDEX_SCHEMA_ID:
                 raise ContractError("manifest materialized input index schema is unsupported")
             _verify_digest_ref(
                 artifact.get("schema_path"),

@@ -14,18 +14,21 @@ from scripts.atlas_documentation_example_review_mappings import (
     DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS,
 )
 from scripts.parity.contract import (
+    API_WORKFLOW_SCHEMA_IDS,
+    MATERIALIZED_INPUT_INDEX_SCHEMA_ID,
     ROOT,
     ContractError,
     load_workflow,
     read_json,
     sha256_file,
 )
-from scripts.parity.materialized import _source_selectors_for_case
+from scripts.parity.materialized import _api_probe_selectors, _source_selectors_for_case
 
 INDEX_PATH = ROOT / "tests/fixtures/materialized-input-index.json"
 INPUT_DIR = ROOT / "tests/fixtures/inputs/parity"
 FASTAPI_SOURCE = (ROOT / "../fastapi").resolve()
 MANIFEST_PATH = ROOT / "tests/fixtures/manifest.yaml"
+INDEX_SCHEMA = MATERIALIZED_INPUT_INDEX_SCHEMA_ID
 
 
 def _source_item_id(
@@ -102,6 +105,7 @@ def _scope(case_count: int, selectors: set[str]) -> str:
 def _manifest_with_current_index(text: str, index: dict[str, Any]) -> str:
     index_bytes = (json.dumps(index, indent=2) + "\n").encode("utf-8")
     values = {
+        "schema": index["schema"],
         "sha256": hashlib.sha256(index_bytes).hexdigest(),
         "schema_sha256": sha256_file(
             ROOT / "tests/fixtures/schemas/materialized-input-index.schema.json"
@@ -122,6 +126,7 @@ def _manifest_with_current_index(text: str, index: dict[str, Any]) -> str:
         len(lines),
     )
     replacements = {
+        "schema": re.compile(r"^    schema: .*(\n?)$"),
         "sha256": re.compile(r"^    sha256: .*(\n?)$"),
         "schema_sha256": re.compile(r"^    schema_sha256: .*(\n?)$"),
         "workflows": re.compile(r"^      workflows: .*(\n?)$"),
@@ -133,7 +138,7 @@ def _manifest_with_current_index(text: str, index: dict[str, Any]) -> str:
         for key, pattern in replacements.items():
             match = pattern.match(lines[i])
             if match:
-                indent = "    " if key in {"sha256", "schema_sha256"} else "      "
+                indent = "    " if key in {"schema", "sha256", "schema_sha256"} else "      "
                 lines[i] = f"{indent}{key}: {values[key]}{match[1]}"
                 found.add(key)
                 break
@@ -150,6 +155,9 @@ def build_index() -> dict[str, Any]:
     selector_catalog = read_json(ROOT / "tests/fixtures/observation-selectors.json")
     selector_support = {
         row["id"]: row["workflow_support"] for row in selector_catalog["selectors"] if "id" in row
+    }
+    supported_api_symbols = {
+        row["id"] for row in atlas["api_candidates"] if row["classification"] == "supported"
     }
     coverage_by_path: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for row in atlas["coverage_matrix"]:
@@ -170,13 +178,35 @@ def build_index() -> dict[str, Any]:
             input_path, source_root=FASTAPI_SOURCE
         )
         api_definitions = []
+        api_probes = []
         for case in workflow["cases"]:
             public_symbol_ids: set[str] = set()
-            for probe in case.get("probes", []):
+            case_probes = case.get("probes", [])
+            for probe in case_probes:
                 for key in ("public_callable", "public_attribute"):
                     reference = probe.get(key)
                     if isinstance(reference, dict):
                         public_symbol_ids.add(f"{reference['module']}.{reference['attribute']}")
+            if workflow["schema"] in API_WORKFLOW_SCHEMA_IDS:
+                for probe in case_probes:
+                    reference = probe.get("public_callable", probe.get("public_attribute"))
+                    symbol_id = f"{reference['module']}.{reference['attribute']}"
+                    if symbol_id not in supported_api_symbols:
+                        raise ContractError(
+                            "direct API workflow probe is outside the supported source API "
+                            f"contract: {case['case_id']} -> {symbol_id}"
+                        )
+                    api_probes.append(
+                        {
+                            "case_id": case["case_id"],
+                            "probe_id": probe["probe_id"],
+                            "symbol_id": symbol_id,
+                            "probe_kind": (
+                                "callable" if "public_callable" in probe else "attribute"
+                            ),
+                            "observation_selectors": _api_probe_selectors(probe, selector_support),
+                        }
+                    )
             for evidence in case["source_evidence"]:
                 if evidence["kind"] != "upstream_api_definition":
                     continue
@@ -219,6 +249,11 @@ def build_index() -> dict[str, Any]:
             workflow_ref["api_definitions"] = sorted(
                 api_definitions,
                 key=lambda row: (row["case_id"], row["symbol_id"], row["path"]),
+            )
+        if api_probes:
+            workflow_ref["api_probes"] = sorted(
+                api_probes,
+                key=lambda row: (row["case_id"], row["probe_id"], row["symbol_id"]),
             )
         workflow_rows[workflow_id] = workflow_ref
 
@@ -278,7 +313,7 @@ def build_index() -> dict[str, Any]:
             }
 
     generated = {
-        "schema": current["schema"],
+        "schema": INDEX_SCHEMA,
         "authority": current["authority"],
         "workflows": sorted(workflow_rows.values(), key=lambda row: row["id"]),
         "mappings": sorted(

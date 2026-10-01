@@ -9,7 +9,9 @@ from jsonschema import Draft202012Validator
 
 from scripts.build_parity_inputs import read_recipe
 from scripts.parity.contract import (
+    API_WORKFLOW_SCHEMA_IDS,
     API_WORKFLOW_SCHEMA_V3_ID,
+    MATERIALIZED_INPUT_INDEX_SCHEMA_ID,
     ROOT,
     WORKFLOW_SCHEMA_V3_ID,
     WORKFLOW_SCHEMA_V4_ID,
@@ -22,7 +24,40 @@ from scripts.parity.contract import (
 )
 
 INDEX_SCHEMA = ROOT / "tests/fixtures/schemas/materialized-input-index.schema.json"
-INDEX_SCHEMA_ID = "fastapi-rs/materialized-input-index@1"
+INDEX_SCHEMA_ID = MATERIALIZED_INPUT_INDEX_SCHEMA_ID
+API_OBSERVATION_SELECTORS = {
+    "python_attribute_value": "python.attribute_value",
+    "python_call_outcome": "python.call_outcome",
+    "python_import_path": "python.import_path",
+    "python_object_identity": "python.object_identity",
+    "python_return_value": "python.attribute_value",
+    "python_signature": "python.signature",
+}
+
+
+def _api_probe_selectors(probe: dict[str, Any], selector_support: dict[str, str]) -> list[str]:
+    selectors: set[str] = set()
+    for observation in probe.get("observations", []):
+        selector = API_OBSERVATION_SELECTORS.get(observation.get("kind"))
+        if selector is None:
+            raise ContractError(
+                f"direct API probe has no selector mapping: {probe.get('probe_id')} -> "
+                f"{observation.get('kind')}"
+            )
+        if selector_support.get(selector) not in {"supported", "partial"}:
+            raise ContractError(f"direct API probe selects an unsupported observation: {selector}")
+        selectors.add(selector)
+    if probe.get("capture_warnings"):
+        if selector_support.get("python.warnings") != "supported":
+            raise ContractError(
+                "direct API warning capture requires the supported python.warnings selector"
+            )
+        selectors.add("python.warnings")
+    if not selectors:
+        raise ContractError(
+            f"direct API probe has no observable selectors: {probe.get('probe_id')}"
+        )
+    return sorted(selectors)
 
 
 def _fail(message: str) -> None:
@@ -179,6 +214,12 @@ def validate_materialized_input_index(
     coverage_rows = {row["id"]: row for row in atlas["coverage_matrix"]}
     backlog_rows = {row["source_item_id"]: row for row in backlog["fixture_designs"]}
     selector_rows = {row["id"]: row for row in selector_catalog["selectors"] if "id" in row}
+    selector_support = {
+        selector_id: selector["workflow_support"] for selector_id, selector in selector_rows.items()
+    }
+    supported_api_symbols = {
+        row["id"] for row in atlas["api_candidates"] if row["classification"] == "supported"
+    }
     workflow_cases: dict[str, dict[str, dict[str, Any]]] = {}
     workflow_schemas: dict[str, str] = {}
     api_definition_cases: dict[str, set[str]] = {}
@@ -266,6 +307,33 @@ def validate_materialized_input_index(
         )
         if workflow_ref.get("api_definitions", []) != expected_api_definitions:
             _fail(f"API source-definition references differ from workflow evidence: {workflow_id}")
+        expected_api_probes: list[dict[str, Any]] = []
+        if workflow["schema"] in API_WORKFLOW_SCHEMA_IDS:
+            for case in workflow["cases"]:
+                for probe in case.get("probes", []):
+                    reference = probe.get("public_callable", probe.get("public_attribute"))
+                    symbol_id = f"{reference['module']}.{reference['attribute']}"
+                    if symbol_id not in supported_api_symbols:
+                        _fail(
+                            "direct API workflow probe is outside the supported source API "
+                            f"contract: {case['case_id']} -> {symbol_id}"
+                        )
+                    expected_api_probes.append(
+                        {
+                            "case_id": case["case_id"],
+                            "probe_id": probe["probe_id"],
+                            "symbol_id": symbol_id,
+                            "probe_kind": (
+                                "callable" if "public_callable" in probe else "attribute"
+                            ),
+                            "observation_selectors": _api_probe_selectors(probe, selector_support),
+                        }
+                    )
+        expected_api_probes.sort(
+            key=lambda row: (row["case_id"], row["probe_id"], row["symbol_id"])
+        )
+        if workflow_ref.get("api_probes", []) != expected_api_probes:
+            _fail(f"direct API probe references differ from workflow input: {workflow_id}")
         api_definition_cases[workflow_id] = defined_cases
         actual_cases = {case["case_id"]: case for case in workflow["cases"]}
         if set(actual_cases) != set(workflow_ref["case_ids"]):

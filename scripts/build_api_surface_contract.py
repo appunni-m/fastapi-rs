@@ -40,6 +40,7 @@ def _build(manifest: dict[str, Any]) -> dict[str, Any]:
         inventory=artifact("api_inventory"),
         atlas=artifact("compatibility_atlas"),
         backlog=artifact("fixture_backlog"),
+        materialized_input_index=artifact("materialized_input_index"),
         runtime_core=artifact("runtime_api_surface_core"),
         runtime_standard=artifact("runtime_api_surface_standard"),
     )

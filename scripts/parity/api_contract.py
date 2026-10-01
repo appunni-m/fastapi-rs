@@ -13,9 +13,9 @@ from typing import Any
 
 import yaml
 
-from scripts.parity.contract import ContractError
+from scripts.parity.contract import MATERIALIZED_INPUT_INDEX_SCHEMA_ID, ContractError
 
-CONTRACT_SCHEMA = "fastapi-rs/public-api-contract@2"
+CONTRACT_SCHEMA = "fastapi-rs/public-api-contract@3"
 TARGET_PROFILE = "fastapi-rs-python-consumer"
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 OVERLAY_SCHEMA = "fastapi-rs/reviewed-api-contract-overlay@2"
@@ -856,6 +856,7 @@ def build_api_surface_contract(
     inventory: dict[str, Any],
     atlas: dict[str, Any],
     backlog: dict[str, Any],
+    materialized_input_index: dict[str, Any],
     runtime_core: dict[str, Any],
     runtime_standard: dict[str, Any],
     reviewed_overlay: dict[str, Any] | None = None,
@@ -1270,6 +1271,64 @@ def build_api_surface_contract(
         for feature_id in row[1].get("feature_ids", [])
     }
     known_error_ids = set(errors)
+    if materialized_input_index.get("schema") != MATERIALIZED_INPUT_INDEX_SCHEMA_ID:
+        raise ContractError("materialized input index schema is unsupported for the API contract")
+    api_input_refs_by_symbol: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    seen_api_probe_refs: set[tuple[str, str, str, str]] = set()
+    for workflow_ref in materialized_input_index.get("workflows", []):
+        if not isinstance(workflow_ref, dict):
+            raise ContractError("materialized input index contains an invalid workflow row")
+        for probe_ref in workflow_ref.get("api_probes", []):
+            if not isinstance(probe_ref, dict):
+                raise ContractError("materialized input index contains an invalid API probe row")
+            symbol_id = probe_ref.get("symbol_id")
+            case_id = probe_ref.get("case_id")
+            probe_id = probe_ref.get("probe_id")
+            workflow_id = workflow_ref.get("id")
+            selectors = probe_ref.get("observation_selectors")
+            if (
+                not isinstance(symbol_id, str)
+                or symbol_id not in api_symbol_ids
+                or not isinstance(case_id, str)
+                or case_id not in workflow_ref.get("case_ids", [])
+                or not isinstance(probe_id, str)
+                or not isinstance(workflow_id, str)
+                or not isinstance(selectors, list)
+                or not selectors
+                or any(not isinstance(selector, str) for selector in selectors)
+                or not set(selectors) <= known_selectors
+            ):
+                raise ContractError(
+                    f"materialized direct API probe has an invalid source or selector link: "
+                    f"{workflow_id}::{case_id}::{probe_id}"
+                )
+            key = (workflow_id, case_id, probe_id, symbol_id)
+            if key in seen_api_probe_refs:
+                raise ContractError(f"materialized direct API probe is duplicated: {key}")
+            seen_api_probe_refs.add(key)
+            api_input_refs_by_symbol[symbol_id].append(
+                {
+                    "workflow_id": workflow_id,
+                    "input_path": workflow_ref["input_path"],
+                    "input_sha256": workflow_ref["input_sha256"],
+                    "recipe_path": workflow_ref["recipe_path"],
+                    "recipe_sha256": workflow_ref["recipe_sha256"],
+                    "workload_path": workflow_ref["workload_path"],
+                    "workload_sha256": workflow_ref["workload_sha256"],
+                    "case_id": case_id,
+                    "probe_id": probe_id,
+                    "probe_kind": probe_ref["probe_kind"],
+                    "observation_selectors": sorted(set(selectors)),
+                }
+            )
+    for references in api_input_refs_by_symbol.values():
+        references.sort(
+            key=lambda reference: (
+                reference["workflow_id"],
+                reference["case_id"],
+                reference["probe_id"],
+            )
+        )
     for operation_id, operation in overlay_operations.items():
         if not isinstance(operation, dict):
             raise ContractError(f"reviewed API overlay operation must be a mapping: {operation_id}")
@@ -1645,6 +1704,7 @@ def build_api_surface_contract(
         selectors: set[str] = set()
         feature_ids: set[str] = set()
         reviewed_operation = overlay_operations.get(symbol_id, {})
+        input_workflow_refs = api_input_refs_by_symbol.get(symbol_id, [])
         for source_path in sorted(_source_doc_paths(candidate.get("public_evidence", []))):
             row_ref = coverage_by_doc_path.get(source_path)
             if row_ref is None:
@@ -1667,6 +1727,8 @@ def build_api_surface_contract(
 
         feature_ids.update(reviewed_operation.get("feature_ids", []))
         selectors.update(reviewed_operation.get("observation_selectors", []))
+        for input_workflow_ref in input_workflow_refs:
+            selectors.update(input_workflow_ref["observation_selectors"])
         rust_binding = reviewed_operation.get("rust_binding")
         if rust_binding is not None and (
             not isinstance(rust_binding, str) or not rust_binding.strip()
@@ -1722,6 +1784,7 @@ def build_api_surface_contract(
                 "deprecation_refs": deprecations.get(symbol_id, []),
                 "error_contract_refs": error_refs,
                 "documentation_contract_refs": documentation_refs,
+                "input_workflow_refs": input_workflow_refs,
                 "feature_ids": sorted(feature_ids),
                 "observation_selectors": sorted(selectors),
                 "behavior_contract_state": (
@@ -1729,6 +1792,8 @@ def build_api_surface_contract(
                     if reviewed_operation
                     else "documentation-fixture-design-linked; operation-level review pending"
                     if documentation_refs
+                    else "direct-api-input-fixture-linked; behavior review pending"
+                    if input_workflow_refs
                     else "source-evidence-only; fixture link pending"
                 ),
                 "target_binding": {
@@ -1776,6 +1841,7 @@ def build_api_surface_contract(
         "coverage_source": [
             "source_artifacts.compatibility_atlas.coverage_matrix",
             "source_artifacts.fixture_backlog",
+            "source_artifacts.materialized_input_index.api_probes",
         ],
         "counts": {
             "required_public_symbols": len(symbols),
@@ -1801,6 +1867,9 @@ def build_api_surface_contract(
             "symbols_with_error_contract_refs": sum(
                 bool(symbol["error_contract_refs"]) for symbol in symbols
             ),
+            "symbols_with_direct_api_input_workflow_refs": sum(
+                bool(symbol["input_workflow_refs"]) for symbol in symbols
+            ),
         },
         "symbols": symbols,
         "inherited_operations": inherited_operation_contracts,
@@ -1811,8 +1880,10 @@ def validate_api_workflow_public_surface(
     workflow: dict[str, Any],
     contract: dict[str, Any],
     inventory: dict[str, Any],
+    *,
+    input_path: str,
 ) -> list[str]:
-    """Require public probes and direct source-definition evidence to match the manifest."""
+    """Require each direct API probe to match a manifest input-workflow link."""
     if contract.get("schema") != CONTRACT_SCHEMA:
         raise ContractError("direct Python API workflow requires the generated public API contract")
     symbols = [
@@ -1858,6 +1929,21 @@ def validate_api_workflow_public_surface(
                 raise ContractError(
                     f"direct API {probe_kind} probe disagrees with manifest {manifest_kind} "
                     f"kind: {symbol_id}"
+                )
+            input_refs = symbol.get("input_workflow_refs", [])
+            matches = [
+                reference
+                for reference in input_refs
+                if isinstance(reference, dict)
+                and reference.get("input_path") == input_path
+                and reference.get("case_id") == case.get("case_id")
+                and reference.get("probe_id") == probe.get("probe_id")
+                and reference.get("symbol_id", symbol_id) == symbol_id
+            ]
+            if len(matches) != 1:
+                raise ContractError(
+                    "direct Python API probe has no unique manifest input-workflow link: "
+                    f"{input_path}::{case.get('case_id')}::{probe.get('probe_id')} -> {symbol_id}"
                 )
             selected.add(symbol_id)
             selected_in_case.add(symbol_id)
@@ -1942,6 +2028,7 @@ def validate_api_surface_contract(
     inventory: dict[str, Any],
     atlas: dict[str, Any],
     backlog: dict[str, Any],
+    materialized_input_index: dict[str, Any],
     runtime_core: dict[str, Any],
     runtime_standard: dict[str, Any],
 ) -> dict[str, Any]:
@@ -1950,6 +2037,7 @@ def validate_api_surface_contract(
         inventory=inventory,
         atlas=atlas,
         backlog=backlog,
+        materialized_input_index=materialized_input_index,
         runtime_core=runtime_core,
         runtime_standard=runtime_standard,
     )
