@@ -19,23 +19,29 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 METADATA_PATH = ROOT / "metadata.yaml"
 GRAPH_PATH = ROOT / "docs" / "DEPENDENCY_GRAPH.md"
+SOURCE_USE_PATH = ROOT / "docs" / "audit-locks" / "fastapi-0.141.1-source-use.yaml"
 TABLE_HEADER = (
     "Distribution @ locked version",
     "Surfaces",
     "Incoming edges / direct roots (extra; marker)",
-    "Purpose in selected path",
+    "PyPI summary (context only)",
     "Implementation / native parts",
     "License (release/sdist metadata)",
     "FastAPI imports",
+    "Source-backed use or explicit unresolved purpose",
 )
 REQUIRED_FIELDS = {
-    "Purpose in selected path": "purpose",
+    "PyPI summary (context only)": "package summary",
     "Implementation / native parts": "language/native components",
     "License (release/sdist metadata)": "license metadata",
     "FastAPI imports": "source-import evidence",
+    "Source-backed use or explicit unresolved purpose": "source-use evidence or unresolved purpose",
 }
-ROW_SEPARATOR = r"\|\s*:?-{3,}:?\s*(?:\|\s*:?-{3,}:?\s*){6}\|"
+ROW_SEPARATOR = r"\|\s*:?-{3,}:?\s*(?:\|\s*:?-{3,}:?\s*){7}\|"
 SURFACE_SUMMARY = re.compile(r"^- `([^`]+)`: ([0-9]+) locked distributions reachable\.$")
+SOURCE_USE_SUMMARY = re.compile(
+    r"^- Source-use review: [0-9]+ of [0-9]+ packages source-backed; [0-9]+ purposes unresolved\."
+)
 
 
 class DependencyGraphError(ValueError):
@@ -59,6 +65,7 @@ class DerivedGraph:
     versions: dict[str, str]
     surfaces: dict[str, set[str]]
     incoming_edges: dict[str, set[str]]
+    consumer_traces: dict[str, str]
     surface_counts: dict[str, int]
 
 
@@ -151,6 +158,141 @@ def canonical_name(name: str) -> str:
     return re.sub(r"[-_.]+", "-", name).lower()
 
 
+def _read_source_use_review() -> tuple[str, dict[str, dict[str, Any]]]:
+    try:
+        review: Any = yaml.safe_load(SOURCE_USE_PATH.read_text(encoding="utf-8"))
+    except (OSError, yaml.YAMLError) as exc:
+        raise DependencyGraphError(f"cannot read source-use review: {exc}") from exc
+    if not isinstance(review, dict) or review.get("schema") != (
+        "fastapi-rs/dependency-source-use-review@1"
+    ):
+        raise DependencyGraphError("source-use review has an unsupported schema")
+
+    metadata = _read_metadata()
+    authority = metadata["authority"]
+    lock = authority["upstream_source_lock"]
+    starlette = authority["starlette"]
+    declared_authority = review.get("authority")
+    expected_authority = {
+        "fastapi_version": authority["version"],
+        "fastapi_commit": authority["commit"],
+        "upstream_lock_sha256": lock["sha256"],
+        "starlette_version": starlette["version"],
+        "starlette_commit": starlette["commit"],
+    }
+    if declared_authority != expected_authority:
+        raise DependencyGraphError(
+            "source-use review identity differs from metadata.yaml: "
+            f"expected {expected_authority!r}, found {declared_authority!r}"
+        )
+
+    scope = review.get("scope")
+    if not isinstance(scope, dict) or not isinstance(scope.get("unresolved_default"), str):
+        raise DependencyGraphError("source-use review must explain its unresolved-purpose default")
+    evidence = review.get("source_backed")
+    if not isinstance(evidence, dict):
+        raise DependencyGraphError("source-use review source_backed must be a mapping")
+    normalized: dict[str, dict[str, Any]] = {}
+    for name, record in evidence.items():
+        if not isinstance(name, str) or not isinstance(record, dict):
+            raise DependencyGraphError("source-use review contains a malformed package record")
+        purpose = record.get("purpose")
+        sources = record.get("evidence")
+        if (
+            not isinstance(purpose, str)
+            or not purpose.strip()
+            or not isinstance(sources, list)
+            or not sources
+            or any(
+                not isinstance(source, str) or not source.startswith("https://")
+                for source in sources
+            )
+        ):
+            raise DependencyGraphError(
+                f"source-use review for {name!r} needs a purpose and HTTPS source evidence"
+            )
+        normalized_name = canonical_name(name)
+        if normalized_name in normalized:
+            raise DependencyGraphError(f"duplicate normalized source-use review name {name!r}")
+        normalized[normalized_name] = record
+    return scope["unresolved_default"], normalized
+
+
+def _root_label_for_display(label: str) -> str:
+    if label.endswith(" (base root)"):
+        return label[: -len(" (base root)")] + " [base]"
+    if label.endswith(" (root)"):
+        return label[: -len(" (root)")]
+    return label
+
+
+def _paths_from_roots(
+    root_edges: list[tuple[str, str]], children: dict[str, set[str]]
+) -> dict[str, tuple[str, ...]]:
+    paths: dict[str, tuple[str, ...]] = {}
+    queue: deque[tuple[str, tuple[str, ...]]] = deque()
+    for root_label, child in sorted(root_edges):
+        candidate = (root_label, child)
+        current = paths.get(child)
+        if current is None or (len(candidate), candidate) < (len(current), current):
+            paths[child] = candidate
+            queue.append((child, candidate))
+
+    while queue:
+        parent, parent_path = queue.popleft()
+        for child in sorted(children.get(parent, set())):
+            candidate = (*parent_path, child)
+            current = paths.get(child)
+            if current is not None and (len(current), current) <= (len(candidate), candidate):
+                continue
+            paths[child] = candidate
+            queue.append((child, candidate))
+    return paths
+
+
+def _consumer_surface_priority(surface: str) -> tuple[int, str]:
+    if surface == "runtime":
+        return (0, surface)
+    if surface.startswith("extra:"):
+        return (1, surface)
+    group_priority = {
+        "group:tests": 2,
+        "group:docs-tests": 2,
+        "group:docs": 2,
+        "group:translations": 2,
+        "group:github-actions": 2,
+        "group:dev": 3,
+    }
+    return (group_priority.get(surface, 4), surface)
+
+
+def _format_consumer_trace(surface: str, path: tuple[str, ...]) -> str:
+    display_path = (_root_label_for_display(path[0]), *path[1:])
+    return f"{surface}: " + " → ".join(display_path)
+
+
+def _render_source_use_note(
+    name: str,
+    graph: DerivedGraph,
+    unresolved_default: str,
+    source_backed: dict[str, dict[str, Any]],
+) -> str:
+    trace = graph.consumer_traces.get(name)
+    if trace is None:
+        raise DependencyGraphError(f"{name} has no lock-derived path to a declared profile root")
+    record = source_backed.get(name)
+    if record is None:
+        return f"**Purpose unresolved:** {unresolved_default} Consumer path: `{trace}`."
+    links = ", ".join(
+        f"[{source.rstrip('/').rsplit('/', 1)[-1].split('#', 1)[0]}]({source})"
+        for source in record["evidence"]
+    )
+    return (
+        f"**Source-backed purpose:** {record['purpose']} Consumer path: `{trace}`. "
+        f"Evidence: {links}."
+    )
+
+
 def split_markdown_row(line: str) -> list[str]:
     """Split a Markdown table row on unescaped pipes."""
     value = line.strip()
@@ -173,7 +315,9 @@ def split_markdown_row(line: str) -> list[str]:
     return cells
 
 
-def read_dependency_rows() -> tuple[dict[str, DependencyRow], list[str]]:
+def read_dependency_rows(
+    *, allow_missing_source_use: bool = False
+) -> tuple[dict[str, DependencyRow], list[str]]:
     try:
         lines = GRAPH_PATH.read_text(encoding="utf-8").splitlines()
     except OSError as exc:
@@ -196,6 +340,8 @@ def read_dependency_rows() -> tuple[dict[str, DependencyRow], list[str]]:
             break
         cells = split_markdown_row(line)
         line_number = line_index + 1
+        if allow_missing_source_use and len(cells) == len(TABLE_HEADER) - 1:
+            cells.append("")
         if len(cells) != len(TABLE_HEADER):
             raise DependencyGraphError(
                 f"{GRAPH_PATH.relative_to(ROOT)}:{line_number}: expected 7 cells, "
@@ -217,7 +363,11 @@ def read_dependency_rows() -> tuple[dict[str, DependencyRow], list[str]]:
         missing_fields = [
             field_name
             for field_name in REQUIRED_FIELDS
-            if not fields[field_name] or fields[field_name] == "—"
+            if (not fields[field_name] or fields[field_name] == "—")
+            and not (
+                allow_missing_source_use
+                and field_name == "Source-backed use or explicit unresolved purpose"
+            )
         ]
         if missing_fields:
             missing = ", ".join(REQUIRED_FIELDS[field_name] for field_name in missing_fields)
@@ -392,12 +542,16 @@ def derive_graph(lock_path: Path, project_path: Path) -> DerivedGraph:
 
     surfaces: dict[str, set[str]] = defaultdict(set)
     incoming_edges: dict[str, set[str]] = defaultdict(set)
+    consumer_traces: dict[str, str] = {}
+    trace_scores: dict[str, tuple[int, str, int, tuple[str, ...]]] = {}
     for surface, root_groups in profiles.items():
         reached: set[str] = set()
         contexts: dict[str, set[tuple[str, ...]]] = defaultdict(set)
         active_extras: dict[str, set[str]] = defaultdict(set)
         queue: deque[str] = deque()
         root_edges: dict[str, set[str]] = defaultdict(set)
+        surface_root_edges: list[tuple[str, str]] = []
+        surface_children: dict[str, set[str]] = defaultdict(set)
         processed_base: set[str] = set()
         processed_extras: dict[str, set[str]] = defaultdict(set)
 
@@ -407,6 +561,7 @@ def derive_graph(lock_path: Path, project_path: Path) -> DerivedGraph:
                 extras = tuple(sorted(set(requirement.get("extra", []))))
                 _add_context(name, extras, packages, contexts, active_extras, reached, queue)
                 root_edges[name].add(f"{root_label} -> {_target_label(requirement)}")
+                surface_root_edges.append((root_label, name))
 
         while queue:
             parent = queue.popleft()
@@ -419,6 +574,7 @@ def derive_graph(lock_path: Path, project_path: Path) -> DerivedGraph:
                     name = canonical_name(requirement["name"])
                     extras = tuple(sorted(set(requirement.get("extra", []))))
                     _add_context(name, extras, packages, contexts, active_extras, reached, queue)
+                    surface_children[parent].add(name)
             for extra in sorted(active_extras[parent] - processed_extras[parent]):
                 processed_extras[parent].add(extra)
                 optional = package.get("optional-dependencies", {}).get(extra, [])
@@ -426,6 +582,15 @@ def derive_graph(lock_path: Path, project_path: Path) -> DerivedGraph:
                     name = canonical_name(requirement["name"])
                     extras = tuple(sorted(set(requirement.get("extra", []))))
                     _add_context(name, extras, packages, contexts, active_extras, reached, queue)
+                    surface_children[parent].add(name)
+
+        paths = _paths_from_roots(surface_root_edges, surface_children)
+        surface_priority = _consumer_surface_priority(surface)
+        for name, path in paths.items():
+            score = (*surface_priority, len(path), path)
+            if name not in trace_scores or score < trace_scores[name]:
+                trace_scores[name] = score
+                consumer_traces[name] = _format_consumer_trace(surface, path)
 
         for child, edges in root_edges.items():
             incoming_edges[child].update(edges)
@@ -456,12 +621,17 @@ def derive_graph(lock_path: Path, project_path: Path) -> DerivedGraph:
         if unknown:
             details.append("profiles reach packages absent from the lock: " + ", ".join(unknown))
         raise DependencyGraphError("dependency graph closure failed: " + "; ".join(details))
+    missing_traces = sorted(set(packages) - set(consumer_traces))
+    if missing_traces:
+        raise DependencyGraphError(
+            "locked packages missing a direct consumer path: " + ", ".join(missing_traces)
+        )
 
     counts = {
         profile: sum(profile in package_surfaces for package_surfaces in surfaces.values())
         for profile in profiles
     }
-    return DerivedGraph(versions, dict(surfaces), dict(incoming_edges), counts)
+    return DerivedGraph(versions, dict(surfaces), dict(incoming_edges), consumer_traces, counts)
 
 
 def _read_surface_summary(lines: list[str]) -> tuple[dict[str, int], int, int]:
@@ -495,11 +665,26 @@ def _render_row(cells: list[str]) -> str:
     return "| " + " | ".join(cells) + " |"
 
 
-def update_document(rows: dict[str, DependencyRow], lines: list[str], graph: DerivedGraph) -> None:
+def _source_use_summary_line(package_count: int, source_backed_count: int) -> str:
+    unresolved_count = package_count - source_backed_count
+    return (
+        f"- Source-use review: {source_backed_count} of {package_count} packages source-backed; "
+        f"{unresolved_count} purposes unresolved."
+    )
+
+
+def update_document(
+    rows: dict[str, DependencyRow],
+    lines: list[str],
+    graph: DerivedGraph,
+    unresolved_default: str,
+    source_backed: dict[str, dict[str, Any]],
+) -> None:
     for name, row in rows.items():
         cells = list(row.cells)
         cells[1] = ", ".join(sorted(graph.surfaces[name]))
         cells[2] = "; ".join(sorted(graph.incoming_edges[name]))
+        cells[7] = _render_source_use_note(name, graph, unresolved_default, source_backed)
         lines[row.line_number - 1] = _render_row(cells)
 
     _, first_summary_line, last_summary_line = _read_surface_summary(lines)
@@ -508,6 +693,14 @@ def update_document(rows: dict[str, DependencyRow], lines: list[str], graph: Der
         for surface, count in sorted(graph.surface_counts.items())
     ]
     lines[first_summary_line : last_summary_line + 1] = rendered_summary
+    source_summary_matches = [
+        index for index, line in enumerate(lines) if line.startswith("- Source-use review:")
+    ]
+    if len(source_summary_matches) != 1:
+        raise DependencyGraphError(
+            "dependency graph needs exactly one Source-use review summary line"
+        )
+    lines[source_summary_matches[0]] = _source_use_summary_line(len(rows), len(source_backed))
     GRAPH_PATH.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
@@ -535,18 +728,36 @@ def _check_row_sets(locked: dict[str, str], rows: dict[str, DependencyRow]) -> l
 def check(*, update: bool = False) -> int:
     lock_path, project_path, digest = load_authority()
     graph = derive_graph(lock_path, project_path)
-    rows, lines = read_dependency_rows()
+    unresolved_default, source_backed = _read_source_use_review()
+    unknown_evidence = sorted(set(source_backed) - set(graph.versions))
+    if unknown_evidence:
+        raise DependencyGraphError(
+            "source-use review references packages absent from the pinned lock: "
+            + ", ".join(unknown_evidence)
+        )
+    rows, lines = read_dependency_rows(allow_missing_source_use=update)
     row_drift = _check_row_sets(graph.versions, rows)
     if row_drift:
         raise DependencyGraphError("dependency graph drift: " + "; ".join(row_drift))
 
+    missing_direct_source = sorted(
+        name for name, row in rows.items() if row.cells[6] == "yes" and name not in source_backed
+    )
+    if missing_direct_source:
+        raise DependencyGraphError(
+            "direct FastAPI imports need source-use evidence: " + ", ".join(missing_direct_source)
+        )
+
     if update:
-        update_document(rows, lines, graph)
+        update_document(rows, lines, graph, unresolved_default, source_backed)
         rows, lines = read_dependency_rows()
 
     for name, row in rows.items():
         expected_surfaces = ", ".join(sorted(graph.surfaces[name]))
         expected_edges = "; ".join(sorted(graph.incoming_edges[name]))
+        expected_source_use = _render_source_use_note(
+            name, graph, unresolved_default, source_backed
+        )
         if row.cells[1] != expected_surfaces:
             raise DependencyGraphError(
                 f"{GRAPH_PATH.relative_to(ROOT)}:{row.line_number}: {name} surface drift; "
@@ -557,6 +768,11 @@ def check(*, update: bool = False) -> int:
                 f"{GRAPH_PATH.relative_to(ROOT)}:{row.line_number}: {name} edge drift; "
                 f"expected {expected_edges!r}, found {row.cells[2]!r}"
             )
+        if row.cells[7] != expected_source_use:
+            raise DependencyGraphError(
+                f"{GRAPH_PATH.relative_to(ROOT)}:{row.line_number}: {name} source-use drift; "
+                f"expected {expected_source_use!r}, found {row.cells[7]!r}"
+            )
 
     summary, _, _ = _read_surface_summary(lines)
     if summary != graph.surface_counts:
@@ -565,11 +781,20 @@ def check(*, update: bool = False) -> int:
             f"expected {graph.surface_counts!r}, found {summary!r}"
         )
 
+    expected_source_summary = _source_use_summary_line(len(rows), len(source_backed))
+    source_summary = [line for line in lines if line.startswith("- Source-use review:")]
+    if source_summary != [expected_source_summary]:
+        raise DependencyGraphError(
+            "dependency graph source-use summary drift: "
+            f"expected {expected_source_summary!r}, found {source_summary!r}"
+        )
+
     print(
         "FastAPI dependency graph check passed: "
         f"{len(graph.versions)} locked distributions and {len(graph.surface_counts)} "
         f"profiles match lock-derived edges, extras, groups, markers, and reachability; "
-        f"reviewed purpose/language/license/import annotations are present; lock sha256={digest}"
+        f"source-use purpose evidence: {len(source_backed)} source-backed, "
+        f"{len(rows) - len(source_backed)} unresolved; lock sha256={digest}"
     )
     return 0
 

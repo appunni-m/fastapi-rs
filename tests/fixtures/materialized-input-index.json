@@ -2203,9 +2203,9 @@
     {
       "id": "exception-overrides",
       "input_path": "tests/fixtures/inputs/parity/exception-overrides.json",
-      "input_sha256": "a869a62533154474abe84c795559a025c95c27ebdec4fec20cc6c87ee18580dc",
+      "input_sha256": "e8ab10053bef5820afade38dbf67368e1408197a726223de0bf5abcdb668105b",
       "recipe_path": "tests/fixtures/input-recipes/parity/exception-overrides.yaml",
-      "recipe_sha256": "ef43b88a3b6f38e9a366103b64e9134f1b8fa8fce76367bd4697b0b44f11cd23",
+      "recipe_sha256": "3830b0a85a0b3feddb39c659e3ddd42e53cd019a5757f99112d692bbacac3c20",
       "workload_path": "tests/fixtures/workloads/exception_overrides.py",
       "workload_sha256": "d8aa8a72e98b9cd4c5736294ac8f392c4609cef4dc533e7a23f94160316d586b",
       "case_ids": [
@@ -6162,9 +6162,9 @@
     {
       "id": "request-validation-body",
       "input_path": "tests/fixtures/inputs/parity/request-validation-body.json",
-      "input_sha256": "f67ddd50d8d984390a714f02c7a2a45f1286288880662a10804f1f8cc963d725",
+      "input_sha256": "5b91c2ddfd5a974ad7dddb12a4f91c68b1a7e66c792ed6ae9832a0d2f2bfbc8f",
       "recipe_path": "tests/fixtures/input-recipes/parity/request-validation-body.yaml",
-      "recipe_sha256": "2845a35d3ceca719a7335652e85fd423ae3f0c8f7b65a58ed69833189b6eca12",
+      "recipe_sha256": "e3311aa507cc7651c47bd46995c1604f1a64e74ba75cbad8fcc817ec4db5dd33",
       "workload_path": "tests/fixtures/workloads/request_validation_body.py",
       "workload_sha256": "272512f9f7306ca5dc7eaf33b86b13662e40a83f53af9b1b25c2aa0c6012dec1",
       "case_ids": [
@@ -6370,7 +6370,7 @@
       "input_path": "tests/fixtures/inputs/parity/response-model-data-filter-exclude-unset-none-review.json",
       "input_sha256": "e8df817a4df31b3f2f646068c8a9286416ff13577822d1fc572bbc5d8eb34a17",
       "recipe_path": "tests/fixtures/input-recipes/parity/response-model-data-filter-exclude-unset-none-review.yaml",
-      "recipe_sha256": "b74598e43b945da18f006c320491a7e7e270a5d1ac7ab8d21b29c810d8c8c903",
+      "recipe_sha256": "05d968b0428840cbc300b809e68caf242888a8888cef7eb3606a6e60160aaea2",
       "workload_path": "tests/fixtures/workloads/response_model_data_filter_exclude_unset_none_review.py",
       "workload_sha256": "24b60f06b2472a0254c9ae15d0b208e0edd99d3cb8a3833696d343bacd0c13cd",
       "case_ids": [
@@ -13128,6 +13128,24 @@
         "http.body.bytes",
         "http.status",
         "validation.error_class"
+      ]
+    },
+    {
+      "source_item_id": "documented-example:docs_src/handling_errors/tutorial004_py310.py",
+      "fixture_id": "fastapi.docs-example.handling-errors-tutorial004-py310",
+      "workflow_id": "exception-overrides",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 4 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.docs.handling-errors.overridden-http-error",
+        "fastapi.docs.handling-errors.overridden-validation-error",
+        "fastapi.docs.handling-errors.override-success",
+        "fastapi.docs.handling-errors.overrides-openapi"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
       ]
     },
     {
@@ -21158,6 +21176,23 @@
       ],
       "observation_selectors": [
         "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-example:docs_src/handling_errors/tutorial005_py310.py",
+      "fixture_id": "fastapi.docs-example.handling-errors-tutorial005-py310",
+      "workflow_id": "request-validation-body",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.docs.handling-errors.body-echo.invalid-input",
+        "fastapi.docs.handling-errors.body-echo.openapi",
+        "fastapi.docs.handling-errors.body-echo.valid-input"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
         "http.status"
       ]
     },

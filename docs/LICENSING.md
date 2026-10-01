@@ -40,6 +40,50 @@ it does not relicense FastAPI, Starlette, Pydantic, or third-party material.
   source dependency graph is documented separately in
   [`DEPENDENCY_GRAPH.md`](DEPENDENCY_GRAPH.md).
 
+### Target Python runtime profile
+
+The target package declares Pydantic, Pydantic Core, and Starlette-RS-Py as
+runtime dependencies in [`pyproject.toml`](../pyproject.toml). The hashed
+requirements lock is a **scoped external-wheel lock** for CPython 3.12.13, not
+an all-in-one lock for building and installing the target: Starlette-RS-Py is
+installed separately from the source revision pinned in
+[`metadata.yaml`](../metadata.yaml), with `--no-deps`; its declared AnyIO
+requirement is resolved in the external-wheel lock. The lock also contains
+`annotated-doc` only to keep the parity environments' package identities
+aligned; the target package does not declare or import it. Lock inputs and exact
+wheel hashes are in the [profile input](../requirements/target-runtime-cpython-3.12.13.in)
+and [lock](../requirements/target-runtime-cpython-3.12.13.lock).
+
+| Package | Pinned version and role | Purpose / dependency path | Implementation and native parts | License evidence |
+|---|---|---|---|---|
+| `pydantic` | `2.13.4`; direct target runtime dependency | Reused public Python model, field, and schema API. | Python package; the validation engine is the separate `pydantic-core` wheel. | MIT, `License-Expression` in the [2.13.4 wheel metadata](https://pypi.org/pypi/pydantic/2.13.4/json) and [upstream license](https://github.com/pydantic/pydantic/blob/v2.13.4/LICENSE). |
+| `pydantic-core` | `2.46.4`; direct target runtime dependency and required by Pydantic | Supplies Pydantic's validation and serialization engine; FastAPI-RS calls its Python wheel API through PyO3. | Python API with a Rust native extension. Its Rust implementation and internal crate graph remain Pydantic-owned, not a FastAPI-RS Cargo dependency. | MIT, `License-Expression` in the [2.46.4 wheel metadata](https://pypi.org/pypi/pydantic-core/2.46.4/json) and [upstream license](https://github.com/pydantic/pydantic/blob/v2.13.4/pydantic-core/LICENSE). |
+| `starlette-rs-py` | `0.1.0`; direct target runtime dependency, installed from the pinned local source | Provides the selected Starlette-RS Python package and declares `anyio>=3.6.2,<5`; the selected source is commit `00b98e94afcf8e1fd7aabd5d41a09b4f56fb7f9c`. | Python package and PyO3 extension backed by Rust. | BSD-3-Clause declared by its [pinned project metadata](https://github.com/appunni-m/starlette-rs/blob/00b98e94afcf8e1fd7aabd5d41a09b4f56fb7f9c/pyproject.toml); version is in the [pinned Cargo workspace manifest](https://github.com/appunni-m/starlette-rs/blob/00b98e94afcf8e1fd7aabd5d41a09b4f56fb7f9c/Cargo.toml), and its license files are declared in project metadata. |
+| `anyio` | `4.12.1`; external runtime dependency of Starlette-RS-Py | AnyIO task groups, streams, cancellation, and thread offload are called from the pinned Rust runtime; see [`runtime_calls.rs`](https://github.com/appunni-m/starlette-rs/blob/00b98e94afcf8e1fd7aabd5d41a09b4f56fb7f9c/starlette-rs-py/src/runtime_calls.rs#L551) and [`request_runtime.rs`](https://github.com/appunni-m/starlette-rs/blob/00b98e94afcf8e1fd7aabd5d41a09b4f56fb7f9c/starlette-rs-py/src/request_runtime.rs#L859). | Python wheel; no native component is identified by the locked wheel metadata. | MIT, `License-Expression` in the [4.12.1 wheel metadata](https://pypi.org/pypi/anyio/4.12.1/json). |
+| `annotated-types` | `0.7.0`; Pydantic transitive runtime dependency | Supplies `Annotated` constraint metadata consumed by Pydantic's field/type handling. | Python wheel; no native component is identified by the locked wheel metadata. | The wheel has an MIT license classifier and a `LICENSE` file, but no `License-Expression`; the exact SPDX expression is **unresolved**. See [0.7.0 wheel metadata](https://pypi.org/pypi/annotated-types/0.7.0/json). |
+| `idna` | `3.18`; AnyIO transitive runtime dependency | Required by AnyIO's declared dependency metadata. Whether the selected FastAPI-RS request path exercises IDNA handling is **unresolved**. | Python wheel; no native component is identified by the locked wheel metadata. | BSD-3-Clause, `License-Expression` in the [3.18 wheel metadata](https://pypi.org/pypi/idna/3.18/json). |
+| `typing-extensions` | `4.16.0`; Pydantic, Pydantic Core, and AnyIO transitive runtime dependency | Typing definitions required by the pinned Python dependency stack. | Python wheel; no native component is identified by the locked wheel metadata. | PSF-2.0, `License-Expression` in the [4.16.0 wheel metadata](https://pypi.org/pypi/typing-extensions/4.16.0/json). |
+| `typing-inspection` | `0.4.2`; Pydantic transitive runtime dependency | Typing-object inspection required by Pydantic's type and field handling. | Python wheel; no native component is identified by the locked wheel metadata. | MIT, `License-Expression` in the [0.4.2 wheel metadata](https://pypi.org/pypi/typing-inspection/0.4.2/json). |
+| `annotated-doc` | `0.0.4`; parity-profile only, not a target package dependency | Preserves the source/target parity environment's shared package identity; FastAPI-RS does not import it. | Python wheel; no native component is identified by the locked wheel metadata. | MIT, `License-Expression` in the [0.0.4 wheel metadata](https://pypi.org/pypi/annotated-doc/0.0.4/json). |
+
+The target's current `pyproject.toml` declares no optional dependency groups.
+The pinned Starlette-RS package separately declares `schemas` (`pyyaml`),
+`templates` (`jinja2`), and `testclient` (`httpx>=0.27,<0.29`, `httpx2>=2`)
+extras. FastAPI-RS does not currently request those extras, so their resolved
+versions, native parts, and license evidence are outside this base profile and
+remain **unresolved** for any future target feature that needs them.
+`maturin==1.14.1` is pinned as the Python build backend, but its isolated Python
+build closure is not in this runtime lock. The recursive build-tool closure and
+its license/native-component evidence are **unresolved** here. The profile also
+covers CPython 3.12.13 only; it does not establish a lock or wheel audit for
+every supported Python version and platform.
+
+License values above come from the exact locked wheel's `License-Expression`
+unless the row identifies a classifier/file fallback. They are package metadata,
+not a review of bundled files or a substitute for the distribution notice gate
+below. The lock pins wheel hashes but does not include the local Starlette-RS
+source package or Maturin's build closure.
+
 ## Release gate
 
 Before publishing, record whether each component is independently authored,

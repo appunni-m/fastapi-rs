@@ -90,6 +90,85 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
             }
         ],
     },
+    "docs_src/handling_errors/tutorial004_py310.py": {
+        "rationale": (
+            "The FastAPI 0.141.1 example registers custom Starlette HTTP and FastAPI request-"
+            "validation handlers, then exercises an integer path route with success, HTTP error, "
+            "and validation branches. The independent cases exercise analogous handler dispatch "
+            "and a successful typed route using different paths and values. They observe response "
+            "status, ordered headers, and body bytes; they do not claim the tutorial's exact error "
+            "text, validation location, route literals, or OpenAPI snapshot."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/handling_errors/tutorial004_py310.py",
+                "start_line": 9,
+                "end_line": 19,
+                "role": "custom HTTP and request-validation exception handlers",
+            },
+            {
+                "path": "docs_src/handling_errors/tutorial004_py310.py",
+                "start_line": 22,
+                "end_line": 26,
+                "role": "typed item route with success, HTTP exception, and validation branches",
+            },
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/exception-overrides.yaml",
+                "case_ids": [
+                    "fastapi.docs.handling-errors.overridden-http-error",
+                    "fastapi.docs.handling-errors.overridden-validation-error",
+                    "fastapi.docs.handling-errors.override-success",
+                    "fastapi.docs.handling-errors.overrides-openapi",
+                ],
+                "observation_selectors": [
+                    "http.body.bytes",
+                    "http.headers.ordered",
+                    "http.status",
+                ],
+            }
+        ],
+    },
+    "docs_src/handling_errors/tutorial005_py310.py": {
+        "rationale": (
+            "The FastAPI 0.141.1 example customizes RequestValidationError handling to encode "
+            "both validation details and the parsed request body, and returns a Pydantic model "
+            "for valid input. The independent cases sample invalid-body handling, valid model "
+            "input/output, and the related OpenAPI request/422 schemas with a separately named "
+            "model and handler payload. They do not claim the tutorial's exact field names, "
+            "validation records, encoded JSON keys, or complete OpenAPI document."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/handling_errors/tutorial005_py310.py",
+                "start_line": 10,
+                "end_line": 15,
+                "role": "custom request-validation response encoding errors and parsed body",
+            },
+            {
+                "path": "docs_src/handling_errors/tutorial005_py310.py",
+                "start_line": 18,
+                "end_line": 25,
+                "role": "Pydantic request model and POST route returning the model",
+            },
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/request-validation-body.yaml",
+                "case_ids": [
+                    "fastapi.docs.handling-errors.body-echo.invalid-input",
+                    "fastapi.docs.handling-errors.body-echo.openapi",
+                    "fastapi.docs.handling-errors.body-echo.valid-input",
+                ],
+                "observation_selectors": [
+                    "http.body.bytes",
+                    "http.headers.ordered",
+                    "http.status",
+                ],
+            }
+        ],
+    },
     "docs_src/handling_errors/tutorial006_py310.py": {
         "rationale": (
             "The FastAPI 0.141.1 example registers HTTP and request-validation handlers that "

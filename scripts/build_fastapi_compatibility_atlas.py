@@ -10081,8 +10081,7 @@ def render_markdown(atlas: dict[str, Any]) -> str:
     for item in atlas["prioritized_backlog"]:
         acceptance = item["acceptance"].replace("|", "\\|")
         lines.append(
-            "| %s | `%s` | %s | %s |"
-            % (item["priority"], item["id"], item["status"], acceptance)
+            "| %s | `%s` | %s | %s |" % (item["priority"], item["id"], item["status"], acceptance)
         )
     lines.extend(["", "## Unresolved points", ""])
     for item in atlas["unresolved_compatibility_points"]:
@@ -10239,9 +10238,7 @@ def _sync_manifest_artifact_metadata(
     if count_replacements != 1:
         raise AtlasError("manifest contract_metadata deprecations record has no count")
     manifest_text = (
-        manifest_text[:deprecations_start]
-        + deprecations_block
-        + manifest_text[deprecations_end:]
+        manifest_text[:deprecations_start] + deprecations_block + manifest_text[deprecations_end:]
     )
     runtime_core_path = PROJECT / "tests/fixtures/runtime-api-surface-core.json"
     manifest_text = _replace_manifest_artifact_block(

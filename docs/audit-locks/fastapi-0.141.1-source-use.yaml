@@ -1,0 +1,158 @@
+schema: fastapi-rs/dependency-source-use-review@1
+
+authority:
+  fastapi_version: 0.141.1
+  fastapi_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
+  upstream_lock_sha256: 96ae079a121e11b4cc0d260df5b7f77189bb90fa23a2da368f607418c2d98165
+  starlette_version: 1.6.0
+  starlette_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
+
+scope:
+  source_review: Pinned FastAPI source and selected Starlette source, including their checked-in tests, docs, and tooling.
+  unresolved_default: No source-level use was verified in the reviewed repositories; the lock-derived consumer path is shown for role and reachability only.
+
+source_backed:
+  annotated-doc:
+    purpose: FastAPI attaches Doc metadata to public parameters and API objects.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/fastapi/param_functions.py
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/fastapi/applications.py
+  anyio:
+    purpose: FastAPI uses AnyIO thread offload, task groups, and streams in concurrency and streaming routes.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/fastapi/concurrency.py
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/fastapi/routing.py
+  coverage:
+    purpose: The repository configures coverage collection, exclusions, and reports for the test suite.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml
+  email-validator:
+    purpose: The optional email validator enables Pydantic EmailStr support in FastAPI OpenAPI models.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/fastapi/openapi/models.py
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml
+  fastapi-cli:
+    purpose: FastAPI's CLI module delegates the console command to fastapi-cli.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/fastapi/cli.py
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml
+  flask:
+    purpose: FastAPI's WSGI tutorial demonstrates mounting a Flask application.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/docs_src/wsgi/tutorial001_py310.py
+  gitpython:
+    purpose: Translation automation opens and manipulates the project checkout with GitPython.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py
+  httpx:
+    purpose: FastAPI re-exports Starlette TestClient; the selected Starlette implementation uses HTTPX for in-process requests.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/fastapi/testclient.py
+      - https://github.com/Kludex/starlette/blob/4f250d6b814587e20c5365f0a5f0c4d42bcb929f/starlette/testclient.py
+  inline-snapshot:
+    purpose: FastAPI tests use inline snapshots to pin observable values.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/tests/test_security_http_digest.py
+  itsdangerous:
+    purpose: The `all` extra includes Starlette's signed-cookie SessionMiddleware support, which FastAPI marks as uncommon.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml
+      - https://github.com/Kludex/starlette/blob/4f250d6b814587e20c5365f0a5f0c4d42bcb929f/starlette/middleware/sessions.py
+  jinja2:
+    purpose: FastAPI re-exports Starlette's Jinja2Templates integration, whose implementation imports Jinja2.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/fastapi/templating.py
+      - https://github.com/Kludex/starlette/blob/4f250d6b814587e20c5365f0a5f0c4d42bcb929f/starlette/templating.py
+  mypy:
+    purpose: FastAPI's lint script runs mypy and its project config enables the Pydantic plugin.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/lint.sh
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml
+  pydantic:
+    purpose: FastAPI uses Pydantic models, fields, validation errors, and schemas throughout dependency resolution and OpenAPI generation.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/fastapi/_compat/v2.py
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/fastapi/dependencies/utils.py
+  pydantic-ai:
+    purpose: Translation automation uses Pydantic AI's Agent API to generate translations.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py
+  pydantic-core:
+    purpose: FastAPI directly imports CoreSchema, PydanticUndefined, Url, and core-schema helpers.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/fastapi/_compat/v2.py
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/fastapi/encoders.py
+  pydantic-extra-types:
+    purpose: FastAPI conditionally recognizes Pydantic Extra Types' Color during JSON encoding.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/fastapi/encoders.py
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml
+  pydantic-settings:
+    purpose: FastAPI's settings examples and repository automation instantiate Pydantic Settings models.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/docs_src/settings/tutorial001_py310.py
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/sponsors.py
+  pygithub:
+    purpose: Translation and repository automation call GitHub APIs through PyGithub.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py
+  pyjwt:
+    purpose: FastAPI's OAuth2 tutorial uses PyJWT to sign and validate bearer tokens.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/docs_src/security/tutorial005_py310.py
+  python-multipart:
+    purpose: FastAPI checks for python-multipart when a route declares form or file fields.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/fastapi/dependencies/utils.py
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/fastapi/params.py
+  pytest:
+    purpose: FastAPI's test command runs the repository suite with pytest.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/test.sh
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml
+  pytest-codspeed:
+    purpose: The benchmark and memory-benchmark suites use pytest-codspeed's `benchmark` fixture.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/tests/benchmarks/test_general_performance.py
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml
+  pwdlib:
+    purpose: FastAPI's OAuth2 password-hashing tutorial uses pwdlib's PasswordHash API.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/docs_src/security/tutorial005_py310.py
+  ruff:
+    purpose: FastAPI's lint and format scripts run Ruff on application, test, docs, and script sources.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/lint.sh
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/format.sh
+  sqlmodel:
+    purpose: FastAPI's SQL tutorial apps use SQLModel for typed tables, sessions, and queries.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/docs_src/sql_databases/tutorial001_py310.py
+  starlette:
+    purpose: FastAPI subclasses Starlette and imports its ASGI, routing, request, response, middleware, and WebSocket APIs.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/fastapi/applications.py
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/fastapi/routing.py
+  strawberry-graphql:
+    purpose: FastAPI's GraphQL guide defines a Strawberry schema and mounts its GraphQLRouter.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/docs_src/graphql_/tutorial001_py310.py
+  ty:
+    purpose: FastAPI's lint script runs the ty type checker over the source configuration.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/lint.sh
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml
+  typing-extensions:
+    purpose: FastAPI uses ParamSpec, TypedDict, deprecated, and other typing APIs at runtime and in public annotations.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/fastapi/params.py
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/fastapi/routing.py
+  typing-inspection:
+    purpose: FastAPI uses is_typealiastype while extracting dependency and endpoint annotations.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/fastapi/dependencies/utils.py
+  uvicorn:
+    purpose: FastAPI's debugging tutorial runs an ASGI app with Uvicorn; the standard extra is optional.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/docs_src/debugging/tutorial001_py310.py
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml

@@ -340,6 +340,13 @@ struct FastApiRoute {
     plan: CallablePlan,
 }
 
+#[derive(Clone, Copy)]
+enum FastApiDocsRoute {
+    SwaggerUi,
+    OAuth2Redirect,
+    ReDoc,
+}
+
 struct FastApiWebSocketRoute {
     path: String,
     route_scope: Py<PyAny>,
@@ -400,6 +407,7 @@ pub(crate) struct PyFastApi {
     router: FastApiOperationRouter,
     websocket_router: FastApiOperationRouter,
     docs_router: RouteTable,
+    docs_routes: Vec<FastApiDocsRoute>,
     named_routes: NamedRouteTable,
     routes: Vec<FastApiRoute>,
     routes_version: AtomicU64,
@@ -520,7 +528,7 @@ struct RouterIncludePolicy<'policy> {
 #[pymethods]
 impl PyFastApi {
     #[new]
-    #[pyo3(signature = (*, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", terms_of_service = None, contact = None, license_info = None, openapi_external_docs = None, dependencies = None, default_response_class = None, exception_handlers = None, on_startup = None, on_shutdown = None, lifespan = None))]
+    #[pyo3(signature = (*, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", docs_url = "/docs", redoc_url = "/redoc", terms_of_service = None, contact = None, license_info = None, openapi_external_docs = None, dependencies = None, default_response_class = None, exception_handlers = None, on_startup = None, on_shutdown = None, lifespan = None))]
     // lint-exception: PyO3 needs one Rust argument per Python constructor keyword.
     #[allow(
         clippy::too_many_arguments,
@@ -533,6 +541,8 @@ impl PyFastApi {
         description: &str,
         version: &str,
         openapi_url: &str,
+        docs_url: Option<&str>,
+        redoc_url: Option<&str>,
         terms_of_service: Option<String>,
         contact: Option<Py<PyAny>>,
         license_info: Option<Py<PyAny>>,
@@ -574,10 +584,24 @@ impl PyFastApi {
             )?;
         }
         let mut docs_router = RouteTable::new();
-        for path in ["/docs", "/docs/oauth2-redirect", "/redoc"] {
-            docs_router
-                .add_route(path, ["GET"])
-                .map_err(|error| PyValueError::new_err(error.to_string()))?;
+        let mut docs_routes = Vec::new();
+        if !openapi_url.is_empty() {
+            if let Some(path) = docs_url {
+                docs_router
+                    .add_route(path, ["GET"])
+                    .map_err(|error| PyValueError::new_err(error.to_string()))?;
+                docs_routes.push(FastApiDocsRoute::SwaggerUi);
+                docs_router
+                    .add_route("/docs/oauth2-redirect", ["GET"])
+                    .map_err(|error| PyValueError::new_err(error.to_string()))?;
+                docs_routes.push(FastApiDocsRoute::OAuth2Redirect);
+            }
+            if let Some(path) = redoc_url {
+                docs_router
+                    .add_route(path, ["GET"])
+                    .map_err(|error| PyValueError::new_err(error.to_string()))?;
+                docs_routes.push(FastApiDocsRoute::ReDoc);
+            }
         }
         let lifespan = FastApiLifespan::new(py, on_startup, on_shutdown, lifespan)?;
         Ok(Self {
@@ -600,6 +624,7 @@ impl PyFastApi {
             router: FastApiOperationRouter::new(),
             websocket_router: FastApiOperationRouter::new(),
             docs_router,
+            docs_routes,
             named_routes: NamedRouteTable::new(),
             routes: Vec::new(),
             routes_version: AtomicU64::new(0),
@@ -2187,6 +2212,8 @@ impl PyApiRouter {
                 "",
                 "0.1.0",
                 "/openapi.json",
+                None,
+                None,
                 None,
                 None,
                 None,
@@ -6534,23 +6561,28 @@ impl FastApiCall {
                 .matches_detailed_with_root_path(&path, &root_path, &method);
             match docs_match {
                 DetailedRouteMatch::Matched { route_index, .. } => {
+                    let docs_route = self
+                        .app
+                        .bind(py)
+                        .borrow()
+                        .docs_routes
+                        .get(route_index)
+                        .copied()
+                        .ok_or_else(|| {
+                            PyRuntimeError::new_err("matched FastAPI docs route was lost")
+                        })?;
                     let docs_root_path = root_path.trim_end_matches('/');
-                    let html = match route_index {
-                        0 => docs::swagger_ui_html(
+                    let html = match docs_route {
+                        FastApiDocsRoute::SwaggerUi => docs::swagger_ui_html(
                             &format!("{docs_root_path}{openapi_url}"),
                             &format!("{docs_root_path}/docs/oauth2-redirect"),
                             &format!("{title} - Swagger UI"),
                         ),
-                        1 => docs::oauth2_redirect_html().to_owned(),
-                        2 => docs::redoc_html(
+                        FastApiDocsRoute::OAuth2Redirect => docs::oauth2_redirect_html().to_owned(),
+                        FastApiDocsRoute::ReDoc => docs::redoc_html(
                             &format!("{docs_root_path}{openapi_url}"),
                             &format!("{title} - ReDoc"),
                         ),
-                        _ => {
-                            return Err(PyRuntimeError::new_err(
-                                "matched FastAPI docs route was lost",
-                            ));
-                        }
                     };
                     let response = py
                         .import("starlette.responses")?

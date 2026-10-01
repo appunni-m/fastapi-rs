@@ -80,14 +80,14 @@ api_inventory:
 import_binding_classification_review:
   artifact: tests/fixtures/api-import-binding-classification-review.json
   schema: fastapi-starlette-import-binding-review/v1
-  sha256: bd9c041f35bf164837391235e944105a6d94227bdbcadb8fbda9567ec7b2ce4f
+  sha256: 5f77585571b81bd160d3ca5d29eb4d646cc31a4ac0b322ca8cf58e9c09efc72a
   source_identity:
     package: FastAPI
     version: 0.141.1
     source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
     selected_starlette_profile: 1.6.0
     starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
-    starlette_rs_contract_commit: 53c0a3fde073fb6238135581067a85aaa4599c10
+    starlette_rs_contract_commit: 00b98e94afcf8e1fd7aabd5d41a09b4f56fb7f9c
   starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
   counts:
     candidates: 97
@@ -99,7 +99,7 @@ import_binding_classification_review:
   candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
   pinned_starlette_rs_sources:
     metadata_sha256: 1baeaa65df032816231736829df4a09f40066273d31b529df95c6e24ff6960b1
-    manifest_sha256: d5c069c0c978d2abc19d6c3b8a7bad9fd358956260b5d017432f7b54f2291535
+    manifest_sha256: 3cbac0680dc00548fcdec42be20606297932b29ddfef4c0bf60d14be51ccfd2c
     api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
     api_review_sha256: a98d098cf4f8cb6cf45fd8396482e5a0b58c44f46c8ffb234bbf0fbc984a0ecf
 
@@ -187,7 +187,7 @@ classification_atlas:
 starlette_rs:
   owner: ../starlette-rs
   repository: https://github.com/appunni-m/starlette-rs
-  commit: 53c0a3fde073fb6238135581067a85aaa4599c10
+  commit: 00b98e94afcf8e1fd7aabd5d41a09b4f56fb7f9c
   distribution_version: 0.1.0
   contract_id: starlette-1.6.0-asgi-http-config-session-slice
   metadata: ../starlette-rs/metadata.yaml
@@ -324,6 +324,11 @@ reviewed_api_contract_overlay:
           kind: source-definition
           start_line: 58
           end_line: 1018
+        - path: tests/test_tutorial/test_metadata/test_tutorial003.py
+          symbol: test_swagger_ui_custom_url
+          kind: source-definition
+          start_line: 48
+          end_line: 51
         - path: tests/test_exception_handlers.py
           symbol: test_override_http_exception
           kind: source-definition
@@ -370,7 +375,13 @@ reviewed_api_contract_overlay:
         accepts a mapping keyed by exception class or HTTP status code, and
         registered custom HTTP handlers participate in response dispatch.
         Identity-checked workflows cover exception-class, status-code, and
-        default Starlette HTTPException handling. The application exposes a
+        default Starlette HTTPException handling. The constructor also accepts
+        the default and custom `docs_url` path and an optional `redoc_url`; the
+        metadata tutorial workflow observes a moved Swagger UI route and a
+        disabled ReDoc route. Attribute access to those stored values and other
+        documentation options, including disabling OpenAPI with `None`, remain
+        outside this slice.
+        The application exposes a
         mutable dependency_overrides mapping used by the reviewed synchronous
         and asynchronous override slices in Depends. The synchronous slice
         replaces an app-level dependency with a callable whose nested
