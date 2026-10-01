@@ -25,10 +25,9 @@ The single `tests/fixtures/manifest.yaml` indexes 461 source-supported symbols a
 | Signature/shape evidence | Symbols |
 |---|---:|
 | `module-object-no-call-signature` | 1 |
-| `non-callable-surface` | 234 |
+| `non-callable-surface` | 235 |
 | `runtime-signature-reflected` | 224 |
 | `runtime-signature-unavailable` | 1 |
-| `signature-not-captured` | 1 |
 
 ## Merged coverage matrix and fixture backlog
 

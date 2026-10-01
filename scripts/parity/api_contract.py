@@ -1619,8 +1619,7 @@ def build_api_surface_contract(
                 "signature_status": "unavailable",
             }
         standard_pointer, standard_symbol = standard_refs[symbol_id]
-        signature = standard_symbol.get("signature")
-        signature_status = signature.get("status") if isinstance(signature, dict) else None
+        signature_status = _signature_status(standard_symbol)
         if signature_status == "available":
             contract_signature_state = "runtime-signature-reflected"
         elif signature_status == "unavailable":
@@ -1629,7 +1628,7 @@ def build_api_surface_contract(
             contract_signature_state = "module-object-no-call-signature"
         elif source_signature_refs:
             contract_signature_state = "source-signature-recorded"
-        elif candidate["kind"] in {"field", "value"}:
+        elif signature_status == "not-applicable" or candidate["kind"] in {"field", "value"}:
             contract_signature_state = "non-callable-surface"
         else:
             contract_signature_state = "signature-not-captured"
