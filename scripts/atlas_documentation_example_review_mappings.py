@@ -835,6 +835,33 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
             }
         ],
     },
+    "docs_src/request_files/tutorial001_py310.py": {
+        "rationale": (
+            "The FastAPI 0.141.1 example accepts a bytes file and an UploadFile on two POST "
+            "routes. The independent cases sample the resulting file length and filename with "
+            "different route paths, observing HTTP status and response bytes only. This mapping "
+            "does not claim the source route paths, exact OpenAPI, parser-missing behavior, or "
+            "UploadFile lifetime behavior."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/request_files/tutorial001_py310.py",
+                "start_line": 6,
+                "end_line": 13,
+                "role": "documented bytes File and UploadFile route behaviors",
+            }
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/request-file-form-tutorials-wave.yaml",
+                "case_ids": [
+                    "fastapi.request-files-tutorial001.post-file-bytes",
+                    "fastapi.request-files-tutorial001-03.post-upload-file",
+                ],
+                "observation_selectors": ["http.body.bytes", "http.status"],
+            }
+        ],
+    },
     "docs_src/response_model/tutorial002_py310.py": {
         "rationale": (
             "The pinned example deliberately uses UserIn for both the request and response, "
