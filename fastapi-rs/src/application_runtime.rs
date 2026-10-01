@@ -251,6 +251,7 @@ struct ParameterOpenApiPlan {
 
 #[pyclass(name = "FastAPI", module = "fastapi_rs._core")]
 pub(crate) struct PyFastApi {
+    state: Py<PyAny>,
     title: String,
     summary: Option<String>,
     description: String,
@@ -267,6 +268,7 @@ pub(crate) struct PyFastApi {
     websocket_router: FastApiOperationRouter,
     named_routes: NamedRouteTable,
     routes: Vec<FastApiRoute>,
+    mounted_routes: Vec<Py<PyAny>>,
     websocket_routes: Vec<FastApiWebSocketRoute>,
     user_middleware: Vec<Py<PyAny>>,
     middleware_stack: Option<Py<PyAny>>,
@@ -384,8 +386,14 @@ impl PyFastApi {
         openapi_external_docs: Option<Py<PyAny>>,
         dependencies: Option<Vec<Py<PyAny>>>,
         default_response_class: Option<Py<PyAny>>,
-    ) -> Self {
-        Self {
+    ) -> PyResult<Self> {
+        let state = py
+            .import("starlette.datastructures")?
+            .getattr("State")?
+            .call0()?
+            .unbind();
+        Ok(Self {
+            state,
             title: title.to_owned(),
             summary,
             description: description.to_owned(),
@@ -402,10 +410,21 @@ impl PyFastApi {
             websocket_router: FastApiOperationRouter::new(),
             named_routes: NamedRouteTable::new(),
             routes: Vec::new(),
+            mounted_routes: Vec::new(),
             websocket_routes: Vec::new(),
             user_middleware: Vec::new(),
             middleware_stack: None,
-        }
+        })
+    }
+
+    #[getter]
+    fn state(&self, py: Python<'_>) -> Py<PyAny> {
+        self.state.clone_ref(py)
+    }
+
+    #[setter]
+    fn set_state(&mut self, state: Py<PyAny>) {
+        self.state = state;
     }
 
     #[getter]
@@ -966,6 +985,24 @@ impl PyFastApi {
     ) -> PyResult<()> {
         let decorator = Self::api_route(slf, py, path, include_in_schema, name)?;
         decorator.bind(py).call1((endpoint,))?;
+        Ok(())
+    }
+
+    #[pyo3(signature = (path, app, name=None))]
+    fn mount(
+        &mut self,
+        py: Python<'_>,
+        path: &str,
+        app: Py<PyAny>,
+        name: Option<String>,
+    ) -> PyResult<()> {
+        let mount_type = py.import("starlette.routing")?.getattr("Mount")?;
+        let kwargs = PyDict::new(py);
+        if let Some(name) = name {
+            kwargs.set_item("name", name)?;
+        }
+        let mount = mount_type.call((path, app.bind(py)), Some(&kwargs))?;
+        self.mounted_routes.push(mount.unbind());
         Ok(())
     }
 
@@ -1750,7 +1787,7 @@ impl PyApiRouter {
                 None,
                 None,
                 default_response_class,
-            ),
+            )?,
         )?;
         Ok(Self {
             inner,
@@ -5054,6 +5091,7 @@ enum PendingAction {
     LifespanShutdownSend,
     WebSocketEndpoint,
     WebSocketClose,
+    MountedApp,
     RouteInvocation,
     Endpoint,
     Dependency {
@@ -5434,6 +5472,39 @@ impl FastApiCall {
         Ok(MachineAction::Await(awaitable.unbind()))
     }
 
+    fn dispatch_mounted_app(&mut self, py: Python<'_>) -> PyResult<Option<MachineAction>> {
+        let mounted_routes = self
+            .app
+            .bind(py)
+            .borrow()
+            .mounted_routes
+            .iter()
+            .map(|route| route.clone_ref(py))
+            .collect::<Vec<_>>();
+        let scope = self.scope.bind(py);
+        let full_match = py
+            .import("starlette.routing")?
+            .getattr("Match")?
+            .getattr("FULL")?;
+
+        for route in mounted_routes {
+            let match_result = route.bind(py).call_method1("matches", (scope,))?;
+            if !match_result.get_item(0)?.is(&full_match) {
+                continue;
+            }
+
+            let child_scope = match_result.get_item(1)?;
+            scope.call_method1("update", (child_scope,))?;
+            let awaitable = route
+                .bind(py)
+                .call_method1("handle", (scope, self.receive.bind(py), self.send.bind(py)))?;
+            self.pending = Some(PendingAction::MountedApp);
+            return Ok(Some(MachineAction::Await(awaitable.unbind())));
+        }
+
+        Ok(None)
+    }
+
     fn begin(&mut self, py: Python<'_>) -> PyResult<MachineAction> {
         let scope = self.scope.bind(py);
         let scope_type = parse_scope_string(scope, "type", "http")?;
@@ -5520,6 +5591,9 @@ impl FastApiCall {
                 self.send_start(py)
             }
             FastApiOperationMatch::NotFound => {
+                if let Some(action) = self.dispatch_mounted_app(py)? {
+                    return Ok(action);
+                }
                 self.response_status = 404;
                 self.response_body = br#"{"detail":"Not Found"}"#.to_vec();
                 self.send_start(py)
@@ -6489,6 +6563,7 @@ impl FastApiCall {
                 Some(PendingAction::WebSocketEndpoint | PendingAction::WebSocketClose) => {
                     Ok(MachineAction::Complete(py.None()))
                 }
+                Some(PendingAction::MountedApp) => Ok(MachineAction::Complete(py.None())),
                 Some(PendingAction::Endpoint) => self.finish_endpoint(py, value),
                 Some(PendingAction::Dependency {
                     cache_key,
@@ -6616,6 +6691,11 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     ] {
         module.add(name, responses.getattr(name)?)?;
     }
+    let static_files = module
+        .py()
+        .import("starlette.staticfiles")?
+        .getattr("StaticFiles")?;
+    module.add("StaticFiles", static_files)?;
     let websockets = module.py().import("starlette.websockets")?;
     for name in ["WebSocket", "WebSocketDisconnect", "WebSocketState"] {
         module.add(name, websockets.getattr(name)?)?;

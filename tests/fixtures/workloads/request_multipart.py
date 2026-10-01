@@ -67,9 +67,7 @@ def create_app() -> FastAPI:
 
     @app.post("/files/list-alias-validation-alias")
     async def file_list_alias_validation_alias(
-        p: Annotated[
-            list[UploadFile], File(alias="p_alias", validation_alias="p_val_alias")
-        ],
+        p: Annotated[list[UploadFile], File(alias="p_alias", validation_alias="p_val_alias")],
     ) -> dict[str, list[int]]:
         sizes = [len(await item.read()) for item in p]
         return {"sizes": sizes}

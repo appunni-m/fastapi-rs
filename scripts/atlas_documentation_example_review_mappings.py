@@ -1297,7 +1297,9 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
             "workflow_cases": [
                 {
                     "recipe_path": "tests/fixtures/input-recipes/parity/response-change-status-tutorial-review.yaml",
-                    "case_ids": ["fastapi.response.change-status-code.tutorial-existing-and-created"],
+                    "case_ids": [
+                        "fastapi.response.change-status-code.tutorial-existing-and-created"
+                    ],
                     "observation_selectors": ["http.body.bytes", "http.status"],
                 }
             ],
