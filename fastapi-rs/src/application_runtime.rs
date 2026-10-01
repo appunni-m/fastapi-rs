@@ -1,6 +1,7 @@
 //! Rust-owned FastAPI application registration and ASGI request flow.
 
 use std::collections::{BTreeSet, HashMap, VecDeque};
+use std::path::Path;
 use std::sync::Mutex;
 use std::sync::atomic::{AtomicU64, Ordering};
 
@@ -29,8 +30,15 @@ use crate::{
 
 const DEFAULT_RESPONSE_DESCRIPTION: &str = "Successful Response";
 
+#[pyfunction(name = "_frontend_dependency_endpoint")]
+fn frontend_dependency_endpoint() {}
+
 fn omitted_response_model() -> Py<PyAny> {
     Python::attach(|py| py.NotImplemented())
+}
+
+fn default_frontend_auto() -> Py<PyAny> {
+    Python::attach(|py| PyString::new(py, "auto").unbind().into_any())
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -357,6 +365,21 @@ struct FastApiWebSocketRoute {
     plan: CallablePlan,
 }
 
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum FastApiFrontendFallback {
+    Auto,
+    IndexHtml,
+    NotFoundHtml,
+    None,
+}
+
+struct FastApiFrontendRoute {
+    path: String,
+    static_files: Py<PyAny>,
+    fallback: FastApiFrontendFallback,
+    dependency_plan: CallablePlan,
+}
+
 struct ResponseModelOptions {
     include: Option<Py<PyAny>>,
     exclude: Option<Py<PyAny>>,
@@ -414,6 +437,7 @@ pub(crate) struct PyFastApi {
     routes_version: AtomicU64,
     openapi_cache: Mutex<OpenApiCache>,
     mounted_routes: Vec<Py<PyAny>>,
+    frontend_routes: Vec<FastApiFrontendRoute>,
     websocket_routes: Vec<FastApiWebSocketRoute>,
     user_middleware: Vec<Py<PyAny>>,
     middleware_stack: Option<Py<PyAny>>,
@@ -634,6 +658,7 @@ impl PyFastApi {
                 routes_version: None,
             }),
             mounted_routes: Vec::new(),
+            frontend_routes: Vec::new(),
             websocket_routes: Vec::new(),
             user_middleware: Vec::new(),
             middleware_stack: None,
@@ -1303,6 +1328,31 @@ impl PyFastApi {
         let mount = mount_type.call((path, app.bind(py)), Some(&kwargs))?;
         self.mounted_routes.push(mount.unbind());
         Ok(())
+    }
+
+    #[pyo3(signature = (path, *, directory, fallback=default_frontend_auto(), check_dir=default_frontend_auto()))]
+    fn frontend(
+        &mut self,
+        py: Python<'_>,
+        path: &str,
+        directory: Py<PyAny>,
+        fallback: Py<PyAny>,
+        check_dir: Py<PyAny>,
+    ) -> PyResult<()> {
+        let dependencies = self
+            .dependencies
+            .iter()
+            .map(|dependency| dependency.clone_ref(py))
+            .collect::<Vec<_>>();
+        add_frontend_route(
+            self,
+            py,
+            path,
+            directory,
+            fallback,
+            check_dir,
+            &dependencies,
+        )
     }
 
     #[pyo3(signature = (path, name = None, *, dependencies = None))]
@@ -2265,6 +2315,19 @@ impl PyApiRouter {
             .decorator(py, event_type)
     }
 
+    #[pyo3(signature = (path, *, directory, fallback=default_frontend_auto(), check_dir=default_frontend_auto()))]
+    fn frontend(
+        &self,
+        py: Python<'_>,
+        path: &str,
+        directory: Py<PyAny>,
+        fallback: Py<PyAny>,
+        check_dir: Py<PyAny>,
+    ) -> PyResult<()> {
+        let mut inner = self.inner.bind(py).borrow_mut();
+        add_frontend_route(&mut inner, py, path, directory, fallback, check_dir, &[])
+    }
+
     #[pyo3(signature = (router, *, prefix = "", tags = None, dependencies = None, deprecated = None, include_in_schema = true))]
     // lint-exception: preserve FastAPI's include_router keyword signature.
     #[allow(
@@ -2393,6 +2456,307 @@ fn combined_deprecated(inherited: Option<bool>, router: Option<bool>) -> Option<
     } else {
         None
     }
+}
+
+fn normalize_frontend_path(path: &str) -> PyResult<String> {
+    if path.is_empty() {
+        return Err(PyAssertionError::new_err("A frontend path cannot be empty"));
+    }
+    if !path.starts_with('/') {
+        return Err(PyAssertionError::new_err(
+            "A frontend path must start with '/'",
+        ));
+    }
+    if path == "/" {
+        return Ok(path.to_owned());
+    }
+    Ok(path.trim_end_matches('/').to_owned())
+}
+
+fn join_frontend_paths(prefix: &str, path: &str) -> String {
+    if prefix.is_empty() {
+        path.to_owned()
+    } else if path == "/" {
+        prefix.to_owned()
+    } else {
+        format!("{prefix}{path}")
+    }
+}
+
+fn frontend_path_for(route_path: &str, frontend_path: &str) -> Option<String> {
+    if frontend_path == "/" {
+        return Some(route_path.trim_start_matches('/').to_owned());
+    }
+    if route_path == frontend_path {
+        return Some(String::new());
+    }
+    route_path
+        .strip_prefix(frontend_path)
+        .and_then(|remainder| remainder.strip_prefix('/'))
+        .map(str::to_owned)
+}
+
+fn frontend_path_specificity(path: &str) -> usize {
+    if path == "/" { 0 } else { path.chars().count() }
+}
+
+fn normalize_frontend_relative_path(path: &str) -> String {
+    let mut normalized = std::path::PathBuf::new();
+    for component in Path::new(path).components() {
+        match component {
+            std::path::Component::CurDir => {}
+            std::path::Component::ParentDir => {
+                if !normalized.pop() {
+                    normalized.push("..");
+                }
+            }
+            std::path::Component::Normal(value) => normalized.push(value),
+            std::path::Component::RootDir | std::path::Component::Prefix(_) => {
+                normalized.push(component.as_os_str());
+            }
+        }
+    }
+    if normalized.as_os_str().is_empty() {
+        ".".to_owned()
+    } else {
+        normalized.to_string_lossy().into_owned()
+    }
+}
+
+fn frontend_file_is_regular(
+    py: Python<'_>,
+    static_files: &Bound<'_, PyAny>,
+    path: &str,
+) -> PyResult<bool> {
+    let lookup = static_files.call_method1("lookup_path", (path,))?;
+    let stat_result = lookup.get_item(1)?;
+    if stat_result.is_none() {
+        return Ok(false);
+    }
+    py.import("stat")?
+        .getattr("S_ISREG")?
+        .call1((stat_result.getattr("st_mode")?,))?
+        .extract()
+}
+
+fn frontend_static_resource_exists(
+    py: Python<'_>,
+    static_files: &Bound<'_, PyAny>,
+    path: &str,
+) -> PyResult<bool> {
+    let lookup = static_files.call_method1("lookup_path", (path,))?;
+    let stat_result = lookup.get_item(1)?;
+    if stat_result.is_none() {
+        return Ok(false);
+    }
+    let mode = stat_result.getattr("st_mode")?;
+    let stat_module = py.import("stat")?;
+    if stat_module
+        .getattr("S_ISREG")?
+        .call1((&mode,))?
+        .extract::<bool>()?
+    {
+        return Ok(true);
+    }
+    if !stat_module
+        .getattr("S_ISDIR")?
+        .call1((mode,))?
+        .extract::<bool>()?
+    {
+        return Ok(false);
+    }
+    let index_path = if path == "." {
+        "index.html".to_owned()
+    } else {
+        format!("{path}/index.html")
+    };
+    frontend_file_is_regular(py, static_files, &index_path)
+}
+
+fn python_path_string(py: Python<'_>, path: &Bound<'_, PyAny>) -> PyResult<String> {
+    py.import("os")?
+        .getattr("fsdecode")?
+        .call1((py.import("os")?.getattr("fspath")?.call1((path,))?,))?
+        .extract()
+}
+
+fn python_path_display(py: Python<'_>, path: &Bound<'_, PyAny>) -> PyResult<String> {
+    py.import("builtins")?
+        .getattr("str")?
+        .call1((path,))?
+        .extract()
+}
+
+fn resolved_absolute_path(py: Python<'_>, path: &str) -> PyResult<String> {
+    py.import("os.path")?
+        .getattr("realpath")?
+        .call1((path,))?
+        .extract()
+}
+
+fn parse_frontend_fallback(fallback: &Bound<'_, PyAny>) -> PyResult<FastApiFrontendFallback> {
+    if fallback.is_none() {
+        return Ok(FastApiFrontendFallback::None);
+    }
+    if fallback.eq("auto")? {
+        return Ok(FastApiFrontendFallback::Auto);
+    }
+    if fallback.eq("index.html")? {
+        return Ok(FastApiFrontendFallback::IndexHtml);
+    }
+    if fallback.eq("404.html")? {
+        return Ok(FastApiFrontendFallback::NotFoundHtml);
+    }
+    Err(PyAssertionError::new_err(
+        "fallback must be 'auto', 'index.html', '404.html', or None",
+    ))
+}
+
+fn frontend_fallback_file_error(
+    py: Python<'_>,
+    fallback: &str,
+    directory: &Bound<'_, PyAny>,
+    directory_path: &str,
+) -> PyResult<PyErr> {
+    let display = python_path_display(py, directory)?;
+    let resolved = resolved_absolute_path(py, directory_path)?;
+    Ok(PyRuntimeError::new_err(format!(
+        "Frontend fallback file '{fallback}' does not exist in directory '{display}'. Resolved absolute directory: '{resolved}'"
+    )))
+}
+
+fn frontend_http_error(py: Python<'_>, status_code: u16) -> PyResult<PyErr> {
+    let exception = py
+        .import("starlette.exceptions")?
+        .getattr("HTTPException")?
+        .call1((status_code,))?;
+    Ok(PyErr::from_value(exception))
+}
+
+fn frontend_is_navigation_request(py: Python<'_>, request: &Bound<'_, PyAny>) -> PyResult<bool> {
+    let accept = request
+        .getattr("headers")?
+        .call_method1("get", ("accept", ""))?
+        .extract::<String>()?;
+    let email_message = py.import("email.message")?.getattr("Message")?;
+    let builtins = py.import("builtins")?;
+    for raw_value in accept.split(',') {
+        let message = email_message.call0()?;
+        message.set_item("content-type", raw_value.trim())?;
+        let media_type = format!(
+            "{}/{}",
+            message
+                .call_method0("get_content_maintype")?
+                .extract::<String>()?,
+            message
+                .call_method0("get_content_subtype")?
+                .extract::<String>()?
+        );
+        if !matches!(media_type.as_str(), "text/html" | "application/xhtml+xml") {
+            continue;
+        }
+        let quality = message.call_method1("get_param", ("q",))?;
+        let quality = if quality.is_none() {
+            1.0
+        } else {
+            match builtins.getattr("float")?.call1((quality,)) {
+                Ok(value) => value.extract::<f64>()?,
+                Err(error) if error.is_instance_of::<PyValueError>(py) => 1.0,
+                Err(error) => return Err(error),
+            }
+        };
+        if quality != 0.0 {
+            return Ok(true);
+        }
+    }
+    Ok(false)
+}
+
+fn add_frontend_route(
+    app: &mut PyFastApi,
+    py: Python<'_>,
+    path: &str,
+    directory: Py<PyAny>,
+    fallback: Py<PyAny>,
+    check_dir: Py<PyAny>,
+    dependencies: &[Py<PyAny>],
+) -> PyResult<()> {
+    let path = normalize_frontend_path(path)?;
+    let fallback = parse_frontend_fallback(fallback.bind(py))?;
+    let directory_path = python_path_string(py, directory.bind(py))?;
+    let directory_exists = Path::new(&directory_path).is_dir();
+    let is_automatic = check_dir.bind(py).eq("auto")?;
+    let is_development =
+        std::env::var("FASTAPI_ENV").is_ok_and(|environment| environment == "development");
+    let check_now = if is_automatic {
+        !is_development
+    } else {
+        check_dir.bind(py).is_truthy()?
+    };
+    let display = python_path_display(py, directory.bind(py))?;
+    let resolved = resolved_absolute_path(py, &directory_path)?;
+    if check_now && !directory_exists {
+        return Err(PyRuntimeError::new_err(format!(
+            "Frontend directory '{display}' does not exist. Resolved absolute path: '{resolved}'"
+        )));
+    }
+    if is_automatic && is_development && !directory_exists {
+        let warning = format!(
+            "Frontend directory '{display}' does not exist. Resolved absolute path: '{resolved}'"
+        );
+        let warning_kwargs = PyDict::new(py);
+        warning_kwargs.set_item("stacklevel", 3)?;
+        py.import("warnings")?.call_method(
+            "warn",
+            (warning, py.import("builtins")?.getattr("UserWarning")?),
+            Some(&warning_kwargs),
+        )?;
+    }
+
+    let static_files_type = py.import("starlette.staticfiles")?.getattr("StaticFiles")?;
+    let static_files_kwargs = PyDict::new(py);
+    static_files_kwargs.set_item("directory", directory.bind(py))?;
+    static_files_kwargs.set_item("html", true)?;
+    // FastAPI has already applied its own constructor-time directory policy.
+    // Starlette-RS performs the deferred configuration check on first use.
+    static_files_kwargs.set_item("check_dir", false)?;
+    static_files_kwargs.set_item("follow_symlink", false)?;
+    let static_files = static_files_type
+        .call((), Some(&static_files_kwargs))?
+        .unbind();
+
+    if check_now {
+        let required_fallback = match fallback {
+            FastApiFrontendFallback::IndexHtml => Some("index.html"),
+            FastApiFrontendFallback::NotFoundHtml => Some("404.html"),
+            FastApiFrontendFallback::Auto | FastApiFrontendFallback::None => None,
+        };
+        if let Some(required_fallback) = required_fallback
+            && !frontend_file_is_regular(py, static_files.bind(py), required_fallback)?
+        {
+            return Err(frontend_fallback_file_error(
+                py,
+                required_fallback,
+                directory.bind(py),
+                &directory_path,
+            )?);
+        }
+    }
+
+    let endpoint = py
+        .import("fastapi_rs._core")?
+        .getattr("_frontend_dependency_endpoint")?
+        .unbind();
+    let mut dependency_plan = CallablePlan::build(py, endpoint, &[], None)?;
+    dependency_plan.prepend_dependencies(py, dependencies)?;
+    app.frontend_routes.push(FastApiFrontendRoute {
+        path,
+        static_files,
+        fallback,
+        dependency_plan,
+    });
+    app.bump_routes_version();
+    Ok(())
 }
 
 fn merge_router_routes(
@@ -2536,6 +2900,17 @@ fn merge_router_routes(
             route_dependencies,
             endpoint: source_route.endpoint.clone_ref(py),
             plan,
+        });
+        app.bump_routes_version();
+    }
+    for source_frontend in &source.frontend_routes {
+        let mut dependency_plan = source_frontend.dependency_plan.clone_ref(py);
+        dependency_plan.prepend_dependencies(py, inherited_dependencies)?;
+        app.frontend_routes.push(FastApiFrontendRoute {
+            path: join_frontend_paths(prefix, &source_frontend.path),
+            static_files: source_frontend.static_files.clone_ref(py),
+            fallback: source_frontend.fallback,
+            dependency_plan,
         });
         app.bump_routes_version();
     }
@@ -5978,6 +6353,9 @@ enum PendingAction {
     WebSocketEndpoint,
     WebSocketClose,
     MountedApp,
+    FrontendConfig,
+    FrontendResponse,
+    FrontendAsgiResponse,
     RouteInvocation,
     Endpoint,
     Dependency {
@@ -6310,6 +6688,9 @@ fn fastapi_core_call(
             receive,
             send,
             route_index: None,
+            frontend_route_index: None,
+            frontend_path: None,
+            frontend_response_status_override: None,
             websocket_route_index: None,
             request: None,
             websocket: None,
@@ -6338,6 +6719,9 @@ struct FastApiCall {
     receive: Py<PyAny>,
     send: Py<PyAny>,
     route_index: Option<usize>,
+    frontend_route_index: Option<usize>,
+    frontend_path: Option<String>,
+    frontend_response_status_override: Option<u16>,
     websocket_route_index: Option<usize>,
     request: Option<Py<PyAny>>,
     websocket: Option<Py<PyAny>>,
@@ -6372,15 +6756,27 @@ impl FastApiCall {
     ) -> PyResult<Bound<'py, PyDict>> {
         let (endpoint, method, path) = {
             let app = self.app.bind(py).borrow();
-            let route = app
-                .routes
-                .get(self.route_index.unwrap_or_default())
-                .ok_or_else(|| PyRuntimeError::new_err("selected FastAPI route was lost"))?;
-            (
-                route.endpoint.clone_ref(py),
-                route.method.clone(),
-                route.path.clone(),
-            )
+            if let Some(frontend_index) = self.frontend_route_index {
+                let frontend = app
+                    .frontend_routes
+                    .get(frontend_index)
+                    .ok_or_else(|| PyRuntimeError::new_err("selected FastAPI frontend was lost"))?;
+                (
+                    frontend.dependency_plan.callable.clone_ref(py),
+                    "GET".to_owned(),
+                    frontend.path.clone(),
+                )
+            } else {
+                let route = app
+                    .routes
+                    .get(self.route_index.unwrap_or_default())
+                    .ok_or_else(|| PyRuntimeError::new_err("selected FastAPI route was lost"))?;
+                (
+                    route.endpoint.clone_ref(py),
+                    route.method.clone(),
+                    route.path.clone(),
+                )
+            }
         };
         let root_path = parse_scope_string(self.scope.bind(py), "root_path", "")?;
         response_endpoint_context(py, endpoint.bind(py), &method, &path, &root_path)
@@ -6482,6 +6878,324 @@ impl FastApiCall {
         }
 
         Ok(None)
+    }
+
+    fn dispatch_frontend_route(
+        &mut self,
+        py: Python<'_>,
+        route_path: &str,
+        method: &str,
+    ) -> PyResult<Option<MachineAction>> {
+        let selected = {
+            let app = self.app.bind(py).borrow();
+            let mut selected: Option<(usize, String, usize)> = None;
+            for (index, route) in app.frontend_routes.iter().enumerate() {
+                let Some(frontend_path) = frontend_path_for(route_path, &route.path) else {
+                    continue;
+                };
+                let specificity = frontend_path_specificity(&route.path);
+                if selected
+                    .as_ref()
+                    .is_none_or(|(_, _, selected_specificity)| specificity > *selected_specificity)
+                {
+                    selected = Some((index, frontend_path, specificity));
+                }
+            }
+            selected.map(|(index, path, _)| (index, path))
+        };
+        let Some((route_index, frontend_path)) = selected else {
+            return Ok(None);
+        };
+        let frontend_path = normalize_frontend_relative_path(&frontend_path);
+        let static_files = self
+            .app
+            .bind(py)
+            .borrow()
+            .frontend_routes
+            .get(route_index)
+            .ok_or_else(|| PyRuntimeError::new_err("selected FastAPI frontend was lost"))?
+            .static_files
+            .clone_ref(py);
+
+        if !matches!(method, "GET" | "HEAD") {
+            let status_code =
+                if frontend_static_resource_exists(py, static_files.bind(py), &frontend_path)? {
+                    405
+                } else {
+                    404
+                };
+            return Err(frontend_http_error(py, status_code)?);
+        }
+
+        self.frontend_route_index = Some(route_index);
+        self.frontend_path = Some(frontend_path);
+        self.frontend_response_status_override = None;
+        self.injected_response = Some(fastapi_response_state(py)?);
+        let scope = self.scope.bind(py);
+        let fastapi_scope_key = concat!("fast", "api");
+        let fastapi_scope =
+            scope.call_method1("setdefault", (fastapi_scope_key, PyDict::new(py)))?;
+        fastapi_scope.set_item(
+            "frontend_path",
+            self.frontend_path.as_deref().unwrap_or_default(),
+        )?;
+        let path_specificity = {
+            let app = self.app.bind(py).borrow();
+            let frontend = app
+                .frontend_routes
+                .get(route_index)
+                .ok_or_else(|| PyRuntimeError::new_err("selected FastAPI frontend was lost"))?;
+            frontend_path_specificity(&frontend.path)
+        };
+        fastapi_scope.set_item("frontend_specificity", path_specificity)?;
+        scope.set_item("path_params", PyDict::new(py))?;
+        let request_type = py.import("starlette.requests")?.getattr("Request")?;
+        let request = request_type.call1((scope, self.receive.bind(py), self.send.bind(py)))?;
+        scope.set_item("starlette._exception_request", &request)?;
+        self.request = Some(request.unbind());
+        let query: Vec<u8> = scope
+            .call_method1("get", ("query_string", PyBytes::new(py, b"")))?
+            .extract()?;
+        self.invocation = Some(RequestInvocation {
+            inputs: PyDict::new(py).unbind(),
+            query_params: QueryParams::parse(&query),
+            request_body: None,
+            form_body_embedded: false,
+            failures: Vec::new(),
+            dependency_cache: HashMap::new(),
+            prepared_dependency_values: HashMap::new(),
+            dependency_override_cursor: 0,
+            dependency_exit_stack: new_dependency_exit_stack(py)?,
+            dependency_exit_stack_closed: false,
+            function_dependency_exit_stack: new_dependency_exit_stack(py)?,
+            function_dependency_exit_stack_closed: false,
+            background_tasks: None,
+        });
+        self.invoke_route(py).map(Some)
+    }
+
+    fn start_frontend_response(&mut self, py: Python<'_>) -> PyResult<MachineAction> {
+        let route_index = self
+            .frontend_route_index
+            .ok_or_else(|| PyRuntimeError::new_err("ASGI dispatch has no selected frontend"))?;
+        let static_files = self
+            .app
+            .bind(py)
+            .borrow()
+            .frontend_routes
+            .get(route_index)
+            .ok_or_else(|| PyRuntimeError::new_err("selected FastAPI frontend was lost"))?
+            .static_files
+            .clone_ref(py);
+        if static_files
+            .bind(py)
+            .getattr("config_checked")?
+            .extract::<bool>()?
+        {
+            return self.get_frontend_response(py, None);
+        }
+        let awaitable = static_files.bind(py).call_method0("check_config")?;
+        self.pending = Some(PendingAction::FrontendConfig);
+        Ok(MachineAction::Await(awaitable.unbind()))
+    }
+
+    fn get_frontend_response(
+        &mut self,
+        py: Python<'_>,
+        fallback_status_code: Option<u16>,
+    ) -> PyResult<MachineAction> {
+        let route_index = self
+            .frontend_route_index
+            .ok_or_else(|| PyRuntimeError::new_err("ASGI dispatch has no selected frontend"))?;
+        let (static_files, path) = {
+            let app = self.app.bind(py).borrow();
+            let frontend = app
+                .frontend_routes
+                .get(route_index)
+                .ok_or_else(|| PyRuntimeError::new_err("selected FastAPI frontend was lost"))?;
+            (
+                frontend.static_files.clone_ref(py),
+                self.frontend_path
+                    .clone()
+                    .ok_or_else(|| PyRuntimeError::new_err("frontend request path was lost"))?,
+            )
+        };
+        self.frontend_response_status_override = fallback_status_code;
+        let awaitable = static_files
+            .bind(py)
+            .call_method1("get_response", (path, self.scope.bind(py)))?;
+        self.pending = Some(PendingAction::FrontendResponse);
+        Ok(MachineAction::Await(awaitable.unbind()))
+    }
+
+    fn get_frontend_fallback_response(
+        &mut self,
+        py: Python<'_>,
+        fallback: &str,
+        status_code: Option<u16>,
+    ) -> PyResult<MachineAction> {
+        let route_index = self
+            .frontend_route_index
+            .ok_or_else(|| PyRuntimeError::new_err("ASGI dispatch has no selected frontend"))?;
+        let static_files = self
+            .app
+            .bind(py)
+            .borrow()
+            .frontend_routes
+            .get(route_index)
+            .ok_or_else(|| PyRuntimeError::new_err("selected FastAPI frontend was lost"))?
+            .static_files
+            .clone_ref(py);
+        if !frontend_file_is_regular(py, static_files.bind(py), fallback)? {
+            let directory = static_files.bind(py).getattr("directory")?;
+            let directory_path = python_path_string(py, &directory)?;
+            return Err(frontend_fallback_file_error(
+                py,
+                fallback,
+                &directory,
+                &directory_path,
+            )?);
+        }
+        let awaitable = static_files
+            .bind(py)
+            .call_method1("get_response", (fallback, self.scope.bind(py)))?;
+        self.frontend_response_status_override = status_code;
+        self.pending = Some(PendingAction::FrontendResponse);
+        Ok(MachineAction::Await(awaitable.unbind()))
+    }
+
+    fn finish_frontend_response(
+        &mut self,
+        py: Python<'_>,
+        response: Py<PyAny>,
+    ) -> PyResult<MachineAction> {
+        let status_override = self.frontend_response_status_override.take();
+        let response = response.bind(py);
+        if let Some(status_code) = status_override {
+            response.setattr("status_code", status_code)?;
+        } else if response.getattr("status_code")?.extract::<u16>()? == 404 {
+            let fallback = {
+                let app = self.app.bind(py).borrow();
+                app.frontend_routes
+                    .get(self.frontend_route_index.ok_or_else(|| {
+                        PyRuntimeError::new_err("ASGI dispatch has no selected frontend")
+                    })?)
+                    .ok_or_else(|| PyRuntimeError::new_err("selected FastAPI frontend was lost"))?
+                    .fallback
+            };
+            match fallback {
+                FastApiFrontendFallback::Auto | FastApiFrontendFallback::NotFoundHtml => {}
+                FastApiFrontendFallback::IndexHtml => {
+                    let request = self
+                        .request
+                        .as_ref()
+                        .ok_or_else(|| PyRuntimeError::new_err("frontend request was lost"))?;
+                    if frontend_is_navigation_request(py, request.bind(py))? {
+                        return self.get_frontend_fallback_response(py, "index.html", None);
+                    }
+                    return Err(frontend_http_error(py, 404)?);
+                }
+                FastApiFrontendFallback::None => return Err(frontend_http_error(py, 404)?),
+            }
+        }
+        let background_tasks = self.request_background_tasks(py);
+        attach_response_background_if_missing(
+            response,
+            background_tasks.as_ref().map(|tasks| tasks.bind(py)),
+        )?;
+        if let Some(injected_response) = self.injected_response.as_ref() {
+            let response_headers = response.getattr("headers")?.getattr("raw")?;
+            let injected_headers = injected_response
+                .bind(py)
+                .getattr("headers")?
+                .getattr("raw")?;
+            response_headers.call_method1("extend", (injected_headers,))?;
+        }
+        let awaitable = response.call1((
+            self.scope.bind(py),
+            self.receive.bind(py),
+            self.send.bind(py),
+        ))?;
+        self.pending = Some(PendingAction::FrontendAsgiResponse);
+        Ok(MachineAction::Await(awaitable.unbind()))
+    }
+
+    fn frontend_response_failed(
+        &mut self,
+        py: Python<'_>,
+        error: PyErr,
+    ) -> PyResult<MachineAction> {
+        let value = error.value(py);
+        let http_exception = py
+            .import("starlette.exceptions")?
+            .getattr("HTTPException")?;
+        if !value.is_instance(&http_exception)?
+            || value.getattr("status_code")?.extract::<u16>()? != 404
+        {
+            return self.route_exception(py, error);
+        }
+        let fallback = {
+            let app = self.app.bind(py).borrow();
+            app.frontend_routes
+                .get(self.frontend_route_index.ok_or_else(|| {
+                    PyRuntimeError::new_err("ASGI dispatch has no selected frontend")
+                })?)
+                .ok_or_else(|| PyRuntimeError::new_err("selected FastAPI frontend was lost"))?
+                .fallback
+        };
+        match fallback {
+            FastApiFrontendFallback::Auto => {
+                if frontend_file_is_regular(
+                    py,
+                    self.frontend_static_files(py)?.bind(py),
+                    "404.html",
+                )? {
+                    return self.get_frontend_fallback_response(py, "404.html", Some(404));
+                }
+                let request = self
+                    .request
+                    .as_ref()
+                    .ok_or_else(|| PyRuntimeError::new_err("frontend request was lost"))?;
+                if frontend_is_navigation_request(py, request.bind(py))?
+                    && frontend_file_is_regular(
+                        py,
+                        self.frontend_static_files(py)?.bind(py),
+                        "index.html",
+                    )?
+                {
+                    return self.get_frontend_fallback_response(py, "index.html", None);
+                }
+                Err(error)
+            }
+            FastApiFrontendFallback::IndexHtml => {
+                let request = self
+                    .request
+                    .as_ref()
+                    .ok_or_else(|| PyRuntimeError::new_err("frontend request was lost"))?;
+                if frontend_is_navigation_request(py, request.bind(py))? {
+                    self.get_frontend_fallback_response(py, "index.html", None)
+                } else {
+                    Err(error)
+                }
+            }
+            FastApiFrontendFallback::NotFoundHtml => {
+                self.get_frontend_fallback_response(py, "404.html", Some(404))
+            }
+            FastApiFrontendFallback::None => Err(error),
+        }
+    }
+
+    fn frontend_static_files(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
+        let route_index = self
+            .frontend_route_index
+            .ok_or_else(|| PyRuntimeError::new_err("ASGI dispatch has no selected frontend"))?;
+        self.app
+            .bind(py)
+            .borrow()
+            .frontend_routes
+            .get(route_index)
+            .map(|frontend| frontend.static_files.clone_ref(py))
+            .ok_or_else(|| PyRuntimeError::new_err("selected FastAPI frontend was lost"))
     }
 
     fn redirect_docs_slash(
@@ -6701,6 +7415,9 @@ impl FastApiCall {
                     {
                         return Ok(action);
                     }
+                }
+                if let Some(action) = self.dispatch_frontend_route(py, &route_path, &method)? {
+                    return Ok(action);
                 }
                 let exception = py
                     .import("starlette.exceptions")?
@@ -7079,7 +7796,12 @@ impl FastApiCall {
 
     fn selected_body_fields_embedded(&self, py: Python<'_>) -> PyResult<bool> {
         let app = self.app.bind(py).borrow();
-        let plan = if let Some(route_index) = self.websocket_route_index {
+        let plan = if let Some(route_index) = self.frontend_route_index {
+            &app.frontend_routes
+                .get(route_index)
+                .ok_or_else(|| PyRuntimeError::new_err("selected FastAPI frontend was lost"))?
+                .dependency_plan
+        } else if let Some(route_index) = self.websocket_route_index {
             &app.websocket_routes
                 .get(route_index)
                 .ok_or_else(|| {
@@ -7099,7 +7821,10 @@ impl FastApiCall {
     }
 
     fn invoke_route(&mut self, py: Python<'_>) -> PyResult<MachineAction> {
-        if self.websocket_route_index.is_none() && self.route_index.is_none() {
+        if self.websocket_route_index.is_none()
+            && self.frontend_route_index.is_none()
+            && self.route_index.is_none()
+        {
             return Err(PyRuntimeError::new_err(
                 "ASGI dispatch has no selected route",
             ));
@@ -7118,7 +7843,12 @@ impl FastApiCall {
             .ok_or_else(|| PyRuntimeError::new_err("request invocation state was lost"))?;
         let (plan, dependency_overrides) = {
             let app = self.app.bind(py).borrow();
-            let plan = if let Some(route_index) = self.websocket_route_index {
+            let plan = if let Some(route_index) = self.frontend_route_index {
+                &app.frontend_routes
+                    .get(route_index)
+                    .ok_or_else(|| PyRuntimeError::new_err("selected FastAPI frontend was lost"))?
+                    .dependency_plan
+            } else if let Some(route_index) = self.websocket_route_index {
                 &app.websocket_routes
                     .get(route_index)
                     .ok_or_else(|| {
@@ -7366,6 +8096,9 @@ impl FastApiCall {
     }
 
     fn finish_endpoint(&mut self, py: Python<'_>, result: Py<PyAny>) -> PyResult<MachineAction> {
+        if self.frontend_route_index.is_some() {
+            return self.start_frontend_response(py);
+        }
         let response_type = py.import("starlette.responses")?.getattr("Response")?;
         if result.bind(py).is_instance(&response_type)? {
             // Starlette responses own their status, headers, body, and ASGI send path.
@@ -7851,6 +8584,9 @@ impl FastApiCall {
                     self.close_form_after_response(py)
                 }
                 Some(PendingAction::MountedApp) => Ok(MachineAction::Complete(py.None())),
+                Some(PendingAction::FrontendConfig) => self.get_frontend_response(py, None),
+                Some(PendingAction::FrontendResponse) => self.finish_frontend_response(py, value),
+                Some(PendingAction::FrontendAsgiResponse) => self.close_form_after_response(py),
                 Some(PendingAction::Endpoint) => self.finish_endpoint(py, value),
                 Some(PendingAction::Dependency {
                     cache_key,
@@ -7935,6 +8671,8 @@ impl FastApiCall {
                     | PendingAction::RouteInvocation
                     | PendingAction::Endpoint
                     | PendingAction::ReturnedResponse
+                    | PendingAction::FrontendConfig
+                    | PendingAction::FrontendAsgiResponse
                     | PendingAction::FunctionDependencyCloseBeforeResponse
                     | PendingAction::FunctionDependencyCloseAfterResponse
                     | PendingAction::SendStart
@@ -7943,6 +8681,7 @@ impl FastApiCall {
                     | PendingAction::Dependency { .. }
                     | PendingAction::OverrideSubdependency { .. },
                 ) => self.route_exception(py, error),
+                Some(PendingAction::FrontendResponse) => self.frontend_response_failed(py, error),
                 Some(PendingAction::FunctionDependencyCloseAfterError(_)) => {
                     self.route_exception(py, error)
                 }
@@ -8007,6 +8746,7 @@ impl AwaitableStateMachine for FastApiCall {
 /// Registers FastAPI's Rust-owned application type and request markers.
 pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     crate::lifespan::register(module)?;
+    module.add_function(wrap_pyfunction!(frontend_dependency_endpoint, module)?)?;
     module.add_class::<PyFastApi>()?;
     module.add_class::<PyFastApiAsgiApp>()?;
     module.add_class::<PyMiddlewareDecorator>()?;

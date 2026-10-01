@@ -80,14 +80,14 @@ api_inventory:
 import_binding_classification_review:
   artifact: tests/fixtures/api-import-binding-classification-review.json
   schema: fastapi-starlette-import-binding-review/v1
-  sha256: c100a3a6acbc3c250490e8b1aa5eac6224e10f5c8c1c28722ead9f615f68062f
+  sha256: f60884e696fab761c2e7cf617eb381d20a1b2cc66a7edc111931b76177e2d1d2
   source_identity:
     package: FastAPI
     version: 0.141.1
     source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
     selected_starlette_profile: 1.6.0
     starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
-    starlette_rs_contract_commit: e108f22de2807b50eb92b2d206cf70265f406d7d
+    starlette_rs_contract_commit: 82bf19b99a94040c4f0fb03beca5967349504eda
   starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
   counts:
     candidates: 97
@@ -99,7 +99,7 @@ import_binding_classification_review:
   candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
   pinned_starlette_rs_sources:
     metadata_sha256: 1baeaa65df032816231736829df4a09f40066273d31b529df95c6e24ff6960b1
-    manifest_sha256: 1712f0b627d1fd709d928dda0d9c291cd732bbd60450622a21cb9e52e3230456
+    manifest_sha256: 851db1c8b36ddb26e41ac8dff6d45f7dc8a2ede130cef3c736d18a74cc5c7134
     api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
     api_review_sha256: a98d098cf4f8cb6cf45fd8396482e5a0b58c44f46c8ffb234bbf0fbc984a0ecf
 
@@ -187,7 +187,7 @@ classification_atlas:
 starlette_rs:
   owner: ../starlette-rs
   repository: https://github.com/appunni-m/starlette-rs
-  commit: e108f22de2807b50eb92b2d206cf70265f406d7d
+  commit: 82bf19b99a94040c4f0fb03beca5967349504eda
   distribution_version: 0.1.0
   contract_id: starlette-1.6.0-asgi-http-config-session-slice
   metadata: ../starlette-rs/metadata.yaml
@@ -440,6 +440,26 @@ reviewed_api_contract_overlay:
         custom request/WebSocket validation handlers, custom WebSocket
         exception object identity, and default FastAPI validation-handler
         entries remain outside this slice.
+    fastapi.applications.FastAPI.frontend:
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::frontend
+      source_evidence:
+        - {path: fastapi/applications.py, symbol: frontend}
+        - {path: fastapi/routing.py, symbol: _FrontendStaticFiles}
+        - {path: fastapi/routing.py, symbol: _FrontendRoute}
+        - {path: fastapi/routing.py, symbol: _FrontendRouteGroup}
+        - {path: tests/test_frontend.py}
+        - {path: docs/en/docs/tutorial/frontend.md}
+      feature_ids: [app-routing, dependency-security, public-api-errors]
+      observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, dependency.call_order, http.status, http.headers.ordered, http.body.bytes, asgi.application_error.exception, route.match]
+      supported_slice: >-
+        Source-backed operation scope for FastAPI.frontend. The pinned
+        frontend-fallback-routing-source-review workflow maps API-route
+        precedence, low-priority static fallback routing, root-path behavior,
+        router dependencies, GET/HEAD responses, and directory/fallback
+        configuration outcomes. Only behavior observed by identity-checked
+        comparisons may be claimed; development warnings, broader Accept
+        parsing, unusual path-like values, and unrepresented static-file edge
+        cases remain outside this reviewed slice.
     fastapi.Path:
       rust_binding: fastapi-rs/src/parameters.rs::path
       source_evidence:
@@ -1047,6 +1067,23 @@ reviewed_api_contract_overlay:
         handlers and lifespan contexts. The source-defined self/transitive
         inclusion guard is compared at construction; lifecycle failures and
         other router-level options remain outside this slice.
+    fastapi.routing.APIRouter.frontend:
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::frontend
+      source_evidence:
+        - {path: fastapi/routing.py, symbol: frontend}
+        - {path: fastapi/routing.py, symbol: _FrontendRouteGroup}
+        - {path: tests/test_frontend.py}
+        - {path: tests/test_router_include_context.py}
+        - {path: docs/en/docs/tutorial/frontend.md}
+      feature_ids: [app-routing, dependency-security, public-api-errors]
+      observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, dependency.call_order, http.status, http.headers.ordered, http.body.bytes, asgi.application_error.exception, route.match]
+      supported_slice: >-
+        Source-backed operation scope for APIRouter.frontend. The pinned
+        frontend-fallback-routing-source-review workflow observes included
+        frontend prefixes, router dependency behavior, and static fallback
+        dispatch. Prefix composition, priority, and dependency claims remain
+        limited to the exact identity-checked inputs; other router inclusion
+        combinations remain outside this reviewed slice.
     fastapi.routing.APIRouter.__init__:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::new
       source_evidence:

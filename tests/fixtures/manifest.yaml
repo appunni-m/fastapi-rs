@@ -91,7 +91,7 @@ target:
     name: starlette-rs-py
     version: 0.1.0
     starlette_contract: 1.6.0
-    commit: e108f22de2807b50eb92b2d206cf70265f406d7d
+    commit: 82bf19b99a94040c4f0fb03beca5967349504eda
   external_python_runtime_lock:
     path: requirements/target-runtime-cpython-3.12.13.lock
     sha256: efb7ca633fc9a9c8587a6f59f8ee9b509151f6f77ceb75a56dd3cdeff2be99f7
@@ -128,7 +128,7 @@ source_artifacts:
   api_import_binding_classification_review:
     path: tests/fixtures/api-import-binding-classification-review.json
     schema: fastapi-starlette-import-binding-review/v1
-    sha256: c100a3a6acbc3c250490e8b1aa5eac6224e10f5c8c1c28722ead9f615f68062f
+    sha256: f60884e696fab761c2e7cf617eb381d20a1b2cc66a7edc111931b76177e2d1d2
     purpose: Reviewed source-backed disposition of uncertain FastAPI import bindings from the selected Starlette profile
     source_identity:
       package: FastAPI
@@ -136,7 +136,7 @@ source_artifacts:
       source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
       selected_starlette_profile: 1.6.0
       starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
-      starlette_rs_contract_commit: e108f22de2807b50eb92b2d206cf70265f406d7d
+      starlette_rs_contract_commit: 82bf19b99a94040c4f0fb03beca5967349504eda
     starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
     counts:
       candidates: 97
@@ -148,7 +148,7 @@ source_artifacts:
     candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
     pinned_starlette_rs_sources:
       metadata_sha256: 1baeaa65df032816231736829df4a09f40066273d31b529df95c6e24ff6960b1
-      manifest_sha256: 1712f0b627d1fd709d928dda0d9c291cd732bbd60450622a21cb9e52e3230456
+      manifest_sha256: 851db1c8b36ddb26e41ac8dff6d45f7dc8a2ede130cef3c736d18a74cc5c7134
       api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
       api_review_sha256: a98d098cf4f8cb6cf45fd8396482e5a0b58c44f46c8ffb234bbf0fbc984a0ecf
   api_source_classification_review:
@@ -172,7 +172,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@3
-    sha256: c071b0f37b3c9d3b363df2beeb41b6ff6351ecdf23ba1c0e6b3b7e3313ba1e0c
+    sha256: df7c9e6a9d4b81e3ac599d9cf18eab497b248f3223dc2150f503ca93293dcfc7
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -242,7 +242,7 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@2
-    sha256: 2b1f5fa6485efdd6afed0fd67b4ebc6232fc469380be6f097183b033cd82c4e0
+    sha256: a414d0cfb59371b5abf0d27c4825a46c19b6e045335b8786419939d29f02422d
     schema_path: tests/fixtures/schemas/materialized-input-index.schema.json
     schema_sha256: 56ac1cdfaa6f28b4277ef44b5ef78efebb3122111c5691e1b9c1bce869156aaf
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
@@ -2464,6 +2464,10 @@ api_surface_contract:
     - response-serialization
     - websocket-lifecycle
     observation_selectors:
+    - asgi.application_error.exception
+    - construction.exception_class
+    - construction.exception_message
+    - construction.outcome
     - dependency.call_order
     - docs.response.body.bytes
     - docs.response.status
@@ -2487,7 +2491,7 @@ api_surface_contract:
     - warnings.category_message
     - websocket.event_order
     - websocket.messages
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.applications.FastAPI.frontend
@@ -2497,7 +2501,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/195
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::frontend
   - id: fastapi.applications.FastAPI.get
     kind: method
     source_candidate_ref: /api_candidates/196
@@ -21152,10 +21156,15 @@ api_surface_contract:
     - app-routing
     - dependency-security
     - openapi-docs
+    - public-api-errors
     - request-validation
     - response-serialization
     - websocket-lifecycle
     observation_selectors:
+    - asgi.application_error.exception
+    - construction.exception_class
+    - construction.exception_message
+    - construction.outcome
     - dependency.call_order
     - http.body.bytes
     - http.body.json
@@ -21169,7 +21178,7 @@ api_surface_contract:
     - validation.error_class
     - validation.error_details
     - websocket.messages
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.routing.APIRouter.frontend
@@ -21179,7 +21188,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1076
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::frontend
   - id: fastapi.routing.APIRouter.get
     kind: method
     source_candidate_ref: /api_candidates/1077
