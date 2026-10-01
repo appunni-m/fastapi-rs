@@ -69,6 +69,7 @@ enum ParameterSource {
     },
     WebSocket,
     Request,
+    Response,
     Dependency {
         plan: Box<CallablePlan>,
         use_cache: bool,
@@ -101,6 +102,7 @@ struct InvocationContext<'context, 'py> {
     inputs: &'context Bound<'py, PyDict>,
     request: Option<&'context Bound<'py, PyAny>>,
     websocket: Option<&'context Bound<'py, PyAny>>,
+    response: Option<&'context Bound<'py, PyAny>>,
     query_params: &'context QueryParams,
     form_body_embedded: bool,
     failures: &'context mut Vec<ValidationIssue>,
@@ -2598,6 +2600,7 @@ impl CallablePlan {
                 ),
                 ParameterSource::WebSocket => false,
                 ParameterSource::Request => false,
+                ParameterSource::Response => false,
                 ParameterSource::Dependency { plan, .. } => plan.has_openapi_parameter_inputs(),
             })
     }
@@ -2612,6 +2615,7 @@ impl CallablePlan {
                 ParameterSource::Input { .. }
                 | ParameterSource::WebSocket
                 | ParameterSource::Request
+                | ParameterSource::Response
                 | ParameterSource::Dependency { .. } => {}
             }
         }
@@ -2635,6 +2639,7 @@ impl CallablePlan {
                 ParameterSource::Input { .. } => false,
                 ParameterSource::WebSocket => false,
                 ParameterSource::Request => false,
+                ParameterSource::Response => false,
                 ParameterSource::Dependency { plan, .. } => plan.has_form_inputs(),
             })
     }
@@ -2697,7 +2702,8 @@ impl CallablePlan {
                 }
                 ParameterSource::Input { .. }
                 | ParameterSource::WebSocket
-                | ParameterSource::Request => {}
+                | ParameterSource::Request
+                | ParameterSource::Response => {}
             }
         }
         parameters.sort_by_key(|parameter| match parameter.location.as_str() {
@@ -2808,7 +2814,8 @@ impl CallablePlan {
                     ParameterSource::Dependency { plan, .. } => Some(plan.as_ref()),
                     ParameterSource::Input { .. }
                     | ParameterSource::WebSocket
-                    | ParameterSource::Request => None,
+                    | ParameterSource::Request
+                    | ParameterSource::Response => None,
                 })
                 .collect::<Vec<_>>();
             if nested_dependencies.is_empty() {
@@ -2879,6 +2886,7 @@ impl CallablePlan {
                     ParameterSource::Input { .. }
                     | ParameterSource::WebSocket
                     | ParameterSource::Request
+                    | ParameterSource::Response
                     | ParameterSource::Dependency { .. } => false,
                 };
                 if parameter.default.is_some()
@@ -3044,6 +3052,14 @@ impl CallablePlan {
                     if let Some(request) = context.request {
                         kwargs.set_item(&parameter.name, request)?;
                     }
+                }
+                ParameterSource::Response => {
+                    let response = context.response.ok_or_else(|| {
+                        PyRuntimeError::new_err(
+                            "Response parameter requires a request response context",
+                        )
+                    })?;
+                    kwargs.set_item(&parameter.name, response)?;
                 }
                 ParameterSource::Input { .. } | ParameterSource::Dependency { .. } => {}
             }
@@ -3432,7 +3448,9 @@ impl CallableParameter {
                 required: self.default.is_none(),
             }],
             ParameterSource::Dependency { plan, .. } => plan.input_parameters(),
-            ParameterSource::WebSocket | ParameterSource::Request => Vec::new(),
+            ParameterSource::WebSocket | ParameterSource::Request | ParameterSource::Response => {
+                Vec::new()
+            }
         }
     }
 }
@@ -3481,9 +3499,30 @@ fn parameter_source(
     metadata: &[Py<PyAny>],
     path_parameters: &[String],
 ) -> PyResult<ParameterSource> {
+    // Explicit Depends takes precedence over framework-managed parameter injection.
+    for marker in metadata {
+        let marker = marker.bind(py);
+        if !marker.hasattr("kind")? || marker.getattr("kind")?.extract::<String>()? != "depends" {
+            continue;
+        }
+        let dependency = marker.getattr("dependency")?.unbind();
+        let use_cache = marker.getattr("use_cache")?.extract::<bool>()?;
+        let path_names = path_parameters.to_vec();
+        return CallablePlan::build(py, dependency, &path_names).map(|plan| {
+            ParameterSource::Dependency {
+                plan: Box::new(plan),
+                use_cache,
+                bind_value: true,
+            }
+        });
+    }
     let request_type = py.import("starlette.requests")?.getattr("Request")?;
     if annotation_is_subclass(py, annotation, &request_type)? {
         return Ok(ParameterSource::Request);
+    }
+    let response_type = py.import("starlette.responses")?.getattr("Response")?;
+    if annotation_is_subclass(py, annotation, &response_type)? {
+        return Ok(ParameterSource::Response);
     }
     let websocket_type = py.import("starlette.websockets")?.getattr("WebSocket")?;
     if annotation.is(&websocket_type) {
@@ -3495,18 +3534,6 @@ fn parameter_source(
             continue;
         }
         let kind = marker.getattr("kind")?.extract::<String>()?;
-        if kind == "depends" {
-            let dependency = marker.getattr("dependency")?.unbind();
-            let use_cache = marker.getattr("use_cache")?.extract::<bool>()?;
-            let path_names = path_parameters.to_vec();
-            return CallablePlan::build(py, dependency, &path_names).map(|plan| {
-                ParameterSource::Dependency {
-                    plan: Box::new(plan),
-                    use_cache,
-                    bind_value: true,
-                }
-            });
-        }
         if kind == "body" {
             return Ok(ParameterSource::Input {
                 source: InputSource::Body,
@@ -4810,6 +4837,7 @@ fn response_start(
     send: &Bound<'_, PyAny>,
     status: u16,
     body: &[u8],
+    extra_headers: Option<&Bound<'_, PyAny>>,
 ) -> PyResult<Py<PyAny>> {
     let headers = PyList::empty(py);
     if status != 204 {
@@ -4822,11 +4850,56 @@ fn response_start(
         PyBytes::new(py, b"content-type"),
         PyBytes::new(py, b"application/json"),
     ))?;
+    if let Some(extra_headers) = extra_headers {
+        for header in extra_headers.try_iter()? {
+            headers.append(header?)?;
+        }
+    }
     let message = PyDict::new(py);
     message.set_item("type", "http.response.start")?;
     message.set_item("status", status)?;
     message.set_item("headers", headers)?;
     send.call1((message,)).map(Bound::unbind)
+}
+
+fn fastapi_response_state(py: Python<'_>) -> PyResult<Py<PyAny>> {
+    let response = py
+        .import("starlette.responses")?
+        .getattr("Response")?
+        .call0()?;
+    response
+        .getattr("headers")?
+        .call_method1("__delitem__", ("content-length",))?;
+    response.setattr("status_code", py.None())?;
+    Ok(response.unbind())
+}
+
+fn injected_response_status(response: Option<&Bound<'_, PyAny>>) -> PyResult<Option<Py<PyAny>>> {
+    let Some(response) = response else {
+        return Ok(None);
+    };
+    let status_code = response.getattr("status_code")?;
+    if status_code.is_none() || !status_code.is_truthy()? {
+        return Ok(None);
+    }
+    Ok(Some(status_code.unbind()))
+}
+
+fn merge_injected_response_state(
+    py: Python<'_>,
+    response: &Bound<'_, PyAny>,
+    injected_response: Option<&Bound<'_, PyAny>>,
+) -> PyResult<()> {
+    let Some(injected_response) = injected_response else {
+        return Ok(());
+    };
+    if let Some(status_code) = injected_response_status(Some(injected_response))? {
+        response.setattr("status_code", status_code.bind(py))?;
+    }
+    let response_headers = response.getattr("headers")?.getattr("raw")?;
+    let injected_headers = injected_response.getattr("headers")?.getattr("raw")?;
+    response_headers.call_method1("extend", (injected_headers,))?;
+    Ok(())
 }
 
 fn response_body(py: Python<'_>, send: &Bound<'_, PyAny>, body: &[u8]) -> PyResult<Py<PyAny>> {
@@ -5214,6 +5287,7 @@ fn fastapi_core_call(
             websocket_route_index: None,
             request: None,
             websocket: None,
+            injected_response: None,
             path_params: Vec::new(),
             pending: None,
             response_status: 200,
@@ -5239,6 +5313,7 @@ struct FastApiCall {
     websocket_route_index: Option<usize>,
     request: Option<Py<PyAny>>,
     websocket: Option<Py<PyAny>>,
+    injected_response: Option<Py<PyAny>>,
     path_params: Vec<(String, String)>,
     pending: Option<PendingAction>,
     response_status: u16,
@@ -5305,6 +5380,7 @@ impl FastApiCall {
             } => {
                 self.route_index = Some(operation_index);
                 self.path_params = path_params;
+                self.injected_response = Some(fastapi_response_state(py)?);
                 let converted_path_params = PyDict::new(py);
                 {
                     let app = self.app.bind(py).borrow();
@@ -5378,6 +5454,7 @@ impl FastApiCall {
             return self.close_unmatched_websocket(py);
         };
         self.websocket_route_index = Some(operation_index);
+        self.injected_response = Some(fastapi_response_state(py)?);
         self.path_params = path_params.clone();
 
         let query: Vec<u8> = scope
@@ -5703,6 +5780,10 @@ impl FastApiCall {
         self.pending = Some(PendingAction::RouteInvocation);
         let websocket = self.websocket.as_ref().map(|socket| socket.bind(py));
         let request = self.request.as_ref().map(|request| request.bind(py));
+        let injected_response = self
+            .injected_response
+            .as_ref()
+            .map(|response| response.bind(py));
         let invocation = self
             .invocation
             .as_mut()
@@ -5731,6 +5812,7 @@ impl FastApiCall {
                 inputs: invocation.inputs.bind(py),
                 request,
                 websocket,
+                response: injected_response,
                 query_params: &invocation.query_params,
                 form_body_embedded: invocation.form_body_embedded,
                 failures: &mut invocation.failures,
@@ -5883,6 +5965,10 @@ impl FastApiCall {
         prepared_dependencies.insert(0, subdependency_value);
         let request = self.request.as_ref().map(|request| request.bind(py));
         let websocket = self.websocket.as_ref().map(|socket| socket.bind(py));
+        let injected_response = self
+            .injected_response
+            .as_ref()
+            .map(|response| response.bind(py));
         let parent_result = {
             let invocation = self
                 .invocation
@@ -5894,6 +5980,7 @@ impl FastApiCall {
                 inputs: invocation.inputs.bind(py),
                 request,
                 websocket,
+                response: injected_response,
                 query_params: &invocation.query_params,
                 form_body_embedded: invocation.form_body_embedded,
                 failures: &mut invocation.failures,
@@ -5986,6 +6073,18 @@ impl FastApiCall {
                 stream_serializer,
             )
         };
+        let injected_response = self
+            .injected_response
+            .as_ref()
+            .map(|response| response.clone_ref(py));
+        let injected_response_bound = injected_response.as_ref().map(|response| response.bind(py));
+        let status_code = injected_response_status(injected_response_bound)
+            .and_then(|status_code| {
+                status_code
+                    .map(|status_code| status_code.bind(py).extract::<u16>())
+                    .transpose()
+            })?
+            .unwrap_or(status_code);
         if generator_kind.is_generator() {
             let json_lines = response_class.is_none() && !sse_stream;
             let synchronous = generator_kind == FastApiGeneratorKind::Sync;
@@ -6040,6 +6139,7 @@ impl FastApiCall {
                 headers.set_item("Cache-Control", "no-cache")?;
                 headers.set_item("X-Accel-Buffering", "no")?;
             }
+            merge_injected_response_state(py, &response, injected_response_bound)?;
             return self.start_returned_response(py, &response);
         }
 
@@ -6103,7 +6203,6 @@ impl FastApiCall {
             .response_class
             .as_ref()
             .map(|response_class| response_class.clone_ref(py));
-        let status_code = route.status_code;
         drop(app);
         if let Some(response_class) = response_class {
             let kwargs = PyDict::new(py);
@@ -6111,6 +6210,7 @@ impl FastApiCall {
             let response = response_class
                 .bind(py)
                 .call((response_value,), Some(&kwargs))?;
+            merge_injected_response_state(py, &response, injected_response_bound)?;
             return self.start_returned_response(py, &response);
         }
         self.response_status = status_code;
@@ -6119,16 +6219,43 @@ impl FastApiCall {
         } else {
             json_bytes(py, &response_value)?
         };
-        self.send_start(py)
+        self.send_start_with_injected_response_headers(py)
     }
 
     fn send_start(&mut self, py: Python<'_>) -> PyResult<MachineAction> {
+        self.send_start_with_extra_headers(py, None)
+    }
+
+    fn send_start_with_injected_response_headers(
+        &mut self,
+        py: Python<'_>,
+    ) -> PyResult<MachineAction> {
+        let extra_headers = self
+            .injected_response
+            .as_ref()
+            .map(|response| {
+                response
+                    .bind(py)
+                    .getattr("headers")?
+                    .getattr("raw")
+                    .map(Bound::unbind)
+            })
+            .transpose()?;
+        self.send_start_with_extra_headers(py, extra_headers)
+    }
+
+    fn send_start_with_extra_headers(
+        &mut self,
+        py: Python<'_>,
+        extra_headers: Option<Py<PyAny>>,
+    ) -> PyResult<MachineAction> {
         self.pending = Some(PendingAction::SendStart);
         response_start(
             py,
             self.send.bind(py),
             self.response_status,
             &self.response_body,
+            extra_headers.as_ref().map(|headers| headers.bind(py)),
         )
         .map(MachineAction::Await)
     }
