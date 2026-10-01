@@ -3004,7 +3004,7 @@ impl CallablePlan {
             }
             let subdependency_plan =
                 CallablePlan::build(context.py, nested_callable, &nested_plan.path_parameters)?;
-            let mut required_query_parameters = !subdependency_plan.parameters.is_empty();
+            let mut supported_query_parameters = true;
             for parameter in &subdependency_plan.parameters {
                 // QueryParams::get supplies one scalar value. Sequence
                 // annotations need FastAPI's getlist behavior and stay out of
@@ -3028,13 +3028,13 @@ impl CallablePlan {
                         parameter.annotation.bind(context.py),
                     )?
                 {
-                    required_query_parameters = false;
+                    supported_query_parameters = false;
                     break;
                 }
             }
-            if !required_query_parameters {
+            if !supported_query_parameters {
                 return Err(PyNotImplementedError::new_err(
-                    "async nested dependency support requires one or more required scalar query parameters",
+                    "async nested dependency parameters must be required scalar query parameters",
                 ));
             }
             nested_override = Some((
@@ -3638,7 +3638,12 @@ fn parameter_source(
         if !marker.hasattr("kind")? || marker.getattr("kind")?.extract::<String>()? != "depends" {
             continue;
         }
-        let dependency = marker.getattr("dependency")?.unbind();
+        let dependency = marker.getattr("dependency")?;
+        let dependency = if dependency.is_none() {
+            annotation.clone().unbind()
+        } else {
+            dependency.unbind()
+        };
         let use_cache = marker.getattr("use_cache")?.extract::<bool>()?;
         let path_names = path_parameters.to_vec();
         return CallablePlan::build(py, dependency, &path_names).map(|plan| {

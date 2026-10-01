@@ -1,7 +1,5 @@
 """Independent request-scoped dependency injection workload."""
 
-from __future__ import annotations
-
 from typing import Annotated, Any
 
 from fastapi import Depends, FastAPI, Header, HTTPException

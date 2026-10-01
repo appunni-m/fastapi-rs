@@ -146,10 +146,10 @@ impl ParameterMetadata {
     }
 }
 
-#[pyfunction(name = "Depends", signature = (dependency, *, use_cache = true))]
+#[pyfunction(name = "Depends", signature = (dependency = None, *, use_cache = true))]
 fn depends(
     py: Python<'_>,
-    dependency: Py<PyAny>,
+    dependency: Option<Py<PyAny>>,
     use_cache: bool,
 ) -> PyResult<Py<ParameterMetadata>> {
     Py::new(
@@ -159,7 +159,7 @@ fn depends(
             alias: None,
             validation_alias: None,
             embed: None,
-            dependency: Some(dependency),
+            dependency,
             default: None,
             media_type: None,
             title: None,
