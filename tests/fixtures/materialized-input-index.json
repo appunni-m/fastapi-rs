@@ -558,9 +558,9 @@
     {
       "id": "body-surface",
       "input_path": "tests/fixtures/inputs/parity/body-surface.json",
-      "input_sha256": "d42d8d06ab08034d3dbf25f7df9d6f032ba8fa4f1ba6532a65e8c284e227ccab",
+      "input_sha256": "5bc87e9aa49d203e7d4e02b5601646191b985db50347f98fa6e0dbfca9adf5fa",
       "recipe_path": "tests/fixtures/input-recipes/parity/body-surface.yaml",
-      "recipe_sha256": "f04eab9c84197fec6d0929dc69e8c384e9fcf84c00948955158c72f8e1a1c7de",
+      "recipe_sha256": "1370c5fcd46eafba44754f8d8ea56581194ef5733121a333af4b3b03cc5fa609",
       "workload_path": "tests/fixtures/workloads/body_surface.py",
       "workload_sha256": "8481dd24509f48994a53c884cb5d7103ce18327e3960085a0dc8544f3d144e82",
       "case_ids": [
@@ -575,7 +575,9 @@
         "fastapi.body.multiple-values-invalid",
         "fastapi.body.optional-model-absent",
         "fastapi.body.optional-model-present",
-        "fastapi.body.openapi-schemas"
+        "fastapi.body.openapi-schemas",
+        "fastapi.path.ge-le-lower-bound-invalid",
+        "fastapi.path.ge-le-upper-bound-invalid"
       ]
     },
     {
@@ -8377,13 +8379,15 @@
       "fixture_id": "fastapi.docs.tutorial-body-multiple-params",
       "workflow_id": "body-surface",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 5 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 7 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.body.multiple-values-invalid",
         "fastapi.body.multiple-values-valid",
         "fastapi.body.openapi-schemas",
         "fastapi.body.optional-model-absent",
-        "fastapi.body.optional-model-present"
+        "fastapi.body.optional-model-present",
+        "fastapi.path.ge-le-lower-bound-invalid",
+        "fastapi.path.ge-le-upper-bound-invalid"
       ],
       "observation_selectors": [
         "asgi.send.message_types",
@@ -8412,6 +8416,23 @@
         "http.status",
         "openapi.document",
         "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_path.py",
+      "fixture_id": "fastapi.test.test-path",
+      "workflow_id": "body-surface",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.path.ge-le-lower-bound-invalid",
+        "fastapi.path.ge-le-upper-bound-invalid"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
       ]
     },
     {
@@ -8471,7 +8492,7 @@
       "fixture_id": "fastapi.test.test-tutorial-test-body-multiple-params-test-tutorial001",
       "workflow_id": "body-surface",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 5 case(s); observes asgi.send.message_types, docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 5 case(s); observes asgi.send.message_types, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.body.multiple-values-invalid",
         "fastapi.body.multiple-values-valid",
@@ -8481,7 +8502,6 @@
       ],
       "observation_selectors": [
         "asgi.send.message_types",
-        "docs.response.body.bytes",
         "docs.response.headers",
         "docs.response.status",
         "http.body.bytes",

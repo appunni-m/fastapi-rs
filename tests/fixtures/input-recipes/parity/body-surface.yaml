@@ -538,11 +538,11 @@ cases:
       body: ''
       more_body: false
     observations:
+    # OpenAPI schema objects are compared structurally below, not by JSON key order.
     - kind: http_response
       selectors:
       - status
       - headers
-      - body
       comparison: exact
     - kind: asgi_send
       selector: message_types
@@ -558,4 +558,90 @@ cases:
   - path: docs/en/docs/tutorial/body-multiple-params.md
     kind: upstream_documentation
   - path: docs/en/docs/tutorial/body.md
+    kind: upstream_documentation
+- case_id: fastapi.path.ge-le-lower-bound-invalid
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: PUT
+      scheme: http
+      path: /products/-1
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_path.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/body-multiple-params.md
+    kind: upstream_documentation
+- case_id: fastapi.path.ge-le-upper-bound-invalid
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: PUT
+      scheme: http
+      path: /products/1001
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_path.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/body-multiple-params.md
     kind: upstream_documentation

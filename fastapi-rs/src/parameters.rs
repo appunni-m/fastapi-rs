@@ -9,6 +9,7 @@ pub(crate) struct ParameterMetadata {
     kind: String,
     alias: Option<String>,
     validation_alias: Option<Py<PyAny>>,
+    embed: Option<bool>,
     dependency: Option<Py<PyAny>>,
     default: Option<Py<PyAny>>,
     media_type: Option<String>,
@@ -18,7 +19,9 @@ pub(crate) struct ParameterMetadata {
     deprecated: Option<Py<PyAny>>,
     include_in_schema: bool,
     gt: Option<Py<PyAny>>,
+    ge: Option<Py<PyAny>>,
     lt: Option<Py<PyAny>>,
+    le: Option<Py<PyAny>>,
     min_length: Option<Py<PyAny>>,
     max_length: Option<Py<PyAny>>,
     convert_underscores: bool,
@@ -42,6 +45,11 @@ impl ParameterMetadata {
         self.validation_alias
             .as_ref()
             .map(|validation_alias| validation_alias.clone_ref(py))
+    }
+
+    #[getter]
+    fn embed(&self) -> Option<bool> {
+        self.embed
     }
 
     #[getter]
@@ -99,8 +107,18 @@ impl ParameterMetadata {
     }
 
     #[getter]
+    fn ge(&self, py: Python<'_>) -> Option<Py<PyAny>> {
+        self.ge.as_ref().map(|ge| ge.clone_ref(py))
+    }
+
+    #[getter]
     fn lt(&self, py: Python<'_>) -> Option<Py<PyAny>> {
         self.lt.as_ref().map(|lt| lt.clone_ref(py))
+    }
+
+    #[getter]
+    fn le(&self, py: Python<'_>) -> Option<Py<PyAny>> {
+        self.le.as_ref().map(|le| le.clone_ref(py))
     }
 
     #[getter]
@@ -140,6 +158,7 @@ fn depends(
             kind: "depends".to_owned(),
             alias: None,
             validation_alias: None,
+            embed: None,
             dependency: Some(dependency),
             default: None,
             media_type: None,
@@ -149,7 +168,9 @@ fn depends(
             deprecated: None,
             include_in_schema: true,
             gt: None,
+            ge: None,
             lt: None,
+            le: None,
             min_length: None,
             max_length: None,
             convert_underscores: true,
@@ -175,6 +196,7 @@ fn header(
             kind: "header".to_owned(),
             alias,
             validation_alias: None,
+            embed: None,
             dependency: None,
             default,
             media_type: None,
@@ -184,7 +206,9 @@ fn header(
             deprecated: None,
             include_in_schema: true,
             gt: None,
+            ge: None,
             lt: None,
+            le: None,
             min_length: None,
             max_length: None,
             convert_underscores,
@@ -206,6 +230,7 @@ fn cookie(
             kind: "cookie".to_owned(),
             alias,
             validation_alias: None,
+            embed: None,
             dependency: None,
             default,
             media_type: None,
@@ -215,7 +240,9 @@ fn cookie(
             deprecated: None,
             include_in_schema: true,
             gt: None,
+            ge: None,
             lt: None,
+            le: None,
             min_length: None,
             max_length: None,
             convert_underscores: true,
@@ -290,6 +317,7 @@ fn query(
             kind: "query".to_owned(),
             alias,
             validation_alias,
+            embed: None,
             dependency: None,
             default,
             media_type: None,
@@ -299,7 +327,9 @@ fn query(
             deprecated,
             include_in_schema,
             gt,
+            ge: None,
             lt,
+            le: None,
             min_length,
             max_length,
             convert_underscores: true,
@@ -308,14 +338,21 @@ fn query(
     )
 }
 
-#[pyfunction(name = "Path", signature = (*, gt = None))]
-fn path(py: Python<'_>, gt: Option<Py<PyAny>>) -> PyResult<Py<ParameterMetadata>> {
+#[pyfunction(name = "Path", signature = (*, gt = None, ge = None, lt = None, le = None))]
+fn path(
+    py: Python<'_>,
+    gt: Option<Py<PyAny>>,
+    ge: Option<Py<PyAny>>,
+    lt: Option<Py<PyAny>>,
+    le: Option<Py<PyAny>>,
+) -> PyResult<Py<ParameterMetadata>> {
     Py::new(
         py,
         ParameterMetadata {
             kind: "path".to_owned(),
             alias: None,
             validation_alias: None,
+            embed: None,
             dependency: None,
             default: None,
             media_type: None,
@@ -325,7 +362,9 @@ fn path(py: Python<'_>, gt: Option<Py<PyAny>>) -> PyResult<Py<ParameterMetadata>
             deprecated: None,
             include_in_schema: true,
             gt,
-            lt: None,
+            ge,
+            lt,
+            le,
             min_length: None,
             max_length: None,
             convert_underscores: true,
@@ -334,14 +373,24 @@ fn path(py: Python<'_>, gt: Option<Py<PyAny>>) -> PyResult<Py<ParameterMetadata>
     )
 }
 
-#[pyfunction(name = "Body", signature = (*, gt = None))]
-fn body(py: Python<'_>, gt: Option<Py<PyAny>>) -> PyResult<Py<ParameterMetadata>> {
+#[pyfunction(
+    name = "Body",
+    signature = (*, embed = None, alias = None, validation_alias = None, gt = None)
+)]
+fn body(
+    py: Python<'_>,
+    embed: Option<bool>,
+    alias: Option<String>,
+    validation_alias: Option<Py<PyAny>>,
+    gt: Option<Py<PyAny>>,
+) -> PyResult<Py<ParameterMetadata>> {
     Py::new(
         py,
         ParameterMetadata {
             kind: "body".to_owned(),
-            alias: None,
-            validation_alias: None,
+            alias,
+            validation_alias,
+            embed,
             dependency: None,
             default: None,
             media_type: None,
@@ -351,7 +400,9 @@ fn body(py: Python<'_>, gt: Option<Py<PyAny>>) -> PyResult<Py<ParameterMetadata>
             deprecated: None,
             include_in_schema: true,
             gt,
+            ge: None,
             lt: None,
+            le: None,
             min_length: None,
             max_length: None,
             convert_underscores: true,
@@ -407,6 +458,7 @@ fn form(
             kind: "form".to_owned(),
             alias,
             validation_alias: None,
+            embed: None,
             dependency: None,
             default: normalize_undefined_default(py, default)?,
             media_type: Some(media_type.to_owned()),
@@ -416,7 +468,9 @@ fn form(
             deprecated: None,
             include_in_schema: true,
             gt: None,
+            ge: None,
             lt: None,
+            le: None,
             min_length: None,
             max_length: None,
             convert_underscores: true,
@@ -448,6 +502,7 @@ fn file(
             kind: "file".to_owned(),
             alias,
             validation_alias: None,
+            embed: None,
             dependency: None,
             default: normalize_undefined_default(py, default)?,
             media_type: Some(media_type.to_owned()),
@@ -457,7 +512,9 @@ fn file(
             deprecated: None,
             include_in_schema: true,
             gt: None,
+            ge: None,
             lt: None,
+            le: None,
             min_length: None,
             max_length: None,
             convert_underscores: true,

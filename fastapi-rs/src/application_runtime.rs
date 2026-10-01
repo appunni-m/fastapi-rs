@@ -87,6 +87,7 @@ struct CallableParameter {
     description: Option<String>,
     deprecated: bool,
     include_in_schema: bool,
+    body_embed: bool,
     source: ParameterSource,
 }
 
@@ -104,6 +105,7 @@ struct InvocationContext<'context, 'py> {
     websocket: Option<&'context Bound<'py, PyAny>>,
     response: Option<&'context Bound<'py, PyAny>>,
     query_params: &'context QueryParams,
+    body_fields_embedded: bool,
     form_body_embedded: bool,
     failures: &'context mut Vec<ValidationIssue>,
     dependency_overrides: &'context Bound<'py, PyDict>,
@@ -1588,12 +1590,8 @@ impl PyFastApi {
                     }
                 }
             } else {
-                let direct_body_parameters = route.plan.direct_body_parameters();
-                let unique_body_names = direct_body_parameters
-                    .iter()
-                    .map(|parameter| parameter.name.as_str())
-                    .collect::<BTreeSet<_>>();
-                let aggregate_body = unique_body_names.len() > 1;
+                let direct_body_parameters = route.plan.all_body_parameters();
+                let aggregate_body = body_fields_embedded(&direct_body_parameters);
                 if aggregate_body {
                     let aggregate_name = format!("Body_{operation_id}");
                     let aggregate_model =
@@ -1611,17 +1609,21 @@ impl PyFastApi {
                     )
                 } else {
                     match route.plan.body_parameter() {
-                        Some(parameter) => (
-                            model_name(py, parameter.annotation.bind(py))?,
-                            Some(pydantic_schema(
-                                py,
-                                parameter.annotation.bind(py),
-                                "validation",
-                                None,
-                            )?),
-                            parameter.default.is_none(),
-                            "application/json".to_owned(),
-                        ),
+                        Some(parameter) => {
+                            let annotation = parameter.annotation.bind(py);
+                            let schema_title = nullable_pydantic_model_name(py, annotation)?;
+                            (
+                                model_name(py, annotation)?,
+                                Some(pydantic_schema(
+                                    py,
+                                    annotation,
+                                    "validation",
+                                    schema_title.as_deref(),
+                                )?),
+                                parameter.default.is_none(),
+                                "application/json".to_owned(),
+                            )
+                        }
                         None => (None, None, false, "application/json".to_owned()),
                     }
                 }
@@ -1686,8 +1688,7 @@ impl PyFastApi {
         } else {
             (None, None)
         };
-        let request_body_present =
-            request_model_name.is_some() || (has_form_body && request_schema.is_some());
+        let request_body_present = request_schema.is_some();
 
         Ok(OpenApiOperation {
             path: route.path.clone(),
@@ -2496,6 +2497,7 @@ impl CallablePlan {
                     description: parameter_description(py, &source, &metadata)?,
                     deprecated: parameter_deprecated(py, &source, &metadata)?,
                     include_in_schema: parameter_include_in_schema(py, &source, &metadata)?,
+                    body_embed: parameter_body_embed(py, &source, &metadata)?,
                     source,
                 })
             })
@@ -2537,6 +2539,7 @@ impl CallablePlan {
                 description: None,
                 deprecated: false,
                 include_in_schema: true,
+                body_embed: false,
                 source: ParameterSource::Dependency {
                     plan,
                     use_cache,
@@ -2567,21 +2570,6 @@ impl CallablePlan {
                 ParameterSource::Dependency { ref plan, .. } => plan.body_parameter(),
                 _ => None,
             })
-    }
-
-    fn direct_body_parameters(&self) -> Vec<&CallableParameter> {
-        self.parameters
-            .iter()
-            .filter(|parameter| {
-                matches!(
-                    parameter.source,
-                    ParameterSource::Input {
-                        source: InputSource::Body,
-                        ..
-                    }
-                )
-            })
-            .collect()
     }
 
     fn all_body_parameters(&self) -> Vec<&CallableParameter> {
@@ -3034,12 +3022,7 @@ impl CallablePlan {
     ) -> PyResult<Option<Py<PyAny>>> {
         let initial_failure_count = context.failures.len();
         let kwargs = PyDict::new(context.py);
-        let aggregate_body = self
-            .input_parameters()
-            .iter()
-            .filter(|parameter| parameter.location == FastApiInputLocation::Body)
-            .count()
-            > 1;
+        let aggregate_body = context.body_fields_embedded;
         for parameter in &self.parameters {
             match &parameter.source {
                 ParameterSource::WebSocket => {
@@ -3535,9 +3518,19 @@ fn parameter_source(
         }
         let kind = marker.getattr("kind")?.extract::<String>()?;
         if kind == "body" {
+            let declared_alias = marker.getattr("alias")?.extract::<Option<String>>()?;
+            let validation_alias = marker.getattr("validation_alias")?;
+            let validation_alias =
+                if validation_alias.is_truthy()? && validation_alias.is_instance_of::<PyString>() {
+                    Some(validation_alias.extract::<String>()?)
+                } else {
+                    None
+                };
             return Ok(ParameterSource::Input {
                 source: InputSource::Body,
-                alias: name.to_owned(),
+                alias: validation_alias
+                    .or(declared_alias)
+                    .unwrap_or_else(|| name.to_owned()),
             });
         }
         if kind == "form" || kind == "file" {
@@ -3609,7 +3602,7 @@ fn parameter_source(
             alias: name.to_owned(),
         });
     }
-    if is_pydantic_model(py, annotation)? {
+    if is_pydantic_model_annotation(py, annotation)? || is_union_of_base_models(py, annotation)? {
         return Ok(ParameterSource::Input {
             source: InputSource::Body,
             alias: name.to_owned(),
@@ -3773,6 +3766,30 @@ fn parameter_include_in_schema(
     Ok(true)
 }
 
+fn parameter_body_embed(
+    py: Python<'_>,
+    source: &ParameterSource,
+    metadata: &[Py<PyAny>],
+) -> PyResult<bool> {
+    if !matches!(
+        source,
+        ParameterSource::Input {
+            source: InputSource::Body,
+            ..
+        }
+    ) {
+        return Ok(false);
+    }
+    for marker in metadata {
+        let marker = marker.bind(py);
+        if marker.hasattr("kind")? && marker.getattr("kind")?.extract::<String>()? == "body" {
+            let embed = marker.getattr("embed")?;
+            return Ok(!embed.is_none() && embed.is_truthy()?);
+        }
+    }
+    Ok(false)
+}
+
 fn is_pydantic_model_annotation(py: Python<'_>, annotation: &Bound<'_, PyAny>) -> PyResult<bool> {
     let typing = py.import("typing")?;
     let origin = typing.getattr("get_origin")?.call1((annotation,))?;
@@ -3783,7 +3800,65 @@ fn is_pydantic_model_annotation(py: Python<'_>, annotation: &Bound<'_, PyAny>) -
             .cast_into::<PyTuple>()?;
         return is_pydantic_model_annotation(py, &arguments.get_item(0)?);
     }
+    let union = typing.getattr("Union")?;
+    let union_type = py.import("types")?.getattr("UnionType")?;
+    if origin.is(&union) || origin.is(&union_type) {
+        let arguments = typing
+            .getattr("get_args")?
+            .call1((annotation,))?
+            .cast_into::<PyTuple>()?;
+        if arguments.len() == 2 {
+            let none = py.None();
+            let none_type = none.bind(py).get_type();
+            for argument in arguments.iter() {
+                if argument.is(&none_type) {
+                    let model = if arguments.get_item(0)?.is(&none_type) {
+                        arguments.get_item(1)?
+                    } else {
+                        arguments.get_item(0)?
+                    };
+                    return is_pydantic_model_annotation(py, &model);
+                }
+            }
+        }
+        return Ok(false);
+    }
     is_pydantic_model(py, annotation)
+}
+
+fn nullable_pydantic_model_name(
+    py: Python<'_>,
+    annotation: &Bound<'_, PyAny>,
+) -> PyResult<Option<String>> {
+    let typing = py.import("typing")?;
+    let origin = typing.getattr("get_origin")?.call1((annotation,))?;
+    let union = typing.getattr("Union")?;
+    let union_type = py.import("types")?.getattr("UnionType")?;
+    if !origin.is(&union) && !origin.is(&union_type) {
+        return Ok(None);
+    }
+    let arguments = typing
+        .getattr("get_args")?
+        .call1((annotation,))?
+        .cast_into::<PyTuple>()?;
+    if arguments.len() != 2 {
+        return Ok(None);
+    }
+    let none = py.None();
+    let none_type = none.bind(py).get_type();
+    for argument in arguments.iter() {
+        if argument.is(&none_type) {
+            let model = if arguments.get_item(0)?.is(&none_type) {
+                arguments.get_item(1)?
+            } else {
+                arguments.get_item(0)?
+            };
+            if is_pydantic_model(py, &model)? {
+                return model_name(py, &model);
+            }
+        }
+    }
+    Ok(None)
 }
 
 fn is_union_of_base_models(py: Python<'_>, annotation: &Bound<'_, PyAny>) -> PyResult<bool> {
@@ -3816,6 +3891,9 @@ fn form_body_should_embed(
     if body_parameters.is_empty() {
         return Ok(false);
     }
+    if body_fields_embedded(body_parameters) {
+        return Ok(true);
+    }
     let unique_names = body_parameters
         .iter()
         .map(|parameter| parameter.name.as_str())
@@ -3839,6 +3917,17 @@ fn form_body_should_embed(
         return Ok(true);
     }
     Ok(false)
+}
+
+fn body_fields_embedded(body_parameters: &[&CallableParameter]) -> bool {
+    let unique_names = body_parameters
+        .iter()
+        .map(|parameter| parameter.name.as_str())
+        .collect::<BTreeSet<_>>();
+    unique_names.len() > 1
+        || body_parameters
+            .first()
+            .is_some_and(|parameter| parameter.body_embed)
 }
 
 fn form_parameter_is_unembedded_model(
@@ -3970,8 +4059,8 @@ fn constrained_parameter_annotation(
         }
         let kwargs = PyDict::new(py);
         let mut has_field_metadata = false;
-        for name in ["gt", "lt", "min_length", "max_length"] {
-            if name != "gt" && kind != "query" {
+        for name in ["gt", "ge", "lt", "le", "min_length", "max_length"] {
+            if kind != "query" && !matches!(name, "gt" | "ge" | "lt" | "le") {
                 continue;
             }
             let value = marker.getattr(name)?;
@@ -4137,11 +4226,13 @@ fn title_case(value: &str) -> String {
     let mut titled = String::with_capacity(value.len());
     let mut capitalize_next = true;
     for character in value.chars() {
-        if capitalize_next {
-            titled.extend(character.to_uppercase());
+        if character.is_alphanumeric() {
+            if capitalize_next {
+                titled.extend(character.to_uppercase());
+            } else {
+                titled.extend(character.to_lowercase());
+            }
             capitalize_next = false;
-        } else if character.is_alphanumeric() {
-            titled.extend(character.to_lowercase());
         } else {
             titled.push(character);
             capitalize_next = true;
@@ -4204,7 +4295,7 @@ fn aggregate_body_model(
             .map_or_else(|| required.clone(), |value| value.bind(py).clone());
         let field = match &parameter.source {
             ParameterSource::Input {
-                source: InputSource::Form | InputSource::File,
+                source: InputSource::Body | InputSource::Form | InputSource::File,
                 alias,
             } => {
                 let kwargs = PyDict::new(py);
@@ -5771,12 +5862,34 @@ impl FastApiCall {
         }
     }
 
+    fn selected_body_fields_embedded(&self, py: Python<'_>) -> PyResult<bool> {
+        let app = self.app.bind(py).borrow();
+        let plan = if let Some(route_index) = self.websocket_route_index {
+            &app.websocket_routes
+                .get(route_index)
+                .ok_or_else(|| {
+                    PyRuntimeError::new_err("selected FastAPI WebSocket route was lost")
+                })?
+                .plan
+        } else {
+            let route_index = self
+                .route_index
+                .ok_or_else(|| PyRuntimeError::new_err("ASGI dispatch has no selected route"))?;
+            &app.routes
+                .get(route_index)
+                .ok_or_else(|| PyRuntimeError::new_err("selected FastAPI route was lost"))?
+                .plan
+        };
+        Ok(body_fields_embedded(&plan.all_body_parameters()))
+    }
+
     fn invoke_route(&mut self, py: Python<'_>) -> PyResult<MachineAction> {
         if self.websocket_route_index.is_none() && self.route_index.is_none() {
             return Err(PyRuntimeError::new_err(
                 "ASGI dispatch has no selected route",
             ));
         }
+        let route_body_fields_embedded = self.selected_body_fields_embedded(py)?;
         self.pending = Some(PendingAction::RouteInvocation);
         let websocket = self.websocket.as_ref().map(|socket| socket.bind(py));
         let request = self.request.as_ref().map(|request| request.bind(py));
@@ -5814,6 +5927,7 @@ impl FastApiCall {
                 websocket,
                 response: injected_response,
                 query_params: &invocation.query_params,
+                body_fields_embedded: invocation.form_body_embedded || route_body_fields_embedded,
                 form_body_embedded: invocation.form_body_embedded,
                 failures: &mut invocation.failures,
                 dependency_overrides,
@@ -5969,6 +6083,7 @@ impl FastApiCall {
             .injected_response
             .as_ref()
             .map(|response| response.bind(py));
+        let route_body_fields_embedded = self.selected_body_fields_embedded(py)?;
         let parent_result = {
             let invocation = self
                 .invocation
@@ -5982,6 +6097,7 @@ impl FastApiCall {
                 websocket,
                 response: injected_response,
                 query_params: &invocation.query_params,
+                body_fields_embedded: invocation.form_body_embedded || route_body_fields_embedded,
                 form_body_embedded: invocation.form_body_embedded,
                 failures: &mut invocation.failures,
                 dependency_overrides: app.dependency_overrides.bind(py),

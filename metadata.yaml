@@ -323,8 +323,14 @@ reviewed_api_contract_overlay:
       observation_selectors: [http.status, http.body.bytes]
       supported_slice: >-
         Partial native slice: Annotated[int, Path(gt=0)] validates path integers
-        with a strict lower bound above zero. Other Path constructor parameters
-        and FieldInfo options remain outside this reviewed slice.
+        with a strict lower bound; Path(ge=..., le=...) applies inclusive integer
+        bounds. The body-surface workflow checks lower and upper bound failures.
+        Other Path constructor parameters and FieldInfo options remain outside
+        this reviewed slice.
+      source_evidence:
+        - {path: tests/test_path.py, symbol: test_path_param_ge_int_2}
+        - {path: tests/test_path.py, symbol: test_path_param_le_ge_int_4}
+        - {path: tests/test_path.py, symbol: test_path_param_le_int_42}
     fastapi.applications.FastAPI.options:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::options
       source_evidence:
@@ -480,11 +486,22 @@ reviewed_api_contract_overlay:
       observation_selectors: [http.status, http.body.bytes, openapi.request_schema]
       supported_slice: >-
         Partial native slice: Body(gt=...) marks a request-body input and applies
-        the numeric strict-greater-than constraint. OpenAPI request_schema also
-        covers the tested aggregate schema for multiple direct Body fields with
-        distinct names. Aliases, explicit defaults, dependency-provided body
-        fields, Form, File, and other Body constructor or FieldInfo options remain
-        outside this reviewed slice.
+        the numeric strict-greater-than constraint. Body(embed=True) wraps scalar
+        and list inputs under one body key; string alias and validation_alias
+        select the input key, with validation_alias taking precedence. OpenAPI
+        schemas cover embedded fields, aliases, multiple direct Body fields, and
+        an optional Pydantic model body. Non-string aliases, explicit Body
+        defaults, dependency-provided body fields, Form, File, and other Body
+        constructor or FieldInfo options remain outside this reviewed slice.
+      source_evidence:
+        - {path: fastapi/dependencies/utils.py, symbol: _should_embed_body_fields}
+        - {path: fastapi/dependencies/utils.py, symbol: request_body_to_args}
+        - {path: fastapi/dependencies/utils.py, symbol: get_validation_alias}
+        - {path: tests/test_request_params/test_body/test_required_str.py, symbol: test_required_alias_by_alias}
+        - {path: tests/test_request_params/test_body/test_required_str.py, symbol: test_required_validation_alias_by_validation_alias}
+        - {path: tests/test_request_params/test_body/test_required_str.py, symbol: test_required_alias_and_validation_alias_by_validation_alias}
+        - {path: tests/test_request_params/test_body/test_optional_list.py, symbol: test_optional_list_alias_and_validation_alias_by_validation_alias}
+        - {path: tests/test_request_params/test_body/test_optional_list.py, symbol: test_optional_list_alias_and_validation_alias_schema}
     fastapi.Query:
       rust_binding: fastapi-rs/src/parameters.rs::query
       source_evidence:
