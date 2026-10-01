@@ -548,7 +548,7 @@ The merged coverage matrix links each FastAPI test, documented feature, or examp
 |---:|---:|---:|---:|
 | 945 | 2461 | 511 | 8 |
 
-The sibling Starlette-RS manifest, API review, and coverage matrix remain the sole Starlette API inventory. FastAPI's atlas stores only relevant requirement references plus manifest/catalog/review/matrix SHA-256 digests. The inspected Starlette-RS implementation revision is d009a3f33b3d3174f83551a6c99bf1e07063ae93 (pinned, clean sibling Git commit).
+The sibling Starlette-RS manifest, API review, and coverage matrix remain the sole Starlette API inventory. FastAPI's atlas stores only relevant requirement references plus manifest/catalog/review/matrix SHA-256 digests. The inspected Starlette-RS implementation revision is d009a3f33b3d3174f83551a6c99bf1e07063ae93 (pinned, clean Starlette-RS checkout).
 
 ## Errors, aliases, optional features, and deprecations
 
@@ -564,10 +564,20 @@ The implemented first slice is a scoped end-to-end POST `/items/{item_id}` path:
 
 The ten cases define a narrow first vertical slice. Full FastAPI 0.141.1 API and behavior parity remains incomplete; do not read fixture links or runner availability as broader support evidence.
 
-1. Review the 1.6.0 Starlette-RS consumption crosswalk and its contract-area ownership.
-2. Review uncertain API candidates and runtime-generated Python/Pydantic surfaces, retaining explicit uncertainty where source evidence cannot decide.
-3. Materialize independent input-only scenarios from the mapped test/documentation backlog; do not copy upstream tests or expected outputs.
-4. Complete the operation-level contract, materialize the remaining independent inputs, expand the native implementation and pass-through facade, and gate every parity claim on fresh identity-checked comparisons.
+## Prioritized project backlog
+
+Priority 0 records the narrow end-to-end slice already present. The remaining priorities close its contract, source ownership, independent coverage, dependency, licensing, and benchmark gaps before broader support claims.
+
+| Priority | Workstream | Status | Acceptance condition |
+|---:|---|---|---|
+| 0 | `first-end-to-end-request-response-slice` | implementation-present; broader-contract-pending | POST /items/{item_id} through FastAPI public API; path/query/header dependency; Pydantic request validation; response-model field filtering; observe exact HTTP response and ordered ASGI send message types; observe generated OpenAPI; execute the same input against identity-checked oracle and target workers. |
+| 1 | `complete-public-operation-contract` | incomplete | Complete the FastAPI public operation contract: signatures, runtime availability, target bindings, observable requirements, and an explicit supported, unsupported, or unresolved target disposition for every public API; keep the 1.6.0 Starlette-RS ownership boundary explicit. |
+| 2 | `complete-starlette-consumption-crosswalk` | partial | Review all 133 direct re-export, subclass, helper, and internal-import edges against the pinned Starlette 1.6.0 and Starlette-RS contracts; resolve the four target paths without exact sibling review rows; never duplicate Starlette-owned behavior. |
+| 3 | `review-runtime-and-generated-public-surfaces` | backlog | Reflect supported Python profiles and review runtime-added FastAPI attributes, inherited Pydantic model methods, generated OpenAPI models, and object identity; retain explicit uncertainty where source inspection cannot establish behavior. |
+| 4 | `deepen-independent-input-and-observation-coverage` | partial | Extend the 486 materialized workflows with independent cases and supported selectors for high-impact partial behavior, starting with yield-dependency cleanup/cancellation and request validation; directly map documentation examples when page-level selectors are insufficient; never copy upstream tests or expected outputs. |
+| 5 | `complete-alias-deprecation-error-and-extra-matrix` | backlog | Review alias identity and behavior, exercise source deprecations and warnings, materialize the 42 HTTP/WebSocket/validation error candidates, and verify all three optional-extra profiles across supported Python versions 3.10-3.14. |
+| 6 | `complete-recursive-dependency-purpose-and-license-records` | incomplete | Add source-backed feature/purpose evidence for Python transitive dependencies, reconcile target-runtime and recursive build-time closures, resolve ambiguous license families, bundle required notices, and record the zlib backend in each release artifact. |
+| 7 | `build-upstream-equivalent-benchmark-tiers` | narrow-direct-asgi-lanes-only | After each corresponding parity gate passes, reproduce FastAPI's TestClient request, OpenAPI, construction, and memory benchmark workloads with matched timing boundaries; report direct-ASGI measurements separately and never generalize the current first-slice result. |
 
 ## Unresolved points
 
@@ -578,7 +588,7 @@ The ten cases define a narrow first vertical slice. Full FastAPI 0.141.1 API and
 - **lifespan-input-and-observation-contract** (workflow-v3-expressible; fixture-and-warning-coverage-pending): Which FastAPI and APIRouter lifespan combinations still need independent input cases and exact deprecation-warning observations under the v3 lifecycle workflow?
 - **fastapi-cli-compatibility-boundary** (package-pin-and-process-workflow-required): Does FastAPI-RS replace FastAPI's `fastapi` console script, and if so which fastapi-cli package identity, optional environment, arguments, output streams, and exit behavior are in the compatibility contract?
 - **fixture-recipe-execution-contract** (first-slice-defined; broader-api-coverage-pending): Which additional independently authored workflows should extend the first request/response slice to cover the public FastAPI contract?
-- **starlette-rs-target-revision** (pinned, clean sibling Git commit): Do the local path dependency, metadata, and CI continue to resolve to the same committed Starlette-RS target profile?
+- **starlette-rs-target-revision** (pinned, clean Starlette-RS checkout): Do the local path dependency, metadata, and CI continue to resolve to the same committed Starlette-RS target profile?
 - **app-dependency-wave-residual-gaps** (source-reviewed; partial-input-gates-remain): Which app, dependency, lifecycle, exception, and WebSocket cases still need independent inputs or target observations?
 
 ## Machine-readable authority

@@ -7572,9 +7572,9 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             f"{starlette_rs_revision}: {actual_starlette_rs_revision}"
         )
     starlette_rs_revision_state = (
-        "pinned, clean sibling Git commit"
+        "pinned, clean Starlette-RS checkout"
         if not starlette_rs_worktree_changes
-        else "pinned sibling Git commit with local changes; artifact digests identify inspected contract files"
+        else "pinned Starlette-RS checkout with local changes; artifact digests identify inspected contract files"
     )
     fastapi_identity = verify_checkout(
         fastapi_root,
@@ -9406,7 +9406,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         {
             "priority": 0,
             "id": "first-end-to-end-request-response-slice",
-            "status": "first-slice-implemented; broader-contract-pending",
+            "status": "implementation-present; broader-contract-pending",
             "schema_path": first_slice_workflow["schema_path"],
             "fixture_path": first_slice_workflow["input_path"],
             "workload_path": first_slice_workflow["workload"]["path"],
@@ -9427,40 +9427,45 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         },
         {
             "priority": 1,
-            "id": "resolve-source-and-cross-project-identities",
-            "status": (
-                f"FastAPI and Starlette identities verified; Starlette-RS {starlette_rs_revision[:12]} pinned; "
-                + (
-                    "sibling checkout has uncommitted edits outside the pin"
-                    if starlette_rs_worktree_changes
-                    else "sibling checkout is clean"
-                )
-            ),
-            "acceptance": "Keep FastAPI 0.141.1 + only Starlette 1.6.0 + Pydantic 2.13.4 and the pinned Starlette-RS commit; commit target changes before moving the pin and do not claim parity until the selected target passes the input workflows.",
+            "id": "complete-public-operation-contract",
+            "status": "incomplete",
+            "acceptance": "Complete the FastAPI public operation contract: signatures, runtime availability, target bindings, observable requirements, and an explicit supported, unsupported, or unresolved target disposition for every public API; keep the 1.6.0 Starlette-RS ownership boundary explicit.",
         },
         {
             "priority": 2,
-            "id": "review-uncertain-api-candidates",
+            "id": "complete-starlette-consumption-crosswalk",
             "status": "partial",
-            "acceptance": "A reviewed, source-linked classification covers all 137 uncertain public/protocol callables (47 supported, 72 private/internal, 18 retained uncertain); review the remaining uncertain non-callable and import-binding candidates.",
+            "acceptance": "Review all 133 direct re-export, subclass, helper, and internal-import edges against the pinned Starlette 1.6.0 and Starlette-RS contracts; resolve the four target paths without exact sibling review rows; never duplicate Starlette-owned behavior.",
         },
         {
             "priority": 3,
-            "id": "materialize-parity-fixtures-by-feature-family",
+            "id": "review-runtime-and-generated-public-surfaces",
             "status": "backlog",
-            "acceptance": "Review source-function and documentation-section candidates; write independent stimuli/selectors, then index them under a reviewed Python-workload/ASGI schema and live identity-checked runner.",
+            "acceptance": "Reflect supported Python profiles and review runtime-added FastAPI attributes, inherited Pydantic model methods, generated OpenAPI models, and object identity; retain explicit uncertainty where source inspection cannot establish behavior.",
         },
         {
             "priority": 4,
-            "id": "complete-starlette-consumption-crosswalk",
-            "status": "backlog",
-            "acceptance": "Review all direct re-exports, subclass edges, and internal Starlette imports against the 1.6.0 Starlette-RS contract; do not duplicate Starlette-owned behavior.",
+            "id": "deepen-independent-input-and-observation-coverage",
+            "status": "partial",
+            "acceptance": "Extend the 486 materialized workflows with independent cases and supported selectors for high-impact partial behavior, starting with yield-dependency cleanup/cancellation and request validation; directly map documentation examples when page-level selectors are insufficient; never copy upstream tests or expected outputs.",
         },
         {
             "priority": 5,
-            "id": "optional-python-and-error-matrix",
+            "id": "complete-alias-deprecation-error-and-extra-matrix",
             "status": "backlog",
-            "acceptance": "Materialize Python 3.10-3.14 profiles, optional-extra workflows, aliases/deprecations, and HTTP/WebSocket/validation error observations.",
+            "acceptance": "Review alias identity and behavior, exercise source deprecations and warnings, materialize the 42 HTTP/WebSocket/validation error candidates, and verify all three optional-extra profiles across supported Python versions 3.10-3.14.",
+        },
+        {
+            "priority": 6,
+            "id": "complete-recursive-dependency-purpose-and-license-records",
+            "status": "incomplete",
+            "acceptance": "Add source-backed feature/purpose evidence for Python transitive dependencies, reconcile target-runtime and recursive build-time closures, resolve ambiguous license families, bundle required notices, and record the zlib backend in each release artifact.",
+        },
+        {
+            "priority": 7,
+            "id": "build-upstream-equivalent-benchmark-tiers",
+            "status": "narrow-direct-asgi-lanes-only",
+            "acceptance": "After each corresponding parity gate passes, reproduce FastAPI's TestClient request, OpenAPI, construction, and memory benchmark workloads with matched timing boundaries; report direct-ASGI measurements separately and never generalize the current first-slice result.",
         },
     ]
 
@@ -10065,15 +10070,21 @@ def render_markdown(atlas: dict[str, Any]) -> str:
             "",
             "The ten cases define a narrow first vertical slice. Full FastAPI 0.141.1 API and behavior parity remains incomplete; do not read fixture links or runner availability as broader support evidence.",
             "",
-            "1. Review the 1.6.0 Starlette-RS consumption crosswalk and its contract-area ownership.",
-            "2. Review uncertain API candidates and runtime-generated Python/Pydantic surfaces, retaining explicit uncertainty where source evidence cannot decide.",
-            "3. Materialize independent input-only scenarios from the mapped test/documentation backlog; do not copy upstream tests or expected outputs.",
-            "4. Complete the operation-level contract, materialize the remaining independent inputs, expand the native implementation and pass-through facade, and gate every parity claim on fresh identity-checked comparisons.",
+            "## Prioritized project backlog",
             "",
-            "## Unresolved points",
+            "Priority 0 records the narrow end-to-end slice already present. The remaining priorities close its contract, source ownership, independent coverage, dependency, licensing, and benchmark gaps before broader support claims.",
             "",
+            "| Priority | Workstream | Status | Acceptance condition |",
+            "|---:|---|---|---|",
         ]
     )
+    for item in atlas["prioritized_backlog"]:
+        acceptance = item["acceptance"].replace("|", "\\|")
+        lines.append(
+            "| %s | `%s` | %s | %s |"
+            % (item["priority"], item["id"], item["status"], acceptance)
+        )
+    lines.extend(["", "## Unresolved points", ""])
     for item in atlas["unresolved_compatibility_points"]:
         lines.append("- **%s** (%s): %s" % (item["id"], item["status"], item["question"]))
     lines.extend(
@@ -10205,6 +10216,32 @@ def _sync_manifest_artifact_metadata(
             "import_bindings": inventory_counts["import_bindings"],
             "source_deprecations": inventory_counts["symbols_with_source_deprecation_evidence"],
         },
+    )
+    contract_metadata_start = manifest_text.find("contract_metadata:\n")
+    deprecations_start = manifest_text.find("  deprecations:\n", contract_metadata_start)
+    if contract_metadata_start < 0 or deprecations_start < 0:
+        raise AtlasError("manifest contract_metadata is missing its deprecations record")
+    deprecations_header_end = deprecations_start + len("  deprecations:\n")
+    deprecations_remainder = manifest_text[deprecations_header_end:]
+    next_contract_record = re.search(r"^  [A-Za-z0-9_-]+:\n", deprecations_remainder, re.MULTILINE)
+    deprecations_end = (
+        deprecations_header_end + next_contract_record.start()
+        if next_contract_record
+        else len(manifest_text)
+    )
+    deprecations_block = manifest_text[deprecations_start:deprecations_end]
+    deprecations_block, count_replacements = re.subn(
+        r"(?m)^(    count: )\d+$",
+        rf"\g<1>{len(atlas['deprecations'])}",
+        deprecations_block,
+        count=1,
+    )
+    if count_replacements != 1:
+        raise AtlasError("manifest contract_metadata deprecations record has no count")
+    manifest_text = (
+        manifest_text[:deprecations_start]
+        + deprecations_block
+        + manifest_text[deprecations_end:]
     )
     runtime_core_path = PROJECT / "tests/fixtures/runtime-api-surface-core.json"
     manifest_text = _replace_manifest_artifact_block(
