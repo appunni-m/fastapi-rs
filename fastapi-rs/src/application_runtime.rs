@@ -1697,7 +1697,24 @@ impl PyFastApi {
                 let response_class = response_class.bind(py);
                 let media_type = response_class.getattr("media_type")?;
                 let media_type = if media_type.is_none() {
-                    None
+                    // Starlette-RS exposes PlainTextResponse's constructor default
+                    // ("text/plain") without the class attribute that upstream
+                    // Starlette exposes. FastAPI's OpenAPI builder reads the class
+                    // attribute, so recover that inherited default for this class
+                    // family while preserving an explicit subclass override to None.
+                    let responses = py.import("starlette.responses")?;
+                    let plain_text_response = responses.getattr("PlainTextResponse")?;
+                    let is_plain_text_response =
+                        annotation_is_subclass(py, response_class, &plain_text_response)?;
+                    let defines_media_type = response_class
+                        .getattr("__dict__")?
+                        .call_method1("__contains__", ("media_type",))?
+                        .extract::<bool>()?;
+                    if is_plain_text_response && !defines_media_type {
+                        Some("text/plain".to_owned())
+                    } else {
+                        None
+                    }
                 } else {
                     Some(media_type.extract::<String>()?)
                 };
