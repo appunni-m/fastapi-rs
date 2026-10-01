@@ -24,6 +24,14 @@ def create_app() -> FastAPI:
     async def form_list(values: Annotated[list[str], Form()]) -> dict[str, list[str]]:
         return {"values": values}
 
+    @app.post("/forms/list-alias-validation-alias")
+    async def form_list_alias_validation_alias(
+        values: Annotated[
+            list[str], Form(alias="values_alias", validation_alias="values_val_alias")
+        ],
+    ) -> dict[str, list[str]]:
+        return {"values": values}
+
     @app.post("/forms/optional-list")
     async def optional_form_list(
         values: Annotated[list[str] | None, Form()] = None,
@@ -50,6 +58,19 @@ def create_app() -> FastAPI:
 
     @app.post("/files/list")
     async def file_list(p: Annotated[list[UploadFile], File()]) -> dict[str, list[int]]:
+        sizes = [len(await item.read()) for item in p]
+        return {"sizes": sizes}
+
+    @app.post("/files/list-bytes")
+    async def file_bytes_list(p: Annotated[list[bytes], File()]) -> dict[str, list[int]]:
+        return {"sizes": [len(item) for item in p]}
+
+    @app.post("/files/list-alias-validation-alias")
+    async def file_list_alias_validation_alias(
+        p: Annotated[
+            list[UploadFile], File(alias="p_alias", validation_alias="p_val_alias")
+        ],
+    ) -> dict[str, list[int]]:
         sizes = [len(await item.read()) for item in p]
         return {"sizes": sizes}
 

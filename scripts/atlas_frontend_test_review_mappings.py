@@ -19,6 +19,7 @@ _CONFIG_AUTO_CASE = "fastapi.frontend.configuration.auto-check-directory-product
 _CONFIG_FALLBACK_CASE = "fastapi.frontend.configuration.explicit-fallback-file-required"
 _CONFIG_INVALID_CASE = "fastapi.frontend.configuration.invalid-fallback-value"
 _CONFIG_DEFERRED_CASE = "fastapi.frontend.configuration.check-dir-false-defers-check"
+_ROOT_PATH_CASE = "fastapi.test.test-frontend.test-frontend-respects-root-path"
 
 
 def _source(path: str, start: int, end: int, role: str) -> dict[str, Any]:
@@ -90,6 +91,18 @@ _FRONTEND_WEBSOCKET_FILTER = _source(
     2069,
     2083,
     "FastAPI frontend route matching excludes WebSocket scopes, allowing an explicit WebSocket route at the same path to win",
+)
+_FRONTEND_MATCH_ROOT_PATH = _source(
+    "fastapi/routing.py",
+    2068,
+    2078,
+    "FastAPI frontend route matching uses Starlette get_route_path for the ASGI scope, so a configured root_path is considered during path matching",
+)
+_STARLETTE_ROUTE_PATH = _source(
+    "starlette/_utils.py",
+    96,
+    110,
+    "Starlette get_route_path strips a matching ASGI root_path prefix and otherwise preserves the path",
 )
 _FRONTEND_GROUP = _source(
     "fastapi/routing.py",
@@ -196,6 +209,11 @@ FRONTEND_TEST_REVIEW_MAPPINGS = {
                     "construction.exception_message",
                     "asgi.application_error.exception",
                 ],
+            },
+            {
+                "recipe_path": _RECIPE,
+                "case_ids": [_ROOT_PATH_CASE],
+                "observation_selectors": ["http.status", "http.body.bytes"],
             },
         ],
         "rationale": (
@@ -402,6 +420,20 @@ FRONTEND_TEST_REVIEW_MAPPINGS = {
                 rationale="Frontend static paths compose the APIRouter's own prefix, its frontend subpath, and include_router's prefix.",
                 sources=[_FRONTEND_REGISTRATION, _FRONTEND_GROUP, _DOC_DIRECTORY],
                 gate=_ASGI_GATE,
+            ),
+            "test_frontend_respects_root_path": _candidate(
+                start=975,
+                end=985,
+                case_id=_ROOT_PATH_CASE,
+                action_ids=["nonempty-root-path-static-asset"],
+                selectors=["http.status", "http.body.bytes"],
+                rationale="A frontend mounted at /app continues to serve its asset when the ASGI scope carries a nonempty /proxy root_path.",
+                sources=[_FRONTEND_MATCH_ROOT_PATH, _STARLETTE_ROUTE_PATH],
+                feature_ids=["app-routing"],
+                gate=(
+                    _ASGI_GATE
+                    + " This direct ASGI input represents the TestClient root_path scope from the source test; generic root_path normalization is defined by Starlette's get_route_path utility."
+                ),
             ),
             "test_apirouter_frontend_dependencies_protect_prefixed_frontend": _candidate(
                 start=313,

@@ -558,15 +558,19 @@
     {
       "id": "body-surface",
       "input_path": "tests/fixtures/inputs/parity/body-surface.json",
-      "input_sha256": "89f8a861544078c0ac96e5dc8d17031a694d2a35ab0d852fd8a967830d5a95c1",
+      "input_sha256": "d42d8d06ab08034d3dbf25f7df9d6f032ba8fa4f1ba6532a65e8c284e227ccab",
       "recipe_path": "tests/fixtures/input-recipes/parity/body-surface.yaml",
-      "recipe_sha256": "bc89767f45a0a6e71b4de9c63601d9b5c4f5f61f09c5fc256b12333f8010a2ac",
+      "recipe_sha256": "f04eab9c84197fec6d0929dc69e8c384e9fcf84c00948955158c72f8e1a1c7de",
       "workload_path": "tests/fixtures/workloads/body_surface.py",
-      "workload_sha256": "ebc08b7704d7053f10f8a9b3f9ad6287a309f09d8f1f64ac9415e69d2a5233df",
+      "workload_sha256": "8481dd24509f48994a53c884cb5d7103ce18327e3960085a0dc8544f3d144e82",
       "case_ids": [
         "fastapi.body.embedded-scalar-valid",
         "fastapi.body.embedded-scalar-missing",
         "fastapi.body.embedded-list-valid",
+        "fastapi.body.required-list-alias-by-name",
+        "fastapi.body.required-list-alias-valid",
+        "fastapi.body.optional-list-alias-ignored",
+        "fastapi.body.optional-list-validation-alias-valid",
         "fastapi.body.multiple-values-valid",
         "fastapi.body.multiple-values-invalid",
         "fastapi.body.optional-model-absent",
@@ -1984,13 +1988,14 @@
     {
       "id": "frontend-fallback-routing-source-review",
       "input_path": "tests/fixtures/inputs/parity/frontend-fallback-routing-source-review.json",
-      "input_sha256": "b8925722610dd0e21e1f8c47190f5531cb2bddaaf1666b70b06f2ed64276e613",
+      "input_sha256": "7217bf4b3e87a6b877327eb048fbc68fa8053eb5d50c1b79b1d50ccf97894a4f",
       "recipe_path": "tests/fixtures/input-recipes/parity/frontend-fallback-routing-source-review.yaml",
-      "recipe_sha256": "607c0e6bc3bec7a421394405e454dc9e0e9f8fbdf17edf4a2194f655a53c7027",
+      "recipe_sha256": "e1997dd5649edc94fea4cf1b384fa04339e89449bfb19d8816b7078a06827c17",
       "workload_path": "tests/fixtures/workloads/frontend_fallback_routing_source_review.py",
-      "workload_sha256": "9ce27b25beb119cd93a8469dd47c643eaa3acc6c08128a64e5d096a9f21443f8",
+      "workload_sha256": "e4938a4aacba1a40f960052f865d7a84668335243546d0e3f0c6b80a3fb1d182",
       "case_ids": [
         "fastapi.frontend.fallback-routing-surface",
+        "fastapi.test.test-frontend.test-frontend-respects-root-path",
         "fastapi.frontend.configuration.auto-check-directory-production",
         "fastapi.frontend.configuration.explicit-fallback-file-required",
         "fastapi.frontend.configuration.invalid-fallback-value",
@@ -4828,11 +4833,11 @@
     {
       "id": "request-multipart",
       "input_path": "tests/fixtures/inputs/parity/request-multipart.json",
-      "input_sha256": "bcb075b9a54a8a75cb1caafe6796cffb5ab0a196ec4b193d6292040898639f03",
+      "input_sha256": "f39a7d19b003a57889c90cc8a2e4c6ee4f31188033d4178314eda63e6564e1f9",
       "recipe_path": "tests/fixtures/input-recipes/parity/request-multipart.yaml",
-      "recipe_sha256": "904d763b250c9b3047abb3ee8901b5cf5143aa7aadf1281544b53cc1c5203096",
+      "recipe_sha256": "a234925e40e866855962f7aa777a0b2a7442fd8bb67d13d90d53d7e6669fa46b",
       "workload_path": "tests/fixtures/workloads/request_multipart.py",
-      "workload_sha256": "f1e6dad79e6bc6b8c2df4aedd73a1d61830b29c0d43f67a9e831032873cad8e5",
+      "workload_sha256": "3936f50bf006886de5f140d778d6e15e21785d50c35c6791ded9f96a3f324a70",
       "case_ids": [
         "fastapi.request-multipart.form.required-present",
         "fastapi.request-multipart.form.required-missing",
@@ -4849,7 +4854,14 @@
         "fastapi.request-multipart.file.list-repeated",
         "fastapi.request-multipart.file.optional-list-missing",
         "fastapi.request-multipart.file.optional-list-repeated",
-        "fastapi.request-multipart.mixed.form-and-file"
+        "fastapi.request-multipart.mixed.form-and-file",
+        "fastapi.request-multipart.form.required-list-missing",
+        "fastapi.request-multipart.form.list-validation-alias-precedence",
+        "fastapi.request-multipart.form.list-validation-alias-repeated",
+        "fastapi.request-multipart.file.bytes-list-repeated",
+        "fastapi.request-multipart.file.required-list-missing",
+        "fastapi.request-multipart.file.list-validation-alias-precedence",
+        "fastapi.request-multipart.file.list-validation-alias-repeated"
       ],
       "oracle_profile_extension": "standard-multipart"
     },
@@ -5076,9 +5088,9 @@
     {
       "id": "request-validation-parameters",
       "input_path": "tests/fixtures/inputs/parity/request-validation-parameters.json",
-      "input_sha256": "900bd92416b11aba2f8b397002c9c075ca71c770d9386ec2507790fa5c548d75",
+      "input_sha256": "249856427c8d40167042189a7611ebd83d076607b3f50f76a1c32d4e1b95f04f",
       "recipe_path": "tests/fixtures/input-recipes/parity/request-validation-parameters.yaml",
-      "recipe_sha256": "0fb43fc8172cb4235129286c45859173c42e0b596f760a919d8370bc041c0fd9",
+      "recipe_sha256": "0ac24533ec0ecce7768dcb615c18a84319652eff168322c7085eac801c6cf1dd",
       "workload_path": "tests/fixtures/workloads/request_validation_parameters.py",
       "workload_sha256": "d41307606d9d90ca0c570e798badd09e68800e6cba13ec68469b9cd5c7be66c8",
       "case_ids": [
@@ -5090,10 +5102,13 @@
         "fastapi.request-parameters.query.alias-name-missing",
         "fastapi.request-parameters.query.invalid-integer",
         "fastapi.request-parameters.query.repeated-alias-values",
+        "fastapi.request-parameters.query.required-list-missing",
+        "fastapi.request-parameters.query.repeated-python-name-missing",
         "fastapi.request-parameters.query.repeated-invalid-integers",
         "fastapi.request-parameters.header.underscore-alias",
         "fastapi.request-parameters.header.required-missing",
         "fastapi.request-parameters.header.repeated-values",
+        "fastapi.request-parameters.header.required-list-missing",
         "fastapi.request-parameters.cookie.alias-valid",
         "fastapi.request-parameters.cookie.alias-name-missing",
         "fastapi.request-parameters.cookie.required-missing",
@@ -5160,9 +5175,9 @@
     {
       "id": "response-change-status-tutorial-review",
       "input_path": "tests/fixtures/inputs/parity/response-change-status-tutorial-review.json",
-      "input_sha256": "b795e658813bc90ff7f1fec11e2858f44262e8a85814148e0733ed8821a3d932",
+      "input_sha256": "4d79a06181c8a62398efe68604599c763f85dbd7a7ad2d89eea9cb15793c4c64",
       "recipe_path": "tests/fixtures/input-recipes/parity/response-change-status-tutorial-review.yaml",
-      "recipe_sha256": "150bd4440893827189f9d2f2ed5ceb5f876f3a9ddf8c0c8a0cef08d8895ac14a",
+      "recipe_sha256": "9d52449aedc06e887670cc05d858fc96dceb208708e08fe279dadd72c7f828f9",
       "workload_path": "tests/fixtures/workloads/response_change_status_tutorial_review.py",
       "workload_sha256": "1e613d3f7abc426ce626c9b8e1b0ae31f49fe16050bfdda1585d5bf5e341c59a",
       "case_ids": [
@@ -5223,7 +5238,7 @@
       "input_path": "tests/fixtures/inputs/parity/response-model-data-filter-exclude-unset-none-review.json",
       "input_sha256": "e8df817a4df31b3f2f646068c8a9286416ff13577822d1fc572bbc5d8eb34a17",
       "recipe_path": "tests/fixtures/input-recipes/parity/response-model-data-filter-exclude-unset-none-review.yaml",
-      "recipe_sha256": "0add450ac1279e2c05232c03e42469b05b1aac9cf2533f86024c949d6fdc5a33",
+      "recipe_sha256": "6a918c80312ff3df891300c26c181fded304bab6756f4edd4227d771d95b1d06",
       "workload_path": "tests/fixtures/workloads/response_model_data_filter_exclude_unset_none_review.py",
       "workload_sha256": "24b60f06b2472a0254c9ae15d0b208e0edd99d3cb8a3833696d343bacd0c13cd",
       "case_ids": [
@@ -5604,15 +5619,20 @@
     {
       "id": "router-composition-upstream",
       "input_path": "tests/fixtures/inputs/parity/router-composition-upstream.json",
-      "input_sha256": "1981b8e084b9c6f8daef4cf031b211b7e2046651aad122eee585a50e90d89852",
+      "input_sha256": "073ec6b78bc591b83b983e3c54175ce91173f2a15c5953ad270dcdf97ec58215",
       "recipe_path": "tests/fixtures/input-recipes/parity/router-composition-upstream.yaml",
-      "recipe_sha256": "4e5b7e0eccb5668ac8241378e9cccb104b209e21b7c9a54c6a7c31e6f77fd0cb",
+      "recipe_sha256": "bf8bd502c29df53468a1afb4707a63402790f9535be8a04a23f0992f158f6084",
       "workload_path": "tests/fixtures/workloads/router_composition_upstream.py",
-      "workload_sha256": "26dd913b4e277be36749afca59b5580da061829cd3d40875a2c1ee73e8080ba6",
+      "workload_sha256": "a0c21493c4e9caef170dd5552fafc39d4b66a6f60884a6963c9763b69fee5961",
       "case_ids": [
         "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-users-token-jessica",
         "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-users-with-no-token",
-        "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-users-foo-token-jessica"
+        "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-users-foo-token-jessica",
+        "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-items-token-jessica",
+        "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-items-with-missing-x-token-header",
+        "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-put",
+        "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-put-forbidden",
+        "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-admin"
       ]
     },
     {
@@ -8399,9 +8419,28 @@
       "fixture_id": "fastapi.test.test-request-params-test-body-test-list",
       "workflow_id": "body-surface",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
-        "fastapi.body.embedded-list-valid"
+        "fastapi.body.embedded-list-valid",
+        "fastapi.body.required-list-alias-by-name",
+        "fastapi.body.required-list-alias-valid"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_request_params/test_body/test_optional_list.py",
+      "fixture_id": "fastapi.test.test-request-params-test-body-test-optional-list",
+      "workflow_id": "body-surface",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.body.optional-list-alias-ignored",
+        "fastapi.body.optional-list-validation-alias-valid"
       ],
       "observation_selectors": [
         "asgi.send.message_types",
@@ -12175,13 +12214,14 @@
       "fixture_id": "fastapi.test.test-frontend",
       "workflow_id": "frontend-fallback-routing-source-review",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 5 case(s); observes asgi.application_error.exception, construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 6 case(s); observes asgi.application_error.exception, construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.frontend.configuration.auto-check-directory-production",
         "fastapi.frontend.configuration.check-dir-false-defers-check",
         "fastapi.frontend.configuration.explicit-fallback-file-required",
         "fastapi.frontend.configuration.invalid-fallback-value",
-        "fastapi.frontend.fallback-routing-surface"
+        "fastapi.frontend.fallback-routing-surface",
+        "fastapi.test.test-frontend.test-frontend-respects-root-path"
       ],
       "observation_selectors": [
         "asgi.application_error.exception",
@@ -18943,9 +18983,13 @@
       "fixture_id": "fastapi.test.test-request-params-test-file-test-list",
       "workflow_id": "request-multipart",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 5 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
-        "fastapi.request-multipart.file.list-repeated"
+        "fastapi.request-multipart.file.bytes-list-repeated",
+        "fastapi.request-multipart.file.list-repeated",
+        "fastapi.request-multipart.file.list-validation-alias-precedence",
+        "fastapi.request-multipart.file.list-validation-alias-repeated",
+        "fastapi.request-multipart.file.required-list-missing"
       ],
       "observation_selectors": [
         "http.body.bytes",
@@ -19003,9 +19047,12 @@
       "fixture_id": "fastapi.test.test-request-params-test-form-test-list",
       "workflow_id": "request-multipart",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 4 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
-        "fastapi.request-multipart.form.list-repeated"
+        "fastapi.request-multipart.form.list-repeated",
+        "fastapi.request-multipart.form.list-validation-alias-precedence",
+        "fastapi.request-multipart.form.list-validation-alias-repeated",
+        "fastapi.request-multipart.form.required-list-missing"
       ],
       "observation_selectors": [
         "http.body.bytes",
@@ -19892,9 +19939,10 @@
       "fixture_id": "fastapi.test.test-request-params-test-header-test-list",
       "workflow_id": "request-validation-parameters",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
-        "fastapi.request-parameters.header.repeated-values"
+        "fastapi.request-parameters.header.repeated-values",
+        "fastapi.request-parameters.header.required-list-missing"
       ],
       "observation_selectors": [
         "http.body.bytes",
@@ -19921,9 +19969,11 @@
       "fixture_id": "fastapi.test.test-request-params-test-query-test-list",
       "workflow_id": "request-validation-parameters",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
-        "fastapi.request-parameters.query.repeated-alias-values"
+        "fastapi.request-parameters.query.repeated-alias-values",
+        "fastapi.request-parameters.query.repeated-python-name-missing",
+        "fastapi.request-parameters.query.required-list-missing"
       ],
       "observation_selectors": [
         "http.body.bytes",
@@ -20144,6 +20194,20 @@
       "observation_selectors": [
         "http.body.bytes",
         "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-example:docs_src/response_change_status_code/tutorial001_py310.py",
+      "fixture_id": "fastapi.docs-example.response-change-status-code-tutorial001-py310",
+      "workflow_id": "response-change-status-tutorial-review",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.response.change-status-code.tutorial-existing-and-created"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
         "http.status"
       ]
     },
@@ -21727,8 +21791,13 @@
       "fixture_id": "fastapi.test.test-tutorial-test-bigger-applications-test-main",
       "workflow_id": "router-composition-upstream",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 8 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
+        "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-admin",
+        "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-items-token-jessica",
+        "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-items-with-missing-x-token-header",
+        "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-put",
+        "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-put-forbidden",
         "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-users-foo-token-jessica",
         "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-users-token-jessica",
         "fastapi.test.test-tutorial-test-bigger-applications-test-main.test-users-with-no-token"

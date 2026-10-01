@@ -304,6 +304,80 @@ cases:
   source_evidence:
   - path: tests/test_request_params/test_query/test_list.py
     kind: upstream_test
+- case_id: fastapi.request-parameters.query.required-list-missing
+  actions:
+  - action_id: get-required-query-list-missing
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /tags
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_query/test_list.py
+    kind: upstream_test
+- case_id: fastapi.request-parameters.query.repeated-python-name-missing
+  actions:
+  - action_id: get-repeated-query-values-by-python-name
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /tags
+      query_string: tags=red&tags=blue
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_query/test_list.py
+    kind: upstream_test
 - case_id: fastapi.request-parameters.query.repeated-invalid-integers
   actions:
   - action_id: get-invalid-query-values
@@ -464,6 +538,43 @@ cases:
     kind: upstream_test
   - path: docs/en/docs/tutorial/header-params.md
     kind: upstream_documentation
+- case_id: fastapi.request-parameters.header.required-list-missing
+  actions:
+  - action_id: get-required-header-list-missing
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /headers/repeated
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_header/test_list.py
+    kind: upstream_test
 - case_id: fastapi.request-parameters.cookie.alias-valid
   actions:
   - action_id: get-cookie-by-alias

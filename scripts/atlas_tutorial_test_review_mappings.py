@@ -572,6 +572,7 @@ TUTORIAL_TEST_REVIEW_MAPPINGS = {
                 ["app-routing", "dependency-security"],
                 ["http.status", "http.body.json"],
                 "Router-level header validation and the global token dependency admit the request; the item dictionary is application-owned.",
+                stimulus_notes="The ASGI input uses the canonical trailing-slash path `/items/`; the source TestClient call requests `/items` and follows Starlette's redirect. This case samples the resolved route and dependency behavior, not redirect handling.",
             ),
             "test_items_with_no_token_jessica": _case(
                 "tests/test_tutorial/test_bigger_applications/test_main.py",
@@ -628,6 +629,7 @@ TUTORIAL_TEST_REVIEW_MAPPINGS = {
                 ["request-validation", "dependency-security"],
                 ["http.status", "http.body.json", "validation.error_details"],
                 "FastAPI reports a missing required header parameter in a router dependency; the exact validation error detail is Pydantic-owned.",
+                stimulus_notes="The ASGI input uses `/items/` directly to isolate the required router-header validation; the source TestClient path `/items` follows Starlette's trailing-slash redirect, which this case does not claim to exercise.",
             ),
             "test_items_plumbus_with_missing_x_token_header": _case(
                 "tests/test_tutorial/test_bigger_applications/test_main.py",

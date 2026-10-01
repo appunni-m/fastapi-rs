@@ -92,6 +92,15 @@ def create_app(factory_input: dict[str, Any], event_trace: list[str]) -> FastAPI
         app.include_router(router, prefix="/prefix")
         return app
 
+    if scenario == "root-path-static-asset":
+        app = FastAPI()
+        directory = _keep_directory(
+            app,
+            {"assets/app.js": "root path frontend asset"},
+        )
+        app.frontend("/app", directory=directory)
+        return app
+
     if scenario == "check-dir-auto-production":
         app = FastAPI()
         previous = os.environ.get("FASTAPI_ENV")

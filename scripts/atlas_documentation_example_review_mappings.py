@@ -1277,6 +1277,31 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
 # Query parameter tutorial examples: exact source-to-input workflow links.
 DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
     {
+        "docs_src/response_change_status_code/tutorial001_py310.py": {
+            "rationale": (
+                "The FastAPI 0.141.1 example returns an existing task at the declared default "
+                "status and changes the response status to 201 when it creates a task. The "
+                "independent case samples the existing-record and new-record branches and "
+                "observes status and body only. Its route path and literal task values differ; "
+                "this mapping does not claim those literals, OpenAPI, or other response-status "
+                "behavior."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/response_change_status_code/tutorial001_py310.py",
+                    "start_line": 8,
+                    "end_line": 12,
+                    "role": "documented default-status route and conditional Response status mutation",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/response-change-status-tutorial-review.yaml",
+                    "case_ids": ["fastapi.response.change-status-code.tutorial-existing-and-created"],
+                    "observation_selectors": ["http.body.bytes", "http.status"],
+                }
+            ],
+        },
         "docs_src/query_params_str_validations/tutorial001_py310.py": {
             "rationale": "The exact source "
             "example declares an "

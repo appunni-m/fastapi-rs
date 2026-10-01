@@ -28,6 +28,21 @@ def create_app() -> FastAPI:
     ) -> dict[str, list[str]]:
         return {"swatches": swatches}
 
+    @app.post("/required-list-alias")
+    async def echo_required_list_alias(
+        p: Annotated[list[str], Body(embed=True, alias="p_alias")],
+    ) -> dict[str, list[str]]:
+        return {"p": p}
+
+    @app.post("/optional-list-alias-and-validation-alias")
+    async def echo_optional_list_alias_and_validation_alias(
+        p: Annotated[
+            list[str] | None,
+            Body(embed=True, alias="p_alias", validation_alias="p_val_alias"),
+        ] = None,
+    ) -> dict[str, list[str] | None]:
+        return {"p": p}
+
     @app.post("/bundles")
     async def create_bundle(
         product: Product,
