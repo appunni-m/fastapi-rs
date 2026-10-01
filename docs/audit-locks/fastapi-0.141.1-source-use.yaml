@@ -17,6 +17,19 @@ source_backed:
     evidence:
       - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/fastapi/param_functions.py
       - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/fastapi/applications.py
+  annotated-types:
+    purpose: >-
+      The pinned Pydantic runtime uses annotated-types metadata such as Interval,
+      Gt, Ge, Lt, Le, MultipleOf, MinLen, and MaxLen to build constrained
+      Annotated schemas. FastAPI passes parameter and FieldInfo metadata through
+      dependency analysis and Pydantic TypeAdapter validation; this is an
+      indirect FastAPI runtime dependency, not a direct FastAPI import.
+    evidence:
+      - https://github.com/annotated-types/annotated-types/blob/0.7.0/annotated_types/__init__.py
+      - https://github.com/pydantic/pydantic/blob/v2.13.4/pydantic/types.py
+      - https://github.com/pydantic/pydantic/blob/v2.13.4/pydantic/_internal/_known_annotated_metadata.py
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/fastapi/_compat/v2.py
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/fastapi/dependencies/utils.py
   anyio:
     purpose: FastAPI uses AnyIO thread offload, task groups, and streams in concurrency and streaming routes.
     evidence:
