@@ -1088,7 +1088,7 @@ impl PyFastApi {
     }
 
     fn openapi(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
-        self.openapi_document(py)
+        self.openapi_document(py, None)
     }
 
     #[pyo3(
@@ -1505,7 +1505,7 @@ impl PyFastApi {
         Ok(stack)
     }
 
-    fn openapi_document(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
+    fn openapi_document(&self, py: Python<'_>, root_path: Option<&str>) -> PyResult<Py<PyAny>> {
         let operations = self
             .routes
             .iter()
@@ -1525,6 +1525,7 @@ impl PyFastApi {
                 version: &self.version,
             },
             &operations,
+            root_path,
         )
     }
 
@@ -5521,14 +5522,23 @@ impl FastApiCall {
         }
         let path = parse_scope_string(scope, "path", "/")?;
         let method = parse_scope_string(scope, "method", "GET")?;
-        if path == self.app.bind(py).borrow().openapi_url && method == "GET" {
-            let document = self.app.bind(py).borrow().openapi_document(py)?;
+        let route_path = py
+            .import("starlette.routing")?
+            .getattr("_get_route_path")?
+            .call1((scope,))?
+            .extract::<String>()?;
+        let root_path = parse_scope_string(scope, "root_path", "")?;
+        if route_path == self.app.bind(py).borrow().openapi_url && method == "GET" {
+            let document = self
+                .app
+                .bind(py)
+                .borrow()
+                .openapi_document(py, Some(root_path.trim_end_matches('/')))?;
             self.response_status = 200;
             self.response_body = json_bytes(py, document.bind(py))?;
             return self.send_start(py);
         }
 
-        let root_path = parse_scope_string(scope, "root_path", "")?;
         let match_result = self
             .app
             .bind(py)

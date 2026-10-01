@@ -15,10 +15,10 @@ import yaml
 
 from scripts.parity.contract import ContractError
 
-CONTRACT_SCHEMA = "fastapi-rs/public-api-contract@1"
+CONTRACT_SCHEMA = "fastapi-rs/public-api-contract@2"
 TARGET_PROFILE = "fastapi-rs-python-consumer"
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-OVERLAY_SCHEMA = "fastapi-rs/reviewed-api-contract-overlay@1"
+OVERLAY_SCHEMA = "fastapi-rs/reviewed-api-contract-overlay@2"
 
 
 def _read_project_metadata() -> dict[str, Any]:
@@ -160,6 +160,276 @@ def _verify_starlette_rs_checkout(starlette_rs: dict[str, Any]) -> Path:
     if dirty_state:
         raise ContractError(f"selected Starlette-RS checkout is dirty: {checkout}")
     return checkout
+
+
+def _starlette_source_signature_reference(
+    project_metadata: dict[str, Any], signature_source: dict[str, Any]
+) -> dict[str, Any]:
+    """Verify a method signature directly against a clean pinned Starlette source blob."""
+    authority = project_metadata.get("authority", {})
+    starlette = authority.get("starlette", {}) if isinstance(authority, dict) else {}
+    if not isinstance(starlette, dict):
+        raise ContractError("metadata.yaml has no pinned Starlette source authority")
+    if signature_source.get("repository") != "starlette":
+        raise ContractError("inherited source signature must identify the Starlette repository")
+    checkout_text = starlette.get("checkout")
+    expected_commit = starlette.get("commit")
+    version = starlette.get("version")
+    if not all(
+        isinstance(value, str) and value for value in (checkout_text, expected_commit, version)
+    ):
+        raise ContractError("pinned Starlette source identity is incomplete")
+    override = os.environ.get("STARLETTE_SOURCE")
+    checkout = Path(override).resolve() if override else (PROJECT_ROOT / checkout_text).resolve()
+
+    source_path_text = signature_source.get("path")
+    if not isinstance(source_path_text, str) or not source_path_text:
+        raise ContractError("inherited source signature has no Starlette source path")
+    source_relative = Path(source_path_text)
+    if source_relative.is_absolute() or ".." in source_relative.parts:
+        raise ContractError("inherited Starlette source path must stay inside its checkout")
+    source_path = (checkout / source_relative).resolve()
+    try:
+        source_path.relative_to(checkout)
+    except ValueError as exc:
+        raise ContractError("inherited Starlette source path escapes its checkout") from exc
+
+    try:
+        observed_commit = subprocess.run(
+            ["git", "-C", str(checkout), "rev-parse", "HEAD"],
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout.strip()
+        committed_source = subprocess.run(
+            ["git", "-C", str(checkout), "show", f"{expected_commit}:{source_relative.as_posix()}"],
+            check=True,
+            capture_output=True,
+        ).stdout
+    except (OSError, subprocess.CalledProcessError) as exc:
+        raise ContractError(f"pinned Starlette source cannot be verified: {checkout}") from exc
+    if observed_commit != expected_commit:
+        raise ContractError(
+            "selected Starlette source checkout differs from metadata.yaml pin: "
+            f"expected {expected_commit}, observed {observed_commit}"
+        )
+    if not source_path.is_file():
+        raise ContractError(f"pinned Starlette source file is missing: {source_path}")
+    source_bytes = source_path.read_bytes()
+    if source_bytes != committed_source:
+        raise ContractError(
+            f"selected Starlette source file differs from its pinned commit blob: {source_path}"
+        )
+
+    owner = signature_source.get("owner")
+    symbol = signature_source.get("symbol")
+    start_line = signature_source.get("start_line")
+    end_line = signature_source.get("end_line")
+    if (
+        not isinstance(owner, str)
+        or not owner
+        or not isinstance(symbol, str)
+        or not symbol
+        or not isinstance(start_line, int)
+        or isinstance(start_line, bool)
+        or not isinstance(end_line, int)
+        or isinstance(end_line, bool)
+        or end_line < start_line
+    ):
+        raise ContractError("inherited Starlette source signature identity or range is invalid")
+    try:
+        tree = ast.parse(source_bytes.decode("utf-8"), filename=source_path_text)
+    except (UnicodeDecodeError, SyntaxError) as exc:
+        raise ContractError(
+            f"pinned Starlette source is not valid Python: {source_path_text}"
+        ) from exc
+    owner_definitions = [
+        node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == owner
+    ]
+    if len(owner_definitions) != 1:
+        raise ContractError(
+            f"pinned Starlette source class is not unique: {source_path_text}:{owner}"
+        )
+    method_definitions = [
+        node
+        for node in owner_definitions[0].body
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == symbol
+    ]
+    matching_methods = [
+        node
+        for node in method_definitions
+        if node.lineno == start_line and getattr(node, "end_lineno", None) == end_line
+    ]
+    if len(matching_methods) != 1:
+        raise ContractError(
+            f"pinned Starlette method or exact source range differs: "
+            f"{source_path_text}:{owner}.{symbol}"
+        )
+    method = matching_methods[0]
+    signature = ast.unparse(method).splitlines()[0].removesuffix(":")
+    module_path = source_relative.with_suffix("").as_posix().replace("/", ".")
+    return {
+        "repository": "starlette",
+        "version": version,
+        "commit": expected_commit,
+        "source_path": source_path_text,
+        "source_operation_id": f"{module_path}.{owner}.{symbol}",
+        "owner": owner,
+        "symbol": symbol,
+        "start_line": start_line,
+        "end_line": end_line,
+        "signature": signature,
+    }
+
+
+def _starlette_rs_contract_gap_reference(
+    project_metadata: dict[str, Any], gap: dict[str, Any]
+) -> dict[str, Any]:
+    """Prove a reviewed sibling API candidate exists while its operation contract is absent."""
+    starlette_rs = project_metadata.get("starlette_rs")
+    if not isinstance(starlette_rs, dict):
+        raise ContractError("metadata.yaml has no pinned Starlette-RS contract")
+    _verify_starlette_rs_checkout(starlette_rs)
+    metadata_path = _starlette_rs_artifact_path(starlette_rs, "metadata")
+    manifest_path = _starlette_rs_artifact_path(starlette_rs, "manifest")
+    catalog_path = _starlette_rs_artifact_path(starlette_rs, "api_catalog")
+    review_path = _starlette_rs_artifact_path(starlette_rs, "api_review")
+    for path in (metadata_path, manifest_path, catalog_path, review_path):
+        if not path.is_file():
+            raise ContractError(f"pinned Starlette-RS API artifact is missing: {path}")
+
+    sibling_metadata = yaml.safe_load(metadata_path.read_text(encoding="utf-8"))
+    sibling_manifest = yaml.safe_load(manifest_path.read_text(encoding="utf-8"))
+    if not isinstance(sibling_metadata, dict) or not isinstance(sibling_manifest, dict):
+        raise ContractError("pinned Starlette-RS API metadata and manifest must be mappings")
+    expected_contract_id = starlette_rs.get("contract_id")
+    manifest_contract_pointer = starlette_rs.get("manifest_contract_pointer")
+    if not isinstance(expected_contract_id, str) or not isinstance(manifest_contract_pointer, str):
+        raise ContractError("pinned Starlette-RS contract identity is incomplete")
+    if _json_pointer_value(sibling_manifest, manifest_contract_pointer) != expected_contract_id:
+        raise ContractError("pinned Starlette-RS manifest contract identity differs")
+    expected_operation_id = gap.get("expected_operation_id")
+    reason = gap.get("reason")
+    if not isinstance(expected_operation_id, str) or not expected_operation_id:
+        raise ContractError("inherited sibling contract gap has no expected operation ID")
+    if not isinstance(reason, str) or not reason.strip():
+        raise ContractError("inherited sibling contract gap has no review rationale")
+    surface_id, operation_name = expected_operation_id.rsplit(".", 1)
+
+    sibling_authority = sibling_metadata.get("authority", {})
+    starlette_authority = project_metadata.get("authority", {}).get("starlette", {})
+    if sibling_authority.get("revision") != starlette_authority.get(
+        "commit"
+    ) or sibling_authority.get("version") != starlette_authority.get("version"):
+        raise ContractError("pinned Starlette-RS API source is from another Starlette revision")
+
+    api_sources = sibling_metadata.get("api_sources")
+    if not isinstance(api_sources, list):
+        raise ContractError("pinned Starlette-RS metadata has no reviewed API sources")
+    source_surface_matches = [
+        (source_index, source)
+        for source_index, source in enumerate(api_sources)
+        if isinstance(source, dict) and source.get("surface_id") == surface_id
+    ]
+    if len(source_surface_matches) != 1:
+        raise ContractError(
+            f"expected one pinned Starlette-RS API source for inherited gap: {surface_id}"
+        )
+    source_surface_index, source_surface = source_surface_matches[0]
+    source_operations = source_surface.get("operations", [])
+    if not isinstance(source_operations, list):
+        raise ContractError(f"pinned Starlette-RS API source operations are invalid: {surface_id}")
+    source_operation_matches = [
+        operation
+        for operation in source_operations
+        if isinstance(operation, dict)
+        and (
+            operation.get("operation_id") == operation_name
+            or operation.get("source_path") == expected_operation_id
+        )
+    ]
+    if source_operation_matches:
+        raise ContractError(
+            "declared sibling operation gap is stale; operation now exists in API sources: "
+            f"{expected_operation_id}"
+        )
+
+    surfaces = sibling_manifest.get("surfaces", [])
+    if not isinstance(surfaces, list):
+        raise ContractError("pinned Starlette-RS manifest surfaces are invalid")
+    manifest_surface_matches = [
+        (surface_index, surface)
+        for surface_index, surface in enumerate(surfaces)
+        if isinstance(surface, dict) and surface.get("id") == surface_id
+    ]
+    if len(manifest_surface_matches) != 1:
+        raise ContractError(
+            f"expected one pinned Starlette-RS manifest surface for inherited gap: {surface_id}"
+        )
+    manifest_surface_index, manifest_surface = manifest_surface_matches[0]
+    manifest_operations = manifest_surface.get("operations", [])
+    if not isinstance(manifest_operations, list):
+        raise ContractError(f"pinned Starlette-RS manifest operations are invalid: {surface_id}")
+    manifest_operation_matches = [
+        operation
+        for operation in manifest_operations
+        if isinstance(operation, dict)
+        and (
+            operation.get("id") == operation_name
+            or operation.get("source", {}).get("path") == expected_operation_id
+        )
+    ]
+    if manifest_operation_matches:
+        raise ContractError(
+            "declared sibling operation gap is stale; operation now exists in manifest: "
+            f"{expected_operation_id}"
+        )
+
+    def matching_csv_row(
+        path: Path, *, disposition: str | None = None
+    ) -> tuple[int, dict[str, str]]:
+        with path.open(encoding="utf-8", newline="") as csv_file:
+            rows = list(csv.DictReader(csv_file))
+        matches = [
+            (index + 2, row)
+            for index, row in enumerate(rows)
+            if row.get("qualified_name") == expected_operation_id
+            and (disposition is None or row.get("api_disposition") == disposition)
+        ]
+        if len(matches) != 1:
+            raise ContractError(
+                "sibling contract gap must resolve to one Starlette-RS catalog/review row: "
+                f"{expected_operation_id}"
+            )
+        return matches[0]
+
+    catalog_line, catalog_row = matching_csv_row(catalog_path)
+    review_line, review_row = matching_csv_row(review_path, disposition="supported")
+    return {
+        "contract_id": expected_contract_id,
+        "expected_operation_id": expected_operation_id,
+        "reason": reason,
+        "operation_absent_from_api_sources": True,
+        "operation_absent_from_manifest": True,
+        "api_source_surface_ref": {
+            "path": starlette_rs["metadata"],
+            "json_pointer": _pointer("api_sources", source_surface_index),
+        },
+        "manifest_surface_ref": {
+            "path": starlette_rs["manifest"],
+            "json_pointer": _pointer("surfaces", manifest_surface_index),
+        },
+        "api_catalog_ref": {
+            "path": starlette_rs["api_catalog"],
+            "line": catalog_line,
+            "audit_status": catalog_row.get("audit_status"),
+        },
+        "api_review_ref": {
+            "path": starlette_rs["api_review"],
+            "line": review_line,
+            "api_disposition": review_row.get("api_disposition"),
+        },
+    }
 
 
 def _starlette_rs_operation_reference(
@@ -395,23 +665,24 @@ def _validate_inherited_fixture_reference(
         and isinstance(node.value.func, ast.Name)
         and node.value.func.id == "FastAPI"
     ]
-    middleware_calls = [
+    method_name = operation_id.rsplit(".", 1)[-1]
+    operation_calls = [
         node
         for node in ast.walk(factory_node)
         if isinstance(node, ast.Call)
         and isinstance(node.func, ast.Attribute)
-        and node.func.attr == "add_middleware"
+        and node.func.attr == method_name
         and isinstance(node.func.value, ast.Name)
         and node.func.value.id == "app"
     ]
     if (
         not app_initializations
-        or not middleware_calls
-        or min(node.lineno for node in middleware_calls)
+        or not operation_calls
+        or min(node.lineno for node in operation_calls)
         <= min(node.lineno for node in app_initializations)
     ):
         raise ContractError(
-            f"inherited API fixture does not call {operation_id} on FastAPI: {workload_path}"
+            f"inherited API fixture does not call FastAPI.{method_name}: {workload_path}"
         )
 
     observed_short_selectors = {
@@ -653,6 +924,44 @@ def build_api_surface_contract(
             raise ContractError(
                 "inherited API overlays must point to the canonical sibling contract without "
                 f"copying its signature or requirements: {operation_id}"
+            )
+        has_gap = "sibling_contract_gap" in operation
+        if has_gap:
+            if "canonical_operation_id" in operation:
+                raise ContractError(
+                    "inherited API sibling-gap rows must omit canonical_operation_id: "
+                    f"{operation_id}"
+                )
+            signature_source = operation.get("signature_source")
+            gap = operation.get("sibling_contract_gap")
+            target_binding = operation.get("target_binding")
+            if not isinstance(signature_source, dict) or not isinstance(gap, dict):
+                raise ContractError(
+                    f"inherited API sibling-gap row needs signature_source and gap mappings: "
+                    f"{operation_id}"
+                )
+            if not isinstance(target_binding, dict):
+                raise ContractError(
+                    "inherited API sibling-gap row needs an explicit target binding: "
+                    f"{operation_id}"
+                )
+            known_gaps = target_binding.get("known_gaps")
+            if (
+                target_binding.get("status") != "partial-contract"
+                or target_binding.get("implementation_owner") != "fastapi-rs"
+                or not isinstance(known_gaps, list)
+                or not known_gaps
+                or any(not isinstance(value, str) or not value.strip() for value in known_gaps)
+                or len(known_gaps) != len(set(known_gaps))
+            ):
+                raise ContractError(
+                    "inherited API sibling-gap target binding must declare partial-contract, "
+                    f"fastapi-rs ownership, and unique known gaps: {operation_id}"
+                )
+        elif any(field in operation for field in ("signature_source", "target_binding")):
+            raise ContractError(
+                "inherited API signature_source and target_binding are reserved for explicit "
+                f"sibling contract gaps: {operation_id}"
             )
         evidence = operation.get("source_evidence", [])
         if not isinstance(evidence, list) or any(not isinstance(row, dict) for row in evidence):
@@ -1005,8 +1314,12 @@ def build_api_surface_contract(
                 "inherited API operation must point to a supported FastAPI class candidate: "
                 f"{operation_id}"
             )
+        sibling_gap = operation.get("sibling_contract_gap")
+        has_sibling_gap = isinstance(sibling_gap, dict)
         canonical_operation_id = operation.get("canonical_operation_id")
-        if not isinstance(canonical_operation_id, str) or not canonical_operation_id:
+        if not has_sibling_gap and (
+            not isinstance(canonical_operation_id, str) or not canonical_operation_id
+        ):
             raise ContractError(
                 f"inherited API operation has no canonical sibling operation: {operation_id}"
             )
@@ -1019,7 +1332,6 @@ def build_api_surface_contract(
             reviewed_candidate.get("kind") != "inherited_method"
             or reviewed_candidate.get("classification") != "supported"
             or reviewed_candidate.get("exposure_candidate_id") != exposure_candidate_id
-            or reviewed_candidate.get("canonical_operation_id") != canonical_operation_id
             or reviewed_candidate.get("source_evidence") != operation.get("source_evidence")
             or reviewed_candidate.get("documentation_contract_refs")
             != operation.get("documentation_contract_refs")
@@ -1028,6 +1340,20 @@ def build_api_surface_contract(
             or reviewed_candidate.get("observation_selectors")
             != operation.get("observation_selectors")
             or reviewed_candidate.get("reviewed_overlay_ref") != expected_overlay_ref
+            or (
+                has_sibling_gap
+                and (
+                    "canonical_operation_id" in reviewed_candidate
+                    or reviewed_candidate.get("signature_source")
+                    != operation.get("signature_source")
+                    or reviewed_candidate.get("sibling_contract_gap") != sibling_gap
+                    or reviewed_candidate.get("target_binding") != operation.get("target_binding")
+                )
+            )
+            or (
+                not has_sibling_gap
+                and reviewed_candidate.get("canonical_operation_id") != canonical_operation_id
+            )
         ):
             raise ContractError(
                 f"atlas inherited API candidate differs from reviewed metadata: {operation_id}"
@@ -1125,40 +1451,81 @@ def build_api_surface_contract(
                 f"inherited API operation requires an input fixture: {operation_id}"
             )
 
-        canonical_operation_ref = _starlette_rs_operation_reference(
-            metadata, canonical_operation_id
-        )
-        inherited_operation_contracts.append(
-            {
-                "id": operation_id,
-                "kind": "inherited_method",
-                "exposure": "inherited-from-starlette",
-                "reviewed_candidate_ref": _pointer(
-                    "reviewed_inherited_api_candidates",
-                    inherited_candidate_indexes[operation_id],
-                ),
-                "fastapi_exposure_candidate_ref": _pointer(
-                    "api_candidates", candidate_indexes[exposure_candidate_id]
-                ),
-                "exposure_evidence": evidence,
-                "canonical_operation_ref": canonical_operation_ref,
-                "signature_contract_state": "delegated-to-canonical-starlette-rs-operation",
-                "documentation_contract_refs": documentation_refs,
-                "fixture_refs": fixture_refs,
-                "feature_ids": sorted(feature_ids),
-                "observation_selectors": sorted(selectors),
-                "target_binding": {
-                    "target_profile": TARGET_PROFILE,
-                    "public_python_path": operation_id,
-                    "implementation_owner": "starlette-rs",
-                    "implementation_owner_evidence": {
-                        "kind": "canonical-sibling-operation-reference",
-                        "canonical_operation_ref": canonical_operation_ref,
+        inherited_contract = {
+            "id": operation_id,
+            "kind": "inherited_method",
+            "exposure": "inherited-from-starlette",
+            "reviewed_candidate_ref": _pointer(
+                "reviewed_inherited_api_candidates",
+                inherited_candidate_indexes[operation_id],
+            ),
+            "fastapi_exposure_candidate_ref": _pointer(
+                "api_candidates", candidate_indexes[exposure_candidate_id]
+            ),
+            "exposure_evidence": evidence,
+            "documentation_contract_refs": documentation_refs,
+            "fixture_refs": fixture_refs,
+            "feature_ids": sorted(feature_ids),
+            "observation_selectors": sorted(selectors),
+        }
+        if has_sibling_gap:
+            signature_source = operation.get("signature_source")
+            if not isinstance(signature_source, dict):
+                raise ContractError(
+                    f"inherited sibling-gap row has no pinned source signature: {operation_id}"
+                )
+            source_signature_ref = _starlette_source_signature_reference(metadata, signature_source)
+            expected_operation_id = sibling_gap.get("expected_operation_id")
+            if expected_operation_id != source_signature_ref["source_operation_id"]:
+                raise ContractError(
+                    "inherited sibling gap does not identify the pinned source method: "
+                    f"{operation_id}"
+                )
+            sibling_gap_ref = _starlette_rs_contract_gap_reference(metadata, sibling_gap)
+            target_binding = operation.get("target_binding", {})
+            inherited_contract.update(
+                {
+                    "signature": source_signature_ref["signature"],
+                    "signature_source_ref": source_signature_ref,
+                    "signature_contract_state": (
+                        "source-signature-linked; sibling-operation-missing"
+                    ),
+                    "sibling_contract_gap": sibling_gap_ref,
+                    "target_binding": {
+                        "target_profile": TARGET_PROFILE,
+                        "public_python_path": operation_id,
+                        "implementation_owner": target_binding["implementation_owner"],
+                        "implementation_owner_evidence": {
+                            "kind": "pinned-source-signature-with-sibling-operation-gap",
+                            "signature_source_ref": source_signature_ref,
+                            "sibling_contract_gap_ref": sibling_gap_ref,
+                        },
+                        "status": target_binding["status"],
+                        "known_gaps": target_binding["known_gaps"],
                     },
-                    "status": "full-contract-not-established",
-                },
-            }
-        )
+                }
+            )
+        else:
+            canonical_operation_ref = _starlette_rs_operation_reference(
+                metadata, canonical_operation_id
+            )
+            inherited_contract.update(
+                {
+                    "canonical_operation_ref": canonical_operation_ref,
+                    "signature_contract_state": "delegated-to-canonical-starlette-rs-operation",
+                    "target_binding": {
+                        "target_profile": TARGET_PROFILE,
+                        "public_python_path": operation_id,
+                        "implementation_owner": "starlette-rs",
+                        "implementation_owner_evidence": {
+                            "kind": "canonical-sibling-operation-reference",
+                            "canonical_operation_ref": canonical_operation_ref,
+                        },
+                        "status": "full-contract-not-established",
+                    },
+                }
+            )
+        inherited_operation_contracts.append(inherited_contract)
 
     for warning_id, review in warning_reviews.items():
         candidate = candidates_by_id.get(warning_id)

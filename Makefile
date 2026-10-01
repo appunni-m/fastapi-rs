@@ -93,6 +93,7 @@ compatibility-atlas-update: parity-inputs ## Rebuild generated source atlas, fix
 	$(PYTHON) scripts/build_fastapi_compatibility_atlas.py --fastapi-source "$(FASTAPI_SOURCE)" --starlette-source "$(STARLETTE_SOURCE)" --starlette-rs-root "$(STARLETTE_RS_SOURCE)"
 	$(PYTHON) -m scripts.build_materialized_input_index
 	$(PYTHON) -m scripts.build_api_surface_contract
+	$(PYTHON) scripts/build_fastapi_compatibility_atlas.py --fastapi-source "$(FASTAPI_SOURCE)" --starlette-source "$(STARLETTE_SOURCE)" --starlette-rs-root "$(STARLETTE_RS_SOURCE)"
 	$(PYTHON) -m scripts.parity.cli validate
 
 api-contract-update: ## Refresh per-symbol source/runtime API links in the active manifest

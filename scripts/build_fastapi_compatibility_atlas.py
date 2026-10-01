@@ -9450,6 +9450,8 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         row["id"]: index for index, row in enumerate(source_api_candidates)
     }
     reviewed_api_overlay = project_metadata.get("reviewed_api_contract_overlay", {})
+    if reviewed_api_overlay.get("schema") != "fastapi-rs/reviewed-api-contract-overlay@2":
+        raise AtlasError("metadata.yaml reviewed API contract overlay schema is unsupported")
     inherited_api_overlay = reviewed_api_overlay.get("inherited_operations", {})
     if not isinstance(inherited_api_overlay, dict):
         raise AtlasError("metadata.yaml inherited API operation overlay must be a mapping")
@@ -9475,34 +9477,58 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             raise AtlasError(
                 "inherited API candidate must reference a supported FastAPI class: " + operation_id
             )
-        reviewed_inherited_api_candidates.append(
-            {
-                "id": operation_id,
-                "kind": "inherited_method",
-                "classification": "supported",
-                "classification_evidence_rule": (
-                    "FastAPI class inheritance and reviewed user documentation expose the "
-                    "Starlette-owned method on FastAPI"
-                ),
-                "exposure_candidate_id": exposure_candidate_id,
-                "exposure_candidate_ref": (
-                    "/api_candidates/" + str(source_api_candidate_indexes[exposure_candidate_id])
-                ),
-                "canonical_operation_id": operation.get("canonical_operation_id"),
-                "source_evidence": operation.get("source_evidence", []),
-                "documentation_contract_refs": operation.get("documentation_contract_refs", []),
-                "fixture_refs": operation.get("fixture_refs", []),
-                "feature_ids": operation.get("feature_ids", []),
-                "observation_selectors": operation.get("observation_selectors", []),
-                "reviewed_overlay_ref": (
-                    "/reviewed_api_contract_overlay/inherited_operations/"
-                    + operation_id.replace("~", "~0").replace("/", "~1")
-                ),
-            }
-        )
+        inherited_candidate = {
+            "id": operation_id,
+            "kind": "inherited_method",
+            "classification": "supported",
+            "classification_evidence_rule": (
+                "FastAPI class inheritance and reviewed user documentation expose the "
+                "Starlette-owned method on FastAPI"
+            ),
+            "exposure_candidate_id": exposure_candidate_id,
+            "exposure_candidate_ref": (
+                "/api_candidates/" + str(source_api_candidate_indexes[exposure_candidate_id])
+            ),
+            "source_evidence": operation.get("source_evidence", []),
+            "documentation_contract_refs": operation.get("documentation_contract_refs", []),
+            "fixture_refs": operation.get("fixture_refs", []),
+            "feature_ids": operation.get("feature_ids", []),
+            "observation_selectors": operation.get("observation_selectors", []),
+            "reviewed_overlay_ref": (
+                "/reviewed_api_contract_overlay/inherited_operations/"
+                + operation_id.replace("~", "~0").replace("/", "~1")
+            ),
+        }
+        sibling_gap = operation.get("sibling_contract_gap")
+        if sibling_gap is not None:
+            if (
+                not isinstance(sibling_gap, dict)
+                or "canonical_operation_id" in operation
+                or not isinstance(operation.get("signature_source"), dict)
+                or not isinstance(operation.get("target_binding"), dict)
+            ):
+                raise AtlasError(
+                    "inherited sibling-gap candidates require signature source and target "
+                    "binding and must omit a canonical operation: " + operation_id
+                )
+            inherited_candidate.update(
+                {
+                    "signature_source": operation["signature_source"],
+                    "sibling_contract_gap": sibling_gap,
+                    "target_binding": operation["target_binding"],
+                }
+            )
+        else:
+            canonical_operation_id = operation.get("canonical_operation_id")
+            if not isinstance(canonical_operation_id, str) or not canonical_operation_id:
+                raise AtlasError(
+                    "inherited API candidate has no canonical sibling operation: " + operation_id
+                )
+            inherited_candidate["canonical_operation_id"] = canonical_operation_id
+        reviewed_inherited_api_candidates.append(inherited_candidate)
 
     atlas = {
-        "schema": "fastapi-rs/compatibility-atlas@2",
+        "schema": "fastapi-rs/compatibility-atlas@3",
         "purpose": "Source-backed FastAPI API classification and merged upstream test/documentation fixture backlog; not parity evidence.",
         "authorities": {
             "fastapi": {
@@ -9749,7 +9775,10 @@ def render_markdown(atlas: dict[str, Any]) -> str:
     )
     api_contract = manifest.get("api_surface_contract", {})
     api_contract_counts = api_contract.get("counts", {})
-    if api_contract.get("schema") != "fastapi-rs/public-api-contract@1":
+    if api_contract.get("schema") not in {
+        "fastapi-rs/public-api-contract@1",
+        "fastapi-rs/public-api-contract@2",
+    }:
         raise AtlasError("manifest has no generated per-symbol source API contract")
     required_public_symbols = api_contract_counts.get("required_public_symbols", 0)
     required_inherited_operations = counts.get("reviewed_inherited_api_candidates", 0)
@@ -9853,7 +9882,7 @@ def render_markdown(atlas: dict[str, Any]) -> str:
         "",
         "## Per-symbol API contract in the active manifest",
         "",
-        "The single `tests/fixtures/manifest.yaml` indexes %d source-supported symbols and %d separately reviewed inherited API candidates (%d public API candidates total). Direct symbols link to the pinned AST inventory and both runtime-reflection profiles; inherited candidates point to their FastAPI class and the canonical Starlette-RS operation without copying its signature or requirements. The contract links alias, deprecation, error, documented-feature, selector, and planned Python import-path evidence; %d direct symbols link to a documented-page fixture design. The current Python facade directly re-exports %d native names; this source contract does not measure behavioral completeness, and broader operation-level review remains pending."
+        "The single `tests/fixtures/manifest.yaml` indexes %d source-supported symbols and %d separately reviewed inherited API candidates (%d public API candidates total). Direct symbols link to the pinned AST inventory and both runtime-reflection profiles; inherited candidates either delegate to a canonical Starlette-RS operation or record a pinned source signature and explicit sibling-contract gap, without treating registration as ASGI dispatch. The contract links alias, deprecation, error, documented-feature, selector, and planned Python import-path evidence; %d direct symbols link to a documented-page fixture design. The current Python facade directly re-exports %d native names; this source contract does not measure behavioral completeness, and broader operation-level review remains pending."
         % (
             required_public_symbols,
             required_inherited_operations,
@@ -10063,6 +10092,7 @@ def _sync_manifest_artifact_metadata(
         manifest_text,
         "compatibility_atlas",
         {
+            "schema": atlas["schema"],
             "sha256": sha256(atlas_path),
             "api_candidates": counts["api_candidates"],
             "reviewed_inherited_api_candidates": counts["reviewed_inherited_api_candidates"],

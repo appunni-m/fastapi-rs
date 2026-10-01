@@ -138,7 +138,7 @@ api_public_candidate_classification_review:
 
 classification_atlas:
   artifact: tests/fixtures/compatibility-atlas.json
-  schema: fastapi-rs/compatibility-atlas@2
+  schema: fastapi-rs/compatibility-atlas@3
   candidates_pointer: /api_candidates
   inherited_candidates_pointer: /reviewed_inherited_api_candidates
   classification_pointer: /classification
@@ -226,14 +226,14 @@ cargo_dependency_inventory:
       source_description: Python-API bindings for the PyO3 ecosystem
 
 reviewed_api_contract_overlay:
-  schema: fastapi-rs/reviewed-api-contract-overlay@1
+  schema: fastapi-rs/reviewed-api-contract-overlay@2
   purpose: >-
     Source-backed overlays link selected supported operations to documented
-    features, observable selectors, and candidate error records. The separate
-    inherited_operations map records FastAPI exposure while delegating generic
-    Starlette signatures and requirements to the pinned Starlette-RS contract.
-    An error link does not promote an uncertain exception into the public import
-    contract.
+    features, observable selectors, and candidate error records. Inherited
+    operations record FastAPI exposure and either delegate to a canonical pinned
+    Starlette-RS operation or state the exact sibling-contract gap and source
+    signature. An error link does not promote an uncertain exception into the
+    public import contract.
   error_selector_rules:
     - id: http-exception
       candidate_ids:
@@ -1723,6 +1723,53 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/middleware-execution-order-wave.yaml
           case_id: fastapi.docs.middleware.request-and-response-order
       feature_ids: [middleware-integrations]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+    fastapi.applications.FastAPI.mount:
+      fastapi_exposure_candidate_id: fastapi.applications.FastAPI
+      source_evidence:
+        - path: fastapi/applications.py
+          kind: class-inheritance
+          symbol: FastAPI
+          base_class: Starlette
+          line: 42
+        - path: docs/en/docs/advanced/sub-applications.md
+          kind: documentation-text
+          start_line: 25
+          end_line: 29
+          required_text:
+            - "mount the sub-application, `subapi`."
+            - "mounted at the path `/subapi`"
+      signature_source:
+        repository: starlette
+        path: starlette/applications.py
+        owner: Starlette
+        symbol: mount
+        start_line: 98
+        end_line: 99
+      sibling_contract_gap:
+        expected_operation_id: starlette.applications.Starlette.mount
+        reason: >-
+          The pinned Starlette-RS API catalog records only an unreviewed method candidate while
+          api-review.csv marks it supported; canonical API sources and the manifest have no
+          registration-operation contract. Router.route-dispatch describes later ASGI dispatch
+          and cannot stand in for the method signature or registration behavior.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - Built-in Swagger, ReDoc, and OAuth redirect routes are not implemented; identity-checked parent and mounted Swagger UI inputs observe 404.
+          - Mount dispatch is attempted after native FastAPI routes, so registration ordering is incomplete.
+          - WebSocket Mount dispatch is not implemented.
+          - FastAPI.routes does not include the registered mounts.
+          - Named-mount reverse URL lookup is not implemented.
+      documentation_contract_refs:
+        - source_path: docs/en/docs/advanced/sub-applications.md
+          fixture_id: fastapi.docs.advanced-sub-applications
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/sub_applications.yaml
+          case_id: fastapi.docs.sub-applications.mount-and-own-openapi
+      feature_ids: [app-routing]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
   warning_classification_reviews:
     fastapi.exceptions.FastAPIDeprecationWarning:

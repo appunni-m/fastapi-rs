@@ -20,7 +20,7 @@ This source-backed compatibility atlas indexes the API denominator and candidate
 
 ## Per-symbol API contract in the active manifest
 
-The single `tests/fixtures/manifest.yaml` indexes 461 source-supported symbols and 1 separately reviewed inherited API candidates (462 public API candidates total). Direct symbols link to the pinned AST inventory and both runtime-reflection profiles; inherited candidates point to their FastAPI class and the canonical Starlette-RS operation without copying its signature or requirements. The contract links alias, deprecation, error, documented-feature, selector, and planned Python import-path evidence; 454 direct symbols link to a documented-page fixture design. The current Python facade directly re-exports 19 native names; this source contract does not measure behavioral completeness, and broader operation-level review remains pending.
+The single `tests/fixtures/manifest.yaml` indexes 461 source-supported symbols and 2 separately reviewed inherited API candidates (463 public API candidates total). Direct symbols link to the pinned AST inventory and both runtime-reflection profiles; inherited candidates either delegate to a canonical Starlette-RS operation or record a pinned source signature and explicit sibling-contract gap, without treating registration as ASGI dispatch. The contract links alias, deprecation, error, documented-feature, selector, and planned Python import-path evidence; 454 direct symbols link to a documented-page fixture design. The current Python facade directly re-exports 19 native names; this source contract does not measure behavioral completeness, and broader operation-level review remains pending.
 
 | Signature/shape evidence | Symbols |
 |---|---:|

@@ -171,12 +171,12 @@ source_artifacts:
       uncertain_candidate_id_prefixes: ["fastapi.exception_handlers.", "fastapi.responses.EventSourceResponse", "fastapi.responses.FastAPIDeprecationWarning", "fastapi.responses.deprecated", "fastapi.sse."]
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
-    schema: fastapi-rs/compatibility-atlas@2
-    sha256: 6d87bc5b7aca56daa64e3a16d9f0e0be7ce197715a961910dd88bbb1b0b796d0
+    schema: fastapi-rs/compatibility-atlas@3
+    sha256: aaa2dc029426f4420646c3096a8defee9b4f2dce0e1c471f4d3f1067ea725a92
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
-      reviewed_inherited_api_candidates: 1
+      reviewed_inherited_api_candidates: 2
       reviewed_import_binding_candidates: 97
       reviewed_source_api_candidates: 162
       source_classifications:
@@ -505,7 +505,7 @@ evidence_policy:
 
 # BEGIN GENERATED PER-SYMBOL API CONTRACT
 api_surface_contract:
-  schema: fastapi-rs/public-api-contract@1
+  schema: fastapi-rs/public-api-contract@2
   status: source-api-linked; behavior-and-target-contract-incomplete
   authority:
     fastapi:
@@ -535,8 +535,8 @@ api_surface_contract:
   - source_artifacts.fixture_backlog
   counts:
     required_public_symbols: 461
-    required_inherited_operations: 1
-    required_public_api_candidates: 462
+    required_inherited_operations: 2
+    required_public_api_candidates: 463
     signature_contract_states:
       module-object-no-call-signature: 1
       non-callable-surface: 234
@@ -547,6 +547,7 @@ api_surface_contract:
       fastapi-rs: 430
       starlette-rs: 31
     inherited_implementation_owner_plans:
+      fastapi-rs: 1
       starlette-rs: 1
     symbols_with_documented_feature_refs: 454
     symbols_with_alias_refs: 46
@@ -24734,6 +24735,31 @@ api_surface_contract:
       - '`app.add_middleware()`'
       - app = FastAPI()
       - app.add_middleware(UnicornMiddleware, some_config="rainbow")
+    documentation_contract_refs:
+    - coverage_matrix_ref: /coverage_matrix/475
+      source_path: docs/en/docs/advanced/middleware.md
+      mapping_status: candidate
+      fixture_id: fastapi.docs.advanced-middleware
+      fixture_design_ref: /fixture_designs/87
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    fixture_refs:
+    - recipe_path: tests/fixtures/input-recipes/parity/middleware-execution-order-wave.yaml
+      case_id: fastapi.docs.middleware.request-and-response-order
+      workload_path: tests/fixtures/workloads/middleware_execution_order_wave.py
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    feature_ids:
+    - app-routing
+    - middleware-integrations
+    observation_selectors:
+    - http.body.bytes
+    - http.headers.ordered
+    - http.status
     canonical_operation_ref: &id023
       contract_id: starlette-1.6.0-asgi-http-config-session-slice
       manifest_path: ../starlette-rs/tests/fixtures/manifest.yaml
@@ -24763,31 +24789,6 @@ api_surface_contract:
         path: ../starlette-rs/docs/atlas/api-review.csv
         line: 40
     signature_contract_state: delegated-to-canonical-starlette-rs-operation
-    documentation_contract_refs:
-    - coverage_matrix_ref: /coverage_matrix/475
-      source_path: docs/en/docs/advanced/middleware.md
-      mapping_status: candidate
-      fixture_id: fastapi.docs.advanced-middleware
-      fixture_design_ref: /fixture_designs/87
-      observation_selectors:
-      - http.body.bytes
-      - http.headers.ordered
-      - http.status
-    fixture_refs:
-    - recipe_path: tests/fixtures/input-recipes/parity/middleware-execution-order-wave.yaml
-      case_id: fastapi.docs.middleware.request-and-response-order
-      workload_path: tests/fixtures/workloads/middleware_execution_order_wave.py
-      observation_selectors:
-      - http.body.bytes
-      - http.headers.ordered
-      - http.status
-    feature_ids:
-    - app-routing
-    - middleware-integrations
-    observation_selectors:
-    - http.body.bytes
-    - http.headers.ordered
-    - http.status
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.applications.FastAPI.add_middleware
@@ -24796,4 +24797,99 @@ api_surface_contract:
         kind: canonical-sibling-operation-reference
         canonical_operation_ref: *id023
       status: full-contract-not-established
+  - id: fastapi.applications.FastAPI.mount
+    kind: inherited_method
+    exposure: inherited-from-starlette
+    reviewed_candidate_ref: /reviewed_inherited_api_candidates/1
+    fastapi_exposure_candidate_ref: /api_candidates/186
+    exposure_evidence:
+    - path: fastapi/applications.py
+      kind: class-inheritance
+      symbol: FastAPI
+      base_class: Starlette
+      line: 42
+    - path: docs/en/docs/advanced/sub-applications.md
+      kind: documentation-text
+      start_line: 25
+      end_line: 29
+      required_text:
+      - mount the sub-application, `subapi`.
+      - mounted at the path `/subapi`
+    documentation_contract_refs:
+    - coverage_matrix_ref: /coverage_matrix/489
+      source_path: docs/en/docs/advanced/sub-applications.md
+      mapping_status: candidate
+      fixture_id: fastapi.docs.advanced-sub-applications
+      fixture_design_ref: /fixture_designs/100
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    fixture_refs:
+    - recipe_path: tests/fixtures/input-recipes/parity/sub_applications.yaml
+      case_id: fastapi.docs.sub-applications.mount-and-own-openapi
+      workload_path: tests/fixtures/workloads/sub_applications.py
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    feature_ids:
+    - app-routing
+    - openapi-docs
+    observation_selectors:
+    - http.body.bytes
+    - http.headers.ordered
+    - http.status
+    signature: 'def mount(self, path: str, app: ASGIApp, name: str | None=None) -> None'
+    signature_source_ref: &id024
+      repository: starlette
+      version: 1.6.0
+      commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
+      source_path: starlette/applications.py
+      source_operation_id: starlette.applications.Starlette.mount
+      owner: Starlette
+      symbol: mount
+      start_line: 98
+      end_line: 99
+      signature: 'def mount(self, path: str, app: ASGIApp, name: str | None=None) -> None'
+    signature_contract_state: source-signature-linked; sibling-operation-missing
+    sibling_contract_gap: &id025
+      contract_id: starlette-1.6.0-asgi-http-config-session-slice
+      expected_operation_id: starlette.applications.Starlette.mount
+      reason: The pinned Starlette-RS API catalog records only an unreviewed method candidate while api-review.csv
+        marks it supported; canonical API sources and the manifest have no registration-operation contract.
+        Router.route-dispatch describes later ASGI dispatch and cannot stand in for the method signature
+        or registration behavior.
+      operation_absent_from_api_sources: true
+      operation_absent_from_manifest: true
+      api_source_surface_ref:
+        path: ../starlette-rs/metadata.yaml
+        json_pointer: /api_sources/0
+      manifest_surface_ref:
+        path: ../starlette-rs/tests/fixtures/manifest.yaml
+        json_pointer: /surfaces/0
+      api_catalog_ref:
+        path: ../starlette-rs/docs/api-surface.csv
+        line: 44
+        audit_status: method candidate; not reviewed
+      api_review_ref:
+        path: ../starlette-rs/docs/atlas/api-review.csv
+        line: 44
+        api_disposition: supported
+    target_binding:
+      target_profile: fastapi-rs-python-consumer
+      public_python_path: fastapi.applications.FastAPI.mount
+      implementation_owner: fastapi-rs
+      implementation_owner_evidence:
+        kind: pinned-source-signature-with-sibling-operation-gap
+        signature_source_ref: *id024
+        sibling_contract_gap_ref: *id025
+      status: partial-contract
+      known_gaps:
+      - Built-in Swagger, ReDoc, and OAuth redirect routes are not implemented; identity-checked parent
+        and mounted Swagger UI inputs observe 404.
+      - Mount dispatch is attempted after native FastAPI routes, so registration ordering is incomplete.
+      - WebSocket Mount dispatch is not implemented.
+      - FastAPI.routes does not include the registered mounts.
+      - Named-mount reverse URL lookup is not implemented.
 # END GENERATED PER-SYMBOL API CONTRACT

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import ast
 import hashlib
 import json
 import re
@@ -358,7 +359,7 @@ def validate_compatibility_artifacts(
     starlette_source: Path,
 ) -> dict[str, Any]:
     """Check source evidence, complete module/page links, and input-only designs."""
-    _require(atlas.get("schema") == "fastapi-rs/compatibility-atlas@2", "unsupported atlas schema")
+    _require(atlas.get("schema") == "fastapi-rs/compatibility-atlas@3", "unsupported atlas schema")
     _require(
         backlog.get("schema") == "fastapi-rs/fixture-backlog@1",
         "unsupported fixture backlog schema",
@@ -611,15 +612,101 @@ def validate_compatibility_artifacts(
             row.get("kind") == "inherited_method" and row.get("classification") == "supported",
             f"{identifier} must be a supported inherited-method candidate",
         )
-        _require(
-            isinstance(row.get("canonical_operation_id"), str)
-            and bool(row["canonical_operation_id"]),
-            f"{identifier} has no canonical delegated operation",
-        )
-        _require(
-            all(field not in row for field in ("signature", "parameters", "requirements")),
-            f"{identifier} must leave its canonical signature and requirements to its owner",
-        )
+        sibling_gap = row.get("sibling_contract_gap")
+        if sibling_gap is None:
+            _require(
+                isinstance(row.get("canonical_operation_id"), str)
+                and bool(row["canonical_operation_id"]),
+                f"{identifier} has no canonical delegated operation",
+            )
+            _require(
+                all(field not in row for field in ("signature", "parameters", "requirements")),
+                f"{identifier} must leave its canonical signature and requirements to its owner",
+            )
+        else:
+            _require(
+                "canonical_operation_id" not in row,
+                f"{identifier} sibling-gap candidate must not claim a canonical operation",
+            )
+            _require(
+                isinstance(sibling_gap, dict)
+                and isinstance(sibling_gap.get("expected_operation_id"), str)
+                and bool(sibling_gap.get("expected_operation_id"))
+                and isinstance(sibling_gap.get("reason"), str)
+                and bool(sibling_gap["reason"].strip()),
+                f"{identifier} has an incomplete sibling contract gap",
+            )
+            signature_source = row.get("signature_source")
+            _require(
+                isinstance(signature_source, dict)
+                and signature_source.get("repository") == "starlette"
+                and isinstance(signature_source.get("path"), str)
+                and signature_source.get("owner")
+                and signature_source.get("symbol")
+                and isinstance(signature_source.get("start_line"), int)
+                and isinstance(signature_source.get("end_line"), int),
+                f"{identifier} has no pinned Starlette source signature reference",
+            )
+            source_path = signature_source["path"]
+            start_line = signature_source["start_line"]
+            end_line = signature_source["end_line"]
+            _verify_source_ref(
+                starlette_source,
+                {"path": source_path, "line": start_line, "end_line": end_line},
+                f"{identifier} Starlette signature source",
+            )
+            try:
+                source_tree = ast.parse(
+                    _source_path(
+                        starlette_source, source_path, f"{identifier} signature source"
+                    ).read_text(encoding="utf-8"),
+                    filename=source_path,
+                )
+            except SyntaxError as exc:
+                raise ContractError(
+                    f"compatibility atlas: {identifier} Starlette signature source is invalid"
+                ) from exc
+            owners = [
+                node
+                for node in source_tree.body
+                if isinstance(node, ast.ClassDef) and node.name == signature_source["owner"]
+            ]
+            methods = [
+                node
+                for owner in owners
+                for node in owner.body
+                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+                and node.name == signature_source["symbol"]
+                and node.lineno == start_line
+                and getattr(node, "end_lineno", None) == end_line
+            ]
+            module_id = Path(source_path).with_suffix("").as_posix().replace("/", ".")
+            expected_operation_id = (
+                f"{module_id}.{signature_source['owner']}.{signature_source['symbol']}"
+            )
+            _require(
+                len(owners) == 1
+                and len(methods) == 1
+                and sibling_gap["expected_operation_id"] == expected_operation_id,
+                f"{identifier} signature source does not resolve to the reviewed sibling method",
+            )
+            target_binding = row.get("target_binding")
+            _require(
+                isinstance(target_binding, dict)
+                and target_binding.get("implementation_owner") == "fastapi-rs"
+                and target_binding.get("status") == "partial-contract"
+                and isinstance(target_binding.get("known_gaps"), list)
+                and bool(target_binding["known_gaps"])
+                and all(
+                    isinstance(gap, str) and gap.strip() for gap in target_binding["known_gaps"]
+                ),
+                f"{identifier} sibling-gap candidate has no explicit partial target binding",
+            )
+            _require(
+                all(field not in row for field in ("signature", "parameters", "requirements")),
+                f"{identifier} must link its source signature without copying an operation "
+                "contract",
+            )
         exposure_candidate_id = row.get("exposure_candidate_id")
         _require(
             exposure_candidate_id in api_indexes

@@ -70,6 +70,7 @@ pub(crate) fn openapi_document(
     py: Python<'_>,
     app_info: OpenApiInfo<'_>,
     operations: &[OpenApiOperation],
+    root_path: Option<&str>,
 ) -> PyResult<Py<PyAny>> {
     let mut schemas = BTreeMap::<String, Py<PyAny>>::new();
     for operation in operations {
@@ -339,6 +340,13 @@ pub(crate) fn openapi_document(
     info.set_item("version", app_info.version)?;
     document.set_item("info", info)?;
     document.set_item("paths", paths)?;
+    if let Some(root_path) = root_path.filter(|path| !path.is_empty()) {
+        let server = PyDict::new(py);
+        server.set_item("url", root_path)?;
+        let servers = PyList::empty(py);
+        servers.append(server)?;
+        document.set_item("servers", servers)?;
+    }
     if let Some(external_docs) = app_info.openapi_external_docs {
         let external_docs = external_docs.bind(py);
         if external_docs.is_truthy()? {
