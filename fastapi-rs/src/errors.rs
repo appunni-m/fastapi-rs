@@ -432,6 +432,33 @@ pub(crate) fn dependency_scope_error(message: &str) -> PyErr {
     DependencyScopeError::new_err(message.to_owned())
 }
 
+pub(crate) fn request_validation_error_type<'py>(py: Python<'py>) -> Bound<'py, PyAny> {
+    py.get_type::<RequestValidationError>().into_any()
+}
+
+pub(crate) fn request_validation_error(
+    py: Python<'_>,
+    errors: &Bound<'_, PyAny>,
+    body: Option<&Bound<'_, PyAny>>,
+    endpoint_ctx: Option<&Bound<'_, PyAny>>,
+) -> PyResult<PyErr> {
+    let kwargs = PyDict::new(py);
+    if let Some(body) = body {
+        kwargs.set_item("body", body)?;
+    } else {
+        kwargs.set_item("body", py.None())?;
+    }
+    if let Some(endpoint_ctx) = endpoint_ctx {
+        kwargs.set_item("endpoint_ctx", endpoint_ctx)?;
+    } else {
+        kwargs.set_item("endpoint_ctx", py.None())?;
+    }
+    let exception = py
+        .get_type::<RequestValidationError>()
+        .call((errors,), Some(&kwargs))?;
+    Ok(PyErr::from_value(exception))
+}
+
 fn set_http_exception_signature(py: Python<'_>, exception_type: &Bound<'_, PyAny>) -> PyResult<()> {
     let inspect = py.import("inspect")?;
     let annotated_doc = py.import("annotated_doc")?.getattr("Doc")?;

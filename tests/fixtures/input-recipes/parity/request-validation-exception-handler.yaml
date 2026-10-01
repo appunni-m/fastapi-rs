@@ -1,0 +1,162 @@
+schema: fastapi-rs/python-asgi-workflow@3
+oracle_profile_extension: standard-multipart
+workload:
+  file: tests/fixtures/workloads/request_validation_exception_handler.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.request-validation-handler.path-error
+  factory_input: {custom_validation_handler: true}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: dispatch-path-validation-error
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /validation/not-an-integer
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - kind: http_response
+      selectors: [status, headers, body]
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_exception_handlers.py, kind: upstream_test}
+  - {path: tests/test_validation_error_context.py, kind: upstream_test}
+- case_id: fastapi.request-validation-handler.body-error
+  factory_input: {custom_validation_handler: true}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: dispatch-body-validation-error
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /validation-body/7
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      - [content-type, application/json]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '{"count":"bad"}', more_body: false}
+    observations:
+    - kind: http_response
+      selectors: [status, headers, body]
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_multi_body_errors.py, kind: upstream_test}
+  - {path: tests/test_validation_error_context.py, kind: upstream_test}
+- case_id: fastapi.request-validation-handler.malformed-json
+  factory_input: {custom_validation_handler: true}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: dispatch-json-decode-validation-error
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /validation-body/7
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      - [content-type, application/json]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '{"count":', more_body: false}
+    observations:
+    - kind: http_response
+      selectors: [status, headers, body]
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_tutorial/test_body/test_tutorial001.py, kind: upstream_test}
+  - {path: tests/test_exception_handlers.py, kind: upstream_test}
+- case_id: fastapi.request-validation-handler.default-precedes-server-error
+  factory_input: {custom_validation_handler: false}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: retain-default-validation-response
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /validation/not-an-integer
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - kind: http_response
+      selectors: [status, headers, body]
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_exception_handlers.py, kind: upstream_test}
+- case_id: fastapi.request-validation-handler.form-body
+  factory_input: {custom_validation_handler: true}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: dispatch-form-validation-error
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /validation-form
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      - [content-type, application/x-www-form-urlencoded]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: 'count=bad', more_body: false}
+    observations:
+    - kind: http_response
+      selectors: [status, headers, body]
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_union_forms.py, kind: upstream_test}
+  - {path: tests/test_exception_handlers.py, kind: upstream_test}

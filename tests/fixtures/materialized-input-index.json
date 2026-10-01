@@ -5194,6 +5194,23 @@
       ]
     },
     {
+      "id": "request-validation-exception-handler",
+      "input_path": "tests/fixtures/inputs/parity/request-validation-exception-handler.json",
+      "input_sha256": "e43be255c2e47d6825cb8326abf21a0d6182eeb0d35a7b800f568d77ec2bbc57",
+      "recipe_path": "tests/fixtures/input-recipes/parity/request-validation-exception-handler.yaml",
+      "recipe_sha256": "79591ac868bea1d80c677f7999db30f9383a372d32dbc6e1e56063773600f47b",
+      "workload_path": "tests/fixtures/workloads/request_validation_exception_handler.py",
+      "workload_sha256": "82152526ea2823f1d25b3ea0c96dc757bc9345a3e2a633518b1180d4a9246c89",
+      "case_ids": [
+        "fastapi.request-validation-handler.path-error",
+        "fastapi.request-validation-handler.body-error",
+        "fastapi.request-validation-handler.malformed-json",
+        "fastapi.request-validation-handler.default-precedes-server-error",
+        "fastapi.request-validation-handler.form-body"
+      ],
+      "oracle_profile_extension": "standard-multipart"
+    },
+    {
       "id": "request-validation-parameters",
       "input_path": "tests/fixtures/inputs/parity/request-validation-parameters.json",
       "input_sha256": "249856427c8d40167042189a7611ebd83d076607b3f50f76a1c32d4e1b95f04f",
@@ -20252,6 +20269,93 @@
       ],
       "observation_selectors": [
         "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_exception_handlers.py",
+      "fixture_id": "fastapi.test.test-exception-handlers",
+      "workflow_id": "request-validation-exception-handler",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 4 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.request-validation-handler.default-precedes-server-error",
+        "fastapi.request-validation-handler.form-body",
+        "fastapi.request-validation-handler.malformed-json",
+        "fastapi.request-validation-handler.path-error"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_multi_body_errors.py",
+      "fixture_id": "fastapi.test.test-multi-body-errors",
+      "workflow_id": "request-validation-exception-handler",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.request-validation-handler.body-error"
+      ],
+      "observation_selectors": [
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_body/test_tutorial001.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-body-test-tutorial001",
+      "workflow_id": "request-validation-exception-handler",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.request-validation-handler.malformed-json"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_union_forms.py",
+      "fixture_id": "fastapi.test.test-union-forms",
+      "workflow_id": "request-validation-exception-handler",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.request-validation-handler.form-body"
+      ],
+      "observation_selectors": [
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_validation_error_context.py",
+      "fixture_id": "fastapi.test.test-validation-error-context",
+      "workflow_id": "request-validation-exception-handler",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.request-validation-handler.body-error",
+        "fastapi.request-validation-handler.path-error"
+      ],
+      "observation_selectors": [
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
+        "http.body.bytes",
+        "http.headers.ordered",
         "http.status"
       ]
     },

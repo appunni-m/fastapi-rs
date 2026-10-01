@@ -194,6 +194,7 @@ struct InvocationContext<'context, 'py> {
 struct RequestInvocation {
     inputs: Py<PyDict>,
     query_params: QueryParams,
+    request_body: Option<Py<PyAny>>,
     form_body_embedded: bool,
     failures: Vec<ValidationIssue>,
     dependency_cache: HashMap<DependencyCacheKey, Py<PyAny>>,
@@ -439,6 +440,12 @@ struct PyFastApiMessageCapture {
 #[pyclass(name = "_FastAPIHTTPExceptionHandler", module = "fastapi_rs._core")]
 struct PyFastApiHttpExceptionHandler;
 
+#[pyclass(
+    name = "_FastAPIRequestValidationExceptionHandler",
+    module = "fastapi_rs._core"
+)]
+struct PyFastApiRequestValidationExceptionHandler;
+
 #[pyclass(name = "_ExceptionHandlerDecorator", module = "fastapi_rs._core")]
 struct PyExceptionHandlerDecorator {
     app: Py<PyFastApi>,
@@ -550,6 +557,13 @@ impl PyFastApi {
             exception_handlers.set_item(
                 http_exception_type,
                 Py::new(py, PyFastApiHttpExceptionHandler)?.into_any(),
+            )?;
+        }
+        let request_validation_exception_type = crate::errors::request_validation_error_type(py);
+        if !exception_handlers.contains(&request_validation_exception_type)? {
+            exception_handlers.set_item(
+                request_validation_exception_type,
+                Py::new(py, PyFastApiRequestValidationExceptionHandler)?.into_any(),
             )?;
         }
         let mut docs_router = RouteTable::new();
@@ -1522,6 +1536,27 @@ impl PyFastApiHttpExceptionHandler {
         } else {
             response_type.call((), Some(&kwargs)).map(Bound::unbind)
         }
+    }
+}
+
+#[pymethods]
+impl PyFastApiRequestValidationExceptionHandler {
+    fn __call__(
+        &self,
+        py: Python<'_>,
+        _request: Py<PyAny>,
+        exception: Py<PyAny>,
+    ) -> PyResult<Py<PyAny>> {
+        let encoded_errors =
+            jsonable_encoder_default(py, &exception.bind(py).call_method0("errors")?)?;
+        let content = PyDict::new(py);
+        content.set_item("detail", encoded_errors)?;
+        let kwargs = PyDict::new(py);
+        kwargs.set_item("status_code", 422)?;
+        py.import("starlette.responses")?
+            .getattr("JSONResponse")?
+            .call((content,), Some(&kwargs))
+            .map(Bound::unbind)
     }
 }
 
@@ -5509,8 +5544,10 @@ fn validation_error_details<'py>(
     Ok(details)
 }
 
-fn validation_response_body(py: Python<'_>, failures: &[ValidationIssue]) -> PyResult<Py<PyAny>> {
-    let details = validation_error_details(py, failures)?;
+fn validation_response_body_from_details(
+    py: Python<'_>,
+    details: &Bound<'_, PyList>,
+) -> PyResult<Py<PyAny>> {
     let result = PyDict::new(py);
     result.set_item("detail", details)?;
     Ok(jsonable_encoder_default(py, &result)?.unbind())
@@ -6180,6 +6217,7 @@ fn fastapi_core_call(
             response_body: Vec::new(),
             invocation: None,
             form_request: None,
+            form_body: None,
             form_close_started: false,
             form_body_embedded: false,
             form_inputs: None,
@@ -6207,6 +6245,7 @@ struct FastApiCall {
     response_body: Vec<u8>,
     invocation: Option<RequestInvocation>,
     form_request: Option<Py<PyAny>>,
+    form_body: Option<Py<PyAny>>,
     form_close_started: bool,
     form_body_embedded: bool,
     form_inputs: Option<Py<PyDict>>,
@@ -6222,6 +6261,26 @@ impl FastApiCall {
             .as_ref()
             .and_then(|invocation| invocation.background_tasks.as_ref())
             .map(|tasks| tasks.clone_ref(py))
+    }
+
+    fn request_validation_endpoint_context<'py>(
+        &self,
+        py: Python<'py>,
+    ) -> PyResult<Bound<'py, PyDict>> {
+        let (endpoint, method, path) = {
+            let app = self.app.bind(py).borrow();
+            let route = app
+                .routes
+                .get(self.route_index.unwrap_or_default())
+                .ok_or_else(|| PyRuntimeError::new_err("selected FastAPI route was lost"))?;
+            (
+                route.endpoint.clone_ref(py),
+                route.method.clone(),
+                route.path.clone(),
+            )
+        };
+        let root_path = parse_scope_string(self.scope.bind(py), "root_path", "")?;
+        response_endpoint_context(py, endpoint.bind(py), &method, &path, &root_path)
     }
 
     fn start_returned_response(
@@ -6616,6 +6675,7 @@ impl FastApiCall {
         self.invocation = Some(RequestInvocation {
             inputs: values,
             query_params: QueryParams::parse(&query),
+            request_body: None,
             form_body_embedded: false,
             failures: Vec::new(),
             dependency_cache: HashMap::new(),
@@ -6744,14 +6804,28 @@ impl FastApiCall {
             .borrow()
             .router
             .resolve_inputs(&path, &root_path, &method, &query, headers, body);
+        let request_has_body = inputs
+            .inputs
+            .iter()
+            .any(|input| input.location == FastApiInputLocation::Body);
         let values = match decode_input_values(py, inputs, parse_json_body) {
             Ok(values) => values,
             Err(InputDecodeError::JsonValidation(error)) => {
-                self.response_status = 422;
-                self.response_body = json_bytes(
+                let response_body = json_decode_validation_response_body(py, &error)?;
+                let details = response_body.bind(py).get_item("detail")?;
+                let body = error.value(py).getattr("doc")?;
+                let endpoint_ctx = self.request_validation_endpoint_context(py)?;
+                let validation_error = crate::errors::request_validation_error(
                     py,
-                    json_decode_validation_response_body(py, &error)?.bind(py),
+                    &details,
+                    Some(&body),
+                    Some(&endpoint_ctx),
                 )?;
+                if self.has_registered_exception_handler(py, &validation_error)? {
+                    return self.route_exception(py, validation_error);
+                }
+                self.response_status = 422;
+                self.response_body = json_bytes(py, response_body.bind(py))?;
                 return self.send_start(py);
             }
             Err(InputDecodeError::BodyParse(_error)) => {
@@ -6761,9 +6835,21 @@ impl FastApiCall {
             }
             Err(InputDecodeError::Other(error)) => return Err(error),
         };
+        let request_body = if request_has_body && !body.is_empty() {
+            let body = PyBytes::new(py, body);
+            let body = if parse_json_body {
+                py.import("json")?.getattr("loads")?.call1((body,))?
+            } else {
+                body.into_any()
+            };
+            Some(body.unbind())
+        } else {
+            None
+        };
         self.invocation = Some(RequestInvocation {
             inputs: values,
             query_params,
+            request_body,
             form_body_embedded: false,
             failures: Vec::new(),
             dependency_cache: HashMap::new(),
@@ -6826,6 +6912,7 @@ impl FastApiCall {
         }
         self.form_inputs = Some(values);
         self.form_query_params = Some(query_params);
+        self.form_body = Some(form.clone_ref(py));
         self.advance_form_file_reads(py)
     }
 
@@ -6866,6 +6953,7 @@ impl FastApiCall {
             self.invocation = Some(RequestInvocation {
                 inputs,
                 query_params,
+                request_body: self.form_body.take(),
                 form_body_embedded: self.form_body_embedded,
                 failures: Vec::new(),
                 dependency_cache: HashMap::new(),
@@ -7031,14 +7119,18 @@ impl FastApiCall {
                 }
             }
             RouteInvocation::Ready(None) => {
-                let invocation = self
-                    .invocation
-                    .as_ref()
-                    .ok_or_else(|| PyRuntimeError::new_err("request invocation state was lost"))?;
-                if !invocation.failures.is_empty() {
+                let (has_failures, failures) = {
+                    let invocation = self.invocation.as_ref().ok_or_else(|| {
+                        PyRuntimeError::new_err("request invocation state was lost")
+                    })?;
+                    (
+                        !invocation.failures.is_empty(),
+                        validation_error_details(py, &invocation.failures)?,
+                    )
+                };
+                if has_failures {
                     if self.websocket_route_index.is_some() {
-                        let details = validation_error_details(py, &invocation.failures)?;
-                        let reason = jsonable_encoder_default(py, &details)?;
+                        let reason = jsonable_encoder_default(py, &failures)?;
                         let websocket = self.websocket.as_ref().ok_or_else(|| {
                             PyRuntimeError::new_err("FastAPI WebSocket was not initialized")
                         })?;
@@ -7054,10 +7146,27 @@ impl FastApiCall {
                         self.pending = Some(PendingAction::WebSocketClose);
                         return Ok(MachineAction::Await(close.unbind()));
                     }
+
+                    let request_body = self
+                        .invocation
+                        .as_ref()
+                        .and_then(|invocation| invocation.request_body.as_ref())
+                        .map(|body| body.bind(py));
+                    let endpoint_ctx = self.request_validation_endpoint_context(py)?;
+                    let error = crate::errors::request_validation_error(
+                        py,
+                        &failures,
+                        request_body,
+                        Some(&endpoint_ctx),
+                    )?;
+                    if self.has_registered_exception_handler(py, &error)? {
+                        return self.route_exception(py, error);
+                    }
+
                     self.response_status = 422;
                     self.response_body = json_bytes(
                         py,
-                        validation_response_body(py, &invocation.failures)?.bind(py),
+                        validation_response_body_from_details(py, &failures)?.bind(py),
                     )?;
                     self.send_start(py)
                 } else {
@@ -7788,6 +7897,7 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     module.add_class::<PyFastApiHttpMiddleware>()?;
     module.add_class::<PyFastApiMessageCapture>()?;
     module.add_class::<PyFastApiHttpExceptionHandler>()?;
+    module.add_class::<PyFastApiRequestValidationExceptionHandler>()?;
     module.add_class::<PyExceptionHandlerDecorator>()?;
     module.add_class::<PyFastApiCallNext>()?;
     module.add_class::<PyApiRouter>()?;
