@@ -623,6 +623,21 @@ def validate_compatibility_artifacts(
                 all(field not in row for field in ("signature", "parameters", "requirements")),
                 f"{identifier} must leave its canonical signature and requirements to its owner",
             )
+            if row.get("target_binding") is not None:
+                target_binding = row.get("target_binding")
+                known_gaps = (
+                    target_binding.get("known_gaps") if isinstance(target_binding, dict) else None
+                )
+                _require(
+                    isinstance(target_binding, dict)
+                    and target_binding.get("implementation_owner") == "fastapi-rs"
+                    and target_binding.get("status") in {"partial-contract", "unimplemented"}
+                    and isinstance(known_gaps, list)
+                    and bool(known_gaps)
+                    and all(isinstance(gap, str) and gap.strip() for gap in known_gaps),
+                    f"{identifier} canonical target binding must state FastAPI-RS ownership "
+                    "and known gaps",
+                )
         else:
             _require(
                 "canonical_operation_id" not in row,

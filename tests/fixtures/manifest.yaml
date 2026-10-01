@@ -91,7 +91,7 @@ target:
     name: starlette-rs-py
     version: 0.1.0
     starlette_contract: 1.6.0
-    commit: 1f28952a1adfd2cc942366749f102b81d4ea962f
+    commit: 8f57ed5fff8e59f2484779faaff3628360055685
   external_python_runtime_lock:
     path: requirements/target-runtime-cpython-3.12.13.lock
     sha256: efb7ca633fc9a9c8587a6f59f8ee9b509151f6f77ceb75a56dd3cdeff2be99f7
@@ -128,7 +128,7 @@ source_artifacts:
   api_import_binding_classification_review:
     path: tests/fixtures/api-import-binding-classification-review.json
     schema: fastapi-starlette-import-binding-review/v1
-    sha256: 13ff80835cdb0aea3564101d91adb3252b4ed81ad7206e20f64f3cf88e39bd0b
+    sha256: c3e5a7539112e13dfeed31e6d8e04a0e0ac503c6f01dd25eda12950f1826b06c
     purpose: Reviewed source-backed disposition of uncertain FastAPI import bindings from the selected Starlette profile
     source_identity:
       package: FastAPI
@@ -136,7 +136,7 @@ source_artifacts:
       source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
       selected_starlette_profile: 1.6.0
       starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
-      starlette_rs_contract_commit: 1f28952a1adfd2cc942366749f102b81d4ea962f
+      starlette_rs_contract_commit: 8f57ed5fff8e59f2484779faaff3628360055685
     starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
     counts:
       candidates: 97
@@ -147,8 +147,8 @@ source_artifacts:
       starlette_rs_unreviewed_unique_targets: 4
     candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
     pinned_starlette_rs_sources:
-      metadata_sha256: 34970cc3421af6bbd2d9ee711120595485751c27a09419fde814d5c423b7e527
-      manifest_sha256: 955789538f7cef9f5edd6d1ff3d954af3b1d08a4636e4d5737f1dc2e48f351fb
+      metadata_sha256: c1f3c930f7cdbd8febde7af2ba108ef6684f1b240f94dcb8cfa716b71b68416f
+      manifest_sha256: 441a35dba2315fd3cc1baca6a6d529d6eaee886cb6a1c852842845c9a7f6f983
       api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
       api_review_sha256: 822503a4b91afc8b61f1b668d286cedfb3378d96be02f4ebb6c84c9210208325
   api_source_classification_review:
@@ -172,11 +172,11 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@3
-    sha256: 23398a652fd7c9e1d5461081602e7357853ccf966eab2b58ca4b4091dd3312e0
+    sha256: 04afa6ac1b0bab5e4360866dfeb7ec12333cbaf9475095e82efb1115abb9f510
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
-      reviewed_inherited_api_candidates: 2
+      reviewed_inherited_api_candidates: 3
       reviewed_import_binding_candidates: 97
       reviewed_source_api_candidates: 162
       source_classifications:
@@ -205,7 +205,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: fcb42afc60df8569c24d474ce179ba709470567c548f6f75efa6922935854672
+    sha256: 20cba4fb0bc5d800d55e84ead9f3eae66fc38edfe5b0e7918629d9ac69eba27c
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 632
@@ -242,14 +242,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@1
-    sha256: 674963ba84d6c56829575d27264313d26f3ef8212d3c5a68480c989182033c52
+    sha256: e383542e1ff51832dfd62b520a4b28541bc56a74346a29660669a78e2b1256f2
     schema_path: tests/fixtures/schemas/materialized-input-index.schema.json
     schema_sha256: b0a2ec32c63dc82ec43cb4c5ffaf41590e951526de305865a24301ea42e947d2
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 479
-      cases: 1884
-      partial_source_mappings: 1131
+      workflows: 480
+      cases: 1885
+      partial_source_mappings: 1132
 
 contract_metadata:
   aliases:
@@ -535,8 +535,8 @@ api_surface_contract:
   - source_artifacts.fixture_backlog
   counts:
     required_public_symbols: 461
-    required_inherited_operations: 2
-    required_public_api_candidates: 463
+    required_inherited_operations: 3
+    required_public_api_candidates: 464
     signature_contract_states:
       module-object-no-call-signature: 1
       non-callable-surface: 234
@@ -547,7 +547,7 @@ api_surface_contract:
       fastapi-rs: 430
       starlette-rs: 31
     inherited_implementation_owner_plans:
-      fastapi-rs: 1
+      fastapi-rs: 2
       starlette-rs: 1
     symbols_with_documented_feature_refs: 454
     symbols_with_alias_refs: 46
@@ -24721,7 +24721,7 @@ api_surface_contract:
   - id: fastapi.applications.FastAPI.add_middleware
     kind: inherited_method
     exposure: inherited-from-starlette
-    reviewed_candidate_ref: /reviewed_inherited_api_candidates/0
+    reviewed_candidate_ref: /reviewed_inherited_api_candidates/1
     fastapi_exposure_candidate_ref: /api_candidates/186
     exposure_evidence:
     - path: fastapi/applications.py
@@ -24799,10 +24799,102 @@ api_surface_contract:
         kind: canonical-sibling-operation-reference
         canonical_operation_ref: *id023
       status: full-contract-not-established
+  - id: fastapi.applications.FastAPI.add_exception_handler
+    kind: inherited_method
+    exposure: inherited-from-starlette
+    reviewed_candidate_ref: /reviewed_inherited_api_candidates/0
+    fastapi_exposure_candidate_ref: /api_candidates/186
+    exposure_evidence:
+    - path: fastapi/applications.py
+      kind: class-inheritance
+      symbol: FastAPI
+      base_class: Starlette
+      line: 42
+    - path: fastapi/applications.py
+      kind: source-definition
+      symbol: exception_handler
+      start_line: 4729
+      end_line: 4774
+    - path: docs/en/docs/tutorial/handling-errors.md
+      kind: documentation-text
+      start_line: 82
+      end_line: 102
+      required_text:
+      - 'You could add a custom exception handler with `@app.exception_handler()`:'
+      - HTTP status code of `418`
+    documentation_contract_refs:
+    - coverage_matrix_ref: /coverage_matrix/586
+      source_path: docs/en/docs/tutorial/handling-errors.md
+      mapping_status: candidate
+      fixture_id: fastapi.docs.tutorial-handling-errors
+      fixture_design_ref: /fixture_designs/154
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    fixture_refs:
+    - recipe_path: tests/fixtures/input-recipes/parity/inherited-exception-handler-registration.yaml
+      case_id: fastapi.applications.add-exception-handler.custom-exception
+      workload_path: tests/fixtures/workloads/inherited_exception_handler_registration.py
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    feature_ids:
+    - app-routing
+    - public-api-errors
+    - python-data-encoding
+    - request-validation
+    - response-serialization
+    observation_selectors:
+    - http.body.bytes
+    - http.headers.ordered
+    - http.status
+    canonical_operation_ref: &id024
+      contract_id: starlette-1.6.0-asgi-http-config-session-slice
+      manifest_path: ../starlette-rs/tests/fixtures/manifest.yaml
+      manifest_contract_pointer: /scope/id
+      canonical_operation_id: starlette.applications.Starlette.add_exception_handler
+      target_support:
+        rust-native:
+          status: unimplemented
+          manifest_target_ref:
+            path: ../starlette-rs/tests/fixtures/manifest.yaml
+            json_pointer: /surfaces/0/operations/4/targets/0
+        python-package:
+          status: supported
+          manifest_target_ref:
+            path: ../starlette-rs/tests/fixtures/manifest.yaml
+            json_pointer: /surfaces/0/operations/4/targets/1
+      manifest_operation_ref:
+        path: ../starlette-rs/tests/fixtures/manifest.yaml
+        json_pointer: /surfaces/0/operations/4
+      source_operation_ref:
+        path: ../starlette-rs/metadata.yaml
+        json_pointer: /api_sources/0/operations/4
+      api_catalog_ref:
+        path: ../starlette-rs/docs/api-surface.csv
+        line: 39
+      api_review_ref:
+        path: ../starlette-rs/docs/atlas/api-review.csv
+        line: 39
+    signature_contract_state: delegated-to-canonical-starlette-rs-operation
+    target_binding:
+      target_profile: fastapi-rs-python-consumer
+      public_python_path: fastapi.applications.FastAPI.add_exception_handler
+      implementation_owner: fastapi-rs
+      implementation_owner_evidence:
+        kind: canonical-sibling-operation-reference
+        canonical_operation_ref: *id024
+      status: unimplemented
+      known_gaps:
+      - FastAPI-RS exposes no FastAPI.add_exception_handler method.
+      - FastAPI-RS does not implement FastAPI.exception_handler, which delegates custom-handler registration
+        to the inherited method.
   - id: fastapi.applications.FastAPI.mount
     kind: inherited_method
     exposure: inherited-from-starlette
-    reviewed_candidate_ref: /reviewed_inherited_api_candidates/1
+    reviewed_candidate_ref: /reviewed_inherited_api_candidates/2
     fastapi_exposure_candidate_ref: /api_candidates/186
     exposure_evidence:
     - path: fastapi/applications.py
@@ -24843,7 +24935,7 @@ api_surface_contract:
     - http.headers.ordered
     - http.status
     signature: 'def mount(self, path: str, app: ASGIApp, name: str | None=None) -> None'
-    signature_source_ref: &id024
+    signature_source_ref: &id025
       repository: starlette
       version: 1.6.0
       commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
@@ -24855,7 +24947,7 @@ api_surface_contract:
       end_line: 99
       signature: 'def mount(self, path: str, app: ASGIApp, name: str | None=None) -> None'
     signature_contract_state: source-signature-linked; sibling-operation-missing
-    sibling_contract_gap: &id025
+    sibling_contract_gap: &id026
       contract_id: starlette-1.6.0-asgi-http-config-session-slice
       expected_operation_id: starlette.applications.Starlette.mount
       reason: The pinned Starlette-RS API catalog records only an unreviewed method candidate while api-review.csv
@@ -24884,8 +24976,8 @@ api_surface_contract:
       implementation_owner: fastapi-rs
       implementation_owner_evidence:
         kind: pinned-source-signature-with-sibling-operation-gap
-        signature_source_ref: *id024
-        sibling_contract_gap_ref: *id025
+        signature_source_ref: *id025
+        sibling_contract_gap_ref: *id026
       status: partial-contract
       known_gaps:
       - Built-in Swagger, ReDoc, and OAuth redirect routes are not implemented; identity-checked parent

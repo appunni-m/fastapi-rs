@@ -2253,6 +2253,18 @@
       ]
     },
     {
+      "id": "inherited-exception-handler-registration",
+      "input_path": "tests/fixtures/inputs/parity/inherited-exception-handler-registration.json",
+      "input_sha256": "ba95afcf7ea6be2e98de2e25e00d55b133525756d52d9940c64183254a8fc084",
+      "recipe_path": "tests/fixtures/input-recipes/parity/inherited-exception-handler-registration.yaml",
+      "recipe_sha256": "1470cb1620056ff9b5064b13c810713d53adb70cdb214ff0fbbc02a9eb7c7dac",
+      "workload_path": "tests/fixtures/workloads/inherited_exception_handler_registration.py",
+      "workload_sha256": "0398af53fb0c8753ffc937084761aa209fe61125ba3637ec3089aa3f231fb3f7",
+      "case_ids": [
+        "fastapi.applications.add-exception-handler.custom-exception"
+      ]
+    },
+    {
       "id": "json-base64-bytes",
       "input_path": "tests/fixtures/inputs/parity/json_base64_bytes.json",
       "input_sha256": "87d892906abecb759c57406cdde5574bf81dc87cc306e58bb44a86f422e16c55",
@@ -5265,7 +5277,7 @@
       "input_path": "tests/fixtures/inputs/parity/response-model-data-filter-exclude-unset-none-review.json",
       "input_sha256": "e8df817a4df31b3f2f646068c8a9286416ff13577822d1fc572bbc5d8eb34a17",
       "recipe_path": "tests/fixtures/input-recipes/parity/response-model-data-filter-exclude-unset-none-review.yaml",
-      "recipe_sha256": "3e1249230eec6c5b38280ac1afa1c457579e4221a63c2f9f69ef35a08e2da166",
+      "recipe_sha256": "dbf6cfc51141c2376caa8e8ccb77f445c7436cb048dfc93b872f5accdfa9c551",
       "workload_path": "tests/fixtures/workloads/response_model_data_filter_exclude_unset_none_review.py",
       "workload_sha256": "24b60f06b2472a0254c9ae15d0b208e0edd99d3cb8a3833696d343bacd0c13cd",
       "case_ids": [
@@ -12796,6 +12808,21 @@
       ],
       "observation_selectors": [
         "http.body.bytes"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/handling-errors.md",
+      "fixture_id": "fastapi.docs.tutorial-handling-errors",
+      "workflow_id": "inherited-exception-handler-registration",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.applications.add-exception-handler.custom-exception"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
       ]
     },
     {

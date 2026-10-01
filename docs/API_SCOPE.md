@@ -82,12 +82,12 @@ remain significant.
 
 ### Current target facade availability
 
-The root facade currently exposes 17 of the 21 source bindings:
+The root facade currently exposes 19 of the 21 source bindings:
 `__version__`, `APIRouter`, `Body`, `Cookie`, `Depends`, `FastAPI`, `File`,
-`Form`, `Header`, `Path`, `Query`, `Response`, `UploadFile`, and `status`.
-It also exposes `Request`, `WebSocket`, and `WebSocketDisconnect`. The missing
-exports are `BackgroundTasks`, `HTTPException`, `WebSocketException`, and
-`Security`. Request injection has a partial identity-checked ASGI workflow;
+`Form`, `Header`, `HTTPException`, `Path`, `Query`, `Request`, `Response`,
+`UploadFile`, `WebSocket`, `WebSocketDisconnect`, `WebSocketException`, and
+`status`. The missing exports are `BackgroundTasks` and `Security`. Request
+injection has a partial identity-checked ASGI workflow;
 generic Request API parity remains owned by Starlette-RS and is not established
 by that FastAPI integration case. Other availability here means import-level
 presence; it does not prove full signatures or behavior. The generated

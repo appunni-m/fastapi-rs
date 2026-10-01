@@ -25,7 +25,7 @@ SOURCE_IDENTITIES = {
         "role": "sole owner of generic HTTP response rendering and ASGI transport",
     },
     "starlette-rs": {
-        "commit": "1f28952a1adfd2cc942366749f102b81d4ea962f",
+        "commit": "8f57ed5fff8e59f2484779faaff3628360055685",
         "role": "target under review",
     },
     "pydantic": {

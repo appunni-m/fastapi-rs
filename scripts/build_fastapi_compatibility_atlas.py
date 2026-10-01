@@ -9525,6 +9525,13 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                     "inherited API candidate has no canonical sibling operation: " + operation_id
                 )
             inherited_candidate["canonical_operation_id"] = canonical_operation_id
+            target_binding = operation.get("target_binding")
+            if target_binding is not None:
+                if not isinstance(target_binding, dict):
+                    raise AtlasError(
+                        "inherited API target binding must be a mapping: " + operation_id
+                    )
+                inherited_candidate["target_binding"] = target_binding
         reviewed_inherited_api_candidates.append(inherited_candidate)
 
     atlas = {

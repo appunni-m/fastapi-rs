@@ -958,11 +958,30 @@ def build_api_surface_contract(
                     "inherited API sibling-gap target binding must declare partial-contract, "
                     f"fastapi-rs ownership, and unique known gaps: {operation_id}"
                 )
-        elif any(field in operation for field in ("signature_source", "target_binding")):
+        elif "signature_source" in operation:
             raise ContractError(
-                "inherited API signature_source and target_binding are reserved for explicit "
-                f"sibling contract gaps: {operation_id}"
+                "inherited API signature_source is reserved for explicit sibling contract gaps: "
+                f"{operation_id}"
             )
+        elif "target_binding" in operation:
+            target_binding = operation.get("target_binding")
+            known_gaps = (
+                target_binding.get("known_gaps") if isinstance(target_binding, dict) else None
+            )
+            if (
+                not isinstance(target_binding, dict)
+                or target_binding.get("implementation_owner") != "fastapi-rs"
+                or target_binding.get("status") not in {"partial-contract", "unimplemented"}
+                or not isinstance(known_gaps, list)
+                or not known_gaps
+                or any(not isinstance(value, str) or not value.strip() for value in known_gaps)
+                or len(known_gaps) != len(set(known_gaps))
+            ):
+                raise ContractError(
+                    "inherited canonical target binding must declare FastAPI-RS ownership, "
+                    "partial-contract or unimplemented status, and unique known gaps: "
+                    f"{operation_id}"
+                )
         evidence = operation.get("source_evidence", [])
         if not isinstance(evidence, list) or any(not isinstance(row, dict) for row in evidence):
             raise ContractError(
@@ -1352,7 +1371,10 @@ def build_api_surface_contract(
             )
             or (
                 not has_sibling_gap
-                and reviewed_candidate.get("canonical_operation_id") != canonical_operation_id
+                and (
+                    reviewed_candidate.get("canonical_operation_id") != canonical_operation_id
+                    or reviewed_candidate.get("target_binding") != operation.get("target_binding")
+                )
             )
         ):
             raise ContractError(
@@ -1509,20 +1531,29 @@ def build_api_surface_contract(
             canonical_operation_ref = _starlette_rs_operation_reference(
                 metadata, canonical_operation_id
             )
+            target_binding = operation.get("target_binding")
+            if target_binding is None:
+                target_binding = {
+                    "implementation_owner": "starlette-rs",
+                    "status": "full-contract-not-established",
+                }
+            rendered_target_binding = {
+                "target_profile": TARGET_PROFILE,
+                "public_python_path": operation_id,
+                "implementation_owner": target_binding["implementation_owner"],
+                "implementation_owner_evidence": {
+                    "kind": "canonical-sibling-operation-reference",
+                    "canonical_operation_ref": canonical_operation_ref,
+                },
+                "status": target_binding["status"],
+            }
+            if "known_gaps" in target_binding:
+                rendered_target_binding["known_gaps"] = target_binding["known_gaps"]
             inherited_contract.update(
                 {
                     "canonical_operation_ref": canonical_operation_ref,
                     "signature_contract_state": "delegated-to-canonical-starlette-rs-operation",
-                    "target_binding": {
-                        "target_profile": TARGET_PROFILE,
-                        "public_python_path": operation_id,
-                        "implementation_owner": "starlette-rs",
-                        "implementation_owner_evidence": {
-                            "kind": "canonical-sibling-operation-reference",
-                            "canonical_operation_ref": canonical_operation_ref,
-                        },
-                        "status": "full-contract-not-established",
-                    },
+                    "target_binding": rendered_target_binding,
                 }
             )
         inherited_operation_contracts.append(inherited_contract)
