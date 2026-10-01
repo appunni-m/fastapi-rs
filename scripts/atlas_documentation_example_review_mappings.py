@@ -2273,3 +2273,75 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
         },
     }
 )
+
+# Function-scoped yield dependency examples: direct response input plus a
+# separate, documented cleanup-order probe. The tutorial test only asserts the
+# response value; neither mapping claims that it captures stdout or print order.
+DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
+    {
+        "docs_src/dependencies/tutorial008e_py310.py": {
+            "rationale": (
+                "FastAPI 0.141.1 yields Rick from a function-scoped dependency and prints from its cleanup. "
+                "The independent tutorial case sends the same `/users/me` request and has a follow-up "
+                "request that exposes a workload cleanup event; only the first response's status and body "
+                "match the upstream test assertions. The separate `first-response` action in the lifecycle "
+                "case probes documented function-scope cleanup relative to a streamed response using an "
+                "independent workload. These are partial inputs: the tutorial test does not assert cleanup, "
+                "capture stdout, or assert print order."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/dependencies/tutorial008e_py310.py",
+                    "start_line": 6,
+                    "end_line": 15,
+                    "role": "documented yielding dependency, cleanup print, function scope, and user route",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/dependency-yield-tutorials-upstream.yaml",
+                    "case_ids": ["fastapi.dependencies.tutorial008e.function-scope-yield-rick"],
+                    "observation_selectors": ["http.body.bytes", "http.status"],
+                },
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/dependency-lifecycle.yaml",
+                    "case_ids": ["fastapi.dependencies.yield-scope-cleanup"],
+                    "observation_selectors": ["http.body.bytes", "http.status"],
+                },
+            ],
+        },
+        "docs_src/dependencies/tutorial008e_an_py310.py": {
+            "rationale": (
+                "FastAPI 0.141.1 expresses the same function-scoped yield dependency with Annotated: it "
+                "yields Rick and prints from cleanup. The independent tutorial case sends a separate "
+                "`/users/me-annotated` request and has a follow-up request that exposes a workload cleanup event; "
+                "only the first response's status and body match the upstream test assertions. The separate "
+                "`first-response` action in the lifecycle case probes documented function-scope cleanup "
+                "relative to a streamed response using an independent workload. These are partial inputs: "
+                "the tutorial test does not assert cleanup, capture stdout, or assert print order."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/dependencies/tutorial008e_an_py310.py",
+                    "start_line": 8,
+                    "end_line": 17,
+                    "role": "documented Annotated yielding dependency, cleanup print, function scope, and user route",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/dependency-yield-tutorials-upstream.yaml",
+                    "case_ids": [
+                        "fastapi.dependencies.tutorial008e.annotated-function-scope-yield-rick"
+                    ],
+                    "observation_selectors": ["http.body.bytes", "http.status"],
+                },
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/dependency-lifecycle.yaml",
+                    "case_ids": ["fastapi.dependencies.yield-scope-cleanup"],
+                    "observation_selectors": ["http.body.bytes", "http.status"],
+                },
+            ],
+        },
+    }
+)

@@ -77,6 +77,152 @@ cases:
     kind: upstream_documentation
   - path: docs/en/docs/tutorial/dependencies/dependencies-with-yield.md
     kind: upstream_documentation
+- case_id: fastapi.dependencies.tutorial008e.function-scope-yield-rick
+  actions:
+  - action_id: rick-response
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /users/me
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: cleanup-follow-up
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /events
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_dependencies/test_tutorial008e.py
+    kind: upstream_test
+  - path: docs_src/dependencies/tutorial008e_py310.py
+    kind: upstream_documentation_example
+  - path: docs/en/docs/tutorial/dependencies/dependencies-with-yield.md
+    kind: upstream_documentation
+- case_id: fastapi.dependencies.tutorial008e.annotated-function-scope-yield-rick
+  actions:
+  - action_id: rick-response
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /users/me-annotated
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: cleanup-follow-up
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /events
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_dependencies/test_tutorial008e.py
+    kind: upstream_test
+  - path: docs_src/dependencies/tutorial008e_an_py310.py
+    kind: upstream_documentation_example
+  - path: docs/en/docs/tutorial/dependencies/dependencies-with-yield.md
+    kind: upstream_documentation
 - case_id: fastapi.dependencies.tutorial010.context-manager-in-yield-dependency
   actions:
   - action_id: database-result

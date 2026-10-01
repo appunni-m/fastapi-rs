@@ -1094,9 +1094,9 @@
     {
       "id": "dependency-lifecycle",
       "input_path": "tests/fixtures/inputs/parity/dependency-lifecycle.json",
-      "input_sha256": "1bfbf869c67d7e6690563eecd9e6937dbc47165c5b9f12b8e57b335f2cdc68b4",
+      "input_sha256": "c739d2072875b6df889a288b94bcdb5ee0ea77110403cc6b76c0fec296cf192c",
       "recipe_path": "tests/fixtures/input-recipes/parity/dependency-lifecycle.yaml",
-      "recipe_sha256": "cef7627bc343f791984cc31d94ce7ea07d4ea25d05ae332eccaee1b4c3ad00ad",
+      "recipe_sha256": "ed8f3daaea132414bcdaa59bdf85df625cf4b17336693d51d827349304aa1798",
       "workload_path": "tests/fixtures/workloads/dependency_lifecycle.py",
       "workload_sha256": "9def1f56483fe1e554423b201924325ad2c9f2bfbec90ec1bbcac059d76e07cf",
       "case_ids": [
@@ -1387,9 +1387,9 @@
     {
       "id": "dependency-wave",
       "input_path": "tests/fixtures/inputs/parity/dependency-wave.json",
-      "input_sha256": "17fe11da7fb1d7c4a5fca312c567f1df2b6484a607fc56a6b3d88620937dffc6",
+      "input_sha256": "fc3ca0b98f14ed757f5171d1c94585b52f04917d51ab5ebce0aedc0d2c5e3dc7",
       "recipe_path": "tests/fixtures/input-recipes/parity/dependency-wave.yaml",
-      "recipe_sha256": "b9aaa27bf997b9da28905e58257bbef4b5846f3b6b87e8d3c7da7aea1f8c989e",
+      "recipe_sha256": "1e041259912546411f1c69a41e30bb400e25859df7bd2eef8f7eecfb579e32cd",
       "workload_path": "tests/fixtures/workloads/dependency_injection_wave.py",
       "workload_sha256": "2a236013bcd74d97fa38372c0eb2edcc55b5b45d26f866cdd1da5bedc8d45dc7",
       "case_ids": [
@@ -1505,13 +1505,15 @@
     {
       "id": "dependency-yield-tutorials-upstream",
       "input_path": "tests/fixtures/inputs/parity/dependency-yield-tutorials-upstream.json",
-      "input_sha256": "09d818eb31849768401cfb4b168d28f705d1cb1cf2e2f81b8e548a5d496d6ad6",
+      "input_sha256": "fb2b0a5b6fc8ddc26e6a0aec17fe68ba522f4752fc7b6375744c48837353d332",
       "recipe_path": "tests/fixtures/input-recipes/parity/dependency-yield-tutorials-upstream.yaml",
-      "recipe_sha256": "bd666041bbe687bda3a4baa7ea19641a48731feb116fd1dd4add57df5268853e",
+      "recipe_sha256": "6ed3eb7d11d30817b431ae54f6c26014863f7b690dc333ad419cac8bb16925c9",
       "workload_path": "tests/fixtures/workloads/dependency_yield_tutorials_upstream.py",
-      "workload_sha256": "1f11f7a14458604805b4e8b225b4455c73818a7edd3f5b2c9f9bdc755e8d82eb",
+      "workload_sha256": "1a2a6d2142d705064e83dd41e5420d377de6928eda1cf4dd2514c089cefd86ee",
       "case_ids": [
         "fastapi.dependencies.tutorial008.async-yield-chain-default",
+        "fastapi.dependencies.tutorial008e.function-scope-yield-rick",
+        "fastapi.dependencies.tutorial008e.annotated-function-scope-yield-rick",
         "fastapi.dependencies.tutorial010.context-manager-in-yield-dependency"
       ]
     },
@@ -9526,6 +9528,34 @@
       ]
     },
     {
+      "source_item_id": "documented-example:docs_src/dependencies/tutorial008e_an_py310.py",
+      "fixture_id": "fastapi.docs-example.dependencies-tutorial008e-an-py310",
+      "workflow_id": "dependency-lifecycle",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.dependencies.yield-scope-cleanup"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-example:docs_src/dependencies/tutorial008e_py310.py",
+      "fixture_id": "fastapi.docs-example.dependencies-tutorial008e-py310",
+      "workflow_id": "dependency-lifecycle",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.dependencies.yield-scope-cleanup"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
       "source_item_id": "documented-page:advanced/testing-dependencies.md",
       "fixture_id": "fastapi.docs.advanced-testing-dependencies",
       "workflow_id": "dependency-lifecycle",
@@ -10373,20 +10403,6 @@
       ]
     },
     {
-      "source_item_id": "upstream-test:tests/test_tutorial/test_dependencies/test_tutorial008e.py",
-      "fixture_id": "fastapi.test.test-tutorial-test-dependencies-test-tutorial008e",
-      "workflow_id": "dependency-wave",
-      "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
-      "case_ids": [
-        "fastapi.dependency-wave.dependency-current-user.test-get-users-me"
-      ],
-      "observation_selectors": [
-        "http.body.bytes",
-        "http.status"
-      ]
-    },
-    {
       "source_item_id": "upstream-test:tests/test_tutorial/test_dependencies/test_tutorial010.py",
       "fixture_id": "fastapi.test.test-tutorial-test-dependencies-test-tutorial010",
       "workflow_id": "dependency-wave",
@@ -10784,13 +10800,43 @@
       ]
     },
     {
+      "source_item_id": "documented-example:docs_src/dependencies/tutorial008e_an_py310.py",
+      "fixture_id": "fastapi.docs-example.dependencies-tutorial008e-an-py310",
+      "workflow_id": "dependency-yield-tutorials-upstream",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.dependencies.tutorial008e.annotated-function-scope-yield-rick"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-example:docs_src/dependencies/tutorial008e_py310.py",
+      "fixture_id": "fastapi.docs-example.dependencies-tutorial008e-py310",
+      "workflow_id": "dependency-yield-tutorials-upstream",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.dependencies.tutorial008e.function-scope-yield-rick"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
       "source_item_id": "documented-page:tutorial/dependencies/dependencies-with-yield.md",
       "fixture_id": "fastapi.docs.tutorial-dependencies-dependencies-with-yield",
       "workflow_id": "dependency-yield-tutorials-upstream",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 4 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.dependencies.tutorial008.async-yield-chain-default",
+        "fastapi.dependencies.tutorial008e.annotated-function-scope-yield-rick",
+        "fastapi.dependencies.tutorial008e.function-scope-yield-rick",
         "fastapi.dependencies.tutorial010.context-manager-in-yield-dependency"
       ],
       "observation_selectors": [
@@ -10806,6 +10852,21 @@
       "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.dependencies.tutorial008.async-yield-chain-default"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_dependencies/test_tutorial008e.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-dependencies-test-tutorial008e",
+      "workflow_id": "dependency-yield-tutorials-upstream",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.dependencies.tutorial008e.annotated-function-scope-yield-rick",
+        "fastapi.dependencies.tutorial008e.function-scope-yield-rick"
       ],
       "observation_selectors": [
         "http.body.bytes",

@@ -86,6 +86,13 @@ async def get_db():
         yield db
 
 
+def get_username():
+    try:
+        yield "Rick"
+    finally:
+        _events.append("function-scope-cleanup")
+
+
 def create_app() -> FastAPI:
     global _events
     _events = []
@@ -98,6 +105,16 @@ def create_app() -> FastAPI:
     @app.get("/context-manager")
     def read_context_manager(c: Annotated[Any, Depends(get_db)]):
         return {"c": str(c)}
+
+    @app.get("/users/me")
+    def get_user_me(username: str = Depends(get_username, scope="function")):
+        return username
+
+    @app.get("/users/me-annotated")
+    def get_user_me_annotated(
+        username: Annotated[str, Depends(get_username, scope="function")],
+    ):
+        return username
 
     @app.get("/events")
     def read_events():

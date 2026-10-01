@@ -918,21 +918,27 @@ DEPENDENCY_TUTORIAL_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
         },
     ),
     "tests/test_tutorial/test_dependencies/test_tutorial008e.py": _module(
-        "The module asserts a current-user response from a yield dependency whose declared function scope causes cleanup before response sending.",
+        "The module parametrizes the two documented function-scoped yield-dependency signatures and asserts only the current-user response.",
         {
             "test_get_users_me": _review(
                 "tests/test_tutorial/test_dependencies/test_tutorial008e.py",
                 "test_get_users_me",
                 ["dependency-security", "response-serialization"],
-                "A yielding dependency supplies the current-user value to a route.",
-                "The existing case returns a different user value from an independently authored dependency. The source does not assert cleanup timing or stdout, and this workflow does not declare the tutorial's function scope.",
+                "Both parameterized source apps yield the literal current-user value Rick from a dependency declared with function scope, and the test asserts HTTP 200 plus the JSON value Rick.",
+                "The independent workflow gives each syntax variant its own status/body response case and adds a separate follow-up request to observe cleanup; the upstream test does not assert cleanup timing, stdout, or print order.",
                 [
                     _link(
-                        _DEPENDENCY_WAVE,
-                        "fastapi.dependency-wave.dependency-current-user.test-get-users-me",
-                        ["dispatch"],
+                        _YIELD_TUTORIALS,
+                        "fastapi.dependencies.tutorial008e.function-scope-yield-rick",
+                        ["rick-response"],
                         _HTTP,
-                    )
+                    ),
+                    _link(
+                        _YIELD_TUTORIALS,
+                        "fastapi.dependencies.tutorial008e.annotated-function-scope-yield-rick",
+                        ["rick-response"],
+                        _HTTP,
+                    ),
                 ],
                 (
                     _source(
