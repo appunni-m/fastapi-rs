@@ -5595,6 +5595,18 @@
       ]
     },
     {
+      "id": "route-dependency-response-status",
+      "input_path": "tests/fixtures/inputs/parity/route-dependency-response-status.json",
+      "input_sha256": "ced4919a85633607002fa775e92f33f683b5493ce9ae87ccf6f67cdaf7a740ad",
+      "recipe_path": "tests/fixtures/input-recipes/parity/route-dependency-response-status.yaml",
+      "recipe_sha256": "1e3ac88191b3653ae1770b1e87fec09ea863f814326671acf22fef4264e02800",
+      "workload_path": "tests/fixtures/workloads/route_dependency_status.py",
+      "workload_sha256": "572ab0580d7583ff5d1702da5ea086e34c06d2c82e3b548945c0e0a8779781be",
+      "case_ids": [
+        "fastapi.route-dependency.response-status"
+      ]
+    },
+    {
       "id": "route-scope-websocket-path",
       "input_path": "tests/fixtures/inputs/parity/route-scope-websocket-path.json",
       "input_sha256": "4ece5b697971dd8453d58884fd14d01aeebc94e191b54ea328a623c4807bf57b",
@@ -21799,6 +21811,51 @@
         "http.body.bytes",
         "http.status",
         "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:advanced/response-change-status-code.md",
+      "fixture_id": "fastapi.docs.advanced-response-change-status-code",
+      "workflow_id": "route-dependency-response-status",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.route-dependency.response-status"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/dependencies/dependencies-in-path-operation-decorators.md",
+      "fixture_id": "fastapi.docs.tutorial-dependencies-dependencies-in-path-operation-decorators",
+      "workflow_id": "route-dependency-response-status",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.route-dependency.response-status"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_response_change_status_code.py",
+      "fixture_id": "fastapi.test.test-response-change-status-code",
+      "workflow_id": "route-dependency-response-status",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.route-dependency.response-status"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
       ]
     },
     {

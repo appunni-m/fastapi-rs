@@ -235,6 +235,7 @@ struct ResponseModelOptions {
     operation_id: Option<String>,
     deprecated: Option<bool>,
     tags: Option<Vec<String>>,
+    dependencies: Vec<Py<PyAny>>,
     response_class: Option<Py<PyAny>>,
     name: Option<String>,
 }
@@ -484,8 +485,8 @@ impl PyFastApi {
     )]
     // Distinguish omission (infer from the endpoint return annotation) from explicit None (opt out).
     #[pyo3(
-        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None, response_class = None, name = None),
-        text_signature = "($self, path, *, response_model=None, status_code=None, response_model_include=None, response_model_exclude=None, response_model_by_alias=True, response_model_exclude_unset=False, response_model_exclude_defaults=False, response_model_exclude_none=False, tags=None, summary=None, response_description=\"Successful Response\", responses=None, include_in_schema=True, deprecated=None, operation_id=None, response_class=None, name=None)"
+        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, dependencies = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None, response_class = None, name = None),
+        text_signature = "($self, path, *, response_model=None, status_code=None, response_model_include=None, response_model_exclude=None, response_model_by_alias=True, response_model_exclude_unset=False, response_model_exclude_defaults=False, response_model_exclude_none=False, tags=None, dependencies=None, summary=None, response_description=\"Successful Response\", responses=None, include_in_schema=True, deprecated=None, operation_id=None, response_class=None, name=None)"
     )]
     fn post(
         slf: Py<Self>,
@@ -500,6 +501,7 @@ impl PyFastApi {
         response_model_exclude_defaults: bool,
         response_model_exclude_none: bool,
         tags: Option<Vec<String>>,
+        dependencies: Option<Vec<Py<PyAny>>>,
         summary: Option<String>,
         response_description: &str,
         responses: Option<Py<PyAny>>,
@@ -531,6 +533,7 @@ impl PyFastApi {
                 operation_id,
                 deprecated,
                 tags,
+                dependencies: dependencies.unwrap_or_default(),
                 name,
             },
         )
@@ -542,8 +545,8 @@ impl PyFastApi {
         reason = "preserve the Python route decorator keyword signature"
     )]
     #[pyo3(
-        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None, response_class = None, name = None),
-        text_signature = "($self, path, *, response_model=None, status_code=None, response_model_include=None, response_model_exclude=None, response_model_by_alias=True, response_model_exclude_unset=False, response_model_exclude_defaults=False, response_model_exclude_none=False, tags=None, summary=None, response_description=\"Successful Response\", responses=None, include_in_schema=True, deprecated=None, operation_id=None, response_class=None, name=None)"
+        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, dependencies = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None, response_class = None, name = None),
+        text_signature = "($self, path, *, response_model=None, status_code=None, response_model_include=None, response_model_exclude=None, response_model_by_alias=True, response_model_exclude_unset=False, response_model_exclude_defaults=False, response_model_exclude_none=False, tags=None, dependencies=None, summary=None, response_description=\"Successful Response\", responses=None, include_in_schema=True, deprecated=None, operation_id=None, response_class=None, name=None)"
     )]
     fn get(
         slf: Py<Self>,
@@ -558,6 +561,7 @@ impl PyFastApi {
         response_model_exclude_defaults: bool,
         response_model_exclude_none: bool,
         tags: Option<Vec<String>>,
+        dependencies: Option<Vec<Py<PyAny>>>,
         summary: Option<String>,
         response_description: &str,
         responses: Option<Py<PyAny>>,
@@ -589,6 +593,7 @@ impl PyFastApi {
                 operation_id,
                 deprecated,
                 tags,
+                dependencies: dependencies.unwrap_or_default(),
                 name,
             },
         )
@@ -600,8 +605,8 @@ impl PyFastApi {
         reason = "preserve the Python route decorator keyword signature"
     )]
     #[pyo3(
-        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None, response_class = None, name = None),
-        text_signature = "($self, path, *, response_model=None, status_code=None, response_model_include=None, response_model_exclude=None, response_model_by_alias=True, response_model_exclude_unset=False, response_model_exclude_defaults=False, response_model_exclude_none=False, tags=None, summary=None, response_description=\"Successful Response\", responses=None, include_in_schema=True, deprecated=None, operation_id=None, response_class=None, name=None)"
+        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, dependencies = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None, response_class = None, name = None),
+        text_signature = "($self, path, *, response_model=None, status_code=None, response_model_include=None, response_model_exclude=None, response_model_by_alias=True, response_model_exclude_unset=False, response_model_exclude_defaults=False, response_model_exclude_none=False, tags=None, dependencies=None, summary=None, response_description=\"Successful Response\", responses=None, include_in_schema=True, deprecated=None, operation_id=None, response_class=None, name=None)"
     )]
     fn put(
         slf: Py<Self>,
@@ -616,6 +621,7 @@ impl PyFastApi {
         response_model_exclude_defaults: bool,
         response_model_exclude_none: bool,
         tags: Option<Vec<String>>,
+        dependencies: Option<Vec<Py<PyAny>>>,
         summary: Option<String>,
         response_description: &str,
         responses: Option<Py<PyAny>>,
@@ -647,6 +653,7 @@ impl PyFastApi {
                 operation_id,
                 deprecated,
                 tags,
+                dependencies: dependencies.unwrap_or_default(),
                 name,
             },
         )
@@ -658,8 +665,8 @@ impl PyFastApi {
         reason = "preserve the Python route decorator keyword signature"
     )]
     #[pyo3(
-        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None, response_class = None, name = None),
-        text_signature = "($self, path, *, response_model=None, status_code=None, response_model_include=None, response_model_exclude=None, response_model_by_alias=True, response_model_exclude_unset=False, response_model_exclude_defaults=False, response_model_exclude_none=False, tags=None, summary=None, response_description=\"Successful Response\", responses=None, include_in_schema=True, deprecated=None, operation_id=None, response_class=None, name=None)"
+        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, dependencies = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None, response_class = None, name = None),
+        text_signature = "($self, path, *, response_model=None, status_code=None, response_model_include=None, response_model_exclude=None, response_model_by_alias=True, response_model_exclude_unset=False, response_model_exclude_defaults=False, response_model_exclude_none=False, tags=None, dependencies=None, summary=None, response_description=\"Successful Response\", responses=None, include_in_schema=True, deprecated=None, operation_id=None, response_class=None, name=None)"
     )]
     fn delete(
         slf: Py<Self>,
@@ -674,6 +681,7 @@ impl PyFastApi {
         response_model_exclude_defaults: bool,
         response_model_exclude_none: bool,
         tags: Option<Vec<String>>,
+        dependencies: Option<Vec<Py<PyAny>>>,
         summary: Option<String>,
         response_description: &str,
         responses: Option<Py<PyAny>>,
@@ -705,6 +713,7 @@ impl PyFastApi {
                 operation_id,
                 deprecated,
                 tags,
+                dependencies: dependencies.unwrap_or_default(),
                 name,
             },
         )
@@ -716,8 +725,8 @@ impl PyFastApi {
         reason = "preserve the Python route decorator keyword signature"
     )]
     #[pyo3(
-        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None, response_class = None, name = None),
-        text_signature = "($self, path, *, response_model=None, status_code=None, response_model_include=None, response_model_exclude=None, response_model_by_alias=True, response_model_exclude_unset=False, response_model_exclude_defaults=False, response_model_exclude_none=False, tags=None, summary=None, response_description=\"Successful Response\", responses=None, include_in_schema=True, deprecated=None, operation_id=None, response_class=None, name=None)"
+        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, dependencies = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None, response_class = None, name = None),
+        text_signature = "($self, path, *, response_model=None, status_code=None, response_model_include=None, response_model_exclude=None, response_model_by_alias=True, response_model_exclude_unset=False, response_model_exclude_defaults=False, response_model_exclude_none=False, tags=None, dependencies=None, summary=None, response_description=\"Successful Response\", responses=None, include_in_schema=True, deprecated=None, operation_id=None, response_class=None, name=None)"
     )]
     fn patch(
         slf: Py<Self>,
@@ -732,6 +741,7 @@ impl PyFastApi {
         response_model_exclude_defaults: bool,
         response_model_exclude_none: bool,
         tags: Option<Vec<String>>,
+        dependencies: Option<Vec<Py<PyAny>>>,
         summary: Option<String>,
         response_description: &str,
         responses: Option<Py<PyAny>>,
@@ -763,6 +773,7 @@ impl PyFastApi {
                 operation_id,
                 deprecated,
                 tags,
+                dependencies: dependencies.unwrap_or_default(),
                 name,
             },
         )
@@ -774,8 +785,8 @@ impl PyFastApi {
         reason = "preserve the Python route decorator keyword signature"
     )]
     #[pyo3(
-        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None, response_class = None, name = None),
-        text_signature = "($self, path, *, response_model=None, status_code=None, response_model_include=None, response_model_exclude=None, response_model_by_alias=True, response_model_exclude_unset=False, response_model_exclude_defaults=False, response_model_exclude_none=False, tags=None, summary=None, response_description=\"Successful Response\", responses=None, include_in_schema=True, deprecated=None, operation_id=None, response_class=None, name=None)"
+        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, dependencies = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None, response_class = None, name = None),
+        text_signature = "($self, path, *, response_model=None, status_code=None, response_model_include=None, response_model_exclude=None, response_model_by_alias=True, response_model_exclude_unset=False, response_model_exclude_defaults=False, response_model_exclude_none=False, tags=None, dependencies=None, summary=None, response_description=\"Successful Response\", responses=None, include_in_schema=True, deprecated=None, operation_id=None, response_class=None, name=None)"
     )]
     fn head(
         slf: Py<Self>,
@@ -790,6 +801,7 @@ impl PyFastApi {
         response_model_exclude_defaults: bool,
         response_model_exclude_none: bool,
         tags: Option<Vec<String>>,
+        dependencies: Option<Vec<Py<PyAny>>>,
         summary: Option<String>,
         response_description: &str,
         responses: Option<Py<PyAny>>,
@@ -821,6 +833,7 @@ impl PyFastApi {
                 operation_id,
                 deprecated,
                 tags,
+                dependencies: dependencies.unwrap_or_default(),
                 name,
             },
         )
@@ -832,8 +845,8 @@ impl PyFastApi {
         reason = "preserve the Python route decorator keyword signature"
     )]
     #[pyo3(
-        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None, response_class = None, name = None),
-        text_signature = "($self, path, *, response_model=None, status_code=None, response_model_include=None, response_model_exclude=None, response_model_by_alias=True, response_model_exclude_unset=False, response_model_exclude_defaults=False, response_model_exclude_none=False, tags=None, summary=None, response_description=\"Successful Response\", responses=None, include_in_schema=True, deprecated=None, operation_id=None, response_class=None, name=None)"
+        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, dependencies = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None, response_class = None, name = None),
+        text_signature = "($self, path, *, response_model=None, status_code=None, response_model_include=None, response_model_exclude=None, response_model_by_alias=True, response_model_exclude_unset=False, response_model_exclude_defaults=False, response_model_exclude_none=False, tags=None, dependencies=None, summary=None, response_description=\"Successful Response\", responses=None, include_in_schema=True, deprecated=None, operation_id=None, response_class=None, name=None)"
     )]
     fn options(
         slf: Py<Self>,
@@ -848,6 +861,7 @@ impl PyFastApi {
         response_model_exclude_defaults: bool,
         response_model_exclude_none: bool,
         tags: Option<Vec<String>>,
+        dependencies: Option<Vec<Py<PyAny>>>,
         summary: Option<String>,
         response_description: &str,
         responses: Option<Py<PyAny>>,
@@ -879,6 +893,7 @@ impl PyFastApi {
                 operation_id,
                 deprecated,
                 tags,
+                dependencies: dependencies.unwrap_or_default(),
                 name,
             },
         )
@@ -890,8 +905,8 @@ impl PyFastApi {
         reason = "preserve the Python route decorator keyword signature"
     )]
     #[pyo3(
-        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None, response_class = None, name = None),
-        text_signature = "($self, path, *, response_model=None, status_code=None, response_model_include=None, response_model_exclude=None, response_model_by_alias=True, response_model_exclude_unset=False, response_model_exclude_defaults=False, response_model_exclude_none=False, tags=None, summary=None, response_description=\"Successful Response\", responses=None, include_in_schema=True, deprecated=None, operation_id=None, response_class=None, name=None)"
+        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, dependencies = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None, response_class = None, name = None),
+        text_signature = "($self, path, *, response_model=None, status_code=None, response_model_include=None, response_model_exclude=None, response_model_by_alias=True, response_model_exclude_unset=False, response_model_exclude_defaults=False, response_model_exclude_none=False, tags=None, dependencies=None, summary=None, response_description=\"Successful Response\", responses=None, include_in_schema=True, deprecated=None, operation_id=None, response_class=None, name=None)"
     )]
     fn trace(
         slf: Py<Self>,
@@ -906,6 +921,7 @@ impl PyFastApi {
         response_model_exclude_defaults: bool,
         response_model_exclude_none: bool,
         tags: Option<Vec<String>>,
+        dependencies: Option<Vec<Py<PyAny>>>,
         summary: Option<String>,
         response_description: &str,
         responses: Option<Py<PyAny>>,
@@ -937,19 +953,21 @@ impl PyFastApi {
                 operation_id,
                 deprecated,
                 tags,
+                dependencies: dependencies.unwrap_or_default(),
                 name,
             },
         )
     }
 
     #[pyo3(
-        signature = (path, *, include_in_schema = true, name = None),
-        text_signature = "($self, path, *, include_in_schema=True, name=None)"
+        signature = (path, *, dependencies = None, include_in_schema = true, name = None),
+        text_signature = "($self, path, *, dependencies=None, include_in_schema=True, name=None)"
     )]
     fn api_route(
         slf: Py<Self>,
         py: Python<'_>,
         path: &str,
+        dependencies: Option<Vec<Py<PyAny>>>,
         include_in_schema: bool,
         name: Option<String>,
     ) -> PyResult<Py<PyOperationDecorator>> {
@@ -974,6 +992,7 @@ impl PyFastApi {
                 operation_id: None,
                 deprecated: None,
                 tags: None,
+                dependencies: dependencies.unwrap_or_default(),
                 response_class: None,
                 name,
             },
@@ -981,18 +1000,19 @@ impl PyFastApi {
     }
 
     #[pyo3(
-        signature = (path, endpoint, *, include_in_schema = true, name = None),
-        text_signature = "($self, path, endpoint, *, include_in_schema=True, name=None)"
+        signature = (path, endpoint, *, dependencies = None, include_in_schema = true, name = None),
+        text_signature = "($self, path, endpoint, *, dependencies=None, include_in_schema=True, name=None)"
     )]
     fn add_api_route(
         slf: Py<Self>,
         py: Python<'_>,
         path: &str,
         endpoint: Py<PyAny>,
+        dependencies: Option<Vec<Py<PyAny>>>,
         include_in_schema: bool,
         name: Option<String>,
     ) -> PyResult<()> {
-        let decorator = Self::api_route(slf, py, path, include_in_schema, name)?;
+        let decorator = Self::api_route(slf, py, path, dependencies, include_in_schema, name)?;
         decorator.bind(py).call1((endpoint,))?;
         Ok(())
     }
@@ -2100,6 +2120,7 @@ struct PyOperationDecorator {
     operation_id: Option<String>,
     deprecated: Option<bool>,
     tags: Option<Vec<String>>,
+    dependencies: Vec<Py<PyAny>>,
     response_model: Option<Py<PyAny>>,
     status_code: u16,
     include_in_schema: bool,
@@ -2290,6 +2311,7 @@ fn operation_decorator(
             operation_id: response_model_options.operation_id,
             deprecated: response_model_options.deprecated,
             tags: response_model_options.tags,
+            dependencies: response_model_options.dependencies,
             response_model,
             status_code: status_code.unwrap_or(200),
             include_in_schema: response_model_options.include_in_schema,
@@ -2317,8 +2339,14 @@ impl PyOperationDecorator {
             .iter()
             .map(|dependency| dependency.clone_ref(py))
             .collect::<Vec<_>>();
+        let mut route_dependencies = app_dependencies;
+        route_dependencies.extend(
+            self.dependencies
+                .iter()
+                .map(|dependency| dependency.clone_ref(py)),
+        );
         let mut plan = CallablePlan::build(py, endpoint.clone_ref(py), &path_parameters)?;
-        plan.prepend_dependencies(py, &app_dependencies)?;
+        plan.prepend_dependencies(py, &route_dependencies)?;
         let generator_kind = generator_kind(py, endpoint.bind(py))?;
         let (inferred_name, param_convertors) =
             route_reverse_metadata(py, &self.path, endpoint.bind(py))?;
@@ -2416,7 +2444,7 @@ impl PyOperationDecorator {
             response_model_exclude_unset: self.response_model_exclude_unset,
             response_model_exclude_defaults: self.response_model_exclude_defaults,
             response_model_exclude_none: self.response_model_exclude_none,
-            router_dependencies: app_dependencies,
+            router_dependencies: route_dependencies,
             plan,
         });
         Ok(endpoint)
