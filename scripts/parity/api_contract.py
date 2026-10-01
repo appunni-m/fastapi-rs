@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 import ast
+import csv
 import json
+import os
+import subprocess
 from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any
@@ -94,6 +97,352 @@ def _source_doc_paths(value: Any) -> set[str]:
         for child in value:
             paths.update(_source_doc_paths(child))
     return paths
+
+
+def _json_pointer_value(document: Any, pointer: str) -> Any:
+    if pointer == "":
+        return document
+    if not isinstance(pointer, str) or not pointer.startswith("/"):
+        raise ContractError(f"invalid JSON pointer: {pointer!r}")
+    current = document
+    for token in pointer[1:].split("/"):
+        key = token.replace("~1", "/").replace("~0", "~")
+        current = current[int(key)] if isinstance(current, list) else current[key]
+    return current
+
+
+def _starlette_rs_artifact_path(starlette_rs: dict[str, Any], field: str) -> Path:
+    artifact = starlette_rs.get(field)
+    owner = starlette_rs.get("owner")
+    if not isinstance(artifact, str) or not isinstance(owner, str):
+        raise ContractError(f"pinned Starlette-RS metadata has no {field} path")
+    override = os.environ.get("STARLETTE_RS_SOURCE")
+    if override:
+        owner_hint = Path(owner)
+        artifact_hint = Path(artifact)
+        try:
+            artifact_relative = artifact_hint.relative_to(owner_hint)
+        except ValueError as exc:
+            raise ContractError(
+                f"pinned Starlette-RS {field} path is outside its repository"
+            ) from exc
+        return Path(override).resolve() / artifact_relative
+    return (PROJECT_ROOT / artifact).resolve()
+
+
+def _verify_starlette_rs_checkout(starlette_rs: dict[str, Any]) -> Path:
+    owner = starlette_rs.get("owner")
+    expected_commit = starlette_rs.get("commit")
+    if not isinstance(owner, str) or not isinstance(expected_commit, str):
+        raise ContractError("pinned Starlette-RS checkout identity is incomplete")
+    override = os.environ.get("STARLETTE_RS_SOURCE")
+    checkout = Path(override).resolve() if override else (PROJECT_ROOT / owner).resolve()
+    try:
+        observed_commit = subprocess.run(
+            ["git", "-C", str(checkout), "rev-parse", "HEAD"],
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout.strip()
+        dirty_state = subprocess.run(
+            ["git", "-C", str(checkout), "status", "--porcelain=v1", "--untracked-files=all"],
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout.strip()
+    except (OSError, subprocess.CalledProcessError) as exc:
+        raise ContractError(f"pinned Starlette-RS checkout cannot be verified: {checkout}") from exc
+    if observed_commit != expected_commit:
+        raise ContractError(
+            "selected Starlette-RS checkout differs from metadata.yaml pin: "
+            f"expected {expected_commit}, observed {observed_commit}"
+        )
+    if dirty_state:
+        raise ContractError(f"selected Starlette-RS checkout is dirty: {checkout}")
+    return checkout
+
+
+def _starlette_rs_operation_reference(
+    project_metadata: dict[str, Any], operation_id: str
+) -> dict[str, Any]:
+    starlette_rs = project_metadata.get("starlette_rs")
+    if not isinstance(starlette_rs, dict):
+        raise ContractError("metadata.yaml has no pinned Starlette-RS contract")
+    _verify_starlette_rs_checkout(starlette_rs)
+    metadata_path = _starlette_rs_artifact_path(starlette_rs, "metadata")
+    manifest_path = _starlette_rs_artifact_path(starlette_rs, "manifest")
+    catalog_path = _starlette_rs_artifact_path(starlette_rs, "api_catalog")
+    review_path = _starlette_rs_artifact_path(starlette_rs, "api_review")
+    for path in (metadata_path, manifest_path, catalog_path, review_path):
+        if not path.is_file():
+            raise ContractError(f"pinned Starlette-RS API artifact is missing: {path}")
+
+    sibling_metadata = yaml.safe_load(metadata_path.read_text(encoding="utf-8"))
+    sibling_manifest = yaml.safe_load(manifest_path.read_text(encoding="utf-8"))
+    if not isinstance(sibling_metadata, dict) or not isinstance(sibling_manifest, dict):
+        raise ContractError("pinned Starlette-RS API metadata and manifest must be mappings")
+    expected_contract_id = starlette_rs.get("contract_id")
+    manifest_contract_pointer = starlette_rs.get("manifest_contract_pointer")
+    if not isinstance(expected_contract_id, str) or not isinstance(manifest_contract_pointer, str):
+        raise ContractError("pinned Starlette-RS contract identity is incomplete")
+    if _json_pointer_value(sibling_manifest, manifest_contract_pointer) != expected_contract_id:
+        raise ContractError("pinned Starlette-RS manifest contract identity differs")
+    starlette_authority = project_metadata.get("authority", {}).get("starlette", {})
+    sibling_authority = sibling_metadata.get("authority", {})
+    if sibling_authority.get("revision") != starlette_authority.get(
+        "commit"
+    ) or sibling_authority.get("version") != starlette_authority.get("version"):
+        raise ContractError("pinned Starlette-RS API source is from another Starlette revision")
+
+    surface_id, operation_name = operation_id.rsplit(".", 1)
+    api_sources = sibling_metadata.get("api_sources")
+    if not isinstance(api_sources, list):
+        raise ContractError("pinned Starlette-RS metadata has no reviewed API sources")
+    source_matches: list[tuple[int, int]] = []
+    for source_index, source in enumerate(api_sources):
+        if not isinstance(source, dict) or source.get("surface_id") != surface_id:
+            continue
+        operations = source.get("operations", [])
+        if not isinstance(operations, list):
+            continue
+        for operation_index, operation in enumerate(operations):
+            if (
+                isinstance(operation, dict)
+                and operation.get("operation_id") == operation_name
+                and operation.get("source_path") == operation_id
+            ):
+                source_matches.append((source_index, operation_index))
+    if len(source_matches) != 1:
+        raise ContractError(
+            "inherited API operation must resolve to one canonical Starlette-RS API source: "
+            f"{operation_id}"
+        )
+    manifest_matches = [
+        (surface_index, operation_index, operation)
+        for surface_index, surface in enumerate(sibling_manifest.get("surfaces", []))
+        if isinstance(surface, dict) and surface.get("id") == surface_id
+        for operation_index, operation in enumerate(surface.get("operations", []))
+        if isinstance(operation, dict)
+        and operation.get("id") == operation_name
+        and operation.get("source", {}).get("path") == operation_id
+    ]
+    if len(manifest_matches) != 1:
+        raise ContractError(
+            "inherited API operation must resolve to one pinned Starlette-RS manifest row: "
+            f"{operation_id}"
+        )
+    manifest_surface_index, manifest_operation_index, manifest_operation = manifest_matches[0]
+    manifest_targets = manifest_operation.get("targets", [])
+    target_support: dict[str, dict[str, Any]] = {}
+    for target_id in ("rust-native", "python-package"):
+        target_matches = [
+            (target_index, target)
+            for target_index, target in enumerate(manifest_targets)
+            if isinstance(target, dict) and target.get("target_id") == target_id
+        ]
+        if len(target_matches) != 1:
+            raise ContractError(
+                "canonical inherited API operation must declare one support row for "
+                f"{target_id}: {operation_id}"
+            )
+        target_index, target = target_matches[0]
+        support = target.get("support")
+        if not isinstance(support, dict) or not isinstance(support.get("status"), str):
+            raise ContractError(
+                "canonical inherited API operation has no target support status for "
+                f"{target_id}: {operation_id}"
+            )
+        target_support[target_id] = {
+            "status": support["status"],
+            "manifest_target_ref": {
+                "path": starlette_rs["manifest"],
+                "json_pointer": _pointer(
+                    "surfaces",
+                    manifest_surface_index,
+                    "operations",
+                    manifest_operation_index,
+                    "targets",
+                    target_index,
+                ),
+            },
+        }
+    python_support = target_support["python-package"]["status"]
+    if python_support != "supported":
+        raise ContractError(
+            "canonical inherited API operation is not supported by the pinned Starlette-RS "
+            f"Python package contract: {operation_id}"
+        )
+
+    def matching_csv_row(path: Path, *, disposition: str | None = None) -> int:
+        with path.open(encoding="utf-8", newline="") as csv_file:
+            rows = list(csv.DictReader(csv_file))
+        matches = [
+            (index + 2, row)
+            for index, row in enumerate(rows)
+            if row.get("qualified_name") == operation_id
+            and (disposition is None or row.get("api_disposition") == disposition)
+        ]
+        if len(matches) != 1:
+            raise ContractError(
+                "inherited API operation must resolve to one pinned Starlette-RS catalog row: "
+                f"{operation_id}"
+            )
+        return matches[0][0]
+
+    catalog_line = matching_csv_row(catalog_path)
+    review_line = matching_csv_row(review_path, disposition="supported")
+    source_index, operation_index = source_matches[0]
+    return {
+        "contract_id": expected_contract_id,
+        "manifest_path": starlette_rs["manifest"],
+        "manifest_contract_pointer": manifest_contract_pointer,
+        "canonical_operation_id": operation_id,
+        "target_support": target_support,
+        "manifest_operation_ref": {
+            "path": starlette_rs["manifest"],
+            "json_pointer": _pointer(
+                "surfaces", manifest_surface_index, "operations", manifest_operation_index
+            ),
+        },
+        "source_operation_ref": {
+            "path": starlette_rs["metadata"],
+            "json_pointer": _pointer("api_sources", source_index, "operations", operation_index),
+        },
+        "api_catalog_ref": {"path": starlette_rs["api_catalog"], "line": catalog_line},
+        "api_review_ref": {"path": starlette_rs["api_review"], "line": review_line},
+    }
+
+
+def _validate_inherited_fixture_reference(
+    fixture_reference: dict[str, Any],
+    *,
+    expected_doc_paths: set[str],
+    expected_selectors: list[str],
+    operation_id: str,
+) -> dict[str, Any]:
+    recipe_path = fixture_reference.get("recipe_path")
+    case_id = fixture_reference.get("case_id")
+    if not isinstance(recipe_path, str) or not isinstance(case_id, str):
+        raise ContractError(f"inherited API fixture reference is incomplete: {operation_id}")
+    recipe = (PROJECT_ROOT / recipe_path).resolve()
+    input_root = (PROJECT_ROOT / "tests/fixtures/input-recipes").resolve()
+    if input_root not in recipe.parents or not recipe.is_file():
+        raise ContractError(
+            f"inherited API fixture recipe is missing or outside inputs: {recipe_path}"
+        )
+    workflow = yaml.safe_load(recipe.read_text(encoding="utf-8"))
+    if not isinstance(workflow, dict):
+        raise ContractError(f"inherited API fixture recipe must be a mapping: {recipe_path}")
+    cases = workflow.get("cases", [])
+    matching_cases = [
+        case for case in cases if isinstance(case, dict) and case.get("case_id") == case_id
+    ]
+    if len(matching_cases) != 1:
+        raise ContractError(
+            f"inherited API fixture must select one input case: {recipe_path}::{case_id}"
+        )
+    case = matching_cases[0]
+    case_doc_paths = {
+        evidence.get("path")
+        for evidence in case.get("source_evidence", [])
+        if isinstance(evidence, dict)
+    }
+    if not expected_doc_paths <= case_doc_paths:
+        raise ContractError(
+            f"inherited API fixture lacks its reviewed documentation evidence: {recipe_path}"
+        )
+
+    workload = workflow.get("workload", {})
+    workload_path = workload.get("file")
+    factory = workload.get("factory")
+    if not isinstance(workload_path, str) or not isinstance(factory, str):
+        raise ContractError(f"inherited API fixture workload is incomplete: {recipe_path}")
+    workload_file = (PROJECT_ROOT / workload_path).resolve()
+    try:
+        workload_file.relative_to(PROJECT_ROOT.resolve())
+    except ValueError as exc:
+        raise ContractError(f"inherited API workload escapes the project: {workload_path}") from exc
+    if not workload_file.is_file():
+        raise ContractError(f"inherited API workload is missing: {workload_path}")
+    try:
+        tree = ast.parse(workload_file.read_text(encoding="utf-8"), filename=workload_path)
+    except SyntaxError as exc:
+        raise ContractError(f"inherited API workload is not valid Python: {workload_path}") from exc
+    imports_fastapi = any(
+        isinstance(node, ast.ImportFrom)
+        and node.module == "fastapi"
+        and any(alias.name == "FastAPI" for alias in node.names)
+        for node in ast.walk(tree)
+    )
+    if not imports_fastapi:
+        raise ContractError(f"inherited API workload does not import FastAPI: {workload_path}")
+    factories = [
+        node
+        for node in ast.walk(tree)
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == factory
+    ]
+    if len(factories) != 1:
+        raise ContractError(
+            f"inherited API workload factory is not unique: {workload_path}:{factory}"
+        )
+    factory_node = factories[0]
+    app_initializations = [
+        node
+        for node in ast.walk(factory_node)
+        if isinstance(node, ast.Assign)
+        and any(isinstance(target, ast.Name) and target.id == "app" for target in node.targets)
+        and isinstance(node.value, ast.Call)
+        and isinstance(node.value.func, ast.Name)
+        and node.value.func.id == "FastAPI"
+    ]
+    middleware_calls = [
+        node
+        for node in ast.walk(factory_node)
+        if isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Attribute)
+        and node.func.attr == "add_middleware"
+        and isinstance(node.func.value, ast.Name)
+        and node.func.value.id == "app"
+    ]
+    if (
+        not app_initializations
+        or not middleware_calls
+        or min(node.lineno for node in middleware_calls)
+        <= min(node.lineno for node in app_initializations)
+    ):
+        raise ContractError(
+            f"inherited API fixture does not call {operation_id} on FastAPI: {workload_path}"
+        )
+
+    observed_short_selectors = {
+        selector
+        for action in case.get("actions", [])
+        if isinstance(action, dict)
+        for observation in action.get("observations", [])
+        if isinstance(observation, dict) and observation.get("kind") == "http_response"
+        for selector in observation.get("selectors", [])
+    }
+    selector_aliases = {
+        "http.status": "status",
+        "http.headers.ordered": "headers",
+        "http.body.bytes": "body",
+    }
+    missing_selectors = [
+        selector
+        for selector in expected_selectors
+        if selector_aliases.get(selector) not in observed_short_selectors
+    ]
+    if missing_selectors:
+        raise ContractError(
+            "inherited API fixture observations do not cover reviewed selectors: "
+            f"{recipe_path}::{case_id} -> {', '.join(missing_selectors)}"
+        )
+    return {
+        "recipe_path": recipe_path,
+        "case_id": case_id,
+        "workload_path": workload_path,
+        "observation_selectors": sorted(expected_selectors),
+    }
 
 
 def _implementation_owner_plan(
@@ -248,6 +597,9 @@ def build_api_surface_contract(
     overlay_operations = overlay.get("operations")
     if not isinstance(overlay_operations, dict):
         raise ContractError("reviewed API contract overlay operations must be a mapping")
+    inherited_operations = overlay.get("inherited_operations", {})
+    if not isinstance(inherited_operations, dict):
+        raise ContractError("reviewed inherited API operations must be a mapping")
     error_selector_rules = overlay.get("error_selector_rules", [])
     if not isinstance(error_selector_rules, list) or any(
         not isinstance(rule, dict) for rule in error_selector_rules
@@ -292,6 +644,47 @@ def build_api_surface_contract(
                 raise ContractError(
                     f"reviewed API docs selectors must be a string list: {operation_id}"
                 )
+    for operation_id, operation in inherited_operations.items():
+        if not isinstance(operation, dict):
+            raise ContractError(
+                f"reviewed inherited API operation must be a mapping: {operation_id}"
+            )
+        if any(field in operation for field in ("signature", "parameters", "requirements")):
+            raise ContractError(
+                "inherited API overlays must point to the canonical sibling contract without "
+                f"copying its signature or requirements: {operation_id}"
+            )
+        evidence = operation.get("source_evidence", [])
+        if not isinstance(evidence, list) or any(not isinstance(row, dict) for row in evidence):
+            raise ContractError(
+                f"reviewed inherited API evidence must be a list of mappings: {operation_id}"
+            )
+        docs = operation.get("documentation_contract_refs", [])
+        fixtures = operation.get("fixture_refs", [])
+        if (
+            not isinstance(docs, list)
+            or any(not isinstance(row, dict) for row in docs)
+            or not isinstance(fixtures, list)
+            or any(not isinstance(row, dict) for row in fixtures)
+        ):
+            raise ContractError(
+                f"reviewed inherited API documentation and fixture refs must be mappings: "
+                f"{operation_id}"
+            )
+        for field in ("feature_ids", "observation_selectors"):
+            values = operation.get(field, [])
+            if not isinstance(values, list) or any(not isinstance(value, str) for value in values):
+                raise ContractError(
+                    f"reviewed inherited API {field} must be a string list: {operation_id}"
+                )
+        for documentation_ref in docs:
+            doc_selectors = documentation_ref.get("observation_selectors", [])
+            if not isinstance(doc_selectors, list) or any(
+                not isinstance(value, str) for value in doc_selectors
+            ):
+                raise ContractError(
+                    f"reviewed inherited API docs selectors must be a string list: {operation_id}"
+                )
     inventory_refs = _inventory_rows(inventory)
     core_refs = _runtime_rows(runtime_core)
     standard_refs = _runtime_rows(runtime_standard)
@@ -302,6 +695,19 @@ def build_api_surface_contract(
     atlas_candidates = atlas["api_candidates"]
     candidates_by_id = {candidate["id"]: candidate for candidate in atlas_candidates}
     candidate_indexes = {candidate["id"]: index for index, candidate in enumerate(atlas_candidates)}
+    atlas_inherited_candidates = atlas.get("reviewed_inherited_api_candidates", [])
+    if not isinstance(atlas_inherited_candidates, list):
+        raise ContractError("atlas reviewed inherited API candidates must be a list")
+    inherited_candidates_by_id = {
+        candidate["id"]: candidate
+        for candidate in atlas_inherited_candidates
+        if isinstance(candidate, dict) and isinstance(candidate.get("id"), str)
+    }
+    inherited_candidate_indexes = {
+        candidate["id"]: index for index, candidate in enumerate(atlas_inherited_candidates)
+    }
+    if set(inherited_candidates_by_id) != set(inherited_candidate_indexes):
+        raise ContractError("atlas inherited API candidate IDs must be unique")
     aliases: dict[str, list[str]] = defaultdict(list)
     for index, alias in enumerate(atlas["aliases"]):
         aliases[alias["id"]].append(_pointer("aliases", index))
@@ -333,6 +739,17 @@ def build_api_surface_contract(
         raise ContractError(
             "reviewed API overlay references operations outside the supported source contract: "
             + ", ".join(sorted(unsupported_overlay_operations))
+        )
+    duplicate_inherited_candidates = set(inherited_operations) & set(candidates_by_id)
+    if duplicate_inherited_candidates:
+        raise ContractError(
+            "inherited API overlays must remain separate from source-declared candidates: "
+            + ", ".join(sorted(duplicate_inherited_candidates))
+        )
+    if set(inherited_operations) != set(inherited_candidates_by_id):
+        raise ContractError(
+            "reviewed inherited API overlays differ from the generated atlas candidates: "
+            + ", ".join(sorted(set(inherited_operations) ^ set(inherited_candidates_by_id)))
         )
     reviewed_deprecation_refs = _reviewed_deprecation_references(
         deprecation_reference_rules,
@@ -460,6 +877,54 @@ def build_api_surface_contract(
                 )
             if reference.get("section") not in source_text:
                 raise ContractError(f"reviewed release-note section is missing: {source_path}")
+        if reference.get("kind") == "class-inheritance":
+            try:
+                tree = ast.parse(source_text, filename=source_path)
+            except SyntaxError as exc:
+                raise ContractError(
+                    f"reviewed source evidence is not valid Python: {source_path}"
+                ) from exc
+            line = reference.get("line")
+            base_class = reference.get("base_class")
+            classes = [
+                node
+                for node in ast.walk(tree)
+                if isinstance(node, ast.ClassDef) and node.name == symbol
+            ]
+            if (
+                not isinstance(line, int)
+                or not isinstance(base_class, str)
+                or not any(
+                    node.lineno == line
+                    and any(
+                        (isinstance(base, ast.Name) and base.id == base_class)
+                        or (isinstance(base, ast.Attribute) and base.attr == base_class)
+                        for base in node.bases
+                    )
+                    for node in classes
+                )
+            ):
+                raise ContractError(f"reviewed class inheritance differs: {source_path}:{symbol}")
+        if reference.get("kind") == "documentation-text":
+            lines = source_text.splitlines()
+            start_line = reference.get("start_line")
+            end_line = reference.get("end_line")
+            required_text = reference.get("required_text")
+            if (
+                not isinstance(start_line, int)
+                or not isinstance(end_line, int)
+                or start_line < 1
+                or end_line < start_line
+                or end_line > len(lines)
+                or not isinstance(required_text, list)
+                or any(not isinstance(value, str) or not value for value in required_text)
+            ):
+                raise ContractError(f"reviewed documentation evidence range is invalid: {context}")
+            excerpt = "\n".join(lines[start_line - 1 : end_line])
+            if any(value not in excerpt for value in required_text):
+                raise ContractError(
+                    f"reviewed documentation evidence text differs: {source_path}:{start_line}"
+                )
 
     for operation_id, operation in overlay_operations.items():
         evidence = operation.get("source_evidence", [])
@@ -521,6 +986,179 @@ def build_api_surface_contract(
                 raise ContractError(
                     f"reviewed API overlay docs selectors exceed page evidence: {source_path}"
                 )
+
+    inherited_operation_contracts: list[dict[str, Any]] = []
+    for operation_id, operation in inherited_operations.items():
+        if operation_id in overlay_operations or operation_id in candidates_by_id:
+            raise ContractError(
+                f"inherited API operation duplicates another public-surface record: {operation_id}"
+            )
+        exposure_candidate_id = operation.get("fastapi_exposure_candidate_id")
+        exposure_candidate = candidates_by_id.get(exposure_candidate_id)
+        if (
+            not isinstance(exposure_candidate_id, str)
+            or exposure_candidate is None
+            or exposure_candidate.get("classification") != "supported"
+            or exposure_candidate.get("kind") != "class"
+        ):
+            raise ContractError(
+                "inherited API operation must point to a supported FastAPI class candidate: "
+                f"{operation_id}"
+            )
+        canonical_operation_id = operation.get("canonical_operation_id")
+        if not isinstance(canonical_operation_id, str) or not canonical_operation_id:
+            raise ContractError(
+                f"inherited API operation has no canonical sibling operation: {operation_id}"
+            )
+        reviewed_candidate = inherited_candidates_by_id[operation_id]
+        expected_overlay_ref = (
+            "/reviewed_api_contract_overlay/inherited_operations/"
+            + operation_id.replace("~", "~0").replace("/", "~1")
+        )
+        if (
+            reviewed_candidate.get("kind") != "inherited_method"
+            or reviewed_candidate.get("classification") != "supported"
+            or reviewed_candidate.get("exposure_candidate_id") != exposure_candidate_id
+            or reviewed_candidate.get("canonical_operation_id") != canonical_operation_id
+            or reviewed_candidate.get("source_evidence") != operation.get("source_evidence")
+            or reviewed_candidate.get("documentation_contract_refs")
+            != operation.get("documentation_contract_refs")
+            or reviewed_candidate.get("fixture_refs") != operation.get("fixture_refs")
+            or reviewed_candidate.get("feature_ids") != operation.get("feature_ids")
+            or reviewed_candidate.get("observation_selectors")
+            != operation.get("observation_selectors")
+            or reviewed_candidate.get("reviewed_overlay_ref") != expected_overlay_ref
+        ):
+            raise ContractError(
+                f"atlas inherited API candidate differs from reviewed metadata: {operation_id}"
+            )
+        evidence = operation.get("source_evidence", [])
+        if not evidence:
+            raise ContractError(
+                f"inherited API operation requires exposure evidence: {operation_id}"
+            )
+        for reference in evidence:
+            verify_source_evidence(reference, operation_id)
+        evidence_kinds = {reference.get("kind") for reference in evidence}
+        if not {"class-inheritance", "documentation-text"} <= evidence_kinds:
+            raise ContractError(
+                "inherited API exposure requires both class inheritance and documentation text: "
+                f"{operation_id}"
+            )
+
+        operation_features = operation.get("feature_ids", [])
+        operation_selectors = operation.get("observation_selectors", [])
+        if (
+            not isinstance(operation_features, list)
+            or not set(operation_features) <= known_features
+        ):
+            raise ContractError(f"inherited API operation has unknown feature IDs: {operation_id}")
+        if (
+            not isinstance(operation_selectors, list)
+            or not set(operation_selectors) <= known_selectors
+        ):
+            raise ContractError(f"inherited API operation has unknown selectors: {operation_id}")
+
+        documentation_refs: list[dict[str, Any]] = []
+        documentation_paths: set[str] = set()
+        selectors = set(operation_selectors)
+        feature_ids = set(operation_features)
+        for documentation_ref in operation.get("documentation_contract_refs", []):
+            source_path = documentation_ref.get("source_path")
+            coverage_reference = coverage_by_doc_path.get(source_path)
+            if coverage_reference is None:
+                raise ContractError(
+                    f"inherited API operation references an unreviewed docs page: {source_path}"
+                )
+            coverage_pointer, coverage_row = coverage_reference
+            if documentation_ref.get("fixture_id") != coverage_row.get("fixture_id"):
+                raise ContractError(f"inherited API docs fixture identity differs: {source_path}")
+            doc_selectors = documentation_ref.get("observation_selectors", [])
+            if not set(doc_selectors) <= set(coverage_row.get("observation_selectors", [])):
+                raise ContractError(
+                    f"inherited API docs selectors exceed page evidence: {source_path}"
+                )
+            if not set(doc_selectors) <= set(operation_selectors):
+                raise ContractError(
+                    f"inherited API docs selectors exceed operation observations: {source_path}"
+                )
+            documentation_paths.add(source_path)
+            fixture_id = coverage_row.get("fixture_id")
+            documentation_refs.append(
+                {
+                    "coverage_matrix_ref": coverage_pointer,
+                    "source_path": source_path,
+                    "mapping_status": coverage_row["mapping_status"],
+                    "fixture_id": fixture_id,
+                    "fixture_design_ref": backlog_by_id.get(fixture_id) if fixture_id else None,
+                    "observation_selectors": sorted(set(doc_selectors)),
+                }
+            )
+            selectors.update(doc_selectors)
+            feature_ids.update(coverage_row.get("feature_ids", []))
+        if not documentation_refs:
+            raise ContractError(
+                f"inherited API operation requires a reviewed documentation mapping: {operation_id}"
+            )
+        evidenced_doc_paths = {
+            reference.get("path")
+            for reference in evidence
+            if reference.get("kind") == "documentation-text"
+        }
+        if not documentation_paths <= evidenced_doc_paths:
+            raise ContractError(
+                f"inherited API documentation mapping lacks source evidence: {operation_id}"
+            )
+
+        fixture_refs: list[dict[str, Any]] = []
+        for fixture_reference in operation.get("fixture_refs", []):
+            fixture_refs.append(
+                _validate_inherited_fixture_reference(
+                    fixture_reference,
+                    expected_doc_paths=documentation_paths,
+                    expected_selectors=operation_selectors,
+                    operation_id=operation_id,
+                )
+            )
+        if not fixture_refs:
+            raise ContractError(
+                f"inherited API operation requires an input fixture: {operation_id}"
+            )
+
+        canonical_operation_ref = _starlette_rs_operation_reference(
+            metadata, canonical_operation_id
+        )
+        inherited_operation_contracts.append(
+            {
+                "id": operation_id,
+                "kind": "inherited_method",
+                "exposure": "inherited-from-starlette",
+                "reviewed_candidate_ref": _pointer(
+                    "reviewed_inherited_api_candidates",
+                    inherited_candidate_indexes[operation_id],
+                ),
+                "fastapi_exposure_candidate_ref": _pointer(
+                    "api_candidates", candidate_indexes[exposure_candidate_id]
+                ),
+                "exposure_evidence": evidence,
+                "canonical_operation_ref": canonical_operation_ref,
+                "signature_contract_state": "delegated-to-canonical-starlette-rs-operation",
+                "documentation_contract_refs": documentation_refs,
+                "fixture_refs": fixture_refs,
+                "feature_ids": sorted(feature_ids),
+                "observation_selectors": sorted(selectors),
+                "target_binding": {
+                    "target_profile": TARGET_PROFILE,
+                    "public_python_path": operation_id,
+                    "implementation_owner": "starlette-rs",
+                    "implementation_owner_evidence": {
+                        "kind": "canonical-sibling-operation-reference",
+                        "canonical_operation_ref": canonical_operation_ref,
+                    },
+                    "status": "full-contract-not-established",
+                },
+            }
+        )
 
     for warning_id, review in warning_reviews.items():
         candidate = candidates_by_id.get(warning_id)
@@ -729,6 +1367,9 @@ def build_api_surface_contract(
         "public_import": "fastapi",
         "classification_source": "source_artifacts.compatibility_atlas.api_candidates",
         "reviewed_operation_overlay_source": "metadata.yaml:/reviewed_api_contract_overlay",
+        "inherited_operation_source": (
+            "metadata.yaml:/reviewed_api_contract_overlay/inherited_operations"
+        ),
         "signature_source": [
             "source_artifacts.api_inventory",
             "source_artifacts.runtime_api_surface_core",
@@ -741,8 +1382,18 @@ def build_api_surface_contract(
         ],
         "counts": {
             "required_public_symbols": len(symbols),
+            "required_inherited_operations": len(inherited_operation_contracts),
+            "required_public_api_candidates": len(symbols) + len(inherited_operation_contracts),
             "signature_contract_states": dict(sorted(signature_statuses.items())),
             "implementation_owner_plans": dict(sorted(owner_counts.items())),
+            "inherited_implementation_owner_plans": dict(
+                sorted(
+                    Counter(
+                        operation["target_binding"]["implementation_owner"]
+                        for operation in inherited_operation_contracts
+                    ).items()
+                )
+            ),
             "symbols_with_documented_feature_refs": sum(
                 bool(symbol["documentation_contract_refs"]) for symbol in symbols
             ),
@@ -755,6 +1406,7 @@ def build_api_surface_contract(
             ),
         },
         "symbols": symbols,
+        "inherited_operations": inherited_operation_contracts,
     }
 
 

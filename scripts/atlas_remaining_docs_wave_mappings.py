@@ -190,9 +190,18 @@ DOC_PAGE_REVIEW_MAPPINGS = {
                 "http.body.bytes, "
                 "http.headers.ordered, http.status.",
             },
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/middleware-execution-order-wave.yaml",
+                "case_ids": ["fastapi.docs.middleware.request-and-response-order"],
+                "observation_selectors": ["http.body.bytes", "http.headers.ordered", "http.status"],
+                "coverage": "The input-only workload creates FastAPI, invokes its inherited "
+                "add_middleware method twice, and observes the resulting HTTP response order "
+                "through status, ordered headers, and exact body bytes.",
+            },
         ],
         "contract_gate": "Linked cases cover selected middleware and redirect "
-        "outcomes. Missing: arbitrary middleware "
+        "outcomes. The two-wrapper recipe maps the FastAPI exposure of inherited "
+        "add_middleware to one observed request/response order sample. Missing: arbitrary middleware "
         "ordering/errors, all middleware classes, third-party "
         "package contracts and Python decorator signature. "
         "The mapping remains partial pending the full FastAPI "
@@ -207,6 +216,12 @@ DOC_PAGE_REVIEW_MAPPINGS = {
                 "role": "Page-level source evidence for the "
                 "documented Advanced Middleware "
                 "behavior and examples.",
+            },
+            {
+                "path": "fastapi/applications.py",
+                "start_line": 42,
+                "end_line": 42,
+                "role": "FastAPI subclasses Starlette and inherits generic middleware registration.",
             },
             {
                 "path": "fastapi/routing.py",

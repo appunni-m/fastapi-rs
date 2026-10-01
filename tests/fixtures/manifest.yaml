@@ -91,7 +91,7 @@ target:
     name: starlette-rs-py
     version: 0.1.0
     starlette_contract: 1.6.0
-    commit: 127e3b21d1e4d3c6d4c37885574a933c953fa810
+    commit: 72705a275a6ea3bbcaa2f6a957576fc5d1d64bd5
   external_python_runtime_lock:
     path: requirements/target-runtime-cpython-3.12.13.lock
     sha256: efb7ca633fc9a9c8587a6f59f8ee9b509151f6f77ceb75a56dd3cdeff2be99f7
@@ -128,7 +128,7 @@ source_artifacts:
   api_import_binding_classification_review:
     path: tests/fixtures/api-import-binding-classification-review.json
     schema: fastapi-starlette-import-binding-review/v1
-    sha256: ed3b83108565826c6f4575b4d6144f0b852832ab1c7bd32890e66fa8599972a6
+    sha256: baa29583afbbfbcdb9496134a11c1cd0bba3b7a7b1f392fadd186b50665a68b0
     purpose: Reviewed source-backed disposition of uncertain FastAPI import bindings from the selected Starlette profile
     source_identity:
       package: FastAPI
@@ -136,7 +136,7 @@ source_artifacts:
       source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
       selected_starlette_profile: 1.6.0
       starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
-      starlette_rs_contract_commit: 127e3b21d1e4d3c6d4c37885574a933c953fa810
+      starlette_rs_contract_commit: 72705a275a6ea3bbcaa2f6a957576fc5d1d64bd5
     starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
     counts:
       candidates: 97
@@ -148,7 +148,7 @@ source_artifacts:
     candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
     pinned_starlette_rs_sources:
       metadata_sha256: 5747ecfaaf7b8eb8b8b6dee86b410b5eddb9026f53ae88a56c9b6ea281e3783c
-      manifest_sha256: 6830e7c20badb5582c30715c21b2b911cd989efc6c4617f8033cfe3442cd5bad
+      manifest_sha256: ea4d37adc555528218be5b6b01b5c95e115cb25fac50f7e043cb9dbf2a7f3208
       api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
       api_review_sha256: 822503a4b91afc8b61f1b668d286cedfb3378d96be02f4ebb6c84c9210208325
   api_source_classification_review:
@@ -172,10 +172,11 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@2
-    sha256: fd067f862e05aed1d0ce8bebcbe374d31e820f2ea6c01556b3a42f3c5acdf0eb
+    sha256: 3d27b46e736e98143e129b406b0798333652a1da16920d56823dedbbc8663bcf
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
+      reviewed_inherited_api_candidates: 1
       reviewed_import_binding_candidates: 97
       reviewed_source_api_candidates: 162
       source_classifications:
@@ -200,10 +201,11 @@ source_artifacts:
       starlette_authority: /authorities/starlette
       starlette_rs_authority: /authorities/starlette_rs
       starlette_crosswalk: /starlette_integration_edges
+      reviewed_inherited_api_candidates: /reviewed_inherited_api_candidates
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 7eb6ab194df766587ec04de78514e7d54a0354d567e167863c63787b650daf5c
+    sha256: 4b6fb3fe6b589aa7edf7bae1fa48881841e921b7604b8b4679785ca0b1e481b5
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 630
@@ -240,14 +242,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@1
-    sha256: abeaca4faf894a2ac967008a4fdfbbf315afc33bddf5829575d523a292e99429
+    sha256: fa3b5d7116aec6e0614bc3cd01786e8efd9097c02f2f2a0840185889bec7a869
     schema_path: tests/fixtures/schemas/materialized-input-index.schema.json
     schema_sha256: b0a2ec32c63dc82ec43cb4c5ffaf41590e951526de305865a24301ea42e947d2
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
       workflows: 476
       cases: 1857
-      partial_source_mappings: 1115
+      partial_source_mappings: 1116
 
 contract_metadata:
   aliases:
@@ -522,6 +524,7 @@ api_surface_contract:
   public_import: fastapi
   classification_source: source_artifacts.compatibility_atlas.api_candidates
   reviewed_operation_overlay_source: metadata.yaml:/reviewed_api_contract_overlay
+  inherited_operation_source: metadata.yaml:/reviewed_api_contract_overlay/inherited_operations
   signature_source:
   - source_artifacts.api_inventory
   - source_artifacts.runtime_api_surface_core
@@ -532,6 +535,8 @@ api_surface_contract:
   - source_artifacts.fixture_backlog
   counts:
     required_public_symbols: 461
+    required_inherited_operations: 1
+    required_public_api_candidates: 462
     signature_contract_states:
       module-object-no-call-signature: 1
       non-callable-surface: 234
@@ -541,6 +546,8 @@ api_surface_contract:
     implementation_owner_plans:
       fastapi-rs: 430
       starlette-rs: 31
+    inherited_implementation_owner_plans:
+      starlette-rs: 1
     symbols_with_documented_feature_refs: 454
     symbols_with_alias_refs: 46
     symbols_with_deprecation_refs: 15
@@ -24707,4 +24714,86 @@ api_surface_contract:
         - /api_candidates/1592
       status: full-contract-not-established
       rust_binding: null
+  inherited_operations:
+  - id: fastapi.applications.FastAPI.add_middleware
+    kind: inherited_method
+    exposure: inherited-from-starlette
+    reviewed_candidate_ref: /reviewed_inherited_api_candidates/0
+    fastapi_exposure_candidate_ref: /api_candidates/186
+    exposure_evidence:
+    - path: fastapi/applications.py
+      kind: class-inheritance
+      symbol: FastAPI
+      base_class: Starlette
+      line: 42
+    - path: docs/en/docs/advanced/middleware.md
+      kind: documentation-text
+      start_line: 29
+      end_line: 40
+      required_text:
+      - '`app.add_middleware()`'
+      - app = FastAPI()
+      - app.add_middleware(UnicornMiddleware, some_config="rainbow")
+    canonical_operation_ref: &id023
+      contract_id: starlette-1.6.0-asgi-http-config-session-slice
+      manifest_path: ../starlette-rs/tests/fixtures/manifest.yaml
+      manifest_contract_pointer: /scope/id
+      canonical_operation_id: starlette.applications.Starlette.add_middleware
+      target_support:
+        rust-native:
+          status: unimplemented
+          manifest_target_ref:
+            path: ../starlette-rs/tests/fixtures/manifest.yaml
+            json_pointer: /surfaces/0/operations/3/targets/0
+        python-package:
+          status: supported
+          manifest_target_ref:
+            path: ../starlette-rs/tests/fixtures/manifest.yaml
+            json_pointer: /surfaces/0/operations/3/targets/1
+      manifest_operation_ref:
+        path: ../starlette-rs/tests/fixtures/manifest.yaml
+        json_pointer: /surfaces/0/operations/3
+      source_operation_ref:
+        path: ../starlette-rs/metadata.yaml
+        json_pointer: /api_sources/0/operations/3
+      api_catalog_ref:
+        path: ../starlette-rs/docs/api-surface.csv
+        line: 40
+      api_review_ref:
+        path: ../starlette-rs/docs/atlas/api-review.csv
+        line: 40
+    signature_contract_state: delegated-to-canonical-starlette-rs-operation
+    documentation_contract_refs:
+    - coverage_matrix_ref: /coverage_matrix/475
+      source_path: docs/en/docs/advanced/middleware.md
+      mapping_status: candidate
+      fixture_id: fastapi.docs.advanced-middleware
+      fixture_design_ref: /fixture_designs/85
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    fixture_refs:
+    - recipe_path: tests/fixtures/input-recipes/parity/middleware-execution-order-wave.yaml
+      case_id: fastapi.docs.middleware.request-and-response-order
+      workload_path: tests/fixtures/workloads/middleware_execution_order_wave.py
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    feature_ids:
+    - app-routing
+    - middleware-integrations
+    observation_selectors:
+    - http.body.bytes
+    - http.headers.ordered
+    - http.status
+    target_binding:
+      target_profile: fastapi-rs-python-consumer
+      public_python_path: fastapi.applications.FastAPI.add_middleware
+      implementation_owner: starlette-rs
+      implementation_owner_evidence:
+        kind: canonical-sibling-operation-reference
+        canonical_operation_ref: *id023
+      status: full-contract-not-established
 # END GENERATED PER-SYMBOL API CONTRACT

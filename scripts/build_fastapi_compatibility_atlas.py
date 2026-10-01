@@ -9445,6 +9445,62 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         },
     ]
 
+    source_api_candidates = sorted(candidates.values(), key=lambda row: row["id"])
+    source_api_candidate_indexes = {
+        row["id"]: index for index, row in enumerate(source_api_candidates)
+    }
+    reviewed_api_overlay = project_metadata.get("reviewed_api_contract_overlay", {})
+    inherited_api_overlay = reviewed_api_overlay.get("inherited_operations", {})
+    if not isinstance(inherited_api_overlay, dict):
+        raise AtlasError("metadata.yaml inherited API operation overlay must be a mapping")
+    reviewed_inherited_api_candidates = []
+    for operation_id, operation in sorted(inherited_api_overlay.items()):
+        if not isinstance(operation, dict):
+            raise AtlasError(
+                f"metadata.yaml inherited API candidate must be a mapping: {operation_id}"
+            )
+        if operation_id in candidates:
+            raise AtlasError(
+                "inherited API candidates must remain separate from source declarations: "
+                + operation_id
+            )
+        exposure_candidate_id = operation.get("fastapi_exposure_candidate_id")
+        exposure_candidate = candidates.get(exposure_candidate_id)
+        if (
+            not isinstance(exposure_candidate_id, str)
+            or exposure_candidate is None
+            or exposure_candidate.get("kind") != "class"
+            or exposure_candidate.get("classification") != "supported"
+        ):
+            raise AtlasError(
+                "inherited API candidate must reference a supported FastAPI class: " + operation_id
+            )
+        reviewed_inherited_api_candidates.append(
+            {
+                "id": operation_id,
+                "kind": "inherited_method",
+                "classification": "supported",
+                "classification_evidence_rule": (
+                    "FastAPI class inheritance and reviewed user documentation expose the "
+                    "Starlette-owned method on FastAPI"
+                ),
+                "exposure_candidate_id": exposure_candidate_id,
+                "exposure_candidate_ref": (
+                    "/api_candidates/" + str(source_api_candidate_indexes[exposure_candidate_id])
+                ),
+                "canonical_operation_id": operation.get("canonical_operation_id"),
+                "source_evidence": operation.get("source_evidence", []),
+                "documentation_contract_refs": operation.get("documentation_contract_refs", []),
+                "fixture_refs": operation.get("fixture_refs", []),
+                "feature_ids": operation.get("feature_ids", []),
+                "observation_selectors": operation.get("observation_selectors", []),
+                "reviewed_overlay_ref": (
+                    "/reviewed_api_contract_overlay/inherited_operations/"
+                    + operation_id.replace("~", "~0").replace("/", "~1")
+                ),
+            }
+        )
+
     atlas = {
         "schema": "fastapi-rs/compatibility-atlas@2",
         "purpose": "Source-backed FastAPI API classification and merged upstream test/documentation fixture backlog; not parity evidence.",
@@ -9538,7 +9594,8 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             "source_identity": public_candidate_review["source_identity"],
             "scope": public_candidate_review["scope"],
         },
-        "api_candidates": sorted(candidates.values(), key=lambda x: x["id"]),
+        "api_candidates": source_api_candidates,
+        "reviewed_inherited_api_candidates": reviewed_inherited_api_candidates,
         "aliases": aliases,
         "deprecations": deprecations,
         "errors": sorted(error_candidates, key=lambda x: x["id"]),
@@ -9557,6 +9614,10 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         "prioritized_backlog": priority_backlog,
         "counts": {
             "api_candidates": len(candidates),
+            "reviewed_inherited_api_candidates": len(reviewed_inherited_api_candidates),
+            "inherited_api_classifications": dict(
+                Counter(row["classification"] for row in reviewed_inherited_api_candidates)
+            ),
             "reviewed_callable_candidates": len(callable_review["rows"]),
             "reviewed_import_binding_candidates": len(import_binding_review["rows"]),
             "reviewed_source_api_candidates": len(source_api_review["rows"]),
@@ -9691,6 +9752,8 @@ def render_markdown(atlas: dict[str, Any]) -> str:
     if api_contract.get("schema") != "fastapi-rs/public-api-contract@1":
         raise AtlasError("manifest has no generated per-symbol source API contract")
     required_public_symbols = api_contract_counts.get("required_public_symbols", 0)
+    required_inherited_operations = counts.get("reviewed_inherited_api_candidates", 0)
+    required_public_api_candidates = required_public_symbols + required_inherited_operations
     facade_tree = ast.parse(
         (PROJECT / "fastapi-rs-py/python/fastapi/__init__.py").read_text(encoding="utf-8")
     )
@@ -9790,9 +9853,11 @@ def render_markdown(atlas: dict[str, Any]) -> str:
         "",
         "## Per-symbol API contract in the active manifest",
         "",
-        "The single `tests/fixtures/manifest.yaml` indexes %d source-supported symbols, with pointers to the pinned AST inventory and both runtime-reflection profiles. It links alias, deprecation, error, documented-feature, selector, and planned Python import-path evidence; %d symbols link to a documented-page fixture design. The current Python facade directly re-exports %d native names; this source contract does not measure their behavioral completeness, and broader operation-level review remains pending."
+        "The single `tests/fixtures/manifest.yaml` indexes %d source-supported symbols and %d separately reviewed inherited API candidates (%d public API candidates total). Direct symbols link to the pinned AST inventory and both runtime-reflection profiles; inherited candidates point to their FastAPI class and the canonical Starlette-RS operation without copying its signature or requirements. The contract links alias, deprecation, error, documented-feature, selector, and planned Python import-path evidence; %d direct symbols link to a documented-page fixture design. The current Python facade directly re-exports %d native names; this source contract does not measure behavioral completeness, and broader operation-level review remains pending."
         % (
             required_public_symbols,
+            required_inherited_operations,
+            required_public_api_candidates,
             symbols_with_documented_refs,
             native_facade_exports,
         ),
@@ -10000,6 +10065,7 @@ def _sync_manifest_artifact_metadata(
         {
             "sha256": sha256(atlas_path),
             "api_candidates": counts["api_candidates"],
+            "reviewed_inherited_api_candidates": counts["reviewed_inherited_api_candidates"],
             "reviewed_import_binding_candidates": counts["reviewed_import_binding_candidates"],
             "reviewed_source_api_candidates": counts["reviewed_source_api_candidates"],
             "supported": counts["api_classifications"]["supported"],

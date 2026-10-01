@@ -944,6 +944,16 @@ def validate() -> None:
         atlas_meta["count_pointers"], atlas, manifest, "classification atlas"
     )
     require_equal("atlas candidate count", atlas_counts["api_candidates"], len(candidates))
+    inherited_candidates = pointer(
+        atlas,
+        atlas_meta["section_pointers"]["reviewed_inherited_api_candidates"],
+        "atlas inherited API candidates",
+    )
+    require_equal(
+        "atlas inherited API candidate count",
+        atlas_counts["reviewed_inherited_api_candidates"],
+        len(inherited_candidates),
+    )
     for name, expected in classifications.items():
         count_name = "private_or_internal" if name == "private/internal" else name
         require_equal(f"atlas {name} candidate count", atlas_counts[count_name], expected)

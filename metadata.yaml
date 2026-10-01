@@ -80,14 +80,14 @@ api_inventory:
 import_binding_classification_review:
   artifact: tests/fixtures/api-import-binding-classification-review.json
   schema: fastapi-starlette-import-binding-review/v1
-  sha256: ed3b83108565826c6f4575b4d6144f0b852832ab1c7bd32890e66fa8599972a6
+  sha256: baa29583afbbfbcdb9496134a11c1cd0bba3b7a7b1f392fadd186b50665a68b0
   source_identity:
     package: FastAPI
     version: 0.141.1
     source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
     selected_starlette_profile: 1.6.0
     starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
-    starlette_rs_contract_commit: 127e3b21d1e4d3c6d4c37885574a933c953fa810
+    starlette_rs_contract_commit: 72705a275a6ea3bbcaa2f6a957576fc5d1d64bd5
   starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
   counts:
     candidates: 97
@@ -99,7 +99,7 @@ import_binding_classification_review:
   candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
   pinned_starlette_rs_sources:
     metadata_sha256: 5747ecfaaf7b8eb8b8b6dee86b410b5eddb9026f53ae88a56c9b6ea281e3783c
-    manifest_sha256: 6830e7c20badb5582c30715c21b2b911cd989efc6c4617f8033cfe3442cd5bad
+    manifest_sha256: ea4d37adc555528218be5b6b01b5c95e115cb25fac50f7e043cb9dbf2a7f3208
     api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
     api_review_sha256: 822503a4b91afc8b61f1b668d286cedfb3378d96be02f4ebb6c84c9210208325
 
@@ -140,6 +140,7 @@ classification_atlas:
   artifact: tests/fixtures/compatibility-atlas.json
   schema: fastapi-rs/compatibility-atlas@2
   candidates_pointer: /api_candidates
+  inherited_candidates_pointer: /reviewed_inherited_api_candidates
   classification_pointer: /classification
   policy_pointer: /classification_policy
   section_pointers:
@@ -147,11 +148,15 @@ classification_atlas:
     deprecations: /deprecations
     errors: /errors
     optional_features: /optional_features
+    reviewed_inherited_api_candidates: /reviewed_inherited_api_candidates
     starlette_integration_edges: /starlette_integration_edges
   count_pointers:
     api_candidates:
       artifact: /counts/api_candidates
       manifest: /source_artifacts/compatibility_atlas/counts/api_candidates
+    reviewed_inherited_api_candidates:
+      artifact: /counts/reviewed_inherited_api_candidates
+      manifest: /source_artifacts/compatibility_atlas/counts/reviewed_inherited_api_candidates
     reviewed_import_binding_candidates:
       artifact: /counts/reviewed_import_binding_candidates
       manifest: /source_artifacts/compatibility_atlas/counts/reviewed_import_binding_candidates
@@ -177,12 +182,12 @@ classification_atlas:
     supported: Explicit root export, documented target/import, reviewed public contract, or documented model field; source evidence only.
     private/internal: Private-name or implementation/protocol evidence without a consumer-facing contract.
     uncertain: Public-looking or importable name whose consumer-facing status needs review; retain visibly.
-  status: candidates require operation review before compatibility claims
+  status: source candidates require operation review; inherited candidates link exposure evidence only
 
 starlette_rs:
   owner: ../starlette-rs
   repository: https://github.com/appunni-m/starlette-rs
-  commit: 127e3b21d1e4d3c6d4c37885574a933c953fa810
+  commit: 72705a275a6ea3bbcaa2f6a957576fc5d1d64bd5
   distribution_version: 0.1.0
   contract_id: starlette-1.6.0-asgi-http-config-session-slice
   metadata: ../starlette-rs/metadata.yaml
@@ -224,8 +229,11 @@ reviewed_api_contract_overlay:
   schema: fastapi-rs/reviewed-api-contract-overlay@1
   purpose: >-
     Source-backed overlays link selected supported operations to documented
-    features, observable selectors, and candidate error records. An error link
-    does not promote an uncertain exception into the public import contract.
+    features, observable selectors, and candidate error records. The separate
+    inherited_operations map records FastAPI exposure while delegating generic
+    Starlette signatures and requirements to the pinned Starlette-RS contract.
+    An error link does not promote an uncertain exception into the public import
+    contract.
   error_selector_rules:
     - id: http-exception
       candidate_ids:
@@ -1672,6 +1680,33 @@ reviewed_api_contract_overlay:
         - python.signature
         - websocket.close_code
         - websocket.close_reason
+  inherited_operations:
+    fastapi.applications.FastAPI.add_middleware:
+      fastapi_exposure_candidate_id: fastapi.applications.FastAPI
+      canonical_operation_id: starlette.applications.Starlette.add_middleware
+      source_evidence:
+        - path: fastapi/applications.py
+          kind: class-inheritance
+          symbol: FastAPI
+          base_class: Starlette
+          line: 42
+        - path: docs/en/docs/advanced/middleware.md
+          kind: documentation-text
+          start_line: 29
+          end_line: 40
+          required_text:
+            - "`app.add_middleware()`"
+            - "app = FastAPI()"
+            - 'app.add_middleware(UnicornMiddleware, some_config="rainbow")'
+      documentation_contract_refs:
+        - source_path: docs/en/docs/advanced/middleware.md
+          fixture_id: fastapi.docs.advanced-middleware
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/middleware-execution-order-wave.yaml
+          case_id: fastapi.docs.middleware.request-and-response-order
+      feature_ids: [middleware-integrations]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
   warning_classification_reviews:
     fastapi.exceptions.FastAPIDeprecationWarning:
       classification: uncertain

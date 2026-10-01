@@ -2421,9 +2421,9 @@
     {
       "id": "middleware-execution-order-wave",
       "input_path": "tests/fixtures/inputs/parity/middleware-execution-order-wave.json",
-      "input_sha256": "4938539257776c523a956ad4ad05ab1831aebfbc6f3fa1639e00fe09a5eccf8a",
+      "input_sha256": "f4a4ee3d100fc0eb835229190f33631f44fdb04c3e44c295e2eaa039917d67a1",
       "recipe_path": "tests/fixtures/input-recipes/parity/middleware-execution-order-wave.yaml",
-      "recipe_sha256": "ea67fa014d4f101550cee84d38c96d4432a279eaa621d2c728664fc202ea87f6",
+      "recipe_sha256": "d425e492645f635ef7e6a5ad691720aa1116f3e74cd28cb793e1a1ae6084d4c3",
       "workload_path": "tests/fixtures/workloads/middleware_execution_order_wave.py",
       "workload_sha256": "1babfeb66207924966af73e5c65c3fc83a45304d609175c6ce1ebbbeb94c2bb6",
       "case_ids": [
@@ -5223,7 +5223,7 @@
       "input_path": "tests/fixtures/inputs/parity/response-model-data-filter-exclude-unset-none-review.json",
       "input_sha256": "e8df817a4df31b3f2f646068c8a9286416ff13577822d1fc572bbc5d8eb34a17",
       "recipe_path": "tests/fixtures/input-recipes/parity/response-model-data-filter-exclude-unset-none-review.yaml",
-      "recipe_sha256": "7fb58501e1abee98df267b5c873392cbcdedbcd7eb479438dc456c93cf651075",
+      "recipe_sha256": "0add450ac1279e2c05232c03e42469b05b1aac9cf2533f86024c949d6fdc5a33",
       "workload_path": "tests/fixtures/workloads/response_model_data_filter_exclude_unset_none_review.py",
       "workload_sha256": "24b60f06b2472a0254c9ae15d0b208e0edd99d3cb8a3833696d343bacd0c13cd",
       "case_ids": [
@@ -13056,6 +13056,21 @@
       "case_ids": [
         "fastapi.test.test-tutorial-test-custom-request-and-route-test-tutorial002.test-endpoint-works",
         "fastapi.test.test-tutorial-test-custom-request-and-route-test-tutorial002.test-exception-handler-body-access"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:advanced/middleware.md",
+      "fixture_id": "fastapi.docs.advanced-middleware",
+      "workflow_id": "middleware-execution-order-wave",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.docs.middleware.request-and-response-order"
       ],
       "observation_selectors": [
         "http.body.bytes",

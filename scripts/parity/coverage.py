@@ -592,6 +592,64 @@ def validate_compatibility_artifacts(
             row.get("public_evidence", []), fastapi_source, starlette_source, identifier
         )
 
+    inherited_rows = atlas.get("reviewed_inherited_api_candidates")
+    _require(
+        isinstance(inherited_rows, list), "reviewed inherited API candidate inventory is missing"
+    )
+    inherited_ids: set[str] = set()
+    api_indexes = {row["id"]: index for index, row in enumerate(api_rows)}
+    for row in inherited_rows:
+        identifier = row.get("id")
+        _require(
+            isinstance(identifier, str)
+            and identifier not in inherited_ids
+            and identifier not in api_ids,
+            "inherited API candidate IDs must be unique and separate from source candidates",
+        )
+        inherited_ids.add(identifier)
+        _require(
+            row.get("kind") == "inherited_method" and row.get("classification") == "supported",
+            f"{identifier} must be a supported inherited-method candidate",
+        )
+        _require(
+            isinstance(row.get("canonical_operation_id"), str)
+            and bool(row["canonical_operation_id"]),
+            f"{identifier} has no canonical delegated operation",
+        )
+        _require(
+            all(field not in row for field in ("signature", "parameters", "requirements")),
+            f"{identifier} must leave its canonical signature and requirements to its owner",
+        )
+        exposure_candidate_id = row.get("exposure_candidate_id")
+        _require(
+            exposure_candidate_id in api_indexes
+            and api_rows[api_indexes[exposure_candidate_id]].get("kind") == "class"
+            and api_rows[api_indexes[exposure_candidate_id]].get("classification") == "supported"
+            and row.get("exposure_candidate_ref")
+            == f"/api_candidates/{api_indexes[exposure_candidate_id]}",
+            f"{identifier} does not point to its supported FastAPI class candidate",
+        )
+        evidence = row.get("source_evidence")
+        _require(
+            isinstance(evidence, list) and bool(evidence), f"{identifier} has no exposure evidence"
+        )
+        _require(
+            {item.get("kind") for item in evidence if isinstance(item, dict)}
+            >= {"class-inheritance", "documentation-text"},
+            f"{identifier} lacks class-inheritance or documentation exposure evidence",
+        )
+        _require(
+            isinstance(row.get("documentation_contract_refs"), list)
+            and bool(row["documentation_contract_refs"])
+            and isinstance(row.get("fixture_refs"), list)
+            and bool(row["fixture_refs"]),
+            f"{identifier} has no reviewed docs or input-fixture mapping",
+        )
+    _require(
+        atlas.get("counts", {}).get("reviewed_inherited_api_candidates") == len(inherited_rows),
+        "reviewed inherited API candidate count differs from its rows",
+    )
+
     for group, rows in (
         ("aliases", atlas.get("aliases")),
         ("deprecations", atlas.get("deprecations")),
@@ -1193,6 +1251,7 @@ def validate_compatibility_artifacts(
     return {
         "starlette_contract": "1.6.0",
         "api_candidates": len(api_rows),
+        "reviewed_inherited_api_candidates": len(inherited_rows),
         "api_classifications": dict(sorted(classifications.items())),
         "upstream_test_modules": kinds["upstream_test_module"],
         "documented_feature_pages": kinds["documented_feature_page"],

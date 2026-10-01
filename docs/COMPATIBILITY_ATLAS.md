@@ -6,7 +6,7 @@ This source-backed compatibility atlas indexes the API denominator and candidate
 
 - FastAPI: 0.141.1 at `95f8322ee1dcda7ceace7b1c4f6c9915b36d748f`.
 - Starlette oracle contract: 1.6.0 at `4f250d6b814587e20c5365f0a5f0c4d42bcb929f` (the sole selected Starlette version).
-- Starlette-RS implementation contract: at `127e3b21d1e4d3c6d4c37885574a933c953fa810`.
+- Starlette-RS implementation contract: at `72705a275a6ea3bbcaa2f6a957576fc5d1d64bd5`.
 - FastAPI declares `starlette>=0.46.0`, which admits the selected contract. Its upstream lock graph is dependency-inventory evidence, not another compatibility profile.
 - Pydantic: 2.13.4 source-lock baseline; Python support is `>=3.10`.
 
@@ -20,7 +20,7 @@ This source-backed compatibility atlas indexes the API denominator and candidate
 
 ## Per-symbol API contract in the active manifest
 
-The single `tests/fixtures/manifest.yaml` indexes 461 source-supported symbols, with pointers to the pinned AST inventory and both runtime-reflection profiles. It links alias, deprecation, error, documented-feature, selector, and planned Python import-path evidence; 454 symbols link to a documented-page fixture design. The current Python facade directly re-exports 19 native names; this source contract does not measure their behavioral completeness, and broader operation-level review remains pending.
+The single `tests/fixtures/manifest.yaml` indexes 461 source-supported symbols and 1 separately reviewed inherited API candidates (462 public API candidates total). Direct symbols link to the pinned AST inventory and both runtime-reflection profiles; inherited candidates point to their FastAPI class and the canonical Starlette-RS operation without copying its signature or requirements. The contract links alias, deprecation, error, documented-feature, selector, and planned Python import-path evidence; 454 direct symbols link to a documented-page fixture design. The current Python facade directly re-exports 19 native names; this source contract does not measure behavioral completeness, and broader operation-level review remains pending.
 
 | Signature/shape evidence | Symbols |
 |---|---:|
@@ -40,13 +40,13 @@ The single `tests/fixtures/manifest.yaml` indexes 461 source-supported symbols, 
 
 Python-source exclusions include the documented Pydantic Settings configuration file, one debugging/setup example, and 91 package initializers. Of the remaining examples, 75 have a reviewed direct input-workflow link; examples grouped with a documentation page inherit only page-level selectors, which do not claim that each example's behavior was exercised.
 
-Review state is separate from coverage completeness. `reviewed_partial` means pinned source evidence and exact indexed workflows, cases, and selectors were reviewed for the linked behavior; it does not claim complete source behavior or parity. Pending counts identify examples without that direct review. The materialized index has 451 distinct upstream test modules, 104 documentation pages, and 75 exact documentation Python examples linked to workflows; all 1115 mapping rows are partial. No source module, documentation page, or Python example is fully covered by an input workflow.
+Review state is separate from coverage completeness. `reviewed_partial` means pinned source evidence and exact indexed workflows, cases, and selectors were reviewed for the linked behavior; it does not claim complete source behavior or parity. Pending counts identify examples without that direct review. The materialized index has 451 distinct upstream test modules, 104 documentation pages, and 75 exact documentation Python examples linked to workflows; all 1116 mapping rows are partial. No source module, documentation page, or Python example is fully covered by an input workflow.
 
 `mapping_status` labels source-to-feature mapping, while `review_status` and independent workflow links record whether a partial input mapping was reviewed. A row may therefore retain `candidate` while already having `review_status: reviewed_partial` and exact fixture cases/selectors. The documentation denominator is feature pages; `documented_sections` are discovery leads, not separately reviewed workflow units.
 
 Candidate function and section records carry source path/SHA evidence, exact whole-token signals, family IDs, and family-level selectors. Per-function mapping scope distinguishes reviewed source mappings, function-body signals, and filename candidates. Test modules index function names/lines without copying bodies. These records are backlog leads, not independent executable parity cases; linked workflows cover only their declared partial behavior, and additional behavior needs tailored stimuli and selector review. Rows without a signal remain `review_required`; exclusions include a reason. Benchmark modules are routed to correctness-gated benchmark work.
 
-`make parity-validate` checks 1593 API classifications against pinned FastAPI source evidence, every source digest in the coverage matrix, fixture links or exclusion reasons for all 492 test modules and 155 documentation pages, direct Starlette 1.6.0 dependency edges, and all 50 declared observation selectors. It also validates 630 input-only design records, including 2114 per-function test designs, selector evidence, source digests, and the absence of expected result fields. The current materialized-input index contains 476 input-only workflows, 1857 cases, and 1115 partial source mappings. These are oracle inputs, not target parity results; the remaining design candidates still need review and materialization. Selectors marked `planned` in `observation-selectors.json` still need runner support.
+`make parity-validate` checks 1593 API classifications against pinned FastAPI source evidence, every source digest in the coverage matrix, fixture links or exclusion reasons for all 492 test modules and 155 documentation pages, direct Starlette 1.6.0 dependency edges, and all 50 declared observation selectors. It also validates 630 input-only design records, including 2114 per-function test designs, selector evidence, source digests, and the absence of expected result fields. The current materialized-input index contains 476 input-only workflows, 1857 cases, and 1116 partial source mappings. These are oracle inputs, not target parity results; the remaining design candidates still need review and materialization. Selectors marked `planned` in `observation-selectors.json` still need runner support.
 
 ## Independently authored input workflows
 
@@ -222,7 +222,7 @@ Reviewed workflow recipes live in `tests/fixtures/input-recipes/parity/*.yaml`. 
 | `metadata-tutorial004-upstream` | 1 | 1 | [`tests/fixtures/input-recipes/parity/metadata-tutorial004-upstream.yaml`](../tests/fixtures/input-recipes/parity/metadata-tutorial004-upstream.yaml) | [`tests/fixtures/workloads/metadata_tutorial004_upstream.py`](../tests/fixtures/workloads/metadata_tutorial004_upstream.py) |
 | `middleware` | 6 | 6 | [`tests/fixtures/input-recipes/parity/middleware.yaml`](../tests/fixtures/input-recipes/parity/middleware.yaml) | [`tests/fixtures/workloads/middleware.py`](../tests/fixtures/workloads/middleware.py) |
 | `middleware-exceptions-upstream` | 9 | 4 | [`tests/fixtures/input-recipes/parity/middleware-exceptions-upstream.yaml`](../tests/fixtures/input-recipes/parity/middleware-exceptions-upstream.yaml) | [`tests/fixtures/workloads/middleware_exceptions_upstream.py`](../tests/fixtures/workloads/middleware_exceptions_upstream.py) |
-| `middleware-execution-order-wave` | 1 | 1 | [`tests/fixtures/input-recipes/parity/middleware-execution-order-wave.yaml`](../tests/fixtures/input-recipes/parity/middleware-execution-order-wave.yaml) | [`tests/fixtures/workloads/middleware_execution_order_wave.py`](../tests/fixtures/workloads/middleware_execution_order_wave.py) |
+| `middleware-execution-order-wave` | 1 | 2 | [`tests/fixtures/input-recipes/parity/middleware-execution-order-wave.yaml`](../tests/fixtures/input-recipes/parity/middleware-execution-order-wave.yaml) | [`tests/fixtures/workloads/middleware_execution_order_wave.py`](../tests/fixtures/workloads/middleware_execution_order_wave.py) |
 | `middleware-proxy-advanced-source-review` | 3 | 4 | [`tests/fixtures/input-recipes/parity/middleware-proxy-advanced-source-review.yaml`](../tests/fixtures/input-recipes/parity/middleware-proxy-advanced-source-review.yaml) | [`tests/fixtures/workloads/middleware_proxy_source_review.py`](../tests/fixtures/workloads/middleware_proxy_source_review.py) |
 | `middleware-proxy-root-path-source-review` | 4 | 8 | [`tests/fixtures/input-recipes/parity/middleware-proxy-root-path-source-review.yaml`](../tests/fixtures/input-recipes/parity/middleware-proxy-root-path-source-review.yaml) | [`tests/fixtures/workloads/middleware_proxy_source_review.py`](../tests/fixtures/workloads/middleware_proxy_source_review.py) |
 | `middleware-proxy-static-settings-source-review` | 3 | 8 | [`tests/fixtures/input-recipes/parity/middleware-proxy-static-settings-source-review.yaml`](../tests/fixtures/input-recipes/parity/middleware-proxy-static-settings-source-review.yaml) | [`tests/fixtures/workloads/middleware_proxy_source_review.py`](../tests/fixtures/workloads/middleware_proxy_source_review.py) |
@@ -539,7 +539,7 @@ The merged coverage matrix links each FastAPI test, documented feature, or examp
 |---:|---:|---:|---:|
 | 945 | 2459 | 513 | 7 |
 
-The sibling Starlette-RS manifest, API review, and coverage matrix remain the sole Starlette API inventory. FastAPI's atlas stores only relevant requirement references plus manifest/catalog/review/matrix SHA-256 digests. The inspected Starlette-RS implementation revision is 127e3b21d1e4d3c6d4c37885574a933c953fa810 (pinned, clean sibling Git commit).
+The sibling Starlette-RS manifest, API review, and coverage matrix remain the sole Starlette API inventory. FastAPI's atlas stores only relevant requirement references plus manifest/catalog/review/matrix SHA-256 digests. The inspected Starlette-RS implementation revision is 72705a275a6ea3bbcaa2f6a957576fc5d1d64bd5 (pinned, clean sibling Git commit).
 
 ## Errors, aliases, optional features, and deprecations
 
