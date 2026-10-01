@@ -1,6 +1,8 @@
 //! Rust-owned FastAPI application registration and ASGI request flow.
 
 use std::collections::{BTreeSet, HashMap, VecDeque};
+use std::sync::Mutex;
+use std::sync::atomic::{AtomicU64, Ordering};
 
 use pyo3::exceptions::{
     PyAssertionError, PyAttributeError, PyException, PyNameError, PyNotImplementedError,
@@ -104,6 +106,70 @@ struct CallablePlan {
     path_parameters: Vec<String>,
     return_annotation: Option<Py<PyAny>>,
     computed_scope: Option<String>,
+}
+
+impl ParameterSource {
+    fn clone_ref(&self, py: Python<'_>) -> Self {
+        match self {
+            Self::Input { source, alias } => Self::Input {
+                source: *source,
+                alias: alias.clone(),
+            },
+            Self::WebSocket => Self::WebSocket,
+            Self::Request => Self::Request,
+            Self::HttpConnection => Self::HttpConnection,
+            Self::Response => Self::Response,
+            Self::BackgroundTasks => Self::BackgroundTasks,
+            Self::Dependency {
+                plan,
+                use_cache,
+                scope,
+                bind_value,
+            } => Self::Dependency {
+                plan: Box::new(plan.clone_ref(py)),
+                use_cache: *use_cache,
+                scope: scope.clone(),
+                bind_value: *bind_value,
+            },
+        }
+    }
+}
+
+impl CallableParameter {
+    fn clone_ref(&self, py: Python<'_>) -> Self {
+        Self {
+            name: self.name.clone(),
+            annotation: self.annotation.clone_ref(py),
+            default: self.default.as_ref().map(|value| value.clone_ref(py)),
+            is_sequence: self.is_sequence,
+            media_type: self.media_type.clone(),
+            title: self.title.clone(),
+            description: self.description.clone(),
+            deprecated: self.deprecated,
+            include_in_schema: self.include_in_schema,
+            body_embed: self.body_embed,
+            source: self.source.clone_ref(py),
+        }
+    }
+}
+
+impl CallablePlan {
+    fn clone_ref(&self, py: Python<'_>) -> Self {
+        Self {
+            callable: self.callable.clone_ref(py),
+            parameters: self
+                .parameters
+                .iter()
+                .map(|parameter| parameter.clone_ref(py))
+                .collect(),
+            path_parameters: self.path_parameters.clone(),
+            return_annotation: self
+                .return_annotation
+                .as_ref()
+                .map(|annotation| annotation.clone_ref(py)),
+            computed_scope: self.computed_scope.clone(),
+        }
+    }
 }
 
 struct InvocationContext<'context, 'py> {
@@ -328,10 +394,17 @@ pub(crate) struct PyFastApi {
     docs_router: RouteTable,
     named_routes: NamedRouteTable,
     routes: Vec<FastApiRoute>,
+    routes_version: AtomicU64,
+    openapi_cache: Mutex<OpenApiCache>,
     mounted_routes: Vec<Py<PyAny>>,
     websocket_routes: Vec<FastApiWebSocketRoute>,
     user_middleware: Vec<Py<PyAny>>,
     middleware_stack: Option<Py<PyAny>>,
+}
+
+struct OpenApiCache {
+    schema: Py<PyAny>,
+    routes_version: Option<u64>,
 }
 
 #[pyclass(name = "_FastAPIAsgiApp", module = "fastapi_rs._core")]
@@ -508,6 +581,11 @@ impl PyFastApi {
             docs_router,
             named_routes: NamedRouteTable::new(),
             routes: Vec::new(),
+            routes_version: AtomicU64::new(0),
+            openapi_cache: Mutex::new(OpenApiCache {
+                schema: py.None(),
+                routes_version: None,
+            }),
             mounted_routes: Vec::new(),
             websocket_routes: Vec::new(),
             user_middleware: Vec::new(),
@@ -523,6 +601,23 @@ impl PyFastApi {
     #[setter]
     fn set_state(&mut self, state: Py<PyAny>) {
         self.state = state;
+    }
+
+    #[getter]
+    fn openapi_schema(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
+        self.openapi_cache
+            .lock()
+            .map(|cache| cache.schema.clone_ref(py))
+            .map_err(|_| PyRuntimeError::new_err("OpenAPI schema cache is unavailable"))
+    }
+
+    #[setter]
+    fn set_openapi_schema(&self, schema: Py<PyAny>) -> PyResult<()> {
+        self.openapi_cache
+            .lock()
+            .map_err(|_| PyRuntimeError::new_err("OpenAPI schema cache is unavailable"))?
+            .schema = schema;
+        Ok(())
     }
 
     #[getter]
@@ -1242,11 +1337,30 @@ impl PyFastApi {
                 include_in_schema,
             },
         )?;
-        self.lifespan.include_router(py, &source.lifespan)
+        self.lifespan.include_router(py, &source.lifespan)?;
+        self.bump_routes_version();
+        Ok(())
     }
 
     fn openapi(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
-        self.openapi_document(py, None)
+        let routes_version = self.routes_version.load(Ordering::Relaxed);
+        let (cached_schema, cached_routes_version) = self
+            .openapi_cache
+            .lock()
+            .map(|cache| (cache.schema.clone_ref(py), cache.routes_version))
+            .map_err(|_| PyRuntimeError::new_err("OpenAPI schema cache is unavailable"))?;
+        if cached_routes_version == Some(routes_version) && cached_schema.bind(py).is_truthy()? {
+            return Ok(cached_schema);
+        }
+
+        let schema = self.openapi_document(py, None)?;
+        let mut cache = self
+            .openapi_cache
+            .lock()
+            .map_err(|_| PyRuntimeError::new_err("OpenAPI schema cache is unavailable"))?;
+        cache.schema = schema.clone_ref(py);
+        cache.routes_version = Some(routes_version);
+        Ok(schema)
     }
 
     #[pyo3(
@@ -1614,7 +1728,45 @@ fn response_from_captured_messages(
         .map(Bound::unbind)
 }
 
+fn openapi_document_for_root_path(
+    py: Python<'_>,
+    schema: Py<PyAny>,
+    root_path: &str,
+) -> PyResult<Py<PyAny>> {
+    if root_path.is_empty() {
+        return Ok(schema);
+    }
+
+    let schema = schema.bind(py);
+    let existing_servers = schema.call_method1("get", ("servers", PyList::empty(py)))?;
+    for server in existing_servers.try_iter()? {
+        let server = server?;
+        let server_url = server.call_method1("get", ("url",))?;
+        if server_url
+            .extract::<String>()
+            .is_ok_and(|server_url| server_url == root_path)
+        {
+            return Ok(schema.clone().unbind());
+        }
+    }
+
+    let schema_copy = py.import("builtins")?.getattr("dict")?.call1((schema,))?;
+    let root_server = PyDict::new(py);
+    root_server.set_item("url", root_path)?;
+    let servers = PyList::empty(py);
+    servers.append(root_server)?;
+    for server in existing_servers.try_iter()? {
+        servers.append(server?)?;
+    }
+    schema_copy.set_item("servers", servers)?;
+    Ok(schema_copy.unbind())
+}
+
 impl PyFastApi {
+    fn bump_routes_version(&self) {
+        self.routes_version.fetch_add(1, Ordering::Relaxed);
+    }
+
     fn middleware_stack_for(slf: Py<Self>, py: Python<'_>) -> PyResult<Py<PyAny>> {
         let (cached, registrations, exception_handlers) = {
             let app = slf.bind(py).borrow();
@@ -2283,6 +2435,7 @@ fn merge_router_routes(
             router_dependencies: route_dependencies,
             plan,
         });
+        app.bump_routes_version();
     }
     for source_route in &source.websocket_routes {
         let path = format!("{prefix}{}", source_route.path);
@@ -2320,6 +2473,7 @@ fn merge_router_routes(
             endpoint: source_route.endpoint.clone_ref(py),
             plan,
         });
+        app.bump_routes_version();
     }
     Ok(())
 }
@@ -2712,6 +2866,7 @@ impl PyOperationDecorator {
             router_dependencies: route_dependencies,
             plan,
         });
+        app.bump_routes_version();
         Ok(endpoint)
     }
 }
@@ -2760,6 +2915,7 @@ impl PyWebSocketDecorator {
             endpoint: endpoint.clone_ref(py),
             plan,
         });
+        app.bump_routes_version();
         Ok(endpoint)
     }
 }
@@ -6226,11 +6382,11 @@ impl FastApiCall {
             (app.openapi_url.clone(), app.title.clone())
         };
         if !openapi_url.is_empty() && route_path == openapi_url && method == "GET" {
-            let document = self
-                .app
-                .bind(py)
-                .borrow()
-                .openapi_document(py, Some(root_path.trim_end_matches('/')))?;
+            let root_path = root_path.trim_end_matches('/');
+            let document = {
+                let app = self.app.bind(py).borrow();
+                openapi_document_for_root_path(py, app.openapi(py)?, root_path)?
+            };
             self.response_status = 200;
             self.response_body = json_bytes(py, document.bind(py))?;
             return self.send_start(py);
@@ -6764,7 +6920,7 @@ impl FastApiCall {
             .invocation
             .as_mut()
             .ok_or_else(|| PyRuntimeError::new_err("request invocation state was lost"))?;
-        let route_invocation = {
+        let (plan, dependency_overrides) = {
             let app = self.app.bind(py).borrow();
             let plan = if let Some(route_index) = self.websocket_route_index {
                 &app.websocket_routes
@@ -6782,7 +6938,9 @@ impl FastApiCall {
                     .ok_or_else(|| PyRuntimeError::new_err("selected FastAPI route was lost"))?
                     .plan
             };
-            let dependency_overrides = app.dependency_overrides.bind(py);
+            (plan.clone_ref(py), app.dependency_overrides.clone_ref(py))
+        };
+        let route_invocation = {
             let mut context = InvocationContext {
                 py,
                 inputs: invocation.inputs.bind(py),
@@ -6793,7 +6951,7 @@ impl FastApiCall {
                 body_fields_embedded: invocation.form_body_embedded || route_body_fields_embedded,
                 form_body_embedded: invocation.form_body_embedded,
                 failures: &mut invocation.failures,
-                dependency_overrides,
+                dependency_overrides: dependency_overrides.bind(py),
                 dependency_cache: &mut invocation.dependency_cache,
                 prepared_dependency_values: &mut invocation.prepared_dependency_values,
                 dependency_override_cursor: &mut invocation.dependency_override_cursor,

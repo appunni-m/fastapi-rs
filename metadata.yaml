@@ -981,6 +981,34 @@ reviewed_api_contract_overlay:
         emits the observed deprecation warning, and runs the callback in the
         direct-ASGI lifespan workflow. Invalid event types and warning-filter
         error behavior are outside this slice.
+    fastapi.applications.FastAPI.openapi:
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::openapi
+      source_evidence:
+        - path: fastapi/applications.py
+          symbol: openapi
+          kind: source-definition
+          start_line: 1070
+          end_line: 1103
+        - path: tests/test_router_include_context.py
+          symbol: test_openapi_cache_updates_after_live_route_addition
+        - path: tests/test_extra_routes.py
+          symbol: test_openapi_schema
+        - path: tests/test_openapi_cache_root_path.py
+        - path: docs/en/docs/how-to/extending-openapi.md
+      feature_ids: [openapi-docs]
+      observation_selectors: [http.status, http.body.json, openapi.document, openapi.paths]
+      supported_slice: >-
+        Reuses the same cached schema object while the app route version is
+        unchanged. Direct app.add_api_route registration invalidates that cache;
+        the next openapi() call regenerates the schema and subsequent calls
+        reuse the new object. The input workflow reports cache identity through
+        response booleans and compares the OpenAPI paths before and after route
+        registration. The built-in endpoint uses this canonical cache and adds
+        a request root-path server to a shallow response copy without persisting
+        it, as covered by openapi-cache-root-path. Assigning custom
+        openapi_schema values, late mutation of already-included routers,
+        webhooks, root_path_in_servers configuration, and complete OpenAPI
+        parity remain outside this slice.
     fastapi.routing.APIRouter.include_router:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::include_router
       source_evidence:
