@@ -172,7 +172,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@3
-    sha256: 20065b72a69cc811bf00257044a6b0b483418836e85cece08b423c499e910af4
+    sha256: 4812957fdb408c648f3ab1eccdfb8e185924b9fce1ef7bc92da5b0c65faf3543
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -205,7 +205,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: caa52863cc1defbd1e7814962cd2bff5c64e9ec4d2575a1585f9d5b02e658c8c
+    sha256: 1eaef231461642ccfb6d2d7bcdfcc8c9a441003ea51e823a9e5e89c71dba0312
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 632
@@ -242,14 +242,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@1
-    sha256: f85dce447500f9c57544dc749e4408eae50b7afba6b2d9f3698a434ed3d525c5
+    sha256: 31d009eaaad060bfda681c05aed80e3e5d67d3541e58781e20c2d93815276cfb
     schema_path: tests/fixtures/schemas/materialized-input-index.schema.json
     schema_sha256: b0a2ec32c63dc82ec43cb4c5ffaf41590e951526de305865a24301ea42e947d2
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 480
-      cases: 1891
-      partial_source_mappings: 1133
+      workflows: 482
+      cases: 1894
+      partial_source_mappings: 1136
 
 contract_metadata:
   aliases:
@@ -881,6 +881,9 @@ api_surface_contract:
     - openapi.document
     - openapi.paths
     - openapi.security
+    - python.signature
+    - websocket.close_code
+    - websocket.messages
     behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer

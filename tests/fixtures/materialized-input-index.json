@@ -1311,6 +1311,19 @@
       ]
     },
     {
+      "id": "dependency-scope-websocket",
+      "input_path": "tests/fixtures/inputs/parity/dependency-scope-websocket.json",
+      "input_sha256": "2f28f0331235cc9bcbef00a5d0754b9db4017914804692ffaff428fec570dc76",
+      "recipe_path": "tests/fixtures/input-recipes/parity/dependency-scope-websocket.yaml",
+      "recipe_sha256": "d54489c5c56963efcc47d1cef8608132db81a1198189fd8e77786e90bdda0bad",
+      "workload_path": "tests/fixtures/workloads/dependency_scope_websocket.py",
+      "workload_sha256": "e073559aecc1aa06ac2cb36c12a252291e7fa291c682423ec4a601ede186f1ff",
+      "case_ids": [
+        "fastapi.dependencies.websocket-function-scope-isolated",
+        "fastapi.dependencies.websocket-request-scope-isolated"
+      ]
+    },
+    {
       "id": "dependency-tutorial-review-upstream",
       "input_path": "tests/fixtures/inputs/parity/dependency-tutorial-review-upstream.json",
       "input_sha256": "b3998eabe103ef5cd2cef9a6ac43efdd3e0202e0e3495e97e2ba74d678101023",
@@ -1500,6 +1513,18 @@
       "case_ids": [
         "fastapi.dependencies.tutorial008.async-yield-chain-default",
         "fastapi.dependencies.tutorial010.context-manager-in-yield-dependency"
+      ]
+    },
+    {
+      "id": "depends-signature",
+      "input_path": "tests/fixtures/inputs/parity/depends-signature.json",
+      "input_sha256": "057d26345fcac0ae5feb09744125a80272492c69a2c6e39c3460df2451adde3e",
+      "recipe_path": "tests/fixtures/input-recipes/parity/depends-signature.yaml",
+      "recipe_sha256": "eecede1bd798578bf9db9fda4b753ee7ce4d52716928f39470502f6c3f2c80af",
+      "workload_path": "tests/fixtures/workloads/direct_api_reference_wave.py",
+      "workload_sha256": "57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741",
+      "case_ids": [
+        "fastapi.dependencies.depends-yield-scope-signature"
       ]
     },
     {
@@ -10055,6 +10080,38 @@
       ]
     },
     {
+      "source_item_id": "documented-page:tutorial/dependencies/dependencies-with-yield.md",
+      "fixture_id": "fastapi.docs.tutorial-dependencies-dependencies-with-yield",
+      "workflow_id": "dependency-scope-websocket",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.dependencies.websocket-function-scope-isolated",
+        "fastapi.dependencies.websocket-request-scope-isolated"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_dependency_yield_scope_websockets.py",
+      "fixture_id": "fastapi.test.test-dependency-yield-scope-websockets",
+      "workflow_id": "dependency-scope-websocket",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status, websocket.close_code, websocket.messages. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.dependencies.websocket-function-scope-isolated",
+        "fastapi.dependencies.websocket-request-scope-isolated"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status",
+        "websocket.close_code",
+        "websocket.messages"
+      ]
+    },
+    {
       "source_item_id": "upstream-test:tests/test_tutorial/test_dependencies/test_tutorial001_tutorial001_02.py",
       "fixture_id": "fastapi.test.test-tutorial-test-dependencies-test-tutorial001-tutorial001-02",
       "workflow_id": "dependency-tutorial-review-upstream",
@@ -10767,6 +10824,19 @@
       "observation_selectors": [
         "http.body.bytes",
         "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_dependency_yield_scope.py",
+      "fixture_id": "fastapi.test.test-dependency-yield-scope",
+      "workflow_id": "depends-signature",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes python.signature. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.dependencies.depends-yield-scope-signature"
+      ],
+      "observation_selectors": [
+        "python.signature"
       ]
     },
     {

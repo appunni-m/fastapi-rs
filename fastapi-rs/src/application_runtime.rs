@@ -76,9 +76,12 @@ enum ParameterSource {
     Dependency {
         plan: Box<CallablePlan>,
         use_cache: bool,
+        scope: Option<String>,
         bind_value: bool,
     },
 }
+
+type DependencyCacheKey = (usize, Option<String>);
 
 struct CallableParameter {
     name: String,
@@ -99,6 +102,7 @@ struct CallablePlan {
     parameters: Vec<CallableParameter>,
     path_parameters: Vec<String>,
     return_annotation: Option<Py<PyAny>>,
+    computed_scope: Option<String>,
 }
 
 struct InvocationContext<'context, 'py> {
@@ -112,10 +116,11 @@ struct InvocationContext<'context, 'py> {
     form_body_embedded: bool,
     failures: &'context mut Vec<ValidationIssue>,
     dependency_overrides: &'context Bound<'py, PyDict>,
-    dependency_cache: &'context mut HashMap<usize, Py<PyAny>>,
+    dependency_cache: &'context mut HashMap<DependencyCacheKey, Py<PyAny>>,
     prepared_dependency_values: &'context mut HashMap<usize, Py<PyAny>>,
     dependency_override_cursor: &'context mut usize,
     dependency_exit_stack: &'context Bound<'py, PyAny>,
+    function_dependency_exit_stack: &'context Bound<'py, PyAny>,
 }
 
 struct RequestInvocation {
@@ -123,11 +128,13 @@ struct RequestInvocation {
     query_params: QueryParams,
     form_body_embedded: bool,
     failures: Vec<ValidationIssue>,
-    dependency_cache: HashMap<usize, Py<PyAny>>,
+    dependency_cache: HashMap<DependencyCacheKey, Py<PyAny>>,
     prepared_dependency_values: HashMap<usize, Py<PyAny>>,
     dependency_override_cursor: usize,
     dependency_exit_stack: Py<PyAny>,
     dependency_exit_stack_closed: bool,
+    function_dependency_exit_stack: Py<PyAny>,
+    function_dependency_exit_stack_closed: bool,
 }
 
 struct FormFileReadPlan {
@@ -142,13 +149,13 @@ enum RouteInvocation {
     Ready(Option<Py<PyAny>>),
     AwaitDependency {
         awaitable: Py<PyAny>,
-        cache_key: usize,
+        cache_key: DependencyCacheKey,
         edge_index: usize,
     },
     AwaitOverrideSubdependency {
         awaitable: Py<PyAny>,
         parent_plan: Box<CallablePlan>,
-        cache_key: usize,
+        cache_key: DependencyCacheKey,
         edge_index: usize,
     },
 }
@@ -158,13 +165,13 @@ enum OverridePreparation {
     Invalid,
     Await {
         awaitable: Py<PyAny>,
-        cache_key: usize,
+        cache_key: DependencyCacheKey,
         edge_index: usize,
     },
     AwaitSubdependency {
         awaitable: Py<PyAny>,
         parent_plan: Box<CallablePlan>,
-        cache_key: usize,
+        cache_key: DependencyCacheKey,
         edge_index: usize,
     },
 }
@@ -2188,6 +2195,7 @@ fn merge_router_routes(
             py,
             source_route.endpoint.clone_ref(py),
             &path_parameter_names(&path),
+            None,
         )?;
         plan.prepend_dependencies(py, &route_dependencies)?;
         let param_convertors = route_param_convertors(py, &path)?;
@@ -2275,6 +2283,7 @@ fn merge_router_routes(
             py,
             source_route.endpoint.clone_ref(py),
             &path_parameter_names(&path),
+            None,
         )?;
         plan.prepend_dependencies(py, &route_dependencies)?;
         let param_convertors = route_param_convertors(py, &path)?;
@@ -2574,7 +2583,7 @@ impl PyOperationDecorator {
                 .iter()
                 .map(|dependency| dependency.clone_ref(py)),
         );
-        let mut plan = CallablePlan::build(py, endpoint.clone_ref(py), &path_parameters)?;
+        let mut plan = CallablePlan::build(py, endpoint.clone_ref(py), &path_parameters, None)?;
         plan.prepend_dependencies(py, &route_dependencies)?;
         let generator_kind = generator_kind(py, endpoint.bind(py))?;
         let (inferred_name, param_convertors) =
@@ -2697,7 +2706,7 @@ impl PyWebSocketDecorator {
                 .iter()
                 .map(|dependency| dependency.clone_ref(py)),
         );
-        let mut plan = CallablePlan::build(py, endpoint.clone_ref(py), &path_parameters)?;
+        let mut plan = CallablePlan::build(py, endpoint.clone_ref(py), &path_parameters, None)?;
         plan.prepend_dependencies(py, &route_dependencies)?;
         let param_convertors = route_param_convertors(py, &self.path)?;
         let inputs = plan.input_parameters();
@@ -2743,7 +2752,12 @@ impl CallablePlan {
             {
                 return Ok(false);
             }
-            let dependency_plan = CallablePlan::build(context.py, callable, &plan.path_parameters)?;
+            let dependency_plan = CallablePlan::build(
+                context.py,
+                callable,
+                &plan.path_parameters,
+                plan.computed_scope.clone(),
+            )?;
             if !dependency_plan.has_only_synchronous_dependencies(context)? {
                 return Ok(false);
             }
@@ -2751,7 +2765,19 @@ impl CallablePlan {
         Ok(true)
     }
 
-    fn build(py: Python<'_>, callable: Py<PyAny>, path_parameters: &[String]) -> PyResult<Self> {
+    fn build(
+        py: Python<'_>,
+        callable: Py<PyAny>,
+        path_parameters: &[String],
+        declared_scope: Option<String>,
+    ) -> PyResult<Self> {
+        let computed_scope = match declared_scope.as_deref() {
+            Some(scope) if !scope.is_empty() => Some(scope.to_owned()),
+            _ if dependency_callable_is_generator(py, callable.bind(py))? => {
+                Some("request".to_owned())
+            }
+            _ => None,
+        };
         let inspect = py.import("inspect")?;
         let typing = py.import("typing")?;
         let signature = inspect.getattr("signature")?.call1((callable.bind(py),))?;
@@ -2823,11 +2849,37 @@ impl CallablePlan {
                 })
             })
             .collect::<PyResult<Vec<_>>>()?;
+        if dependency_callable_is_generator(py, callable.bind(py))?
+            && computed_scope.as_deref() == Some("request")
+        {
+            for parameter in &parameters {
+                let ParameterSource::Dependency {
+                    scope: Some(child_scope),
+                    ..
+                } = &parameter.source
+                else {
+                    continue;
+                };
+                if child_scope == "function" {
+                    let callable_name = py
+                        .import("builtins")?
+                        .getattr("getattr")?
+                        .call1((callable.bind(py), "__name__", "<unnamed_callable>"))?
+                        .str()?
+                        .to_string_lossy()
+                        .into_owned();
+                    return Err(crate::errors::dependency_scope_error(&format!(
+                        "The dependency \"{callable_name}\" has a scope of \"request\", it cannot depend on dependencies with scope \"function\"."
+                    )));
+                }
+            }
+        }
         Ok(Self {
             callable,
             parameters,
             path_parameters: path_parameters.to_vec(),
             return_annotation,
+            computed_scope,
         })
     }
 
@@ -2843,7 +2895,10 @@ impl CallablePlan {
                 &self.path_parameters,
             )?;
             let ParameterSource::Dependency {
-                plan, use_cache, ..
+                plan,
+                use_cache,
+                scope,
+                ..
             } = source
             else {
                 return Err(PyValueError::new_err(
@@ -2864,6 +2919,7 @@ impl CallablePlan {
                 source: ParameterSource::Dependency {
                     plan,
                     use_cache,
+                    scope,
                     bind_value: false,
                 },
             });
@@ -3040,7 +3096,10 @@ impl CallablePlan {
 
         for parameter in &self.parameters {
             let ParameterSource::Dependency {
-                plan, use_cache, ..
+                plan,
+                use_cache,
+                scope,
+                ..
             } = &parameter.source
             else {
                 continue;
@@ -3049,7 +3108,7 @@ impl CallablePlan {
             dependency_edge_index += 1;
             has_direct_dependency = true;
 
-            let cache_key = plan.callable.as_ptr() as usize;
+            let cache_key = (plan.callable.as_ptr() as usize, plan.computed_scope.clone());
             let original_callable = plan.callable.bind(context.py);
             let replacement = context.dependency_overrides.get_item(original_callable)?;
             let (callable, callable_kind) = match replacement {
@@ -3084,6 +3143,7 @@ impl CallablePlan {
                 edge_index,
                 cache_key,
                 *use_cache,
+                scope.clone(),
                 callable,
                 callable_kind,
                 generator_kind,
@@ -3117,6 +3177,7 @@ impl CallablePlan {
             edge_index,
             cache_key,
             use_cache,
+            scope,
             callable,
             callable_kind,
             generator_kind,
@@ -3128,8 +3189,12 @@ impl CallablePlan {
                     "async dependency graphs do not support callable-instance dependencies",
                 ));
             }
-            let mut dependency_plan =
-                CallablePlan::build(context.py, callable.clone_ref(context.py), &path_parameters)?;
+            let mut dependency_plan = CallablePlan::build(
+                context.py,
+                callable.clone_ref(context.py),
+                &path_parameters,
+                scope.clone(),
+            )?;
             let nested_dependencies = dependency_plan
                 .parameters
                 .iter()
@@ -3221,8 +3286,12 @@ impl CallablePlan {
                     "async nested dependency support requires a coroutine query dependency",
                 ));
             }
-            let subdependency_plan =
-                CallablePlan::build(context.py, nested_callable, &nested_plan.path_parameters)?;
+            let subdependency_plan = CallablePlan::build(
+                context.py,
+                nested_callable,
+                &nested_plan.path_parameters,
+                nested_plan.computed_scope.clone(),
+            )?;
             let mut supported_query_parameters = true;
             for parameter in &subdependency_plan.parameters {
                 // QueryParams::get supplies one scalar value. Sequence
@@ -3337,9 +3406,13 @@ impl CallablePlan {
                     )?
                     .into_any(),
                 };
+                let exit_stack = if dependency_plan.computed_scope.as_deref() == Some("function") {
+                    context.function_dependency_exit_stack
+                } else {
+                    context.dependency_exit_stack
+                };
                 Some(
-                    context
-                        .dependency_exit_stack
+                    exit_stack
                         .call_method1("enter_async_context", (context_manager.bind(context.py),))?
                         .unbind(),
                 )
@@ -3381,7 +3454,7 @@ impl CallablePlan {
         &self,
         context: &mut InvocationContext<'_, '_>,
         cache_result: Option<bool>,
-        cache_key_override: Option<usize>,
+        cache_key_override: Option<DependencyCacheKey>,
     ) -> PyResult<Option<Py<PyAny>>> {
         self.invoke_with_threadpool(context, cache_result, cache_key_override, false, None)
     }
@@ -3398,7 +3471,7 @@ impl CallablePlan {
         &self,
         context: &mut InvocationContext<'_, '_>,
         cache_result: Option<bool>,
-        cache_key_override: Option<usize>,
+        cache_key_override: Option<DependencyCacheKey>,
     ) -> PyResult<Option<Py<PyAny>>> {
         self.invoke_with_threadpool(context, cache_result, cache_key_override, true, None)
     }
@@ -3407,7 +3480,7 @@ impl CallablePlan {
         &self,
         context: &mut InvocationContext<'_, '_>,
         cache_result: Option<bool>,
-        cache_key_override: Option<usize>,
+        cache_key_override: Option<DependencyCacheKey>,
         use_threadpool: bool,
         prepared_dependencies: Option<&HashMap<usize, Py<PyAny>>>,
     ) -> PyResult<Option<Py<PyAny>>> {
@@ -3448,6 +3521,7 @@ impl CallablePlan {
             if let ParameterSource::Dependency {
                 plan,
                 use_cache,
+                scope,
                 bind_value,
             } = &parameter.source
             {
@@ -3462,7 +3536,8 @@ impl CallablePlan {
                     }
                     continue;
                 }
-                let original_cache_key = plan.callable.as_ptr() as usize;
+                let original_cache_key =
+                    (plan.callable.as_ptr() as usize, plan.computed_scope.clone());
                 let original_callable = plan.callable.bind(context.py);
                 let replacement = context.dependency_overrides.get_item(original_callable)?;
                 let value = match replacement {
@@ -3471,11 +3546,12 @@ impl CallablePlan {
                             context.py,
                             replacement.unbind(),
                             &plan.path_parameters,
+                            scope.clone(),
                         )?;
                         replacement_plan.invoke(
                             context,
                             Some(*use_cache),
-                            Some(original_cache_key),
+                            Some(original_cache_key.clone()),
                         )?
                     }
                     _ => plan.invoke(context, Some(*use_cache), Some(original_cache_key))?,
@@ -3614,7 +3690,8 @@ impl CallablePlan {
         if context.failures.len() != initial_failure_count {
             return Ok(None);
         }
-        let cache_key = cache_key_override.unwrap_or_else(|| self.callable.as_ptr() as usize);
+        let cache_key = cache_key_override
+            .unwrap_or_else(|| (self.callable.as_ptr() as usize, self.computed_scope.clone()));
         if cache_result == Some(true) {
             if let Some(value) = context.dependency_cache.get(&cache_key) {
                 return Ok(Some(value.clone_ref(context.py)));
@@ -3650,6 +3727,23 @@ fn new_dependency_exit_stack(py: Python<'_>) -> PyResult<Py<PyAny>> {
     py.import("contextlib")?
         .getattr("AsyncExitStack")?
         .call0()
+        .map(Bound::unbind)
+}
+
+fn dependency_exit_with_error(
+    py: Python<'_>,
+    exit_stack: &Py<PyAny>,
+    error: &PyErr,
+) -> PyResult<Py<PyAny>> {
+    let exception_type = error.get_type(py).unbind();
+    let exception_value = error.value(py).clone().unbind().into_any();
+    let traceback = error
+        .traceback(py)
+        .map(|traceback| traceback.unbind().into_any())
+        .unwrap_or_else(|| py.None());
+    exit_stack
+        .bind(py)
+        .call_method1("__aexit__", (exception_type, exception_value, traceback))
         .map(Bound::unbind)
 }
 
@@ -3910,11 +4004,13 @@ fn parameter_source(
             dependency.unbind()
         };
         let use_cache = marker.getattr("use_cache")?.extract::<bool>()?;
+        let scope = marker.getattr("scope")?.extract::<Option<String>>()?;
         let path_names = path_parameters.to_vec();
-        return CallablePlan::build(py, dependency, &path_names).map(|plan| {
+        return CallablePlan::build(py, dependency, &path_names, scope.clone()).map(|plan| {
             ParameterSource::Dependency {
                 plan: Box::new(plan),
                 use_cache,
+                scope,
                 bind_value: true,
             }
         });
@@ -5480,21 +5576,29 @@ enum PendingAction {
     RouteInvocation,
     Endpoint,
     Dependency {
-        cache_key: usize,
+        cache_key: DependencyCacheKey,
         edge_index: usize,
     },
     OverrideSubdependency {
         parent_plan: Box<CallablePlan>,
-        cache_key: usize,
+        cache_key: DependencyCacheKey,
         edge_index: usize,
     },
     ReturnedResponse,
+    FunctionDependencyCloseBeforeResponse,
+    FunctionDependencyCloseAfterResponse,
+    FunctionDependencyCloseAfterError(PyErr),
     DependencyCloseAfterResponse,
     DependencyCloseAfterError(PyErr),
     FormCloseAfterResponse,
     FormCloseAfterError(PyErr),
     SendStart,
     SendBody,
+}
+
+enum FunctionCloseContinuation {
+    ReturnedResponse(Py<PyAny>),
+    SendStart(Option<Py<PyAny>>),
 }
 
 #[derive(Clone, Copy)]
@@ -5816,6 +5920,7 @@ fn fastapi_core_call(
             form_query_params: None,
             form_file_reads: VecDeque::new(),
             active_form_file_read: None,
+            function_close_continuation: None,
         },
     )
 }
@@ -5842,10 +5947,22 @@ struct FastApiCall {
     form_query_params: Option<QueryParams>,
     form_file_reads: VecDeque<FormFileReadPlan>,
     active_form_file_read: Option<FormFileReadPlan>,
+    function_close_continuation: Option<FunctionCloseContinuation>,
 }
 
 impl FastApiCall {
     fn start_returned_response(
+        &mut self,
+        py: Python<'_>,
+        response: &Bound<'_, PyAny>,
+    ) -> PyResult<MachineAction> {
+        self.close_function_dependency_stack_before_response(
+            py,
+            FunctionCloseContinuation::ReturnedResponse(response.clone().unbind()),
+        )
+    }
+
+    fn start_returned_response_after_function_close(
         &mut self,
         py: Python<'_>,
         response: &Bound<'_, PyAny>,
@@ -5857,6 +5974,46 @@ impl FastApiCall {
             self.send.bind(py),
         ))?;
         Ok(MachineAction::Await(awaitable.unbind()))
+    }
+
+    fn close_function_dependency_stack_before_response(
+        &mut self,
+        py: Python<'_>,
+        continuation: FunctionCloseContinuation,
+    ) -> PyResult<MachineAction> {
+        let exit_stack = self.invocation.as_mut().and_then(|invocation| {
+            if invocation.function_dependency_exit_stack_closed {
+                None
+            } else {
+                invocation.function_dependency_exit_stack_closed = true;
+                Some(invocation.function_dependency_exit_stack.clone_ref(py))
+            }
+        });
+        let Some(exit_stack) = exit_stack else {
+            return self.resume_function_close_continuation(py, continuation);
+        };
+        self.function_close_continuation = Some(continuation);
+        self.pending = Some(PendingAction::FunctionDependencyCloseBeforeResponse);
+        exit_stack
+            .bind(py)
+            .call_method0("aclose")
+            .map(Bound::unbind)
+            .map(MachineAction::Await)
+    }
+
+    fn resume_function_close_continuation(
+        &mut self,
+        py: Python<'_>,
+        continuation: FunctionCloseContinuation,
+    ) -> PyResult<MachineAction> {
+        match continuation {
+            FunctionCloseContinuation::ReturnedResponse(response) => {
+                self.start_returned_response_after_function_close(py, response.bind(py))
+            }
+            FunctionCloseContinuation::SendStart(extra_headers) => {
+                self.send_start_after_function_close(py, extra_headers)
+            }
+        }
     }
 
     fn dispatch_mounted_app(&mut self, py: Python<'_>) -> PyResult<Option<MachineAction>> {
@@ -6160,6 +6317,8 @@ impl FastApiCall {
             dependency_override_cursor: 0,
             dependency_exit_stack: new_dependency_exit_stack(py)?,
             dependency_exit_stack_closed: false,
+            function_dependency_exit_stack: new_dependency_exit_stack(py)?,
+            function_dependency_exit_stack_closed: false,
         });
         self.invoke_route(py)
     }
@@ -6305,6 +6464,8 @@ impl FastApiCall {
             dependency_override_cursor: 0,
             dependency_exit_stack: new_dependency_exit_stack(py)?,
             dependency_exit_stack_closed: false,
+            function_dependency_exit_stack: new_dependency_exit_stack(py)?,
+            function_dependency_exit_stack_closed: false,
         });
         self.invoke_route(py)
     }
@@ -6404,6 +6565,8 @@ impl FastApiCall {
                 dependency_override_cursor: 0,
                 dependency_exit_stack: new_dependency_exit_stack(py)?,
                 dependency_exit_stack_closed: false,
+                function_dependency_exit_stack: new_dependency_exit_stack(py)?,
+                function_dependency_exit_stack_closed: false,
             });
             return self.invoke_route(py);
         }
@@ -6482,6 +6645,7 @@ impl FastApiCall {
                 prepared_dependency_values: &mut invocation.prepared_dependency_values,
                 dependency_override_cursor: &mut invocation.dependency_override_cursor,
                 dependency_exit_stack: invocation.dependency_exit_stack.bind(py),
+                function_dependency_exit_stack: invocation.function_dependency_exit_stack.bind(py),
             };
             match plan.prepare_direct_dependency_overrides(&mut context)? {
                 OverridePreparation::Await {
@@ -6596,7 +6760,7 @@ impl FastApiCall {
     fn dependency_resumed(
         &mut self,
         py: Python<'_>,
-        cache_key: usize,
+        cache_key: DependencyCacheKey,
         edge_index: usize,
         value: Py<PyAny>,
     ) -> PyResult<MachineAction> {
@@ -6618,7 +6782,7 @@ impl FastApiCall {
         &mut self,
         py: Python<'_>,
         parent_plan: CallablePlan,
-        cache_key: usize,
+        cache_key: DependencyCacheKey,
         edge_index: usize,
         subdependency_value: Py<PyAny>,
     ) -> PyResult<MachineAction> {
@@ -6653,6 +6817,7 @@ impl FastApiCall {
                 prepared_dependency_values: &mut invocation.prepared_dependency_values,
                 dependency_override_cursor: &mut invocation.dependency_override_cursor,
                 dependency_exit_stack: invocation.dependency_exit_stack.bind(py),
+                function_dependency_exit_stack: invocation.function_dependency_exit_stack.bind(py),
             };
             parent_plan.invoke_with_prepared_dependencies(&mut context, &prepared_dependencies)?
         };
@@ -6918,6 +7083,17 @@ impl FastApiCall {
         py: Python<'_>,
         extra_headers: Option<Py<PyAny>>,
     ) -> PyResult<MachineAction> {
+        self.close_function_dependency_stack_before_response(
+            py,
+            FunctionCloseContinuation::SendStart(extra_headers),
+        )
+    }
+
+    fn send_start_after_function_close(
+        &mut self,
+        py: Python<'_>,
+        extra_headers: Option<Py<PyAny>>,
+    ) -> PyResult<MachineAction> {
         self.pending = Some(PendingAction::SendStart);
         response_start(
             py,
@@ -6956,7 +7132,35 @@ impl FastApiCall {
         self.send_start(py)
     }
 
+    fn dependency_stacks_open(&self) -> bool {
+        self.invocation.as_ref().is_some_and(|invocation| {
+            !invocation.function_dependency_exit_stack_closed
+                || !invocation.dependency_exit_stack_closed
+        })
+    }
+
     fn route_exception(&mut self, py: Python<'_>, error: PyErr) -> PyResult<MachineAction> {
+        let function_exit_stack = self.invocation.as_mut().and_then(|invocation| {
+            if invocation.function_dependency_exit_stack_closed {
+                None
+            } else {
+                invocation.function_dependency_exit_stack_closed = true;
+                Some(invocation.function_dependency_exit_stack.clone_ref(py))
+            }
+        });
+        if let Some(exit_stack) = function_exit_stack {
+            let awaitable = dependency_exit_with_error(py, &exit_stack, &error)?;
+            self.pending = Some(PendingAction::FunctionDependencyCloseAfterError(error));
+            return Ok(MachineAction::Await(awaitable));
+        }
+        self.close_request_dependency_stack_after_error(py, error)
+    }
+
+    fn close_request_dependency_stack_after_error(
+        &mut self,
+        py: Python<'_>,
+        error: PyErr,
+    ) -> PyResult<MachineAction> {
         let exit = self.invocation.as_mut().and_then(|invocation| {
             if invocation.dependency_exit_stack_closed {
                 None
@@ -6966,17 +7170,9 @@ impl FastApiCall {
             }
         });
         if let Some(exit_stack) = exit {
-            let exception_type = error.get_type(py).unbind();
-            let exception_value = error.value(py).clone().unbind().into_any();
-            let traceback = error
-                .traceback(py)
-                .map(|traceback| traceback.unbind().into_any())
-                .unwrap_or_else(|| py.None());
-            let awaitable = exit_stack
-                .bind(py)
-                .call_method1("__aexit__", (exception_type, exception_value, traceback))?;
+            let awaitable = dependency_exit_with_error(py, &exit_stack, &error)?;
             self.pending = Some(PendingAction::DependencyCloseAfterError(error));
-            return Ok(MachineAction::Await(awaitable.unbind()));
+            return Ok(MachineAction::Await(awaitable));
         }
         self.route_exception_after_dependency_cleanup(py, error)
     }
@@ -7023,6 +7219,29 @@ impl FastApiCall {
     }
 
     fn close_form_after_response(&mut self, py: Python<'_>) -> PyResult<MachineAction> {
+        let function_exit_stack = self.invocation.as_mut().and_then(|invocation| {
+            if invocation.function_dependency_exit_stack_closed {
+                None
+            } else {
+                invocation.function_dependency_exit_stack_closed = true;
+                Some(invocation.function_dependency_exit_stack.clone_ref(py))
+            }
+        });
+        if let Some(exit_stack) = function_exit_stack {
+            self.pending = Some(PendingAction::FunctionDependencyCloseAfterResponse);
+            return exit_stack
+                .bind(py)
+                .call_method0("aclose")
+                .map(Bound::unbind)
+                .map(MachineAction::Await);
+        }
+        self.close_request_dependency_stack_after_response(py)
+    }
+
+    fn close_request_dependency_stack_after_response(
+        &mut self,
+        py: Python<'_>,
+    ) -> PyResult<MachineAction> {
         let exit_stack = self.invocation.as_mut().and_then(|invocation| {
             if invocation.dependency_exit_stack_closed {
                 None
@@ -7093,6 +7312,31 @@ impl FastApiCall {
                     value,
                 ),
                 Some(PendingAction::ReturnedResponse) => self.close_form_after_response(py),
+                Some(PendingAction::FunctionDependencyCloseBeforeResponse) => {
+                    let continuation =
+                        self.function_close_continuation.take().ok_or_else(|| {
+                            PyRuntimeError::new_err(
+                                "function dependency cleanup resumed without a response",
+                            )
+                        })?;
+                    self.resume_function_close_continuation(py, continuation)
+                }
+                Some(PendingAction::FunctionDependencyCloseAfterResponse) => {
+                    if let Some(continuation) = self.function_close_continuation.take() {
+                        self.resume_function_close_continuation(py, continuation)
+                    } else {
+                        self.close_request_dependency_stack_after_response(py)
+                    }
+                }
+                Some(PendingAction::FunctionDependencyCloseAfterError(error)) => {
+                    if value.bind(py).is_truthy()? {
+                        Err(PyRuntimeError::new_err(
+                            "yield dependency suppressed a route exception before a response was created",
+                        ))
+                    } else {
+                        self.close_request_dependency_stack_after_error(py, error)
+                    }
+                }
                 Some(PendingAction::DependencyCloseAfterResponse) => {
                     self.close_form_request_after_response(py)
                 }
@@ -7126,11 +7370,16 @@ impl FastApiCall {
                     | PendingAction::RouteInvocation
                     | PendingAction::Endpoint
                     | PendingAction::ReturnedResponse
+                    | PendingAction::FunctionDependencyCloseBeforeResponse
+                    | PendingAction::FunctionDependencyCloseAfterResponse
                     | PendingAction::SendStart
                     | PendingAction::SendBody
                     | PendingAction::Dependency { .. }
                     | PendingAction::OverrideSubdependency { .. },
                 ) => self.route_exception(py, error),
+                Some(PendingAction::FunctionDependencyCloseAfterError(_)) => {
+                    self.route_exception(py, error)
+                }
                 Some(PendingAction::DependencyCloseAfterError(_)) => {
                     self.route_exception_after_dependency_cleanup(py, error)
                 }
@@ -7146,6 +7395,7 @@ impl FastApiCall {
 impl AwaitableStateMachine for FastApiCall {
     fn resume(&mut self, py: Python<'_>, input: MachineResume) -> PyResult<MachineAction> {
         match self.resume_inner(py, input) {
+            Err(error) if self.dependency_stacks_open() => self.route_exception(py, error),
             Err(error) if matches!(self.pending, Some(PendingAction::RouteInvocation)) => {
                 match self.route_exception(py, error) {
                     Ok(action) => Ok(action),

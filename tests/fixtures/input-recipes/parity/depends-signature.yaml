@@ -1,0 +1,24 @@
+schema: fastapi-rs/python-api-workflow@1
+workload:
+  file: tests/fixtures/workloads/direct_api_reference_wave.py
+  factory: create_argument_bundles
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.dependencies.depends-yield-scope-signature
+  probes:
+  - probe_id: depends-yield-scope-signature
+    public_callable:
+      module: fastapi
+      attribute: Depends
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  source_evidence:
+  - path: tests/test_dependency_yield_scope.py
+    kind: upstream_test
+    sha256: a8def8f4fd1326aa74eea557b8116820813bcb37066e3002b94cc15d6068f1ee
+  - path: docs/en/docs/tutorial/dependencies/dependencies-with-yield.md
+    kind: upstream_documentation
+    sha256: 93f58ceecafff1967c39047657ae08a020d2452c84d795dc777901c35b8a0d17

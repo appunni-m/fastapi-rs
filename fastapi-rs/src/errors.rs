@@ -13,6 +13,12 @@ create_exception!(
 );
 create_exception!(
     fastapi.exceptions,
+    DependencyScopeError,
+    FastAPIError,
+    "A dependency declared an invalid scope relationship."
+);
+create_exception!(
+    fastapi.exceptions,
     PydanticV1NotSupportedError,
     FastAPIError,
     "A pydantic.v1 model is used, which is no longer supported."
@@ -414,7 +420,16 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     module.add("ValidationException", validation_exception_type)?;
     module.add("RequestValidationError", request_exception_type)?;
     module.add("ResponseValidationError", exception_type)?;
+    module.add("_FastAPIError", py.get_type::<FastAPIError>())?;
+    module.add(
+        "_DependencyScopeError",
+        py.get_type::<DependencyScopeError>(),
+    )?;
     module.add("WebSocketException", websocket_exception_type)
+}
+
+pub(crate) fn dependency_scope_error(message: &str) -> PyErr {
+    DependencyScopeError::new_err(message.to_owned())
 }
 
 fn set_http_exception_signature(py: Python<'_>, exception_type: &Bound<'_, PyAny>) -> PyResult<()> {
