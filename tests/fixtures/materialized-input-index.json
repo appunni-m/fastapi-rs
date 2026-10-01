@@ -6,6 +6,18 @@
   },
   "workflows": [
     {
+      "id": "additional-response-model-openapi",
+      "input_path": "tests/fixtures/inputs/parity/additional-response-model-openapi.json",
+      "input_sha256": "30d3d259ac3bf008ac54f9789b54a9eeb98b9c2fb0afe11181fde9830c3385eb",
+      "recipe_path": "tests/fixtures/input-recipes/parity/additional-response-model-openapi.yaml",
+      "recipe_sha256": "b0ddd374acf2cd35d630052f485f96bdd747b8dfde53f728cefe3860b69de034",
+      "workload_path": "tests/fixtures/workloads/additional_response_model_openapi.py",
+      "workload_sha256": "b2564c1dfaa712a8430f14383aee36164d2444ea470039f30f243b8eddc37c99",
+      "case_ids": [
+        "fastapi.openapi.additional-response-model"
+      ]
+    },
+    {
       "id": "additional-response-openapi-wave",
       "input_path": "tests/fixtures/inputs/parity/additional-response-openapi-wave.json",
       "input_sha256": "2fd2992ad82741b3c7206b9b6a51ea85fc3421e6ee78ce5fcf6a18e3ed576163",
@@ -7228,6 +7240,37 @@
     }
   ],
   "mappings": [
+    {
+      "source_item_id": "documented-page:advanced/additional-responses.md",
+      "fixture_id": "fastapi.docs.advanced-additional-responses",
+      "workflow_id": "additional-response-model-openapi",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.openapi.additional-response-model"
+      ],
+      "observation_selectors": [
+        "docs.response.status",
+        "http.status",
+        "openapi.document",
+        "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_additional_responses/test_tutorial001.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-additional-responses-test-tutorial001",
+      "workflow_id": "additional-response-model-openapi",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.openapi.additional-response-model"
+      ],
+      "observation_selectors": [
+        "docs.response.status",
+        "http.status",
+        "openapi.document"
+      ]
+    },
     {
       "source_item_id": "upstream-test:tests/test_additional_responses_default_validationerror.py",
       "fixture_id": "fastapi.test.test-additional-responses-default-validationerror",

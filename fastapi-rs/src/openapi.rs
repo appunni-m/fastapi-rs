@@ -16,10 +16,11 @@ pub(crate) struct OpenApiParameter {
     pub(crate) schema: Py<PyAny>,
 }
 
-#[derive(Clone)]
 pub(crate) struct OpenApiAdditionalResponse {
     pub(crate) status: String,
     pub(crate) description: String,
+    pub(crate) response_model_name: Option<String>,
+    pub(crate) response_schema: Option<Py<PyAny>>,
 }
 
 /// The OpenAPI-facing contract for one registered FastAPI operation.
@@ -88,6 +89,15 @@ pub(crate) fn openapi_document(
                 collect_model_schema(py, &mut schemas, name, schema)?;
             } else {
                 collect_schema_definitions(py, &mut schemas, schema)?;
+            }
+        }
+        for response in &operation.additional_responses {
+            if let Some(schema) = response.response_schema.as_ref() {
+                if let Some(name) = response.response_model_name.as_deref() {
+                    collect_model_schema(py, &mut schemas, name, schema)?;
+                } else {
+                    collect_schema_definitions(py, &mut schemas, schema)?;
+                }
             }
         }
         if let Some(schema) = operation.stream_item_schema.as_ref() {
@@ -291,20 +301,49 @@ pub(crate) fn openapi_document(
         }
 
         for additional_response in &operation.additional_responses {
-            match responses.get_item(&additional_response.status)? {
-                Some(existing) => {
-                    let existing = existing.cast_into::<PyDict>().map_err(|_| {
-                        PyErr::new::<pyo3::exceptions::PyTypeError, _>(
-                            "OpenAPI response must be a dictionary",
-                        )
-                    })?;
-                    existing.set_item("description", &additional_response.description)?;
-                }
+            let response = match responses.get_item(&additional_response.status)? {
+                Some(existing) => existing.cast_into::<PyDict>().map_err(|_| {
+                    PyErr::new::<pyo3::exceptions::PyTypeError, _>(
+                        "OpenAPI response must be a dictionary",
+                    )
+                })?,
                 None => {
                     let response = PyDict::new(py);
-                    response.set_item("description", &additional_response.description)?;
                     responses.set_item(&additional_response.status, &response)?;
+                    response
                 }
+            };
+            response.set_item("description", &additional_response.description)?;
+            if let Some(schema) = additional_response.response_schema.as_ref() {
+                let content = match response.get_item("content")? {
+                    Some(content) => content.cast_into::<PyDict>().map_err(|_| {
+                        PyErr::new::<pyo3::exceptions::PyTypeError, _>(
+                            "OpenAPI response content must be a dictionary",
+                        )
+                    })?,
+                    None => {
+                        let content = PyDict::new(py);
+                        response.set_item("content", &content)?;
+                        content
+                    }
+                };
+                let media_type = operation
+                    .response_media_type
+                    .as_deref()
+                    .unwrap_or("application/json");
+                let media = match content.get_item(media_type)? {
+                    Some(media) => media.cast_into::<PyDict>().map_err(|_| {
+                        PyErr::new::<pyo3::exceptions::PyTypeError, _>(
+                            "OpenAPI media type entry must be a dictionary",
+                        )
+                    })?,
+                    None => {
+                        let media = PyDict::new(py);
+                        content.set_item(media_type, &media)?;
+                        media
+                    }
+                };
+                media.set_item("schema", schema.bind(py))?;
             }
         }
 

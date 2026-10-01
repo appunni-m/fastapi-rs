@@ -1779,7 +1779,7 @@ impl PyFastApi {
             method: route.method.to_ascii_lowercase(),
             summary,
             response_description: route.response_description.clone(),
-            additional_responses: route.additional_responses.clone(),
+            additional_responses: clone_additional_responses(py, &route.additional_responses),
             operation_id,
             status: route.status_code,
             parameters,
@@ -2038,7 +2038,10 @@ fn merge_router_routes(
             param_convertors,
             summary: source_route.summary.clone(),
             response_description: source_route.response_description.clone(),
-            additional_responses: source_route.additional_responses.clone(),
+            additional_responses: clone_additional_responses(
+                py,
+                &source_route.additional_responses,
+            ),
             operation_id: source_route.operation_id.clone(),
             deprecated: combined_deprecated(inherited_deprecated, source_route.deprecated),
             tags: combined_route_tags(inherited_tags, source_route.tags.as_deref()),
@@ -2260,9 +2263,17 @@ fn additional_response_descriptions(
         }
         let status = status.str()?.to_str()?.to_owned();
         let response = response.cast::<PyDict>()?;
-        if response.len() != 1 {
+        for (key, _) in response.iter() {
+            let key = key.extract::<String>()?;
+            if !matches!(key.as_str(), "description" | "model") {
+                return Err(PyNotImplementedError::new_err(
+                    "route-level responses currently support description and model entries only",
+                ));
+            }
+        }
+        if response.len() > 2 {
             return Err(PyNotImplementedError::new_err(
-                "route-level responses currently support description-only entries",
+                "route-level responses currently support description and model entries only",
             ));
         }
         let description = response
@@ -2278,12 +2289,46 @@ fn additional_response_descriptions(
                 "route-level response descriptions must be non-empty",
             ));
         }
+        let (response_model_name, response_schema) = match response.get_item("model")? {
+            Some(response_model) if !response_model.is_none() => {
+                let schema = pydantic_schema(py, &response_model, "serialization", None)?;
+                let model_name = match schema_definition_name(schema.bind(py))? {
+                    Some(name) => Some(name),
+                    None if is_pydantic_model(py, &response_model)? => {
+                        model_name(py, &response_model)?
+                    }
+                    None => None,
+                };
+                (model_name, Some(schema))
+            }
+            _ => (None, None),
+        };
         additional_responses.push(OpenApiAdditionalResponse {
             status,
             description,
+            response_model_name,
+            response_schema,
         });
     }
     Ok(additional_responses)
+}
+
+fn clone_additional_responses(
+    py: Python<'_>,
+    responses: &[OpenApiAdditionalResponse],
+) -> Vec<OpenApiAdditionalResponse> {
+    responses
+        .iter()
+        .map(|response| OpenApiAdditionalResponse {
+            status: response.status.clone(),
+            description: response.description.clone(),
+            response_model_name: response.response_model_name.clone(),
+            response_schema: response
+                .response_schema
+                .as_ref()
+                .map(|schema| schema.clone_ref(py)),
+        })
+        .collect()
 }
 
 fn operation_decorator(
@@ -2420,7 +2465,7 @@ impl PyOperationDecorator {
             param_convertors,
             summary: self.summary.clone(),
             response_description: self.response_description.clone(),
-            additional_responses: self.additional_responses.clone(),
+            additional_responses: clone_additional_responses(py, &self.additional_responses),
             operation_id: self.operation_id.clone(),
             deprecated: self.deprecated,
             tags: self.tags.clone(),
