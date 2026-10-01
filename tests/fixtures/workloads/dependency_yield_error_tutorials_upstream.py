@@ -1,7 +1,5 @@
 """Independent workloads for yield dependencies that suppress or re-raise errors."""
 
-from __future__ import annotations
-
 from typing import Annotated
 
 from fastapi import Depends, FastAPI, HTTPException
@@ -15,7 +13,7 @@ class OwnerError(Exception):
     pass
 
 
-def create_app() -> FastAPI:
+def create_app(_factory_input: dict[str, object], _event_trace: list[str]) -> FastAPI:
     app = FastAPI()
     exception_messages: list[str] = []
     items = {

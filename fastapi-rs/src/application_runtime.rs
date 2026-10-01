@@ -17,6 +17,7 @@ use crate::awaitable::{
 };
 use crate::docs;
 use crate::encoding::jsonable_encoder_default;
+use crate::errors::fastapi_error;
 use crate::lifespan::{FastApiLifespan, warn_on_event};
 use crate::openapi::{
     OpenApiAdditionalResponse, OpenApiInfo, OpenApiOperation, OpenApiParameter, openapi_document,
@@ -7885,9 +7886,13 @@ impl FastApiCall {
                 }
                 Some(PendingAction::FunctionDependencyCloseAfterError(error)) => {
                     if value.bind(py).is_truthy()? {
-                        Err(PyRuntimeError::new_err(
-                            "yield dependency suppressed a route exception before a response was created",
-                        ))
+                        Err(fastapi_error(concat!(
+                            "Response not awaited. There's a high chance that the ",
+                            "application code is raising an exception and a dependency with yield ",
+                            "has a block with a bare except, or a block with except Exception, ",
+                            "and is not raising the exception again. Read more about it in the ",
+                            "docs: https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-with-yield/#dependencies-with-yield-and-except"
+                        )))
                     } else {
                         self.close_request_dependency_stack_after_error(py, error)
                     }
@@ -7897,9 +7902,13 @@ impl FastApiCall {
                 }
                 Some(PendingAction::DependencyCloseAfterError(error)) => {
                     if value.bind(py).is_truthy()? {
-                        Err(PyRuntimeError::new_err(
-                            "yield dependency suppressed a route exception before a response was created",
-                        ))
+                        Err(fastapi_error(concat!(
+                            "Response not awaited. There's a high chance that the ",
+                            "application code is raising an exception and a dependency with yield ",
+                            "has a block with a bare except, or a block with except Exception, ",
+                            "and is not raising the exception again. Read more about it in the ",
+                            "docs: https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-with-yield/#dependencies-with-yield-and-except"
+                        )))
                     } else {
                         self.route_exception_after_dependency_cleanup(py, error)
                     }

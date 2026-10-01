@@ -1,10 +1,15 @@
-schema: fastapi-rs/python-asgi-workflow@2
+schema: fastapi-rs/python-asgi-workflow@3
 workload:
   file: tests/fixtures/workloads/dependency_yield_error_tutorials_upstream.py
   factory: create_app
   instantiate_per_case: true
 cases:
 - case_id: fastapi.dependencies.tutorial008b.default-parameter-exception-translation
+  factory_input: {}
+  construction_observation: &construction-observation
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
   actions:
   - action_id: missing-item-passes-through-dependency
     kind: http_request
@@ -68,6 +73,8 @@ cases:
   - path: docs/en/docs/tutorial/dependencies/dependencies-with-yield.md
     kind: upstream_documentation
 - case_id: fastapi.dependencies.tutorial008b.annotated-parameter-exception-translation
+  factory_input: {}
+  construction_observation: *construction-observation
   actions:
   - action_id: missing-item-passes-through-dependency
     kind: http_request
@@ -131,6 +138,8 @@ cases:
   - path: docs/en/docs/tutorial/dependencies/dependencies-with-yield.md
     kind: upstream_documentation
 - case_id: fastapi.dependencies.tutorial008c.suppressed-yield-exception
+  factory_input: {}
+  construction_observation: *construction-observation
   actions:
   - action_id: not-found
     kind: http_request
@@ -229,7 +238,7 @@ cases:
       - body
       comparison: exact
     - kind: application_error
-      selector: validation_error_class
+      selector: exception
       comparison: exact
   - action_id: suppressed-annotated
     kind: http_request
@@ -264,7 +273,7 @@ cases:
       - body
       comparison: exact
     - kind: application_error
-      selector: validation_error_class
+      selector: exception
       comparison: exact
   - action_id: observed-original-exceptions
     kind: http_request
@@ -308,6 +317,8 @@ cases:
   - path: docs/en/docs/tutorial/dependencies/dependencies-with-yield.md
     kind: upstream_documentation
 - case_id: fastapi.dependencies.tutorial008d.reraised-yield-exception
+  factory_input: {}
+  construction_observation: *construction-observation
   actions:
   - action_id: not-found
     kind: http_request

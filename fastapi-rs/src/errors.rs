@@ -442,6 +442,10 @@ pub(crate) fn fastapi_deprecation_warning_type<'py>(py: Python<'py>) -> Bound<'p
     py.get_type::<FastAPIDeprecationWarning>().into_any()
 }
 
+pub(crate) fn fastapi_error(message: &str) -> PyErr {
+    FastAPIError::new_err(message.to_owned())
+}
+
 pub(crate) fn dependency_scope_error(message: &str) -> PyErr {
     DependencyScopeError::new_err(message.to_owned())
 }

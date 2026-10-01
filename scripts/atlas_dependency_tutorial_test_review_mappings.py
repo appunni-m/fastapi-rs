@@ -22,7 +22,7 @@ SOURCE_IDENTITY = {
 
 _HTTP = ["http.body.bytes", "http.status"]
 _OPENAPI = ["docs.response.status", "http.status", "openapi.document", "openapi.paths"]
-_ERROR_CLASS = ["validation.error_class"]
+_ERROR_CLASS = ["asgi.application_error.exception"]
 
 
 def _source(path: str, start: int, end: int, role: str) -> dict[str, Any]:
@@ -742,7 +742,7 @@ DEPENDENCY_TUTORIAL_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                 "test_fastapi_error",
                 ["dependency-security", "asgi-error-propagation"],
                 "A yield dependency that suppresses an endpoint exception causes FastAPIError.",
-                "The two existing actions observe the escaping exception class but not the source's required message substring or TestClient.raises boundary. The default and Annotated source modules are separate pytest fixture variants.",
+                "The two existing actions observe the escaping exception class and exact message but not the TestClient.raises boundary. The default and Annotated source modules are separate pytest fixture variants.",
                 [
                     _link(
                         _YIELD_ERRORS,
