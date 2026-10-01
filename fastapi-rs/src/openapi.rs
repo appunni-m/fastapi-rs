@@ -3,7 +3,7 @@
 use std::collections::BTreeMap;
 
 use pyo3::prelude::*;
-use pyo3::types::{PyBool, PyDict, PyFloat, PyList};
+use pyo3::types::{PyBool, PyDict, PyFloat, PyList, PyString};
 
 /// One OpenAPI parameter extracted from a FastAPI operation.
 pub(crate) struct OpenApiParameter {
@@ -343,7 +343,25 @@ pub(crate) fn openapi_document(
                         media
                     }
                 };
-                media.set_item("schema", schema.bind(py))?;
+                let schema = match additional_response.response_model_name.as_deref() {
+                    Some(model_name) => reference_schema(py, model_name)?.into_any(),
+                    None => normalize_schema(py, schema.bind(py), false)?,
+                };
+                if additional_response.response_model_name.is_none() {
+                    if let Ok(schema_dict) = schema.cast::<PyDict>() {
+                        if schema_dict.get_item("$ref")?.is_none() {
+                            let alias = format!(
+                                "Response_{}_{}",
+                                additional_response.status, operation.operation_id
+                            );
+                            let title = PyString::new(py, &alias)
+                                .call_method0("title")?
+                                .extract::<String>()?;
+                            schema_dict.set_item("title", title.replace('_', " "))?;
+                        }
+                    }
+                }
+                media.set_item("schema", schema)?;
             }
         }
 

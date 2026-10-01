@@ -6606,6 +6606,10 @@ impl FastApiCall {
                 .bind(py)
                 .call((response_value,), Some(&kwargs))?;
             merge_injected_response_state(py, &response, injected_response_bound)?;
+            let response_status_code = response.getattr("status_code")?.extract::<i64>()?;
+            if response_status_code < 200 || matches!(response_status_code, 204 | 205 | 304) {
+                response.setattr("body", PyBytes::new(py, b""))?;
+            }
             return self.start_returned_response(py, &response);
         }
         self.response_status = status_code;
