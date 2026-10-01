@@ -1,4 +1,9 @@
 schema: fastapi-rs/python-asgi-workflow@2
+# Generic FileResponse semantics use the pinned sibling Starlette 1.6.0 source:
+# ../starlette/tests/test_responses.py:716-727 covers FileResponse dispatch,
+# and ../starlette/starlette/responses.py:311-382 reads path/status/stat_result
+# while dispatching. Recipe v2's structured source_evidence is rooted only at
+# FastAPI, so the workflow's consumer-path evidence remains the tutorial test.
 workload:
   file: tests/fixtures/workloads/starlette_response_runtime.py
   factory: create_app
@@ -252,6 +257,107 @@ cases:
       headers:
       - - host
         - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: call-time-status-code
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /file-call-time/status-code
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: call-time-path
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /file-call-time/path
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: call-time-stat-result
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /file-call-time/stat-result
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - range
+        - bytes=2-
       client:
       - 127.0.0.1
       - 123

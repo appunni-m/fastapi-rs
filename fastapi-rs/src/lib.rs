@@ -7,6 +7,7 @@
 mod application_runtime;
 mod awaitable;
 mod datastructures;
+mod docs;
 mod encoding;
 mod errors;
 mod openapi;

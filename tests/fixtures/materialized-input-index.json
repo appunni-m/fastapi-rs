@@ -5240,7 +5240,7 @@
       "input_path": "tests/fixtures/inputs/parity/response-model-data-filter-exclude-unset-none-review.json",
       "input_sha256": "e8df817a4df31b3f2f646068c8a9286416ff13577822d1fc572bbc5d8eb34a17",
       "recipe_path": "tests/fixtures/input-recipes/parity/response-model-data-filter-exclude-unset-none-review.yaml",
-      "recipe_sha256": "aa4bb740eedd503f68ca16c07df35b97e105a834a9b7f730e54ff5faecd34451",
+      "recipe_sha256": "8a987cc09b248e163f9bf1d2cc6016f7a381d988d44a9ce2d4a7d1f6cac56ce1",
       "workload_path": "tests/fixtures/workloads/response_model_data_filter_exclude_unset_none_review.py",
       "workload_sha256": "24b60f06b2472a0254c9ae15d0b208e0edd99d3cb8a3833696d343bacd0c13cd",
       "case_ids": [
@@ -6501,11 +6501,11 @@
     {
       "id": "starlette-response-runtime-upstream",
       "input_path": "tests/fixtures/inputs/parity/starlette-response-runtime-upstream.json",
-      "input_sha256": "3fa7e6c867bfd12c4ff38163db09429dc99555105477711beb0813cbb3ccb571",
+      "input_sha256": "6376beae3cc11d761b0eb8937c013a2615b176ef4d2da380996ba96f91a7af4a",
       "recipe_path": "tests/fixtures/input-recipes/parity/starlette-response-runtime-upstream.yaml",
-      "recipe_sha256": "a2516642e8af13110378566a08f7a8ae6e626b94c30c03461a6fdb22574624fd",
+      "recipe_sha256": "f0f31b11088814efcc69080f52a1ab0b4caba1224c0182931d352289cb9b1027",
       "workload_path": "tests/fixtures/workloads/starlette_response_runtime.py",
-      "workload_sha256": "15655e424afbc80d584feb15b1fc1ffe07e772b616dc9f49f37b51d2542d9dbc",
+      "workload_sha256": "8e106c548e33e3dac5db53da200e493406484f4e3ff7cfab91e475827d01b073",
       "case_ids": [
         "fastapi.test.test-tutorial-test-custom-response-test-tutorial005.test-get",
         "fastapi.test.test-tutorial-test-custom-response-test-tutorial005.test-openapi-schema",
@@ -6730,13 +6730,14 @@
     {
       "id": "sub-applications",
       "input_path": "tests/fixtures/inputs/parity/sub_applications.json",
-      "input_sha256": "125990b554d1e45ff6d400bc7baaed518050630eeeafc24af1ec29c5cb0a3059",
+      "input_sha256": "3b11234c7f2731b9dc398c746897730329643419e4ab99a20dd2e3e092ae287a",
       "recipe_path": "tests/fixtures/input-recipes/parity/sub_applications.yaml",
-      "recipe_sha256": "5f2c6ee98c9e5e933375920d1d9c8be97e1e94c75d3343d0a169c73b2b005e91",
+      "recipe_sha256": "def19c720694be55af27073fe9cf111c00779b98529cb9205a3d21f10ba4280b",
       "workload_path": "tests/fixtures/workloads/sub_applications.py",
       "workload_sha256": "ddc0524c6fda68b4b86a817719476eb5fea765910f007ae6b57d29aec036b26f",
       "case_ids": [
-        "fastapi.docs.sub-applications.mount-and-own-openapi"
+        "fastapi.docs.sub-applications.mount-and-own-openapi",
+        "fastapi.docs.sub-applications.built-in-routes-root-path"
       ]
     },
     {
@@ -24812,12 +24813,28 @@
       ]
     },
     {
+      "source_item_id": "documented-page:advanced/behind-a-proxy.md",
+      "fixture_id": "fastapi.docs.advanced-behind-a-proxy",
+      "workflow_id": "sub-applications",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.docs.sub-applications.built-in-routes-root-path"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
       "source_item_id": "documented-page:advanced/sub-applications.md",
       "fixture_id": "fastapi.docs.advanced-sub-applications",
       "workflow_id": "sub-applications",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
+        "fastapi.docs.sub-applications.built-in-routes-root-path",
         "fastapi.docs.sub-applications.mount-and-own-openapi"
       ],
       "observation_selectors": [
@@ -24831,12 +24848,27 @@
       ]
     },
     {
+      "source_item_id": "upstream-test:tests/test_local_docs.py",
+      "fixture_id": "fastapi.test.test-local-docs",
+      "workflow_id": "sub-applications",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.docs.sub-applications.built-in-routes-root-path"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
       "source_item_id": "upstream-test:tests/test_tutorial/test_sub_applications/test_tutorial001.py",
       "fixture_id": "fastapi.test.test-tutorial-test-sub-applications-test-tutorial001",
       "workflow_id": "sub-applications",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
+        "fastapi.docs.sub-applications.built-in-routes-root-path",
         "fastapi.docs.sub-applications.mount-and-own-openapi"
       ],
       "observation_selectors": [

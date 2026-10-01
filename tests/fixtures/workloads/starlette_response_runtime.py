@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import os
+import stat
+import tempfile
 from pathlib import Path
 
 import anyio
@@ -17,6 +20,15 @@ from fastapi.responses import (
 )
 from pydantic import BaseModel
 
+_FILE_RESPONSE_MTIME = 1_700_000_000
+_FILE_RESPONSE_BYTES = b"original-file-content"
+_FILE_RESPONSE_MUTATED_PATH_BYTES = b"mutated-path-content"
+
+
+def _write_file_response_input(path: Path, contents: bytes) -> None:
+    path.write_bytes(contents)
+    os.utime(path, (_FILE_RESPONSE_MTIME, _FILE_RESPONSE_MTIME))
+
 
 class Item(BaseModel):
     title: str
@@ -26,6 +38,15 @@ class Item(BaseModel):
 
 def create_app() -> FastAPI:
     app = FastAPI(default_response_class=HTMLResponse)
+    file_response_directory = tempfile.TemporaryDirectory(
+        prefix="fastapi-rs-file-response-call-time-"
+    )
+    file_response_root = Path(file_response_directory.name)
+    file_response_original = file_response_root / "original.txt"
+    file_response_mutated = file_response_root / "mutated.txt"
+    _write_file_response_input(file_response_original, _FILE_RESPONSE_BYTES)
+    _write_file_response_input(file_response_mutated, _FILE_RESPONSE_MUTATED_PATH_BYTES)
+    app.state.file_response_directory = file_response_directory
 
     @app.get("/plain", response_class=PlainTextResponse)
     async def plain_text():
@@ -59,6 +80,37 @@ def create_app() -> FastAPI:
     @app.get("/file-class", response_class=FileResponse)
     async def file_response_class():
         return str(Path(__file__))
+
+    @app.get("/file-call-time/status-code")
+    async def file_response_mutated_status_code():
+        response = FileResponse(file_response_original, status_code=200)
+        response.status_code = 201
+        return response
+
+    @app.get("/file-call-time/path")
+    async def file_response_mutated_path():
+        response = FileResponse(file_response_original)
+        response.path = file_response_mutated
+        return response
+
+    @app.get("/file-call-time/stat-result")
+    async def file_response_mutated_stat_result():
+        response = FileResponse(file_response_original)
+        response.stat_result = os.stat_result(
+            (
+                stat.S_IFREG | 0o644,
+                1,
+                1,
+                1,
+                0,
+                0,
+                4,
+                _FILE_RESPONSE_MTIME,
+                _FILE_RESPONSE_MTIME + 5,
+                _FILE_RESPONSE_MTIME + 5,
+            )
+        )
+        return response
 
     @app.get("/items/", response_class=HTMLResponse)
     async def html_items():

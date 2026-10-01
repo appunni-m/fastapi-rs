@@ -8,11 +8,12 @@ use pyo3::exceptions::{
 };
 use pyo3::prelude::*;
 use pyo3::types::{PyBool, PyBytes, PyDict, PyInt, PyList, PyModule, PyString, PyTuple, PyType};
-use starlette_rs::{NamedRouteError, NamedRouteTable, QueryParams};
+use starlette_rs::{DetailedRouteMatch, NamedRouteError, NamedRouteTable, QueryParams, RouteTable};
 
 use crate::awaitable::{
     AwaitableStateMachine, MachineAction, MachineResume, into_python_awaitable,
 };
+use crate::docs;
 use crate::encoding::jsonable_encoder_default;
 use crate::openapi::{
     OpenApiAdditionalResponse, OpenApiInfo, OpenApiOperation, OpenApiParameter, openapi_document,
@@ -266,6 +267,7 @@ pub(crate) struct PyFastApi {
     dependency_overrides: Py<PyDict>,
     router: FastApiOperationRouter,
     websocket_router: FastApiOperationRouter,
+    docs_router: RouteTable,
     named_routes: NamedRouteTable,
     routes: Vec<FastApiRoute>,
     mounted_routes: Vec<Py<PyAny>>,
@@ -392,6 +394,12 @@ impl PyFastApi {
             .getattr("State")?
             .call0()?
             .unbind();
+        let mut docs_router = RouteTable::new();
+        for path in ["/docs", "/docs/oauth2-redirect", "/redoc"] {
+            docs_router
+                .add_route(path, ["GET"])
+                .map_err(|error| PyValueError::new_err(error.to_string()))?;
+        }
         Ok(Self {
             state,
             title: title.to_owned(),
@@ -408,6 +416,7 @@ impl PyFastApi {
             dependency_overrides: PyDict::new(py).unbind(),
             router: FastApiOperationRouter::new(),
             websocket_router: FastApiOperationRouter::new(),
+            docs_router,
             named_routes: NamedRouteTable::new(),
             routes: Vec::new(),
             mounted_routes: Vec::new(),
@@ -5506,6 +5515,39 @@ impl FastApiCall {
         Ok(None)
     }
 
+    fn redirect_docs_slash(
+        &mut self,
+        py: Python<'_>,
+        path: &str,
+        root_path: &str,
+        method: &str,
+    ) -> PyResult<Option<MachineAction>> {
+        let redirect_path = self
+            .app
+            .bind(py)
+            .borrow()
+            .docs_router
+            .find_slash_redirect_path(path, root_path, method);
+        let Some(redirect_path) = redirect_path else {
+            return Ok(None);
+        };
+
+        let redirect_scope = PyDict::new(py);
+        redirect_scope.call_method1("update", (self.scope.bind(py),))?;
+        redirect_scope.set_item("path", redirect_path)?;
+        let url_kwargs = PyDict::new(py);
+        url_kwargs.set_item("scope", redirect_scope)?;
+        let redirect_url = py
+            .import("starlette.datastructures")?
+            .getattr("URL")?
+            .call((), Some(&url_kwargs))?;
+        let response = py
+            .import("starlette.responses")?
+            .getattr("RedirectResponse")?
+            .call1((redirect_url,))?;
+        self.start_returned_response(py, &response).map(Some)
+    }
+
     fn begin(&mut self, py: Python<'_>) -> PyResult<MachineAction> {
         let scope = self.scope.bind(py);
         let scope_type = parse_scope_string(scope, "type", "http")?;
@@ -5528,7 +5570,11 @@ impl FastApiCall {
             .call1((scope,))?
             .extract::<String>()?;
         let root_path = parse_scope_string(scope, "root_path", "")?;
-        if route_path == self.app.bind(py).borrow().openapi_url && method == "GET" {
+        let (openapi_url, title) = {
+            let app = self.app.bind(py).borrow();
+            (app.openapi_url.clone(), app.title.clone())
+        };
+        if !openapi_url.is_empty() && route_path == openapi_url && method == "GET" {
             let document = self
                 .app
                 .bind(py)
@@ -5537,6 +5583,58 @@ impl FastApiCall {
             self.response_status = 200;
             self.response_body = json_bytes(py, document.bind(py))?;
             return self.send_start(py);
+        }
+        if !openapi_url.is_empty() {
+            let docs_match = self
+                .app
+                .bind(py)
+                .borrow()
+                .docs_router
+                .matches_detailed_with_root_path(&path, &root_path, &method);
+            match docs_match {
+                DetailedRouteMatch::Matched { route_index, .. } => {
+                    let docs_root_path = root_path.trim_end_matches('/');
+                    let html = match route_index {
+                        0 => docs::swagger_ui_html(
+                            &format!("{docs_root_path}{openapi_url}"),
+                            &format!("{docs_root_path}/docs/oauth2-redirect"),
+                            &format!("{title} - Swagger UI"),
+                        ),
+                        1 => docs::oauth2_redirect_html().to_owned(),
+                        2 => docs::redoc_html(
+                            &format!("{docs_root_path}{openapi_url}"),
+                            &format!("{title} - ReDoc"),
+                        ),
+                        _ => {
+                            return Err(PyRuntimeError::new_err(
+                                "matched FastAPI docs route was lost",
+                            ));
+                        }
+                    };
+                    let response = py
+                        .import("starlette.responses")?
+                        .getattr("HTMLResponse")?
+                        .call1((html,))?;
+                    return self.start_returned_response(py, &response);
+                }
+                DetailedRouteMatch::MethodNotAllowed {
+                    allowed_methods, ..
+                } => {
+                    let headers = PyDict::new(py);
+                    headers.set_item("Allow", allowed_methods.join(", "))?;
+                    let content = PyDict::new(py);
+                    content.set_item("detail", "Method Not Allowed")?;
+                    let kwargs = PyDict::new(py);
+                    kwargs.set_item("status_code", 405)?;
+                    kwargs.set_item("headers", headers)?;
+                    let response = py
+                        .import("starlette.responses")?
+                        .getattr("JSONResponse")?
+                        .call((content,), Some(&kwargs))?;
+                    return self.start_returned_response(py, &response);
+                }
+                DetailedRouteMatch::NotFound => {}
+            }
         }
 
         let match_result = self
@@ -5603,6 +5701,13 @@ impl FastApiCall {
             FastApiOperationMatch::NotFound => {
                 if let Some(action) = self.dispatch_mounted_app(py)? {
                     return Ok(action);
+                }
+                if !openapi_url.is_empty() {
+                    if let Some(action) =
+                        self.redirect_docs_slash(py, &path, &root_path, &method)?
+                    {
+                        return Ok(action);
+                    }
                 }
                 self.response_status = 404;
                 self.response_body = br#"{"detail":"Not Found"}"#.to_vec();
