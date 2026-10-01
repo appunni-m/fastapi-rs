@@ -75,6 +75,9 @@ pub(crate) fn openapi_document(
 ) -> PyResult<Py<PyAny>> {
     let mut schemas = BTreeMap::<String, Py<PyAny>>::new();
     for operation in operations {
+        for parameter in &operation.parameters {
+            collect_schema_definitions(py, &mut schemas, &parameter.schema)?;
+        }
         if operation.request_body_present {
             if let Some(schema) = operation.request_schema.as_ref() {
                 if let Some(name) = operation.request_model_name.as_deref() {
@@ -435,6 +438,15 @@ fn collect_model_schema(
     schema: &Py<PyAny>,
 ) -> PyResult<()> {
     collect_schema_definitions(py, schemas, schema)?;
+
+    if let Ok(schema) = schema.bind(py).cast::<PyDict>() {
+        if let Some(reference) = schema.get_item("$ref")? {
+            let reference = reference.extract::<String>()?;
+            if reference == format!("#/components/schemas/{name}") {
+                return Ok(());
+            }
+        }
+    }
 
     let normalized = normalize_schema(py, schema.bind(py), true)?;
     schemas

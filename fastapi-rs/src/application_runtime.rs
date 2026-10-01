@@ -136,6 +136,13 @@ impl ParameterSource {
 }
 
 impl CallableParameter {
+    fn body_alias(&self) -> &str {
+        match &self.source {
+            ParameterSource::Input { alias, .. } => alias,
+            _ => &self.name,
+        }
+    }
+
     fn clone_ref(&self, py: Python<'_>) -> Self {
         Self {
             name: self.name.clone(),
@@ -1976,21 +1983,16 @@ impl PyFastApi {
                         .iter()
                         .any(|parameter| parameter.default.is_none());
                     let media_type = aggregate_form_media_type(&body_parameters);
-                    (
-                        Some(aggregate_name),
-                        Some(request_schema),
-                        request_required,
-                        media_type,
-                    )
+                    (None, Some(request_schema), request_required, media_type)
                 } else {
                     match body_parameters.first().copied() {
                         Some(parameter) => (
-                            model_name(py, parameter.annotation.bind(py))?,
+                            None,
                             Some(pydantic_schema(
                                 py,
                                 parameter.annotation.bind(py),
                                 "validation",
-                                None,
+                                Some(&title_case(&parameter.body_alias().replace('_', " "))),
                             )?),
                             parameter.default.is_none(),
                             parameter
@@ -2015,7 +2017,7 @@ impl PyFastApi {
                         .iter()
                         .any(|parameter| parameter.default.is_none());
                     (
-                        Some(aggregate_name),
+                        None,
                         Some(request_schema),
                         request_required,
                         "application/json".to_owned(),
@@ -2024,14 +2026,13 @@ impl PyFastApi {
                     match route.plan.body_parameter() {
                         Some(parameter) => {
                             let annotation = parameter.annotation.bind(py);
-                            let schema_title = nullable_pydantic_model_name(py, annotation)?;
                             (
-                                model_name(py, annotation)?,
+                                None,
                                 Some(pydantic_schema(
                                     py,
                                     annotation,
                                     "validation",
-                                    schema_title.as_deref(),
+                                    Some(&title_case(&parameter.body_alias().replace('_', " "))),
                                 )?),
                                 parameter.default.is_none(),
                                 "application/json".to_owned(),
@@ -4374,7 +4375,7 @@ fn parameter_source(
             alias: name.to_owned(),
         });
     }
-    if is_pydantic_model_annotation(py, annotation)? || is_union_of_base_models(py, annotation)? {
+    if field_annotation_is_complex(py, annotation)? {
         return Ok(ParameterSource::Input {
             source: InputSource::Body,
             alias: name.to_owned(),
@@ -4384,6 +4385,68 @@ fn parameter_source(
         source: InputSource::Query,
         alias: name.to_owned(),
     })
+}
+
+/// Mirrors FastAPI's ``field_annotation_is_complex`` default-source rule.
+fn field_annotation_is_complex(py: Python<'_>, annotation: &Bound<'_, PyAny>) -> PyResult<bool> {
+    let typing = py.import("typing")?;
+    let origin = typing.getattr("get_origin")?.call1((annotation,))?;
+    let annotated = typing.getattr("Annotated")?;
+    if origin.is(&annotated) {
+        let arguments = typing
+            .getattr("get_args")?
+            .call1((annotation,))?
+            .cast_into::<PyTuple>()?;
+        return field_annotation_is_complex(py, &arguments.get_item(0)?);
+    }
+
+    let union = typing.getattr("Union")?;
+    let union_type = py.import("types")?.getattr("UnionType")?;
+    if origin.is(&union) || origin.is(&union_type) {
+        let arguments = typing
+            .getattr("get_args")?
+            .call1((annotation,))?
+            .cast_into::<PyTuple>()?;
+        for argument in arguments.iter() {
+            if field_annotation_is_complex(py, &argument)? {
+                return Ok(true);
+            }
+        }
+        return Ok(false);
+    }
+
+    if annotation_is_complex_type(py, annotation)?
+        || (!origin.is_none() && annotation_is_complex_type(py, &origin)?)
+    {
+        return Ok(true);
+    }
+
+    if origin.is_none() {
+        return Ok(false);
+    }
+    Ok(origin.hasattr("__pydantic_core_schema__")?
+        || origin.hasattr("__get_pydantic_core_schema__")?)
+}
+
+fn annotation_is_complex_type(py: Python<'_>, annotation: &Bound<'_, PyAny>) -> PyResult<bool> {
+    let base_model = py.import("pydantic")?.getattr("BaseModel")?;
+    if annotation_is_subclass(py, annotation, &base_model)? {
+        return Ok(true);
+    }
+    let mapping = py.import("collections.abc")?.getattr("Mapping")?;
+    if annotation_is_subclass(py, annotation, &mapping)? {
+        return Ok(true);
+    }
+    let upload_file = py
+        .import("starlette.datastructures")?
+        .getattr("UploadFile")?;
+    if annotation_is_subclass(py, annotation, &upload_file)? || is_sequence_class(py, annotation)? {
+        return Ok(true);
+    }
+    py.import("dataclasses")?
+        .getattr("is_dataclass")?
+        .call1((annotation,))?
+        .extract()
 }
 
 fn annotation_is_subclass(
@@ -4596,41 +4659,6 @@ fn is_pydantic_model_annotation(py: Python<'_>, annotation: &Bound<'_, PyAny>) -
         return Ok(false);
     }
     is_pydantic_model(py, annotation)
-}
-
-fn nullable_pydantic_model_name(
-    py: Python<'_>,
-    annotation: &Bound<'_, PyAny>,
-) -> PyResult<Option<String>> {
-    let typing = py.import("typing")?;
-    let origin = typing.getattr("get_origin")?.call1((annotation,))?;
-    let union = typing.getattr("Union")?;
-    let union_type = py.import("types")?.getattr("UnionType")?;
-    if !origin.is(&union) && !origin.is(&union_type) {
-        return Ok(None);
-    }
-    let arguments = typing
-        .getattr("get_args")?
-        .call1((annotation,))?
-        .cast_into::<PyTuple>()?;
-    if arguments.len() != 2 {
-        return Ok(None);
-    }
-    let none = py.None();
-    let none_type = none.bind(py).get_type();
-    for argument in arguments.iter() {
-        if argument.is(&none_type) {
-            let model = if arguments.get_item(0)?.is(&none_type) {
-                arguments.get_item(1)?
-            } else {
-                arguments.get_item(0)?
-            };
-            if is_pydantic_model(py, &model)? {
-                return model_name(py, &model);
-            }
-        }
-    }
-    Ok(None)
 }
 
 fn is_union_of_base_models(py: Python<'_>, annotation: &Bound<'_, PyAny>) -> PyResult<bool> {
@@ -5067,7 +5095,10 @@ fn schema_definition_name(schema: &Bound<'_, PyAny>) -> PyResult<Option<String>>
     let Ok(reference) = reference.extract::<String>() else {
         return Ok(None);
     };
-    let Some(name) = reference.strip_prefix("#/$defs/") else {
+    let Some(name) = reference
+        .strip_prefix("#/$defs/")
+        .or_else(|| reference.strip_prefix("#/components/schemas/"))
+    else {
         return Ok(None);
     };
     Ok(Some(name.replace("~1", "/").replace("~0", "~")))
@@ -5135,12 +5166,49 @@ fn pydantic_schema(
         .import("pydantic")?
         .getattr("TypeAdapter")?
         .call1((annotation,))?;
-    let kwargs = PyDict::new(py);
-    kwargs.set_item("mode", mode)?;
-    let schema = adapter
-        .call_method("json_schema", (), Some(&kwargs))?
-        .cast_into::<PyDict>()?;
-    if schema.get_item("title")?.is_none() {
+    let core_schema = adapter.getattr("core_schema")?;
+    let generator_kwargs = PyDict::new(py);
+    generator_kwargs.set_item("ref_template", "#/components/schemas/{model}")?;
+    let generator = py
+        .import("pydantic.json_schema")?
+        .getattr("GenerateJsonSchema")?
+        .call((), Some(&generator_kwargs))?;
+    let inputs = PyList::empty(py);
+    for input_mode in ["validation", "serialization"] {
+        let input = PyTuple::new(
+            py,
+            [
+                PyString::new(py, "fastapi-rs-schema").into_any(),
+                PyString::new(py, input_mode).into_any(),
+                core_schema.clone(),
+            ],
+        )?;
+        inputs.append(input)?;
+    }
+    let generated = generator
+        .call_method1("generate_definitions", (inputs,))?
+        .cast_into::<PyTuple>()?;
+    let field_schemas = generated.get_item(0)?.cast_into::<PyDict>()?;
+    let definitions = generated.get_item(1)?.cast_into::<PyDict>()?;
+    let field_key = PyTuple::new(
+        py,
+        [
+            PyString::new(py, "fastapi-rs-schema").into_any(),
+            PyString::new(py, mode).into_any(),
+        ],
+    )?;
+    let field_schema = field_schemas.get_item(&field_key)?.ok_or_else(|| {
+        PyValueError::new_err("Pydantic did not generate the requested JSON Schema mode")
+    })?;
+    let field_schema = field_schema.cast_into::<PyDict>()?;
+    let schema = PyDict::new(py);
+    for (key, value) in field_schema.iter() {
+        schema.set_item(key, value)?;
+    }
+    if !definitions.is_empty() {
+        schema.set_item("$defs", definitions)?;
+    }
+    if schema.get_item("title")?.is_none() && schema.get_item("$ref")?.is_none() {
         if let Some(title) = title {
             schema.set_item("title", title)?;
         }
@@ -5553,6 +5621,13 @@ fn validation_response_body_from_details(
     Ok(jsonable_encoder_default(py, &result)?.unbind())
 }
 
+fn validation_location_tuple(py: Python<'_>, location: &Bound<'_, PyList>) -> PyResult<Py<PyAny>> {
+    py.import("builtins")?
+        .getattr("tuple")?
+        .call1((location,))
+        .map(Bound::unbind)
+}
+
 fn append_input_validation_details(
     py: Python<'_>,
     details: &Bound<'_, PyList>,
@@ -5589,7 +5664,7 @@ fn append_input_validation_details(
                 loc.append(part?)?;
             }
         }
-        detail.set_item("loc", loc)?;
+        detail.set_item("loc", validation_location_tuple(py, &loc)?)?;
         detail.set_item("msg", entry.get_item("msg")?)?;
         if let Some(input) = entry.get_item("input")? {
             let input = if input.is_instance_of::<PyBytes>() {
@@ -5621,7 +5696,7 @@ fn append_missing_validation_detail(
     if location != "body" || body_field {
         loc.append(alias)?;
     }
-    detail.set_item("loc", loc)?;
+    detail.set_item("loc", validation_location_tuple(py, &loc)?)?;
     detail.set_item("msg", "Field required")?;
     detail.set_item("input", py.None())?;
     details.append(detail)?;
@@ -5635,7 +5710,7 @@ fn json_decode_validation_response_body(py: Python<'_>, error: &PyErr) -> PyResu
     let location = PyList::empty(py);
     location.append("body")?;
     location.append(error_value.getattr("pos")?)?;
-    detail.set_item("loc", location)?;
+    detail.set_item("loc", validation_location_tuple(py, &location)?)?;
     detail.set_item("msg", "JSON decode error")?;
     detail.set_item("input", PyDict::new(py))?;
     let context = PyDict::new(py);
