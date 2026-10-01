@@ -4034,7 +4034,7 @@ DOC_EXCLUSION_OVERRIDES = {
     "newsletter.md": "Newsletter signup and project communication content do not specify FastAPI runtime behavior.",
     "project-generation.md": "Project scaffolding and generated template behavior belong to separate tooling, outside the FastAPI runtime API.",
     "reference/middleware.md": "The reference exposes Starlette 1.6.0 middleware aliases; import paths remain in the FastAPI API manifest and generic middleware behavior belongs to Starlette-RS.",
-    "reference/staticfiles.md": "The reference exposes Starlette 1.6.0 StaticFiles; import paths remain in the FastAPI API manifest and file-serving behavior belongs to Starlette-RS.",
+    "reference/staticfiles.md": "This page only identifies FastAPI's direct Starlette StaticFiles re-export. Keep its import identity in the FastAPI API manifest and exclude it from an independent FastAPI behavior workflow; the separate Starlette-RS StaticFiles configuration contract is mapped below, but its missing-root and repeated-check requirements are not exercised by this page's workflow.",
     "reference/templating.md": "The reference exposes Starlette 1.6.0 Jinja2Templates; import paths remain in the FastAPI API manifest and rendering behavior belongs to Starlette-RS and Jinja2.",
     "reference/testclient.md": "The reference exposes Starlette 1.6.0 TestClient; import paths remain in the FastAPI API manifest and client/lifespan behavior belongs to Starlette-RS.",
     "release-notes.md": "Release notes span multiple historical versions and do not define one behavior of pinned FastAPI 0.141.1.",
@@ -8169,7 +8169,24 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                     ]
                 specs = (relation, note, operation_specs)
             elif feature_id == "middleware-integrations":
-                if "gzip" in source_path:
+                if "staticfiles" in source_path or "static-files" in source_path:
+                    specs = (
+                        "shared FastAPI/Starlette StaticFiles boundary",
+                        "FastAPI re-exports Starlette StaticFiles and owns mount integration; Starlette-RS owns generic configuration checks. The sibling Python-package lane supports this operation while its Rust-native lane is out of scope. The linked FastAPI workflows do not exercise the missing-root, file-root, or repeated-configuration requirements, so this is an ownership and backlog link rather than parity evidence.",
+                        [
+                            (
+                                "starlette.staticfiles.StaticFiles",
+                                "configuration-check",
+                                [
+                                    "starlette.staticfiles.StaticFiles.configuration-check.constructor-missing-directory",
+                                    "starlette.staticfiles.StaticFiles.configuration-check.lazy-missing-directory",
+                                    "starlette.staticfiles.StaticFiles.configuration-check.lazy-not-directory",
+                                    "starlette.staticfiles.StaticFiles.configuration-check.repeated-call-state-and-asgi-events",
+                                ],
+                            ),
+                        ],
+                    )
+                elif "gzip" in source_path:
                     specs = (
                         "shared GZipMiddleware boundary",
                         "Only the separately inventoried GZipMiddleware contract is in the current sibling slice; other middleware, integrations, and CLI behavior remain outside it.",

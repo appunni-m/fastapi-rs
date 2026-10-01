@@ -6242,9 +6242,11 @@ impl FastApiCall {
                         return Ok(action);
                     }
                 }
-                self.response_status = 404;
-                self.response_body = br#"{"detail":"Not Found"}"#.to_vec();
-                self.send_start(py)
+                let exception = py
+                    .import("starlette.exceptions")?
+                    .getattr("HTTPException")?
+                    .call1((404,))?;
+                Err(PyErr::from_value(exception))
             }
         }
     }

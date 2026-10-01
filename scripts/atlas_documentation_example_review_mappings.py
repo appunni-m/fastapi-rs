@@ -93,10 +93,11 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
     "docs_src/handling_errors/tutorial006_py310.py": {
         "rationale": (
             "The FastAPI 0.141.1 example registers HTTP and request-validation handlers that "
-            "delegate to FastAPI's defaults. The independent cases trigger those two handler "
-            "categories and observe response status/body only. The workflow does not observe "
-            "the printed messages or separately prove the delegation call path, and it uses a "
-            "different typed route and error details."
+            "delegate to FastAPI's defaults. The original independent cases trigger those two "
+            "handler categories and observe response status/body only. A separate probe registers "
+            "a distinctive Starlette HTTP exception handler and samples dispatch for an "
+            "unregistered path; this makes route-miss handling observable but does not claim the "
+            "example's printed messages, default delegation, route, or literal details."
         ),
         "supporting_sources": [
             {
@@ -111,6 +112,12 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
                 "end_line": 28,
                 "role": "documented typed item route with HTTP and success branches",
             },
+            {
+                "path": "docs_src/handling_errors/tutorial006_py310.py",
+                "start_line": 12,
+                "end_line": 17,
+                "role": "documented Starlette HTTP exception handler registration",
+            },
         ],
         "workflow_cases": [
             {
@@ -120,7 +127,19 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
                     "fastapi.docs-example.handling-errors.tutorial006.delegated-validation-error",
                 ],
                 "observation_selectors": ["http.body.bytes", "http.status"],
-            }
+            },
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/custom-not-found-handler.yaml",
+                "case_ids": [
+                    "fastapi.docs-example.handling-errors.tutorial006.custom-route-miss-handler"
+                ],
+                "observation_selectors": [
+                    "asgi.send.message_types",
+                    "http.body.bytes",
+                    "http.headers.ordered",
+                    "http.status",
+                ],
+            },
         ],
     },
     "docs_src/security/tutorial003_py310.py": {

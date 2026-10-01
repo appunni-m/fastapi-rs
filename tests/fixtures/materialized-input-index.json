@@ -903,6 +903,18 @@
       ]
     },
     {
+      "id": "custom-not-found-handler",
+      "input_path": "tests/fixtures/inputs/parity/custom-not-found-handler.json",
+      "input_sha256": "e7b6e348a2ede4af1303dbe7b511ac19beef1b4b2012f384a879068409fa2c92",
+      "recipe_path": "tests/fixtures/input-recipes/parity/custom-not-found-handler.yaml",
+      "recipe_sha256": "c21976adc32eebe9c3861ed17488925be7861a88de6b2f9cf61015e11a19730c",
+      "workload_path": "tests/fixtures/workloads/custom_not_found_handler.py",
+      "workload_sha256": "0a6802fffe6450be83bf326405963d72e924c84ce248f9f5848531843a7caafa",
+      "case_ids": [
+        "fastapi.docs-example.handling-errors.tutorial006.custom-route-miss-handler"
+      ]
+    },
+    {
       "id": "custom-response-tutorial001-upstream",
       "input_path": "tests/fixtures/inputs/parity/custom-response-tutorial001-upstream.json",
       "input_sha256": "044a4fd49efc8745a0537878d7c68b72cdf9858a55bf8546fdb7383feda18b18",
@@ -5309,7 +5321,7 @@
       "input_path": "tests/fixtures/inputs/parity/response-model-data-filter-exclude-unset-none-review.json",
       "input_sha256": "e8df817a4df31b3f2f646068c8a9286416ff13577822d1fc572bbc5d8eb34a17",
       "recipe_path": "tests/fixtures/input-recipes/parity/response-model-data-filter-exclude-unset-none-review.yaml",
-      "recipe_sha256": "1edbe8669ec9cea65b4a2e9ae90d170957e3d8c46f34cdf5e366ebf4afe38589",
+      "recipe_sha256": "3872c9fb0bd16adb76773b2d0e284e5b9bf7e5b6840b49bfd63312555c6d7098",
       "workload_path": "tests/fixtures/workloads/response_model_data_filter_exclude_unset_none_review.py",
       "workload_sha256": "24b60f06b2472a0254c9ae15d0b208e0edd99d3cb8a3833696d343bacd0c13cd",
       "case_ids": [
@@ -9187,6 +9199,22 @@
         "fastapi.middleware.custom-upload-budget-exceeded"
       ],
       "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-example:docs_src/handling_errors/tutorial006_py310.py",
+      "fixture_id": "fastapi.docs-example.handling-errors-tutorial006-py310",
+      "workflow_id": "custom-not-found-handler",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.docs-example.handling-errors.tutorial006.custom-route-miss-handler"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
         "http.body.bytes",
         "http.headers.ordered",
         "http.status"
