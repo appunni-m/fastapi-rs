@@ -9351,6 +9351,12 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             "evidence": f"The merged FastAPI coverage matrix assigns Starlette-RS ownership areas, and direct re-export/subclass/helper edges reference the sibling catalog and reviewed dispositions. FastAPI-RS metadata and CI pin the local sibling at {starlette_rs_revision[:12]}; the initial FastAPI-RS slice consumes it, while full cross-project behavior review remains open.",
         },
         {
+            "id": "starlette-rs-streaming-taskgroup-callback",
+            "status": "identity-checked target mismatch; sibling-owned fix pending",
+            "question": "Does the pinned Starlette-RS ASGI 2.0 StreamingResponse disconnect race pass a native coroutine callback to AnyIO TaskGroup.start_soon, preserving stream cancellation and request-scoped dependency cleanup?",
+            "evidence": f"The identity-checked stream-cancellation workflow passes on FastAPI 0.141.1 with Starlette 1.6.0 but fails on the current target in all three streaming cases. At Starlette-RS {starlette_rs_revision}, starlette-rs-py/src/runtime_calls.rs wraps a custom PyO3 AwaitableFactory around a PythonAwaitable and passes it to AnyIO 4.12.1 TaskGroup.start_soon; AnyIO rejects the returned object because it is not a native coroutine, then raises AttributeError while formatting the missing __qualname__. The same response path fails while registering the stream child, before the streaming iterator starts. This generic ASGI response behavior is Starlette-RS-owned; adding __qualname__ alone is not a fix.",
+        },
+        {
             "id": "pydantic-runtime-generated-api",
             "status": "pending",
             "question": "Which inherited/runtime-generated Pydantic model methods and schemas are externally observable through FastAPI's OpenAPI models and facade?",
@@ -9447,7 +9453,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             "priority": 4,
             "id": "deepen-independent-input-and-observation-coverage",
             "status": "partial",
-            "acceptance": "Extend the 486 materialized workflows with independent cases and supported selectors for high-impact partial behavior, starting with yield-dependency cleanup/cancellation and request validation; directly map documentation examples when page-level selectors are insufficient; never copy upstream tests or expected outputs.",
+            "acceptance": "Extend the 488 materialized workflows with independent cases and supported selectors for high-impact partial behavior. The yield-dependency cleanup/cancellation composition now has an input-only probe but remains blocked by the sibling streaming adapter mismatch; continue with request validation and directly map documentation examples when page-level selectors are insufficient. Never copy upstream tests or expected outputs.",
         },
         {
             "priority": 5,

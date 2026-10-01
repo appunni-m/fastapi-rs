@@ -70,6 +70,7 @@
       "type": "object",
       "required": [
         "boundary",
+        "includes",
         "excludes",
         "warmups",
         "rounds",
@@ -82,6 +83,8 @@
         "boundary": {"type": "string", "minLength": 1},
         "includes": {
           "type": "array",
+          "minItems": 2,
+          "description": "Work inside the measured request boundary for the compared subjects; name ASGI, facade, and native execution costs where applicable.",
           "items": {"type": "string", "minLength": 1},
           "uniqueItems": true
         },

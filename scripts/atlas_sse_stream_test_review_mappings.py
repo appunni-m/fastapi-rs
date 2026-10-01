@@ -819,7 +819,7 @@ SSE_STREAM_TEST_REVIEW_MAPPINGS = {
                             "fastapi.stream-cancellation.raw-async-generator",
                             ["cancel-raw-stream"],
                             _STREAM_CANCELLATION,
-                        )
+                        ),
                     ],
                     [
                         _source(
@@ -841,7 +841,7 @@ SSE_STREAM_TEST_REVIEW_MAPPINGS = {
                             "The source asserts that cancellation returns instead of hanging",
                         ),
                     ],
-                    "The upstream test asserts only that the call returns within three seconds. The independent recipe cancels after 0.05 seconds and observes response status, ordered headers, and the cancellation outcome; it does not observe stream bytes, individual yields, finite completion, an http.disconnect event, backpressure, or network-client behavior. Generic StreamingResponse transport belongs to Starlette 1.6.0.",
+                    "The upstream helper reports success when cancellation was caught or at least one body chunk was emitted, then the test asserts that result. The independent recipe uses a finite cancellation deadline and observes response status, ordered headers, and cancellation; it does not compare stream bytes or chunk count, model an http.disconnect event, backpressure, or network-client behavior. Generic StreamingResponse transport belongs to Starlette 1.6.0.",
                 )
                 | {
                     "stimulus_notes": "Independent direct-ASGI cancellation input: tests/fixtures/input-recipes/parity/stream-cancellation.yaml::fastapi.stream-cancellation.raw-async-generator (action cancel-raw-stream). The recipe records no expected output and observes only response status, headers, and the outer cancellation outcome."
@@ -884,13 +884,13 @@ SSE_STREAM_TEST_REVIEW_MAPPINGS = {
                             "The JSON Lines documentation describes async generator routes and streamed serialization",
                         ),
                     ],
-                    "The upstream test asserts only that the call returns within three seconds. The independent recipe cancels after 0.05 seconds and observes response status, ordered headers, and the cancellation outcome; it does not observe stream bytes, individual yields, finite completion, an http.disconnect event, backpressure, or network-client behavior. Generic StreamingResponse transport belongs to Starlette 1.6.0.",
+                    "The upstream helper reports success when cancellation was caught or at least one body chunk was emitted, then the test asserts that result. The independent recipe uses a finite cancellation deadline and observes response status, ordered headers, and cancellation; it does not compare stream bytes or chunk count, model an http.disconnect event, backpressure, or network-client behavior. Generic StreamingResponse transport belongs to Starlette 1.6.0.",
                 )
                 | {
                     "stimulus_notes": "Independent direct-ASGI cancellation input: tests/fixtures/input-recipes/parity/stream-cancellation.yaml::fastapi.stream-cancellation.jsonl-async-generator (action cancel-jsonl-stream). The recipe records no expected output and observes only response status, headers, and the outer cancellation outcome."
                 },
             },
         ),
-        "stimulus_notes": "Two independent direct-ASGI workflows exercise FastAPI's raw and JSON Lines async generator routes with an outer cancellation timeout. They record no expected output. Starlette 1.6.0 owns generic StreamingResponse send and disconnect mechanics; the recipes do not model TestClient, network transport, body bytes, stream completion, chunk boundaries, or backpressure.",
+        "stimulus_notes": "Two independent direct-ASGI workflows cover the module's raw and JSON Lines cancellation tests. The composed request-scoped yield-dependency cleanup probe is mapped under the separate dependency-after-yield source module. Fixtures record no expected output. Starlette 1.6.0 owns generic StreamingResponse send and disconnect mechanics; recipes do not model TestClient, network transport, streamed body bytes, chunk counts, or backpressure.",
     },
 }

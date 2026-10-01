@@ -141,8 +141,9 @@ target internals to manufacture compatibility.
 ### First executable lane
 
 `benchmarks/workloads/first-slice-valid-asgi.yaml` defines the first runnable
-measurement. `make benchmark-first-slice` first runs the complete ten-case
-identity-checked parity gate, then measures the valid item request in three
+measurement. `make benchmark-first-slice` rebuilds the pinned target extension
+with Cargo's release profile, runs the complete ten-case identity-checked
+parity gate, then measures the valid item request in three
 isolated processes: FastAPI 0.141.1 with Starlette 1.6.0, the FastAPI-RS release
 extension with the pinned Starlette-RS source, and a plain Starlette 1.6.0
 route/response control. The untimed output must match exactly across all three

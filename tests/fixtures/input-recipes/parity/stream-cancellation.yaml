@@ -72,3 +72,55 @@ cases:
     kind: upstream_documentation
   - path: docs/en/docs/tutorial/stream-json-lines.md
     kind: upstream_documentation
+- case_id: fastapi.stream-cancellation.request-yield-dependency-cleanup
+  factory_input:
+    workflow: yield-cleanup
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: cancel-stream-with-yield
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.0'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /stream-with-yield
+      query_string: ''
+      root_path: ''
+      headers: []
+      client: null
+      server: [test, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    receive_mode: wait_until_cancelled
+    cancel_after_seconds: 0.25
+    observations:
+    - {kind: http_response, selectors: [status], comparison: exact}
+    - {kind: asgi_cancellation, selector: cancelled_caught, comparison: exact}
+  - action_id: observe-yield-cleanup
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /events
+      query_string: ''
+      root_path: ''
+      headers: []
+      client: null
+      server: [test, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - path: tests/test_dependency_after_yield_streaming.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/dependencies/dependencies-with-yield.md
+    kind: upstream_documentation

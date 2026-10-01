@@ -281,14 +281,20 @@ _FUNCTIONS: dict[str, dict[str, dict[str, Any]]] = {
             "test_stream_session",
             features=["dependency-security", "response-serialization"],
             selectors=HTTP,
-            rationale="The response iterator reads the dependency-owned session, so the stream proves that FastAPI keeps a yielded resource available through response consumption.",
+            rationale="The pinned test consumes a finite stream backed by a yielded session. A separate independent probe composes request-scoped cleanup with stream cancellation and a follow-up request; that cancellation behavior is not asserted by this test.",
             links=[
                 _link(
                     _WAVE_LIFECYCLE,
                     "fastapi.dependencies.streaming-resource-lifetime",
                     ["stream-resource-open", "stream-resource-cleanup"],
                     HTTP,
-                )
+                ),
+                _link(
+                    "tests/fixtures/input-recipes/parity/stream-cancellation.yaml",
+                    "fastapi.stream-cancellation.request-yield-dependency-cleanup",
+                    ["observe-yield-cleanup"],
+                    HTTP,
+                ),
             ],
             gate=_ASGI_CLIENT_GATE,
             evidence=(_DEPENDENCY_SOLVER, _HTTP_EXIT_STACKS, _STARLETTE_STREAMING),

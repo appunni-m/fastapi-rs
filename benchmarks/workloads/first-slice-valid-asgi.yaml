@@ -27,10 +27,15 @@ subjects:
   environment: oracle
 timing:
   boundary: one direct ASGI app invocation, including facade/native dispatch and captured ASGI sends
+  includes:
+  - FastAPI request validation on the oracle and native FastAPI-RS behavior on the target
+  - FastAPI-RS public Python facade and PyO3 value conversion on the target subject
+  - ASGI dispatch, response creation, and captured response sends
   excludes:
   - interpreter and module startup
   - app construction and route registration
   - ASGI scope and receive/send callback construction
+  - HTTP server startup and server-side request processing
   - network and HTTP client
   warmups: 50
   rounds: 5

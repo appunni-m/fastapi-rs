@@ -141,15 +141,17 @@ are build-time support for this discovery/fallback path.
 
 ## Python package dependencies
 
-The Python distribution declares `pydantic==2.13.4` and
-`starlette-rs-py==0.1.0` in `pyproject.toml`; the selected oracle profile uses
-Pydantic 2.13.4. Pydantic's Python package builds schemas and exposes model
-behavior, while `pydantic-core` supplies its Rust validation/serialization
-engine. `starlette-rs-py` is a separate Rust/Python package and declares AnyIO
-`>=3.6.2,<5` in its own manifest. Maturin 1.14.1 is the Python build-system
-dependency. The target pins its direct Python runtime packages but does not yet
-have a lockfile for their full resolved closure; the FastAPI 0.141.1 oracle
-closure is separately locked and documented in
+The Python distribution directly pins `pydantic==2.13.4`,
+`pydantic-core==2.46.4`, and `starlette-rs-py==0.1.0` in `pyproject.toml`.
+Pydantic's Python package builds schemas and exposes model behavior, while the
+separately installed `pydantic-core` wheel supplies its Rust
+validation/serialization engine. `starlette-rs-py` is a separate Rust/Python
+package and declares AnyIO `>=3.6.2,<5` in its own manifest. Maturin 1.14.1 is
+the Python build-system dependency. The external target runtime closure is
+hash-locked for CPython 3.12.13 in
+[`requirements/target-runtime-cpython-3.12.13.lock`](../requirements/target-runtime-cpython-3.12.13.lock);
+the local Starlette-RS source install is separately pinned. The FastAPI
+0.141.1 oracle closure is separately locked and documented in
 [`DEPENDENCY_GRAPH.md`](DEPENDENCY_GRAPH.md).
 
 ### Narrow Pydantic Core encoder bridge
@@ -173,8 +175,9 @@ The input-only encoder review is
 `tests/fixtures/input-recipes/parity/pydantic-core-encoder-compatibility.yaml`.
 
 These runtime checks are an internal compatibility bridge, not a FastAPI-RS
-public API or an independently declared Python/Cargo dependency. Pydantic
-2.13.4 pins `pydantic-core==2.46.4` transitively, matching the selected
+public API. The `pydantic-core` wheel is a direct target Python runtime
+dependency and its Rust implementation remains Pydantic-owned, outside this
+workspace's Cargo graph. The explicit `2.46.4` pin matches the selected
 manifest identity. The public Pydantic `AnyUrl` type does not replace the raw
 Core `Url` check, and Pydantic does not export the undefined sentinel type as
 a public API. Keep the behavior tied to these encoder classifications and

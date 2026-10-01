@@ -7800,14 +7800,15 @@
     {
       "id": "stream-cancellation",
       "input_path": "tests/fixtures/inputs/parity/stream-cancellation.json",
-      "input_sha256": "336c8377979de2cb01471c5dc4cbb708aea3a0255a5a6d1d268fd7086fc8610a",
+      "input_sha256": "42c43141f152d2d05d1136027ba3ecd90f3c8153c6f414f6adeee6990f9547f5",
       "recipe_path": "tests/fixtures/input-recipes/parity/stream-cancellation.yaml",
-      "recipe_sha256": "08836b5ef7d2751300f9376822e896cb22207005aa9fa29fd1dade69c8a5eed4",
+      "recipe_sha256": "7d527c144380780d9b315c4f47becb857317123a936ea074273ab85f514549c2",
       "workload_path": "tests/fixtures/workloads/stream_cancellation.py",
-      "workload_sha256": "dcce47bd4c1189c7c90c9746fe16181d8a77c7758f889d7514e0e728ae819164",
+      "workload_sha256": "cd674dac5355134cf909602f274700729cc1cc7bc7af186842e6a3f7ecb48cd0",
       "case_ids": [
         "fastapi.stream-cancellation.raw-async-generator",
-        "fastapi.stream-cancellation.jsonl-async-generator"
+        "fastapi.stream-cancellation.jsonl-async-generator",
+        "fastapi.stream-cancellation.request-yield-dependency-cleanup"
       ]
     },
     {
@@ -26262,6 +26263,20 @@
       ]
     },
     {
+      "source_item_id": "documented-page:tutorial/dependencies/dependencies-with-yield.md",
+      "fixture_id": "fastapi.docs.tutorial-dependencies-dependencies-with-yield",
+      "workflow_id": "stream-cancellation",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.stream-cancellation.request-yield-dependency-cleanup"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
       "source_item_id": "documented-page:tutorial/stream-json-lines.md",
       "fixture_id": "fastapi.docs.tutorial-stream-json-lines",
       "workflow_id": "stream-cancellation",
@@ -26272,6 +26287,20 @@
       ],
       "observation_selectors": [
         "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_dependency_after_yield_streaming.py",
+      "fixture_id": "fastapi.test.test-dependency-after-yield-streaming",
+      "workflow_id": "stream-cancellation",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.stream-cancellation.request-yield-dependency-cleanup"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
         "http.status"
       ]
     },

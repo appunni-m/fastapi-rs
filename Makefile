@@ -197,7 +197,7 @@ parity-first-slice: parity-validate ## Run and exactly compare the pinned first 
 benchmark-contract-check: parity-inputs ## Validate workload/result schemas and parity references
 	$(PYTHON) -m scripts.benchmarks.contract --check
 
-benchmark-first-slice: benchmark-contract-check ## Gate parity and measure the selected FastAPI direct-ASGI workload
+benchmark-first-slice: benchmark-contract-check parity-prepare-target ## Prepare the release target, gate parity, and measure the selected direct-ASGI workload
 	$(PYTHON) scripts/benchmarks/run_first_slice.py \
 	  --workload "$(BENCHMARK_WORKLOAD)" \
 	  --fastapi-source "$(FASTAPI_SOURCE)" \

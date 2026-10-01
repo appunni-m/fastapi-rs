@@ -172,7 +172,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@3
-    sha256: 038ea6195ffb842468af28b1c2364816908bbc8570830d5517bd6ea148545a43
+    sha256: c071b0f37b3c9d3b363df2beeb41b6ff6351ecdf23ba1c0e6b3b7e3313ba1e0c
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -205,7 +205,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: e41af9d2528a6c3bebdb3504479ebafb0873353aa5557e86a01888355f72ec7b
+    sha256: b5b0e8ee0fc26e67fe74e2892dbd82a654509bde6891bd578b5a073a8cf97ecf
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 636
@@ -242,14 +242,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@2
-    sha256: 578f12d4d5b3927e20594a52927e0e4ec2f224d56842a11245f28f3aeb04a04a
+    sha256: 2b1f5fa6485efdd6afed0fd67b4ebc6232fc469380be6f097183b033cd82c4e0
     schema_path: tests/fixtures/schemas/materialized-input-index.schema.json
     schema_sha256: 56ac1cdfaa6f28b4277ef44b5ef78efebb3122111c5691e1b9c1bce869156aaf
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
       workflows: 488
-      cases: 1907
-      partial_source_mappings: 1154
+      cases: 1908
+      partial_source_mappings: 1156
 
 contract_metadata:
   aliases:
@@ -309,6 +309,12 @@ unresolved:
     source_artifact: compatibility_atlas
     pointer: /unresolved_compatibility_points
     item_id: starlette-rs-surface-review
+  starlette_rs_streaming_taskgroup_callback:
+    state: identity-checked target mismatch; sibling-owned fix pending
+    source_artifact: compatibility_atlas
+    pointer: /unresolved_compatibility_points
+    item_id: starlette-rs-streaming-taskgroup-callback
+    question: The pinned Starlette-RS streaming adapter passes a custom awaitable factory to AnyIO TaskGroup.start_soon, which requires a native coroutine callback.
   starlette_rs_target_identity:
     state: unresolved
     source_artifact: compatibility_atlas
