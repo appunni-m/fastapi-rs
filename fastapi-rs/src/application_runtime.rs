@@ -3,8 +3,8 @@
 use std::collections::{BTreeSet, HashMap, VecDeque};
 
 use pyo3::exceptions::{
-    PyAssertionError, PyAttributeError, PyNameError, PyNotImplementedError, PyRuntimeError,
-    PyStopAsyncIteration, PyTypeError, PyValueError,
+    PyAssertionError, PyAttributeError, PyException, PyNameError, PyNotImplementedError,
+    PyRuntimeError, PyStopAsyncIteration, PyTypeError, PyValueError,
 };
 use pyo3::prelude::*;
 use pyo3::types::{PyBool, PyBytes, PyDict, PyInt, PyList, PyModule, PyString, PyTuple, PyType};
@@ -305,6 +305,7 @@ pub(crate) struct PyFastApi {
     openapi_external_docs: Option<Py<PyAny>>,
     dependencies: Vec<Py<PyAny>>,
     default_response_class: Option<Py<PyAny>>,
+    exception_handlers: Py<PyAny>,
     dependency_overrides: Py<PyDict>,
     router: FastApiOperationRouter,
     websocket_router: FastApiOperationRouter,
@@ -348,6 +349,12 @@ struct PyFastApiMessageCapture {
 
 #[pyclass(name = "_FastAPIHTTPExceptionHandler", module = "fastapi_rs._core")]
 struct PyFastApiHttpExceptionHandler;
+
+#[pyclass(name = "_ExceptionHandlerDecorator", module = "fastapi_rs._core")]
+struct PyExceptionHandlerDecorator {
+    app: Py<PyFastApi>,
+    exception_key: Py<PyAny>,
+}
 
 #[pyclass(name = "_FastAPICallNext", module = "fastapi_rs._core", unsendable)]
 struct PyFastApiCallNext {
@@ -410,7 +417,7 @@ struct RouterIncludePolicy<'policy> {
 #[pymethods]
 impl PyFastApi {
     #[new]
-    #[pyo3(signature = (*, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", terms_of_service = None, contact = None, license_info = None, openapi_external_docs = None, dependencies = None, default_response_class = None))]
+    #[pyo3(signature = (*, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", terms_of_service = None, contact = None, license_info = None, openapi_external_docs = None, dependencies = None, default_response_class = None, exception_handlers = None))]
     // lint-exception: PyO3 needs one Rust argument per Python constructor keyword.
     #[allow(
         clippy::too_many_arguments,
@@ -429,12 +436,30 @@ impl PyFastApi {
         openapi_external_docs: Option<Py<PyAny>>,
         dependencies: Option<Vec<Py<PyAny>>>,
         default_response_class: Option<Py<PyAny>>,
+        exception_handlers: Option<Py<PyAny>>,
     ) -> PyResult<Self> {
         let state = py
             .import("starlette.datastructures")?
             .getattr("State")?
             .call0()?
             .unbind();
+        let exception_handlers = match exception_handlers {
+            Some(handlers) => py
+                .import("builtins")?
+                .getattr("dict")?
+                .call1((handlers,))?
+                .cast_into::<PyDict>()?,
+            None => PyDict::new(py),
+        };
+        let http_exception_type = py
+            .import("starlette.exceptions")?
+            .getattr("HTTPException")?;
+        if !exception_handlers.contains(&http_exception_type)? {
+            exception_handlers.set_item(
+                http_exception_type,
+                Py::new(py, PyFastApiHttpExceptionHandler)?.into_any(),
+            )?;
+        }
         let mut docs_router = RouteTable::new();
         for path in ["/docs", "/docs/oauth2-redirect", "/redoc"] {
             docs_router
@@ -454,6 +479,7 @@ impl PyFastApi {
             openapi_external_docs,
             dependencies: dependencies.unwrap_or_default(),
             default_response_class,
+            exception_handlers: exception_handlers.unbind().into_any(),
             dependency_overrides: PyDict::new(py).unbind(),
             router: FastApiOperationRouter::new(),
             websocket_router: FastApiOperationRouter::new(),
@@ -485,6 +511,41 @@ impl PyFastApi {
     #[setter]
     fn set_dependency_overrides(&mut self, dependency_overrides: Py<PyDict>) {
         self.dependency_overrides = dependency_overrides;
+    }
+
+    #[getter]
+    fn exception_handlers(&self, py: Python<'_>) -> Py<PyAny> {
+        self.exception_handlers.clone_ref(py)
+    }
+
+    #[setter]
+    fn set_exception_handlers(&mut self, exception_handlers: Py<PyAny>) {
+        self.exception_handlers = exception_handlers;
+    }
+
+    fn add_exception_handler(
+        &self,
+        py: Python<'_>,
+        exc_class_or_status_code: Py<PyAny>,
+        handler: Py<PyAny>,
+    ) -> PyResult<()> {
+        self.exception_handlers
+            .bind(py)
+            .set_item(exc_class_or_status_code.bind(py), handler.bind(py))
+    }
+
+    fn exception_handler(
+        slf: Py<Self>,
+        py: Python<'_>,
+        exc_class_or_status_code: Py<PyAny>,
+    ) -> PyResult<Py<PyExceptionHandlerDecorator>> {
+        Py::new(
+            py,
+            PyExceptionHandlerDecorator {
+                app: slf,
+                exception_key: exc_class_or_status_code,
+            },
+        )
     }
 
     #[pyo3(signature = (middleware_class, *args, **kwargs))]
@@ -1323,6 +1384,17 @@ impl PyFastApiHttpExceptionHandler {
 }
 
 #[pymethods]
+impl PyExceptionHandlerDecorator {
+    fn __call__(&self, py: Python<'_>, handler: Py<PyAny>) -> PyResult<Py<PyAny>> {
+        self.app.bind(py).call_method1(
+            "add_exception_handler",
+            (self.exception_key.bind(py), handler.bind(py)),
+        )?;
+        Ok(handler)
+    }
+}
+
+#[pymethods]
 impl PyFastApiCallNext {
     fn __call__(&self, py: Python<'_>, _request: Py<PyAny>) -> PyResult<Py<PyAny>> {
         let messages = PyList::empty(py).unbind();
@@ -1516,7 +1588,7 @@ fn response_from_captured_messages(
 
 impl PyFastApi {
     fn middleware_stack_for(slf: Py<Self>, py: Python<'_>) -> PyResult<Py<PyAny>> {
-        let (cached, registrations) = {
+        let (cached, registrations, exception_handlers) = {
             let app = slf.bind(py).borrow();
             (
                 app.middleware_stack
@@ -1526,6 +1598,7 @@ impl PyFastApi {
                     .iter()
                     .map(|registration| registration.clone_ref(py))
                     .collect::<Vec<_>>(),
+                app.exception_handlers.clone_ref(py),
             )
         };
         if let Some(cached) = cached {
@@ -1543,9 +1616,22 @@ impl PyFastApi {
             .import("starlette.middleware.exceptions")?
             .getattr("ExceptionMiddleware")?;
         let handlers = PyDict::new(py);
-        let http_exception_type = py.import("fastapi_rs._core")?.getattr("HTTPException")?;
-        let http_exception_handler = Py::new(py, PyFastApiHttpExceptionHandler)?.into_any();
-        handlers.set_item(http_exception_type, http_exception_handler)?;
+        let mut server_error_handler = None;
+        let exception_type = py.get_type::<PyException>();
+        for entry in exception_handlers
+            .bind(py)
+            .call_method0("items")?
+            .try_iter()?
+        {
+            let pair = entry?.cast_into::<PyTuple>()?;
+            let key = pair.get_item(0)?;
+            let handler = pair.get_item(1)?;
+            if key.eq(500)? || key.is(&exception_type) {
+                server_error_handler = Some(handler.unbind());
+            } else {
+                handlers.set_item(key, handler)?;
+            }
+        }
         let exception_kwargs = PyDict::new(py);
         exception_kwargs.set_item("handlers", handlers)?;
         stack = exception_middleware
@@ -1565,7 +1651,12 @@ impl PyFastApi {
         let server_error_middleware = py
             .import("starlette.middleware.errors")?
             .getattr("ServerErrorMiddleware")?;
-        stack = server_error_middleware.call1((stack.bind(py),))?.unbind();
+        let server_error_kwargs = PyDict::new(py);
+        server_error_kwargs.set_item("handler", server_error_handler)?;
+        server_error_kwargs.set_item("debug", false)?;
+        stack = server_error_middleware
+            .call((stack.bind(py),), Some(&server_error_kwargs))?
+            .unbind();
 
         let mut app = slf.bind(py).borrow_mut();
         if app.middleware_stack.is_none() {
@@ -1874,6 +1965,7 @@ impl PyApiRouter {
                 None,
                 None,
                 default_response_class,
+                None,
             )?,
         )?;
         Ok(Self {
@@ -5905,11 +5997,10 @@ impl FastApiCall {
                 }
                 scope.set_item("path_params", converted_path_params)?;
                 let request_type = py.import("starlette.requests")?.getattr("Request")?;
-                self.request = Some(
-                    request_type
-                        .call1((scope, self.receive.bind(py), self.send.bind(py)))?
-                        .unbind(),
-                );
+                let request =
+                    request_type.call1((scope, self.receive.bind(py), self.send.bind(py)))?;
+                scope.set_item("starlette._exception_request", &request)?;
+                self.request = Some(request.unbind());
                 let (has_form_inputs, has_body_inputs) = {
                     let app = self.app.bind(py).borrow();
                     let route = app.routes.get(operation_index).ok_or_else(|| {
@@ -6818,26 +6909,21 @@ impl FastApiCall {
     }
 
     fn form_parse_failed(&mut self, py: Python<'_>, error: PyErr) -> PyResult<MachineAction> {
-        if let Some(action) = self.http_exception_response(py, &error)? {
-            return Ok(action);
-        }
         let value = error.value(py);
         let http_exception = py
             .import("starlette.exceptions")?
             .getattr("HTTPException")?;
-        let detail = if error.matches(py, &http_exception)? {
-            self.response_status = value.getattr("status_code")?.extract::<u16>()?;
-            value.getattr("detail")?
-        } else {
-            let multipart_exception = py
-                .import("starlette.formparsers")?
-                .getattr("MultiPartException")?;
-            if !error.matches(py, &multipart_exception)? {
-                return Err(error);
-            }
-            self.response_status = 400;
-            value.getattr("message")?
-        };
+        if error.matches(py, &http_exception)? {
+            return Err(error);
+        }
+        let multipart_exception = py
+            .import("starlette.formparsers")?
+            .getattr("MultiPartException")?;
+        if !error.matches(py, &multipart_exception)? {
+            return Err(error);
+        }
+        self.response_status = 400;
+        let detail = value.getattr("message")?;
         let body = PyDict::new(py);
         body.set_item("detail", detail)?;
         self.response_body = json_bytes(py, &body)?;
@@ -6875,48 +6961,39 @@ impl FastApiCall {
         error: PyErr,
     ) -> PyResult<MachineAction> {
         if self.websocket_route_index.is_some() {
+            if self.has_registered_exception_handler(py, &error)? {
+                return Err(error);
+            }
             return self.close_websocket_exception(py, error);
         }
-        match self.http_exception_response(py, &error)? {
-            Some(action) => Ok(action),
-            None => Err(error),
-        }
+        Err(error)
     }
 
-    fn http_exception_response(
-        &mut self,
-        py: Python<'_>,
-        error: &PyErr,
-    ) -> PyResult<Option<MachineAction>> {
-        let http_exception = py
-            .import("starlette.exceptions")?
-            .getattr("HTTPException")?;
-        if !error.matches(py, &http_exception)? {
-            return Ok(None);
+    fn has_registered_exception_handler(&self, py: Python<'_>, error: &PyErr) -> PyResult<bool> {
+        let exception_type = error.get_type(py);
+        let server_error_type = py.get_type::<PyException>();
+        let integer_type = py.get_type::<PyInt>();
+        let issubclass = py.import("builtins")?.getattr("issubclass")?;
+        let exception_handlers = self.app.bind(py).borrow().exception_handlers.clone_ref(py);
+
+        for entry in exception_handlers
+            .bind(py)
+            .call_method0("items")?
+            .try_iter()?
+        {
+            let pair = entry?.cast_into::<PyTuple>()?;
+            let key = pair.get_item(0)?;
+            if key.is_instance(&integer_type)? || key.is(&server_error_type) {
+                continue;
+            }
+            if issubclass
+                .call1((exception_type.clone(), key))?
+                .extract::<bool>()?
+            {
+                return Ok(true);
+            }
         }
-
-        let value = error.value(py);
-        let status_code = value.getattr("status_code")?;
-        let status = status_code.extract::<i64>()?;
-        let response_type = py.import("starlette.responses")?.getattr(
-            if status < 200 || matches!(status, 204 | 205 | 304) {
-                "Response"
-            } else {
-                "JSONResponse"
-            },
-        )?;
-        let kwargs = PyDict::new(py);
-        kwargs.set_item("status_code", status_code)?;
-        kwargs.set_item("headers", value.getattr("headers")?)?;
-
-        let response = if status < 200 || matches!(status, 204 | 205 | 304) {
-            response_type.call((), Some(&kwargs))?
-        } else {
-            let content = PyDict::new(py);
-            content.set_item("detail", value.getattr("detail")?)?;
-            response_type.call((content,), Some(&kwargs))?
-        };
-        self.start_returned_response(py, &response).map(Some)
+        Ok(false)
     }
 
     fn close_form_after_response(&mut self, py: Python<'_>) -> PyResult<MachineAction> {
@@ -7095,6 +7172,7 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     module.add_class::<PyFastApiHttpMiddleware>()?;
     module.add_class::<PyFastApiMessageCapture>()?;
     module.add_class::<PyFastApiHttpExceptionHandler>()?;
+    module.add_class::<PyExceptionHandlerDecorator>()?;
     module.add_class::<PyFastApiCallNext>()?;
     module.add_class::<PyApiRouter>()?;
     module.add_class::<PyOperationDecorator>()?;

@@ -80,14 +80,14 @@ api_inventory:
 import_binding_classification_review:
   artifact: tests/fixtures/api-import-binding-classification-review.json
   schema: fastapi-starlette-import-binding-review/v1
-  sha256: c3e5a7539112e13dfeed31e6d8e04a0e0ac503c6f01dd25eda12950f1826b06c
+  sha256: 7289daa4aca5825f3a5f766b58601e1a18f1b627e14f479360270710e2267896
   source_identity:
     package: FastAPI
     version: 0.141.1
     source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
     selected_starlette_profile: 1.6.0
     starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
-    starlette_rs_contract_commit: 8f57ed5fff8e59f2484779faaff3628360055685
+    starlette_rs_contract_commit: 6fec565bd26619ef5db1d756c43c4cb9855d624e
   starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
   counts:
     candidates: 97
@@ -99,7 +99,7 @@ import_binding_classification_review:
   candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
   pinned_starlette_rs_sources:
     metadata_sha256: c1f3c930f7cdbd8febde7af2ba108ef6684f1b240f94dcb8cfa716b71b68416f
-    manifest_sha256: 441a35dba2315fd3cc1baca6a6d529d6eaee886cb6a1c852842845c9a7f6f983
+    manifest_sha256: 03393cc4af98b242d83b87d92d56bc1b2e1030e231400b528f32c2767eff3437
     api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
     api_review_sha256: 822503a4b91afc8b61f1b668d286cedfb3378d96be02f4ebb6c84c9210208325
 
@@ -187,7 +187,7 @@ classification_atlas:
 starlette_rs:
   owner: ../starlette-rs
   repository: https://github.com/appunni-m/starlette-rs
-  commit: 8f57ed5fff8e59f2484779faaff3628360055685
+  commit: 6fec565bd26619ef5db1d756c43c4cb9855d624e
   distribution_version: 0.1.0
   contract_id: starlette-1.6.0-asgi-http-config-session-slice
   metadata: ../starlette-rs/metadata.yaml
@@ -314,6 +314,53 @@ reviewed_api_contract_overlay:
       source_line: 6415
       source_end_line: 6422
   operations:
+    fastapi.applications.FastAPI.__init__:
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::new
+      source_evidence:
+        - path: fastapi/applications.py
+          symbol: __init__
+          kind: source-definition
+        - {path: tests/test_exception_handlers.py, symbol: app}
+      feature_ids: [public-api-errors]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      supported_slice: >-
+        Partial native slice: the exception_handlers constructor argument
+        accepts a mapping keyed by exception class or HTTP status code, and
+        registered custom HTTP handlers participate in response dispatch.
+        Identity-checked workflows cover exception-class, status-code, and
+        default Starlette HTTPException handling. The constructor's remaining
+        FastAPI-specific arguments and default RequestValidationError and
+        WebSocketRequestValidationError handler entries remain outside this
+        reviewed slice.
+    fastapi.applications.FastAPI.exception_handler:
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::exception_handler
+      source_evidence:
+        - path: fastapi/applications.py
+          symbol: exception_handler
+          kind: source-definition
+          start_line: 4729
+          end_line: 4774
+        - {path: tests/test_exception_handlers.py, symbol: http_exception_handler}
+        - path: docs/en/docs/tutorial/handling-errors.md
+          kind: documentation-text
+          start_line: 82
+          end_line: 102
+          required_text:
+            - "You could add a custom exception handler with `@app.exception_handler()`:"
+      feature_ids: [public-api-errors]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.lifespan.workload_trace]
+      supported_slice: >-
+        Partial native slice: registers custom HTTP exception handlers through
+        the decorator and returns the original handler object. A custom class
+        handler for an application exception and the documented 418 status
+        handler are exercised by input-only, identity-checked ASGI workflows.
+        The custom handler receives the same Request object used by the FastAPI
+        path operation. Built-in Starlette HTTPException JSON handling is also
+        included.
+        Handler registration after the middleware stack has been cached,
+        custom request/WebSocket validation handlers, custom WebSocket
+        exception object identity, and default FastAPI validation-handler
+        entries remain outside this slice.
     fastapi.Path:
       rust_binding: fastapi-rs/src/parameters.rs::path
       source_evidence:
@@ -1798,14 +1845,21 @@ reviewed_api_contract_overlay:
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/inherited-exception-handler-registration.yaml
           case_id: fastapi.applications.add-exception-handler.custom-exception
+        - recipe_path: tests/fixtures/input-recipes/parity/inherited-exception-handler-registration.yaml
+          case_id: fastapi.applications.add-exception-handler.status-code
       feature_ids: [public-api-errors]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
       target_binding:
         implementation_owner: fastapi-rs
-        status: unimplemented
+        status: partial-contract
         known_gaps:
-          - FastAPI-RS exposes no FastAPI.add_exception_handler method.
-          - FastAPI-RS does not implement FastAPI.exception_handler, which delegates custom-handler registration to the inherited method.
+          - Custom RequestValidationError and WebSocketRequestValidationError handlers are not dispatched; validation keeps FastAPI-RS's direct 422 and 1008 response paths.
+          - Custom WebSocket exception handlers do not yet preserve the same WebSocket object identity and state when Starlette-RS invokes the handler.
+          - FastAPI's default RequestValidationError and WebSocketRequestValidationError handlers are not present in the exception_handlers mapping.
+          - Registering handlers after the middleware stack has been cached does not rebuild the stack.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/inherited-exception-handler-registration.yaml
+          case_id: fastapi.applications.exception-handler.decorator
     fastapi.applications.FastAPI.mount:
       fastapi_exposure_candidate_id: fastapi.applications.FastAPI
       source_evidence:

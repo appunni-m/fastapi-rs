@@ -91,7 +91,7 @@ target:
     name: starlette-rs-py
     version: 0.1.0
     starlette_contract: 1.6.0
-    commit: 8f57ed5fff8e59f2484779faaff3628360055685
+    commit: 6fec565bd26619ef5db1d756c43c4cb9855d624e
   external_python_runtime_lock:
     path: requirements/target-runtime-cpython-3.12.13.lock
     sha256: efb7ca633fc9a9c8587a6f59f8ee9b509151f6f77ceb75a56dd3cdeff2be99f7
@@ -128,7 +128,7 @@ source_artifacts:
   api_import_binding_classification_review:
     path: tests/fixtures/api-import-binding-classification-review.json
     schema: fastapi-starlette-import-binding-review/v1
-    sha256: c3e5a7539112e13dfeed31e6d8e04a0e0ac503c6f01dd25eda12950f1826b06c
+    sha256: 7289daa4aca5825f3a5f766b58601e1a18f1b627e14f479360270710e2267896
     purpose: Reviewed source-backed disposition of uncertain FastAPI import bindings from the selected Starlette profile
     source_identity:
       package: FastAPI
@@ -136,7 +136,7 @@ source_artifacts:
       source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
       selected_starlette_profile: 1.6.0
       starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
-      starlette_rs_contract_commit: 8f57ed5fff8e59f2484779faaff3628360055685
+      starlette_rs_contract_commit: 6fec565bd26619ef5db1d756c43c4cb9855d624e
     starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
     counts:
       candidates: 97
@@ -148,7 +148,7 @@ source_artifacts:
     candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
     pinned_starlette_rs_sources:
       metadata_sha256: c1f3c930f7cdbd8febde7af2ba108ef6684f1b240f94dcb8cfa716b71b68416f
-      manifest_sha256: 441a35dba2315fd3cc1baca6a6d529d6eaee886cb6a1c852842845c9a7f6f983
+      manifest_sha256: 03393cc4af98b242d83b87d92d56bc1b2e1030e231400b528f32c2767eff3437
       api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
       api_review_sha256: 822503a4b91afc8b61f1b668d286cedfb3378d96be02f4ebb6c84c9210208325
   api_source_classification_review:
@@ -172,7 +172,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@3
-    sha256: 04afa6ac1b0bab5e4360866dfeb7ec12333cbaf9475095e82efb1115abb9f510
+    sha256: d7e6a98fdc0090833b5f8cc58d11628af4065b4f13e21a9264078eb5dc6600a1
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -205,7 +205,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 20cba4fb0bc5d800d55e84ead9f3eae66fc38edfe5b0e7918629d9ac69eba27c
+    sha256: 632923638f7d83ddb4a9e57620be083bbe11a73185e8fb7a083cfb0be1bc17cb
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 632
@@ -242,14 +242,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@1
-    sha256: e383542e1ff51832dfd62b520a4b28541bc56a74346a29660669a78e2b1256f2
+    sha256: 7d38184d6a26c1a5ef7a60527cb0cdacc030d8122e45eee8e08fea552e6e628e
     schema_path: tests/fixtures/schemas/materialized-input-index.schema.json
     schema_sha256: b0a2ec32c63dc82ec43cb4c5ffaf41590e951526de305865a24301ea42e947d2
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
       workflows: 480
-      cases: 1885
-      partial_source_mappings: 1132
+      cases: 1890
+      partial_source_mappings: 1133
 
 contract_metadata:
   aliases:
@@ -2172,6 +2172,7 @@ api_surface_contract:
     - response-serialization
     - websocket-lifecycle
     observation_selectors:
+    - asgi.lifespan.workload_trace
     - dependency.call_order
     - docs.response.body.bytes
     - docs.response.status
@@ -2195,7 +2196,7 @@ api_surface_contract:
     - warnings.category_message
     - websocket.event_order
     - websocket.messages
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.applications.FastAPI.exception_handler
@@ -2205,7 +2206,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/194
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::exception_handler
   - id: fastapi.applications.FastAPI.frontend
     kind: method
     source_candidate_ref: /api_candidates/195
@@ -24834,7 +24835,7 @@ api_surface_contract:
       - http.status
     fixture_refs:
     - recipe_path: tests/fixtures/input-recipes/parity/inherited-exception-handler-registration.yaml
-      case_id: fastapi.applications.add-exception-handler.custom-exception
+      case_id: fastapi.applications.exception-handler.decorator
       workload_path: tests/fixtures/workloads/inherited_exception_handler_registration.py
       observation_selectors:
       - http.body.bytes
@@ -24886,11 +24887,15 @@ api_surface_contract:
       implementation_owner_evidence:
         kind: canonical-sibling-operation-reference
         canonical_operation_ref: *id024
-      status: unimplemented
+      status: partial-contract
       known_gaps:
-      - FastAPI-RS exposes no FastAPI.add_exception_handler method.
-      - FastAPI-RS does not implement FastAPI.exception_handler, which delegates custom-handler registration
-        to the inherited method.
+      - Custom RequestValidationError and WebSocketRequestValidationError handlers are not dispatched;
+        validation keeps FastAPI-RS's direct 422 and 1008 response paths.
+      - Custom WebSocket exception handlers do not yet preserve the same WebSocket object identity and
+        state when Starlette-RS invokes the handler.
+      - FastAPI's default RequestValidationError and WebSocketRequestValidationError handlers are not
+        present in the exception_handlers mapping.
+      - Registering handlers after the middleware stack has been cached does not rebuild the stack.
   - id: fastapi.applications.FastAPI.mount
     kind: inherited_method
     exposure: inherited-from-starlette

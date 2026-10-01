@@ -31,3 +31,148 @@ cases:
     - {kind: http_response, selectors: [status, headers, body], comparison: exact}
   source_evidence:
   - {path: docs/en/docs/tutorial/handling-errors.md, kind: upstream_documentation}
+- case_id: fastapi.applications.add-exception-handler.status-code
+  factory_input: {registration: status}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: dispatch-status-handler
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /widget
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+  source_evidence:
+  - {path: docs/en/docs/tutorial/handling-errors.md, kind: upstream_documentation}
+- case_id: fastapi.applications.exception-handler.decorator
+  factory_input: {registration: decorator}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: registration-trace
+    kind: lifespan
+    events: [lifespan.startup, lifespan.shutdown]
+    observations:
+    - {kind: asgi_lifespan, selector: event_order, comparison: ordered}
+    - {kind: asgi_lifespan, selector: startup, comparison: exact}
+    - {kind: asgi_lifespan, selector: shutdown, comparison: exact}
+    - {kind: asgi_lifespan, selector: application_errors, comparison: exact}
+    - {kind: asgi_lifespan, selector: workload_trace, comparison: ordered}
+  - action_id: dispatch-decorated-handler
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /widget
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+  source_evidence:
+  - {path: docs/en/docs/tutorial/handling-errors.md, kind: upstream_documentation}
+- case_id: fastapi.applications.constructor.exception-handlers
+  factory_input: {registration: constructor-class}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: dispatch-constructor-handler
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /widget
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_exception_handlers.py, kind: upstream_test}
+- case_id: fastapi.applications.constructor.exception-handlers.status-code
+  factory_input: {registration: constructor-status}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: dispatch-constructor-status-handler
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /widget
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_exception_handlers.py, kind: upstream_test}
+- case_id: fastapi.applications.constructor.default-http-exception-handler
+  factory_input: {registration: default-http}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: dispatch-default-http-handler
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /widget
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_exception_handlers.py, kind: upstream_test}
+  - {path: fastapi/exception_handlers.py, kind: upstream_documentation}
