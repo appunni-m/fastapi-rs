@@ -17,7 +17,7 @@ SOURCE_IDENTITIES = {
     },
     "starlette-rs": {
         "distribution": "starlette-rs-py==0.1.0",
-        "commit": "87f732c1700b5ca752ac1d47c3919ddf74f43dd8",
+        "commit": "3228c12605cb1898576b36544c5dcc4a9c30ce2b",
         "role": "target implementation of the pinned Starlette generic contract",
     },
     "python": {
