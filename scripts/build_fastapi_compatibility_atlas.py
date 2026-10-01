@@ -3036,12 +3036,14 @@ TEST_REVIEW_MAPPINGS.setdefault("tests/test_router_circular_import.py", {}).upda
             "construction.exception_message",
         ],
         "rationale": (
-            "The public APIRouter.include_router API rejects including the same router "
-            "instance into itself during app construction."
+            "The upstream test asserts that APIRouter.include_router rejects direct "
+            "self-inclusion. The independent workflow adds a source-derived transitive "
+            "cycle case from FastAPI's recursive-router guard."
         ),
         "stimulus_notes": (
-            "Create a router and attempt its self-inclusion through the public API; "
-            "compare construction outcome, exception class, and exact message."
+            "Create routers and observe the upstream direct self-inclusion error plus "
+            "the input-only transitive-cycle extension; compare construction outcome, "
+            "exception class, and exact message."
         ),
     }
 )
@@ -4369,7 +4371,7 @@ DOC_PAGE_REVIEW_MAPPINGS = {
             "http.body.bytes",
             "warnings.category_message",
         ],
-        "rationale": "The page covers FastAPI lifespan and deprecated startup/shutdown handlers. A v3 direct-ASGI workflow maps startup, shutdown, request-visible state, and callback effects; TestClient lifecycle driving remains Starlette-owned, and on_event warning capture is still planned.",
+        "rationale": "The page covers FastAPI lifespan and deprecated startup/shutdown handlers. The v4 direct-ASGI workflow maps startup, shutdown, request-visible merged state, callback effects, and selected on_event warning records; TestClient lifecycle driving and TestClient.app_state remain Starlette-owned.",
         "supporting_sources": [
             {
                 "path": "docs/en/docs/advanced/events.md",

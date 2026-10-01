@@ -10,6 +10,7 @@ mod datastructures;
 mod docs;
 mod encoding;
 mod errors;
+mod lifespan;
 mod openapi;
 mod operation;
 mod parameters;

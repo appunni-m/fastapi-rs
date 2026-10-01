@@ -33,9 +33,34 @@ class MetadataError(ValueError):
     """Raised when authority metadata and its referenced records disagree."""
 
 
+class UniqueKeySafeLoader(yaml.SafeLoader):
+    """Safe YAML loader that rejects repeated keys in the same mapping."""
+
+    def construct_mapping(self, node: yaml.MappingNode, deep: bool = False) -> dict[Any, Any]:
+        seen: set[Any] = set()
+        for key_node, _ in node.value:
+            # YAML merge keys are inherited mappings, not repeated declarations.
+            if key_node.tag == "tag:yaml.org,2002:merge":
+                continue
+            key = self.construct_object(key_node, deep=deep)
+            try:
+                if key in seen:
+                    raise yaml.constructor.ConstructorError(
+                        "while constructing a mapping",
+                        node.start_mark,
+                        f"found duplicate key {key!r}",
+                        key_node.start_mark,
+                    )
+                seen.add(key)
+            except TypeError:
+                # Let SafeLoader report its usual error for unhashable YAML keys.
+                continue
+        return super().construct_mapping(node, deep=deep)
+
+
 def load_yaml(path: Path) -> dict[str, Any]:
     try:
-        value = yaml.safe_load(path.read_text(encoding="utf-8"))
+        value = yaml.load(path.read_text(encoding="utf-8"), Loader=UniqueKeySafeLoader)
     except (OSError, yaml.YAMLError) as exc:
         raise MetadataError(f"cannot read YAML {relative(path)}: {exc}") from exc
     if not isinstance(value, dict):

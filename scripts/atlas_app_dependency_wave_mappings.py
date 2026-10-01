@@ -382,7 +382,7 @@ APP_DEPENDENCY_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
         },
     ),
     "tests/test_router_circular_import.py": _module(
-        "FastAPI rejects a public APIRouter self-inclusion during construction.",
+        "The upstream test asserts direct self-inclusion rejection; the input-only workflow adds a source-derived transitive APIRouter cycle case.",
         {
             "test_router_circular_import": _review(
                 "tests/test_router_circular_import.py",
@@ -395,15 +395,20 @@ APP_DEPENDENCY_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                         "tests/fixtures/input-recipes/parity/router-circular-self-include-upstream.yaml",
                         "fastapi.routing.router-self-include-construction",
                         _CONSTRUCTION,
-                    )
+                    ),
+                    _case_link(
+                        "tests/fixtures/input-recipes/parity/router-circular-self-include-upstream.yaml",
+                        "fastapi.routing.router-transitive-cycle-include-construction",
+                        _CONSTRUCTION,
+                    ),
                 ],
-                "The workflow repeats the public self-include operation and captures construction outcome/class/message; the full public manifest is still required before an executable parity claim.",
+                "The workflow observes the public self-include error from the upstream test and the source-defined transitive-cycle guard; both compare construction outcome/class/message.",
                 (_ROUTER_INCLUDE,),
             )
         },
     ),
     "tests/test_router_events.py": _module(
-        "The existing lifespan recipe covers the module's router/app startup, shutdown, state merging, and generator-lifespan behaviors. The deprecated on_event warning and TestClient.app_state are explicit gaps.",
+        "The lifespan recipe covers app and nested-router startup/shutdown callbacks, legacy on_event deprecation records, nested yielded-state merging, generator lifespans, and mounted-subapp exclusion. TestClient.app_state remains an explicit Starlette-RS-owned gap.",
         {
             name: _review(
                 "tests/test_router_events.py",
@@ -417,6 +422,11 @@ APP_DEPENDENCY_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                     "asgi.lifespan.workload_trace",
                     "http.status",
                     "http.body.bytes",
+                    *(
+                        ["python.warnings", "warnings.category_message"]
+                        if name == "test_router_events"
+                        else []
+                    ),
                 ],
                 description,
                 [
@@ -426,7 +436,7 @@ APP_DEPENDENCY_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                         _LIFESPAN,
                     )
                 ],
-                "Partial: direct ASGI lifespan events and request observations do not capture the source's TestClient.app_state or exact DeprecationWarning for on_event. Generic lifespan protocol mechanics remain the Starlette 1.6.0 contract.",
+                "Partial: direct ASGI lifespan and request observations do not test TestClient.app_state, which remains with the pinned Starlette-RS contract. The legacy on_event case captures construction warning records.",
                 (_LIFESPAN_MERGE,),
             )
             for name, case_id, description in [
@@ -1784,7 +1794,6 @@ APP_DEPENDENCY_WAVE_GAPS = {
     "full_fastapi_manifest": "Every linked case remains a source candidate until the full FastAPI public API manifest is complete and identity-checked.",
     "python_object_observations": "The current ASGI workflow does not express Python object identity/isinstance observations such as APIRoute subclass identity.",
     "dependency_matrix": "The current links do not exhaust all dependency cache keys, sync/async generator forms, nested scopes, app/router overrides, or exception matrices.",
-    "lifespan_warning_capture": "The current workflow does not capture exact DeprecationWarning category/message or TestClient.app_state assertions from test_router_events.py.",
     "websocket_request_validation": "WebSocket Header/path/query dependency failures remain with request-validation/security waves; generic handshakes, middleware, and unmatched-route close behavior remain Starlette-RS-owned.",
     "starlette_contract_identity": "Starlette behavior is assigned to the pinned 1.6.0 / 4f250d6b814587e20c5365f0a5f0c4d42bcb929f contract; no sibling Starlette-RS files are modified by this mapping wave.",
 }

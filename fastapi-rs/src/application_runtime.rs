@@ -15,6 +15,7 @@ use crate::awaitable::{
 };
 use crate::docs;
 use crate::encoding::jsonable_encoder_default;
+use crate::lifespan::{FastApiLifespan, warn_on_event};
 use crate::openapi::{
     OpenApiAdditionalResponse, OpenApiInfo, OpenApiOperation, OpenApiParameter, openapi_document,
 };
@@ -306,6 +307,7 @@ pub(crate) struct PyFastApi {
     dependencies: Vec<Py<PyAny>>,
     default_response_class: Option<Py<PyAny>>,
     exception_handlers: Py<PyAny>,
+    lifespan: FastApiLifespan,
     dependency_overrides: Py<PyDict>,
     router: FastApiOperationRouter,
     websocket_router: FastApiOperationRouter,
@@ -417,7 +419,7 @@ struct RouterIncludePolicy<'policy> {
 #[pymethods]
 impl PyFastApi {
     #[new]
-    #[pyo3(signature = (*, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", terms_of_service = None, contact = None, license_info = None, openapi_external_docs = None, dependencies = None, default_response_class = None, exception_handlers = None))]
+    #[pyo3(signature = (*, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", terms_of_service = None, contact = None, license_info = None, openapi_external_docs = None, dependencies = None, default_response_class = None, exception_handlers = None, on_startup = None, on_shutdown = None, lifespan = None))]
     // lint-exception: PyO3 needs one Rust argument per Python constructor keyword.
     #[allow(
         clippy::too_many_arguments,
@@ -437,6 +439,9 @@ impl PyFastApi {
         dependencies: Option<Vec<Py<PyAny>>>,
         default_response_class: Option<Py<PyAny>>,
         exception_handlers: Option<Py<PyAny>>,
+        on_startup: Option<Py<PyAny>>,
+        on_shutdown: Option<Py<PyAny>>,
+        lifespan: Option<Py<PyAny>>,
     ) -> PyResult<Self> {
         let state = py
             .import("starlette.datastructures")?
@@ -466,6 +471,7 @@ impl PyFastApi {
                 .add_route(path, ["GET"])
                 .map_err(|error| PyValueError::new_err(error.to_string()))?;
         }
+        let lifespan = FastApiLifespan::new(py, on_startup, on_shutdown, lifespan)?;
         Ok(Self {
             state,
             title: title.to_owned(),
@@ -480,6 +486,7 @@ impl PyFastApi {
             dependencies: dependencies.unwrap_or_default(),
             default_response_class,
             exception_handlers: exception_handlers.unbind().into_any(),
+            lifespan,
             dependency_overrides: PyDict::new(py).unbind(),
             router: FastApiOperationRouter::new(),
             websocket_router: FastApiOperationRouter::new(),
@@ -521,6 +528,11 @@ impl PyFastApi {
     #[setter]
     fn set_exception_handlers(&mut self, exception_handlers: Py<PyAny>) {
         self.exception_handlers = exception_handlers;
+    }
+
+    fn on_event(&self, py: Python<'_>, event_type: &str) -> PyResult<Py<PyAny>> {
+        warn_on_event(py, true)?;
+        self.lifespan.decorator(py, event_type)
     }
 
     fn add_exception_handler(
@@ -1214,7 +1226,8 @@ impl PyFastApi {
                 deprecated,
                 include_in_schema,
             },
-        )
+        )?;
+        self.lifespan.include_router(py, &source.lifespan)
     }
 
     fn openapi(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
@@ -1939,15 +1952,23 @@ impl PyFastApi {
 #[pymethods]
 impl PyApiRouter {
     #[new]
-    #[pyo3(signature = (*, prefix = "", tags = None, dependencies = None, deprecated = None, include_in_schema = true, default_response_class = None))]
+    #[pyo3(signature = (*, prefix = "", tags = None, dependencies = None, default_response_class = None, on_startup = None, on_shutdown = None, lifespan = None, deprecated = None, include_in_schema = true))]
+    // lint-exception: preserve the FastAPI-compatible APIRouter constructor keyword signature.
+    #[allow(
+        clippy::too_many_arguments,
+        reason = "preserve the FastAPI-compatible APIRouter constructor keywords"
+    )]
     fn new(
         py: Python<'_>,
         prefix: &str,
         tags: Option<Vec<String>>,
         dependencies: Option<Vec<Py<PyAny>>>,
+        default_response_class: Option<Py<PyAny>>,
+        on_startup: Option<Py<PyAny>>,
+        on_shutdown: Option<Py<PyAny>>,
+        lifespan: Option<Py<PyAny>>,
         deprecated: Option<bool>,
         include_in_schema: bool,
-        default_response_class: Option<Py<PyAny>>,
     ) -> PyResult<Self> {
         validate_router_prefix(prefix)?;
         let inner = Py::new(
@@ -1966,6 +1987,9 @@ impl PyApiRouter {
                 None,
                 default_response_class,
                 None,
+                on_startup,
+                on_shutdown,
+                lifespan,
             )?,
         )?;
         Ok(Self {
@@ -1981,6 +2005,28 @@ impl PyApiRouter {
     #[getter]
     fn prefix(&self) -> &str {
         &self.prefix
+    }
+
+    fn add_event_handler(
+        &self,
+        py: Python<'_>,
+        event_type: &str,
+        handler: Py<PyAny>,
+    ) -> PyResult<()> {
+        self.inner
+            .bind(py)
+            .borrow()
+            .lifespan
+            .add_event_handler(py, event_type, handler)
+    }
+
+    fn on_event(&self, py: Python<'_>, event_type: &str) -> PyResult<Py<PyAny>> {
+        warn_on_event(py, false)?;
+        self.inner
+            .bind(py)
+            .borrow()
+            .lifespan
+            .decorator(py, event_type)
     }
 
     #[pyo3(signature = (router, *, prefix = "", tags = None, dependencies = None, deprecated = None, include_in_schema = true))]
@@ -2018,6 +2064,11 @@ impl PyApiRouter {
         let include_in_schema = include_in_schema && router.include_in_schema;
         let source = router.inner.bind(py).borrow();
         let mut destination = self.inner.bind(py).borrow_mut();
+        if source.lifespan.is_included_by(py, &destination.lifespan)? {
+            return Err(PyAssertionError::new_err(
+                "Cannot include an APIRouter instance that already includes this router. Did you mean to include a different router?",
+            ));
+        }
         merge_router_routes(
             py,
             &mut destination,
@@ -2029,7 +2080,8 @@ impl PyApiRouter {
                 deprecated,
                 include_in_schema,
             },
-        )
+        )?;
+        destination.lifespan.include_router(py, &source.lifespan)
     }
 
     fn __getattr__(&self, py: Python<'_>, name: &str) -> PyResult<Py<PyAny>> {
@@ -5421,9 +5473,7 @@ enum PendingAction {
     RequestBody,
     FormParse,
     FormFileRead,
-    LifespanReceive,
-    LifespanStartupSend,
-    LifespanShutdownSend,
+    LifespanCompletion,
     WebSocketEndpoint,
     WebSocketClose,
     MountedApp,
@@ -6182,42 +6232,18 @@ impl FastApiCall {
     }
 
     fn receive_lifespan(&mut self, py: Python<'_>) -> PyResult<MachineAction> {
-        self.pending = Some(PendingAction::LifespanReceive);
-        self.receive
-            .bind(py)
-            .call0()
-            .map(Bound::unbind)
-            .map(MachineAction::Await)
-    }
-
-    fn lifespan_message(&mut self, py: Python<'_>, message: Py<PyAny>) -> PyResult<MachineAction> {
-        let event = message
-            .bind(py)
-            .call_method1("get", ("type", ""))?
-            .extract::<String>()?;
-        let (response_type, pending) = match event.as_str() {
-            "lifespan.startup" => (
-                "lifespan.startup.complete",
-                PendingAction::LifespanStartupSend,
-            ),
-            "lifespan.shutdown" => (
-                "lifespan.shutdown.complete",
-                PendingAction::LifespanShutdownSend,
-            ),
-            _ => {
-                return Err(PyValueError::new_err(format!(
-                    "unsupported ASGI lifespan event {event:?}"
-                )));
-            }
-        };
-        let response = PyDict::new(py);
-        response.set_item("type", response_type)?;
-        self.pending = Some(pending);
-        self.send
-            .bind(py)
-            .call1((response,))
-            .map(Bound::unbind)
-            .map(MachineAction::Await)
+        let context = self.app.bind(py).borrow().lifespan.context(py);
+        let awaitable = py
+            .import("starlette_rs_py._core")?
+            .getattr("router_lifespan")?
+            .call1((
+                context,
+                self.scope.bind(py),
+                self.receive.bind(py),
+                self.send.bind(py),
+            ))?;
+        self.pending = Some(PendingAction::LifespanCompletion);
+        Ok(MachineAction::Await(awaitable.unbind()))
     }
 
     fn receive_request_body(&mut self, py: Python<'_>, body: Py<PyAny>) -> PyResult<MachineAction> {
@@ -7045,9 +7071,7 @@ impl FastApiCall {
                     active.values.push(value);
                     self.advance_form_file_reads(py)
                 }
-                Some(PendingAction::LifespanReceive) => self.lifespan_message(py, value),
-                Some(PendingAction::LifespanStartupSend) => self.receive_lifespan(py),
-                Some(PendingAction::LifespanShutdownSend) => Ok(MachineAction::Complete(py.None())),
+                Some(PendingAction::LifespanCompletion) => Ok(MachineAction::Complete(py.None())),
                 Some(PendingAction::WebSocketEndpoint | PendingAction::WebSocketClose) => {
                     self.close_form_after_response(py)
                 }
@@ -7166,6 +7190,7 @@ impl AwaitableStateMachine for FastApiCall {
 
 /// Registers FastAPI's Rust-owned application type and request markers.
 pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
+    crate::lifespan::register(module)?;
     module.add_class::<PyFastApi>()?;
     module.add_class::<PyFastApiAsgiApp>()?;
     module.add_class::<PyMiddlewareDecorator>()?;

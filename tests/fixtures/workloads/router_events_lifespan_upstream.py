@@ -103,6 +103,14 @@ def _add_legacy_events(target: Any, events: list[tuple[str, Any]]) -> None:
         target.on_event(stage)(callback)
 
 
+def _add_direct_events(target: Any, spec: Mapping[str, Any], trace: list[str]) -> None:
+    for event in spec.get("direct_event_handlers", []):
+        target.add_event_handler(
+            event["stage"],
+            _callback(trace, event["marker"], event.get("async", False)),
+        )
+
+
 def _add_state_route(target: Any, route: Mapping[str, Any]) -> None:
     path = route.get("path", "/")
     message = route.get("message", "Hello World")
@@ -120,6 +128,7 @@ def _build_router(spec: Mapping[str, Any], trace: list[str]) -> APIRouter:
     options, legacy_events = _node_options(spec, trace)
     router = APIRouter(**options)
     _add_legacy_events(router, legacy_events)
+    _add_direct_events(router, spec, trace)
     for route in spec.get("routes", []):
         _add_state_route(router, route)
     for child_spec in spec.get("routers", []):
@@ -131,6 +140,7 @@ def _build_app(spec: Mapping[str, Any], trace: list[str]) -> FastAPI:
     options, legacy_events = _node_options(spec, trace)
     app = FastAPI(**options)
     _add_legacy_events(app, legacy_events)
+    _add_direct_events(app, spec, trace)
     for route in spec.get("routes", []):
         _add_state_route(app, route)
     for child_spec in spec.get("routers", []):

@@ -80,14 +80,14 @@ api_inventory:
 import_binding_classification_review:
   artifact: tests/fixtures/api-import-binding-classification-review.json
   schema: fastapi-starlette-import-binding-review/v1
-  sha256: 7289daa4aca5825f3a5f766b58601e1a18f1b627e14f479360270710e2267896
+  sha256: 9a5032347deecb62221efc04d8e6bbc2e2522cfb8583a1c4d7b009dbb4448821
   source_identity:
     package: FastAPI
     version: 0.141.1
     source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
     selected_starlette_profile: 1.6.0
     starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
-    starlette_rs_contract_commit: 6fec565bd26619ef5db1d756c43c4cb9855d624e
+    starlette_rs_contract_commit: 658aa222fdac0b2a9c53c4c20eda913142cf1f53
   starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
   counts:
     candidates: 97
@@ -99,7 +99,7 @@ import_binding_classification_review:
   candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
   pinned_starlette_rs_sources:
     metadata_sha256: c1f3c930f7cdbd8febde7af2ba108ef6684f1b240f94dcb8cfa716b71b68416f
-    manifest_sha256: 03393cc4af98b242d83b87d92d56bc1b2e1030e231400b528f32c2767eff3437
+    manifest_sha256: ef9e14b6eb478a723baa2f85aa31c9c41f115125e7be985d7122dae2264fcdc4
     api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
     api_review_sha256: 822503a4b91afc8b61f1b668d286cedfb3378d96be02f4ebb6c84c9210208325
 
@@ -187,7 +187,7 @@ classification_atlas:
 starlette_rs:
   owner: ../starlette-rs
   repository: https://github.com/appunni-m/starlette-rs
-  commit: 6fec565bd26619ef5db1d756c43c4cb9855d624e
+  commit: 658aa222fdac0b2a9c53c4c20eda913142cf1f53
   distribution_version: 0.1.0
   contract_id: starlette-1.6.0-asgi-http-config-session-slice
   metadata: ../starlette-rs/metadata.yaml
@@ -298,8 +298,10 @@ reviewed_api_contract_overlay:
         - validation.error_class
         - validation.error_details
   # These rules link method identities to the exact decorator evidence nested
-  # in their containing class's atlas deprecation record. Warning capture is
-  # still pending in the Python/ASGI workflow.
+  # in their containing class's atlas deprecation record. Warning category and
+  # message observations are now captured for the legacy event
+  # registration workflow; warning identity outside that tested call path stays
+  # subject to the separate warning-classification review.
   deprecation_reference_rules:
     - id: fastapi-app-on-event
       symbol_id: fastapi.applications.FastAPI.on_event
@@ -320,18 +322,84 @@ reviewed_api_contract_overlay:
         - path: fastapi/applications.py
           symbol: __init__
           kind: source-definition
-        - {path: tests/test_exception_handlers.py, symbol: app}
-      feature_ids: [public-api-errors]
-      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+          start_line: 58
+          end_line: 1018
+        - path: tests/test_exception_handlers.py
+          symbol: test_override_http_exception
+          kind: source-definition
+          start_line: 58
+          end_line: 61
+        - {path: fastapi/applications.py, symbol: __init__}
+        - {path: tests/test_ws_dependencies.py, symbol: test_index}
+        - {path: tests/test_ws_dependencies.py, symbol: test_routerindex}
+        - {path: tests/test_ws_dependencies.py, symbol: test_routerprefixindex}
+        - {path: tests/test_dependency_overrides.py, symbol: test_override_simple}
+        - {path: tests/test_request_params/test_query/test_required_str.py, symbol: test_required_alias_missing}
+        - {path: tests/test_request_params/test_query/test_required_str.py, symbol: test_required_alias_by_alias}
+        - path: tests/test_dependency_overrides.py
+          symbol: test_override_with_sub_main_depends
+          kind: source-definition
+          start_line: 216
+          end_line: 231
+        - path: tests/test_dependency_overrides.py
+          symbol: test_override_with_sub_main_depends_k_bar
+          kind: source-definition
+          start_line: 252
+          end_line: 257
+        - {path: tests/test_tutorial/test_testing_dependencies/test_tutorial001.py, symbol: test_override_in_users_with_params}
+        - {path: docs_src/dependency_testing/tutorial001_py310.py}
+        - {path: tests/test_tutorial/test_metadata/test_tutorial001.py, symbol: test_openapi_schema}
+        - {path: docs_src/metadata/tutorial001_py310.py}
+        - {path: fastapi/openapi/utils.py, symbol: get_openapi}
+        - {path: fastapi/applications.py, symbol: openapi}
+        - {path: tests/test_application.py, symbol: test_openapi_schema}
+        - {path: tests/main.py}
+        - {path: tests/test_router_events.py, symbol: test_app_lifespan_state}
+        - {path: tests/test_router_events.py, symbol: test_router_nested_lifespan_state}
+        - {path: tests/test_router_events.py, symbol: test_router_nested_lifespan_state_overriding_by_parent}
+        - {path: tests/test_router_events.py, symbol: test_merged_no_return_lifespans_return_none}
+        - {path: tests/test_router_events.py, symbol: test_merged_mixed_state_lifespans}
+        - {path: tests/test_router_events.py, symbol: test_router_sync_generator_lifespan}
+        - {path: tests/test_router_events.py, symbol: test_router_async_generator_lifespan}
+        - {path: tests/test_router_events.py, symbol: test_startup_shutdown_handlers_as_parameters}
+        - {path: docs/en/docs/advanced/events.md}
+      feature_ids: [public-api-errors, app-routing, dependency-security, request-validation, websocket-lifecycle, openapi-docs]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, websocket.event_order, websocket.messages, openapi.document, asgi.lifespan.event_order, asgi.lifespan.startup, asgi.lifespan.shutdown, asgi.lifespan.application_errors, asgi.lifespan.workload_trace, warnings.category_message]
       supported_slice: >-
-        Partial native slice: the exception_handlers constructor argument
+        Partial native constructor slice: the exception_handlers argument
         accepts a mapping keyed by exception class or HTTP status code, and
         registered custom HTTP handlers participate in response dispatch.
         Identity-checked workflows cover exception-class, status-code, and
-        default Starlette HTTPException handling. The constructor's remaining
-        FastAPI-specific arguments and default RequestValidationError and
-        WebSocketRequestValidationError handler entries remain outside this
-        reviewed slice.
+        default Starlette HTTPException handling. The application exposes a
+        mutable dependency_overrides mapping used by the reviewed synchronous
+        and asynchronous override slices in Depends. The synchronous slice
+        replaces an app-level dependency with a callable whose nested
+        dependency introduces exactly one required scalar query field `k`;
+        missing `k` fails request validation and `?k=bar` succeeds. The async
+        slice is constrained below. The constructor also supports the metadata
+        tutorial's non-empty `summary`, `description`, and `terms_of_service`,
+        plus truthy `contact` and `license_info`, in OpenAPI info through
+        `metadata-summary-description-upstream`. That workflow also verifies a
+        truthy constructor-provided `openapi_external_docs` mapping at
+        `/externalDocs`; empty, omitted, and invalid values are not part of this
+        slice. The `dependencies` argument applies to direct WebSocket routes
+        and included-router WebSocket routes. Selected cases observe app,
+        include, router, and route dependency order through WebSocket messages
+        and ASGI event order; other dependency forms and HTTP-path ordering are
+        not exercised by this workflow. Custom request/WebSocket validation
+        handlers, default FastAPI RequestValidationError and
+        WebSocketRequestValidationError entries, handler registration after
+        middleware-stack caching, other constructor options, and override
+        cache behavior beyond the reviewed Depends slice remain outside this
+        reviewed slice. Lifecycle coverage exercises legacy event decorators,
+        on_startup/on_shutdown constructor callbacks, async context managers,
+        and sync/async generator lifespans through direct ASGI startup, request,
+        and shutdown. Nested yielded state is merged with app values winning
+        duplicate keys; empty and mixed yielded-state cases are included.
+        Startup/shutdown failure parity and combining an explicit lifespan with
+        legacy constructor callbacks are not established. The mounted-subapp
+        case confirms that the parent lifespan does not start the mounted app.
+        TestClient.app_state remains outside this direct-ASGI workflow.
     fastapi.applications.FastAPI.exception_handler:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::exception_handler
       source_evidence:
@@ -366,6 +434,9 @@ reviewed_api_contract_overlay:
       source_evidence:
         - {path: fastapi/param_functions.py, symbol: Path}
         - {path: fastapi/params.py, symbol: Path}
+        - {path: tests/test_path.py, symbol: test_path_param_ge_int_2}
+        - {path: tests/test_path.py, symbol: test_path_param_le_ge_int_4}
+        - {path: tests/test_path.py, symbol: test_path_param_le_int_42}
       feature_ids: [request-validation]
       observation_selectors: [http.status, http.body.bytes]
       supported_slice: >-
@@ -374,10 +445,6 @@ reviewed_api_contract_overlay:
         bounds. The body-surface workflow checks lower and upper bound failures.
         Other Path constructor parameters and FieldInfo options remain outside
         this reviewed slice.
-      source_evidence:
-        - {path: tests/test_path.py, symbol: test_path_param_ge_int_2}
-        - {path: tests/test_path.py, symbol: test_path_param_le_ge_int_4}
-        - {path: tests/test_path.py, symbol: test_path_param_le_int_42}
     fastapi.applications.FastAPI.options:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::options
       source_evidence:
@@ -529,6 +596,14 @@ reviewed_api_contract_overlay:
       source_evidence:
         - {path: fastapi/param_functions.py, symbol: Body}
         - {path: fastapi/params.py, symbol: Body}
+        - {path: fastapi/dependencies/utils.py, symbol: _should_embed_body_fields}
+        - {path: fastapi/dependencies/utils.py, symbol: request_body_to_args}
+        - {path: fastapi/dependencies/utils.py, symbol: get_validation_alias}
+        - {path: tests/test_request_params/test_body/test_required_str.py, symbol: test_required_alias_by_alias}
+        - {path: tests/test_request_params/test_body/test_required_str.py, symbol: test_required_validation_alias_by_validation_alias}
+        - {path: tests/test_request_params/test_body/test_required_str.py, symbol: test_required_alias_and_validation_alias_by_validation_alias}
+        - {path: tests/test_request_params/test_body/test_optional_list.py, symbol: test_optional_list_alias_and_validation_alias_by_validation_alias}
+        - {path: tests/test_request_params/test_body/test_optional_list.py, symbol: test_optional_list_alias_and_validation_alias_schema}
       feature_ids: [request-validation, openapi-docs]
       observation_selectors: [http.status, http.body.bytes, openapi.request_schema]
       supported_slice: >-
@@ -540,15 +615,6 @@ reviewed_api_contract_overlay:
         an optional Pydantic model body. Non-string aliases, explicit Body
         defaults, dependency-provided body fields, Form, File, and other Body
         constructor or FieldInfo options remain outside this reviewed slice.
-      source_evidence:
-        - {path: fastapi/dependencies/utils.py, symbol: _should_embed_body_fields}
-        - {path: fastapi/dependencies/utils.py, symbol: request_body_to_args}
-        - {path: fastapi/dependencies/utils.py, symbol: get_validation_alias}
-        - {path: tests/test_request_params/test_body/test_required_str.py, symbol: test_required_alias_by_alias}
-        - {path: tests/test_request_params/test_body/test_required_str.py, symbol: test_required_validation_alias_by_validation_alias}
-        - {path: tests/test_request_params/test_body/test_required_str.py, symbol: test_required_alias_and_validation_alias_by_validation_alias}
-        - {path: tests/test_request_params/test_body/test_optional_list.py, symbol: test_optional_list_alias_and_validation_alias_by_validation_alias}
-        - {path: tests/test_request_params/test_body/test_optional_list.py, symbol: test_optional_list_alias_and_validation_alias_schema}
     fastapi.Query:
       rust_binding: fastapi-rs/src/parameters.rs::query
       source_evidence:
@@ -769,57 +835,6 @@ reviewed_api_contract_overlay:
         - {path: fastapi/utils.py, symbol: generate_operation_id_for_path}
       feature_ids: [openapi-docs]
       observation_selectors: [python.call_outcome]
-    fastapi.applications.FastAPI.__init__:
-      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::new
-      source_evidence:
-        - {path: fastapi/applications.py, symbol: __init__}
-        - {path: tests/test_ws_dependencies.py, symbol: test_index}
-        - {path: tests/test_ws_dependencies.py, symbol: test_routerindex}
-        - {path: tests/test_ws_dependencies.py, symbol: test_routerprefixindex}
-        - {path: tests/test_dependency_overrides.py, symbol: test_override_simple}
-        - {path: tests/test_request_params/test_query/test_required_str.py, symbol: test_required_alias_missing}
-        - {path: tests/test_request_params/test_query/test_required_str.py, symbol: test_required_alias_by_alias}
-        - path: tests/test_dependency_overrides.py
-          symbol: test_override_with_sub_main_depends
-          kind: source-definition
-          start_line: 216
-          end_line: 231
-        - path: tests/test_dependency_overrides.py
-          symbol: test_override_with_sub_main_depends_k_bar
-          kind: source-definition
-          start_line: 252
-          end_line: 257
-        - {path: tests/test_tutorial/test_testing_dependencies/test_tutorial001.py, symbol: test_override_in_users_with_params}
-        - {path: docs_src/dependency_testing/tutorial001_py310.py}
-        - {path: tests/test_tutorial/test_metadata/test_tutorial001.py, symbol: test_openapi_schema}
-        - {path: docs_src/metadata/tutorial001_py310.py}
-        - {path: fastapi/openapi/utils.py, symbol: get_openapi}
-        - {path: fastapi/applications.py, symbol: openapi}
-        - {path: tests/test_application.py, symbol: test_openapi_schema}
-        - {path: tests/main.py}
-      feature_ids: [app-routing, dependency-security, request-validation, websocket-lifecycle, openapi-docs]
-      observation_selectors: [http.status, http.body.bytes, websocket.event_order, websocket.messages, openapi.document]
-      supported_slice: >-
-        Partial native constructor slice: the application exposes a mutable
-        dependency_overrides mapping used by the reviewed synchronous and
-        asynchronous override slices in Depends. The synchronous slice replaces
-        an app-level dependency with a callable whose nested dependency
-        introduces exactly one required scalar query field `k`. Missing `k`
-        fails request validation; supplying `?k=bar` succeeds. The async slice
-        is constrained below. The constructor also supports the metadata
-        tutorial's non-empty `summary`, `description`, and
-        `terms_of_service`, plus truthy `contact` and `license_info`, in
-        OpenAPI info through `metadata-summary-description-upstream`.
-        That workflow also verifies a truthy constructor-provided
-        `openapi_external_docs` mapping at `/externalDocs`; empty, omitted, and
-        invalid values are not part of this slice.
-        The `dependencies` constructor argument is applied to direct WebSocket
-        routes and to included-router WebSocket routes. The selected cases
-        observe app, include, router, and route dependency order through
-        WebSocket messages and ASGI event order; other dependency forms and
-        HTTP-path ordering are not exercised by this workflow.
-        Other constructor options and override cache behavior beyond the
-        reviewed Depends slice remain outside this reviewed slice.
     fastapi.applications.FastAPI:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::url_path_for
       source_evidence:
@@ -880,7 +895,7 @@ reviewed_api_contract_overlay:
         - {path: tests/test_router_include_context.py, symbol: test_router_include_context_matches_flattened_include_metadata}
         - {path: tests/test_additional_responses_router.py}
         - {path: docs/en/docs/advanced/additional-responses.md}
-      feature_ids: [app-routing, request-validation, openapi-docs]
+      feature_ids: [app-routing, request-validation, openapi-docs, websocket-lifecycle]
       observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths]
       supported_slice: >-
         Partial native router: default and non-empty path prefixes, GET route
@@ -894,9 +909,11 @@ reviewed_api_contract_overlay:
         or more non-colliding Python integer (not bool) status keys and one
         non-empty string description per key are preserved by
         FastAPI.include_router in path-operation-other-verbs-responses.
-        Router/include-level response maps, other dependency forms, callbacks,
-        lifespan, other WebSocket inclusion behavior, enum tags, and other
-        constructor or inclusion options remain unsupported.
+        Router/include-level response maps, other dependency forms, OpenAPI
+        callback objects, other WebSocket inclusion behavior, enum tags, and
+        other constructor or inclusion options remain outside the reviewed
+        slice. Lifecycle callbacks and lifespan contexts are sampled by the
+        dedicated direct-ASGI workflow, including nested router state merging.
     fastapi.applications.FastAPI.include_router:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::include_router
       source_evidence:
@@ -916,8 +933,13 @@ reviewed_api_contract_overlay:
         - {path: docs_src/bigger_applications/app_an_py310/routers/users.py}
         - {path: tests/test_additional_responses_router.py}
         - {path: docs/en/docs/advanced/additional-responses.md}
+        - {path: tests/test_router_events.py, symbol: test_router_events}
+        - {path: tests/test_router_events.py, symbol: test_router_nested_lifespan_state}
+        - {path: tests/test_router_events.py, symbol: test_router_nested_lifespan_state_overriding_by_parent}
+        - {path: tests/test_router_events.py, symbol: test_startup_shutdown_handlers_as_parameters}
+        - {path: docs/en/docs/advanced/events.md}
       feature_ids: [app-routing, request-validation, websocket-lifecycle, openapi-docs]
-      observation_selectors: [http.status, http.body.bytes, websocket.event_order, websocket.messages, openapi.document, openapi.paths]
+      observation_selectors: [http.status, http.body.bytes, websocket.event_order, websocket.messages, openapi.document, openapi.paths, asgi.lifespan.event_order, asgi.lifespan.startup, asgi.lifespan.shutdown, asgi.lifespan.application_errors, asgi.lifespan.workload_trace, warnings.category_message]
       supported_slice: >-
         Includes routes registered on APIRouter, combines route, nested-router,
         and inclusion prefixes, and preserves endpoint dependency plans. The
@@ -932,12 +954,33 @@ reviewed_api_contract_overlay:
         For WebSocket routes, the selected `test_ws_dependencies.py` cases
         preserve app, include, router, and route dependency ordering in emitted
         messages for both root and prefixed included routers.
-        Router-level and include-level `responses` maps, callbacks,
+        Router-level and include-level `responses` maps, OpenAPI callback objects,
         custom response classes, and ID policies remain outside this slice.
         Route-level `responses` maps with one or more non-colliding Python
         integer (not bool) status keys and one non-empty string `description`
         per key are preserved on the included route, sampled by
-        `path-operation-other-verbs-responses`.
+        `path-operation-other-verbs-responses`. Included routers also contribute
+        legacy startup/shutdown handlers and nested lifespan contexts. The
+        lifecycle workflow observes successful startup/shutdown order and
+        request-visible merged state, including app precedence for duplicate
+        keys; lifecycle error paths and TestClient.app_state are not covered.
+    fastapi.applications.FastAPI.on_event:
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::on_event
+      source_evidence:
+        - path: fastapi/applications.py
+          symbol: on_event
+          kind: source-definition
+          start_line: 4662
+          end_line: 4681
+        - {path: tests/test_router_events.py, symbol: test_router_events}
+        - {path: docs/en/docs/advanced/events.md}
+      feature_ids: [websocket-lifecycle, public-api-errors]
+      observation_selectors: [asgi.lifespan.event_order, asgi.lifespan.startup, asgi.lifespan.shutdown, asgi.lifespan.workload_trace, warnings.category_message]
+      supported_slice: >-
+        Registers app startup/shutdown callbacks through the legacy decorator,
+        emits the observed deprecation warning, and runs the callback in the
+        direct-ASGI lifespan workflow. Invalid event types and warning-filter
+        error behavior are outside this slice.
     fastapi.routing.APIRouter.include_router:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::include_router
       source_evidence:
@@ -945,8 +988,13 @@ reviewed_api_contract_overlay:
         - {path: fastapi/routing.py, symbol: APIRouter}
         - {path: tests/test_router_include_context.py, symbol: test_repeated_deep_inclusions_handle_all_concrete_paths}
         - {path: tests/test_router_include_context.py, symbol: test_router_include_context_matches_flattened_include_metadata}
-      feature_ids: [app-routing, request-validation, openapi-docs]
-      observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths]
+        - {path: tests/test_router_events.py, symbol: test_router_nested_lifespan_state}
+        - {path: tests/test_router_events.py, symbol: test_router_nested_lifespan_state_overriding_by_parent}
+        - {path: tests/test_router_events.py, symbol: test_startup_shutdown_handlers_as_parameters}
+        - {path: tests/test_router_circular_import.py, symbol: test_router_circular_import}
+        - {path: docs/en/docs/advanced/events.md}
+      feature_ids: [app-routing, request-validation, openapi-docs, websocket-lifecycle, public-api-errors]
+      observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths, asgi.lifespan.event_order, asgi.lifespan.startup, asgi.lifespan.shutdown, asgi.lifespan.application_errors, asgi.lifespan.workload_trace, construction.outcome, construction.exception_class, construction.exception_message]
       supported_slice: >-
         Nested route sets can be included repeatedly with distinct prefixes and
         string tags. The reviewed inputs observe four concrete routes after two
@@ -954,15 +1002,23 @@ reviewed_api_contract_overlay:
         `deprecated` and `include_in_schema` inheritance are also covered by
         router-schema-policy-upstream. Synchronous scalar-query dependencies
         at router and include scopes are covered by router-dependencies-isolated.
-        Other router-level options remain outside this slice.
+        Nested router inclusion also composes the tested startup/shutdown
+        handlers and lifespan contexts. The source-defined self/transitive
+        inclusion guard is compared at construction; lifecycle failures and
+        other router-level options remain outside this slice.
     fastapi.routing.APIRouter.__init__:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::new
       source_evidence:
         - {path: fastapi/routing.py, symbol: APIRouter}
         - {path: tests/test_router_include_context.py, symbol: test_router_and_include_prefix_path_params_reach_endpoint_and_openapi}
         - {path: tests/test_router_include_context.py, symbol: test_router_include_context_matches_flattened_include_metadata}
-      feature_ids: [app-routing, request-validation, openapi-docs]
-      observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths]
+        - {path: tests/test_router_events.py, symbol: test_app_lifespan_state}
+        - {path: tests/test_router_events.py, symbol: test_router_nested_lifespan_state}
+        - {path: tests/test_router_events.py, symbol: test_router_sync_generator_lifespan}
+        - {path: tests/test_router_events.py, symbol: test_router_async_generator_lifespan}
+        - {path: tests/test_router_events.py, symbol: test_startup_shutdown_handlers_as_parameters}
+      feature_ids: [app-routing, request-validation, openapi-docs, websocket-lifecycle]
+      observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths, asgi.lifespan.event_order, asgi.lifespan.startup, asgi.lifespan.shutdown, asgi.lifespan.application_errors, asgi.lifespan.workload_trace]
       supported_slice: >-
         The native constructor accepts the default or a keyword-only prefix.
         A non-empty `/tenants/{tenant_id}` prefix combines with an app-level
@@ -973,7 +1029,42 @@ reviewed_api_contract_overlay:
         `deprecated` and `include_in_schema`; their behavior is sampled by
         router-schema-policy-upstream. A list of synchronous Depends declarations
         with required scalar query inputs is validated and invoked in router-
-        dependencies-isolated.
+        dependencies-isolated. Lifecycle options include legacy startup and
+        shutdown callbacks, async context managers, and sync/async generator
+        lifespans. Successful nested execution and request-visible yielded
+        state are covered; lifecycle error paths are not.
+    fastapi.routing.APIRouter.add_event_handler:
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::add_event_handler
+      source_evidence:
+        - path: fastapi/routing.py
+          symbol: add_event_handler
+          kind: source-definition
+          start_line: 6396
+          end_line: 6413
+      feature_ids: [websocket-lifecycle]
+      observation_selectors: [asgi.lifespan.event_order, asgi.lifespan.startup, asgi.lifespan.shutdown, asgi.lifespan.workload_trace]
+      supported_slice: >-
+        Adds a synchronous startup or shutdown callback to an APIRouter; the
+        input workflow invokes it for an included router and observes lifecycle
+        order and cleanup. Invalid event types and callback failure behavior
+        are not covered.
+    fastapi.routing.APIRouter.on_event:
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::on_event
+      source_evidence:
+        - path: fastapi/routing.py
+          symbol: on_event
+          kind: source-definition
+          start_line: 6423
+          end_line: 6447
+        - {path: tests/test_router_events.py, symbol: test_router_events}
+        - {path: docs/en/docs/advanced/events.md}
+      feature_ids: [websocket-lifecycle, public-api-errors]
+      observation_selectors: [asgi.lifespan.event_order, asgi.lifespan.startup, asgi.lifespan.shutdown, asgi.lifespan.workload_trace, warnings.category_message]
+      supported_slice: >-
+        Registers router startup/shutdown callbacks through the legacy
+        decorator, emits the observed deprecation warning, and runs callbacks
+        when the router is included in an app. Invalid event types and
+        warning-filter error behavior are outside this slice.
     fastapi.routing.APIRouter.get:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::__getattr__
       source_evidence:
@@ -1847,6 +1938,8 @@ reviewed_api_contract_overlay:
           case_id: fastapi.applications.add-exception-handler.custom-exception
         - recipe_path: tests/fixtures/input-recipes/parity/inherited-exception-handler-registration.yaml
           case_id: fastapi.applications.add-exception-handler.status-code
+        - recipe_path: tests/fixtures/input-recipes/parity/inherited-exception-handler-registration.yaml
+          case_id: fastapi.applications.exception-handler.decorator
       feature_ids: [public-api-errors]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
       target_binding:
@@ -1857,9 +1950,6 @@ reviewed_api_contract_overlay:
           - Custom WebSocket exception handlers do not yet preserve the same WebSocket object identity and state when Starlette-RS invokes the handler.
           - FastAPI's default RequestValidationError and WebSocketRequestValidationError handlers are not present in the exception_handlers mapping.
           - Registering handlers after the middleware stack has been cached does not rebuild the stack.
-      fixture_refs:
-        - recipe_path: tests/fixtures/input-recipes/parity/inherited-exception-handler-registration.yaml
-          case_id: fastapi.applications.exception-handler.decorator
     fastapi.applications.FastAPI.mount:
       fastapi_exposure_candidate_id: fastapi.applications.FastAPI
       source_evidence:
@@ -1875,6 +1965,13 @@ reviewed_api_contract_overlay:
           required_text:
             - "mount the sub-application, `subapi`."
             - "mounted at the path `/subapi`"
+        - path: docs/en/docs/advanced/events.md
+          kind: documentation-text
+          start_line: 163
+          end_line: 165
+          required_text:
+            - "these lifespan events (startup and shutdown) will only be executed for the main application"
+            - "Sub Applications - Mounts"
       signature_source:
         repository: starlette
         path: starlette/applications.py

@@ -18,3 +18,18 @@ cases:
   source_evidence:
   - path: tests/test_router_circular_import.py
     kind: upstream_test
+# The transitive cycle input also exercises APIRouter.include_router's source guard.
+- case_id: fastapi.routing.router-transitive-cycle-include-construction
+  factory_input:
+    include_router_cycle: true
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions: []
+  source_evidence:
+  - path: tests/test_router_circular_import.py
+    kind: upstream_test

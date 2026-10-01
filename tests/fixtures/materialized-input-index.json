@@ -5282,7 +5282,7 @@
       "input_path": "tests/fixtures/inputs/parity/response-model-data-filter-exclude-unset-none-review.json",
       "input_sha256": "e8df817a4df31b3f2f646068c8a9286416ff13577822d1fc572bbc5d8eb34a17",
       "recipe_path": "tests/fixtures/input-recipes/parity/response-model-data-filter-exclude-unset-none-review.yaml",
-      "recipe_sha256": "4fce3ec63e318f809bcbb1a1e8eec4abda9c71f75b68ca70a138c547d0e61b8b",
+      "recipe_sha256": "bcc7f100aa0a2fcfb189f3a0d5db44441bb2dfc80bf81d3f459508e8d11d111e",
       "workload_path": "tests/fixtures/workloads/response_model_data_filter_exclude_unset_none_review.py",
       "workload_sha256": "24b60f06b2472a0254c9ae15d0b208e0edd99d3cb8a3833696d343bacd0c13cd",
       "case_ids": [
@@ -5663,13 +5663,14 @@
     {
       "id": "router-circular-self-include-upstream",
       "input_path": "tests/fixtures/inputs/parity/router-circular-self-include-upstream.json",
-      "input_sha256": "ac1cc3b3f67d7da692e1cb0b6d1add22d22e70e849c4adf9f8d93ff0f724424f",
+      "input_sha256": "39bcccf7d9fa3e0d0c129615e292023e1b56931759d246890d51df8ce5c2deb8",
       "recipe_path": "tests/fixtures/input-recipes/parity/router-circular-self-include-upstream.yaml",
-      "recipe_sha256": "59eca76542f7c77fa4e8158238c8f0c76b765ac2603373821ef36c3b4ca75460",
+      "recipe_sha256": "231bd38683a8f0fe009305513351ab502c645b233ce6e6d9b58607baf051b3c2",
       "workload_path": "tests/fixtures/workloads/router_circular_self_include_upstream.py",
-      "workload_sha256": "f6e8ea63ec3f53fd535ae7213a764fc9622a817891abb0ef8da695d3bd411004",
+      "workload_sha256": "d04aef8c4abdb9619af4a11c1c1aeef9b9b040317e12e6778302362754b9ba5f",
       "case_ids": [
-        "fastapi.routing.router-self-include-construction"
+        "fastapi.routing.router-self-include-construction",
+        "fastapi.routing.router-transitive-cycle-include-construction"
       ]
     },
     {
@@ -5730,11 +5731,11 @@
     {
       "id": "router-events-lifespan-upstream",
       "input_path": "tests/fixtures/inputs/parity/router-events-lifespan-upstream.json",
-      "input_sha256": "1c41a5b9ed8d64cca11dcfb432e6448ef20ecc44dfc7a1390fc49817ba2a7b47",
+      "input_sha256": "41e76d34f11ed884f88d85f6d1d5e13d67789dd425cda0a003a6d13bcaf1e565",
       "recipe_path": "tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml",
-      "recipe_sha256": "735c85ed6a6c282db43c7aec3c04cf9bf6fcdf136f164b33920d10707a6a8320",
+      "recipe_sha256": "b17bf331092e9365cc006509cf760e2c29b279a44fe1111b4fd4c72aa10e71f5",
       "workload_path": "tests/fixtures/workloads/router_events_lifespan_upstream.py",
-      "workload_sha256": "7c44e28b80c90f47d913855048cef67827644c56b40c7d345837329d6060939b",
+      "workload_sha256": "d03ada541a1abf2db1e34a933dd1cccd009146b429cc7d831c771b28b9fdc6a0",
       "case_ids": [
         "fastapi.lifecycle.router-events-legacy",
         "fastapi.lifecycle.app-lifespan-state",
@@ -22018,9 +22019,10 @@
       "fixture_id": "fastapi.test.test-router-circular-import",
       "workflow_id": "router-circular-self-include-upstream",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes construction.exception_class, construction.exception_message, construction.outcome. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes construction.exception_class, construction.exception_message, construction.outcome. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
-        "fastapi.routing.router-self-include-construction"
+        "fastapi.routing.router-self-include-construction",
+        "fastapi.routing.router-transitive-cycle-include-construction"
       ],
       "observation_selectors": [
         "construction.exception_class",

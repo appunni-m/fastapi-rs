@@ -91,7 +91,7 @@ target:
     name: starlette-rs-py
     version: 0.1.0
     starlette_contract: 1.6.0
-    commit: 6fec565bd26619ef5db1d756c43c4cb9855d624e
+    commit: 658aa222fdac0b2a9c53c4c20eda913142cf1f53
   external_python_runtime_lock:
     path: requirements/target-runtime-cpython-3.12.13.lock
     sha256: efb7ca633fc9a9c8587a6f59f8ee9b509151f6f77ceb75a56dd3cdeff2be99f7
@@ -128,7 +128,7 @@ source_artifacts:
   api_import_binding_classification_review:
     path: tests/fixtures/api-import-binding-classification-review.json
     schema: fastapi-starlette-import-binding-review/v1
-    sha256: 7289daa4aca5825f3a5f766b58601e1a18f1b627e14f479360270710e2267896
+    sha256: 9a5032347deecb62221efc04d8e6bbc2e2522cfb8583a1c4d7b009dbb4448821
     purpose: Reviewed source-backed disposition of uncertain FastAPI import bindings from the selected Starlette profile
     source_identity:
       package: FastAPI
@@ -136,7 +136,7 @@ source_artifacts:
       source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
       selected_starlette_profile: 1.6.0
       starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
-      starlette_rs_contract_commit: 6fec565bd26619ef5db1d756c43c4cb9855d624e
+      starlette_rs_contract_commit: 658aa222fdac0b2a9c53c4c20eda913142cf1f53
     starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
     counts:
       candidates: 97
@@ -148,7 +148,7 @@ source_artifacts:
     candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
     pinned_starlette_rs_sources:
       metadata_sha256: c1f3c930f7cdbd8febde7af2ba108ef6684f1b240f94dcb8cfa716b71b68416f
-      manifest_sha256: 03393cc4af98b242d83b87d92d56bc1b2e1030e231400b528f32c2767eff3437
+      manifest_sha256: ef9e14b6eb478a723baa2f85aa31c9c41f115125e7be985d7122dae2264fcdc4
       api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
       api_review_sha256: 822503a4b91afc8b61f1b668d286cedfb3378d96be02f4ebb6c84c9210208325
   api_source_classification_review:
@@ -172,7 +172,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@3
-    sha256: d7e6a98fdc0090833b5f8cc58d11628af4065b4f13e21a9264078eb5dc6600a1
+    sha256: c98a6b59bb1af495bd43b1f386dc8a7372a3585f067745fb6ab79ca81e2b3066
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -205,7 +205,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 632923638f7d83ddb4a9e57620be083bbe11a73185e8fb7a083cfb0be1bc17cb
+    sha256: caa52863cc1defbd1e7814962cd2bff5c64e9ec4d2575a1585f9d5b02e658c8c
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 632
@@ -242,13 +242,13 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@1
-    sha256: 7d38184d6a26c1a5ef7a60527cb0cdacc030d8122e45eee8e08fea552e6e628e
+    sha256: 7878f021e3c6d0a347372ce43080b517250a67556255a37fc679de2be2ced446
     schema_path: tests/fixtures/schemas/materialized-input-index.schema.json
     schema_sha256: b0a2ec32c63dc82ec43cb4c5ffaf41590e951526de305865a24301ea42e947d2
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
       workflows: 480
-      cases: 1890
+      cases: 1891
       partial_source_mappings: 1133
 
 contract_metadata:
@@ -2022,6 +2022,11 @@ api_surface_contract:
     - response-serialization
     - websocket-lifecycle
     observation_selectors:
+    - asgi.lifespan.application_errors
+    - asgi.lifespan.event_order
+    - asgi.lifespan.shutdown
+    - asgi.lifespan.startup
+    - asgi.lifespan.workload_trace
     - dependency.call_order
     - docs.response.body.bytes
     - docs.response.status
@@ -2473,6 +2478,11 @@ api_surface_contract:
     - response-serialization
     - websocket-lifecycle
     observation_selectors:
+    - asgi.lifespan.application_errors
+    - asgi.lifespan.event_order
+    - asgi.lifespan.shutdown
+    - asgi.lifespan.startup
+    - asgi.lifespan.workload_trace
     - dependency.call_order
     - docs.response.body.bytes
     - docs.response.status
@@ -2624,6 +2634,10 @@ api_surface_contract:
     - response-serialization
     - websocket-lifecycle
     observation_selectors:
+    - asgi.lifespan.event_order
+    - asgi.lifespan.shutdown
+    - asgi.lifespan.startup
+    - asgi.lifespan.workload_trace
     - dependency.call_order
     - docs.response.body.bytes
     - docs.response.status
@@ -2647,7 +2661,7 @@ api_surface_contract:
     - warnings.category_message
     - websocket.event_order
     - websocket.messages
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.applications.FastAPI.on_event
@@ -2657,7 +2671,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/200
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::on_event
   - id: fastapi.applications.FastAPI.openapi
     kind: method
     source_candidate_ref: /api_candidates/201
@@ -19314,6 +19328,11 @@ api_surface_contract:
     - response-serialization
     - websocket-lifecycle
     observation_selectors:
+    - asgi.lifespan.application_errors
+    - asgi.lifespan.event_order
+    - asgi.lifespan.shutdown
+    - asgi.lifespan.startup
+    - asgi.lifespan.workload_trace
     - dependency.call_order
     - http.body.bytes
     - http.body.json
@@ -19364,9 +19383,14 @@ api_surface_contract:
     deprecation_refs: []
     error_contract_refs: []
     documentation_contract_refs: []
-    feature_ids: []
-    observation_selectors: []
-    behavior_contract_state: source-evidence-only; fixture link pending
+    feature_ids:
+    - websocket-lifecycle
+    observation_selectors:
+    - asgi.lifespan.event_order
+    - asgi.lifespan.shutdown
+    - asgi.lifespan.startup
+    - asgi.lifespan.workload_trace
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.routing.APIRouter.add_event_handler
@@ -19376,7 +19400,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1070
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::add_event_handler
   - id: fastapi.routing.APIRouter.delete
     kind: method
     source_candidate_ref: /api_candidates/1075
@@ -19667,10 +19691,19 @@ api_surface_contract:
     - app-routing
     - dependency-security
     - openapi-docs
+    - public-api-errors
     - request-validation
     - response-serialization
     - websocket-lifecycle
     observation_selectors:
+    - asgi.lifespan.application_errors
+    - asgi.lifespan.event_order
+    - asgi.lifespan.shutdown
+    - asgi.lifespan.startup
+    - asgi.lifespan.workload_trace
+    - construction.exception_class
+    - construction.exception_message
+    - construction.outcome
     - dependency.call_order
     - http.body.bytes
     - http.body.json
@@ -19732,10 +19765,15 @@ api_surface_contract:
     - app-routing
     - dependency-security
     - openapi-docs
+    - public-api-errors
     - request-validation
     - response-serialization
     - websocket-lifecycle
     observation_selectors:
+    - asgi.lifespan.event_order
+    - asgi.lifespan.shutdown
+    - asgi.lifespan.startup
+    - asgi.lifespan.workload_trace
     - dependency.call_order
     - http.body.bytes
     - http.body.json
@@ -19748,8 +19786,9 @@ api_surface_contract:
     - route.match
     - validation.error_class
     - validation.error_details
+    - warnings.category_message
     - websocket.messages
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.routing.APIRouter.on_event
@@ -19759,7 +19798,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1082
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::on_event
   - id: fastapi.routing.APIRouter.options
     kind: method
     source_candidate_ref: /api_candidates/1083
@@ -24835,6 +24874,20 @@ api_surface_contract:
       - http.status
     fixture_refs:
     - recipe_path: tests/fixtures/input-recipes/parity/inherited-exception-handler-registration.yaml
+      case_id: fastapi.applications.add-exception-handler.custom-exception
+      workload_path: tests/fixtures/workloads/inherited_exception_handler_registration.py
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - recipe_path: tests/fixtures/input-recipes/parity/inherited-exception-handler-registration.yaml
+      case_id: fastapi.applications.add-exception-handler.status-code
+      workload_path: tests/fixtures/workloads/inherited_exception_handler_registration.py
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - recipe_path: tests/fixtures/input-recipes/parity/inherited-exception-handler-registration.yaml
       case_id: fastapi.applications.exception-handler.decorator
       workload_path: tests/fixtures/workloads/inherited_exception_handler_registration.py
       observation_selectors:
@@ -24914,6 +24967,13 @@ api_surface_contract:
       required_text:
       - mount the sub-application, `subapi`.
       - mounted at the path `/subapi`
+    - path: docs/en/docs/advanced/events.md
+      kind: documentation-text
+      start_line: 163
+      end_line: 165
+      required_text:
+      - these lifespan events (startup and shutdown) will only be executed for the main application
+      - Sub Applications - Mounts
     documentation_contract_refs:
     - coverage_matrix_ref: /coverage_matrix/489
       source_path: docs/en/docs/advanced/sub-applications.md

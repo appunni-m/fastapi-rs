@@ -766,6 +766,13 @@ cases:
           - router-startup
           shutdown:
           - router-shutdown
+        direct_event_handlers:
+        - stage: startup
+          marker: router-direct-startup
+          async: false
+        - stage: shutdown
+          marker: router-direct-shutdown
+          async: false
         routers:
         - parameter_events:
             startup:
