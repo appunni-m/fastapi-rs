@@ -3937,6 +3937,18 @@
       "oracle_profile_extension": "standard-multipart"
     },
     {
+      "id": "plain-text-openapi-media-type",
+      "input_path": "tests/fixtures/inputs/parity/plain-text-openapi-media-type.json",
+      "input_sha256": "611f6bf1da519ee9325865ce3265432ad351d5db5672e5a74d4379bfa3d8178f",
+      "recipe_path": "tests/fixtures/input-recipes/parity/plain-text-openapi-media-type.yaml",
+      "recipe_sha256": "611298436c829c42454ed9aad35c9e671f58743714e1fb4c861526a372c94c4b",
+      "workload_path": "tests/fixtures/workloads/plain_text_openapi.py",
+      "workload_sha256": "ad62398572c34d871fa2e10d3cdb31af69ad039b8a713f2e58ccdcd9b4f9d89b",
+      "case_ids": [
+        "fastapi.openapi.plain-text-response-class-media-type"
+      ]
+    },
+    {
       "id": "proxy-slash-redirect-upstream",
       "input_path": "tests/fixtures/inputs/parity/proxy-slash-redirect-upstream.json",
       "input_sha256": "2073c5a2d30c2d0f4b0f3c435dcfe2e310988f9a538f3a4a50b40af00b5476f6",
@@ -16236,6 +16248,33 @@
       ],
       "observation_selectors": [
         "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:advanced/custom-response.md",
+      "fixture_id": "fastapi.docs.advanced-custom-response",
+      "workflow_id": "plain-text-openapi-media-type",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.openapi.plain-text-response-class-media-type"
+      ],
+      "observation_selectors": [
+        "http.status",
+        "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_default_response_class.py",
+      "fixture_id": "fastapi.test.test-default-response-class",
+      "workflow_id": "plain-text-openapi-media-type",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.openapi.plain-text-response-class-media-type"
+      ],
+      "observation_selectors": [
         "http.status"
       ]
     },
