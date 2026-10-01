@@ -125,17 +125,17 @@ pub(crate) fn openapi_document(
         };
 
         let operation_document = PyDict::new(py);
-        operation_document.set_item("summary", &operation.summary)?;
-        operation_document.set_item("operationId", &operation.operation_id)?;
-        if operation.deprecated == Some(true) {
-            operation_document.set_item("deprecated", true)?;
-        }
         if let Some(tags) = operation.tags.as_ref().filter(|tags| !tags.is_empty()) {
             let tag_values = PyList::empty(py);
             for tag in tags {
                 tag_values.append(tag)?;
             }
             operation_document.set_item("tags", tag_values)?;
+        }
+        operation_document.set_item("summary", &operation.summary)?;
+        operation_document.set_item("operationId", &operation.operation_id)?;
+        if operation.deprecated == Some(true) {
+            operation_document.set_item("deprecated", true)?;
         }
 
         if !operation.parameters.is_empty() {
@@ -591,9 +591,9 @@ fn schema_key_rank(key: &str, top_level_model: bool) -> (usize, usize) {
         "anyOf",
         "oneOf",
         "allOf",
-        "additionalProperties",
         "items",
         "type",
+        "additionalProperties",
         "contentMediaType",
         "format",
         "const",
