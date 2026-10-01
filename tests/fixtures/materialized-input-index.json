@@ -7102,6 +7102,67 @@
       ]
     },
     {
+      "id": "security-declaration-api",
+      "input_path": "tests/fixtures/inputs/parity/security-declaration-api.json",
+      "input_sha256": "eda784bb71f24812705dfa874354183b11409cabf70bdb899d8960d922713f27",
+      "recipe_path": "tests/fixtures/input-recipes/parity/security-declaration-api.yaml",
+      "recipe_sha256": "e1f048ef5c15e6dcf9cad46982ea41248c7d2a82d36bcefac28d12ee2dbf8867",
+      "workload_path": "tests/fixtures/workloads/security_declaration_api.py",
+      "workload_sha256": "0299c0af48e62e1bb755035cf4c55957328f46bfda25d5c2193b3c4a02b3254a",
+      "case_ids": [
+        "fastapi.security.declaration-public-surface"
+      ],
+      "api_definitions": [
+        {
+          "case_id": "fastapi.security.declaration-public-surface",
+          "symbol_id": "fastapi.param_functions.Security",
+          "path": "fastapi/param_functions.py",
+          "sha256": "e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc"
+        }
+      ],
+      "api_probes": [
+        {
+          "case_id": "fastapi.security.declaration-public-surface",
+          "probe_id": "param-functions-security-signature",
+          "symbol_id": "fastapi.param_functions.Security",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.declaration-public-surface",
+          "probe_id": "root-security-signature",
+          "symbol_id": "fastapi.Security",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.declaration-public-surface",
+          "probe_id": "scoped-security-declaration",
+          "symbol_id": "fastapi.Security",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "security-declaration-asgi",
+      "input_path": "tests/fixtures/inputs/parity/security-declaration-asgi.json",
+      "input_sha256": "3361ca0071a08adbee35a2825afa607a2e6a343f5bb123c45e8700e680793c2e",
+      "recipe_path": "tests/fixtures/input-recipes/parity/security-declaration-asgi.yaml",
+      "recipe_sha256": "5f22f80cc8ea5198fb4628e697191b3491e7b576ea5b365e03f3f2fd113d5d6d",
+      "workload_path": "tests/fixtures/workloads/security_declaration_asgi.py",
+      "workload_sha256": "2c2dd23f62d42f5795d2bcb6729c2345fc03fe9e3992ba2f3a61ac38bfbe2396",
+      "case_ids": [
+        "fastapi.security.declaration-regular-dependency"
+      ]
+    },
+    {
       "id": "security-dependencies",
       "input_path": "tests/fixtures/inputs/parity/security-dependencies.json",
       "input_sha256": "2eaa306c7cd7561eb6d3fe7127f7cc3d49f031afff4eeba180e43bc92251e6ca",
@@ -24495,6 +24556,34 @@
         "http.headers.ordered",
         "http.status",
         "openapi.security"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:advanced/security/oauth2-scopes.md",
+      "fixture_id": "fastapi.docs.advanced-security-oauth2-scopes",
+      "workflow_id": "security-declaration-asgi",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.security.declaration-regular-dependency"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_security_oauth2_authorization_code_bearer_scopes_openapi.py",
+      "fixture_id": "fastapi.test.test-security-oauth2-authorization-code-bearer-scopes-openapi",
+      "workflow_id": "security-declaration-asgi",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.security.declaration-regular-dependency"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
       ]
     },
     {

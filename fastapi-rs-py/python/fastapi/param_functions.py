@@ -22,5 +22,8 @@ from fastapi_rs._core import (
 from fastapi_rs._core import (
     Query as Query,
 )
+from fastapi_rs._core import (
+    Security as Security,
+)
 
-__all__ = ["Body", "Cookie", "Depends", "File", "Form", "Header", "Path", "Query"]
+__all__ = ["Body", "Cookie", "Depends", "File", "Form", "Header", "Path", "Query", "Security"]

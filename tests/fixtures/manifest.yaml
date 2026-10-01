@@ -172,7 +172,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@3
-    sha256: a8319a48317dc08791c0201a0d0c098efc15741870b70c6bbb7921c048f5d023
+    sha256: ed929268352d5ed416ac39c0d7750089d836f0a87ac85512230d8302bb8f5393
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -205,7 +205,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: c2a25acf5d5fa3e6f6c4d6151fb400cad7d6bb00ce661de89a97d8a467ee6fa9
+    sha256: b4a5b2d8aa18fb8f2e76d74c1d7e5c8872bde1de9afec5a387d50ad3ae1ad840
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 636
@@ -242,14 +242,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@2
-    sha256: 1655f4641a603449d780d5d69c75d13b7fb9bc1699df486ae3cf936a196d9976
+    sha256: 1aeb85fcf32b730ba55d31945b675ba4060998c915224d7f79547168b97dc549
     schema_path: tests/fixtures/schemas/materialized-input-index.schema.json
     schema_sha256: 56ac1cdfaa6f28b4277ef44b5ef78efebb3122111c5691e1b9c1bce869156aaf
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 486
-      cases: 1905
-      partial_source_mappings: 1152
+      workflows: 488
+      cases: 1907
+      partial_source_mappings: 1154
 
 contract_metadata:
   aliases:
@@ -553,7 +553,7 @@ api_surface_contract:
     symbols_with_alias_refs: 46
     symbols_with_deprecation_refs: 15
     symbols_with_error_contract_refs: 13
-    symbols_with_direct_api_input_workflow_refs: 31
+    symbols_with_direct_api_input_workflow_refs: 33
   symbols:
   - id: fastapi.APIRouter
     kind: import_binding
@@ -1697,7 +1697,31 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-dependencies
       fixture_design_ref: /fixture_designs/121
       observation_selectors: *id003
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: security-declaration-api
+      input_path: tests/fixtures/inputs/parity/security-declaration-api.json
+      input_sha256: eda784bb71f24812705dfa874354183b11409cabf70bdb899d8960d922713f27
+      recipe_path: tests/fixtures/input-recipes/parity/security-declaration-api.yaml
+      recipe_sha256: e1f048ef5c15e6dcf9cad46982ea41248c7d2a82d36bcefac28d12ee2dbf8867
+      workload_path: tests/fixtures/workloads/security_declaration_api.py
+      workload_sha256: 0299c0af48e62e1bb755035cf4c55957328f46bfda25d5c2193b3c4a02b3254a
+      case_id: fastapi.security.declaration-public-surface
+      probe_id: root-security-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
+    - workflow_id: security-declaration-api
+      input_path: tests/fixtures/inputs/parity/security-declaration-api.json
+      input_sha256: eda784bb71f24812705dfa874354183b11409cabf70bdb899d8960d922713f27
+      recipe_path: tests/fixtures/input-recipes/parity/security-declaration-api.yaml
+      recipe_sha256: e1f048ef5c15e6dcf9cad46982ea41248c7d2a82d36bcefac28d12ee2dbf8867
+      workload_path: tests/fixtures/workloads/security_declaration_api.py
+      workload_sha256: 0299c0af48e62e1bb755035cf4c55957328f46bfda25d5c2193b3c4a02b3254a
+      case_id: fastapi.security.declaration-public-surface
+      probe_id: scoped-security-declaration
+      probe_kind: callable
+      observation_selectors:
+      - python.call_outcome
     feature_ids:
     - app-routing
     - dependency-security
@@ -1709,7 +1733,9 @@ api_surface_contract:
     - openapi.document
     - openapi.paths
     - openapi.security
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    - python.call_outcome
+    - python.signature
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.Security
@@ -1720,7 +1746,7 @@ api_surface_contract:
         - /api_candidates/14
         - /api_candidates/938
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/parameters.rs::security
   - id: fastapi.UploadFile
     kind: import_binding
     source_candidate_ref: /api_candidates/15
@@ -19489,7 +19515,19 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-dependencies
       fixture_design_ref: /fixture_designs/121
       observation_selectors: *id003
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: security-declaration-api
+      input_path: tests/fixtures/inputs/parity/security-declaration-api.json
+      input_sha256: eda784bb71f24812705dfa874354183b11409cabf70bdb899d8960d922713f27
+      recipe_path: tests/fixtures/input-recipes/parity/security-declaration-api.yaml
+      recipe_sha256: e1f048ef5c15e6dcf9cad46982ea41248c7d2a82d36bcefac28d12ee2dbf8867
+      workload_path: tests/fixtures/workloads/security_declaration_api.py
+      workload_sha256: 0299c0af48e62e1bb755035cf4c55957328f46bfda25d5c2193b3c4a02b3254a
+      case_id: fastapi.security.declaration-public-surface
+      probe_id: param-functions-security-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
     feature_ids:
     - app-routing
     - dependency-security
@@ -19501,7 +19539,9 @@ api_surface_contract:
     - openapi.document
     - openapi.paths
     - openapi.security
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    - python.call_outcome
+    - python.signature
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.param_functions.Security
@@ -19511,7 +19551,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/938
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/parameters.rs::security
   - id: fastapi.params.Body.__init__
     kind: protocol_method
     source_candidate_ref: /api_candidates/949

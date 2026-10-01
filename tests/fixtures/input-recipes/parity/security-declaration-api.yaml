@@ -1,0 +1,46 @@
+schema: fastapi-rs/python-api-workflow@3
+workload:
+  file: tests/fixtures/workloads/security_declaration_api.py
+  factory: create_argument_bundles
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.security.declaration-public-surface
+  probes:
+  - probe_id: root-security-signature
+    public_callable:
+      module: fastapi
+      attribute: Security
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: param-functions-security-signature
+    public_callable:
+      module: fastapi.param_functions
+      attribute: Security
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: scoped-security-declaration
+    public_callable:
+      module: fastapi
+      attribute: Security
+    argument_bundle: scoped-declaration
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence:
+  - path: fastapi/param_functions.py
+    kind: upstream_api_definition
+    sha256: e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc
+    symbol_id: fastapi.param_functions.Security
+  - path: tests/test_security_oauth2_authorization_code_bearer_scopes_openapi.py
+    kind: upstream_test
+    sha256: 1c3493f44c79b9ae073343a969aed22597d43904fe06609abe8f336a9192ecf2
+  - path: docs/en/docs/advanced/security/oauth2-scopes.md
+    kind: upstream_documentation
+    sha256: c8e866d22d766b9473958b91c0231c2547ded1f323207ca1c64609df2b36bb5e

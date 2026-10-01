@@ -28,6 +28,7 @@ pub(crate) struct ParameterMetadata {
     embed: Option<bool>,
     dependency: Option<Py<PyAny>>,
     scope: Option<String>,
+    scopes: Option<Py<PyAny>>,
     default: Option<Py<PyAny>>,
     media_type: Option<String>,
     title: Option<String>,
@@ -81,6 +82,11 @@ impl ParameterMetadata {
     #[getter]
     fn scope(&self) -> Option<String> {
         self.scope.clone()
+    }
+
+    #[getter]
+    fn scopes(&self, py: Python<'_>) -> Option<Py<PyAny>> {
+        self.scopes.as_ref().map(|scopes| scopes.clone_ref(py))
     }
 
     #[getter]
@@ -259,6 +265,48 @@ fn depends(
             embed: None,
             dependency,
             scope,
+            scopes: None,
+            default: None,
+            media_type: None,
+            title: None,
+            description: None,
+            pattern: None,
+            example: None,
+            examples: None,
+            deprecated: None,
+            include_in_schema: true,
+            gt: None,
+            ge: None,
+            lt: None,
+            le: None,
+            min_length: None,
+            max_length: None,
+            convert_underscores: true,
+            use_cache,
+        },
+    )
+}
+
+#[pyfunction(
+    name = "Security",
+    signature = (dependency = None, *, scopes = None, use_cache = true)
+)]
+fn security(
+    py: Python<'_>,
+    dependency: Option<Py<PyAny>>,
+    scopes: Option<Py<PyAny>>,
+    use_cache: bool,
+) -> PyResult<Py<ParameterMetadata>> {
+    Py::new(
+        py,
+        ParameterMetadata {
+            kind: "depends".to_owned(),
+            alias: None,
+            validation_alias: None,
+            embed: None,
+            dependency,
+            scope: None,
+            scopes,
             default: None,
             media_type: None,
             title: None,
@@ -324,6 +372,7 @@ fn header(
             embed: None,
             dependency: None,
             scope: None,
+            scopes: None,
             default,
             media_type: None,
             title: None,
@@ -382,6 +431,7 @@ fn cookie(
             embed: None,
             dependency: None,
             scope: None,
+            scopes: None,
             default,
             media_type: None,
             title: None,
@@ -484,6 +534,7 @@ fn query(
             embed: None,
             dependency: None,
             scope: None,
+            scopes: None,
             default,
             media_type: None,
             title,
@@ -550,6 +601,7 @@ fn path(
             embed: None,
             dependency: None,
             scope: None,
+            scopes: None,
             default: None,
             media_type: None,
             title: None,
@@ -616,6 +668,7 @@ fn body(
             embed,
             dependency: None,
             scope: None,
+            scopes: None,
             default: None,
             media_type: None,
             title: None,
@@ -706,6 +759,7 @@ fn form(
             embed: None,
             dependency: None,
             scope: None,
+            scopes: None,
             default: normalize_undefined_default(py, default)?,
             media_type: Some(media_type.to_owned()),
             title: None,
@@ -772,6 +826,7 @@ fn file(
             embed: None,
             dependency: None,
             scope: None,
+            scopes: None,
             default: normalize_undefined_default(py, default)?,
             media_type: Some(media_type.to_owned()),
             title: None,
@@ -805,7 +860,14 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
         .getattr("partial")?
         .call1((depends_function,))?;
     set_depends_signature(py, &depends)?;
+    let security_function = wrap_pyfunction!(security, module)?;
+    let security = py
+        .import("functools")?
+        .getattr("partial")?
+        .call1((security_function,))?;
+    set_security_signature(py, &security, &depends)?;
     module.add("Depends", depends)?;
+    module.add("Security", security)?;
     module.add_function(wrap_pyfunction!(header, module)?)?;
     module.add_function(wrap_pyfunction!(cookie, module)?)?;
     module.add_function(wrap_pyfunction!(query, module)?)?;
@@ -980,5 +1042,79 @@ fn set_depends_signature(py: Python<'_>, function: &Bound<'_, PyAny>) -> PyResul
     ```
     "#,
     )?;
+    Ok(())
+}
+
+fn set_security_signature(
+    py: Python<'_>,
+    function: &Bound<'_, PyAny>,
+    depends_function: &Bound<'_, PyAny>,
+) -> PyResult<()> {
+    let inspect = py.import("inspect")?;
+    let typing = py.import("typing")?;
+    let annotated_doc = py.import("annotated_doc")?.getattr("Doc")?;
+    let annotated = typing.getattr("Annotated")?;
+    let dependency_parameters = inspect
+        .getattr("signature")?
+        .call1((depends_function,))?
+        .getattr("parameters")?;
+    let dependency = dependency_parameters.get_item("dependency")?;
+    let use_cache = dependency_parameters.get_item("use_cache")?;
+    let dependency_annotation = dependency.getattr("annotation")?;
+    let cache_annotation = use_cache.getattr("annotation")?;
+
+    let scopes_doc = annotated_doc.call1((r#"
+            OAuth2 scopes required for the *path operation* that uses this Security
+            dependency.
+
+            The term "scope" comes from the OAuth2 specification, it seems to be
+            intentionally vague and interpretable. It normally refers to permissions,
+            in cases to roles.
+
+            These scopes are integrated with OpenAPI (and the API docs at `/docs`).
+            So they are visible in the OpenAPI specification.
+
+            Read more about it in the
+            [FastAPI docs about OAuth2 scopes](https://fastapi.tiangolo.com/advanced/security/oauth2-scopes/)
+            "#,
+    ))?;
+    let sequence_type = py.import("collections.abc")?.getattr("Sequence")?;
+    let string_type = py.import("builtins")?.getattr("str")?;
+    let sequence_string = sequence_type.get_item(string_type)?;
+    let none_type = py.None().bind(py).get_type();
+    let optional_scopes = py
+        .import("operator")?
+        .getattr("or_")?
+        .call1((sequence_string, none_type))?;
+    let scopes_annotation = annotated
+        .getattr("__class_getitem__")?
+        .call1((PyTuple::new(
+            py,
+            [optional_scopes.as_any(), scopes_doc.as_any()],
+        )?,))?;
+
+    let parameter_type = inspect.getattr("Parameter")?;
+    let keyword_only = parameter_type.getattr("KEYWORD_ONLY")?;
+    let scopes_kwargs = PyDict::new(py);
+    scopes_kwargs.set_item("annotation", scopes_annotation.clone())?;
+    scopes_kwargs.set_item("default", py.None())?;
+    let scopes = parameter_type.call(("scopes", keyword_only.clone()), Some(&scopes_kwargs))?;
+    let parameters = PyList::new(py, [dependency, scopes, use_cache])?;
+    let signature_kwargs = PyDict::new(py);
+    signature_kwargs.set_item("return_annotation", typing.getattr("Any")?)?;
+    let signature = inspect
+        .getattr("Signature")?
+        .call((parameters,), Some(&signature_kwargs))?;
+    let annotations = PyDict::new(py);
+    annotations.set_item("dependency", dependency_annotation)?;
+    annotations.set_item("scopes", scopes_annotation)?;
+    annotations.set_item("use_cache", cache_annotation)?;
+    annotations.set_item("return", typing.getattr("Any")?)?;
+    function.setattr("__signature__", signature)?;
+    function.setattr("__annotations__", annotations)?;
+    function.setattr("__module__", "fastapi.param_functions")?;
+    function.setattr("__name__", "Security")?;
+    function.setattr("__qualname__", "Security")?;
+    function.setattr("__doc__", "Declare a FastAPI Security dependency.")?;
     Ok(())
 }

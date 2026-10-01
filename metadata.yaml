@@ -1915,13 +1915,48 @@ reviewed_api_contract_overlay:
         invalid HTTP and WebSocket graphs. A yielded dependency may have nested ordinary
         synchronous dependencies, but nested coroutine or yielded dependency
         graphs remain unsupported. Injected `BackgroundTasks`, generator
-        overrides, None-based dependency inference, Security/OAuth scopes,
+        overrides, None-based dependency inference, Security/OAuth scope
+        injection and OpenAPI integration,
         invalid scope values, cleanup suppression semantics, and constructor
         behavior beyond the reviewed sync, async, and yielded dependency slices
         remain unsupported. The public `Depends` signature, including its
         annotated parameter documentation, is covered by the independent
         `tests/fixtures/input-recipes/parity/depends-signature.yaml` case
         `fastapi.dependencies.depends-yield-scope-signature`.
+    fastapi.Security:
+      rust_binding: fastapi-rs/src/parameters.rs::security
+      source_evidence:
+        - path: fastapi/param_functions.py
+          symbol: Security
+          kind: source-definition
+          start_line: 2372
+          end_line: 2460
+      feature_ids: [dependency-security, openapi-docs]
+      observation_selectors: [python.signature, python.call_outcome]
+      supported_slice: >-
+        Partial declaration slice: the root `fastapi.Security` export and
+        `fastapi.param_functions.Security` share the Rust callable, preserve
+        the pinned keyword-only signature, and store the supplied dependency,
+        scopes, and cache policy in the Rust parameter marker. A regular
+        dependency callable can be declared with Security and invoked through
+        the Rust dependency graph. Scope-aware SecurityScopes injection,
+        scope-sensitive dependency caching, SecurityBase behavior, and
+        OpenAPI security scheme/requirement generation remain unsupported.
+    fastapi.param_functions.Security:
+      rust_binding: fastapi-rs/src/parameters.rs::security
+      source_evidence:
+        - path: fastapi/param_functions.py
+          symbol: Security
+          kind: source-definition
+          start_line: 2372
+          end_line: 2460
+      feature_ids: [dependency-security, openapi-docs]
+      observation_selectors: [python.signature, python.call_outcome]
+      supported_slice: >-
+        Partial declaration slice: preserves the pinned keyword-only helper
+        signature and builds a Rust dependency marker with the supplied
+        dependency, scopes, and cache policy. Scope propagation, security
+        scheme execution, and OpenAPI security output remain unsupported.
     fastapi.exceptions.RequestValidationError:
       rust_binding: fastapi-rs/src/errors.rs::RequestValidationError
       source_evidence:
