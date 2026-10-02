@@ -568,9 +568,9 @@ The sibling Starlette-RS manifest, API review, and coverage matrix remain the so
 
 ## First end-to-end request/response slice and next backlog
 
-The implemented first slice is a scoped end-to-end POST `/items/{item_id}` path: Rust-owned app/route construction, path and query parsing, a header-backed dependency, Pydantic request validation, response-model filtering, exact HTTP observations, ordered ASGI send-message types, and selected generated OpenAPI fields. Ten input-only cases are in `tests/fixtures/input-recipes/parity/first-asgi-request.yaml` under the strict schema `tests/fixtures/schemas/python-asgi-workflow-v2.schema.json`; `make parity-inputs` materializes the ignored JSON input, and the independently authored workload is `tests/fixtures/workloads/first_slice.py`. The isolated oracle and target workers and exact comparator are present. This atlas records fixture scope and runner capability; fresh run outcomes belong in ignored `parity-results/` artifacts.
+The implemented first slice is a scoped end-to-end POST `/items/{item_id}` path: Rust-owned app/route construction, path and query parsing, a header-backed dependency, Pydantic request validation, response-model filtering, exact HTTP observations, ordered ASGI send-message types, and selected generated OpenAPI fields. 12 input-only cases are in `tests/fixtures/input-recipes/parity/first-asgi-request.yaml` under the strict schema `tests/fixtures/schemas/python-asgi-workflow-v2.schema.json`; `make parity-inputs` materializes the ignored JSON input, and the independently authored workload is `tests/fixtures/workloads/first_slice.py`. The isolated oracle and target workers and exact comparator are present. This atlas records fixture scope and runner capability; fresh run outcomes belong in ignored `parity-results/` artifacts.
 
-The ten cases define a narrow first vertical slice. Full FastAPI 0.141.1 API and behavior parity remains incomplete; do not read fixture links or runner availability as broader support evidence.
+The 12 cases define a narrow first vertical slice. Full FastAPI 0.141.1 API and behavior parity remains incomplete; do not read fixture links or runner availability as broader support evidence.
 
 ## Prioritized project backlog
 
