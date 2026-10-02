@@ -1,0 +1,180 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/cors_tutorial_independent.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.docs.cors-tutorial.allowed-preflight
+  actions:
+  - action_id: allowed-patch-preflight
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: OPTIONS
+      scheme: http
+      path: /records/42
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - origin
+        - https://console.example.test
+      - - access-control-request-method
+        - PATCH
+      - - access-control-request-headers
+        - X-Workspace-Key, Content-Type
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/cors.md
+    kind: upstream_documentation
+  - path: docs_src/cors/tutorial001_py310.py
+    kind: upstream_documentation_example
+- case_id: fastapi.docs.cors-tutorial.disallowed-preflight-method
+  actions:
+  - action_id: rejected-delete-preflight
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: OPTIONS
+      scheme: http
+      path: /records/42
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - origin
+        - https://console.example.test
+      - - access-control-request-method
+        - DELETE
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/cors.md
+    kind: upstream_documentation
+  - path: docs_src/cors/tutorial001_py310.py
+    kind: upstream_documentation_example
+- case_id: fastapi.docs.cors-tutorial.allowed-simple-request
+  actions:
+  - action_id: allowed-origin-get
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /records/42
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - origin
+        - https://console.example.test
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/cors.md
+    kind: upstream_documentation
+  - path: docs_src/cors/tutorial001_py310.py
+    kind: upstream_documentation_example
+- case_id: fastapi.docs.cors-tutorial.unlisted-simple-request
+  actions:
+  - action_id: unlisted-origin-get
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /records/42
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - origin
+        - https://intruder.example.test
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/cors.md
+    kind: upstream_documentation
+  - path: docs_src/cors/tutorial001_py310.py
+    kind: upstream_documentation_example

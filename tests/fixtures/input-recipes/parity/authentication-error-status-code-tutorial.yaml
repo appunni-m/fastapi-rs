@@ -1,0 +1,88 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/authentication_error_status_code_tutorial.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.docs.auth-error-status.legacy-forbidden
+  actions:
+  - action_id: missing-bearer
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /agents/current
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/how-to/authentication-error-status-code.md
+    kind: upstream_documentation
+  - path: docs_src/authentication_error_status_code/tutorial001_an_py310.py
+    kind: upstream_documentation_example
+- case_id: fastapi.docs.auth-error-status.valid-bearer
+  actions:
+  - action_id: valid-bearer
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /agents/current
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Bearer independent-credential
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/how-to/authentication-error-status-code.md
+    kind: upstream_documentation
+  - path: docs_src/authentication_error_status_code/tutorial001_an_py310.py
+    kind: upstream_documentation_example

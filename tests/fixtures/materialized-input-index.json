@@ -449,6 +449,19 @@
       ]
     },
     {
+      "id": "authentication-error-status-code-tutorial",
+      "input_path": "tests/fixtures/inputs/parity/authentication-error-status-code-tutorial.json",
+      "input_sha256": "e0ca2b8078d3c5c3cb8da250051d243c9fd19b55bbc48b25ccf4f3d5c730a5fa",
+      "recipe_path": "tests/fixtures/input-recipes/parity/authentication-error-status-code-tutorial.yaml",
+      "recipe_sha256": "1d7ae6da64f65ddb427d39b89a553fe4d8bdac9b7a64ab5d3dcc11c05ccd6d22",
+      "workload_path": "tests/fixtures/workloads/authentication_error_status_code_tutorial.py",
+      "workload_sha256": "ba0cfb6233e14e6b84bfb68286e0d2da6287898425f6eaab4cb712aa8f3e92b3",
+      "case_ids": [
+        "fastapi.docs.auth-error-status.legacy-forbidden",
+        "fastapi.docs.auth-error-status.valid-bearer"
+      ]
+    },
+    {
       "id": "background-task-keyword-arguments-tutorial-review",
       "input_path": "tests/fixtures/inputs/parity/background-task-keyword-arguments-tutorial-review.json",
       "input_sha256": "6ec5b9538500e78052d9c73c7383cfeff8c72c41edb041d75f3335263f937c9f",
@@ -900,6 +913,21 @@
         "fastapi.test.test-tutorial-test-cors-test-tutorial001.cors-preflight-disallowed-origin",
         "fastapi.test.test-tutorial-test-cors-test-tutorial001.cors-preflight-disallowed-method",
         "fastapi.test.test-tutorial-test-cors-test-tutorial001.cors-simple-disallowed-origin"
+      ]
+    },
+    {
+      "id": "cors-tutorial-independent",
+      "input_path": "tests/fixtures/inputs/parity/cors-tutorial-independent.json",
+      "input_sha256": "66b449cc171dba587ef1186043c370bea6da030d0dd91726ee00fc6498c077a7",
+      "recipe_path": "tests/fixtures/input-recipes/parity/cors-tutorial-independent.yaml",
+      "recipe_sha256": "008bf6f786a03183e0eda1f78060efb7b8f579c03a5b657b9c3a3aeae79ed4b9",
+      "workload_path": "tests/fixtures/workloads/cors_tutorial_independent.py",
+      "workload_sha256": "70ba12a96bf071bb9e7aa7292f22fa5bce8d690e97145cd432eb708c775e9bcc",
+      "case_ids": [
+        "fastapi.docs.cors-tutorial.allowed-preflight",
+        "fastapi.docs.cors-tutorial.disallowed-preflight-method",
+        "fastapi.docs.cors-tutorial.allowed-simple-request",
+        "fastapi.docs.cors-tutorial.unlisted-simple-request"
       ]
     },
     {
@@ -6370,7 +6398,7 @@
       "input_path": "tests/fixtures/inputs/parity/response-model-data-filter-exclude-unset-none-review.json",
       "input_sha256": "e8df817a4df31b3f2f646068c8a9286416ff13577822d1fc572bbc5d8eb34a17",
       "recipe_path": "tests/fixtures/input-recipes/parity/response-model-data-filter-exclude-unset-none-review.yaml",
-      "recipe_sha256": "6c6ed242eea20f50f52169d880e3fae89fd10d8e3c62ea827bc8ce9b08796c1b",
+      "recipe_sha256": "84b5a6fec070b244615c099e11736a5174b6023994285812ae4348918fd73333",
       "workload_path": "tests/fixtures/workloads/response_model_data_filter_exclude_unset_none_review.py",
       "workload_sha256": "24b60f06b2472a0254c9ae15d0b208e0edd99d3cb8a3833696d343bacd0c13cd",
       "case_ids": [
@@ -9486,6 +9514,38 @@
       ]
     },
     {
+      "source_item_id": "documented-example:docs_src/authentication_error_status_code/tutorial001_an_py310.py",
+      "fixture_id": "fastapi.docs-example.authentication-error-status-code-tutorial001-an-py310",
+      "workflow_id": "authentication-error-status-code-tutorial",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.docs.auth-error-status.legacy-forbidden",
+        "fastapi.docs.auth-error-status.valid-bearer"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:how-to/authentication-error-status-code.md",
+      "fixture_id": "fastapi.docs.how-to-authentication-error-status-code",
+      "workflow_id": "authentication-error-status-code-tutorial",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.docs.auth-error-status.legacy-forbidden",
+        "fastapi.docs.auth-error-status.valid-bearer"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
       "source_item_id": "upstream-test:tests/test_tutorial/test_background_tasks/test_tutorial001.py",
       "fixture_id": "fastapi.test.test-tutorial-test-background-tasks-test-tutorial001",
       "workflow_id": "background-task-keyword-arguments-tutorial-review",
@@ -10393,6 +10453,40 @@
       ],
       "observation_selectors": [
         "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-example:docs_src/cors/tutorial001_py310.py",
+      "fixture_id": "fastapi.docs-example.cors-tutorial001-py310",
+      "workflow_id": "cors-tutorial-independent",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 4 case(s); observes http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.docs.cors-tutorial.allowed-preflight",
+        "fastapi.docs.cors-tutorial.allowed-simple-request",
+        "fastapi.docs.cors-tutorial.disallowed-preflight-method",
+        "fastapi.docs.cors-tutorial.unlisted-simple-request"
+      ],
+      "observation_selectors": [
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/cors.md",
+      "fixture_id": "fastapi.docs.tutorial-cors",
+      "workflow_id": "cors-tutorial-independent",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 4 case(s); observes http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.docs.cors-tutorial.allowed-preflight",
+        "fastapi.docs.cors-tutorial.allowed-simple-request",
+        "fastapi.docs.cors-tutorial.disallowed-preflight-method",
+        "fastapi.docs.cors-tutorial.unlisted-simple-request"
+      ],
+      "observation_selectors": [
         "http.headers.ordered",
         "http.status"
       ]

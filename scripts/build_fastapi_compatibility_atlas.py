@@ -9387,6 +9387,12 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             "evidence": "FastAPI 0.141.1 declares the `fastapi` entrypoint and delegates its implementation to the separate fastapi-cli package; the current workflow schemas cannot execute or observe subprocesses, and no CLI package pin is selected.",
         },
         {
+            "id": "fastapi-security-module-runtime-surface",
+            "status": "identity-checked-target-module-import-failure",
+            "question": "Does FastAPI-RS expose the documented `fastapi.security` module and preserve `HTTPBearer` subclass overrides for missing-credential responses?",
+            "evidence": "The independently authored authentication-error-status-code-tutorial workflow completes both the legacy-403 and valid-bearer cases on FastAPI 0.141.1 with Starlette 1.6.0. The FastAPI-RS target runtime boundary preflight confirms the target package is installed and upstream FastAPI is absent, but the target worker then fails before either case with `ModuleNotFoundError: No module named 'fastapi.security'`. The Rust-backed public package currently has no `fastapi/security.py` facade, so both the module export and the HTTPBearer override behavior remain unsupported pending implementation and exact parity.",
+        },
+        {
             "id": "fixture-recipe-execution-contract",
             "status": "first-slice-defined; broader-api-coverage-pending",
             "question": "Which additional independently authored workflows should extend the first request/response slice to cover the public FastAPI contract?",

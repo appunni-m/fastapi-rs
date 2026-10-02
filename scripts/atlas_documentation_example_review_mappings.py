@@ -7,6 +7,76 @@ page.
 """
 
 DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
+    "docs_src/authentication_error_status_code/tutorial001_an_py310.py": {
+        "rationale": (
+            "The FastAPI 0.141.1 example overrides HTTPBearer's missing-credentials error to "
+            "return HTTP 403. The independent requests exercise that unauthenticated branch and "
+            "a valid bearer credential on a separately named route with different detail and "
+            "token values. They observe status, ordered headers, and body bytes only; they do not "
+            "claim the tutorial's literals, route name, or OpenAPI document."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/authentication_error_status_code/tutorial001_an_py310.py",
+                "start_line": 9,
+                "end_line": 16,
+                "role": "documented HTTPBearer missing-credentials override and dependency",
+            }
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/authentication-error-status-code-tutorial.yaml",
+                "case_ids": [
+                    "fastapi.docs.auth-error-status.legacy-forbidden",
+                    "fastapi.docs.auth-error-status.valid-bearer",
+                ],
+                "observation_selectors": [
+                    "http.body.bytes",
+                    "http.headers.ordered",
+                    "http.status",
+                ],
+            }
+        ],
+    },
+    "docs_src/cors/tutorial001_py310.py": {
+        "rationale": (
+            "The FastAPI 0.141.1 example installs credentialed CORSMiddleware with allowed "
+            "origins, methods, and headers. The independent cases use different origins, an "
+            "explicit method/header allowlist, and a separate records route to sample allowed "
+            "and rejected preflights plus simple requests. The mapping claims only status and "
+            "ordered response headers, which carry the CORS policy result; it does not claim the "
+            "tutorial's origin list, wildcard configuration, or literal route and response."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/cors/tutorial001_py310.py",
+                "start_line": 13,
+                "end_line": 19,
+                "role": "documented CORSMiddleware registration and CORS policy options",
+            },
+            {
+                "path": "docs_src/cors/tutorial001_py310.py",
+                "start_line": 22,
+                "end_line": 24,
+                "role": "documented route behind CORS middleware",
+            },
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/cors-tutorial-independent.yaml",
+                "case_ids": [
+                    "fastapi.docs.cors-tutorial.allowed-preflight",
+                    "fastapi.docs.cors-tutorial.disallowed-preflight-method",
+                    "fastapi.docs.cors-tutorial.allowed-simple-request",
+                    "fastapi.docs.cors-tutorial.unlisted-simple-request",
+                ],
+                "observation_selectors": [
+                    "http.headers.ordered",
+                    "http.status",
+                ],
+            }
+        ],
+    },
     "docs_src/additional_status_codes/tutorial001_py310.py": {
         "rationale": (
             "The FastAPI 0.141.1 example upserts an item: an existing item returns the normal "
