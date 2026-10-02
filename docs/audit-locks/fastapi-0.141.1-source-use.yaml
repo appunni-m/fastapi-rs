@@ -9,9 +9,118 @@ authority:
 
 scope:
   source_review: Pinned FastAPI source and selected Starlette source, including their checked-in tests, docs, and tooling.
-  unresolved_default: No source-level use was verified in the reviewed repositories; the lock-derived consumer path is shown for role and reachability only.
+  unresolved_default: No package-specific source-use mapping is recorded; the lock-derived consumer path shows role and reachability only, not proof that source was reviewed or that the package is unused.
 
 source_backed:
+  a2wsgi:
+    purpose: The WSGI interoperability example and guide use a2wsgi; it is a docs/test integration, not FastAPI's core ASGI request path.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/docs_src/wsgi/tutorial001_py310.py
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/docs/en/docs/advanced/wsgi.md
+  argon2-cffi:
+    purpose: FastAPI's OAuth2 tutorial and test group select pwdlib's optional argon2 backend; this distribution supplies that optional hashing backend, not FastAPI core behavior.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/docs/en/docs/tutorial/security/oauth2-jwt.md
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml
+  argon2-cffi-bindings:
+    purpose: Transitive native binding selected by the pwdlib[argon2] optional backend documented by FastAPI; it is not imported by FastAPI.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/docs/en/docs/tutorial/security/oauth2-jwt.md
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml
+  cross-web:
+    purpose: A FastAPI Strawberry tutorial test filters a deprecation warning containing cross_web; this is test warning handling, not an application dependency.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/tests/test_tutorial/test_graphql/test_tutorial001.py
+  cryptography:
+    purpose: FastAPI's OAuth2/JWT guide documents the optional pyjwt[crypto] feature for RSA and ECDSA algorithms.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/docs/en/docs/tutorial/security/oauth2-jwt.md
+  dirty-equals:
+    purpose: FastAPI tests use dirty-equals matchers to assert request, validation, and response values.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/tests/test_multi_body_errors.py
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/tests/test_request_params/test_header/test_required_str.py
+  fastapi-cloud-cli:
+    purpose: FastAPI documents its optional CLI/deployment integration and fastapi deploy workflow; it is outside the ASGI request path.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/docs/en/docs/index.md
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/docs/en/docs/deployment/fastapicloud.md
+  griffe-typingdoc:
+    purpose: FastAPI's documentation configuration enables the Griffe typing documentation extension for API reference generation.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/docs/en/mkdocs.yml
+  httpx2:
+    purpose: FastAPI's documentation tests use HTTPX2 and CI has a matrix case that removes it; this is a docs-test profile, not the ASGI server path.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/.github/workflows/test.yml
+  markdown-include-variants:
+    purpose: FastAPI's docs configuration enables Markdown include variants for documentation builds.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/docs/en/mkdocs.yml
+  markupsafe:
+    purpose: The WSGI documentation example uses MarkupSafe to escape a query value; it is an example dependency, not FastAPI core behavior.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/docs_src/wsgi/tutorial001_py310.py
+  mdx-include:
+    purpose: FastAPI's docs configuration enables the Markdown include extension for documentation builds.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/docs/en/mkdocs.yml
+  mkdocstrings:
+    purpose: FastAPI's docs configuration enables mkdocstrings to render Python API references.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/docs/en/mkdocs.yml
+  mkdocstrings-python:
+    purpose: FastAPI's docs configuration selects the mkdocstrings Python handler for API reference generation.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/docs/en/mkdocs.yml
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml
+  playwright:
+    purpose: FastAPI's checked-in screenshot-generation scripts use Playwright; it is a developer tool, not a runtime dependency.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/playwright/request_form_models/image01.py
+  pymdown-extensions:
+    purpose: FastAPI's docs configuration enables pymdownx Markdown extensions for rendering documentation.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/docs/en/mkdocs.yml
+  pytest-cov:
+    purpose: FastAPI's coverage script invokes pytest-cov to collect test coverage; this is test tooling.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/test-cov.sh
+  pytest-timeout:
+    purpose: FastAPI's pytest configuration enables per-test timeouts to detect hanging tests.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml
+  pytest-xdist:
+    purpose: FastAPI's test script invokes pytest-xdist for parallel test execution.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/test.sh
+  pyyaml:
+    purpose: FastAPI docs and scripts parse YAML, and the all extra includes the Starlette schema-related feature; it is not required by the ordinary request path.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/docs_src/path_operation_advanced_configuration/tutorial007_py310.py
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/docs.py
+  python-slugify:
+    purpose: FastAPI's docs-generation script uses python-slugify when preparing documentation content.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/docs.py
+  rich:
+    purpose: FastAPI's tooling scripts use Rich for terminal output; CLI use is optional and outside the ASGI request path.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py
+  sqlalchemy:
+    purpose: FastAPI tutorial tests exercise SQLAlchemy through SQLModel; it is a tutorial/test integration, not a FastAPI runtime dependency.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/tests/test_orjson_response_class.py
+  smokeshow:
+    purpose: FastAPI's GitHub Actions workflow publishes coverage reports with Smokeshow.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/.github/workflows/smokeshow.yml
+  typer:
+    purpose: FastAPI repository scripts and tests use Typer for command-line interfaces; FastAPI's CLI integration is optional.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/fastapi/cli.py
   annotated-doc:
     purpose: FastAPI attaches Doc metadata to public parameters and API objects.
     evidence:

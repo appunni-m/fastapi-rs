@@ -42,7 +42,10 @@ _EXPECTED_EXCLUSIONS = {
 }
 _EXPECTED_METRICS = {
     "per-request latency nanoseconds: min, median, p95, p99, max, mean",
-    "sequential request-loop throughput including per-call setup, response observation, correctness checks, and loop bookkeeping",
+    (
+        "sequential request-loop throughput including per-call setup, response "
+        "observation, correctness checks, and loop bookkeeping"
+    ),
 }
 _EXPECTED_KINDS = {"fastapi", "fastapi-rs"}
 _SUBJECT_IDS = {

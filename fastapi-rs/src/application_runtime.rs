@@ -374,6 +374,12 @@ struct FastApiRoute {
     plan: CallablePlan,
 }
 
+struct FastApiRouterInclude {
+    route_position: usize,
+    router: Py<PyAny>,
+    prefix: String,
+}
+
 #[derive(Clone, Copy)]
 enum FastApiDocsRoute {
     SwaggerUi,
@@ -461,6 +467,7 @@ pub(crate) struct PyFastApi {
     docs_routes: Vec<FastApiDocsRoute>,
     named_routes: NamedRouteTable,
     routes: Vec<FastApiRoute>,
+    router_includes: Vec<FastApiRouterInclude>,
     routes_version: AtomicU64,
     openapi_cache: Mutex<OpenApiCache>,
     mounted_routes: Vec<Py<PyAny>>,
@@ -683,6 +690,7 @@ impl PyFastApi {
             docs_routes,
             named_routes: NamedRouteTable::new(),
             routes: Vec::new(),
+            router_includes: Vec::new(),
             routes_version: AtomicU64::new(0),
             openapi_cache: Mutex::new(OpenApiCache {
                 schema: py.None(),
@@ -1371,6 +1379,48 @@ impl PyFastApi {
         Ok(())
     }
 
+    #[pyo3(signature = (path, route, methods=None, name=None, include_in_schema=true))]
+    fn add_route(
+        &mut self,
+        py: Python<'_>,
+        path: &str,
+        route: Py<PyAny>,
+        methods: Option<Py<PyAny>>,
+        name: Option<String>,
+        include_in_schema: bool,
+    ) -> PyResult<()> {
+        let route_type = py.import("starlette.routing")?.getattr("Route")?;
+        let kwargs = PyDict::new(py);
+        if let Some(methods) = methods {
+            kwargs.set_item("methods", methods.bind(py))?;
+        }
+        if let Some(name) = name {
+            kwargs.set_item("name", name)?;
+        }
+        kwargs.set_item("include_in_schema", include_in_schema)?;
+        let route_object = route_type.call((path, route.bind(py)), Some(&kwargs))?;
+        self.mounted_routes.push(route_object.unbind());
+        Ok(())
+    }
+
+    #[pyo3(signature = (host, app, name=None))]
+    fn host(
+        &mut self,
+        py: Python<'_>,
+        host: &str,
+        app: Py<PyAny>,
+        name: Option<String>,
+    ) -> PyResult<()> {
+        let host_type = py.import("starlette.routing")?.getattr("Host")?;
+        let kwargs = PyDict::new(py);
+        if let Some(name) = name {
+            kwargs.set_item("name", name)?;
+        }
+        let route = host_type.call((host, app.bind(py)), Some(&kwargs))?;
+        self.mounted_routes.push(route.unbind());
+        Ok(())
+    }
+
     #[pyo3(signature = (path, *, directory, fallback=default_frontend_auto(), check_dir=default_frontend_auto()))]
     fn frontend(
         &mut self,
@@ -1445,6 +1495,8 @@ impl PyFastApi {
         deprecated: Option<bool>,
         include_in_schema: bool,
     ) -> PyResult<()> {
+        let router_object = router.clone_ref(py).into_any();
+        let include_prefix = prefix.to_owned();
         let router = router.bind(py).borrow();
         let prefix = combined_router_prefix(prefix, &router.prefix)?;
         let tags = combined_router_tags(tags.as_deref(), &router.tags);
@@ -1463,6 +1515,7 @@ impl PyFastApi {
         let deprecated = combined_deprecated(deprecated, router.deprecated);
         let include_in_schema = include_in_schema && router.include_in_schema;
         let source = router.inner.bind(py).borrow();
+        let route_position = self.routes.len();
         merge_router_routes(
             py,
             self,
@@ -1476,6 +1529,11 @@ impl PyFastApi {
                 strict_content_type: self.strict_content_type,
             },
         )?;
+        self.router_includes.push(FastApiRouterInclude {
+            route_position,
+            router: router_object,
+            prefix: include_prefix,
+        });
         self.lifespan.include_router(py, &source.lifespan)?;
         self.bump_routes_version();
         Ok(())
@@ -1518,24 +1576,42 @@ impl PyFastApi {
         supplied_names.sort();
 
         let mut matching_route = None;
-        for route in &self.routes {
-            if route.name != name {
-                continue;
+        let no_match_type = py.import("starlette.routing")?.getattr("NoMatchFound")?;
+        for route_position in 0..=self.routes.len() {
+            for include in &self.router_includes {
+                if include.route_position != route_position {
+                    continue;
+                }
+                if let Some(url_path) = try_included_router_url_path_for(
+                    py,
+                    &include.router,
+                    &include.prefix,
+                    name,
+                    path_params,
+                    &no_match_type,
+                )? {
+                    return Ok(url_path);
+                }
             }
-            let mut expected_names = route
-                .param_convertors
-                .bind(py)
-                .keys()
-                .extract::<Vec<String>>()?;
-            expected_names.sort();
-            if expected_names == supplied_names {
-                matching_route = Some(route);
-                break;
+
+            let Some(route) = self.routes.get(route_position) else {
+                continue;
+            };
+            if route.name == name {
+                let mut expected_names = route
+                    .param_convertors
+                    .bind(py)
+                    .keys()
+                    .extract::<Vec<String>>()?;
+                expected_names.sort();
+                if expected_names == supplied_names {
+                    matching_route = Some(route);
+                    break;
+                }
             }
         }
 
         let Some(route) = matching_route else {
-            let no_match_type = py.import("starlette.routing")?.getattr("NoMatchFound")?;
             let exception = no_match_type.call1((name, path_params))?;
             return Err(PyErr::from_value(exception));
         };
@@ -2416,6 +2492,8 @@ impl PyApiRouter {
         deprecated: Option<bool>,
         include_in_schema: bool,
     ) -> PyResult<()> {
+        let router_object = router.clone_ref(py).into_any();
+        let include_prefix = prefix.to_owned();
         let router = router.bind(py).borrow();
         if self.inner.as_ptr() == router.inner.as_ptr() {
             return Err(PyAssertionError::new_err(
@@ -2441,6 +2519,7 @@ impl PyApiRouter {
             ));
         }
         let inherited_strict_content_type = destination.strict_content_type;
+        let route_position = destination.routes.len();
         merge_router_routes(
             py,
             &mut destination,
@@ -2454,7 +2533,29 @@ impl PyApiRouter {
                 strict_content_type: inherited_strict_content_type,
             },
         )?;
+        destination.router_includes.push(FastApiRouterInclude {
+            route_position,
+            router: router_object,
+            prefix: include_prefix,
+        });
         destination.lifespan.include_router(py, &source.lifespan)
+    }
+
+    #[pyo3(
+        signature = (name, /, **path_params),
+        text_signature = "($self, name, /, **path_params)"
+    )]
+    fn url_path_for(
+        &self,
+        py: Python<'_>,
+        name: &str,
+        path_params: Option<&Bound<'_, PyDict>>,
+    ) -> PyResult<Py<PyAny>> {
+        let url_path = self
+            .inner
+            .bind(py)
+            .call_method("url_path_for", (name,), path_params)?;
+        prefix_url_path(py, url_path, &self.prefix)
     }
 
     fn __getattr__(&self, py: Python<'_>, name: &str) -> PyResult<Py<PyAny>> {
@@ -2502,6 +2603,43 @@ fn combined_router_prefix(include_prefix: &str, router_prefix: &str) -> PyResult
     validate_router_prefix(include_prefix)?;
     validate_router_prefix(router_prefix)?;
     Ok(format!("{include_prefix}{router_prefix}"))
+}
+
+fn try_included_router_url_path_for(
+    py: Python<'_>,
+    router: &Py<PyAny>,
+    prefix: &str,
+    name: &str,
+    path_params: &Bound<'_, PyDict>,
+    no_match_type: &Bound<'_, PyAny>,
+) -> PyResult<Option<Py<PyAny>>> {
+    match router
+        .bind(py)
+        .call_method("url_path_for", (name,), Some(path_params))
+    {
+        Ok(url_path) => prefix_url_path(py, url_path, prefix).map(Some),
+        Err(error) if error.is_instance(py, no_match_type) => Ok(None),
+        Err(error) => Err(error),
+    }
+}
+
+fn prefix_url_path(
+    py: Python<'_>,
+    url_path: Bound<'_, PyAny>,
+    prefix: &str,
+) -> PyResult<Py<PyAny>> {
+    if prefix.is_empty() {
+        return Ok(url_path.unbind());
+    }
+    let path = format!("{prefix}{}", url_path.str()?.to_str()?);
+    py.import("starlette.datastructures")?
+        .getattr("URLPath")?
+        .call1((
+            path,
+            url_path.getattr("protocol")?,
+            url_path.getattr("host")?,
+        ))
+        .map(Bound::unbind)
 }
 
 fn combined_router_tags(include_tags: Option<&[String]>, router_tags: &[String]) -> Vec<String> {
@@ -7284,15 +7422,33 @@ impl FastApiCall {
             .import("starlette.routing")?
             .getattr("Match")?
             .getattr("FULL")?;
+        let partial_match = py
+            .import("starlette.routing")?
+            .getattr("Match")?
+            .getattr("PARTIAL")?;
+        let mut partial_route = None;
 
         for route in mounted_routes {
             let match_result = route.bind(py).call_method1("matches", (scope,))?;
-            if !match_result.get_item(0)?.is(&full_match) {
+            let route_match = match_result.get_item(0)?;
+            if route_match.is(&partial_match) && partial_route.is_none() {
+                partial_route = Some((route.clone_ref(py), match_result.get_item(1)?.unbind()));
+            }
+            if !route_match.is(&full_match) {
                 continue;
             }
 
             let child_scope = match_result.get_item(1)?;
             scope.call_method1("update", (child_scope,))?;
+            let awaitable = route
+                .bind(py)
+                .call_method1("handle", (scope, self.receive.bind(py), self.send.bind(py)))?;
+            self.pending = Some(PendingAction::MountedApp);
+            return Ok(Some(MachineAction::Await(awaitable.unbind())));
+        }
+
+        if let Some((route, child_scope)) = partial_route {
+            scope.call_method1("update", (child_scope.bind(py),))?;
             let awaitable = route
                 .bind(py)
                 .call_method1("handle", (scope, self.receive.bind(py), self.send.bind(py)))?;

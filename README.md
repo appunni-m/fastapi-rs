@@ -85,7 +85,7 @@ interpret the source atlas or foundation manifest as a full support declaration
 or parity result.
 
 After `make parity-prepare-oracle` and `make parity-prepare-target`, run
-`make parity-first-slice` for the current ten-case HTTP parity gate. CI runs
+`make parity-first-slice` for the current twelve-case HTTP parity gate. CI runs
 this same identity-checked oracle/target/comparator path. Target preparation
 builds the PyO3 extension in Cargo release mode and verifies that the Python
 and Rust Starlette-RS dependencies resolve to the same clean pinned checkout.
@@ -101,7 +101,7 @@ floats retained in a JSON Pointer sidecar. Run
 does not represent full public API parity.
 
 The first correctness-gated performance lane is `make benchmark-first-slice`.
-It runs the pinned ten-case parity gate, then compares one valid request through
+It runs the pinned twelve-case parity gate, then compares one valid request through
 the FastAPI 0.141.1 oracle, release FastAPI-RS facade, and Starlette 1.6.0 plain
 route control. It measures direct ASGI dispatch without network/client startup
 and stores raw, identity-stamped samples under ignored `benchmark-results/`.
