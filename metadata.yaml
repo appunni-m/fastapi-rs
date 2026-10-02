@@ -80,14 +80,14 @@ api_inventory:
 import_binding_classification_review:
   artifact: tests/fixtures/api-import-binding-classification-review.json
   schema: fastapi-starlette-import-binding-review/v1
-  sha256: 77c34d20252fcbda82697ca6b9b03213371dfd0cff3fab406808e322ce504621
+  sha256: e2939fd0cdb042d72e88882fb3d7293eca59921e6544f43bf00a9ec28dde41ac
   source_identity:
     package: FastAPI
     version: 0.141.1
     source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
     selected_starlette_profile: 1.6.0
     starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
-    starlette_rs_contract_commit: 7144de458ea6b59bd7821f2979fb20f5ed0dadc2
+    starlette_rs_contract_commit: 530402ab991eb4712970ccee2988bcb6d2f60ace
   starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
   counts:
     candidates: 97
@@ -187,7 +187,7 @@ classification_atlas:
 starlette_rs:
   owner: ../starlette-rs
   repository: https://github.com/appunni-m/starlette-rs
-  commit: 7144de458ea6b59bd7821f2979fb20f5ed0dadc2
+  commit: 530402ab991eb4712970ccee2988bcb6d2f60ace
   distribution_version: 0.1.0
   contract_id: starlette-1.6.0-asgi-http-config-session-slice
   metadata: ../starlette-rs/metadata.yaml
@@ -2570,15 +2570,24 @@ reviewed_api_contract_overlay:
             - "`app.add_middleware()`"
             - "app = FastAPI()"
             - 'app.add_middleware(UnicornMiddleware, some_config="rainbow")'
+        - path: docs/en/docs/advanced/middleware.md
+          kind: documentation-text
+          start_line: 75
+          end_line: 80
+          required_text:
+            - 'Handles GZip responses for any request that includes `"gzip"` in the `Accept-Encoding` header.'
+            - "The middleware will handle both standard and streaming responses."
       documentation_contract_refs:
         - source_path: docs/en/docs/advanced/middleware.md
           fixture_id: fastapi.docs.advanced-middleware
-          observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types]
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/middleware-execution-order-wave.yaml
           case_id: fastapi.docs.middleware.request-and-response-order
+        - recipe_path: tests/fixtures/input-recipes/parity/gzip-streaming-response-integration-docs.yaml
+          case_id: fastapi.middleware.gzip.streaming-response-docs-contract
       feature_ids: [middleware-integrations]
-      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types]
     fastapi.applications.FastAPI.add_exception_handler:
       fastapi_exposure_candidate_id: fastapi.applications.FastAPI
       canonical_operation_id: starlette.applications.Starlette.add_exception_handler

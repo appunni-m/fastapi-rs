@@ -91,7 +91,7 @@ target:
     name: starlette-rs-py
     version: 0.1.0
     starlette_contract: 1.6.0
-    commit: 7144de458ea6b59bd7821f2979fb20f5ed0dadc2
+    commit: 530402ab991eb4712970ccee2988bcb6d2f60ace
   external_python_runtime_lock:
     path: requirements/target-runtime-cpython-3.12.13.lock
     sha256: efb7ca633fc9a9c8587a6f59f8ee9b509151f6f77ceb75a56dd3cdeff2be99f7
@@ -128,13 +128,13 @@ source_artifacts:
   api_import_binding_classification_review:
     path: tests/fixtures/api-import-binding-classification-review.json
     schema: fastapi-starlette-import-binding-review/v1
-    sha256: 77c34d20252fcbda82697ca6b9b03213371dfd0cff3fab406808e322ce504621
+    sha256: e2939fd0cdb042d72e88882fb3d7293eca59921e6544f43bf00a9ec28dde41ac
     purpose: Reviewed source-backed disposition of uncertain FastAPI import bindings from the selected Starlette profile
     source_identity:
       package: FastAPI
       selected_starlette_profile: 1.6.0
       source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
-      starlette_rs_contract_commit: 7144de458ea6b59bd7821f2979fb20f5ed0dadc2
+      starlette_rs_contract_commit: 530402ab991eb4712970ccee2988bcb6d2f60ace
       starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
       version: 0.141.1
     starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
@@ -172,7 +172,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@4
-    sha256: 6511da1b5bd19edffe3ac4d1bcc7e532fa5b2f56b233cd0852bb7995ad99564f
+    sha256: d6fbaf2e4763f26f63eaf74a0bce60c2a9b12f6f813edfe9505b36a11a78644b
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -205,7 +205,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: b018e8322647459e959dd5c173dfdd8e580f4b5737d59432c818bfe66ae4ec9b
+    sha256: 045eb8a0086a4d01b235a27d3cfa938d63a99db2592b8df679c1d1e747c4fcb5
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 690
@@ -242,14 +242,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@2
-    sha256: 9b5f7d254709d9e1b14004a29b31037bb8a559226f80ad265e7c265c4054e673
+    sha256: 4500c06f6c21d7c70a2ba8f2e0ac79338431b766237d2cb9dafc7452c644d095
     schema_path: tests/fixtures/schemas/materialized-input-index.schema.json
     schema_sha256: 56ac1cdfaa6f28b4277ef44b5ef78efebb3122111c5691e1b9c1bce869156aaf
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 505
-      cases: 1985
-      partial_source_mappings: 1248
+      workflows: 506
+      cases: 1986
+      partial_source_mappings: 1249
 
 contract_metadata:
   aliases:
@@ -1266,6 +1266,7 @@ api_surface_contract:
       fixture_id: fastapi.docs.advanced-middleware
       fixture_design_ref: /fixture_designs/144
       observation_selectors:
+      - asgi.send.message_types
       - http.body.bytes
       - http.headers.ordered
       - http.status
@@ -1357,6 +1358,7 @@ api_surface_contract:
     - response-serialization
     - websocket-lifecycle
     observation_selectors:
+    - asgi.send.message_types
     - dependency.call_order
     - docs.response.body.bytes
     - docs.response.status
@@ -28381,6 +28383,13 @@ api_surface_contract:
       - '`app.add_middleware()`'
       - app = FastAPI()
       - app.add_middleware(UnicornMiddleware, some_config="rainbow")
+    - path: docs/en/docs/advanced/middleware.md
+      kind: documentation-text
+      start_line: 75
+      end_line: 80
+      required_text:
+      - Handles GZip responses for any request that includes `"gzip"` in the `Accept-Encoding` header.
+      - The middleware will handle both standard and streaming responses.
     documentation_contract_refs:
     - coverage_matrix_ref: /coverage_matrix/475
       source_path: docs/en/docs/advanced/middleware.md
@@ -28388,6 +28397,7 @@ api_surface_contract:
       fixture_id: fastapi.docs.advanced-middleware
       fixture_design_ref: /fixture_designs/144
       observation_selectors:
+      - asgi.send.message_types
       - http.body.bytes
       - http.headers.ordered
       - http.status
@@ -28396,6 +28406,15 @@ api_surface_contract:
       case_id: fastapi.docs.middleware.request-and-response-order
       workload_path: tests/fixtures/workloads/middleware_execution_order_wave.py
       observation_selectors:
+      - asgi.send.message_types
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - recipe_path: tests/fixtures/input-recipes/parity/gzip-streaming-response-integration-docs.yaml
+      case_id: fastapi.middleware.gzip.streaming-response-docs-contract
+      workload_path: tests/fixtures/workloads/gzip_streaming_response_docs.py
+      observation_selectors:
+      - asgi.send.message_types
       - http.body.bytes
       - http.headers.ordered
       - http.status
@@ -28403,6 +28422,7 @@ api_surface_contract:
     - app-routing
     - middleware-integrations
     observation_selectors:
+    - asgi.send.message_types
     - http.body.bytes
     - http.headers.ordered
     - http.status

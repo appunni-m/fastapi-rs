@@ -2451,6 +2451,18 @@
       ]
     },
     {
+      "id": "gzip-streaming-response-integration-docs",
+      "input_path": "tests/fixtures/inputs/parity/gzip-streaming-response-integration-docs.json",
+      "input_sha256": "4120fbef88607460df545728f3e2795a64ee94b388d1001fe96108e59da6cbbb",
+      "recipe_path": "tests/fixtures/input-recipes/parity/gzip-streaming-response-integration-docs.yaml",
+      "recipe_sha256": "36987534b0f916f9abe4ed6ef2aa35efa0a60cab7ddea4584f7e6aa112e8cddf",
+      "workload_path": "tests/fixtures/workloads/gzip_streaming_response_docs.py",
+      "workload_sha256": "862ca32aead54d8e4a2b244b5e5e8a849e82d97f3d25ad488be7b70fe913b2bc",
+      "case_ids": [
+        "fastapi.middleware.gzip.streaming-response-docs-contract"
+      ]
+    },
+    {
       "id": "handling-errors",
       "input_path": "tests/fixtures/inputs/parity/handling-errors.json",
       "input_sha256": "f920cf4ba6e8df5f8a8b390f64ede0c62cd2c6bc399aed03a7c9ecde94f1f1e3",
@@ -3462,9 +3474,9 @@
     {
       "id": "middleware-execution-order-wave",
       "input_path": "tests/fixtures/inputs/parity/middleware-execution-order-wave.json",
-      "input_sha256": "f4a4ee3d100fc0eb835229190f33631f44fdb04c3e44c295e2eaa039917d67a1",
+      "input_sha256": "55f090ac2738beb8e0373b94af3bc6b30c9ae6175bff32f18b7cc769151d9be4",
       "recipe_path": "tests/fixtures/input-recipes/parity/middleware-execution-order-wave.yaml",
-      "recipe_sha256": "d425e492645f635ef7e6a5ad691720aa1116f3e74cd28cb793e1a1ae6084d4c3",
+      "recipe_sha256": "b5eabe8ea3bdb3903b9aeb760a6387b0d310888aa63665ecdcfddbc050e5af4a",
       "workload_path": "tests/fixtures/workloads/middleware_execution_order_wave.py",
       "workload_sha256": "1babfeb66207924966af73e5c65c3fc83a45304d609175c6ce1ebbbeb94c2bb6",
       "case_ids": [
@@ -6601,7 +6613,7 @@
       "input_path": "tests/fixtures/inputs/parity/response-model-data-filter-exclude-unset-none-review.json",
       "input_sha256": "e8df817a4df31b3f2f646068c8a9286416ff13577822d1fc572bbc5d8eb34a17",
       "recipe_path": "tests/fixtures/input-recipes/parity/response-model-data-filter-exclude-unset-none-review.yaml",
-      "recipe_sha256": "3f16f43e203d7c72f9d8253cda1a27374de3d44d4810677cd498e424c82c3bb0",
+      "recipe_sha256": "a9ee1fc70e9426a677687b19946607d40679f8a654a70a642eeda0c889b26307",
       "workload_path": "tests/fixtures/workloads/response_model_data_filter_exclude_unset_none_review.py",
       "workload_sha256": "24b60f06b2472a0254c9ae15d0b208e0edd99d3cb8a3833696d343bacd0c13cd",
       "case_ids": [
@@ -14734,6 +14746,22 @@
       ]
     },
     {
+      "source_item_id": "documented-page:advanced/middleware.md",
+      "fixture_id": "fastapi.docs.advanced-middleware",
+      "workflow_id": "gzip-streaming-response-integration-docs",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.middleware.gzip.streaming-response-docs-contract"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
       "source_item_id": "documented-page:tutorial/handling-errors.md",
       "fixture_id": "fastapi.docs.tutorial-handling-errors",
       "workflow_id": "handling-errors",
@@ -15699,11 +15727,12 @@
       "fixture_id": "fastapi.docs.advanced-middleware",
       "workflow_id": "middleware-execution-order-wave",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.docs.middleware.request-and-response-order"
       ],
       "observation_selectors": [
+        "asgi.send.message_types",
         "http.body.bytes",
         "http.headers.ordered",
         "http.status"
@@ -15714,11 +15743,12 @@
       "fixture_id": "fastapi.docs.tutorial-middleware",
       "workflow_id": "middleware-execution-order-wave",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.docs.middleware.request-and-response-order"
       ],
       "observation_selectors": [
+        "asgi.send.message_types",
         "http.body.bytes",
         "http.headers.ordered",
         "http.status"

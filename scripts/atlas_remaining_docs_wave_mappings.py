@@ -154,7 +154,12 @@ DOC_PAGE_REVIEW_MAPPINGS = {
     "advanced/middleware.md": {
         "replace_features": True,
         "feature_ids": ["app-routing", "middleware-integrations"],
-        "observation_selectors": ["http.body.bytes", "http.headers.ordered", "http.status"],
+        "observation_selectors": [
+            "asgi.send.message_types",
+            "http.body.bytes",
+            "http.headers.ordered",
+            "http.status",
+        ],
         "rationale": "FastAPI provides its HTTP middleware decorator and "
         "inherits middleware registration; generic middleware "
         "stack and built-in middleware dispatch are Starlette "
@@ -162,8 +167,10 @@ DOC_PAGE_REVIEW_MAPPINGS = {
         "its package.",
         "stimulus_notes": "Reuses input-only recipe cases whose "
         "source_evidence cites this exact page. The case IDs "
-        "and selector unions are listed per recipe; these "
-        "are stimuli, not parity results.",
+        "and selector unions are listed per recipe; these are stimuli, not parity results. "
+        "The new GZip case selects a StreamingResponse route and ordered ASGI send-message types. "
+        "The page explicitly documents streaming responses, but its linked Python example returns a normal string "
+        "and the existing tutorial test uses a full PlainTextResponse.",
         "workflow_cases": [
             {
                 "recipe_path": "tests/fixtures/input-recipes/parity/custom-middleware-upload-limit.yaml",
@@ -193,10 +200,29 @@ DOC_PAGE_REVIEW_MAPPINGS = {
             {
                 "recipe_path": "tests/fixtures/input-recipes/parity/middleware-execution-order-wave.yaml",
                 "case_ids": ["fastapi.docs.middleware.request-and-response-order"],
-                "observation_selectors": ["http.body.bytes", "http.headers.ordered", "http.status"],
+                "observation_selectors": [
+                    "asgi.send.message_types",
+                    "http.body.bytes",
+                    "http.headers.ordered",
+                    "http.status",
+                ],
                 "coverage": "The input-only workload creates FastAPI, invokes its inherited "
                 "add_middleware method twice, and observes the resulting HTTP response order "
-                "through status, ordered headers, and exact body bytes.",
+                "through status, ordered headers, exact body bytes, and ASGI send-message order.",
+            },
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/gzip-streaming-response-integration-docs.yaml",
+                "case_ids": ["fastapi.middleware.gzip.streaming-response-docs-contract"],
+                "observation_selectors": [
+                    "asgi.send.message_types",
+                    "http.body.bytes",
+                    "http.headers.ordered",
+                    "http.status",
+                ],
+                "coverage": "The independent FastAPI workload registers GZipMiddleware and returns a multi-yield "
+                "StreamingResponse for a request advertising gzip. It observes ordered ASGI send-message types, "
+                "status, headers, and exact wire body bytes. This is input coverage only; compressed-byte parity "
+                "has not been run and no normalization is declared.",
             },
         ],
         "contract_gate": "Linked cases cover selected middleware and redirect "
@@ -204,9 +230,14 @@ DOC_PAGE_REVIEW_MAPPINGS = {
         "add_middleware to one observed request/response order sample. Missing: arbitrary middleware "
         "ordering/errors, all middleware classes, third-party "
         "package contracts and Python decorator signature. "
+        "The GZip streaming case is a separate docs-backed FastAPI integration stimulus: the docs state that "
+        "GZipMiddleware handles streaming responses, while the linked tutorial example and test only use a "
+        "normal string and a full PlainTextResponse, respectively. The case does not claim those upstream sources "
+        "tested streaming, and parity remains unverified. Exact compressed body bytes are selected without "
+        "normalization, so compression backend differences remain a comparison risk. "
         "The mapping remains partial pending the full FastAPI "
         "manifest and identity/signature checks. Generic HTTP "
-        "behavior is assigned to Starlette 1.6.0 and the "
+        "behavior, StreamingResponse ASGI emission, and GZip compression are assigned to Starlette 1.6.0 and the "
         "separate Starlette-RS contract.",
         "supporting_sources": [
             {
@@ -216,6 +247,27 @@ DOC_PAGE_REVIEW_MAPPINGS = {
                 "role": "Page-level source evidence for the "
                 "documented Advanced Middleware "
                 "behavior and examples.",
+            },
+            {
+                "path": "docs/en/docs/advanced/middleware.md",
+                "start_line": 75,
+                "end_line": 86,
+                "role": "FastAPI documentation states that GZipMiddleware handles requests advertising gzip, "
+                "covers standard and streaming responses, and documents minimum_size and compresslevel.",
+            },
+            {
+                "path": "docs_src/advanced_middleware/tutorial003_py310.py",
+                "start_line": 1,
+                "end_line": 11,
+                "role": "The linked FastAPI example registers GZipMiddleware but its route returns a normal string, "
+                "not a StreamingResponse.",
+            },
+            {
+                "path": "tests/test_tutorial/test_advanced_middleware/test_tutorial003.py",
+                "start_line": 7,
+                "end_line": 20,
+                "role": "The existing FastAPI GZip tutorial test requests a full PlainTextResponse and checks "
+                "decoded client text and compression headers; it does not test StreamingResponse.",
             },
             {
                 "path": "fastapi/applications.py",

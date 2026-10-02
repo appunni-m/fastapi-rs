@@ -733,6 +733,15 @@ def _validate_inherited_fixture_reference(
         if isinstance(observation, dict) and observation.get("kind") == "http_response"
         for selector in observation.get("selectors", [])
     }
+    observed_short_selectors.update(
+        "asgi.send." + observation["selector"]
+        for action in case.get("actions", [])
+        if isinstance(action, dict)
+        for observation in action.get("observations", [])
+        if isinstance(observation, dict)
+        and observation.get("kind") == "asgi_send"
+        and isinstance(observation.get("selector"), str)
+    )
     selector_aliases = {
         "http.status": "status",
         "http.headers.ordered": "headers",
@@ -741,7 +750,7 @@ def _validate_inherited_fixture_reference(
     missing_selectors = [
         selector
         for selector in expected_selectors
-        if selector_aliases.get(selector) not in observed_short_selectors
+        if selector_aliases.get(selector, selector) not in observed_short_selectors
     ]
     if missing_selectors:
         raise ContractError(
