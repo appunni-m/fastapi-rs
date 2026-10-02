@@ -8,32 +8,594 @@ cases:
   factory_input: {}
   construction_observation:
     kind: construction
-    selectors: [outcome, exception_class, exception_message]
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
     comparison: exact
   actions:
   - action_id: openapi
     kind: http_request
     scope:
       type: http
-      asgi: {version: '3.0', spec_version: '2.4'}
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
       http_version: '1.1'
       method: GET
       scheme: http
       path: /openapi.json
       query_string: ''
       root_path: ''
-      headers: [[host, testserver]]
-      client: [127.0.0.1, 123]
-      server: [testserver, 80]
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
     receive_events:
-    - {type: http.request, body: '', more_body: false}
+    - type: http.request
+      body: ''
+      more_body: false
     observations:
     - kind: http_response
-      selectors: [status]
+      selectors:
+      - status
       comparison: exact
     - kind: openapi
-      json_pointers: [""]
+      json_pointers:
+      - ''
       comparison: exact
+  source_evidence:
+  - path: tests/test_request_body_parameters_media_type.py
+    kind: upstream_test
+- case_id: fastapi.request-body-media-type.source-derived.product-custom-json-runtime
+  factory_input:
+    include_source_review_probes: true
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /products
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/vnd.api+json; charset=utf-8
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"data":{"name":"inkwell","price":3.5}}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_request_body_parameters_media_type.py
+    kind: upstream_test
+- case_id: fastapi.request-body-media-type.source-derived.product-custom-json-validation
+  factory_input:
+    include_source_review_probes: true
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /products
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/vnd.api+json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"data":{"name":"inkwell","price":"not-a-number"}}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_request_body_parameters_media_type.py
+    kind: upstream_test
+- case_id: fastapi.request-body-media-type.source-derived.shop-custom-json-multiple-fields
+  factory_input:
+    include_source_review_probes: true
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /shops
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/vnd.api+json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"data":{"name":"market"},"included":[{"name":"cup","price":2.0}]}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_request_body_parameters_media_type.py
+    kind: upstream_test
+- case_id: fastapi.request-body-media-type.source-derived.shop-custom-json-default-included
+  factory_input:
+    include_source_review_probes: true
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /shops
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/vnd.api+json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"data":{"name":"market"}}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_request_body_parameters_media_type.py
+    kind: upstream_test
+- case_id: fastapi.request-body-media-type.source-derived.product-standard-json-header
+  factory_input:
+    include_source_review_probes: true
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /products
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"data":{"name":"inkwell","price":3.5}}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_request_body_parameters_media_type.py
+    kind: upstream_test
+- case_id: fastapi.request-body-media-type.source-derived.product-text-plain-header
+  factory_input:
+    include_source_review_probes: true
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /products
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - text/plain
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"data":{"name":"inkwell","price":3.5}}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_request_body_parameters_media_type.py
+    kind: upstream_test
+- case_id: fastapi.request-body-media-type.source-derived.product-custom-json-malformed
+  factory_input:
+    include_source_review_probes: true
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /products
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/vnd.api+json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"data":'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_request_body_parameters_media_type.py
+    kind: upstream_test
+- case_id: fastapi.request-body-media-type.source-derived.mixed-media-json-fallback
+  factory_input:
+    include_source_review_probes: true
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /mixed
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/vnd.api+json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"data":{"name":"market"}}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+  - action_id: mixed-media-openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths/~1mixed/post/requestBody/content/application~1json
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_body_parameters_media_type.py
+    kind: upstream_test
+- case_id: fastapi.request-body-media-type.source-derived.direct-body-default
+  factory_input:
+    include_source_review_probes: true
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /direct-default
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_request_body_parameters_media_type.py
+    kind: upstream_test
+- case_id: fastapi.request-body-media-type.source-derived.direct-body-unvalidated-default
+  factory_input:
+    include_source_review_probes: true
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /unvalidated-default
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
   source_evidence:
   - path: tests/test_request_body_parameters_media_type.py
     kind: upstream_test

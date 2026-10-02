@@ -630,8 +630,10 @@ fn path(
 #[pyfunction(
     name = "Body",
     signature = (
+        default = form_file_undefined_default(),
         *,
         embed = None,
+        media_type = "application/json",
         alias = None,
         validation_alias = None,
         gt = None,
@@ -648,7 +650,9 @@ fn path(
 )]
 fn body(
     py: Python<'_>,
+    default: Py<PyAny>,
     embed: Option<bool>,
+    media_type: &str,
     alias: Option<String>,
     validation_alias: Option<Py<PyAny>>,
     gt: Option<Py<PyAny>>,
@@ -673,8 +677,8 @@ fn body(
             dependency: None,
             scope: None,
             scopes: None,
-            default: None,
-            media_type: None,
+            default: normalize_undefined_default(py, default)?,
+            media_type: Some(media_type.to_owned()),
             title: None,
             description: None,
             pattern: normalize_pattern(pattern, regex),

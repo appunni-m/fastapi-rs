@@ -2271,16 +2271,15 @@ impl PyFastApi {
                     let request_required = body_parameters
                         .iter()
                         .any(|parameter| parameter.default.is_none());
-                    let media_type = aggregate_form_media_type(&body_parameters);
+                    let media_type = aggregate_body_media_type(&body_parameters);
                     (None, Some(request_schema), request_required, media_type)
                 } else {
                     match body_parameters.first().copied() {
                         Some(parameter) => (
                             None,
-                            Some(pydantic_schema(
+                            Some(body_parameter_schema(
                                 py,
-                                parameter.annotation.bind(py),
-                                "validation",
+                                parameter,
                                 Some(&title_case(&parameter.body_alias().replace('_', " "))),
                             )?),
                             parameter.default.is_none(),
@@ -2309,24 +2308,24 @@ impl PyFastApi {
                         None,
                         Some(request_schema),
                         request_required,
-                        "application/json".to_owned(),
+                        aggregate_body_media_type(&direct_body_parameters),
                     )
                 } else {
                     match route.plan.body_parameter() {
-                        Some(parameter) => {
-                            let annotation = parameter.annotation.bind(py);
-                            (
-                                None,
-                                Some(pydantic_schema(
-                                    py,
-                                    annotation,
-                                    "validation",
-                                    Some(&title_case(&parameter.body_alias().replace('_', " "))),
-                                )?),
-                                parameter.default.is_none(),
-                                "application/json".to_owned(),
-                            )
-                        }
+                        Some(parameter) => (
+                            None,
+                            Some(body_parameter_schema(
+                                py,
+                                parameter,
+                                Some(&title_case(&parameter.body_alias().replace('_', " "))),
+                            )?),
+                            parameter.default.is_none(),
+                            parameter
+                                .media_type
+                                .as_deref()
+                                .unwrap_or("application/json")
+                                .to_owned(),
+                        ),
                         None => (None, None, false, "application/json".to_owned()),
                     }
                 }
@@ -4686,11 +4685,27 @@ impl CallablePlan {
             } else {
                 context.inputs.get_item(&parameter.name)?
             };
+            if source == InputSource::Body
+                && aggregate_body
+                && value.as_ref().is_some_and(|body| {
+                    !body.is_none()
+                        && !body.is_instance_of::<PyDict>()
+                        && !body.is_instance_of::<PyBytes>()
+                })
+            {
+                context.failures.push(ValidationIssue::Missing {
+                    location: source.as_str().to_owned(),
+                    alias: alias.clone(),
+                    body_field,
+                });
+                continue;
+            }
             let value = if source == InputSource::Body && aggregate_body {
                 match value {
                     Some(body) if body.is_instance_of::<PyDict>() => {
                         body.cast::<PyDict>()?.get_item(alias)?
                     }
+                    Some(body) if body.is_none() || body.is_instance_of::<PyBytes>() => None,
                     value => value,
                 }
             } else {
@@ -4702,7 +4717,7 @@ impl CallablePlan {
                         .py
                         .import("copy")?
                         .call_method1("deepcopy", (default.bind(context.py),))?;
-                    if default.is_none() {
+                    if default.is_none() || source == InputSource::Body {
                         kwargs.set_item(&parameter.name, default)?;
                     } else {
                         match validate_python_value(
@@ -4899,7 +4914,7 @@ fn marker_default(py: Python<'_>, metadata: &[Py<PyAny>]) -> PyResult<Option<Py<
             let default = marker.getattr("default")?;
             let has_default = if matches!(
                 kind.as_str(),
-                "header" | "query" | "cookie" | "form" | "file"
+                "header" | "query" | "cookie" | "body" | "form" | "file"
             ) && marker.hasattr("default_is_set")?
             {
                 marker.getattr("default_is_set")?.extract::<bool>()?
@@ -5303,6 +5318,10 @@ fn parameter_media_type(
 ) -> PyResult<Option<String>> {
     let expected_kind = match source {
         ParameterSource::Input {
+            source: InputSource::Body,
+            ..
+        } => "body",
+        ParameterSource::Input {
             source: InputSource::Form,
             ..
         } => "form",
@@ -5322,6 +5341,7 @@ fn parameter_media_type(
         }
     }
     let default_media_type = match expected_kind {
+        "body" => "application/json",
         "form" => "application/x-www-form-urlencoded",
         "file" => "multipart/form-data",
         _ => return Ok(None),
@@ -5569,7 +5589,7 @@ fn form_parameter_is_unembedded_model(
     Ok(is_pydantic_model_annotation(py, annotation)? || is_union_of_base_models(py, annotation)?)
 }
 
-fn aggregate_form_media_type(body_parameters: &[&CallableParameter]) -> String {
+fn aggregate_body_media_type(body_parameters: &[&CallableParameter]) -> String {
     if body_parameters.iter().any(|parameter| {
         matches!(
             parameter.source,
@@ -5593,6 +5613,24 @@ fn aggregate_form_media_type(body_parameters: &[&CallableParameter]) -> String {
         // FastAPI constructs an aggregate Form field with Form's default media type.
         "application/x-www-form-urlencoded".to_owned()
     } else {
+        let media_types = body_parameters
+            .iter()
+            .filter(|parameter| {
+                matches!(
+                    &parameter.source,
+                    ParameterSource::Input {
+                        source: InputSource::Body,
+                        ..
+                    }
+                )
+            })
+            .map(|parameter| parameter.media_type.as_deref())
+            .collect::<BTreeSet<_>>();
+        if media_types.len() == 1 {
+            if let Some(Some(media_type)) = media_types.first().copied() {
+                return media_type.to_owned();
+            }
+        }
         "application/json".to_owned()
     }
 }
@@ -6024,6 +6062,33 @@ fn pydantic_schema(
     title: Option<&str>,
 ) -> PyResult<Py<PyAny>> {
     pydantic_schema_with_config(py, annotation, mode, title, None)
+}
+
+fn body_parameter_schema(
+    py: Python<'_>,
+    parameter: &CallableParameter,
+    title: Option<&str>,
+) -> PyResult<Py<PyAny>> {
+    let is_body = matches!(
+        &parameter.source,
+        ParameterSource::Input {
+            source: InputSource::Body,
+            ..
+        }
+    );
+    let Some(default) = parameter.default.as_ref().filter(|_| is_body) else {
+        return pydantic_schema(py, parameter.annotation.bind(py), "validation", title);
+    };
+    let field = py
+        .import("pydantic")?
+        .getattr("Field")?
+        .call1((default.bind(py),))?;
+    let annotation = PyTuple::new(py, [parameter.annotation.clone_ref(py), field.unbind()])?;
+    let annotation = py
+        .import("typing")?
+        .getattr("Annotated")?
+        .get_item(annotation)?;
+    pydantic_schema(py, &annotation, "validation", title)
 }
 
 fn pydantic_schema_with_config(

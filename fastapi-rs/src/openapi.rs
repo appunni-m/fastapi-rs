@@ -79,38 +79,38 @@ pub(crate) fn openapi_document(
     let mut schemas = BTreeMap::<String, Py<PyAny>>::new();
     for operation in operations {
         for parameter in &operation.parameters {
-            collect_schema_definitions(py, &mut schemas, &parameter.schema)?;
+            collect_schema_definitions(py, &mut schemas, &parameter.schema, false)?;
         }
         if operation.request_body_present {
             if let Some(schema) = operation.request_schema.as_ref() {
                 if let Some(name) = operation.request_model_name.as_deref() {
-                    collect_model_schema(py, &mut schemas, name, schema)?;
+                    collect_model_schema(py, &mut schemas, name, schema, true)?;
                 } else {
-                    collect_schema_definitions(py, &mut schemas, schema)?;
+                    collect_schema_definitions(py, &mut schemas, schema, true)?;
                 }
             }
         }
         if let Some(schema) = operation.response_schema.as_ref() {
             if let Some(name) = operation.response_model_name.as_deref() {
-                collect_model_schema(py, &mut schemas, name, schema)?;
+                collect_model_schema(py, &mut schemas, name, schema, false)?;
             } else {
-                collect_schema_definitions(py, &mut schemas, schema)?;
+                collect_schema_definitions(py, &mut schemas, schema, false)?;
             }
         }
         for response in &operation.additional_responses {
             if let Some(schema) = response.response_schema.as_ref() {
                 if let Some(name) = response.response_model_name.as_deref() {
-                    collect_model_schema(py, &mut schemas, name, schema)?;
+                    collect_model_schema(py, &mut schemas, name, schema, false)?;
                 } else {
-                    collect_schema_definitions(py, &mut schemas, schema)?;
+                    collect_schema_definitions(py, &mut schemas, schema, false)?;
                 }
             }
         }
         if let Some(schema) = operation.stream_item_schema.as_ref() {
             if let Some(name) = operation.stream_item_model_name.as_deref() {
-                collect_model_schema(py, &mut schemas, name, schema)?;
+                collect_model_schema(py, &mut schemas, name, schema, false)?;
             } else {
-                collect_schema_definitions(py, &mut schemas, schema)?;
+                collect_schema_definitions(py, &mut schemas, schema, false)?;
             }
         }
     }
@@ -157,7 +157,7 @@ pub(crate) fn openapi_document(
                 if parameter.deprecated {
                     parameter_document.set_item("deprecated", true)?;
                 }
-                let mut schema = normalize_schema(py, parameter.schema.bind(py), false)?;
+                let mut schema = normalize_schema(py, parameter.schema.bind(py), false, false)?;
                 if let Some(default) = parameter.default.as_ref() {
                     if let Ok(schema) = schema.cast::<PyDict>() {
                         schema.set_item("default", default.bind(py))?;
@@ -188,7 +188,7 @@ pub(crate) fn openapi_document(
                 operation.request_schema.as_ref(),
             ) {
                 (Some(model_name), Some(_)) => reference_schema(py, model_name)?.into_any(),
-                (None, Some(schema)) => normalize_schema(py, schema.bind(py), false)?,
+                (None, Some(schema)) => normalize_schema(py, schema.bind(py), false, true)?,
                 _ => PyDict::new(py).into_any(),
             };
             media_type.set_item("schema", schema)?;
@@ -210,7 +210,7 @@ pub(crate) fn openapi_document(
                     operation.stream_item_schema.as_ref(),
                 ) {
                     (Some(model_name), Some(_)) => reference_schema(py, model_name)?.into_any(),
-                    (None, Some(schema)) => normalize_schema(py, schema.bind(py), false)?,
+                    (None, Some(schema)) => normalize_schema(py, schema.bind(py), false, false)?,
                     _ => PyDict::new(py).into_any(),
                 };
                 let media_type = PyDict::new(py);
@@ -244,7 +244,7 @@ pub(crate) fn openapi_document(
                     } else {
                         data_schema.set_item(
                             "contentSchema",
-                            normalize_schema(py, schema.bind(py), false)?,
+                            normalize_schema(py, schema.bind(py), false, false)?,
                         )?;
                     }
                     let required = PyList::empty(py);
@@ -267,7 +267,7 @@ pub(crate) fn openapi_document(
                                 reference_schema(py, model_name)?.into_any()
                             }
                             (None, Some(schema)) => {
-                                let schema = normalize_schema(py, schema.bind(py), false)?;
+                                let schema = normalize_schema(py, schema.bind(py), false, false)?;
                                 if let Ok(schema_dict) = schema.cast::<PyDict>() {
                                     if schema_dict.get_item("$ref")?.is_none() {
                                         schema_dict
@@ -354,7 +354,7 @@ pub(crate) fn openapi_document(
                 };
                 let schema = match additional_response.response_model_name.as_deref() {
                     Some(model_name) => reference_schema(py, model_name)?.into_any(),
-                    None => normalize_schema(py, schema.bind(py), false)?,
+                    None => normalize_schema(py, schema.bind(py), false, false)?,
                 };
                 if additional_response.response_model_name.is_none() {
                     if let Ok(schema_dict) = schema.cast::<PyDict>() {
@@ -445,8 +445,9 @@ fn collect_model_schema(
     schemas: &mut BTreeMap<String, Py<PyAny>>,
     name: &str,
     schema: &Py<PyAny>,
+    preserve_defaults: bool,
 ) -> PyResult<()> {
-    collect_schema_definitions(py, schemas, schema)?;
+    collect_schema_definitions(py, schemas, schema, preserve_defaults)?;
 
     if let Ok(schema) = schema.bind(py).cast::<PyDict>() {
         if let Some(reference) = schema.get_item("$ref")? {
@@ -457,7 +458,7 @@ fn collect_model_schema(
         }
     }
 
-    let normalized = normalize_schema(py, schema.bind(py), true)?;
+    let normalized = normalize_schema(py, schema.bind(py), true, preserve_defaults)?;
     schemas
         .entry(name.to_owned())
         .or_insert(normalized.unbind().into_any());
@@ -468,6 +469,7 @@ fn collect_schema_definitions(
     py: Python<'_>,
     schemas: &mut BTreeMap<String, Py<PyAny>>,
     schema: &Py<PyAny>,
+    preserve_defaults: bool,
 ) -> PyResult<()> {
     let schema = schema.bind(py);
     if let Ok(schema_dict) = schema.cast::<PyDict>() {
@@ -475,7 +477,8 @@ fn collect_schema_definitions(
             if let Ok(definitions) = definitions.cast::<PyDict>() {
                 for (definition_name, definition_schema) in definitions.iter() {
                     let definition_name: String = definition_name.extract()?;
-                    let normalized = normalize_schema(py, &definition_schema, true)?;
+                    let normalized =
+                        normalize_schema(py, &definition_schema, true, preserve_defaults)?;
                     schemas
                         .entry(definition_name)
                         .or_insert(normalized.unbind().into_any());
@@ -490,6 +493,7 @@ fn normalize_schema<'py>(
     py: Python<'py>,
     value: &Bound<'py, PyAny>,
     top_level_model: bool,
+    preserve_defaults: bool,
 ) -> PyResult<Bound<'py, PyAny>> {
     if let Ok(source) = value.cast::<PyDict>() {
         let schema_type = source
@@ -504,9 +508,8 @@ fn normalize_schema<'py>(
         let mut entries = Vec::<(String, Bound<'py, PyAny>)>::new();
         for (key, item) in source.iter() {
             let key: String = key.extract()?;
-            // Pydantic's field defaults are excluded from FastAPI's OpenAPI schemas.
-            if key == "default"
-                || key == "$defs"
+            if key == "$defs"
+                || (!preserve_defaults && key == "default")
                 || (fastapi_binary_bytes_schema && key == "format")
             {
                 continue;
@@ -530,7 +533,7 @@ fn normalize_schema<'py>(
                     continue;
                 }
             }
-            let item = normalize_schema_value(py, &key, &item)?;
+            let item = normalize_schema_value(py, &key, &item, preserve_defaults)?;
             result.set_item(&key, item)?;
             if key == "type" && fastapi_binary_bytes_schema {
                 result.set_item("contentMediaType", "application/octet-stream")?;
@@ -546,12 +549,16 @@ fn normalize_schema_value<'py>(
     py: Python<'py>,
     key: &str,
     value: &Bound<'py, PyAny>,
+    preserve_defaults: bool,
 ) -> PyResult<Bound<'py, PyAny>> {
     if matches!(key, "properties" | "patternProperties" | "dependentSchemas") {
         if let Ok(source) = value.cast::<PyDict>() {
             let result = PyDict::new(py);
             for (name, schema) in source.iter() {
-                result.set_item(name, normalize_schema(py, &schema, false)?)?;
+                result.set_item(
+                    name,
+                    normalize_schema(py, &schema, false, preserve_defaults)?,
+                )?;
             }
             return Ok(result.into_any());
         }
@@ -561,7 +568,7 @@ fn normalize_schema_value<'py>(
         if let Ok(source) = value.cast::<PyList>() {
             let result = PyList::empty(py);
             for schema in source.iter() {
-                result.append(normalize_schema(py, &schema, false)?)?;
+                result.append(normalize_schema(py, &schema, false, preserve_defaults)?)?;
             }
             return Ok(result.into_any());
         }
@@ -581,13 +588,13 @@ fn normalize_schema_value<'py>(
             | "contentSchema"
     ) {
         if value.cast::<PyDict>().is_ok() {
-            return normalize_schema(py, value, false);
+            return normalize_schema(py, value, false, preserve_defaults);
         }
         if key == "items" {
             if let Ok(source) = value.cast::<PyList>() {
                 let result = PyList::empty(py);
                 for schema in source.iter() {
-                    result.append(normalize_schema(py, &schema, false)?)?;
+                    result.append(normalize_schema(py, &schema, false, preserve_defaults)?)?;
                 }
                 return Ok(result.into_any());
             }

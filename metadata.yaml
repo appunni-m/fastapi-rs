@@ -80,14 +80,14 @@ api_inventory:
 import_binding_classification_review:
   artifact: tests/fixtures/api-import-binding-classification-review.json
   schema: fastapi-starlette-import-binding-review/v1
-  sha256: ba139942d86d653f4e7bc799569882839b8c7784119d5f8e741d818682812c9b
+  sha256: 8b8a1fe38ae90f0f8d5ad0530558a277ee42877005d9d56c2753a7368c8f26f0
   source_identity:
     package: FastAPI
     version: 0.141.1
     source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
     selected_starlette_profile: 1.6.0
     starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
-    starlette_rs_contract_commit: 7c323c7190df21d36cd0068a6829aeaa36dfefe1
+    starlette_rs_contract_commit: e69601840a8cbb592573e040429a74b95b55c677
   starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
   counts:
     candidates: 97
@@ -99,7 +99,7 @@ import_binding_classification_review:
   candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
   pinned_starlette_rs_sources:
     metadata_sha256: 90f805ed7d2497833422db870f88d53319dbaaf31a675f89b1ad21fdd4a123d5
-    manifest_sha256: 4762fb8bc2d95606907b4ecbb7d03ef64f1ab06e12bdf55385036c6b0e9f3ec3
+    manifest_sha256: fd78a285e42e74dcd63c6ba10317cda54f670f762bf02ff814e8344c47b08859
     api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
     api_review_sha256: fcd2856436ae9696a4ccb93539c1ffeec882199b4b4905bc069226acc1958ff8
 
@@ -187,7 +187,7 @@ classification_atlas:
 starlette_rs:
   owner: ../starlette-rs
   repository: https://github.com/appunni-m/starlette-rs
-  commit: 7c323c7190df21d36cd0068a6829aeaa36dfefe1
+  commit: e69601840a8cbb592573e040429a74b95b55c677
   distribution_version: 0.1.0
   contract_id: starlette-1.6.0-asgi-http-config-session-slice
   metadata: ../starlette-rs/metadata.yaml
@@ -697,24 +697,66 @@ reviewed_api_contract_overlay:
         - {path: fastapi/param_functions.py, symbol: Body}
         - {path: fastapi/params.py, symbol: Body}
         - {path: fastapi/dependencies/utils.py, symbol: _should_embed_body_fields}
+        - {path: fastapi/dependencies/utils.py, symbol: _get_body_field}
+        - {path: fastapi/dependencies/utils.py, symbol: _validate_value_with_model_field}
         - {path: fastapi/dependencies/utils.py, symbol: request_body_to_args}
         - {path: fastapi/dependencies/utils.py, symbol: get_validation_alias}
+        - {path: fastapi/routing.py, symbol: get_request_handler}
+        - {path: fastapi/openapi/utils.py, symbol: get_openapi_operation_request_body}
         - {path: tests/test_request_params/test_body/test_required_str.py, symbol: test_required_alias_by_alias}
         - {path: tests/test_request_params/test_body/test_required_str.py, symbol: test_required_validation_alias_by_validation_alias}
         - {path: tests/test_request_params/test_body/test_required_str.py, symbol: test_required_alias_and_validation_alias_by_validation_alias}
         - {path: tests/test_request_params/test_body/test_optional_list.py, symbol: test_optional_list_alias_and_validation_alias_by_validation_alias}
         - {path: tests/test_request_params/test_body/test_optional_list.py, symbol: test_optional_list_alias_and_validation_alias_schema}
+        - {path: tests/test_request_body_parameters_media_type.py, symbol: test_openapi_schema}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/request-body-media-type-upstream-v3.yaml
+          case_id: fastapi.request-body-media-type.upstream.openapi-schema
+        - recipe_path: tests/fixtures/input-recipes/parity/request-body-media-type-upstream-v3.yaml
+          case_id: fastapi.request-body-media-type.source-derived.product-custom-json-runtime
+        - recipe_path: tests/fixtures/input-recipes/parity/request-body-media-type-upstream-v3.yaml
+          case_id: fastapi.request-body-media-type.source-derived.product-custom-json-validation
+        - recipe_path: tests/fixtures/input-recipes/parity/request-body-media-type-upstream-v3.yaml
+          case_id: fastapi.request-body-media-type.source-derived.shop-custom-json-multiple-fields
+        - recipe_path: tests/fixtures/input-recipes/parity/request-body-media-type-upstream-v3.yaml
+          case_id: fastapi.request-body-media-type.source-derived.shop-custom-json-default-included
+        - recipe_path: tests/fixtures/input-recipes/parity/request-body-media-type-upstream-v3.yaml
+          case_id: fastapi.request-body-media-type.source-derived.product-standard-json-header
+        - recipe_path: tests/fixtures/input-recipes/parity/request-body-media-type-upstream-v3.yaml
+          case_id: fastapi.request-body-media-type.source-derived.product-text-plain-header
+        - recipe_path: tests/fixtures/input-recipes/parity/request-body-media-type-upstream-v3.yaml
+          case_id: fastapi.request-body-media-type.source-derived.product-custom-json-malformed
+        - recipe_path: tests/fixtures/input-recipes/parity/request-body-media-type-upstream-v3.yaml
+          case_id: fastapi.request-body-media-type.source-derived.mixed-media-json-fallback
+        - recipe_path: tests/fixtures/input-recipes/parity/request-body-media-type-upstream-v3.yaml
+          case_id: fastapi.request-body-media-type.source-derived.direct-body-default
+        - recipe_path: tests/fixtures/input-recipes/parity/request-body-media-type-upstream-v3.yaml
+          case_id: fastapi.request-body-media-type.source-derived.direct-body-unvalidated-default
       feature_ids: [request-validation, openapi-docs]
-      observation_selectors: [http.status, http.body.bytes, openapi.request_schema]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, openapi.document]
       supported_slice: >-
         Partial native slice: Body(gt=...) marks a request-body input and applies
         the numeric strict-greater-than constraint. Body(embed=True) wraps scalar
         and list inputs under one body key; string alias and validation_alias
         select the input key, with validation_alias taking precedence. OpenAPI
         schemas cover embedded fields, aliases, multiple direct Body fields, and
-        an optional Pydantic model body. Non-string aliases, explicit Body
-        defaults, dependency-provided body fields, Form, File, and other Body
-        constructor or FieldInfo options remain outside this reviewed slice.
+        an optional Pydantic model body. Direct and aggregate
+        `Body(default=..., media_type=...)` fields preserve explicit defaults
+        and declared media types in OpenAPI; combined Body fields use their
+        shared media type and fall back to JSON when their media types differ.
+        An omitted optional Body value is copied without revalidating its
+        declared default. Incoming JSON parsing follows the request
+        Content-Type, including `application/*+json` with parameters, rather than
+        `Body.media_type`. Identity-checked cases cover valid and invalid vendor
+        JSON, a defaulted aggregate field, standard JSON, text/plain validation,
+        malformed JSON, response serialization, and OpenAPI content keys. The
+        upstream media-type test asserts OpenAPI only; runtime cases are
+        source-derived probes grounded in pinned routing and body-field source;
+        the original upstream test directly asserts only the two-route OpenAPI
+        case. Case names distinguish those probes from upstream assertions.
+        Non-string aliases, dependency-provided body fields, Form, File, default
+        factories, and other Body constructor or FieldInfo options remain
+        outside this reviewed slice.
     fastapi.Form:
       rust_binding: fastapi-rs/src/parameters.rs::form
       source_evidence:

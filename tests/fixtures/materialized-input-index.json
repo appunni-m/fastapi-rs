@@ -5930,13 +5930,23 @@
     {
       "id": "request-body-media-type-upstream-v3",
       "input_path": "tests/fixtures/inputs/parity/request-body-media-type-upstream-v3.json",
-      "input_sha256": "9ad5193cda77ecc6a0468ba7ac19753c79f328d19247c8d1f19696d63e640fd0",
+      "input_sha256": "646cff7e480e6b213063e8297825aa86962d4b5e1167ff0a68424ec9193b9706",
       "recipe_path": "tests/fixtures/input-recipes/parity/request-body-media-type-upstream-v3.yaml",
-      "recipe_sha256": "3872289e2d1fcea406b4f729bca0c49f61344f95e6079d00ac51492a39e09c02",
+      "recipe_sha256": "7c5ad1352f4dbcafa445223a04f6d91a4d2e740df0244f9c40cbc641ef6ba3c5",
       "workload_path": "tests/fixtures/workloads/request_body_media_type_upstream_v3.py",
-      "workload_sha256": "9aa62f8fc8644c104a69dc0310cb2582c78b1330a51370001eae9cede40e3dae",
+      "workload_sha256": "d78ede8f5b8dde45dd062b6ad9cd1a3c0c23bb9bd99a267817e8aa62eda7fca1",
       "case_ids": [
-        "fastapi.request-body-media-type.upstream.openapi-schema"
+        "fastapi.request-body-media-type.upstream.openapi-schema",
+        "fastapi.request-body-media-type.source-derived.product-custom-json-runtime",
+        "fastapi.request-body-media-type.source-derived.product-custom-json-validation",
+        "fastapi.request-body-media-type.source-derived.shop-custom-json-multiple-fields",
+        "fastapi.request-body-media-type.source-derived.shop-custom-json-default-included",
+        "fastapi.request-body-media-type.source-derived.product-standard-json-header",
+        "fastapi.request-body-media-type.source-derived.product-text-plain-header",
+        "fastapi.request-body-media-type.source-derived.product-custom-json-malformed",
+        "fastapi.request-body-media-type.source-derived.mixed-media-json-fallback",
+        "fastapi.request-body-media-type.source-derived.direct-body-default",
+        "fastapi.request-body-media-type.source-derived.direct-body-unvalidated-default"
       ]
     },
     {
@@ -6577,7 +6587,7 @@
       "input_path": "tests/fixtures/inputs/parity/response-model-data-filter-exclude-unset-none-review.json",
       "input_sha256": "e8df817a4df31b3f2f646068c8a9286416ff13577822d1fc572bbc5d8eb34a17",
       "recipe_path": "tests/fixtures/input-recipes/parity/response-model-data-filter-exclude-unset-none-review.yaml",
-      "recipe_sha256": "d34cea2ef8ec3ba94bf05e2706796dc6fffc3fe3cf9a0baa27857cb4e5796111",
+      "recipe_sha256": "dcc35f9ba281b4c7b0397af893a52c90a7fdb4f18775b65f968c81ec279012fd",
       "workload_path": "tests/fixtures/workloads/response_model_data_filter_exclude_unset_none_review.py",
       "workload_sha256": "24b60f06b2472a0254c9ae15d0b208e0edd99d3cb8a3833696d343bacd0c13cd",
       "case_ids": [
@@ -20784,17 +20794,31 @@
       "fixture_id": "fastapi.test.test-request-body-parameters-media-type",
       "workflow_id": "request-body-media-type-upstream-v3",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, docs.response.status, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 11 case(s); observes asgi.send.message_types, construction.exception_class, construction.exception_message, construction.outcome, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
+        "fastapi.request-body-media-type.source-derived.direct-body-default",
+        "fastapi.request-body-media-type.source-derived.direct-body-unvalidated-default",
+        "fastapi.request-body-media-type.source-derived.mixed-media-json-fallback",
+        "fastapi.request-body-media-type.source-derived.product-custom-json-malformed",
+        "fastapi.request-body-media-type.source-derived.product-custom-json-runtime",
+        "fastapi.request-body-media-type.source-derived.product-custom-json-validation",
+        "fastapi.request-body-media-type.source-derived.product-standard-json-header",
+        "fastapi.request-body-media-type.source-derived.product-text-plain-header",
+        "fastapi.request-body-media-type.source-derived.shop-custom-json-default-included",
+        "fastapi.request-body-media-type.source-derived.shop-custom-json-multiple-fields",
         "fastapi.request-body-media-type.upstream.openapi-schema"
       ],
       "observation_selectors": [
+        "asgi.send.message_types",
         "construction.exception_class",
         "construction.exception_message",
         "construction.outcome",
         "docs.response.status",
+        "http.body.bytes",
+        "http.headers.ordered",
         "http.status",
-        "openapi.document"
+        "openapi.document",
+        "openapi.paths"
       ]
     },
     {

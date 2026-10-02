@@ -254,9 +254,21 @@ _FASTAPI_IMPLEMENTATION_SOURCES = [
     ),
     _source(
         "fastapi/dependencies/utils.py",
+        888,
+        905,
+        "FastAPI 0.141.1 selects whether request-body fields must be embedded into one body object.",
+    ),
+    _source(
+        "fastapi/dependencies/utils.py",
         951,
         998,
         "FastAPI 0.141.1 extracts and validates JSON, Form, and File request-body fields.",
+    ),
+    _source(
+        "fastapi/dependencies/utils.py",
+        1001,
+        1048,
+        "FastAPI 0.141.1 combines Body fields and carries a common declared media type into the aggregate field.",
     ),
     _source(
         "fastapi/dependencies/utils.py",
@@ -267,14 +279,20 @@ _FASTAPI_IMPLEMENTATION_SOURCES = [
     _source(
         "fastapi/routing.py",
         425,
-        450,
-        "FastAPI 0.141.1 reads parsed forms or request bytes and decides whether to JSON-decode the body.",
+        465,
+        "FastAPI 0.141.1 selects JSON body decoding by Content-Type and translates malformed JSON into request validation errors.",
     ),
     _source(
         "fastapi/openapi/utils.py",
         159,
         218,
         "FastAPI 0.141.1 projects parameter location, validation alias, requiredness, and schema into OpenAPI.",
+    ),
+    _source(
+        "fastapi/openapi/utils.py",
+        231,
+        263,
+        "FastAPI 0.141.1 uses Body.media_type as the requestBody content key.",
     ),
     _source(
         "fastapi/openapi/utils.py",
@@ -374,6 +392,7 @@ _STARLETTE_CONTRACT_SOURCES = [
 _PYDANTIC_BOUNDARY = "Pydantic 2.13.4 owns its public ModelField/BaseModel field metadata, core type coercion, and validation semantics. FastAPI owns inspecting Python endpoint annotations, constructing its field adapter, choosing request sources/locations, and shaping FastAPI validation errors. This mapping does not claim a Rust reimplementation of Pydantic internals."
 _STARLETTE_BOUNDARY = "Starlette 1.6.0 is the sole generic-framework oracle. HTTP route matching, ASGI request-body/form/multipart parsing, query/header/cookie data structures, and UploadFile mechanics are assigned to the separate Starlette-RS contract. FastAPI owns parameter declaration inspection, source selection, body-field composition, and FastAPI/OpenAPI validation projections."
 _PARITY_GATE = "Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements, and no live parity result is claimed. The cases are selected examples from the pinned test module; full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors after the complete FastAPI manifest and the isolated Python/ASGI runner are ready; generic request and parser behavior remains under Starlette 1.6.0's separate contract."
+_BODY_MEDIA_TYPE_PARITY_GATE = "Input mapping only: the recipe contains stimuli and observation selectors, not expected outputs or measurements, and no live parity result is claimed. The original upstream test asserts the two-route OpenAPI schema only; explicitly named source-derived cases add independent HTTP probes grounded in pinned implementation branches. Full module snapshots, unlisted defaults/aliases/constraints, and exact TestClient behavior remain outside this mapping. Generic request and parser behavior remains under Starlette 1.6.0's separate contract."
 
 
 def _mapping_for_test_module(
@@ -394,6 +413,11 @@ def _mapping_for_test_module(
     )
     if not selectors:
         raise ValueError(f"workflow cases for {test_path} expose no selectors")
+    contract_gate = (
+        _BODY_MEDIA_TYPE_PARITY_GATE
+        if test_path == "tests/test_request_body_parameters_media_type.py"
+        else _PARITY_GATE
+    )
     return {
         "mapping_status": "source-reviewed-input-candidate; parity pending",
         "source_test_spans": spans,
@@ -403,7 +427,7 @@ def _mapping_for_test_module(
         "pydantic_ownership_boundary": _PYDANTIC_BOUNDARY,
         "starlette_ownership_boundary": _STARLETTE_BOUNDARY,
         "starlette_contract_sources": list(_STARLETTE_CONTRACT_SOURCES),
-        "contract_gate": _PARITY_GATE,
+        "contract_gate": contract_gate,
     }
 
 
