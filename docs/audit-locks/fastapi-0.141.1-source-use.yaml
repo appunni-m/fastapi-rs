@@ -8,8 +8,8 @@ authority:
   starlette_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
 
 scope:
-  source_review: Pinned FastAPI source and selected Starlette source, including their checked-in tests, docs, and tooling.
-  unresolved_default: No package-specific source-use mapping is recorded; the lock-derived consumer path shows role and reachability only, not proof that source was reviewed or that the package is unused.
+  source_review: Pinned FastAPI and Starlette sources plus exact-version dependency sources that explain a package's selected lock path, including tests, docs, tooling, and optional extras.
+  unresolved_default: No package-specific purpose evidence is recorded; the lock-derived consumer path shows role and reachability only. Transitive optional capability records describe installed package features, not FastAPI behavior, unless direct invocation is explicitly evidenced.
 
 source_backed:
   a2wsgi:
@@ -924,3 +924,173 @@ source_backed:
       - https://github.com/open-telemetry/opentelemetry-python-contrib/blob/v0.60b1/instrumentation/opentelemetry-instrumentation-httpx/src/opentelemetry/instrumentation/httpx/__init__.py
       - https://github.com/GrahamDumpleton/wrapt/blob/1.17.3/README.rst#L198-L198
       - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L135-L153
+  mergedeep:
+    purpose: >-
+      MkDocs uses mergedeep.merge to combine inherited documentation configuration. This is a docs-tooling capability in the lock closure, outside FastAPI request handling.
+    evidence:
+      - https://github.com/mkdocs/mkdocs/blob/bb7e8b62185b11d9f59bb7f50b13c15134f62f8a/mkdocs/utils/yaml.py#L128-L150
+  mkdocs-get-deps:
+    purpose: >-
+      MkDocs uses this package for its get-deps command to report packages inferred from configured plugins; FastAPI's docs script invokes the build command, not get-deps.
+    evidence:
+      - https://github.com/mkdocs/mkdocs/blob/bb7e8b62185b11d9f59bb7f50b13c15134f62f8a/mkdocs/__main__.py#L338-L353
+      - https://github.com/mkdocs/mkdocs/blob/bb7e8b62185b11d9f59bb7f50b13c15134f62f8a/mkdocs/utils/cache.py#L5-L35
+  more-itertools:
+    purpose: >-
+      Keyring's optional backends use jaraco helpers that call more-itertools for iterator utilities; this is a transitive keyring capability in the translation-tooling closure, not FastAPI request behavior.
+    evidence:
+      - https://github.com/jaraco/keyring/blob/38c040133559682902f25fe96496756ee6849820/keyring/backend.py#L16-L17
+      - https://github.com/jaraco/jaraco.functools/blob/b57bb859e09f10f1e2ad7e64e9d71723793517f2/jaraco/functools/__init__.py#L11-L14
+      - https://github.com/jaraco/jaraco.functools/blob/b57bb859e09f10f1e2ad7e64e9d71723793517f2/jaraco/functools/__init__.py#L409-L422
+      - https://github.com/jaraco/jaraco.classes/blob/0b64201a42adc3ee2b2a994a86f11eb0df1459c6/jaraco/classes/ancestry.py#L8-L10
+  opentelemetry-exporter-otlp-proto-common:
+    purpose: >-
+      The optional Pydantic AI Logfire path encodes SDK spans as OTLP protobuf messages; FastAPI's pinned translation script does not enable or invoke this telemetry path.
+    evidence:
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pyproject.toml#L50-L53
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pyproject.toml#L69-L72
+      - https://github.com/pydantic/logfire/blob/b6fb3fcf0fb115dec457aa0159d44767aafe625c/logfire/_internal/config.py#L26-L29
+      - https://github.com/open-telemetry/opentelemetry-python/blob/b4c13279187941b561de5d62e6483a91759ba123/exporter/opentelemetry-exporter-otlp-proto-common/src/opentelemetry/exporter/otlp/proto/common/_internal/trace_encoder/__init__.py#L52-L57
+  opentelemetry-exporter-otlp-proto-http:
+    purpose: >-
+      The optional Logfire telemetry path serializes and sends spans through OTLP HTTP; FastAPI's translation script selects an OpenAI chat agent and does not demonstrate this telemetry path.
+    evidence:
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pyproject.toml#L69-L72
+      - https://github.com/pydantic/logfire/blob/b6fb3fcf0fb115dec457aa0159d44767aafe625c/logfire/_internal/config.py#L26-L29
+      - https://github.com/pydantic/logfire/blob/b6fb3fcf0fb115dec457aa0159d44767aafe625c/logfire/_internal/config.py#L1091-L1092
+      - https://github.com/open-telemetry/opentelemetry-python/blob/b4c13279187941b561de5d62e6483a91759ba123/exporter/opentelemetry-exporter-otlp-proto-http/src/opentelemetry/exporter/otlp/proto/http/trace_exporter/__init__.py#L28-L37
+      - https://github.com/open-telemetry/opentelemetry-python/blob/b4c13279187941b561de5d62e6483a91759ba123/exporter/opentelemetry-exporter-otlp-proto-http/src/opentelemetry/exporter/otlp/proto/http/trace_exporter/__init__.py#L174-L185
+  opentelemetry-instrumentation:
+    purpose: >-
+      Logfire uses the OpenTelemetry instrumentation base to instrument client libraries; this is optional telemetry capability in the Pydantic AI translation dependency closure and is not enabled by FastAPI's translator.
+    evidence:
+      - https://github.com/pydantic/logfire/blob/b6fb3fcf0fb115dec457aa0159d44767aafe625c/pyproject.toml#L49-L53
+      - https://github.com/open-telemetry/opentelemetry-python-contrib/blob/b13d3500174be305f5962b8b2d139b535cb46e3a/opentelemetry-instrumentation/src/opentelemetry/instrumentation/instrumentor.py#L38-L49
+      - https://github.com/open-telemetry/opentelemetry-python-contrib/blob/b13d3500174be305f5962b8b2d139b535cb46e3a/opentelemetry-instrumentation/src/opentelemetry/instrumentation/instrumentor.py#L91-L119
+  opentelemetry-instrumentation-httpx:
+    purpose: >-
+      Logfire's HTTPX extra wraps synchronous and asynchronous transports for client telemetry; FastAPI's translation script does not configure that optional instrumentation.
+    evidence:
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pyproject.toml#L69-L72
+      - https://github.com/pydantic/logfire/blob/b6fb3fcf0fb115dec457aa0159d44767aafe625c/pyproject.toml#L71-L71
+      - https://github.com/pydantic/logfire/blob/b6fb3fcf0fb115dec457aa0159d44767aafe625c/logfire/_internal/integrations/httpx.py#L19-L20
+      - https://github.com/open-telemetry/opentelemetry-python-contrib/blob/b13d3500174be305f5962b8b2d139b535cb46e3a/instrumentation/opentelemetry-instrumentation-httpx/src/opentelemetry/instrumentation/httpx/__init__.py#L916-L927
+      - https://github.com/open-telemetry/opentelemetry-python-contrib/blob/b13d3500174be305f5962b8b2d139b535cb46e3a/instrumentation/opentelemetry-instrumentation-httpx/src/opentelemetry/instrumentation/httpx/__init__.py#L994-L1021
+  opentelemetry-proto:
+    purpose: >-
+      The OTLP encoder constructs generated trace messages from this protocol package; this is telemetry-library capability in the optional translation closure, not an active FastAPI feature.
+    evidence:
+      - https://github.com/open-telemetry/opentelemetry-python/blob/b4c13279187941b561de5d62e6483a91759ba123/exporter/opentelemetry-exporter-otlp-proto-common/src/opentelemetry/exporter/otlp/proto/common/_internal/trace_encoder/__init__.py#L26-L38
+      - https://github.com/open-telemetry/opentelemetry-python/blob/b4c13279187941b561de5d62e6483a91759ba123/opentelemetry-proto/src/opentelemetry/proto/common/v1/common_pb2.py#L1-L10
+  opentelemetry-sdk:
+    purpose: >-
+      Logfire builds TracerProvider and span processors using the SDK; this optional telemetry capability is present through translation tooling dependencies but not invoked by FastAPI's translation script.
+    evidence:
+      - https://github.com/pydantic/logfire/blob/b6fb3fcf0fb115dec457aa0159d44767aafe625c/pyproject.toml#L49-L53
+      - https://github.com/pydantic/logfire/blob/b6fb3fcf0fb115dec457aa0159d44767aafe625c/logfire/_internal/config.py#L53-L55
+      - https://github.com/open-telemetry/opentelemetry-python/blob/b4c13279187941b561de5d62e6483a91759ba123/opentelemetry-sdk/src/opentelemetry/sdk/trace/__init__.py#L1184-L1206
+  opentelemetry-semantic-conventions:
+    purpose: >-
+      HTTPX instrumentation uses this package's standard HTTP attribute names when recording telemetry; FastAPI's translator does not enable that optional instrumentation path.
+    evidence:
+      - https://github.com/open-telemetry/opentelemetry-python-contrib/blob/b13d3500174be305f5962b8b2d139b535cb46e3a/instrumentation/opentelemetry-instrumentation-httpx/src/opentelemetry/instrumentation/httpx/__init__.py#L267-L285
+      - https://github.com/open-telemetry/opentelemetry-python/blob/b4c13279187941b561de5d62e6483a91759ba123/opentelemetry-semantic-conventions/src/opentelemetry/semconv/attributes/http_attributes.py#L39-L60
+  opentelemetry-util-http:
+    purpose: >-
+      HTTPX instrumentation uses this package's URL exclusion, URL redaction, and method-normalization helpers; FastAPI's translator does not configure that optional instrumentation path.
+    evidence:
+      - https://github.com/open-telemetry/opentelemetry-python-contrib/blob/b13d3500174be305f5962b8b2d139b535cb46e3a/instrumentation/opentelemetry-instrumentation-httpx/src/opentelemetry/instrumentation/httpx/__init__.py#L280-L285
+      - https://github.com/open-telemetry/opentelemetry-python-contrib/blob/b13d3500174be305f5962b8b2d139b535cb46e3a/util/opentelemetry-util-http/src/opentelemetry/util/http/__init__.py#L79-L104
+  platformdirs:
+    purpose: >-
+      Black uses platformdirs.user_cache_dir for its cache directory; this is a docs/development formatting-tool capability, not FastAPI runtime behavior.
+    evidence:
+      - https://github.com/psf/black/blob/87928e6d6761a4a6d22250e1fee5601b3998086e/src/black/cache.py#L13-L14
+      - https://github.com/psf/black/blob/87928e6d6761a4a6d22250e1fee5601b3998086e/src/black/cache.py#L31-L45
+  prompt-toolkit:
+    purpose: >-
+      Pydantic AI's optional CLI uses prompt-toolkit for interactive sessions and input history; FastAPI's translation script calls the Agent API directly and does not invoke that CLI.
+    evidence:
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pyproject.toml#L97-L104
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pydantic_ai/_cli/__init__.py#L24-L42
+  pyasn1:
+    purpose: >-
+      Pydantic AI's optional Google provider brings in Google Auth, whose pure-Python RSA backend uses pyasn1 to decode ASN.1 data; FastAPI's translator selects OpenAI chat, not Google Auth.
+    evidence:
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pyproject.toml#L73-L76
+      - https://github.com/googleapis/google-cloud-python/blob/d3d684007a429dc64d8480ceda04658306c52842/packages/google-auth/google/auth/crypt/_python_rsa.py#L15-L31
+      - https://github.com/googleapis/google-cloud-python/blob/d3d684007a429dc64d8480ceda04658306c52842/packages/google-auth/google/auth/crypt/_python_rsa.py#L116-L125
+      - https://github.com/pyasn1/pyasn1/blob/72e4803405816c371ed3b2cb4be181c47f038406/pyasn1/codec/der/decoder.py#L7-L12
+  pyasn1-modules:
+    purpose: >-
+      Google Auth's optional pure-Python RSA backend imports its X.509 and PKCS#8 schemas from this module collection; FastAPI's translation script does not select the Google provider.
+    evidence:
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pyproject.toml#L73-L76
+      - https://github.com/googleapis/google-cloud-python/blob/d3d684007a429dc64d8480ceda04658306c52842/packages/google-auth/google/auth/crypt/_python_rsa.py#L15-L31
+      - https://github.com/googleapis/google-cloud-python/blob/d3d684007a429dc64d8480ceda04658306c52842/packages/google-auth/setup.py#L24-L30
+      - https://github.com/pyasn1/pyasn1-modules/blob/7154ca47caea6e012ef58d6a9975c719f2b6213b/pyasn1_modules/rfc2459.py#L10-L25
+  pydantic-evals:
+    purpose: >-
+      The Pydantic AI convenience distribution selects the evals package for datasets, evaluators, and experiment results; FastAPI's translation script does not run evaluations.
+    evidence:
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pyproject.toml#L50-L53
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pyproject.toml#L109-L110
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_evals/pydantic_evals/dataset.py#L177-L204
+  pytokens:
+    purpose: >-
+      Black imports pytokens in its source-tokenization pipeline; this docs/development formatting capability is not FastAPI runtime behavior.
+    evidence:
+      - https://github.com/psf/black/blob/87928e6d6761a4a6d22250e1fee5601b3998086e/pyproject.toml#L56-L62
+      - https://github.com/psf/black/blob/87928e6d6761a4a6d22250e1fee5601b3998086e/src/blib2to3/pgen2/tokenize.py#L60-L61
+      - https://github.com/psf/black/blob/87928e6d6761a4a6d22250e1fee5601b3998086e/src/blib2to3/pgen2/tokenize.py#L170-L178
+  pyyaml-env-tag:
+    purpose: >-
+      MkDocs registers this loader extension to support !ENV values in documentation configuration; this is a docs-tooling capability rather than FastAPI runtime behavior.
+    evidence:
+      - https://github.com/mkdocs/mkdocs/blob/bb7e8b62185b11d9f59bb7f50b13c15134f62f8a/mkdocs/utils/yaml.py#L9-L12
+      - https://github.com/mkdocs/mkdocs/blob/bb7e8b62185b11d9f59bb7f50b13c15134f62f8a/mkdocs/utils/yaml.py#L109-L124
+      - https://github.com/waylan/pyyaml-env-tag/blob/8f43568693ebd7fcad5c3b79ef6ce0072225914f/yaml_env_tag.py#L9-L28
+  referencing:
+    purpose: >-
+      The optional MCP client path brings jsonschema into translation dependencies; jsonschema uses referencing.Resource and Registry to resolve JSON Schema resources, while FastAPI's script does not call that MCP path.
+    evidence:
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pyproject.toml#L105-L110
+      - https://github.com/python-jsonschema/jsonschema/blob/a7277432b0f7bcd0551f6e589d30457017125df4/jsonschema/validators.py#L18-L22
+      - https://github.com/python-jsonschema/jsonschema/blob/a7277432b0f7bcd0551f6e589d30457017125df4/jsonschema/validators.py#L125-L132
+      - https://github.com/python-jsonschema/referencing/blob/9a82e6c7e5e2e395b61bb4017dc6adc52ac52e7c/referencing/_core.py#L8-L18
+  secretstorage:
+    purpose: >-
+      Keyring's optional Linux Secret Service backend uses SecretStorage over D-Bus; this is an optional Pydantic AI/FastMCP keyring capability, not a FastAPI translation behavior demonstrated by source.
+    evidence:
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pyproject.toml#L105-L108
+      - https://github.com/jaraco/keyring/blob/38c040133559682902f25fe96496756ee6849820/pyproject.toml#L28-L31
+      - https://github.com/jaraco/keyring/blob/38c040133559682902f25fe96496756ee6849820/keyring/backends/SecretService.py#L16-L20
+      - https://github.com/jaraco/keyring/blob/38c040133559682902f25fe96496756ee6849820/keyring/backends/SecretService.py#L42-L68
+  tenacity:
+    purpose: >-
+      Pydantic AI's optional retries and Google GenAI provider use Tenacity for retry strategies; FastAPI's translation script uses the OpenAI chat provider and does not demonstrate those paths.
+    evidence:
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pyproject.toml#L73-L76
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pyproject.toml#L117-L118
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pydantic_ai/retries.py#L1-L34
+      - https://github.com/googleapis/python-genai/blob/6066ccaa207433e82bb94529cee0fede669527d1/google/genai/_api_client.py#L492-L523
+  tqdm:
+    purpose: >-
+      The optional OpenAI SDK upload CLI uses tqdm for file-upload progress; FastAPI's translator uses the OpenAI chat API and does not exercise file uploads.
+    evidence:
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pyproject.toml#L71-L76
+      - https://github.com/openai/openai-python/blob/750354ed65565b31d0547bf00f4f3180ac1bfeef/src/openai/cli/_progress.py#L20-L55
+  wcwidth:
+    purpose: >-
+      Prompt-toolkit uses wcwidth to measure Unicode terminal display cells; this is the optional Pydantic AI CLI's interactive UI capability, not FastAPI translation behavior.
+    evidence:
+      - https://github.com/prompt-toolkit/python-prompt-toolkit/blob/d8adbe9bfcf5f7e95b015d8ab12e2985b9a7822b/src/prompt_toolkit/utils.py#L18-L18
+      - https://github.com/prompt-toolkit/python-prompt-toolkit/blob/d8adbe9bfcf5f7e95b015d8ab12e2985b9a7822b/src/prompt_toolkit/utils.py#L127-L175
+      - https://github.com/jquast/wcwidth/blob/666c501154765ee20dbddc92c340d759b567cfff/wcwidth/wcwidth.py#L186-L205
+  zipp:
+    purpose: >-
+      OpenTelemetry API's optional importlib-metadata compatibility path uses zipp to read zip-backed metadata; FastAPI's translator does not configure telemetry.
+    evidence:
+      - https://github.com/open-telemetry/opentelemetry-python/blob/b4c13279187941b561de5d62e6483a91759ba123/opentelemetry-api/pyproject.toml#L27-L32
+      - https://github.com/python/importlib_metadata/blob/84e9028d39062af975d0659c0e987c28bcc808a5/pyproject.toml#L20-L27
+      - https://github.com/python/importlib_metadata/blob/84e9028d39062af975d0659c0e987c28bcc808a5/importlib_metadata/__init__.py#L837-L843

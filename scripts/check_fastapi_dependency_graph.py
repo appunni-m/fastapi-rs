@@ -28,19 +28,22 @@ TABLE_HEADER = (
     "Implementation / native parts",
     "License (release/sdist metadata)",
     "FastAPI imports",
-    "Source-backed use or explicit unresolved purpose",
+    "Source-backed purpose or explicit unresolved purpose",
 )
 REQUIRED_FIELDS = {
     "PyPI summary (context only)": "package summary",
     "Implementation / native parts": "language/native components",
     "License (release/sdist metadata)": "license metadata",
     "FastAPI imports": "source-import evidence",
-    "Source-backed use or explicit unresolved purpose": "source-use evidence or unresolved purpose",
+    "Source-backed purpose or explicit unresolved purpose": (
+        "source-use evidence or unresolved purpose"
+    ),
 }
 ROW_SEPARATOR = r"\|\s*:?-{3,}:?\s*(?:\|\s*:?-{3,}:?\s*){7}\|"
 SURFACE_SUMMARY = re.compile(r"^- `([^`]+)`: ([0-9]+) locked distributions reachable\.$")
 SOURCE_USE_SUMMARY = re.compile(
-    r"^- Source-use review: [0-9]+ of [0-9]+ packages source-backed; [0-9]+ purposes unresolved\."
+    r"^- Source-backed purpose review: [0-9]+ of [0-9]+ package purposes documented; "
+    r"[0-9]+ purposes unresolved\."
 )
 
 
@@ -366,7 +369,7 @@ def read_dependency_rows(
             if (not fields[field_name] or fields[field_name] == "—")
             and not (
                 allow_missing_source_use
-                and field_name == "Source-backed use or explicit unresolved purpose"
+                and field_name == "Source-backed purpose or explicit unresolved purpose"
             )
         ]
         if missing_fields:
@@ -668,7 +671,8 @@ def _render_row(cells: list[str]) -> str:
 def _source_use_summary_line(package_count: int, source_backed_count: int) -> str:
     unresolved_count = package_count - source_backed_count
     return (
-        f"- Source-use review: {source_backed_count} of {package_count} packages source-backed; "
+        f"- Source-backed purpose review: {source_backed_count} of {package_count} "
+        "package purposes documented; "
         f"{unresolved_count} purposes unresolved."
     )
 
@@ -694,11 +698,13 @@ def update_document(
     ]
     lines[first_summary_line : last_summary_line + 1] = rendered_summary
     source_summary_matches = [
-        index for index, line in enumerate(lines) if line.startswith("- Source-use review:")
+        index
+        for index, line in enumerate(lines)
+        if line.startswith("- Source-backed purpose review:")
     ]
     if len(source_summary_matches) != 1:
         raise DependencyGraphError(
-            "dependency graph needs exactly one Source-use review summary line"
+            "dependency graph needs exactly one source-backed purpose summary line"
         )
     lines[source_summary_matches[0]] = _source_use_summary_line(len(rows), len(source_backed))
     GRAPH_PATH.write_text("\n".join(lines) + "\n", encoding="utf-8")
@@ -782,7 +788,7 @@ def check(*, update: bool = False) -> int:
         )
 
     expected_source_summary = _source_use_summary_line(len(rows), len(source_backed))
-    source_summary = [line for line in lines if line.startswith("- Source-use review:")]
+    source_summary = [line for line in lines if line.startswith("- Source-backed purpose review:")]
     if source_summary != [expected_source_summary]:
         raise DependencyGraphError(
             "dependency graph source-use summary drift: "
