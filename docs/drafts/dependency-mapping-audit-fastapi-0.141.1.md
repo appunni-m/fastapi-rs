@@ -81,10 +81,11 @@ Primary source checks: [FastAPI 0.141.1 metadata](https://github.com/fastapi/fas
    tie selected platform artifacts to included notices. For Starlette-RS's
    zlib path, record the built artifact's selected system or bundled backend
    and the corresponding C zlib notice.
-5. **P3 — unresolved CLI-only native use.** FastAPI's optional `standard`
-   profile declares `fastar`, and the cloud CLI tree can also reach it. The
-   atlas does not establish a FastAPI ASGI call site. Resolve its CLI consumer
-   only if that optional CLI behavior is included in FastAPI-RS scope.
+5. **P3 — optional CLI-only native behavior.** FastAPI's optional `standard`
+   profile declares `fastar`, and the pinned FastAPI Cloud CLI deploy command
+   uses it to create the zstd-compressed upload archive. It remains outside
+   FastAPI's ASGI request path; include it only if optional deployment CLI
+   behavior is in FastAPI-RS scope.
 
 The draft keeps source-oracle dependencies, FastAPI-RS runtime dependencies,
 and build tooling as separate scopes. Release license/notice verification for

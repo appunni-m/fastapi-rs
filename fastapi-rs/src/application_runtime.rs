@@ -30,6 +30,88 @@ use crate::{
 
 const DEFAULT_RESPONSE_DESCRIPTION: &str = "Successful Response";
 
+#[pyclass(name = "_PydanticBytesSchemaDescriptor")]
+struct PydanticBytesSchemaDescriptor;
+
+#[pyclass(name = "_PydanticBytesSchema")]
+struct PydanticBytesSchema {
+    generator: Py<PyAny>,
+}
+
+#[pymethods]
+impl PydanticBytesSchemaDescriptor {
+    #[new]
+    fn new() -> Self {
+        Self
+    }
+
+    fn __get__(
+        &self,
+        py: Python<'_>,
+        instance: Option<Bound<'_, PyAny>>,
+        _owner: Option<Bound<'_, PyAny>>,
+    ) -> PyResult<Py<PyAny>> {
+        let Some(instance) = instance else {
+            return Py::new(py, Self).map(Py::into_any);
+        };
+        Py::new(
+            py,
+            PydanticBytesSchema {
+                generator: instance.unbind(),
+            },
+        )
+        .map(Py::into_any)
+    }
+}
+
+#[pymethods]
+impl PydanticBytesSchema {
+    fn __call__(&self, py: Python<'_>, core_schema: &Bound<'_, PyAny>) -> PyResult<Py<PyAny>> {
+        let generator = self.generator.bind(py);
+        let schema = PyDict::new(py);
+        schema.set_item("type", "string")?;
+        schema.set_item("contentMediaType", "application/octet-stream")?;
+        let mode = generator.getattr("mode")?.extract::<String>()?;
+        let config = generator.getattr("_config")?;
+        let bytes_mode = config
+            .getattr(if mode == "serialization" {
+                "ser_json_bytes"
+            } else {
+                "val_json_bytes"
+            })?
+            .extract::<String>()?;
+        if bytes_mode == "base64" {
+            schema.set_item("contentEncoding", "base64")?;
+        }
+        let validations = generator.getattr("ValidationsMapping")?.getattr("bytes")?;
+        generator.call_method1(
+            "update_with_validations",
+            (schema.clone(), core_schema, validations),
+        )?;
+        Ok(schema.into_any().unbind())
+    }
+}
+
+fn register_pydantic_schema_generator(module: &Bound<'_, PyModule>) -> PyResult<()> {
+    let py = module.py();
+    module.add_class::<PydanticBytesSchemaDescriptor>()?;
+    module.add_class::<PydanticBytesSchema>()?;
+    let descriptor = module.getattr("_PydanticBytesSchemaDescriptor")?.call0()?;
+    let attributes = PyDict::new(py);
+    attributes.set_item("bytes_schema", descriptor)?;
+    attributes.set_item("__module__", "fastapi_rs._core")?;
+    let base = py
+        .import("pydantic.json_schema")?
+        .getattr("GenerateJsonSchema")?;
+    let bases = PyTuple::new(py, [base])?;
+    let generator = py.import("builtins")?.getattr("type")?.call1((
+        "FastApiGenerateJsonSchema",
+        bases,
+        attributes,
+    ))?;
+    module.add("_FastApiGenerateJsonSchema", generator)
+}
+
 #[pyfunction(name = "_frontend_dependency_endpoint")]
 fn frontend_dependency_endpoint() {}
 
@@ -5953,21 +6035,19 @@ fn pydantic_schema_with_config(
     let generator_kwargs = PyDict::new(py);
     generator_kwargs.set_item("ref_template", "#/components/schemas/{model}")?;
     let generator = py
-        .import("pydantic.json_schema")?
-        .getattr("GenerateJsonSchema")?
+        .import("fastapi_rs._core")?
+        .getattr("_FastApiGenerateJsonSchema")?
         .call((), Some(&generator_kwargs))?;
     let inputs = PyList::empty(py);
-    for input_mode in ["validation", "serialization"] {
-        let input = PyTuple::new(
-            py,
-            [
-                PyString::new(py, "fastapi-rs-schema").into_any(),
-                PyString::new(py, input_mode).into_any(),
-                core_schema.clone(),
-            ],
-        )?;
-        inputs.append(input)?;
-    }
+    let input = PyTuple::new(
+        py,
+        [
+            PyString::new(py, "fastapi-rs-schema").into_any(),
+            PyString::new(py, mode).into_any(),
+            core_schema.clone(),
+        ],
+    )?;
+    inputs.append(input)?;
     let generated = generator
         .call_method1("generate_definitions", (inputs,))?
         .cast_into::<PyTuple>()?;
@@ -9344,6 +9424,7 @@ impl AwaitableStateMachine for FastApiCall {
 /// Registers FastAPI's Rust-owned application type and request markers.
 pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     crate::lifespan::register(module)?;
+    register_pydantic_schema_generator(module)?;
     module.add_function(wrap_pyfunction!(frontend_dependency_endpoint, module)?)?;
     module.add_class::<PyFastApi>()?;
     module.add_class::<PyFastApiAsgiApp>()?;

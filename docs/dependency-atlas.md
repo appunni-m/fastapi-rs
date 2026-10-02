@@ -65,7 +65,7 @@ These are optional installation profiles, not requirements for importing every F
 | dnspython | 2.8.0 | Transitive through email-validator for domain checks. | Python DNS implementation. | [ISC](https://pypi.org/pypi/dnspython/2.8.0/json) |
 | fastapi-cli | 0.0.32 | Included through CLI extras; supplies fastapi dev/run and the fastapi command. Not imported by the app request path. | Python CLI. | [MIT](https://pypi.org/pypi/fastapi-cli/0.0.32/json) |
 | fastapi-cloud-cli | 0.11.0 | Nested through fastapi-cli standard extra; cloud/deployment commands. Omitted by the no-cloud-CLI profile. | Python CLI; its tree brings Rust-backed rignore. | [MIT](https://pypi.org/pypi/fastapi-cloud-cli/0.11.0/json) |
-| fastar | 0.11.0 | Explicit in FastAPI's standard extra and nested in cloud CLI dependencies. Package description says Rust bindings for tar/flate2/zstd; FastAPI/Starlette Python imports do not establish an ASGI call site. | Rust extension using Rust tar, flate2, and zstd crates. Treat app-path usage as unresolved until the pinned CLI source identifies it. | [MIT](https://pypi.org/pypi/fastar/0.11.0/json) |
+| fastar | 0.11.0 | Explicit in FastAPI's standard extra and nested in cloud CLI dependencies. FastAPI Cloud CLI's deploy command uses it to create a zstd-compressed tar archive for upload; this is optional deployment packaging outside ASGI request handling. | Rust extension using Rust tar, flate2, and zstd crates. | [MIT](https://pypi.org/pypi/fastar/0.11.0/json) |
 | rich-toolkit | 0.18.1 | Transitive through FastAPI CLI; formatted CLI prompts/output. | Python CLI toolkit. | [MIT](https://pypi.org/pypi/rich-toolkit/0.18.1/json) |
 | typer | 0.26.8 | Transitive through FastAPI CLI; CLI command definitions. | Python CLI framework over Click. | [MIT](https://pypi.org/pypi/typer/0.26.8/json) |
 | click | 8.2.1 | Transitive through Typer and Uvicorn CLI. | Python CLI parser. | [BSD-3-Clause](https://pypi.org/pypi/click/8.2.1/json) |
@@ -122,7 +122,7 @@ Native components that matter when designing the Rust boundary:
 
 - Core validation already crosses into Rust through pydantic-core/PyO3; this does not make Pydantic's Python model, field, and schema API Rust.
 - The standard server profile can add native acceleration: httptools (C/Cython), uvloop (Cython plus libuv C), watchfiles (Rust), and optional C speedups in MarkupSafe/PyYAML. Presence depends on platform and selected extra.
-- CLI/deployment extras add Rust-backed fastar and rignore. They are outside the ASGI behavior path; fastar's call site remains unresolved from FastAPI/Starlette imports.
+- CLI/deployment extras add Rust-backed fastar and rignore. The pinned FastAPI Cloud CLI deploy command uses fastar to build an upload archive; both remain outside the ASGI behavior path.
 - Dev groups also resolve native or bundled tooling/extensions such as Pillow, cffi/cryptography, greenlet, psutil, regex, and native CLI binaries. These are not runtime requirements for an installed FastAPI app.
 
 <details>
@@ -303,7 +303,7 @@ Each node is reached from a shown group root through edges in the pinned uv.lock
 | Jinja2, python-multipart, email-validator | Lazy/feature-specific optional APIs for templates, forms/uploads, and email validation. | Preserve feature-specific behavior and absent-extra errors/fallbacks. |
 | pydantic-settings and pydantic-extra-types | Installed by standard-family extras but not imported by FastAPI core. | Consumer conveniences, not replacements for FastAPI's Pydantic integration. |
 | itsdangerous and PyYAML | all additions for Starlette sessions/schema support, not ordinary FastAPI routing. | Track exposed behavior through the Starlette-RS contract. |
-| FastAPI CLI, Cloud CLI, fastar, rignore, Sentry SDK | Command/deployment tree only. FastAPI's console entry point is fastapi:main; fastapi/__main__.py invokes the CLI. | Exclude from ASGI compatibility core. Confirm fastar's consumer before assigning it a FastAPI feature. |
+| FastAPI CLI, Cloud CLI, fastar, rignore, Sentry SDK | Command/deployment tree only. FastAPI's console entry point is fastapi:main; fastapi/__main__.py invokes the CLI. The pinned Cloud CLI deploy command uses fastar to create its upload archive. | Exclude from ASGI compatibility core; include deployment archive behavior only if the optional CLI is in scope. |
 | Python version | >=3.10, with conditional resolution rather than a single exact interpreter. | Oracle runner still needs a fixed interpreter identity for Python-specific signatures, warnings, and exceptions. |
 | Starlette version | Upstream lock resolves 1.3.1; project contract selects 1.6.0. | Keep the substitution explicit in runner provenance; never silently compare to 1.3.1. |
 | Build backend | PDM Backend is unversioned and outside uv.lock. | Build tool identity/closure is not reproducible from the pinned source lock alone. |

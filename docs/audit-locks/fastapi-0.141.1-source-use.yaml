@@ -840,3 +840,87 @@ source_backed:
     evidence:
       - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L131-L134
       - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L275-L276
+  caio:
+    purpose: aiofile selects caio as its asynchronous file-I/O backend; this optional FileTree storage dependency is reachable only through FastMCP client tooling in FastAPI's translation group.
+    evidence:
+      - https://github.com/mosquito/aiofile/blob/3.9.0/aiofile/aio.py#L14-L15
+      - https://github.com/mosquito/caio/blob/0.9.25/README.md#L13-L15
+  fastmcp-slim:
+    purpose: Pydantic AI's optional MCP toolset selects the lightweight FastMCP client distribution; this is translation-tooling closure, not FastAPI request handling.
+    evidence:
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pyproject.toml#L651-L656
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L135-L153
+  httpx-sse:
+    purpose: The MCP SDK's optional SSE and streamable-HTTP client transports use httpx-sse to establish and consume event streams; this is translation-tooling closure.
+    evidence:
+      - https://github.com/modelcontextprotocol/python-sdk/blob/v1.26.0/src/mcp/client/sse.py#L528-L544
+      - https://github.com/modelcontextprotocol/python-sdk/blob/v1.26.0/src/mcp/client/sse.py#L624-L632
+  jiter:
+    purpose: OpenAI and Anthropic client streaming parsers use jiter to parse incremental JSON responses; those provider clients are pulled into FastAPI's translation tooling through Pydantic AI extras.
+    evidence:
+      - https://github.com/pydantic/jiter/blob/v0.13.0/README.md
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pyproject.toml#L583-L676
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L135-L153
+  protobuf:
+    purpose: OpenTelemetry's OTLP HTTP exporter serializes generated protocol messages with protobuf; the exporter is installed through Pydantic AI's translation-tooling Logfire extra.
+    evidence:
+      - https://github.com/open-telemetry/opentelemetry-python/blob/v1.39.1/exporter/opentelemetry-exporter-otlp-proto-http/src/opentelemetry/exporter/otlp/proto/http/_log_exporter/__init__.py#L186-L186
+      - https://github.com/protocolbuffers/protobuf/blob/v33.5/python/README.md
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L135-L153
+  py-key-value-aio:
+    purpose: FastMCP uses py-key-value-aio as an async storage protocol for OAuth client state and selects filetree, keyring, and memory adapters in its client extra; this is optional translation-tooling closure.
+    evidence:
+      - https://github.com/jlowin/fastmcp/blob/v3.3.1/src/fastmcp/client/auth/oauth.py#L11-L13
+      - https://github.com/jlowin/fastmcp/blob/v3.3.1/src/fastmcp/client/auth/oauth.py#L73-L77
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pyproject.toml#L651-L656
+  pynacl:
+    purpose: PyGithub uses PyNaCl sealed-box encryption for GitHub repository and organization secrets; the package is selected by FastAPI's GitHub Actions and translation tooling groups.
+    evidence:
+      - https://github.com/PyGithub/PyGithub/blob/v2.9.1/github/PublicKey.py#L48-L63
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L1210-L1337
+  pywin32:
+    purpose: The MCP SDK's Windows stdio client uses pywin32 Job Objects to contain and terminate child-process trees; this dependency is optional and Windows-only within translation tooling.
+    evidence:
+      - https://github.com/modelcontextprotocol/python-sdk/blob/v1.26.0/pyproject.toml#L651-L679
+      - https://github.com/modelcontextprotocol/python-sdk/blob/v1.26.0/src/mcp/os/win32/utilities.py#L937-L948
+      - https://github.com/modelcontextprotocol/python-sdk/blob/v1.26.0/src/mcp/os/win32/utilities.py#L1236-L1250
+  pywin32-ctypes:
+    purpose: Keyring's Windows backend uses pywin32-ctypes to call Windows credential APIs; this package is reached through FastMCP's optional keyring storage extra and is Windows-only.
+    evidence:
+      - https://github.com/jaraco/keyring/blob/v25.7.0/keyring/backends/Windows.py#L14-L15
+      - https://github.com/jaraco/keyring/blob/v25.7.0/pyproject.toml
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pyproject.toml#L651-L656
+  regex:
+    purpose: Tiktoken uses regex's Unicode property patterns to split input into tokenizer pieces before byte-pair encoding; this enters FastAPI's lock through Pydantic AI's optional OpenAI translation tooling.
+    evidence:
+      - https://github.com/openai/tiktoken/blob/0.12.0/tiktoken/core.py#L1682-L1690
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pyproject.toml#L583-L676
+  rpds-py:
+    purpose: referencing uses rpds persistent maps, sets, and lists to maintain JSON Schema resource registries; jsonschema and the MCP client bring this resolver into translation tooling.
+    evidence:
+      - https://github.com/python-jsonschema/referencing/blob/v0.36.2/referencing/_core.py#L9-L21
+      - https://github.com/crate-py/rpds/blob/v0.30.0/Cargo.toml
+      - https://github.com/modelcontextprotocol/python-sdk/blob/v1.26.0/pyproject.toml
+  sse-starlette:
+    purpose: The MCP SDK's server-side SSE transport uses sse-starlette EventSourceResponse; it is an optional protocol integration in translation-tooling closure, not FastAPI or Starlette-RS core behavior.
+    evidence:
+      - https://github.com/modelcontextprotocol/python-sdk/blob/v1.26.0/src/mcp/server/sse.py#L752-L770
+      - https://github.com/modelcontextprotocol/python-sdk/blob/v1.26.0/src/mcp/server/sse.py#L972-L976
+  tiktoken:
+    purpose: Pydantic AI's OpenAI embedding support uses tiktoken to select model-specific encodings for token counting; this optional provider feature is installed by FastAPI's translation tooling.
+    evidence:
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pydantic_ai/embeddings/openai.py#L16-L16
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pydantic_ai/embeddings/openai.py#L166-L169
+      - https://github.com/openai/tiktoken/blob/0.12.0/Cargo.toml
+  watchdog:
+    purpose: MkDocs uses watchdog to monitor documentation files for live reload; this package belongs to the docs development group, not FastAPI runtime.
+    evidence:
+      - https://github.com/mkdocs/mkdocs/blob/1.6.1/pyproject.toml#L732-L746
+      - https://github.com/mkdocs/mkdocs/blob/1.6.1/mkdocs/livereload/__init__.py#L1000-L1003
+      - https://github.com/mkdocs/mkdocs/blob/1.6.1/mkdocs/livereload/__init__.py#L1205-L1211
+  wrapt:
+    purpose: OpenTelemetry HTTPX instrumentation uses wrapt to wrap and patch client callables for telemetry; this is optional Pydantic AI/Logfire translation-tooling closure.
+    evidence:
+      - https://github.com/open-telemetry/opentelemetry-python-contrib/blob/v0.60b1/instrumentation/opentelemetry-instrumentation-httpx/src/opentelemetry/instrumentation/httpx/__init__.py
+      - https://github.com/GrahamDumpleton/wrapt/blob/1.17.3/README.rst#L198-L198
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L135-L153
