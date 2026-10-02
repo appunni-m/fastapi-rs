@@ -2,6 +2,7 @@
 
 use std::collections::BTreeMap;
 
+use crate::encoding::{JsonableEncoderInput, JsonableEncoderOptions, jsonable_encoder};
 use pyo3::prelude::*;
 use pyo3::types::{PyBool, PyDict, PyFloat, PyList, PyString};
 
@@ -430,7 +431,18 @@ pub(crate) fn openapi_document(
         document.set_item("components", components)?;
     }
 
-    Ok(document.into_any().unbind())
+    let document = document.into_any();
+    let encoder_options = JsonableEncoderOptions::new(JsonableEncoderInput {
+        include: None,
+        exclude: None,
+        by_alias: true,
+        exclude_unset: false,
+        exclude_defaults: false,
+        exclude_none: true,
+        custom_encoder: None,
+        sqlalchemy_safe: true,
+    });
+    jsonable_encoder(py, &document, &encoder_options).map(Bound::unbind)
 }
 
 const fn body_allowed_for_status_code(status_code: Option<u16>) -> bool {
