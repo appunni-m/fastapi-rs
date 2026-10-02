@@ -265,11 +265,27 @@ def read_manifest() -> dict[str, Any]:
         raise ContractError(
             "manifest target version must remain the pinned development version 0.1.0"
         )
+    try:
+        project_metadata = yaml.safe_load((ROOT / "metadata.yaml").read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, yaml.YAMLError) as exc:
+        raise ContractError(f"cannot read FastAPI-RS metadata: {exc}") from exc
+    starlette_rs_metadata = (
+        project_metadata.get("starlette_rs") if isinstance(project_metadata, dict) else None
+    )
+    metadata_starlette_rs_commit = (
+        starlette_rs_metadata.get("commit") if isinstance(starlette_rs_metadata, dict) else None
+    )
+    if (
+        not isinstance(metadata_starlette_rs_commit, str)
+        or len(metadata_starlette_rs_commit) != 40
+        or any(character not in "0123456789abcdef" for character in metadata_starlette_rs_commit)
+    ):
+        raise ContractError("metadata.yaml must pin a full lowercase Starlette-RS commit")
     if target.get("starlette_rs_distribution") != {
         "name": "starlette-rs-py",
         "version": "0.1.0",
         "starlette_contract": "1.6.0",
-        "commit": "ddf331a5f4c045e6adaff2b3b8fc1efccc7abfde",
+        "commit": metadata_starlette_rs_commit,
     }:
         raise ContractError("manifest target must select Starlette-RS 0.1.0 for the 1.6.0 contract")
     source_artifacts = manifest.get("source_artifacts")
