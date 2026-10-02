@@ -6,7 +6,7 @@ This source-backed compatibility atlas indexes the API denominator and candidate
 
 - FastAPI: 0.141.1 at `95f8322ee1dcda7ceace7b1c4f6c9915b36d748f`.
 - Starlette oracle contract: 1.6.0 at `4f250d6b814587e20c5365f0a5f0c4d42bcb929f` (the sole selected Starlette version).
-- Starlette-RS implementation contract: at `3f83642457b4db38f2da9bea0cb69628e1f03c29`.
+- Starlette-RS implementation contract: at `3072dc650d0d6a08bd97f6275fce1c16c545c7ba`.
 - FastAPI declares `starlette>=0.46.0`, which admits the selected contract. Its upstream lock graph is dependency-inventory evidence, not another compatibility profile.
 - Pydantic: 2.13.4 source-lock baseline; Python support is `>=3.10`.
 
@@ -556,7 +556,7 @@ The merged coverage matrix links each FastAPI test, documented feature, or examp
 |---:|---:|---:|---:|
 | 945 | 2461 | 511 | 8 |
 
-The sibling Starlette-RS manifest, API review, and coverage matrix remain the sole Starlette API inventory. FastAPI's atlas stores only relevant requirement references plus manifest/catalog/review/matrix SHA-256 digests. The inspected Starlette-RS implementation revision is 3f83642457b4db38f2da9bea0cb69628e1f03c29 (pinned, clean Starlette-RS checkout).
+The sibling Starlette-RS manifest, API review, and coverage matrix remain the sole Starlette API inventory. FastAPI's atlas stores only relevant requirement references plus manifest/catalog/review/matrix SHA-256 digests. The inspected Starlette-RS implementation revision is 3072dc650d0d6a08bd97f6275fce1c16c545c7ba (pinned, clean Starlette-RS checkout).
 
 ## Errors, aliases, optional features, and deprecations
 
