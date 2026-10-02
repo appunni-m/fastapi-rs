@@ -9877,6 +9877,7 @@ def render_markdown(atlas: dict[str, Any]) -> str:
         "fastapi-rs/public-api-contract@3",
         "fastapi-rs/public-api-contract@4",
         "fastapi-rs/public-api-contract@5",
+        "fastapi-rs/public-api-contract@6",
     }:
         raise AtlasError("manifest has no generated per-symbol source API contract")
     required_public_symbols = api_contract_counts.get("required_public_symbols", 0)

@@ -20,7 +20,7 @@ from scripts.parity.contract import (
     sha256_file,
 )
 
-CONTRACT_SCHEMA = "fastapi-rs/public-api-contract@5"
+CONTRACT_SCHEMA = "fastapi-rs/public-api-contract@6"
 TARGET_PROFILE = "fastapi-rs-python-consumer"
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 OVERLAY_SCHEMA = "fastapi-rs/reviewed-api-contract-overlay@4"
@@ -756,6 +756,107 @@ def _validate_inherited_fixture_reference(
     }
 
 
+def _validate_reviewed_operation_fixture_reference(
+    fixture_reference: dict[str, Any],
+    *,
+    materialized_workflows: list[dict[str, Any]],
+    operation_id: str,
+) -> dict[str, Any]:
+    """Resolve one reviewed operation fixture link through the materialized index."""
+    recipe_path = fixture_reference.get("recipe_path")
+    case_id = fixture_reference.get("case_id")
+    if not isinstance(recipe_path, str) or not isinstance(case_id, str):
+        raise ContractError(f"reviewed API operation fixture reference is incomplete: {operation_id}")
+
+    matching_workflows = [
+        workflow
+        for workflow in materialized_workflows
+        if isinstance(workflow, dict) and workflow.get("recipe_path") == recipe_path
+    ]
+    if len(matching_workflows) != 1:
+        raise ContractError(
+            "reviewed API operation fixture must resolve to one materialized recipe: "
+            f"{operation_id}: {recipe_path}"
+        )
+    workflow = matching_workflows[0]
+    case_ids = workflow.get("case_ids")
+    if not isinstance(case_ids, list) or case_ids.count(case_id) != 1:
+        raise ContractError(
+            "reviewed API operation fixture must resolve to one materialized recipe case: "
+            f"{operation_id}: {recipe_path}::{case_id}"
+        )
+
+    input_root = (PROJECT_ROOT / "tests/fixtures/inputs").resolve()
+    recipe_root = (PROJECT_ROOT / "tests/fixtures/input-recipes").resolve()
+    workload_root = (PROJECT_ROOT / "tests/fixtures/workloads").resolve()
+    resolved_paths: dict[str, Path] = {}
+    for field, root, label in (
+        ("input_path", input_root, "materialized API operation input"),
+        ("recipe_path", recipe_root, "API operation fixture recipe"),
+        ("workload_path", workload_root, "API operation fixture workload"),
+    ):
+        relative_path = workflow.get(field)
+        if not isinstance(relative_path, str):
+            raise ContractError(f"materialized API operation workflow has no {field}: {recipe_path}")
+        path = (PROJECT_ROOT / relative_path).resolve()
+        try:
+            path.relative_to(root)
+        except ValueError as exc:
+            raise ContractError(
+                f"API operation fixture {label} is outside its project area: {relative_path}"
+            ) from exc
+        if not path.is_file():
+            raise ContractError(f"API operation fixture {label} is missing: {relative_path}")
+        digest_field = f"{field.removesuffix('_path')}_sha256"
+        expected_digest = workflow.get(digest_field)
+        if not isinstance(expected_digest, str) or sha256_file(path) != expected_digest:
+            raise ContractError(
+                f"materialized API operation workflow has a stale {field} digest: {relative_path}"
+            )
+        resolved_paths[field] = path
+
+    recipe = yaml.safe_load(resolved_paths["recipe_path"].read_text(encoding="utf-8"))
+    materialized_input = json.loads(resolved_paths["input_path"].read_text(encoding="utf-8"))
+    materialized_case: dict[str, Any] | None = None
+    for document, label in ((recipe, "recipe"), (materialized_input, "materialized input")):
+        cases = document.get("cases", []) if isinstance(document, dict) else None
+        matching_cases = [
+            case
+            for case in cases or []
+            if isinstance(case, dict) and case.get("case_id") == case_id
+        ]
+        if not isinstance(cases, list) or len(matching_cases) != 1:
+            raise ContractError(
+                f"reviewed API operation fixture case is absent or duplicated in {label}: "
+                f"{recipe_path}::{case_id}"
+            )
+        if label == "materialized input":
+            materialized_case = matching_cases[0]
+
+    from scripts.parity.materialized import _selected_selectors
+
+    observation_selectors = sorted(
+        _selected_selectors(materialized_case, workflow_schema=materialized_input["schema"])
+    )
+    if not observation_selectors:
+        raise ContractError(
+            f"reviewed API operation fixture case has no observable selectors: "
+            f"{recipe_path}::{case_id}"
+        )
+
+    return {
+        "workflow_id": workflow["id"],
+        "input_path": workflow["input_path"],
+        "input_sha256": workflow["input_sha256"],
+        "recipe_path": recipe_path,
+        "recipe_sha256": workflow["recipe_sha256"],
+        "workload_path": workflow["workload_path"],
+        "workload_sha256": workflow["workload_sha256"],
+        "case_id": case_id,
+        "observation_selectors": observation_selectors,
+    }
+
+
 def _implementation_owner_plan(
     candidate: dict[str, Any],
     *,
@@ -1283,6 +1384,11 @@ def build_api_surface_contract(
             raise ContractError(
                 f"reviewed API documentation references must be a list of mappings: {operation_id}"
             )
+        fixtures = operation.get("fixture_refs", [])
+        if not isinstance(fixtures, list) or any(not isinstance(row, dict) for row in fixtures):
+            raise ContractError(
+                f"reviewed API fixture references must be a list of mappings: {operation_id}"
+            )
         for field in ("feature_ids", "observation_selectors", "error_contract_ids"):
             values = operation.get(field, [])
             if not isinstance(values, list) or any(not isinstance(value, str) for value in values):
@@ -1739,9 +1845,34 @@ def build_api_surface_contract(
                 reference["probe_id"],
             )
         )
+    operation_fixture_refs_by_symbol: dict[str, list[dict[str, Any]]] = {}
     for operation_id, operation in overlay_operations.items():
         if not isinstance(operation, dict):
             raise ContractError(f"reviewed API overlay operation must be a mapping: {operation_id}")
+        fixture_refs: list[dict[str, Any]] = []
+        seen_fixture_refs: set[tuple[str, str]] = set()
+        for fixture_reference in operation.get("fixture_refs", []):
+            recipe_path = fixture_reference.get("recipe_path")
+            case_id = fixture_reference.get("case_id")
+            if not isinstance(recipe_path, str) or not isinstance(case_id, str):
+                raise ContractError(
+                    f"reviewed API operation fixture reference is incomplete: {operation_id}"
+                )
+            key = (recipe_path, case_id)
+            if key in seen_fixture_refs:
+                raise ContractError(
+                    f"reviewed API operation fixture reference is duplicated: "
+                    f"{operation_id}: {recipe_path}::{case_id}"
+                )
+            seen_fixture_refs.add(key)
+            fixture_refs.append(
+                _validate_reviewed_operation_fixture_reference(
+                    fixture_reference,
+                    materialized_workflows=materialized_input_index["workflows"],
+                    operation_id=operation_id,
+                )
+            )
+        operation_fixture_refs_by_symbol[operation_id] = fixture_refs
         operation_features = operation.get("feature_ids", [])
         operation_selectors = operation.get("observation_selectors", [])
         operation_errors = operation.get("error_contract_ids", [])
@@ -2200,6 +2331,11 @@ def build_api_surface_contract(
                 "error_contract_refs": error_refs,
                 "documentation_contract_refs": documentation_refs,
                 "input_workflow_refs": input_workflow_refs,
+                **(
+                    {"operation_fixture_refs": operation_fixture_refs_by_symbol[symbol_id]}
+                    if operation_fixture_refs_by_symbol.get(symbol_id)
+                    else {}
+                ),
                 "identity_workflow_refs": identity_workflow_refs,
                 "feature_ids": sorted(feature_ids),
                 "observation_selectors": sorted(selectors),
@@ -2290,6 +2426,12 @@ def build_api_surface_contract(
             ),
             "symbols_with_direct_api_input_workflow_refs": sum(
                 bool(symbol["input_workflow_refs"]) for symbol in symbols
+            ),
+            "symbols_with_operation_fixture_refs": sum(
+                bool(symbol.get("operation_fixture_refs")) for symbol in symbols
+            ),
+            "operation_fixture_refs": sum(
+                len(symbol.get("operation_fixture_refs", [])) for symbol in symbols
             ),
             "symbols_with_identity_workflow_refs": sum(
                 bool(symbol["identity_workflow_refs"]) for symbol in symbols

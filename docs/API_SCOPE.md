@@ -82,18 +82,20 @@ remain significant.
 
 ### Current target facade availability
 
-The root facade currently exposes 19 of the 21 source bindings:
-`__version__`, `APIRouter`, `Body`, `Cookie`, `Depends`, `FastAPI`, `File`,
+The root facade currently exposes all 21 source bindings:
+`APIRouter`, `BackgroundTasks`, `Body`, `Cookie`, `Depends`, `FastAPI`, `File`,
 `Form`, `Header`, `HTTPException`, `Path`, `Query`, `Request`, `Response`,
-`UploadFile`, `WebSocket`, `WebSocketDisconnect`, `WebSocketException`, and
-`status`. The missing exports are `BackgroundTasks` and `Security`. Request
-injection has a partial identity-checked ASGI workflow;
-generic Request API parity remains owned by Starlette-RS and is not established
-by that FastAPI integration case. Other availability here means import-level
-presence; it does not prove full signatures or behavior. The generated
-manifest's `target_binding.public_python_path` records the required spelling,
-and target status remains `full-contract-not-established` until full interface
-and behavior parity are recorded.
+`Security`, `UploadFile`, `WebSocket`, `WebSocketDisconnect`,
+`WebSocketException`, `__version__`, and `status`. Pinned-source reflection
+identifies `BackgroundTasks` as `fastapi.background.BackgroundTasks` and
+`Security` as `fastapi.param_functions.Security`; the root-alias identity
+workflow observes both root-to-module alias relations. Request injection has a
+partial identity-checked ASGI workflow; generic Request API parity remains
+owned by Starlette-RS and is not established by that FastAPI integration case.
+Root import and alias identity do not prove full signatures or behavior. The
+generated manifest's `target_binding.public_python_path` records the required
+spelling, and both target bindings remain `full-contract-not-established` until
+full interface and behavior parity are recorded.
 
 `fastapi.status` is a Starlette module reexport in the oracle. FastAPI-RS now
 binds the exact `starlette.status` module object. The focused identity-checked
