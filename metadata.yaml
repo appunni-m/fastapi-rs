@@ -946,6 +946,28 @@ reviewed_api_contract_overlay:
         - {path: fastapi/openapi/utils.py, symbol: generate_operation_id}
       feature_ids: [openapi-docs]
       observation_selectors: [python.call_outcome]
+    fastapi.openapi.utils.get_openapi:
+      rust_binding: null
+      source_evidence:
+        - path: fastapi/openapi/utils.py
+          symbol: get_openapi
+          kind: source-definition
+          start_line: 585
+          end_line: 679
+        - path: docs/en/docs/how-to/extending-openapi.md
+          kind: documentation-text
+          start_line: 19
+          end_line: 34
+          required_text:
+            - "And that function `get_openapi()` receives as parameters:"
+            - "`routes`: The routes from the application, taken from `app.routes`. FastAPI uses them to collect the registered *path operations*, including those from included routers."
+            - "You can still pass `app.routes` to `get_openapi()`. FastAPI will traverse that route tree to collect the effective path operations."
+      documentation_contract_refs:
+        - source_path: docs/en/docs/how-to/extending-openapi.md
+          fixture_id: fastapi.docs.how-to-extending-openapi
+          observation_selectors: [http.status, openapi.document]
+      feature_ids: [openapi-docs]
+      observation_selectors: [http.status, openapi.document]
     fastapi.utils.generate_operation_id_for_path:
       rust_binding: fastapi-rs/src/deprecated_api.rs::generate_operation_id_for_path
       source_evidence:
