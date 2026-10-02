@@ -9459,7 +9459,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             "priority": 4,
             "id": "deepen-independent-input-and-observation-coverage",
             "status": "partial",
-            "acceptance": "Extend the 488 materialized workflows with independent cases and supported selectors for high-impact partial behavior. The yield-dependency cleanup/cancellation composition now has an input-only probe but remains blocked by the sibling streaming adapter mismatch; continue with request validation and directly map documentation examples when page-level selectors are insufficient. Never copy upstream tests or expected outputs.",
+            "acceptance": "Extend the current materialized workflow set with independent cases and supported selectors for high-impact partial behavior. The yield-dependency cleanup/cancellation composition now has an input-only probe but remains blocked by the sibling streaming adapter mismatch; continue with request validation and directly map documentation examples when page-level selectors are insufficient. Never copy upstream tests or expected outputs.",
         },
         {
             "priority": 5,

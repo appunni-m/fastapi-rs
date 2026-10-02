@@ -32,7 +32,10 @@ pub(crate) struct OpenApiOperation {
     pub(crate) operation_id: String,
     pub(crate) deprecated: Option<bool>,
     pub(crate) tags: Option<Vec<String>>,
-    pub(crate) status: u16,
+    /// The route's explicit status, kept separate from its response-class default.
+    pub(crate) status: Option<u16>,
+    /// The OpenAPI response key derived from an explicit status or response-class default.
+    pub(crate) response_status_key: Option<String>,
     pub(crate) parameters: Vec<OpenApiParameter>,
     pub(crate) validation_parameters_present: bool,
     pub(crate) request_model_name: Option<String>,
@@ -288,12 +291,15 @@ pub(crate) fn openapi_document(
                 }
             }
         }
-        let status_key = operation.status.to_string();
-        responses.set_item(status_key, success_response)?;
+        if let Some(status_key) = operation.response_status_key.as_deref() {
+            responses.set_item(status_key, success_response)?;
+        } else {
+            responses.set_item(py.None(), success_response)?;
+        }
 
         let needs_validation_response =
             operation.validation_parameters_present || operation.request_body_present;
-        if needs_validation_response && operation.status != 422 {
+        if needs_validation_response && operation.status != Some(422) {
             responses.set_item("422", validation_response(py)?)?;
             schemas
                 .entry("HTTPValidationError".to_owned())
@@ -427,8 +433,11 @@ pub(crate) fn openapi_document(
     Ok(document.into_any().unbind())
 }
 
-const fn body_allowed_for_status_code(status_code: u16) -> bool {
-    status_code >= 200 && !matches!(status_code, 204 | 205 | 304)
+const fn body_allowed_for_status_code(status_code: Option<u16>) -> bool {
+    match status_code {
+        None => true,
+        Some(status_code) => status_code >= 200 && !matches!(status_code, 204 | 205 | 304),
+    }
 }
 
 fn collect_model_schema(

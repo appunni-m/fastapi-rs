@@ -68,8 +68,8 @@ pub struct FastApiOperation {
     pub path: String,
     /// The normalized HTTP methods registered for the operation.
     pub methods: Vec<String>,
-    /// The response status selected by the operation decorator.
-    pub status_code: u16,
+    /// The response status explicitly selected by the operation decorator.
+    pub status_code: Option<u16>,
     /// FastAPI-owned endpoint input declarations.
     pub parameters: Vec<FastApiInputParameter>,
 }
@@ -139,7 +139,7 @@ impl FastApiOperationRouter {
         &mut self,
         path: impl Into<String>,
         method: impl AsRef<str>,
-        status_code: u16,
+        status_code: Option<u16>,
     ) -> Result<usize, RouteError> {
         let path = path.into();
         let method = method.as_ref().to_ascii_uppercase();

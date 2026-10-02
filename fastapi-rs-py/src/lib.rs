@@ -142,7 +142,7 @@ impl PyOperationRouter {
 
     fn add_operation(&mut self, path: &str, method: &str, status_code: u16) -> PyResult<usize> {
         self.inner
-            .add_operation(path, method, status_code)
+            .add_operation(path, method, Some(status_code))
             .map_err(|error| PyValueError::new_err(error.to_string()))
     }
 

@@ -355,7 +355,7 @@ struct FastApiRoute {
     operation_id: Option<String>,
     deprecated: Option<bool>,
     tags: Option<Vec<String>>,
-    status_code: u16,
+    status_code: Option<u16>,
     include_in_schema: bool,
     response_class: Option<Py<PyAny>>,
     strict_content_type: Option<bool>,
@@ -2251,6 +2251,14 @@ impl PyFastApi {
             additional_responses: clone_additional_responses(py, &route.additional_responses),
             operation_id,
             status: route.status_code,
+            response_status_key: openapi_response_status_key(
+                py,
+                route.status_code,
+                route
+                    .response_class
+                    .as_ref()
+                    .map(|response_class| response_class.bind(py)),
+            )?,
             parameters,
             validation_parameters_present,
             request_model_name,
@@ -2959,7 +2967,7 @@ fn merge_router_routes(
         let route_scope = source_route.route_scope.clone_ref(py);
         let index = app
             .websocket_router
-            .add_operation(&path, "GET", 200)
+            .add_operation(&path, "GET", Some(200))
             .map_err(|error| PyValueError::new_err(error.to_string()))?;
         app.websocket_router
             .set_parameters(index, plan.input_parameters())
@@ -3001,7 +3009,7 @@ struct PyOperationDecorator {
     tags: Option<Vec<String>>,
     dependencies: Vec<Py<PyAny>>,
     response_model: Option<Py<PyAny>>,
-    status_code: u16,
+    status_code: Option<u16>,
     include_in_schema: bool,
     response_model_include: Option<Py<PyAny>>,
     response_model_exclude: Option<Py<PyAny>>,
@@ -3234,7 +3242,7 @@ fn operation_decorator(
             tags: response_model_options.tags,
             dependencies: response_model_options.dependencies,
             response_model,
-            status_code: status_code.unwrap_or(200),
+            status_code,
             include_in_schema: response_model_options.include_in_schema,
             response_model_include: response_model_options.include,
             response_model_exclude: response_model_options.exclude,
@@ -3412,7 +3420,7 @@ impl PyWebSocketDecorator {
         let mut app = self.app.bind(py).borrow_mut();
         let index = app
             .websocket_router
-            .add_operation(&self.path, "GET", 200)
+            .add_operation(&self.path, "GET", Some(200))
             .map_err(|error| PyValueError::new_err(error.to_string()))?;
         app.websocket_router
             .set_parameters(index, inputs)
@@ -5708,6 +5716,39 @@ fn response_field_schema_title(name: &str, path: &str, method: &str) -> String {
     unique_id.push('_');
     unique_id.push_str(&method.to_ascii_lowercase());
     title_case(&format!("Response_{unique_id}").replace('_', " "))
+}
+
+fn openapi_response_status_key(
+    py: Python<'_>,
+    route_status_code: Option<u16>,
+    response_class: Option<&Bound<'_, PyAny>>,
+) -> PyResult<Option<String>> {
+    if let Some(status_code) = route_status_code {
+        return Ok(Some(status_code.to_string()));
+    }
+
+    let response_class = match response_class {
+        Some(response_class) => response_class.clone(),
+        None => py.import("starlette.responses")?.getattr("JSONResponse")?,
+    };
+    let response_signature = py
+        .import("inspect")?
+        .getattr("signature")?
+        .call1((response_class.getattr("__init__")?,))?;
+    let parameters = response_signature.getattr("parameters")?;
+    let status_code_parameter = parameters.call_method1("get", ("status_code",))?;
+    if status_code_parameter.is_none() {
+        return Ok(None);
+    }
+    let default = status_code_parameter.getattr("default")?;
+    if !default.is_instance(&py.import("builtins")?.getattr("int")?)? {
+        return Ok(None);
+    }
+    py.import("builtins")?
+        .getattr("str")?
+        .call1((default,))?
+        .extract()
+        .map(Some)
 }
 
 fn aggregate_body_model(
@@ -8579,7 +8620,7 @@ impl FastApiCall {
                     .map(|status_code| status_code.bind(py).extract::<u16>())
                     .transpose()
             })?
-            .unwrap_or(status_code);
+            .or(status_code);
         if generator_kind.is_generator() {
             let json_lines = response_class.is_none() && !sse_stream;
             let synchronous = generator_kind == FastApiGeneratorKind::Sync;
@@ -8609,7 +8650,9 @@ impl FastApiCall {
             };
             let kwargs = PyDict::new(py);
             kwargs.set_item("content", stream.bind(py))?;
-            kwargs.set_item("status_code", status_code)?;
+            if let Some(status_code) = status_code {
+                kwargs.set_item("status_code", status_code)?;
+            }
             let background_tasks = self.request_background_tasks(py);
             if let Some(background_tasks) = background_tasks.as_ref() {
                 kwargs.set_item("background", background_tasks.bind(py))?;
@@ -8707,7 +8750,9 @@ impl FastApiCall {
         drop(app);
         if let Some(response_class) = response_class {
             let kwargs = PyDict::new(py);
-            kwargs.set_item("status_code", status_code)?;
+            if let Some(status_code) = status_code {
+                kwargs.set_item("status_code", status_code)?;
+            }
             let background_tasks = self.request_background_tasks(py);
             if let Some(background_tasks) = background_tasks.as_ref() {
                 kwargs.set_item("background", background_tasks.bind(py))?;
@@ -8724,8 +8769,8 @@ impl FastApiCall {
             }
             return self.start_returned_response(py, &response);
         }
-        self.response_status = status_code;
-        self.response_body = if status_code == 204 {
+        self.response_status = status_code.unwrap_or(200);
+        self.response_body = if status_code == Some(204) {
             Vec::new()
         } else {
             json_bytes(py, &response_value)?
