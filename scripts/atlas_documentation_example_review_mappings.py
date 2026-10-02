@@ -2372,6 +2372,170 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
     }
 )
 
+# Additional-response tutorials: map each exact documented example source to
+# independent runtime and/or OpenAPI observations already present in the input
+# backlog. These links claim only the named behaviors, not the full examples.
+DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
+    {
+        "docs_src/additional_responses/tutorial001_py310.py": {
+            "rationale": (
+                "The pinned example declares an Item response model and a modeled 404 response, "
+                "then returns either a valid item or a JSONResponse error. The independent "
+                "inventory workflow observes analogous success, not-found, and selected OpenAPI "
+                "response/schema behavior using separate models, paths, and values. It does not "
+                "claim the example's literals, complete OpenAPI document, or every response case."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/additional_responses/tutorial001_py310.py",
+                    "start_line": 18,
+                    "end_line": 22,
+                    "role": "documented response model, modeled 404 response, and success/error branches",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/additional-responses.yaml",
+                    "case_ids": [
+                        "fastapi.docs.additional-responses.found",
+                        "fastapi.docs.additional-responses.not-found",
+                        "fastapi.docs.additional-responses.openapi",
+                    ],
+                    "observation_selectors": [
+                        "docs.response.headers",
+                        "docs.response.status",
+                        "http.body.bytes",
+                        "http.headers.ordered",
+                        "http.status",
+                        "openapi.document",
+                        "openapi.paths",
+                    ],
+                }
+            ],
+        },
+        "docs_src/additional_responses/tutorial002_py310.py": {
+            "rationale": (
+                "The pinned example documents image/png as an alternate 200 content type and "
+                "selects FileResponse from a query parameter. The independent inputs exercise a "
+                "separate FileResponse route and inspect the analogous OpenAPI media-content "
+                "declaration. They use an independent workload and do not claim the tutorial's "
+                "file bytes, route values, or complete schema."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/additional_responses/tutorial002_py310.py",
+                    "start_line": 14,
+                    "end_line": 28,
+                    "role": "documented alternate image/png response and query-selected FileResponse",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/additional-response-openapi-wave.yaml",
+                    "case_ids": [
+                        "fastapi.additional-response-openapi-wave.media-content.test-openapi-schema"
+                    ],
+                    "observation_selectors": [
+                        "docs.response.status",
+                        "http.status",
+                        "openapi.document",
+                        "openapi.paths",
+                    ],
+                },
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/tutorial-additional-responses-file-response-review.yaml",
+                    "case_ids": ["fastapi.tutorial-additional-responses.file-response"],
+                    "observation_selectors": [
+                        "http.body.bytes",
+                        "http.headers.ordered",
+                        "http.status",
+                    ],
+                },
+            ],
+        },
+        "docs_src/additional_responses/tutorial003_py310.py": {
+            "rationale": (
+                "The pinned example declares a Pydantic model for its 404 response and returns "
+                "JSONResponse on the missing-item branch. Independent inputs sample an analogous "
+                "not-found response plus selected OpenAPI response-schema pointers with different "
+                "models, route names, and values. They do not claim the literal example payload "
+                "or full generated schema."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/additional_responses/tutorial003_py310.py",
+                    "start_line": 18,
+                    "end_line": 37,
+                    "role": "documented modeled 404 and 200 response declarations with runtime branches",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/additional-responses.yaml",
+                    "case_ids": ["fastapi.docs.additional-responses.not-found"],
+                    "observation_selectors": [
+                        "http.body.bytes",
+                        "http.headers.ordered",
+                        "http.status",
+                    ],
+                },
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/additional-response-openapi-wave.yaml",
+                    "case_ids": [
+                        "fastapi.additional-response-openapi-wave.modeled-not-found.test-openapi-schema"
+                    ],
+                    "observation_selectors": [
+                        "docs.response.status",
+                        "http.status",
+                        "openapi.document",
+                        "openapi.paths",
+                    ],
+                },
+            ],
+        },
+        "docs_src/additional_responses/tutorial004_py310.py": {
+            "rationale": (
+                "The pinned example combines 404, 302, and 403 response descriptions with an "
+                "image/png 200 response, and selects FileResponse for an image query. Independent "
+                "inputs sample the FileResponse path and selected OpenAPI status/content entries "
+                "using separate routes and descriptions. They do not claim the tutorial's redirect "
+                "runtime branch or complete schema."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/additional_responses/tutorial004_py310.py",
+                    "start_line": 11,
+                    "end_line": 30,
+                    "role": "documented shared status responses, image content, and FileResponse branch",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/additional-response-openapi-wave.yaml",
+                    "case_ids": [
+                        "fastapi.additional-response-openapi-wave.multiple-statuses.test-openapi-schema"
+                    ],
+                    "observation_selectors": [
+                        "docs.response.status",
+                        "http.status",
+                        "openapi.document",
+                        "openapi.paths",
+                    ],
+                },
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/tutorial-additional-responses-file-response-review.yaml",
+                    "case_ids": ["fastapi.tutorial-additional-responses.file-response"],
+                    "observation_selectors": [
+                        "http.body.bytes",
+                        "http.headers.ordered",
+                        "http.status",
+                    ],
+                },
+            ],
+        },
+    }
+)
+
 # Function-scoped yield dependency examples: direct response input plus a
 # separate, documented cleanup-order probe. The tutorial test only asserts the
 # response value; neither mapping claims that it captures stdout or print order.
