@@ -1,7 +1,5 @@
 """Independent HTTP authentication and security dependency workload."""
 
-from __future__ import annotations
-
 from typing import Annotated
 
 from fastapi import Depends, FastAPI, HTTPException, Security
@@ -74,13 +72,13 @@ def create_app() -> FastAPI:
     async def read_basic(
         credentials: Annotated[HTTPBasicCredentials, Depends(basic)],
     ) -> dict[str, str]:
-        return {"username": credentials.username}
+        return {"username": credentials.username, "password": credentials.password}
 
     @app.get("/security/basic-checked")
     async def check_basic(
         credentials: Annotated[HTTPBasicCredentials, Depends(basic)],
     ) -> dict[str, str]:
-        if credentials.username != "operator" or credentials.password != "correct-horse":
+        if credentials.username != "stanleyjobson" or credentials.password != "swordfish":
             raise HTTPException(
                 status_code=401,
                 detail="Credentials rejected",

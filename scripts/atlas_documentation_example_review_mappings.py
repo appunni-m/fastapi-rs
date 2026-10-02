@@ -2694,6 +2694,317 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
     }
 )
 
+# Numeric path-parameter tutorials: every included default-style and Annotated
+# source has its own independently routed input case. The route signatures keep
+# the respective declaration form, and cases observe only the documented HTTP
+# binding/validation/schema effects for that exact source.
+DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
+    {
+        "docs_src/path_params_numeric_validations/tutorial001_py310.py": {
+            "rationale": (
+                "This independent route preserves the example's default-style Path declaration, "
+                "optional aliased query parameter, and integer path type. Its distinct case sends "
+                "requests with the alias absent and present, rejects a non-integer path, and reads "
+                "the generated OpenAPI response as raw HTTP bytes. It does not claim the source "
+                "route or response literals."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/path_params_numeric_validations/tutorial001_py310.py",
+                    "start_line": 1,
+                    "end_line": 14,
+                    "role": "default-style Path metadata and optional aliased Query example",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/docs-request-schema.yaml",
+                    "case_ids": [
+                        "fastapi.docs.request-schema.path-params-numeric-validations.tutorial001-default"
+                    ],
+                    "observation_selectors": ["http.body.bytes", "http.status"],
+                }
+            ],
+        },
+        "docs_src/path_params_numeric_validations/tutorial001_an_py310.py": {
+            "rationale": (
+                "This independent route preserves the example's Annotated Path declaration, "
+                "optional aliased Query parameter, and integer path type. Its distinct case sends "
+                "requests with the alias absent and present, rejects a non-integer path, and reads "
+                "the generated OpenAPI response as raw HTTP bytes. It does not claim the source "
+                "route or response literals."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/path_params_numeric_validations/tutorial001_an_py310.py",
+                    "start_line": 1,
+                    "end_line": 16,
+                    "role": "Annotated Path metadata and optional aliased Query example",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/docs-request-schema.yaml",
+                    "case_ids": [
+                        "fastapi.docs.request-schema.path-params-numeric-validations.tutorial001-annotated"
+                    ],
+                    "observation_selectors": ["http.body.bytes", "http.status"],
+                }
+            ],
+        },
+        "docs_src/path_params_numeric_validations/tutorial002_py310.py": {
+            "rationale": (
+                "This independent route preserves the example's required query-first signature and "
+                "default-style Path declaration. Its distinct case sends the required query, omits "
+                "it to exercise requiredness, rejects a non-integer path, and reads the generated "
+                "OpenAPI response as raw HTTP bytes. It does not claim the source route or literals."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/path_params_numeric_validations/tutorial002_py310.py",
+                    "start_line": 1,
+                    "end_line": 11,
+                    "role": "required query before default-style Path declaration",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/docs-request-schema.yaml",
+                    "case_ids": [
+                        "fastapi.docs.request-schema.path-params-numeric-validations.tutorial002-default"
+                    ],
+                    "observation_selectors": ["http.body.bytes", "http.status"],
+                }
+            ],
+        },
+        "docs_src/path_params_numeric_validations/tutorial002_an_py310.py": {
+            "rationale": (
+                "This independent route preserves the example's Annotated Path declaration with "
+                "the required query first. Its distinct case sends the required query, omits it to "
+                "exercise requiredness, rejects a non-integer path, and reads the generated OpenAPI "
+                "response as raw HTTP bytes. It does not claim source literals."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/path_params_numeric_validations/tutorial002_an_py310.py",
+                    "start_line": 1,
+                    "end_line": 15,
+                    "role": "required query before Annotated Path declaration",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/docs-request-schema.yaml",
+                    "case_ids": [
+                        "fastapi.docs.request-schema.path-params-numeric-validations.tutorial002-annotated"
+                    ],
+                    "observation_selectors": ["http.body.bytes", "http.status"],
+                }
+            ],
+        },
+        "docs_src/path_params_numeric_validations/tutorial003_py310.py": {
+            "rationale": (
+                "This independent route preserves the example's keyword-only marker, placing the "
+                "Path-declared item identifier before a required query. Its distinct case sends a "
+                "valid request, omits the required query, rejects a non-integer path, and reads the "
+                "generated OpenAPI response as raw HTTP bytes. It does not claim source literals."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/path_params_numeric_validations/tutorial003_py310.py",
+                    "start_line": 1,
+                    "end_line": 11,
+                    "role": "keyword-only parameter ordering with default-style Path",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/docs-request-schema.yaml",
+                    "case_ids": [
+                        "fastapi.docs.request-schema.path-params-numeric-validations.tutorial003-default"
+                    ],
+                    "observation_selectors": ["http.body.bytes", "http.status"],
+                }
+            ],
+        },
+        "docs_src/path_params_numeric_validations/tutorial003_an_py310.py": {
+            "rationale": (
+                "This independent route preserves the example's Annotated Path declaration before "
+                "a required query without a keyword-only marker. Its distinct case sends a valid "
+                "request, omits the required query, rejects a non-integer path, and reads the "
+                "generated OpenAPI response as raw HTTP bytes. It does not claim source literals."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/path_params_numeric_validations/tutorial003_an_py310.py",
+                    "start_line": 1,
+                    "end_line": 15,
+                    "role": "Annotated Path declaration before required query without `*`",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/docs-request-schema.yaml",
+                    "case_ids": [
+                        "fastapi.docs.request-schema.path-params-numeric-validations.tutorial003-annotated"
+                    ],
+                    "observation_selectors": ["http.body.bytes", "http.status"],
+                }
+            ],
+        },
+        "docs_src/path_params_numeric_validations/tutorial004_py310.py": {
+            "rationale": (
+                "This independent route preserves the default-style Path declaration with the "
+                "inclusive ge=1 bound and a required query. Its distinct case accepts item_id 1, "
+                "rejects 0, and reads the generated OpenAPI response as raw HTTP bytes. It does not "
+                "claim source route literals."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/path_params_numeric_validations/tutorial004_py310.py",
+                    "start_line": 1,
+                    "end_line": 13,
+                    "role": "default-style integer Path with the inclusive lower bound",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/docs-request-schema.yaml",
+                    "case_ids": [
+                        "fastapi.docs.request-schema.path-params-numeric-validations.tutorial004-default"
+                    ],
+                    "observation_selectors": ["http.body.bytes", "http.status"],
+                }
+            ],
+        },
+        "docs_src/path_params_numeric_validations/tutorial004_an_py310.py": {
+            "rationale": (
+                "This independent route preserves the Annotated Path declaration with the "
+                "inclusive ge=1 bound and a required query. Its distinct case accepts item_id 1, "
+                "rejects 0, and reads the generated OpenAPI response as raw HTTP bytes. It does not "
+                "claim source route literals."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/path_params_numeric_validations/tutorial004_an_py310.py",
+                    "start_line": 1,
+                    "end_line": 15,
+                    "role": "Annotated integer Path with the inclusive lower bound",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/docs-request-schema.yaml",
+                    "case_ids": [
+                        "fastapi.docs.request-schema.path-params-numeric-validations.tutorial004-annotated"
+                    ],
+                    "observation_selectors": ["http.body.bytes", "http.status"],
+                }
+            ],
+        },
+        "docs_src/path_params_numeric_validations/tutorial005_py310.py": {
+            "rationale": (
+                "This independent route preserves the default-style Path declaration with gt=0 and "
+                "le=1000 plus a required query. Its distinct case rejects 0 and 1001, accepts the "
+                "upper endpoint 1000, and reads the generated OpenAPI response as raw HTTP bytes. "
+                "It does not claim source route literals."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/path_params_numeric_validations/tutorial005_py310.py",
+                    "start_line": 1,
+                    "end_line": 15,
+                    "role": "default-style integer Path with exclusive and inclusive bounds",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/docs-request-schema.yaml",
+                    "case_ids": [
+                        "fastapi.docs.request-schema.path-params-numeric-validations.tutorial005-default"
+                    ],
+                    "observation_selectors": ["http.body.bytes", "http.status"],
+                }
+            ],
+        },
+        "docs_src/path_params_numeric_validations/tutorial005_an_py310.py": {
+            "rationale": (
+                "This independent route preserves the Annotated Path declaration with gt=0 and "
+                "le=1000 plus a required query. Its distinct case rejects 0 and 1001, accepts the "
+                "upper endpoint 1000, and reads the generated OpenAPI response as raw HTTP bytes. "
+                "It does not claim source route literals."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/path_params_numeric_validations/tutorial005_an_py310.py",
+                    "start_line": 1,
+                    "end_line": 16,
+                    "role": "Annotated integer Path with exclusive and inclusive bounds",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/docs-request-schema.yaml",
+                    "case_ids": [
+                        "fastapi.docs.request-schema.path-params-numeric-validations.tutorial005-annotated"
+                    ],
+                    "observation_selectors": ["http.body.bytes", "http.status"],
+                }
+            ],
+        },
+        "docs_src/path_params_numeric_validations/tutorial006_py310.py": {
+            "rationale": (
+                "This independent route preserves the default-style Path ge=0/le=1000 bounds and "
+                "required float Query gt=0/lt=10.5 constraints. Its distinct case accepts numeric "
+                "path endpoints and in-range float values and rejects each exclusive/out-of-range "
+                "boundary; it also reads raw OpenAPI response bytes. It does not claim source literals."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/path_params_numeric_validations/tutorial006_py310.py",
+                    "start_line": 1,
+                    "end_line": 18,
+                    "role": "default-style bounded integer Path and bounded float Query example",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/docs-request-schema.yaml",
+                    "case_ids": [
+                        "fastapi.docs.request-schema.path-params-numeric-validations.tutorial006-default"
+                    ],
+                    "observation_selectors": ["http.body.bytes", "http.status"],
+                }
+            ],
+        },
+        "docs_src/path_params_numeric_validations/tutorial006_an_py310.py": {
+            "rationale": (
+                "This independent route preserves the Annotated Path ge=0/le=1000 bounds and "
+                "required Annotated float Query gt=0/lt=10.5 constraints. Its distinct case accepts "
+                "numeric path endpoints and in-range float values and rejects each exclusive/out-of-range "
+                "boundary; it also reads raw OpenAPI response bytes. It does not claim source literals."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/path_params_numeric_validations/tutorial006_an_py310.py",
+                    "start_line": 1,
+                    "end_line": 20,
+                    "role": "Annotated bounded integer Path and bounded float Query example",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/docs-request-schema.yaml",
+                    "case_ids": [
+                        "fastapi.docs.request-schema.path-params-numeric-validations.tutorial006-annotated"
+                    ],
+                    "observation_selectors": ["http.body.bytes", "http.status"],
+                }
+            ],
+        },
+    }
+)
+
 # Additional-response tutorials: map each exact documented example source to
 # independent runtime and/or OpenAPI observations already present in the input
 # backlog. These links claim only the named behaviors, not the full examples.

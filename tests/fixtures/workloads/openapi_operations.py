@@ -160,21 +160,27 @@ def create_app() -> FastAPI:
     async def route_extension() -> dict[str, str]:
         return {"state": "ready"}
 
-    @app.get("/hidden/cookie")
-    async def hidden_cookie(value: Annotated[str | None, Cookie(include_in_schema=False)] = None):
-        return {"value": value or ""}
+    @app.get("/hidden_cookie")
+    async def hidden_cookie(
+        hidden_cookie: str | None = Cookie(default=None, include_in_schema=False),
+    ):
+        return {"hidden_cookie": hidden_cookie}
 
-    @app.get("/hidden/header")
-    async def hidden_header(value: Annotated[str | None, Header(include_in_schema=False)] = None):
-        return {"value": value or ""}
+    @app.get("/hidden_header")
+    async def hidden_header(
+        hidden_header: str | None = Header(default=None, include_in_schema=False),
+    ):
+        return {"hidden_header": hidden_header}
 
-    @app.get("/hidden/path/{value}")
-    async def hidden_path(value: Annotated[str, Path(include_in_schema=False)]):
-        return {"value": value}
+    @app.get("/hidden_path/{hidden_path}")
+    async def hidden_path(hidden_path: str = Path(include_in_schema=False)):
+        return {"hidden_path": hidden_path}
 
-    @app.get("/hidden/query")
-    async def hidden_query(value: Annotated[str | None, Query(include_in_schema=False)] = None):
-        return {"value": value or ""}
+    @app.get("/hidden_query")
+    async def hidden_query(
+        hidden_query: str | None = Query(default=None, include_in_schema=False),
+    ):
+        return {"hidden_query": hidden_query}
 
     @app.post("/products")
     async def create_product(

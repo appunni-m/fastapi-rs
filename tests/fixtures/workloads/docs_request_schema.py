@@ -88,6 +88,127 @@ def create_app() -> FastAPI:
     async def read_number(value: Annotated[int, Path(gt=0, le=300)]) -> dict[str, int]:
         return {"value": value}
 
+    @app.get("/examples/numeric/tutorial001-default/{item_id}")
+    async def read_numeric_tutorial001_default(
+        item_id: int = Path(title="The ID of the item to get"),
+        q: str | None = Query(default=None, alias="item-query"),
+    ) -> dict[str, int | str]:
+        result: dict[str, int | str] = {"item_id": item_id}
+        if q:
+            result["q"] = q
+        return result
+
+    @app.get("/examples/numeric/tutorial001-annotated/{item_id}")
+    async def read_numeric_tutorial001_annotated(
+        item_id: Annotated[int, Path(title="The ID of the item to get")],
+        q: Annotated[str | None, Query(alias="item-query")] = None,
+    ) -> dict[str, int | str]:
+        result: dict[str, int | str] = {"item_id": item_id}
+        if q:
+            result["q"] = q
+        return result
+
+    @app.get("/examples/numeric/tutorial002-default/{item_id}")
+    async def read_numeric_tutorial002_default(
+        q: str, item_id: int = Path(title="The ID of the item to get")
+    ) -> dict[str, int | str]:
+        result: dict[str, int | str] = {"item_id": item_id}
+        if q:
+            result["q"] = q
+        return result
+
+    @app.get("/examples/numeric/tutorial002-annotated/{item_id}")
+    async def read_numeric_tutorial002_annotated(
+        q: str, item_id: Annotated[int, Path(title="The ID of the item to get")]
+    ) -> dict[str, int | str]:
+        result: dict[str, int | str] = {"item_id": item_id}
+        if q:
+            result["q"] = q
+        return result
+
+    @app.get("/examples/numeric/tutorial003-default/{item_id}")
+    async def read_numeric_tutorial003_default(
+        *, item_id: int = Path(title="The ID of the item to get"), q: str
+    ) -> dict[str, int | str]:
+        result: dict[str, int | str] = {"item_id": item_id}
+        if q:
+            result["q"] = q
+        return result
+
+    @app.get("/examples/numeric/tutorial003-annotated/{item_id}")
+    async def read_numeric_tutorial003_annotated(
+        item_id: Annotated[int, Path(title="The ID of the item to get")], q: str
+    ) -> dict[str, int | str]:
+        result: dict[str, int | str] = {"item_id": item_id}
+        if q:
+            result["q"] = q
+        return result
+
+    @app.get("/examples/numeric/tutorial004-default/{item_id}")
+    async def read_numeric_tutorial004_default(
+        *, item_id: int = Path(title="The ID of the item to get", ge=1), q: str
+    ) -> dict[str, int | str]:
+        result: dict[str, int | str] = {"item_id": item_id}
+        if q:
+            result["q"] = q
+        return result
+
+    @app.get("/examples/numeric/tutorial004-annotated/{item_id}")
+    async def read_numeric_tutorial004_annotated(
+        item_id: Annotated[int, Path(title="The ID of the item to get", ge=1)], q: str
+    ) -> dict[str, int | str]:
+        result: dict[str, int | str] = {"item_id": item_id}
+        if q:
+            result["q"] = q
+        return result
+
+    @app.get("/examples/numeric/tutorial005-default/{item_id}")
+    async def read_numeric_tutorial005_default(
+        *, item_id: int = Path(title="The ID of the item to get", gt=0, le=1000), q: str
+    ) -> dict[str, int | str]:
+        result: dict[str, int | str] = {"item_id": item_id}
+        if q:
+            result["q"] = q
+        return result
+
+    @app.get("/examples/numeric/tutorial005-annotated/{item_id}")
+    async def read_numeric_tutorial005_annotated(
+        item_id: Annotated[int, Path(title="The ID of the item to get", gt=0, le=1000)],
+        q: str,
+    ) -> dict[str, int | str]:
+        result: dict[str, int | str] = {"item_id": item_id}
+        if q:
+            result["q"] = q
+        return result
+
+    @app.get("/examples/numeric/tutorial006-default/{item_id}")
+    async def read_numeric_tutorial006_default(
+        *,
+        item_id: int = Path(title="The ID of the item to get", ge=0, le=1000),
+        q: str,
+        size: float = Query(gt=0, lt=10.5),
+    ) -> dict[str, int | str | float]:
+        result: dict[str, int | str | float] = {"item_id": item_id}
+        if q:
+            result["q"] = q
+        if size:
+            result["size"] = size
+        return result
+
+    @app.get("/examples/numeric/tutorial006-annotated/{item_id}")
+    async def read_numeric_tutorial006_annotated(
+        *,
+        item_id: Annotated[int, Path(title="The ID of the item to get", ge=0, le=1000)],
+        q: str,
+        size: Annotated[float, Query(gt=0, lt=10.5)],
+    ) -> dict[str, int | str | float]:
+        result: dict[str, int | str | float] = {"item_id": item_id}
+        if q:
+            result["q"] = q
+        if size:
+            result["size"] = size
+        return result
+
     @app.get("/lookup")
     async def lookup(
         term: Annotated[str, Query(min_length=3, max_length=18, pattern="^[a-z-]+$")],

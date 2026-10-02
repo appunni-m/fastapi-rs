@@ -5,13 +5,21 @@ from __future__ import annotations
 from typing import Annotated
 
 from fastapi import FastAPI, Form
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
-class Credentials(BaseModel):
+class FormModel(BaseModel):
     username: str
-    password: str
-    remember: bool = False
+    lastname: str
+    age: int | None = None
+    tags: list[str] = ["foo", "bar"]
+    alias_with: str = Field(alias="with", default="nothing")
+
+
+class FormModelExtraAllow(BaseModel):
+    param: str
+
+    model_config = ConfigDict(extra="allow")
 
 
 class PersonAccount(BaseModel):
@@ -54,11 +62,15 @@ def create_app() -> FastAPI:
     ) -> dict[str, tuple[str, ...]]:
         return {"values": values}
 
-    @app.post("/credentials")
-    async def submit_credentials(
-        credentials: Annotated[Credentials, Form()],
-    ) -> Credentials:
-        return credentials
+    @app.post("/form/")
+    def submit_form(user: Annotated[FormModel, Form()]) -> FormModel:
+        return user
+
+    @app.post("/form-extra-allow/")
+    def submit_form_extra_allow(
+        params: Annotated[FormModelExtraAllow, Form()],
+    ) -> FormModelExtraAllow:
+        return params
 
     @app.post("/note")
     async def submit_note(note: Annotated[str, Form()]) -> dict[str, str]:

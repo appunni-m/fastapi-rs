@@ -83,6 +83,7 @@ cases:
   - path: tests/test_forms_from_non_typing_sequences.py
     kind: upstream_test
 - case_id: fastapi.request-forms.single-form-model.test-send-all-data
+  # Pinned FastAPI 0.141.1: tests/test_forms_single_model.py::test_send_all_data (37-55).
   actions:
   - action_id: dispatch
     kind: http_request
@@ -94,7 +95,7 @@ cases:
       http_version: '1.1'
       method: POST
       scheme: http
-      path: /credentials
+      path: /form/
       query_string: ''
       root_path: ''
       headers:
@@ -110,7 +111,205 @@ cases:
       - 80
     receive_events:
     - type: http.request
-      body: username=river&password=secret&remember=true
+      body: username=Rick&lastname=Sanchez&age=70&tags=plumbus&tags=citadel&with=something
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_forms_single_model.py
+    kind: upstream_test
+- case_id: fastapi.request-forms.single-form-model.test-defaults
+  # Pinned FastAPI 0.141.1: tests/test_forms_single_model.py::test_defaults (58-67).
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /form/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/x-www-form-urlencoded
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: username=Rick&lastname=Sanchez
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_forms_single_model.py
+    kind: upstream_test
+- case_id: fastapi.request-forms.single-form-model.test-invalid-data
+  # Pinned FastAPI 0.141.1: tests/test_forms_single_model.py::test_invalid_data (70-90).
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /form/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/x-www-form-urlencoded
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: username=Rick&lastname=Sanchez&age=seventy&tags=plumbus&tags=citadel
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_forms_single_model.py
+    kind: upstream_test
+- case_id: fastapi.request-forms.single-form-model.test-no-data
+  # Pinned FastAPI 0.141.1: tests/test_forms_single_model.py::test_no_data (93-112).
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /form/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_forms_single_model.py
+    kind: upstream_test
+- case_id: fastapi.request-forms.single-form-model.test-extra-param-single
+  # Pinned FastAPI 0.141.1: tests/test_forms_single_model.py::test_extra_param_single (114-127).
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /form-extra-allow/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/x-www-form-urlencoded
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: param=123&extra_param=456
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_forms_single_model.py
+    kind: upstream_test
+- case_id: fastapi.request-forms.single-form-model.test-extra-param-list
+  # Pinned FastAPI 0.141.1: tests/test_forms_single_model.py::test_extra_param_list (129-141).
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /form-extra-allow/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/x-www-form-urlencoded
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: param=123&extra_params=456&extra_params=789
       more_body: false
     observations:
     - kind: http_response

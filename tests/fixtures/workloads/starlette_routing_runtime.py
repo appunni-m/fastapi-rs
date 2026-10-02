@@ -33,20 +33,6 @@ def create_app() -> FastAPI:
 
     app.include_router(partial_router, prefix="/partial")
 
-    redirect_router = APIRouter()
-    exact_router = APIRouter()
-
-    @redirect_router.get("/items/")
-    def read_items_with_slash():
-        return {"path": "slash"}
-
-    @exact_router.get("/items")
-    def read_items_without_slash():
-        return {"path": "exact"}
-
-    app.include_router(redirect_router, prefix="/slash")
-    app.include_router(exact_router, prefix="/slash")
-
     def mounted_endpoint(request):
         url_path = app.url_path_for("mounted:read_item", item_id="abc")
         return PlainTextResponse(f"mounted:{request.path_params['item_id']}:{url_path}")

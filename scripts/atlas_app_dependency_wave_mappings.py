@@ -1176,7 +1176,7 @@ APP_DEPENDENCY_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
         },
     ),
     "tests/test_router_include_context.py": _module(
-        "Two public inclusion/context workflows are mapped. Direct private helpers, request-parameter/OpenAPI assertions, and generic Starlette mount/host/match behavior are excluded below.",
+        "Three public inclusion/context workflows are mapped. Direct private helpers, request-parameter/OpenAPI assertions, and generic Starlette mount/host/match behavior remain excluded below.",
         {
             "test_router_include_context_matches_flattened_include_metadata": _review(
                 "tests/test_router_include_context.py",
@@ -1209,6 +1209,35 @@ APP_DEPENDENCY_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                 ],
                 "Partial: the input independently builds one included route and exposes selected context in a response; the rest of the route-context test matrix remains open.",
                 (_ROUTER_INCLUDE,),
+            ),
+            "test_included_slash_redirect_does_not_block_later_exact_match": _review(
+                "tests/test_router_include_context.py",
+                "test_included_slash_redirect_does_not_block_later_exact_match",
+                ["app-routing"],
+                ["http.status", "http.body.bytes"],
+                "Two included FastAPI routers register slash-terminated and exact routes at one prefix; the exact route handles a request that could otherwise redirect.",
+                [
+                    _case_link(
+                        "tests/fixtures/input-recipes/parity/router-included-slash-redirect-upstream.yaml",
+                        "fastapi.test.test-router-include-context.test-included-slash-redirect-does-not-block-later-exact-match",
+                        _HTTP_BODY_STATUS,
+                    )
+                ],
+                "Partial: one direct ASGI GET captures the included-router ordering outcome and body. It does not cover other methods, redirect alternatives, or the broader Starlette 1.6.0 routing contract.",
+                (
+                    _source(
+                        "fastapi/routing.py",
+                        1731,
+                        1762,
+                        "FastAPI checks included-router candidates in order and retains only the first partial match unless a full match is found",
+                    ),
+                    _source(
+                        "fastapi/routing.py",
+                        2719,
+                        2759,
+                        "FastAPI APIRouter dispatch selects a full route before probing a slash-adjusted redirect path",
+                    ),
+                ),
             ),
         },
     ),
@@ -1668,7 +1697,6 @@ APP_DEPENDENCY_TEST_FUNCTION_EXCLUSIONS: dict[str, dict[str, dict[str, object]]]
             "test_effective_body_fields_from_app_router_include_and_route_match_openapi": "Combines request-body field composition with OpenAPI; assigned to request-validation/OpenAPI waves.",
             "test_later_full_match_wins_over_earlier_included_partial_match": "Generic partial/full route matching is Starlette 1.6.0 routing behavior.",
             "test_included_partial_match_returns_405_when_no_later_full_match_exists": "Generic method partial-match/405 behavior is Starlette 1.6.0 routing behavior.",
-            "test_included_slash_redirect_does_not_block_later_exact_match": "Generic slash-redirect route matching is Starlette 1.6.0 routing behavior.",
             "test_failed_included_match_does_not_leak_effective_context_to_later_route": "Combines generic route matching with internal context state; not represented by the selected public workflow.",
             "test_included_starlette_mount_keeps_prefix_runtime_and_url_path_for": "Generic Starlette Mount and URLPath behavior belongs to Starlette-RS.",
             "test_included_starlette_host_keeps_prefix_runtime_and_url_path_for": "Generic Starlette Host and URLPath behavior belongs to Starlette-RS.",

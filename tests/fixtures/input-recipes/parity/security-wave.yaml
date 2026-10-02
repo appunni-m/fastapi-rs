@@ -297,7 +297,7 @@ cases:
       - - host
         - testserver
       - - authorization
-        - Basic bW9yZ2FuOnBhc3N3b3Jk
+        - Basic am9objpzZWNyZXQ=
       client:
       - 127.0.0.1
       - 123
@@ -337,7 +337,7 @@ cases:
       - - host
         - testserver
       - - authorization
-        - Basic b3BlcmF0b3I6d3Jvbmc=
+        - Basic c3RhbmxleWpvYnNvbjp3cm9uZ3Bhc3N3b3Jk
       client:
       - 127.0.0.1
       - 123
@@ -356,6 +356,254 @@ cases:
       - body
       comparison: exact
   source_evidence:
+  - path: tests/test_tutorial/test_security/test_tutorial007.py
+    kind: upstream_test
+- case_id: fastapi.security-wave.http-basic-tutorials.missing-credentials
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /security/basic
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_security/test_tutorial006.py
+    kind: upstream_test
+  - path: tests/test_tutorial/test_security/test_tutorial007.py
+    kind: upstream_test
+- case_id: fastapi.security-wave.http-basic-tutorials.malformed-credentials
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /security/basic
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Basic notabase64token
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_security/test_tutorial006.py
+    kind: upstream_test
+  - path: tests/test_tutorial/test_security/test_tutorial007.py
+    kind: upstream_test
+- case_id: fastapi.security-wave.http-basic-tutorials.non-basic-credentials
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /security/basic
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Basic am9obnNlY3JldA==
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_security/test_tutorial006.py
+    kind: upstream_test
+  - path: tests/test_tutorial/test_security/test_tutorial007.py
+    kind: upstream_test
+- case_id: fastapi.security-wave.http-basic-tutorial-007.valid-credentials
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /security/basic-checked
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Basic c3RhbmxleWpvYnNvbjpzd29yZGZpc2g=
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_security/test_tutorial007.py
+    kind: upstream_test
+- case_id: fastapi.security-wave.http-basic-tutorial-007.invalid-username
+  actions:
+  - action_id: dispatch
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /security/basic-checked
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Basic YWxpY2U6c3dvcmRmaXNo
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_security/test_tutorial007.py
+    kind: upstream_test
+- case_id: fastapi.security-wave.http-basic-tutorials.openapi
+  actions:
+  - action_id: inspect-basic-security-schema
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /components/securitySchemes/HTTPBasic
+      - /paths/~1security~1basic/get/security
+      - /paths/~1security~1basic-checked/get/security
+      comparison: exact
+  source_evidence:
+  - path: tests/test_tutorial/test_security/test_tutorial006.py
+    kind: upstream_test
   - path: tests/test_tutorial/test_security/test_tutorial007.py
     kind: upstream_test
 - case_id: fastapi.security-wave.authentication-error-status.test-get-me-no-credentials
