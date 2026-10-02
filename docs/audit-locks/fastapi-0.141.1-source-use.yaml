@@ -67,10 +67,46 @@ source_backed:
     evidence:
       - https://github.com/fastapilabs/fastapi-cloud-cli/blob/fae7dee8a48ec5aa4a69999d0b3a88f1d8a8c608/fastapi_cloud_cli/commands/deploy.py#L71-L90
       - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L59-L66
+  ghp-import:
+    purpose: >-
+      FastAPI's docs group selects mkdocstrings[python], whose locked MkDocs
+      dependency chain brings ghp-import. This package provides the helper for
+      importing a built documentation directory into a gh-pages branch and uses
+      python-dateutil for local-time commit offsets. FastAPI's pinned docs
+      workflow builds with Zensical and deploys the resulting artifact through
+      Cloudflare Pages; no direct ghp-import invocation is evidenced. This is
+      documentation-toolchain closure, not FastAPI product runtime.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L131-L145
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/uv.lock#L2235-L2253
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/uv.lock#L2287-L2318
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/uv.lock#L1361-L1367
+      - https://github.com/c-w/ghp-import/blob/168d3d5df282d16c9059d08faedc5a323254d951/README.md#L17-L31
+      - https://github.com/c-w/ghp-import/blob/168d3d5df282d16c9059d08faedc5a323254d951/ghp_import.py#L8-L9
+      - https://github.com/c-w/ghp-import/blob/168d3d5df282d16c9059d08faedc5a323254d951/ghp_import.py#L122-L126
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/docs.py#L284-L299
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/.github/workflows/deploy-docs.yml#L59-L70
   griffe-typingdoc:
     purpose: FastAPI's documentation configuration enables the Griffe typing documentation extension for API reference generation.
     evidence:
       - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/docs/en/mkdocs.yml
+  griffe-warnings-deprecated:
+    purpose: >-
+      FastAPI declares this package in its docs group. It provides a Griffe PEP
+      702 extension that recognizes warnings.deprecated and
+      typing_extensions.deprecated decorators and adds deprecation admonitions
+      to documented classes and functions. FastAPI's checked-in mkdocstrings
+      configuration names griffe_typingdoc but not this extension, so its
+      activation in the current FastAPI docs build is not established. This is
+      a docs-tooling dependency, not product runtime behavior.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L131-L145
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/uv.lock#L1530-L1536
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/docs/en/mkdocs.yml#L54-L61
+      - https://github.com/mkdocstrings/griffe-warnings-deprecated/blob/5eefa86a463d0b10d579795d022d90eeebffdc57/README.md#L49-L61
+      - https://github.com/mkdocstrings/griffe-warnings-deprecated/blob/5eefa86a463d0b10d579795d022d90eeebffdc57/src/griffe_warnings_deprecated/__init__.py#L1-L9
+      - https://github.com/mkdocstrings/griffe-warnings-deprecated/blob/5eefa86a463d0b10d579795d022d90eeebffdc57/src/griffe_warnings_deprecated/_internal/extension.py#L11-L25
+      - https://github.com/mkdocstrings/griffe-warnings-deprecated/blob/5eefa86a463d0b10d579795d022d90eeebffdc57/src/griffe_warnings_deprecated/_internal/extension.py#L61-L75
   h11:
     purpose: Uvicorn's HTTP/1.1 protocol handler constructs an h11 server connection and uses it to parse and frame requests and responses for FastAPI applications.
     evidence:
@@ -91,6 +127,19 @@ source_backed:
     evidence:
       - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml
       - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/.github/workflows/test.yml
+  jieba:
+    purpose: >-
+      FastAPI explicitly includes jieba in its docs dependency group, and the
+      pinned package supplies Chinese word segmentation. FastAPI's docs tooling
+      includes zh and zh-hant locales, but the pinned FastAPI source and docs
+      configuration do not identify a jieba call site or consumer. The lock
+      establishes a docs-toolchain role; the package's exact use in the current
+      docs build remains unresolved. It is not a FastAPI runtime dependency.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L131-L145
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/uv.lock#L1770-L1774
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/docs.py#L21-L34
+      - https://github.com/fxsjy/jieba/blob/1e20c89b66f56c9301b0feed211733ffaa1bd72a/setup.py#L7-L10
   markdown-include-variants:
     purpose: FastAPI's docs configuration enables Markdown include variants for documentation builds.
     evidence:
@@ -137,6 +186,24 @@ source_backed:
     evidence:
       - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/docs/en/docs/advanced/settings.md#L199-L203
       - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/docs/en/docs/advanced/settings.md#L216-L228
+  python-dateutil:
+    purpose: >-
+      This is a transitive docs-and-test dependency, not FastAPI product runtime.
+      The locked MkDocs publishing helper ghp-import uses dateutil.tz for local
+      commit-time offsets; locked Strawberry GraphQL uses dateutil.parser for
+      GraphQL scalar parsing and is included in FastAPI's tutorial-test group.
+      FastAPI's own pinned source does not import dateutil.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L131-L145
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L160-L175
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/uv.lock#L1361-L1367
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/uv.lock#L3336-L3343
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/uv.lock#L4159-L4168
+      - https://github.com/c-w/ghp-import/blob/168d3d5df282d16c9059d08faedc5a323254d951/ghp_import.py#L8-L9
+      - https://github.com/c-w/ghp-import/blob/168d3d5df282d16c9059d08faedc5a323254d951/ghp_import.py#L122-L126
+      - https://github.com/strawberry-graphql/strawberry/blob/8ec0d496afb20a89dc85b07fcd31e66cb30bdae7/strawberry/schema/types/base_scalars.py#L7-L8
+      - https://github.com/strawberry-graphql/strawberry/blob/8ec0d496afb20a89dc85b07fcd31e66cb30bdae7/strawberry/schema/types/base_scalars.py#L45-L53
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/docs_src/graphql_/tutorial001_py310.py#L1-L3
   pyyaml:
     purpose: FastAPI docs and scripts parse YAML, and the all extra includes the Starlette schema-related feature; it is not required by the ordinary request path.
     evidence:
@@ -609,6 +676,21 @@ source_backed:
     purpose: FastAPI's SQL tutorial apps use SQLModel for typed tables, sessions, and queries.
     evidence:
       - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/docs_src/sql_databases/tutorial001_py310.py
+  six:
+    purpose: >-
+      Six is the declared compatibility-helper dependency of python-dateutil,
+      which is selected transitively by FastAPI's docs publishing and GraphQL
+      tutorial-test toolchains. The pinned dateutil timezone and parser modules
+      use six for Python-version flags, text and integer types, and compatibility
+      imports. FastAPI itself has no direct six import; this is docs/test
+      dependency closure, not product runtime.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/uv.lock#L3336-L3342
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/uv.lock#L4013-L4017
+      - https://github.com/dateutil/dateutil/blob/1ae807774053c071acc9e7d3d27778fba0a7773e/setup.cfg#L39-L45
+      - https://github.com/dateutil/dateutil/blob/1ae807774053c071acc9e7d3d27778fba0a7773e/src/dateutil/tz/_common.py#L1-L5
+      - https://github.com/dateutil/dateutil/blob/1ae807774053c071acc9e7d3d27778fba0a7773e/src/dateutil/parser/_parser.py#L40-L45
+      - https://github.com/benjaminp/six/blob/ebd9b3af90247b8858d415a05e96e9ee61e48d07/six.py#L21-L45
   starlette:
     purpose: FastAPI subclasses Starlette and imports its ASGI, routing, request, response, middleware, and WebSocket APIs.
     evidence:

@@ -80,14 +80,14 @@ api_inventory:
 import_binding_classification_review:
   artifact: tests/fixtures/api-import-binding-classification-review.json
   schema: fastapi-starlette-import-binding-review/v1
-  sha256: e2939fd0cdb042d72e88882fb3d7293eca59921e6544f43bf00a9ec28dde41ac
+  sha256: 14266636678a658708d234c4fd0453fedaf5d9280e5e21464f97d49d4dc0c6af
   source_identity:
     package: FastAPI
     version: 0.141.1
     source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
     selected_starlette_profile: 1.6.0
     starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
-    starlette_rs_contract_commit: 530402ab991eb4712970ccee2988bcb6d2f60ace
+    starlette_rs_contract_commit: 0ca02a3b9dc5ae8984b5bd4d0a650a8df0cf9f76
   starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
   counts:
     candidates: 97
@@ -99,27 +99,60 @@ import_binding_classification_review:
   candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
   pinned_starlette_rs_sources:
     metadata_sha256: 90f805ed7d2497833422db870f88d53319dbaaf31a675f89b1ad21fdd4a123d5
-    manifest_sha256: be13dff9aec49a2c3b7ec7b27912c1ff9407e4c9941fd38e3314e29c19e34826
+    manifest_sha256: 05bffdf5b46d5a1a33e1d3979d1cd6400edb222ca6e985dee916def7a3f2f4d3
     api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
     api_review_sha256: 8b25f2e3a46753316446077bfde97b6ac8a342233e2f4e50b12d3d01eafbe099
 
 source_api_classification_review:
   artifact: tests/fixtures/api-source-classification-review.json
   schema: fastapi-rs/source-api-classification-review@1
-  sha256: 14bec8f8b1422ce7225be6cc97e8b0ffd9aa0688299fad65f3f18589796541a7
+  sha256: fd021ef589e363b1b955723a13c93c5c9b0cae2e0bc3f844d55fe1b08704da57
   source_identity:
     package: FastAPI
     version: 0.141.1
     source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
   counts:
-    candidates: 162
+    candidates: 187
     supported: 6
-    private_or_internal: 154
+    private_or_internal: 179
     uncertain: 2
-  candidate_ids_sha256: a8d5f9a23ffdff2c1c8c9712f7482a9d5788bdea82ddb2f618f4e181f927d22c
+  candidate_ids_sha256: 3c298560d9468ed3c96fdf13073ae5d6892da240fd792c415c7fc5ba72b05658
   selection:
     uncertain_imported_modules: [collections.abc, fastapi._compat, typing]
-    uncertain_candidate_id_prefixes: [fastapi.exception_handlers., fastapi.responses.EventSourceResponse, fastapi.responses.FastAPIDeprecationWarning, fastapi.responses.deprecated, fastapi.sse.]
+    # Six dependency import bindings remain uncertain. Five bare imports have null imported_module.
+    # The utils.dataclass selector also matches the unrepresentable utils.dataclasses ID.
+    # IDs: fastapi.dependencies.models.inspect, fastapi.dependencies.models.sys, fastapi.dependencies.utils.dataclass, fastapi.dependencies.utils.dataclasses, fastapi.dependencies.utils.inspect, fastapi.dependencies.utils.sys
+    uncertain_candidate_id_prefixes:
+      - fastapi.dependencies.models.DependencyCacheKey
+      - fastapi.dependencies.models.SecurityBase
+      - fastapi.dependencies.models.dataclass
+      - fastapi.dependencies.models.field
+      - fastapi.dependencies.models.lru_cache
+      - fastapi.dependencies.models.partial
+      - fastapi.dependencies.utils.AsyncExitStack
+      - fastapi.dependencies.utils.BackgroundTasks
+      - fastapi.dependencies.utils.BaseModel
+      - fastapi.dependencies.utils.Dependant
+      - fastapi.dependencies.utils.DependencyCacheKey
+      - fastapi.dependencies.utils.DependencyScopeError
+      - fastapi.dependencies.utils.FieldInfo
+      - fastapi.dependencies.utils.Json
+      - fastapi.dependencies.utils.SecurityScopes
+      - fastapi.dependencies.utils.asynccontextmanager
+      - fastapi.dependencies.utils.contextmanager
+      - fastapi.dependencies.utils.contextmanager_in_threadpool
+      - fastapi.dependencies.utils.copy
+      - fastapi.dependencies.utils.create_model_field
+      - fastapi.dependencies.utils.deepcopy
+      - fastapi.dependencies.utils.get_path_param_names
+      - fastapi.dependencies.utils.is_typealiastype
+      - fastapi.dependencies.utils.logger
+      - fastapi.dependencies.utils.params
+      - fastapi.exception_handlers.
+      - fastapi.responses.EventSourceResponse
+      - fastapi.responses.FastAPIDeprecationWarning
+      - fastapi.responses.deprecated
+      - fastapi.sse.
 
 api_public_candidate_classification_review:
   artifact: tests/fixtures/api-public-candidate-classification-review.json
@@ -187,7 +220,7 @@ classification_atlas:
 starlette_rs:
   owner: ../starlette-rs
   repository: https://github.com/appunni-m/starlette-rs
-  commit: 530402ab991eb4712970ccee2988bcb6d2f60ace
+  commit: 0ca02a3b9dc5ae8984b5bd4d0a650a8df0cf9f76
   distribution_version: 0.1.0
   contract_id: starlette-1.6.0-asgi-http-config-session-slice
   metadata: ../starlette-rs/metadata.yaml
