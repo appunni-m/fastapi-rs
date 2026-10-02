@@ -91,7 +91,7 @@ target:
     name: starlette-rs-py
     version: 0.1.0
     starlette_contract: 1.6.0
-    commit: d1d8fdecdb3c91b71c897820328236572910eae9
+    commit: 946638c840b45d61b4f3b5327da8903ebe700a0b
   external_python_runtime_lock:
     path: requirements/target-runtime-cpython-3.12.13.lock
     sha256: efb7ca633fc9a9c8587a6f59f8ee9b509151f6f77ceb75a56dd3cdeff2be99f7
@@ -128,7 +128,7 @@ source_artifacts:
   api_import_binding_classification_review:
     path: tests/fixtures/api-import-binding-classification-review.json
     schema: fastapi-starlette-import-binding-review/v1
-    sha256: f0dcdc96975b563b56f44a546126f44bf511d36537bbb754e2e5ae92b125db51
+    sha256: 8fe72f1456b776844632f0833f8df42b290428da19e81a93f4ceed734ad8d817
     purpose: Reviewed source-backed disposition of uncertain FastAPI import bindings from the selected Starlette profile
     source_identity:
       package: FastAPI
@@ -136,7 +136,7 @@ source_artifacts:
       source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
       selected_starlette_profile: 1.6.0
       starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
-      starlette_rs_contract_commit: d1d8fdecdb3c91b71c897820328236572910eae9
+      starlette_rs_contract_commit: 946638c840b45d61b4f3b5327da8903ebe700a0b
     starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
     counts:
       candidates: 97
@@ -148,7 +148,7 @@ source_artifacts:
     candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
     pinned_starlette_rs_sources:
       metadata_sha256: 1baeaa65df032816231736829df4a09f40066273d31b529df95c6e24ff6960b1
-      manifest_sha256: c666a8cd6c3720b7d6b630e601fa333afcfc84ca51d921b6b2d9db90ecebe663
+      manifest_sha256: 5f67e2d91926bcfb77b461bb6a3ad8d54879098d5a51a034a52bad3871474452
       api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
       api_review_sha256: 39a9fc59a070d6956aa65c7578e236980a917105f806eb557920261bf68060ef
   api_source_classification_review:
@@ -172,7 +172,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@4
-    sha256: a896530b0568f7f327ced08639ba706d06c04bffb97fa8a47df40ad747d18082
+    sha256: 20fefe66541242873fc960d3257e0dda1bdd379fc03345f5206782c58f5ac106
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -242,7 +242,7 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@2
-    sha256: 7f76abc9b1d88dd0cf8a1bfd4c1642ff708042b6ac3f59f6dd3682bd5bba3afc
+    sha256: 2548661bb9b598bc080fec23ef8cd5ef486949dbb228ad8611476c27a88adc20
     schema_path: tests/fixtures/schemas/materialized-input-index.schema.json
     schema_sha256: 56ac1cdfaa6f28b4277ef44b5ef78efebb3122111c5691e1b9c1bce869156aaf
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
@@ -26769,10 +26769,10 @@ api_surface_contract:
       implementation_owner_evidence:
         kind: canonical-sibling-operation-reference
         canonical_operation_ref: *id023
-      status: unimplemented
+      status: partial-contract
       known_gaps:
-      - FastAPI-RS does not expose the inherited add_route method or bridge arbitrary Starlette Route
-        registration through its FastAPI router.
+      - Current parity covers basic registration and dispatch plus a method miss; argument and signature
+        errors, route option combinations, and broader ordering or mutation behavior remain unestablished.
   - id: fastapi.applications.FastAPI.host
     kind: inherited_method
     exposure: inherited-from-starlette
@@ -26863,8 +26863,8 @@ api_surface_contract:
         sibling_contract_gap_ref: *id025
       status: partial-contract
       known_gaps:
-      - FastAPI-RS does not expose inherited host registration, subdomain matching, or named host-route
-        reversal.
+      - Current parity covers one named subdomain dispatch; other host patterns, named host-route reversal,
+        and host-route error behavior remain unestablished.
   - id: fastapi.applications.FastAPI.url_path_for
     kind: inherited_method
     exposure: inherited-from-starlette
@@ -26964,8 +26964,8 @@ api_surface_contract:
       status: partial-contract
       known_gaps:
       - Direct URLPath metadata and non-path converter values are not fully established.
-      - Late APIRouter route additions, repeated inclusion, Mount, and Host route-context lookup are not
-        fully established.
+      - Dynamic router mutation after inclusion and Mount or Host route-context lookup are not covered
+        by the current inputs.
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::url_path_for
   - id: fastapi.routing.APIRouter.url_path_for
     kind: inherited_method
@@ -27048,10 +27048,11 @@ api_surface_contract:
       implementation_owner_evidence:
         kind: canonical-sibling-operation-reference
         canonical_operation_ref: *id027
-      status: unimplemented
+      status: partial-contract
       known_gaps:
-      - FastAPI-RS does not expose inherited APIRouter URLPath lookup or preserve repeated inclusion-context
-        selection.
+      - The current input covers one repeated-inclusion context; broader nested inclusion, route-parameter
+        errors, and URLPath metadata behavior remain unestablished.
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApiRouter::url_path_for
   - id: fastapi.applications.FastAPI.add_middleware
     kind: inherited_method
     exposure: inherited-from-starlette
