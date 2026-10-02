@@ -6565,7 +6565,7 @@
       "input_path": "tests/fixtures/inputs/parity/response-model-data-filter-exclude-unset-none-review.json",
       "input_sha256": "e8df817a4df31b3f2f646068c8a9286416ff13577822d1fc572bbc5d8eb34a17",
       "recipe_path": "tests/fixtures/input-recipes/parity/response-model-data-filter-exclude-unset-none-review.yaml",
-      "recipe_sha256": "1d464da15d02d5c776ee9afdd7f01f97f8e55845d039bc41bfafe69258ee66c3",
+      "recipe_sha256": "6b320ca8bbcb7f34a69bb426baa92260c30ac82c70a348d8804c6bfb64acd11c",
       "workload_path": "tests/fixtures/workloads/response_model_data_filter_exclude_unset_none_review.py",
       "workload_sha256": "24b60f06b2472a0254c9ae15d0b208e0edd99d3cb8a3833696d343bacd0c13cd",
       "case_ids": [
@@ -7762,6 +7762,19 @@
       "case_ids": [
         "fastapi.tutorial.server-sent-events.tutorial005.post-chat-stream",
         "fastapi.tutorial.server-sent-events.tutorial005.openapi"
+      ]
+    },
+    {
+      "id": "settings-app01-fastapi-surface",
+      "input_path": "tests/fixtures/inputs/parity/settings-app01-fastapi-surface.json",
+      "input_sha256": "ce23cdb4928d3b1d53769a3453736e4551817b679a2212769ff44092ae3254f7",
+      "recipe_path": "tests/fixtures/input-recipes/parity/settings-app01-fastapi-surface.yaml",
+      "recipe_sha256": "e393fc2bcf673059d42e6ba2ce34eb7402e4fe677ea928043dd6e560d2bbce75",
+      "workload_path": "tests/fixtures/workloads/settings_app01_fastapi_surface.py",
+      "workload_sha256": "f7315ab4381716e4b24abb02af99542281fd2b40040d953c67a8e0466ecdee89",
+      "case_ids": [
+        "fastapi.test.test-tutorial-test-settings-test-app01.test-app",
+        "fastapi.test.test-tutorial-test-settings-test-app01.test-openapi-schema"
       ]
     },
     {
@@ -26625,6 +26638,23 @@
       "observation_selectors": [
         "http.body.bytes",
         "http.headers.ordered",
+        "http.status",
+        "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_settings/test_app01.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-settings-test-app01",
+      "workflow_id": "settings-app01-fastapi-surface",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes docs.response.status, http.body.bytes, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.test.test-tutorial-test-settings-test-app01.test-app",
+        "fastapi.test.test-tutorial-test-settings-test-app01.test-openapi-schema"
+      ],
+      "observation_selectors": [
+        "docs.response.status",
+        "http.body.bytes",
         "http.status",
         "openapi.document"
       ]

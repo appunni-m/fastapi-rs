@@ -780,11 +780,6 @@ TEST_EXCLUSIONS = {
         "the selected core/standard-multipart oracle profiles. Its resolver execution and GraphQL "
         "schema are third-party behavior; FastAPI include_router integration is covered separately."
     ),
-    "tests/test_tutorial/test_settings/test_app01.py": (
-        "The route and OpenAPI are built around pydantic_settings.BaseSettings; pydantic-settings is "
-        "not installed by the selected oracle profile. This fixture cannot reproduce the environment "
-        "settings construction/assertions without changing the declared dependency profile."
-    ),
     "tests/test_tutorial/test_settings/test_app03.py": (
         "The example exercises pydantic_settings.BaseSettings and .env loading, whose pydantic-settings "
         "and dotenv integrations are outside the selected oracle profile."
@@ -837,6 +832,14 @@ TEST_EXCLUSIONS = {
 }
 
 TEST_FUNCTION_EXCLUSIONS = {
+    "tests/test_tutorial/test_settings/test_app01.py": {
+        "test_settings_validation_error": (
+            "Deletes ADMIN_EMAIL, imports the tutorial module, and asserts the import-time "
+            "pydantic_settings.BaseSettings ValidationError. This Pydantic Settings behavior is "
+            "outside FastAPI's app contract; the route response and OpenAPI functions are mapped "
+            "separately with a static independent ASGI workload."
+        ),
+    },
     "tests/test_tutorial/test_settings/test_app02.py": {
         "test_settings": (
             "Reads an environment variable into pydantic_settings.BaseSettings through an un-cached "
@@ -915,6 +918,22 @@ TEST_FUNCTION_EXCLUSIONS = {
 }
 
 TEST_FUNCTION_EXCLUSION_EVIDENCE = {
+    "tests/test_tutorial/test_settings/test_app01.py": {
+        "test_settings_validation_error": [
+            {
+                "path": "docs_src/settings/app01_py310/config.py",
+                "start_line": 1,
+                "end_line": 10,
+                "role": "import-time Pydantic Settings construction and required admin_email",
+            },
+            {
+                "path": "docs_src/settings/app01_py310/main.py",
+                "start_line": 1,
+                "end_line": 3,
+                "role": "tutorial app imports the settings instance during module import",
+            },
+        ],
+    },
     "tests/test_tutorial/test_settings/test_app02.py": {
         "test_settings": [
             {
@@ -2199,26 +2218,21 @@ merge_test_review_mappings(
         },
         "tests/test_tutorial/test_settings/test_app01.py": {
             "replace_module_features": True,
-            "module_feature_ids": ["middleware-integrations"],
+            "module_feature_ids": ["response-serialization", "openapi-docs"],
             "functions": {
                 "test_app": reviewed_case(
-                    ["middleware-integrations"],
-                    ["http.body.json"],
-                    "A settings-backed application returns its route's JSON; environment parsing and settings validation belong to Pydantic Settings.",
+                    ["response-serialization"],
+                    ["http.body.bytes"],
+                    "The test parses JSON from a no-parameter FastAPI GET route; the independent workflow uses distinct static values and compares the route's exact ASGI response bytes without importing Pydantic Settings.",
                     supporting_sources=[
                         {
                             "path": "docs_src/settings/app01_py310/main.py",
-                            "start_line": 1,
+                            "start_line": 5,
                             "end_line": 14,
-                            "role": "settings-backed FastAPI app",
-                        },
-                        {
-                            "path": "docs_src/settings/app01_py310/config.py",
-                            "start_line": 1,
-                            "end_line": 10,
-                            "role": "Pydantic Settings model",
+                            "role": "FastAPI app and no-parameter JSON route",
                         },
                     ],
+                    stimulus_notes="The independent workload supplies fixture-owned static route values and observes exact response bytes; the Pydantic Settings environment construction remains excluded.",
                 ),
             },
         },
@@ -2794,12 +2808,12 @@ merge_test_review_mappings(
             },
         },
         "tests/test_tutorial/test_settings/test_app01.py": {
-            "module_feature_ids": ["middleware-integrations", "openapi-docs"],
+            "module_feature_ids": ["response-serialization", "openapi-docs"],
             "functions": {
                 "test_openapi_schema": reviewed_case(
                     ["openapi-docs"],
-                    ["openapi.document", "docs.response.status"],
-                    "The settings tutorial exposes the generated OpenAPI document for a no-parameter GET route.",
+                    ["openapi.document", "http.status"],
+                    "The app exposes its generated OpenAPI document for a no-parameter GET route; the independent workload uses a static route and observes the complete document and HTTP status.",
                     supporting_sources=[
                         {
                             "path": "docs_src/settings/app01_py310/main.py",
@@ -2820,7 +2834,7 @@ merge_test_review_mappings(
                             "role": "OpenAPI document generation",
                         },
                     ],
-                    stimulus_notes="This case observes the schema only; environment-backed Pydantic Settings validation and route response values belong to separate functions.",
+                    stimulus_notes="The independent workload builds the same no-parameter route with static values and observes the full OpenAPI document; Pydantic Settings validation remains a separate excluded function.",
                 ),
             },
         },
@@ -9387,7 +9401,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             "id": "starlette-rs-streaming-taskgroup-callback",
             "status": "identity-checked target mismatch; sibling-owned fix pending",
             "question": "Does the pinned Starlette-RS ASGI 2.0 StreamingResponse disconnect race pass a native coroutine callback to AnyIO TaskGroup.start_soon, preserving stream cancellation and request-scoped dependency cleanup?",
-            "evidence": f"The identity-checked stream-cancellation workflow passes on FastAPI 0.141.1 with Starlette 1.6.0 but fails on the current target in all three streaming cases. At Starlette-RS {starlette_rs_revision}, starlette-rs-py/src/runtime_calls.rs wraps a custom PyO3 AwaitableFactory around a PythonAwaitable and passes it to AnyIO 4.12.1 TaskGroup.start_soon; AnyIO rejects the returned object because it is not a native coroutine, then raises AttributeError while formatting the missing __qualname__. The same response path fails while registering the stream child, before the streaming iterator starts. This generic ASGI response behavior is Starlette-RS-owned; adding __qualname__ alone is not a fix.",
+            "evidence": "The identity-checked stream-cancellation comparison against FastAPI 0.141.1 and Starlette 1.6.0 records failures in all three FastAPI-RS target cases at the previously pinned Starlette-RS revision 50460eb366338cc843b90f071b3f323a4992aa5f. starlette-rs-py/src/runtime_calls.rs wraps a custom PyO3 AwaitableFactory around a PythonAwaitable and passes it to AnyIO 4.12.1 TaskGroup.start_soon; AnyIO rejects the returned object because it is not a native coroutine, then raises AttributeError while formatting the missing __qualname__. The same response path fails while registering the stream child, before the streaming iterator starts. This generic ASGI response behavior is Starlette-RS-owned; adding __qualname__ alone is not a fix.",
         },
         {
             "id": "pydantic-runtime-generated-api",

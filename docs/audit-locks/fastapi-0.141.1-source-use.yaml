@@ -162,12 +162,22 @@ source_backed:
       through Starlette and AnyIO; the current Python 3.12 target does not
       activate it.
     evidence:
-      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L1071-L1081
-      - https://github.com/Kludex/starlette/blob/4f250d6b814587e20c5365f0a5f0c4d42bcb929f/pyproject.toml#L515-L521
-      - https://github.com/agronholm/anyio/blob/4.12.1/pyproject.toml#L600-L608
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L44-L50
+      - https://github.com/Kludex/starlette/blob/4f250d6b814587e20c5365f0a5f0c4d42bcb929f/pyproject.toml#L33-L36
+      - https://github.com/agronholm/anyio/blob/4.12.1/pyproject.toml#L29-L33
       - https://github.com/agronholm/anyio/blob/4.12.1/src/anyio/_core/_sockets.py#L41-L42
       - https://github.com/agronholm/anyio/blob/4.12.1/src/anyio/_core/_sockets.py#L242-L248
       - https://github.com/agronholm/anyio/blob/4.12.1/src/anyio/_core/_sockets.py#L413-L415
+  idna:
+    purpose: >-
+      AnyIO 4.12.1 uses idna to convert non-ASCII host names to IDNA-compatible
+      ASCII before asynchronous address resolution. This is an indirect FastAPI
+      runtime dependency through Starlette and AnyIO, not a direct FastAPI import.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L44-L50
+      - https://github.com/Kludex/starlette/blob/4f250d6b814587e20c5365f0a5f0c4d42bcb929f/pyproject.toml#L33-L36
+      - https://github.com/agronholm/anyio/blob/4.12.1/pyproject.toml#L29-L33
+      - https://github.com/agronholm/anyio/blob/4.12.1/src/anyio/_core/_sockets.py#L609-L650
   fastapi-cli:
     purpose: FastAPI's CLI module delegates the console command to fastapi-cli.
     evidence:
