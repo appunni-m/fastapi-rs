@@ -80,14 +80,14 @@ api_inventory:
 import_binding_classification_review:
   artifact: tests/fixtures/api-import-binding-classification-review.json
   schema: fastapi-starlette-import-binding-review/v1
-  sha256: 0ab8eb7f5cf27633ab9f52dba2923abb5997d42cbb6c002f0e08482a1fd48ce3
+  sha256: b75e798e39e4d68738659b8c1d45f6ffad1598f29921e4b2c26c6534f4c633cb
   source_identity:
     package: FastAPI
     version: 0.141.1
     source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
     selected_starlette_profile: 1.6.0
     starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
-    starlette_rs_contract_commit: 78423ef9faf223da3d87e0e66851f314fe4cb329
+    starlette_rs_contract_commit: 3f83642457b4db38f2da9bea0cb69628e1f03c29
   starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
   counts:
     candidates: 97
@@ -99,7 +99,7 @@ import_binding_classification_review:
   candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
   pinned_starlette_rs_sources:
     metadata_sha256: 1baeaa65df032816231736829df4a09f40066273d31b529df95c6e24ff6960b1
-    manifest_sha256: dab8a411c6ba62d99d05d42b577485e0b161395ead26ee8f3fe03d768570a45d
+    manifest_sha256: 15594c6ce09c8dab5cfbd9b040ef83beb259656951c060100f9d222a2ba74669
     api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
     api_review_sha256: 39a9fc59a070d6956aa65c7578e236980a917105f806eb557920261bf68060ef
 
@@ -187,7 +187,7 @@ classification_atlas:
 starlette_rs:
   owner: ../starlette-rs
   repository: https://github.com/appunni-m/starlette-rs
-  commit: 78423ef9faf223da3d87e0e66851f314fe4cb329
+  commit: 3f83642457b4db38f2da9bea0cb69628e1f03c29
   distribution_version: 0.1.0
   contract_id: starlette-1.6.0-asgi-http-config-session-slice
   metadata: ../starlette-rs/metadata.yaml
@@ -654,6 +654,45 @@ reviewed_api_contract_overlay:
         an optional Pydantic model body. Non-string aliases, explicit Body
         defaults, dependency-provided body fields, Form, File, and other Body
         constructor or FieldInfo options remain outside this reviewed slice.
+    fastapi.Form:
+      rust_binding: fastapi-rs/src/parameters.rs::form
+      source_evidence:
+        - {path: fastapi/param_functions.py, symbol: Form}
+        - {path: fastapi/params.py, symbol: Form}
+        - {path: fastapi/dependencies/utils.py, symbol: get_validation_alias}
+        - {path: fastapi/dependencies/utils.py, symbol: request_body_to_args}
+        - {path: tests/test_request_params/test_form/test_required_str.py, symbol: test_required_alias_and_validation_alias_by_validation_alias}
+        - {path: tests/test_request_params/test_form/test_required_str.py, symbol: test_required_alias_and_validation_alias_schema}
+        - {path: docs/en/docs/tutorial/request-forms.md}
+      feature_ids: [request-validation, openapi-docs]
+      observation_selectors: [http.status, http.body.bytes, openapi.request_schema]
+      supported_slice: >-
+        Partial native slice: Form accepts a string validation_alias; it takes
+        precedence over alias for form-field lookup, missing-field error
+        locations, and the OpenAPI request schema. Identity-checked inputs cover
+        declared-alias precedence, repeated fields, and ordinary multipart form
+        extraction. Non-string AliasPath/AliasChoices, serialization_alias,
+        default_factory, and other FieldInfo options remain outside this slice.
+    fastapi.File:
+      rust_binding: fastapi-rs/src/parameters.rs::file
+      source_evidence:
+        - {path: fastapi/param_functions.py, symbol: File}
+        - {path: fastapi/params.py, symbol: File}
+        - {path: fastapi/dependencies/utils.py, symbol: get_validation_alias}
+        - {path: fastapi/dependencies/utils.py, symbol: request_body_to_args}
+        - {path: tests/test_request_params/test_file/test_required.py, symbol: test_required_alias_and_validation_alias_by_validation_alias}
+        - {path: tests/test_request_params/test_file/test_required.py, symbol: test_required_alias_and_validation_alias_schema}
+        - {path: tests/test_request_params/test_file/test_list.py, symbol: test_list_alias_and_validation_alias_by_validation_alias}
+        - {path: docs/en/docs/tutorial/request-files.md}
+      feature_ids: [request-validation, openapi-docs]
+      observation_selectors: [http.status, http.body.bytes, openapi.request_schema]
+      supported_slice: >-
+        Partial native slice: File accepts a string validation_alias; it takes
+        precedence over alias for upload-field lookup, missing-field error
+        locations, and the OpenAPI request schema. Identity-checked inputs cover
+        byte and UploadFile values plus repeated uploads. Non-string
+        AliasPath/AliasChoices, serialization_alias, default_factory, and other
+        FieldInfo options remain outside this slice.
     fastapi.Query:
       rust_binding: fastapi-rs/src/parameters.rs::query
       source_evidence:

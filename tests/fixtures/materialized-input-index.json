@@ -6018,9 +6018,9 @@
     {
       "id": "request-multipart",
       "input_path": "tests/fixtures/inputs/parity/request-multipart.json",
-      "input_sha256": "f39a7d19b003a57889c90cc8a2e4c6ee4f31188033d4178314eda63e6564e1f9",
+      "input_sha256": "56a2f28219a5eddf821a42698d6a69accd5542cb9b8ae9f21aba95f28d1b21f7",
       "recipe_path": "tests/fixtures/input-recipes/parity/request-multipart.yaml",
-      "recipe_sha256": "a234925e40e866855962f7aa777a0b2a7442fd8bb67d13d90d53d7e6669fa46b",
+      "recipe_sha256": "2aa23e057226ccf5e798afa84839212c57c693abfd82b7b72c3e08da1ed10e2b",
       "workload_path": "tests/fixtures/workloads/request_multipart.py",
       "workload_sha256": "f303ba119ae86e7ff5d42cde0943e83167944cf39e1762d963d8118ece687afc",
       "case_ids": [
@@ -6046,7 +6046,8 @@
         "fastapi.request-multipart.file.bytes-list-repeated",
         "fastapi.request-multipart.file.required-list-missing",
         "fastapi.request-multipart.file.list-validation-alias-precedence",
-        "fastapi.request-multipart.file.list-validation-alias-repeated"
+        "fastapi.request-multipart.file.list-validation-alias-repeated",
+        "fastapi.request-multipart.form.multipart-field-without-filename"
       ],
       "oracle_profile_extension": "standard-multipart"
     },
@@ -7775,13 +7776,25 @@
       ]
     },
     {
+      "id": "starlette-response-file-disposition-inline",
+      "input_path": "tests/fixtures/inputs/parity/starlette-response-file-disposition-inline.json",
+      "input_sha256": "5250249be60be6d7193de9bd8c81b2d0fe4c3d1239144c97a6fff90dd8252b40",
+      "recipe_path": "tests/fixtures/input-recipes/parity/starlette-response-file-disposition-inline.yaml",
+      "recipe_sha256": "7769b82ba59dac8916daf4bdf05458fe4ab32579b4916b579bbfcb33f9ee8cc9",
+      "workload_path": "tests/fixtures/workloads/starlette_response_runtime.py",
+      "workload_sha256": "f9afd94380e10e9efac6bb8267fc945e956ecf6335a22acc04f3ad3ad2d4a6c8",
+      "case_ids": [
+        "fastapi.test.test-tutorial-test-custom-response-test-tutorial009.inline-disposition"
+      ]
+    },
+    {
       "id": "starlette-response-runtime-upstream",
       "input_path": "tests/fixtures/inputs/parity/starlette-response-runtime-upstream.json",
       "input_sha256": "6376beae3cc11d761b0eb8937c013a2615b176ef4d2da380996ba96f91a7af4a",
       "recipe_path": "tests/fixtures/input-recipes/parity/starlette-response-runtime-upstream.yaml",
       "recipe_sha256": "f0f31b11088814efcc69080f52a1ab0b4caba1224c0182931d352289cb9b1027",
       "workload_path": "tests/fixtures/workloads/starlette_response_runtime.py",
-      "workload_sha256": "8e106c548e33e3dac5db53da200e493406484f4e3ff7cfab91e475827d01b073",
+      "workload_sha256": "f9afd94380e10e9efac6bb8267fc945e956ecf6335a22acc04f3ad3ad2d4a6c8",
       "case_ids": [
         "fastapi.test.test-tutorial-test-custom-response-test-tutorial005.test-get",
         "fastapi.test.test-tutorial-test-custom-response-test-tutorial005.test-openapi-schema",
@@ -20906,9 +20919,10 @@
       "fixture_id": "fastapi.docs.tutorial-request-forms",
       "workflow_id": "request-multipart",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 7 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 8 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.request-multipart.form.list-repeated",
+        "fastapi.request-multipart.form.multipart-field-without-filename",
         "fastapi.request-multipart.form.optional-list-missing",
         "fastapi.request-multipart.form.optional-list-repeated",
         "fastapi.request-multipart.form.optional-missing",
@@ -21037,8 +21051,9 @@
       "fixture_id": "fastapi.test.test-request-params-test-form-test-required-str",
       "workflow_id": "request-multipart",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
+        "fastapi.request-multipart.form.multipart-field-without-filename",
         "fastapi.request-multipart.form.required-missing",
         "fastapi.request-multipart.form.required-present"
       ],
@@ -26458,6 +26473,21 @@
         "http.status",
         "openapi.document",
         "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_custom_response/test_tutorial009.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-custom-response-test-tutorial009",
+      "workflow_id": "starlette-response-file-disposition-inline",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.test.test-tutorial-test-custom-response-test-tutorial009.inline-disposition"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
       ]
     },
     {

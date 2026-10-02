@@ -91,7 +91,7 @@ target:
     name: starlette-rs-py
     version: 0.1.0
     starlette_contract: 1.6.0
-    commit: 78423ef9faf223da3d87e0e66851f314fe4cb329
+    commit: 3f83642457b4db38f2da9bea0cb69628e1f03c29
   external_python_runtime_lock:
     path: requirements/target-runtime-cpython-3.12.13.lock
     sha256: efb7ca633fc9a9c8587a6f59f8ee9b509151f6f77ceb75a56dd3cdeff2be99f7
@@ -128,7 +128,7 @@ source_artifacts:
   api_import_binding_classification_review:
     path: tests/fixtures/api-import-binding-classification-review.json
     schema: fastapi-starlette-import-binding-review/v1
-    sha256: 0ab8eb7f5cf27633ab9f52dba2923abb5997d42cbb6c002f0e08482a1fd48ce3
+    sha256: b75e798e39e4d68738659b8c1d45f6ffad1598f29921e4b2c26c6534f4c633cb
     purpose: Reviewed source-backed disposition of uncertain FastAPI import bindings from the selected Starlette profile
     source_identity:
       package: FastAPI
@@ -136,7 +136,7 @@ source_artifacts:
       source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
       selected_starlette_profile: 1.6.0
       starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
-      starlette_rs_contract_commit: 78423ef9faf223da3d87e0e66851f314fe4cb329
+      starlette_rs_contract_commit: 3f83642457b4db38f2da9bea0cb69628e1f03c29
     starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
     counts:
       candidates: 97
@@ -148,7 +148,7 @@ source_artifacts:
     candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
     pinned_starlette_rs_sources:
       metadata_sha256: 1baeaa65df032816231736829df4a09f40066273d31b529df95c6e24ff6960b1
-      manifest_sha256: dab8a411c6ba62d99d05d42b577485e0b161395ead26ee8f3fe03d768570a45d
+      manifest_sha256: 15594c6ce09c8dab5cfbd9b040ef83beb259656951c060100f9d222a2ba74669
       api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
       api_review_sha256: 39a9fc59a070d6956aa65c7578e236980a917105f806eb557920261bf68060ef
   api_source_classification_review:
@@ -172,7 +172,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@3
-    sha256: 12bfccd65cdb23bc5e399820f7a5a4cc8b20a46ef9df6c74eb9429d8b4e21355
+    sha256: 1d60679b7da41a4c24afa3be7b8e499242638cc37a386795a4ddd1dd49ac8e18
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -205,7 +205,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: b23afda229ef05e7ae1827061feae7b8278f9245c3c5256feab24db95c4ef578
+    sha256: 3f2b0695829eaad72d6ef0b6b991422138267e0423003be8519a5bac6fb23631
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 652
@@ -242,14 +242,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@2
-    sha256: 6bfb27fb25a4f991a04812374128eff51d2a4f5182688c6a3fbe4a3359b44785
+    sha256: cdf119e3cdd4d985ef2f52f7c8915679b992d004aaf79a625ee83228ad2883a4
     schema_path: tests/fixtures/schemas/materialized-input-index.schema.json
     schema_sha256: 56ac1cdfaa6f28b4277ef44b5ef78efebb3122111c5691e1b9c1bce869156aaf
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 493
-      cases: 1926
-      partial_source_mappings: 1182
+      workflows: 494
+      cases: 1928
+      partial_source_mappings: 1183
 
 contract_metadata:
   aliases:
@@ -1134,7 +1134,8 @@ api_surface_contract:
     - http.headers.ordered
     - http.status
     - openapi.paths
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    - openapi.request_schema
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.File
@@ -1145,7 +1146,7 @@ api_surface_contract:
         - /api_candidates/6
         - /api_candidates/932
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/parameters.rs::file
   - id: fastapi.Form
     kind: import_binding
     source_candidate_ref: /api_candidates/7
@@ -1196,7 +1197,8 @@ api_surface_contract:
     - http.headers.ordered
     - http.status
     - openapi.paths
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    - openapi.request_schema
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.Form
@@ -1207,7 +1209,7 @@ api_surface_contract:
         - /api_candidates/7
         - /api_candidates/933
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/parameters.rs::form
   - id: fastapi.HTTPException
     kind: import_binding
     source_candidate_ref: /api_candidates/8

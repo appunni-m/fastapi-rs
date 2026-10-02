@@ -4890,9 +4890,16 @@ fn parameter_source(
             });
         }
         if kind == "form" || kind == "file" {
-            let alias = marker
-                .getattr("alias")?
-                .extract::<Option<String>>()?
+            let declared_alias = marker.getattr("alias")?.extract::<Option<String>>()?;
+            let validation_alias = marker.getattr("validation_alias")?;
+            let validation_alias =
+                if validation_alias.is_truthy()? && validation_alias.is_instance_of::<PyString>() {
+                    Some(validation_alias.extract::<String>()?)
+                } else {
+                    None
+                };
+            let alias = validation_alias
+                .or(declared_alias)
                 .unwrap_or_else(|| name.to_owned());
             return Ok(ParameterSource::Input {
                 source: if kind == "form" {
