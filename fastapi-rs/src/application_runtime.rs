@@ -100,6 +100,8 @@ struct CallableParameter {
     annotation: Py<PyAny>,
     default: Option<Py<PyAny>>,
     is_sequence: bool,
+    query_model_fields: Option<Vec<QueryModelField>>,
+    query_model_config: Option<Py<PyAny>>,
     media_type: Option<String>,
     title: Option<String>,
     description: Option<String>,
@@ -107,6 +109,13 @@ struct CallableParameter {
     include_in_schema: bool,
     body_embed: bool,
     source: ParameterSource,
+}
+
+struct QueryModelField {
+    alias: String,
+    field_info: Py<PyAny>,
+    is_sequence: bool,
+    is_json: bool,
 }
 
 struct CallablePlan {
@@ -158,6 +167,21 @@ impl CallableParameter {
             annotation: self.annotation.clone_ref(py),
             default: self.default.as_ref().map(|value| value.clone_ref(py)),
             is_sequence: self.is_sequence,
+            query_model_fields: self.query_model_fields.as_ref().map(|fields| {
+                fields
+                    .iter()
+                    .map(|field| QueryModelField {
+                        alias: field.alias.clone(),
+                        field_info: field.field_info.clone_ref(py),
+                        is_sequence: field.is_sequence,
+                        is_json: field.is_json,
+                    })
+                    .collect()
+            }),
+            query_model_config: self
+                .query_model_config
+                .as_ref()
+                .map(|value| value.clone_ref(py)),
             media_type: self.media_type.clone(),
             title: self.title.clone(),
             description: self.description.clone(),
@@ -405,6 +429,7 @@ struct ParameterOpenApiPlan {
     location: String,
     required: bool,
     annotation: Py<PyAny>,
+    schema_config: Option<Py<PyAny>>,
     default: Option<Py<PyAny>>,
     title: Option<String>,
     description: Option<String>,
@@ -2042,11 +2067,15 @@ impl PyFastApi {
                 } else {
                     title_case(&parameter.name.replace('_', " "))
                 };
-                let schema = pydantic_schema(
+                let schema = pydantic_schema_with_config(
                     py,
                     parameter.annotation.bind(py),
                     "validation",
                     parameter.title.as_deref().or(Some(&title)),
+                    parameter
+                        .schema_config
+                        .as_ref()
+                        .map(|config| config.bind(py)),
                 )?;
                 Ok(OpenApiParameter {
                     name: parameter.name,
@@ -3506,11 +3535,24 @@ impl CallablePlan {
                 let is_sequence = field_annotation_is_sequence(py, validated_annotation.bind(py))?;
                 let source =
                     parameter_source(py, &name, annotation.bind(py), &metadata, path_parameters)?;
+                let (query_model_fields, query_model_config) = match &source {
+                    ParameterSource::Input {
+                        source: InputSource::Query,
+                        ..
+                    } if is_pydantic_model(py, annotation.bind(py))? => {
+                        let model_fields = query_model_fields(py, annotation.bind(py))?;
+                        let model_config = annotation.bind(py).getattr("model_config")?.unbind();
+                        (Some(model_fields), Some(model_config))
+                    }
+                    _ => (None, None),
+                };
                 Ok(CallableParameter {
                     name,
                     annotation: validated_annotation,
                     default,
                     is_sequence,
+                    query_model_fields,
+                    query_model_config,
                     media_type: parameter_media_type(py, &source, &metadata)?,
                     title: parameter_title(py, &source, &metadata)?,
                     description: parameter_description(py, &source, &metadata)?,
@@ -3582,6 +3624,8 @@ impl CallablePlan {
                 annotation,
                 default: None,
                 is_sequence: false,
+                query_model_fields: None,
+                query_model_config: None,
                 media_type: None,
                 title: None,
                 description: None,
@@ -3606,6 +3650,57 @@ impl CallablePlan {
             .iter()
             .flat_map(CallableParameter::input_parameters)
             .collect()
+    }
+
+    fn single_query_model_parameter_index(&self) -> Option<usize> {
+        let mut query_parameter_index = None;
+        for (index, parameter) in self.parameters.iter().enumerate() {
+            if !matches!(
+                &parameter.source,
+                ParameterSource::Input {
+                    source: InputSource::Query,
+                    ..
+                }
+            ) {
+                continue;
+            }
+            if query_parameter_index.replace(index).is_some() {
+                return None;
+            }
+        }
+        query_parameter_index.filter(|index| self.parameters[*index].query_model_fields.is_some())
+    }
+
+    fn query_parameter_count(&self) -> usize {
+        self.query_parameter_count_with_visited(&mut Vec::new())
+    }
+
+    fn query_parameter_count_with_visited(&self, visited: &mut Vec<DependencyCacheKey>) -> usize {
+        let mut count = self
+            .parameters
+            .iter()
+            .filter(|parameter| {
+                matches!(
+                    &parameter.source,
+                    ParameterSource::Input {
+                        source: InputSource::Query,
+                        ..
+                    }
+                )
+            })
+            .count();
+        for parameter in &self.parameters {
+            let ParameterSource::Dependency { plan, .. } = &parameter.source else {
+                continue;
+            };
+            let key = (plan.callable.as_ptr() as usize, plan.computed_scope.clone());
+            if visited.contains(&key) {
+                continue;
+            }
+            visited.push(key);
+            count += plan.query_parameter_count_with_visited(visited);
+        }
+        count
     }
 
     fn body_parameter(&self) -> Option<&CallableParameter> {
@@ -3715,33 +3810,58 @@ impl CallablePlan {
     }
 
     fn openapi_parameters(&self, py: Python<'_>) -> PyResult<Vec<ParameterOpenApiPlan>> {
+        self.openapi_parameters_with_query_model(py, self.query_parameter_count() == 1)
+    }
+
+    fn openapi_parameters_with_query_model(
+        &self,
+        py: Python<'_>,
+        flatten_query_model: bool,
+    ) -> PyResult<Vec<ParameterOpenApiPlan>> {
         let mut parameters = Vec::new();
         for parameter in &self.parameters {
             match &parameter.source {
                 ParameterSource::Input { source, alias }
-                    if parameter.include_in_schema
-                        && !matches!(
-                            source,
-                            InputSource::Body | InputSource::Form | InputSource::File
-                        ) =>
+                    if !matches!(
+                        source,
+                        InputSource::Body | InputSource::Form | InputSource::File
+                    ) =>
                 {
-                    parameters.push(ParameterOpenApiPlan {
-                        name: alias.clone(),
-                        location: source.as_str().to_owned(),
-                        required: parameter.default.is_none(),
-                        annotation: parameter.annotation.clone_ref(py),
-                        default: parameter
-                            .default
-                            .as_ref()
-                            .filter(|value| !value.bind(py).is_none())
-                            .map(|value| value.clone_ref(py)),
-                        title: parameter.title.clone(),
-                        description: parameter.description.clone(),
-                        deprecated: parameter.deprecated,
-                    });
+                    if flatten_query_model && parameter.query_model_fields.is_some() {
+                        if let Some(fields) = parameter.query_model_fields.as_ref() {
+                            for field in fields {
+                                if let Some(field_plan) = query_model_field_openapi_plan(
+                                    py,
+                                    field,
+                                    parameter.query_model_config.as_ref(),
+                                )? {
+                                    parameters.push(field_plan);
+                                }
+                            }
+                            continue;
+                        }
+                    }
+                    if parameter.include_in_schema {
+                        parameters.push(ParameterOpenApiPlan {
+                            name: alias.clone(),
+                            location: source.as_str().to_owned(),
+                            required: parameter.default.is_none(),
+                            annotation: parameter.annotation.clone_ref(py),
+                            schema_config: None,
+                            default: parameter
+                                .default
+                                .as_ref()
+                                .filter(|value| !value.bind(py).is_none())
+                                .map(|value| value.clone_ref(py)),
+                            title: parameter.title.clone(),
+                            description: parameter.description.clone(),
+                            deprecated: parameter.deprecated,
+                        });
+                    }
                 }
                 ParameterSource::Dependency { plan, .. } => {
-                    parameters.extend(plan.openapi_parameters(py)?);
+                    parameters
+                        .extend(plan.openapi_parameters_with_query_model(py, flatten_query_model)?);
                 }
                 ParameterSource::Input { .. }
                 | ParameterSource::WebSocket
@@ -4256,6 +4376,7 @@ impl CallablePlan {
                 }
             }
         }
+        let query_model_parameter_index = self.single_query_model_parameter_index();
         let mut ordered_input_parameters = Vec::with_capacity(self.parameters.len());
         for source in [
             InputSource::Path,
@@ -4263,7 +4384,7 @@ impl CallablePlan {
             InputSource::Header,
             InputSource::Cookie,
         ] {
-            for parameter in &self.parameters {
+            for (index, parameter) in self.parameters.iter().enumerate() {
                 if matches!(
                     &parameter.source,
                     ParameterSource::Input {
@@ -4271,7 +4392,11 @@ impl CallablePlan {
                         ..
                     } if *parameter_source == source
                 ) {
-                    ordered_input_parameters.push((parameter, source));
+                    ordered_input_parameters.push((
+                        parameter,
+                        source,
+                        query_model_parameter_index == Some(index),
+                    ));
                 }
             }
         }
@@ -4281,10 +4406,10 @@ impl CallablePlan {
                 ..
             } = &parameter.source
             {
-                ordered_input_parameters.push((parameter, *source));
+                ordered_input_parameters.push((parameter, *source, false));
             }
         }
-        for (parameter, source) in ordered_input_parameters {
+        for (parameter, source, is_query_model) in ordered_input_parameters {
             let ParameterSource::Input { alias, .. } = &parameter.source else {
                 continue;
             };
@@ -4298,7 +4423,12 @@ impl CallablePlan {
                 _ => false,
             };
             let value = if source == InputSource::Query {
-                if parameter.is_sequence {
+                if is_query_model {
+                    let fields = parameter.query_model_fields.as_ref().ok_or_else(|| {
+                        PyRuntimeError::new_err("query model field plan was not retained")
+                    })?;
+                    Some(query_model_values(context.py, fields, context.query_params)?.into_any())
+                } else if parameter.is_sequence {
                     let query_values = context.query_params.get_list(alias);
                     if query_values.is_empty() {
                         None
@@ -4349,6 +4479,7 @@ impl CallablePlan {
                                         error,
                                         location: source.as_str().to_owned(),
                                         alias: alias.clone(),
+                                        include_parameter_alias: !is_query_model,
                                         body_field,
                                     },
                                 )));
@@ -4373,6 +4504,7 @@ impl CallablePlan {
                             error,
                             location: source.as_str().to_owned(),
                             alias: alias.clone(),
+                            include_parameter_alias: !is_query_model,
                             body_field,
                         },
                     )));
@@ -4657,6 +4789,7 @@ struct InputValidationFailure {
     error: PyErr,
     location: String,
     alias: String,
+    include_parameter_alias: bool,
     body_field: bool,
 }
 
@@ -5612,10 +5745,24 @@ fn pydantic_schema(
     mode: &str,
     title: Option<&str>,
 ) -> PyResult<Py<PyAny>> {
+    pydantic_schema_with_config(py, annotation, mode, title, None)
+}
+
+fn pydantic_schema_with_config(
+    py: Python<'_>,
+    annotation: &Bound<'_, PyAny>,
+    mode: &str,
+    title: Option<&str>,
+    config: Option<&Bound<'_, PyAny>>,
+) -> PyResult<Py<PyAny>> {
+    let adapter_kwargs = PyDict::new(py);
+    if let Some(config) = config {
+        adapter_kwargs.set_item("config", config)?;
+    }
     let adapter = py
         .import("pydantic")?
         .getattr("TypeAdapter")?
-        .call1((annotation,))?;
+        .call((annotation,), Some(&adapter_kwargs))?;
     let core_schema = adapter.getattr("core_schema")?;
     let generator_kwargs = PyDict::new(py);
     generator_kwargs.set_item("ref_template", "#/components/schemas/{model}")?;
@@ -5900,12 +6047,18 @@ fn pydantic_field_validation_alias(
     field_info: &Bound<'_, PyAny>,
 ) -> PyResult<Py<PyAny>> {
     let validation_alias = field_info.getattr("validation_alias")?;
-    if validation_alias.is_truthy()? {
-        return Ok(validation_alias.unbind());
+    if let Ok(validation_alias) = validation_alias.extract::<String>() {
+        if !validation_alias.is_empty() {
+            return Ok(PyString::new(field_name.py(), &validation_alias)
+                .unbind()
+                .into_any());
+        }
     }
     let alias = field_info.getattr("alias")?;
-    if alias.is_truthy()? {
-        return Ok(alias.unbind());
+    if let Ok(alias) = alias.extract::<String>() {
+        if !alias.is_empty() {
+            return Ok(PyString::new(field_name.py(), &alias).unbind().into_any());
+        }
     }
     Ok(field_name.clone().unbind())
 }
@@ -5917,10 +6070,127 @@ fn copied_pydantic_field_default<'py>(
     if field_info.call_method0("is_required")?.extract::<bool>()? {
         return Ok(None);
     }
-    field_info
-        .getattr("default")
-        .and_then(|default| py.import("copy")?.call_method1("deepcopy", (default,)))
+    let kwargs = PyDict::new(py);
+    kwargs.set_item("call_default_factory", true)?;
+    let default = field_info.call_method("get_default", (), Some(&kwargs))?;
+    py.import("copy")?
+        .call_method1("deepcopy", (default,))
         .map(Some)
+}
+
+fn query_model_fields(
+    py: Python<'_>,
+    annotation: &Bound<'_, PyAny>,
+) -> PyResult<Vec<QueryModelField>> {
+    let model_fields = annotation.getattr("model_fields")?.cast_into::<PyDict>()?;
+    let json_type = py.import("pydantic.types")?.getattr("Json")?;
+    let mut fields = Vec::with_capacity(model_fields.len());
+    for (field_name, field_info) in model_fields.iter() {
+        let alias = pydantic_field_validation_alias(&field_name, &field_info)?;
+        let alias = alias.extract::<String>(py)?;
+        let field_annotation = field_info.getattr("annotation")?;
+        let is_sequence = field_annotation_is_sequence(py, &field_annotation)?;
+        let metadata = field_info.getattr("metadata")?;
+        let mut is_json = false;
+        for item in metadata.try_iter()? {
+            if item?.get_type().is(&json_type) {
+                is_json = true;
+                break;
+            }
+        }
+        fields.push(QueryModelField {
+            alias,
+            field_info: field_info.unbind(),
+            is_sequence,
+            is_json,
+        });
+    }
+    Ok(fields)
+}
+
+fn pydantic_field_schema_annotation(
+    py: Python<'_>,
+    field_info: &Bound<'_, PyAny>,
+) -> PyResult<Py<PyAny>> {
+    let field_data = field_info.call_method0("asdict")?.cast_into::<PyDict>()?;
+    let annotation = field_data
+        .get_item("annotation")?
+        .ok_or_else(|| PyValueError::new_err("Pydantic field is missing its annotation"))?;
+    let metadata = field_data
+        .get_item("metadata")?
+        .ok_or_else(|| PyValueError::new_err("Pydantic field is missing its metadata"))?;
+    let attributes = field_data
+        .get_item("attributes")?
+        .ok_or_else(|| PyValueError::new_err("Pydantic field is missing its attributes"))?
+        .cast_into::<PyDict>()?;
+    let field = py
+        .import("pydantic")?
+        .getattr("Field")?
+        .call((), Some(&attributes))?;
+    let arguments = PyList::empty(py);
+    arguments.append(annotation)?;
+    for metadata_item in metadata.try_iter()? {
+        arguments.append(metadata_item?)?;
+    }
+    arguments.append(field)?;
+    let arguments = py
+        .import("builtins")?
+        .getattr("tuple")?
+        .call1((arguments,))?;
+    py.import("typing")?
+        .getattr("Annotated")?
+        .get_item(arguments)
+        .map(Bound::unbind)
+}
+
+fn query_model_field_openapi_plan(
+    py: Python<'_>,
+    field: &QueryModelField,
+    model_config: Option<&Py<PyAny>>,
+) -> PyResult<Option<ParameterOpenApiPlan>> {
+    let field_info = field.field_info.bind(py);
+    if field_info.hasattr("include_in_schema")?
+        && !field_info.getattr("include_in_schema")?.is_truthy()?
+    {
+        return Ok(None);
+    }
+    let required = field_info.call_method0("is_required")?.extract::<bool>()?;
+    let field_title = field_info.getattr("title")?.extract::<Option<String>>()?;
+    let title = field_title.unwrap_or_else(|| title_case(&field.alias.replace('_', " ")));
+    let description = field_info
+        .getattr("description")?
+        .extract::<Option<String>>()?;
+    let deprecated = field_info.getattr("deprecated")?.is_truthy()?;
+    let default = query_model_field_openapi_default(py, field_info)?;
+    let annotation = pydantic_field_schema_annotation(py, field_info)?;
+    Ok(Some(ParameterOpenApiPlan {
+        name: field.alias.clone(),
+        location: "query".to_owned(),
+        required,
+        annotation,
+        schema_config: model_config.map(|value| value.clone_ref(py)),
+        default,
+        title: Some(title),
+        description,
+        deprecated,
+    }))
+}
+
+fn query_model_field_openapi_default(
+    py: Python<'_>,
+    field_info: &Bound<'_, PyAny>,
+) -> PyResult<Option<Py<PyAny>>> {
+    if field_info.call_method0("is_required")?.extract::<bool>()?
+        || !field_info.getattr("default_factory")?.is_none()
+    {
+        return Ok(None);
+    }
+    let default = field_info.getattr("default")?;
+    let undefined = py.import("pydantic_core")?.getattr("PydanticUndefined")?;
+    if default.is_none() || default.is(&undefined) {
+        return Ok(None);
+    }
+    Ok(Some(default.unbind()))
 }
 
 fn copy_unmatched_form_values(
@@ -5985,6 +6255,58 @@ fn form_model_values<'py>(
         }
     }
     copy_unmatched_form_values(form, &values, &processed_aliases)?;
+    Ok(values)
+}
+
+fn query_model_values<'py>(
+    py: Python<'py>,
+    fields: &[QueryModelField],
+    query_params: &QueryParams,
+) -> PyResult<Bound<'py, PyDict>> {
+    let values = PyDict::new(py);
+    let mut processed_aliases = Vec::with_capacity(fields.len());
+    for field in fields {
+        processed_aliases.push(field.alias.as_str());
+        let mut value = if field.is_sequence && !field.is_json {
+            let field_values = query_params.get_list(&field.alias);
+            if field_values.is_empty() {
+                None
+            } else {
+                let values = PyList::empty(py);
+                for field_value in field_values {
+                    values.append(PyString::new(py, field_value))?;
+                }
+                Some(values.into_any())
+            }
+        } else {
+            query_params
+                .get(&field.alias)
+                .map(|value| PyString::new(py, value).into_any())
+        };
+        if value.is_none() {
+            value = copied_pydantic_field_default(py, field.field_info.bind(py))?;
+        }
+        if let Some(value) = value.filter(|value| !value.is_none()) {
+            values.set_item(&field.alias, value)?;
+        }
+    }
+
+    for key in query_params.keys() {
+        if processed_aliases.contains(&key) {
+            continue;
+        }
+        let field_values = query_params.get_list(key);
+        let value = if field_values.len() == 1 {
+            PyString::new(py, field_values[0]).into_any()
+        } else {
+            let values = PyList::empty(py);
+            for field_value in field_values {
+                values.append(PyString::new(py, field_value))?;
+            }
+            values.into_any()
+        };
+        values.set_item(key, value)?;
+    }
     Ok(values)
 }
 
@@ -6106,7 +6428,9 @@ fn append_input_validation_details(
                 loc.append(part?)?;
             }
         } else {
-            loc.append(failure.alias.as_str())?;
+            if failure.include_parameter_alias {
+                loc.append(failure.alias.as_str())?;
+            }
             let field_loc = entry.get_item("loc")?.ok_or_else(|| {
                 PyValueError::new_err("Pydantic validation error is missing its location")
             })?;

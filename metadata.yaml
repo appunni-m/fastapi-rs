@@ -659,6 +659,15 @@ reviewed_api_contract_overlay:
       source_evidence:
         - {path: fastapi/param_functions.py, symbol: Query}
         - {path: fastapi/params.py, symbol: Query}
+        - {path: fastapi/dependencies/utils.py, symbol: request_params_to_args}
+        - {path: fastapi/openapi/utils.py, symbol: _get_openapi_operation_parameters}
+        - {path: fastapi/_compat/v2.py, symbol: get_model_fields}
+        - {path: docs/en/docs/tutorial/query-param-models.md}
+        - {path: tests/test_tutorial/test_query_param_models/test_tutorial001.py}
+        - {path: tests/test_tutorial/test_query_param_models/test_tutorial002.py}
+        - {path: tests/test_tutorial/test_query_param_models/test_tutorial002.py, symbol: test_query_param_model_extra}
+        - {path: tests/test_query_cookie_header_model_extra_params.py, symbol: test_query_pass_extra_list}
+        - {path: tests/test_request_param_model_by_alias.py, symbol: test_query_model_with_alias}
         - {path: tests/test_request_params/test_query/test_required_str.py, symbol: read_required_alias_and_validation_alias}
         - {path: tests/test_request_params/test_query/test_required_str.py, symbol: QueryModelRequiredAliasAndValidationAlias}
         - {path: tests/test_request_params/test_query/test_required_str.py, symbol: test_required_alias_and_validation_alias_schema}
@@ -697,16 +706,27 @@ reviewed_api_contract_overlay:
         query-params-str-validations-doc-pattern-examples,
         query-params-str-validations-doc-title-description-examples, and
         query-params-str-validations-doc-exclude-schema-examples. Other Query and
-        FieldInfo options remain outside this reviewed slice. Identity-checked
-        Identity-checked query-validation-alias-direct workflow covers string
-        validation_alias behavior: the nonempty validation alias takes
-        precedence over alias and the Python name for query lookup,
-        required-error location, and OpenAPI name. Non-string
-        AliasPath/AliasChoices values remain outside this reviewed slice. The
-        query-validation-alias-model workflow remains unsupported: Query()
-        around a Pydantic model is treated as one object parameter instead of
-        expanding its fields and OpenAPI parameters, and does not reach exact
-        parity.
+        FieldInfo options remain outside this reviewed slice. The
+        query-validation-alias-direct workflow covers string validation_alias
+        behavior: a nonempty validation alias takes precedence over alias and
+        the Python name for query lookup, required-error location, and OpenAPI
+        name. ASGI cases for direct path-operation Query(BaseModel) parameters in
+        query-param-models, query-param-model-tutorial-edges,
+        request-parameter-model-tutorial-edges,
+        model-extra-request-parameters-upstream,
+        query-validation-alias-model, query-model-extra-forbid,
+        query-model-extra-allow, and the query cases from
+        request-param-model-field-aliases-wave cover a model as the callable's
+        sole query parameter. Runtime extraction uses field validation aliases,
+        repeated values for sequence fields, model defaults, and unknown query
+        keys as model extras under ignore, forbid, and allow policies, then
+        validates the assembled model once. For these dependency-free routes,
+        OpenAPI expands the model into fields with aliases, requiredness,
+        defaults, and constraints. Nested BaseModel, dict, and dataclass fields;
+        custom model schema config; multiple query parameters alongside a model;
+        default-factory OpenAPI schemas; empty explicit aliases; non-string
+        AliasPath or AliasChoices validation aliases; and BaseModel parameters
+        from Header() or Cookie() remain outside this reviewed slice.
     fastapi.Request:
       rust_binding: fastapi-rs/src/application_runtime.rs::parameter_source
       source_evidence:
