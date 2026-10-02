@@ -649,6 +649,20 @@
       ]
     },
     {
+      "id": "body-updates-independent",
+      "input_path": "tests/fixtures/inputs/parity/body-updates-independent.json",
+      "input_sha256": "2994d8f71957f3f603e76785cf432cc165cbb018c39f3dd23a5c6aabd832015f",
+      "recipe_path": "tests/fixtures/input-recipes/parity/body-updates-independent.yaml",
+      "recipe_sha256": "4da2b87e28534f4cfed1b489e753cbe627410cf33ff59654e193ef8eb21fc0e6",
+      "workload_path": "tests/fixtures/workloads/body_updates_independent.py",
+      "workload_sha256": "b95353f07ae133ced07bef77343f075718c00337c7f9d5e6465cee5985db453d",
+      "case_ids": [
+        "fastapi.docs.body-updates.put-replaces-omitted-fields",
+        "fastapi.docs.body-updates.patch-preserves-omitted-fields",
+        "fastapi.docs.body-updates.patch-applies-explicit-null"
+      ]
+    },
+    {
       "id": "body-updates-tutorial001-upstream",
       "input_path": "tests/fixtures/inputs/parity/body-updates-tutorial001-upstream.json",
       "input_sha256": "8dab130c0910f4b2c2333f23901d5dd14ba1d5deeadf85171b32c6f7366b3492",
@@ -10036,6 +10050,35 @@
         "http.status",
         "openapi.document",
         "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "documented-example:docs_src/body_updates/tutorial001_py310.py",
+      "fixture_id": "fastapi.docs-example.body-updates-tutorial001-py310",
+      "workflow_id": "body-updates-independent",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.docs.body-updates.put-replaces-omitted-fields"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-example:docs_src/body_updates/tutorial002_py310.py",
+      "fixture_id": "fastapi.docs-example.body-updates-tutorial002-py310",
+      "workflow_id": "body-updates-independent",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.docs.body-updates.patch-applies-explicit-null",
+        "fastapi.docs.body-updates.patch-preserves-omitted-fields"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
       ]
     },
     {

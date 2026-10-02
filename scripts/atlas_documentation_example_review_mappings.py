@@ -77,6 +77,55 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
             }
         ],
     },
+    "docs_src/body_updates/tutorial001_py310.py": {
+        "rationale": (
+            "The FastAPI 0.141.1 example encodes and stores a complete model for a PUT request. "
+            "The independent records workflow sends a partial body to a separate route and "
+            "observes the full replacement result, including model defaults; it uses different "
+            "field names and values from the tutorial."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/body_updates/tutorial001_py310.py",
+                "start_line": 28,
+                "end_line": 32,
+                "role": "documented PUT model encoding and replacement behavior",
+            }
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/body-updates-independent.yaml",
+                "case_ids": ["fastapi.docs.body-updates.put-replaces-omitted-fields"],
+                "observation_selectors": ["http.body.bytes", "http.status"],
+            }
+        ],
+    },
+    "docs_src/body_updates/tutorial002_py310.py": {
+        "rationale": (
+            "The FastAPI 0.141.1 example applies only explicitly supplied fields when handling "
+            "PATCH. Independent cases use a separately named records route and model to verify "
+            "that omitted fields remain stored while an explicit null is applied; the tutorial's "
+            "identifiers, field names, and values are not reused."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/body_updates/tutorial002_py310.py",
+                "start_line": 28,
+                "end_line": 35,
+                "role": "documented PATCH exclude-unset merge and JSON encoding behavior",
+            }
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/body-updates-independent.yaml",
+                "case_ids": [
+                    "fastapi.docs.body-updates.patch-preserves-omitted-fields",
+                    "fastapi.docs.body-updates.patch-applies-explicit-null",
+                ],
+                "observation_selectors": ["http.body.bytes", "http.status"],
+            }
+        ],
+    },
     "docs_src/first_steps/tutorial001_py310.py": {
         "rationale": (
             "The FastAPI 0.141.1 example registers an async root route and returns a JSON "

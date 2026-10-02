@@ -1,0 +1,99 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/body_updates_independent.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.docs.body-updates.put-replaces-omitted-fields
+  actions:
+  - action_id: replace-independent-record
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: PUT
+      scheme: http
+      path: /records/part-17
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client: [127.0.0.1, 321]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: '{"label":"replacement-record"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  source_evidence:
+  - path: docs_src/body_updates/tutorial001_py310.py
+    kind: upstream_documentation_example
+- case_id: fastapi.docs.body-updates.patch-preserves-omitted-fields
+  actions:
+  - action_id: patch-label-only
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: PATCH
+      scheme: http
+      path: /records/part-17
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client: [127.0.0.1, 321]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: '{"label":"patch-record"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  source_evidence:
+  - path: docs_src/body_updates/tutorial002_py310.py
+    kind: upstream_documentation_example
+- case_id: fastapi.docs.body-updates.patch-applies-explicit-null
+  actions:
+  - action_id: patch-explicit-note-null
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: PATCH
+      scheme: http
+      path: /records/part-17
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client: [127.0.0.1, 321]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: '{"note":null}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  source_evidence:
+  - path: docs_src/body_updates/tutorial002_py310.py
+    kind: upstream_documentation_example
