@@ -1,0 +1,100 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/root_alias_identity.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.root-alias-identity.http-reexports
+  actions:
+  - action_id: read-http-identity-relations
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /identity
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/reference/fastapi.md
+    kind: upstream_documentation
+  - path: docs/en/docs/reference/background.md
+    kind: upstream_documentation
+  - path: docs/en/docs/reference/uploadfile.md
+    kind: upstream_documentation
+  - path: docs/en/docs/reference/exceptions.md
+    kind: upstream_documentation
+  - path: docs/en/docs/reference/parameters.md
+    kind: upstream_documentation
+  - path: docs/en/docs/reference/request.md
+    kind: upstream_documentation
+  - path: docs/en/docs/reference/response.md
+    kind: upstream_documentation
+  - path: docs/en/docs/reference/apirouter.md
+    kind: upstream_documentation
+  - path: docs/en/docs/reference/status.md
+    kind: upstream_documentation
+- case_id: fastapi.root-alias-identity.websocket-reexports
+  actions:
+  - action_id: read-websocket-identity-relations
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /identity
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.receive
+      text: inspect-identities
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
+    - kind: websocket
+      selector: messages
+      comparison: ordered
+  source_evidence:
+  - path: docs/en/docs/reference/websockets.md
+    kind: upstream_documentation

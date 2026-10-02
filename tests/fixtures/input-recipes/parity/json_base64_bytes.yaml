@@ -32,7 +32,7 @@ cases:
       - 80
     receive_events:
     - type: http.request
-      body: '{"description":"sample","data":"aGVsbG8="}'
+      body: '{"description":"independent decode input","data":"aW5kZXBlbmRlbnQtaW5wdXQ="}'
       more_body: false
     observations:
     - kind: http_response
@@ -100,7 +100,7 @@ cases:
       - 80
     receive_events:
     - type: http.request
-      body: '{"description":"sample","data":"aGVsbG8="}'
+      body: '{"description":"independent roundtrip input","data":"cm91bmR0cmlwLWlucHV0"}'
       more_body: false
     observations:
     - kind: http_response
@@ -150,6 +150,6 @@ cases:
   - path: docs/en/docs/advanced/json-base64-bytes.md
     kind: upstream_documentation
   - path: docs_src/json_base64_bytes/tutorial001_py310.py
-    kind: upstream_documentation
+    kind: upstream_documentation_example
   - path: tests/test_tutorial/test_json_base64_bytes/test_tutorial001.py
     kind: upstream_test

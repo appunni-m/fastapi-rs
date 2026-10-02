@@ -676,6 +676,169 @@
     {
       "feature_ids": [
         "app-routing",
+        "public-api-errors",
+        "status-codes",
+        "websocket-lifecycle"
+      ],
+      "id": "fastapi.docs-example.app-testing-tutorial003-py310",
+      "independent_workflow_mappings": [
+        {
+          "case_ids": [
+            "fastapi.test.test-tutorial-test-testing-test-tutorial003.startup-items-lifecycle"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.lifespan.application_errors, asgi.lifespan.event_order, asgi.lifespan.shutdown, asgi.lifespan.startup, asgi.lifespan.workload_trace. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "asgi.lifespan.application_errors",
+            "asgi.lifespan.event_order",
+            "asgi.lifespan.shutdown",
+            "asgi.lifespan.startup",
+            "asgi.lifespan.workload_trace"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/testing-tutorial003-lifecycle-upstream.yaml",
+          "workflow_id": "testing-tutorial003-lifecycle-upstream"
+        }
+      ],
+      "input_only": true,
+      "observation_selectors": [
+        "asgi.lifespan.application_errors",
+        "asgi.lifespan.event_order",
+        "asgi.lifespan.shutdown",
+        "asgi.lifespan.startup",
+        "asgi.lifespan.workload_trace"
+      ],
+      "selector_evidence": [
+        {
+          "feature_id": null,
+          "schema_extension_required": [
+            "asgi.lifespan.application_errors",
+            "asgi.lifespan.event_order",
+            "asgi.lifespan.shutdown",
+            "asgi.lifespan.startup",
+            "asgi.lifespan.workload_trace"
+          ],
+          "selectors": [
+            "asgi.lifespan.application_errors",
+            "asgi.lifespan.event_order",
+            "asgi.lifespan.shutdown",
+            "asgi.lifespan.startup",
+            "asgi.lifespan.workload_trace"
+          ]
+        }
+      ],
+      "source_evidence": [
+        {
+          "end_line": 24,
+          "path": "docs_src/app_testing/tutorial003_py310.py",
+          "role": "documented startup callback, item route, and TestClient-scoped request",
+          "sha256": "b40f9768ee8e7a1dbc8afa594975a24f19be411b58968e55b024f37cafce21e2",
+          "start_line": 9
+        }
+      ],
+      "source_item_id": "documented-example:docs_src/app_testing/tutorial003_py310.py",
+      "stage": "reviewed partial example-to-input mapping; only the listed cases and selectors are claimed",
+      "starlette_rs_planning_areas": [
+        "applications-requests-responses-background-concurrency",
+        "asgi-http-websocket-lifespan",
+        "middleware-authentication-endpoints-datastructures-status",
+        "routing-converters-mounts-hosts-and-errors"
+      ],
+      "stimulus_design": [
+        "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
+        "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable.",
+        "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status.",
+        "Create a WebSocket or lifespan workflow with ordered public actions and observe messages, close/error state, startup, shutdown, and cleanup."
+      ],
+      "stimulus_design_notes": "FastAPI 0.141.1 registers startup work with on_event and the example runs a request inside a TestClient context. The independent workflow observes startup/shutdown through raw ASGI lifespan events and also requests the initialized item, but this mapping claims only the lifecycle selectors. Direct ASGI lifecycle inputs do not establish TestClient context-manager parity or the example's import-time deprecation warning."
+    },
+    {
+      "feature_ids": [
+        "app-routing",
+        "public-api-errors",
+        "status-codes",
+        "websocket-lifecycle"
+      ],
+      "id": "fastapi.docs-example.app-testing-tutorial004-py310",
+      "independent_workflow_mappings": [
+        {
+          "case_ids": [
+            "fastapi.application-testing.lifespan-items"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.lifespan.application_errors, asgi.lifespan.event_order, asgi.lifespan.shutdown, asgi.lifespan.startup, asgi.lifespan.workload_trace. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "asgi.lifespan.application_errors",
+            "asgi.lifespan.event_order",
+            "asgi.lifespan.shutdown",
+            "asgi.lifespan.startup",
+            "asgi.lifespan.workload_trace"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/first-steps-application-testing-upstream.yaml",
+          "workflow_id": "first-steps-application-testing-upstream"
+        }
+      ],
+      "input_only": true,
+      "observation_selectors": [
+        "asgi.lifespan.application_errors",
+        "asgi.lifespan.event_order",
+        "asgi.lifespan.shutdown",
+        "asgi.lifespan.startup",
+        "asgi.lifespan.workload_trace"
+      ],
+      "selector_evidence": [
+        {
+          "feature_id": null,
+          "schema_extension_required": [
+            "asgi.lifespan.application_errors",
+            "asgi.lifespan.event_order",
+            "asgi.lifespan.shutdown",
+            "asgi.lifespan.startup",
+            "asgi.lifespan.workload_trace"
+          ],
+          "selectors": [
+            "asgi.lifespan.application_errors",
+            "asgi.lifespan.event_order",
+            "asgi.lifespan.shutdown",
+            "asgi.lifespan.startup",
+            "asgi.lifespan.workload_trace"
+          ]
+        }
+      ],
+      "source_evidence": [
+        {
+          "end_line": 23,
+          "path": "docs_src/app_testing/tutorial004_py310.py",
+          "role": "documented context-manager lifespan cleanup and dependent route",
+          "sha256": "8b9936fc81135a831d39ab9190d8be9dd77a218959afd7578de04ba0947ad61e",
+          "start_line": 9
+        },
+        {
+          "end_line": 43,
+          "path": "docs_src/app_testing/tutorial004_py310.py",
+          "role": "documented TestClient lifecycle context and before/after state assertions",
+          "sha256": "8b9936fc81135a831d39ab9190d8be9dd77a218959afd7578de04ba0947ad61e",
+          "start_line": 30
+        }
+      ],
+      "source_item_id": "documented-example:docs_src/app_testing/tutorial004_py310.py",
+      "stage": "reviewed partial example-to-input mapping; only the listed cases and selectors are claimed",
+      "starlette_rs_planning_areas": [
+        "applications-requests-responses-background-concurrency",
+        "asgi-http-websocket-lifespan",
+        "middleware-authentication-endpoints-datastructures-status",
+        "routing-converters-mounts-hosts-and-errors"
+      ],
+      "stimulus_design": [
+        "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
+        "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable.",
+        "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status.",
+        "Create a WebSocket or lifespan workflow with ordered public actions and observe messages, close/error state, startup, shutdown, and cleanup."
+      ],
+      "stimulus_design_notes": "FastAPI 0.141.1 defines a context-manager lifespan that adds items before yield and clears them afterward; its example asserts those states around a TestClient context. The independent workflow drives startup/shutdown with raw ASGI lifespan events and requests an item while the app is started. This mapping claims only lifecycle events and the workload trace; it does not claim the HTTP response, TestClient context-manager parity, or the tutorial's before/after state assertions."
+    },
+    {
+      "feature_ids": [
+        "app-routing",
         "dependency-security",
         "public-api-errors",
         "request-validation",
@@ -1105,6 +1268,156 @@
         "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs."
       ],
       "stimulus_design_notes": "The FastAPI 0.141.1 example embeds a model body under a named property and uses Pydantic field constraints. The independent supply cases exercise the embedded JSON envelope, positive-value validation, and the generated request schema on a different route/model. They observe status/body and a selected OpenAPI path projection; they do not claim the source field names, limit values, descriptions, or complete document."
+    },
+    {
+      "feature_ids": [
+        "app-routing",
+        "openapi-docs",
+        "request-validation"
+      ],
+      "id": "fastapi.docs-example.body-multiple-params-tutorial004-an-py310",
+      "independent_workflow_mappings": [
+        {
+          "case_ids": [
+            "fastapi.body.gt-zero.annotated-positive-integer",
+            "fastapi.body.gt-zero.annotated-zero-rejected"
+          ],
+          "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/body-gt-zero.yaml",
+          "workflow_id": "body-gt-zero"
+        }
+      ],
+      "input_only": true,
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ],
+      "selector_evidence": [
+        {
+          "feature_id": "app-routing",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        },
+        {
+          "feature_id": "openapi-docs",
+          "selectors": [
+            "http.body.bytes"
+          ]
+        },
+        {
+          "feature_id": "request-validation",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        }
+      ],
+      "source_evidence": [
+        {
+          "end_line": 32,
+          "path": "docs_src/body_multiple_params/tutorial004_an_py310.py",
+          "role": "documented Annotated Body(gt=0) importance field and endpoint result",
+          "sha256": "2f4e34a76b52675e59fa8a0198d9ba5c2b1291e124c4b1c8c6d1da0c8fbf3d8f",
+          "start_line": 21
+        }
+      ],
+      "source_item_id": "documented-example:docs_src/body_multiple_params/tutorial004_an_py310.py",
+      "stage": "reviewed partial example-to-input mapping; only the listed cases and selectors are claimed",
+      "starlette_rs_planning_areas": [
+        "applications-requests-responses-background-concurrency",
+        "middleware-authentication-endpoints-datastructures-status",
+        "routing-converters-mounts-hosts-and-errors",
+        "streaming-headers-cookies-errors-and-cleanup",
+        "wsgi-static-files-templates-schemas-configuration-testclient"
+      ],
+      "stimulus_design": [
+        "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
+        "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response.",
+        "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs."
+      ],
+      "stimulus_design_notes": "FastAPI 0.141.1 declares the importance field as Annotated[int, Body(gt=0)] inside a request that also contains Item and User models. The independent workflow isolates that same positive-integer constraint on a scalar JSON body and observes status/body for a positive value and zero. It does not claim multi-body embedding, Item/User parsing, the optional q parameter, or the tutorial's route and response literals."
+    },
+    {
+      "feature_ids": [
+        "app-routing",
+        "openapi-docs",
+        "request-validation"
+      ],
+      "id": "fastapi.docs-example.body-multiple-params-tutorial004-py310",
+      "independent_workflow_mappings": [
+        {
+          "case_ids": [
+            "fastapi.body.gt-zero.positive-integer",
+            "fastapi.body.gt-zero.zero-rejected"
+          ],
+          "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/body-gt-zero.yaml",
+          "workflow_id": "body-gt-zero"
+        }
+      ],
+      "input_only": true,
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ],
+      "selector_evidence": [
+        {
+          "feature_id": "app-routing",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        },
+        {
+          "feature_id": "openapi-docs",
+          "selectors": [
+            "http.body.bytes"
+          ]
+        },
+        {
+          "feature_id": "request-validation",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        }
+      ],
+      "source_evidence": [
+        {
+          "end_line": 30,
+          "path": "docs_src/body_multiple_params/tutorial004_py310.py",
+          "role": "documented direct Body(gt=0) importance field and endpoint result",
+          "sha256": "277330efb0843b6111ae955e897e9f0104126e0c283fb813b169c9b3f24fe8e4",
+          "start_line": 19
+        }
+      ],
+      "source_item_id": "documented-example:docs_src/body_multiple_params/tutorial004_py310.py",
+      "stage": "reviewed partial example-to-input mapping; only the listed cases and selectors are claimed",
+      "starlette_rs_planning_areas": [
+        "applications-requests-responses-background-concurrency",
+        "middleware-authentication-endpoints-datastructures-status",
+        "routing-converters-mounts-hosts-and-errors",
+        "streaming-headers-cookies-errors-and-cleanup",
+        "wsgi-static-files-templates-schemas-configuration-testclient"
+      ],
+      "stimulus_design": [
+        "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
+        "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response.",
+        "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs."
+      ],
+      "stimulus_design_notes": "FastAPI 0.141.1 declares the importance field as a direct Body(gt=0) scalar inside a request that also contains Item and User models. The independent workflow isolates that same positive-integer constraint on a scalar JSON body and observes status/body for a positive value and zero. It does not claim multi-body embedding, Item/User parsing, the optional q parameter, or the tutorial's route and response literals."
     },
     {
       "feature_ids": [
@@ -1579,6 +1892,140 @@
     {
       "feature_ids": [
         "app-routing",
+        "public-api-errors",
+        "request-validation"
+      ],
+      "id": "fastapi.docs-example.cookie-params-tutorial001-an-py310",
+      "independent_workflow_mappings": [
+        {
+          "case_ids": [
+            "fastapi.pending.tutorials-source-wave.cookie-parameter-cases"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/atlas-pending-tutorials-source-wave.yaml",
+          "workflow_id": "atlas-pending-tutorials-source-wave"
+        }
+      ],
+      "input_only": true,
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ],
+      "selector_evidence": [
+        {
+          "feature_id": "app-routing",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        },
+        {
+          "feature_id": "request-validation",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        }
+      ],
+      "source_evidence": [
+        {
+          "end_line": 10,
+          "path": "docs_src/cookie_params/tutorial001_an_py310.py",
+          "role": "documented Annotated optional Cookie parameter and default",
+          "sha256": "7e29d6ab7494efeb57f6bbfa09520169abd11b1b0a5836b1447310f152e085ae",
+          "start_line": 8
+        }
+      ],
+      "source_item_id": "documented-example:docs_src/cookie_params/tutorial001_an_py310.py",
+      "stage": "reviewed partial example-to-input mapping; only the listed cases and selectors are claimed",
+      "starlette_rs_planning_areas": [
+        "applications-requests-responses-background-concurrency",
+        "middleware-authentication-endpoints-datastructures-status",
+        "routing-converters-mounts-hosts-and-errors",
+        "streaming-headers-cookies-errors-and-cleanup"
+      ],
+      "stimulus_design": [
+        "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
+        "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable.",
+        "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs."
+      ],
+      "stimulus_design_notes": "The FastAPI 0.141.1 Annotated example declares optional ads_id with Cookie() and a Python default of None. The mapped case includes requests to its separately declared Annotated route with the cookie omitted and supplied, observing response status and body bytes. The same case separately exercises the direct route mapped to its own source example; this mapping does not assert equivalence between the two declaration forms or cover other Cookie behavior."
+    },
+    {
+      "feature_ids": [
+        "app-routing",
+        "public-api-errors",
+        "request-validation"
+      ],
+      "id": "fastapi.docs-example.cookie-params-tutorial001-py310",
+      "independent_workflow_mappings": [
+        {
+          "case_ids": [
+            "fastapi.pending.tutorials-source-wave.cookie-parameter-cases"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/atlas-pending-tutorials-source-wave.yaml",
+          "workflow_id": "atlas-pending-tutorials-source-wave"
+        }
+      ],
+      "input_only": true,
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ],
+      "selector_evidence": [
+        {
+          "feature_id": "app-routing",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        },
+        {
+          "feature_id": "request-validation",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        }
+      ],
+      "source_evidence": [
+        {
+          "end_line": 8,
+          "path": "docs_src/cookie_params/tutorial001_py310.py",
+          "role": "documented direct optional Cookie parameter and default",
+          "sha256": "93bd8618219341362f6cde82bc993a7426a9a93eb81119753a3fb7dbdabd88e0",
+          "start_line": 6
+        }
+      ],
+      "source_item_id": "documented-example:docs_src/cookie_params/tutorial001_py310.py",
+      "stage": "reviewed partial example-to-input mapping; only the listed cases and selectors are claimed",
+      "starlette_rs_planning_areas": [
+        "applications-requests-responses-background-concurrency",
+        "middleware-authentication-endpoints-datastructures-status",
+        "routing-converters-mounts-hosts-and-errors",
+        "streaming-headers-cookies-errors-and-cleanup"
+      ],
+      "stimulus_design": [
+        "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
+        "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable.",
+        "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs."
+      ],
+      "stimulus_design_notes": "The FastAPI 0.141.1 direct example declares optional ads_id with Cookie(default=None). The mapped case includes requests to its separately declared direct route with the cookie omitted and supplied, observing response status and body bytes. The same case separately exercises the Annotated route mapped to its own source example; this mapping does not assert equivalence between the two declaration forms or cover other Cookie behavior."
+    },
+    {
+      "feature_ids": [
+        "app-routing",
         "middleware-integrations",
         "public-api-errors"
       ],
@@ -1964,6 +2411,492 @@
         "dependency-security",
         "request-validation"
       ],
+      "id": "fastapi.docs-example.dependencies-tutorial005-an-py310",
+      "independent_workflow_mappings": [
+        {
+          "case_ids": [
+            "fastapi.dependencies.tutorial005.query-cookie.fallback",
+            "fastapi.dependencies.tutorial005.query-cookie.no-query-or-cookie",
+            "fastapi.dependencies.tutorial005.query-cookie.openapi-parameters",
+            "fastapi.dependencies.tutorial005.query-cookie.query-precedence"
+          ],
+          "coverage_scope": "Partial independent sample across 4 case(s); observes http.body.bytes, http.status, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status",
+            "openapi.paths"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/dependency-tutorial005-query-cookie-fallback.yaml",
+          "workflow_id": "dependency-tutorial005-query-cookie-fallback"
+        }
+      ],
+      "input_only": true,
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status",
+        "openapi.paths"
+      ],
+      "selector_evidence": [
+        {
+          "feature_id": "app-routing",
+          "selectors": [
+            "http.body.bytes",
+            "http.status",
+            "openapi.paths"
+          ]
+        },
+        {
+          "feature_id": "dependency-security",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        },
+        {
+          "feature_id": "request-validation",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        }
+      ],
+      "source_evidence": [
+        {
+          "end_line": 25,
+          "path": "docs_src/dependencies/tutorial005_an_py310.py",
+          "role": "documented Annotated query dependency, cookie fallback, and endpoint",
+          "sha256": "04927c56654908254f8ef335ac3949244a921d20313664dc10837ce49208ec82",
+          "start_line": 8
+        }
+      ],
+      "source_item_id": "documented-example:docs_src/dependencies/tutorial005_an_py310.py",
+      "stage": "reviewed partial example-to-input mapping; only the listed cases and selectors are claimed",
+      "starlette_rs_planning_areas": [
+        "applications-requests-responses-background-concurrency",
+        "asgi-http-websocket-lifespan",
+        "middleware-authentication-endpoints-datastructures-status",
+        "routing-converters-mounts-hosts-and-errors",
+        "streaming-headers-cookies-errors-and-cleanup"
+      ],
+      "stimulus_design": [
+        "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
+        "Declare the dependency/security graph and credential inputs, invoke the public endpoint, and observe response, call order, cleanup, and schema effects.",
+        "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs."
+      ],
+      "stimulus_design_notes": "FastAPI 0.141.1's Annotated example nests the same query extractor and cookie fallback. The independent workload uses Annotated dependency declarations and covers query precedence, cookie fallback, absence of both values, and the query/cookie OpenAPI parameters. The mapping is limited to those inputs and observations; it does not claim unrelated dependency behavior."
+    },
+    {
+      "feature_ids": [
+        "app-routing",
+        "dependency-security",
+        "request-validation"
+      ],
+      "id": "fastapi.docs-example.dependencies-tutorial005-py310",
+      "independent_workflow_mappings": [
+        {
+          "case_ids": [
+            "fastapi.dependencies.tutorial005.query-cookie.fallback",
+            "fastapi.dependencies.tutorial005.query-cookie.no-query-or-cookie",
+            "fastapi.dependencies.tutorial005.query-cookie.openapi-parameters",
+            "fastapi.dependencies.tutorial005.query-cookie.query-precedence"
+          ],
+          "coverage_scope": "Partial independent sample across 4 case(s); observes http.body.bytes, http.status, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status",
+            "openapi.paths"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/dependency-tutorial005-query-cookie-fallback.yaml",
+          "workflow_id": "dependency-tutorial005-query-cookie-fallback"
+        }
+      ],
+      "input_only": true,
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status",
+        "openapi.paths"
+      ],
+      "selector_evidence": [
+        {
+          "feature_id": "app-routing",
+          "selectors": [
+            "http.body.bytes",
+            "http.status",
+            "openapi.paths"
+          ]
+        },
+        {
+          "feature_id": "dependency-security",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        },
+        {
+          "feature_id": "request-validation",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        }
+      ],
+      "source_evidence": [
+        {
+          "end_line": 20,
+          "path": "docs_src/dependencies/tutorial005_py310.py",
+          "role": "documented direct query dependency, cookie fallback, and endpoint",
+          "sha256": "2c471ec1ca637c2641e05f80b00050b6a73fc8cd663fdeddd350d989079f2715",
+          "start_line": 6
+        }
+      ],
+      "source_item_id": "documented-example:docs_src/dependencies/tutorial005_py310.py",
+      "stage": "reviewed partial example-to-input mapping; only the listed cases and selectors are claimed",
+      "starlette_rs_planning_areas": [
+        "applications-requests-responses-background-concurrency",
+        "asgi-http-websocket-lifespan",
+        "middleware-authentication-endpoints-datastructures-status",
+        "routing-converters-mounts-hosts-and-errors",
+        "streaming-headers-cookies-errors-and-cleanup"
+      ],
+      "stimulus_design": [
+        "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
+        "Declare the dependency/security graph and credential inputs, invoke the public endpoint, and observe response, call order, cleanup, and schema effects.",
+        "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs."
+      ],
+      "stimulus_design_notes": "FastAPI 0.141.1's direct/default-parameter example nests a query extractor and a cookie fallback. The independent workload covers query precedence, cookie fallback, absence of both values, and the query/cookie OpenAPI parameters, but its Python signatures use Annotated declarations. This is a behavior-level mapping only; it does not establish parity for the direct declaration style."
+    },
+    {
+      "feature_ids": [
+        "app-routing",
+        "dependency-security",
+        "public-api-errors",
+        "request-validation",
+        "status-codes"
+      ],
+      "id": "fastapi.docs-example.dependencies-tutorial008c-an-py310",
+      "independent_workflow_mappings": [
+        {
+          "case_ids": [
+            "fastapi.dependencies.tutorial008c.suppressed-yield-exception"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/dependency-yield-errors-tutorials-upstream.yaml",
+          "workflow_id": "dependency-yield-errors-tutorials-upstream"
+        }
+      ],
+      "input_only": true,
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ],
+      "selector_evidence": [
+        {
+          "feature_id": "app-routing",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        },
+        {
+          "feature_id": "dependency-security",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        },
+        {
+          "feature_id": "request-validation",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        },
+        {
+          "feature_id": "status-codes",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        }
+      ],
+      "source_evidence": [
+        {
+          "end_line": 28,
+          "path": "docs_src/dependencies/tutorial008c_an_py310.py",
+          "role": "documented Annotated Depends yield cleanup and endpoint exception branch",
+          "sha256": "6e0ea198f11f19c2812d040d7757e486497f771ec5d0fa9ce03551c879298fe8",
+          "start_line": 12
+        }
+      ],
+      "source_item_id": "documented-example:docs_src/dependencies/tutorial008c_an_py310.py",
+      "stage": "reviewed partial example-to-input mapping; only the listed cases and selectors are claimed",
+      "starlette_rs_planning_areas": [
+        "applications-requests-responses-background-concurrency",
+        "asgi-http-websocket-lifespan",
+        "middleware-authentication-endpoints-datastructures-status",
+        "routing-converters-mounts-hosts-and-errors",
+        "streaming-headers-cookies-errors-and-cleanup"
+      ],
+      "stimulus_design": [
+        "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
+        "Declare the dependency/security graph and credential inputs, invoke the public endpoint, and observe response, call order, cleanup, and schema effects.",
+        "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable.",
+        "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
+        "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status."
+      ],
+      "stimulus_design_notes": "FastAPI 0.141.1's Annotated example injects an exception into a yield dependency, catches InternalError without re-raising, and has an endpoint branch that raises it. The independent workflow exercises the corresponding Annotated route and observes HTTP status/body; it separately records an application-exception outcome, which this mapping does not claim. The case also contains a separate direct-signature route. This mapping does not claim stdout, the tutorial's literals, or behavior outside these inputs."
+    },
+    {
+      "feature_ids": [
+        "app-routing",
+        "dependency-security",
+        "public-api-errors",
+        "status-codes"
+      ],
+      "id": "fastapi.docs-example.dependencies-tutorial008c-py310",
+      "independent_workflow_mappings": [
+        {
+          "case_ids": [
+            "fastapi.dependencies.tutorial008c.suppressed-yield-exception"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/dependency-yield-errors-tutorials-upstream.yaml",
+          "workflow_id": "dependency-yield-errors-tutorials-upstream"
+        }
+      ],
+      "input_only": true,
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ],
+      "selector_evidence": [
+        {
+          "feature_id": "app-routing",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        },
+        {
+          "feature_id": "dependency-security",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        },
+        {
+          "feature_id": "status-codes",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        }
+      ],
+      "source_evidence": [
+        {
+          "end_line": 26,
+          "path": "docs_src/dependencies/tutorial008c_py310.py",
+          "role": "documented direct Depends yield cleanup and endpoint exception branch",
+          "sha256": "55fe98698b5905cfd99926832798f1ae691be65c7f4a127c57ef6e2981af1ade",
+          "start_line": 10
+        }
+      ],
+      "source_item_id": "documented-example:docs_src/dependencies/tutorial008c_py310.py",
+      "stage": "reviewed partial example-to-input mapping; only the listed cases and selectors are claimed",
+      "starlette_rs_planning_areas": [
+        "applications-requests-responses-background-concurrency",
+        "asgi-http-websocket-lifespan",
+        "middleware-authentication-endpoints-datastructures-status",
+        "routing-converters-mounts-hosts-and-errors"
+      ],
+      "stimulus_design": [
+        "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
+        "Declare the dependency/security graph and credential inputs, invoke the public endpoint, and observe response, call order, cleanup, and schema effects.",
+        "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable.",
+        "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status."
+      ],
+      "stimulus_design_notes": "FastAPI 0.141.1's direct-parameter example injects an exception into a yield dependency, catches InternalError without re-raising, and has an endpoint branch that raises it. The independent workflow exercises the corresponding direct-signature route and observes HTTP status/body; it separately records an application-exception outcome, which this mapping does not claim. The case also contains a separate Annotated route. This mapping does not claim stdout, the tutorial's literals, or behavior outside these inputs."
+    },
+    {
+      "feature_ids": [
+        "app-routing",
+        "dependency-security",
+        "public-api-errors",
+        "request-validation",
+        "status-codes"
+      ],
+      "id": "fastapi.docs-example.dependencies-tutorial008d-an-py310",
+      "independent_workflow_mappings": [
+        {
+          "case_ids": [
+            "fastapi.dependencies.tutorial008d.reraised-yield-exception"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/dependency-yield-errors-tutorials-upstream.yaml",
+          "workflow_id": "dependency-yield-errors-tutorials-upstream"
+        }
+      ],
+      "input_only": true,
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ],
+      "selector_evidence": [
+        {
+          "feature_id": "app-routing",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        },
+        {
+          "feature_id": "dependency-security",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        },
+        {
+          "feature_id": "request-validation",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        },
+        {
+          "feature_id": "status-codes",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        }
+      ],
+      "source_evidence": [
+        {
+          "end_line": 28,
+          "path": "docs_src/dependencies/tutorial008d_an_py310.py",
+          "role": "documented Annotated Depends yield cleanup and re-raised endpoint exception",
+          "sha256": "3b49b4fb2321efaf78def86ca4c11ff6c8aff4690fdaf66953bec49adc90c294",
+          "start_line": 12
+        }
+      ],
+      "source_item_id": "documented-example:docs_src/dependencies/tutorial008d_an_py310.py",
+      "stage": "reviewed partial example-to-input mapping; only the listed cases and selectors are claimed",
+      "starlette_rs_planning_areas": [
+        "applications-requests-responses-background-concurrency",
+        "asgi-http-websocket-lifespan",
+        "middleware-authentication-endpoints-datastructures-status",
+        "routing-converters-mounts-hosts-and-errors",
+        "streaming-headers-cookies-errors-and-cleanup"
+      ],
+      "stimulus_design": [
+        "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
+        "Declare the dependency/security graph and credential inputs, invoke the public endpoint, and observe response, call order, cleanup, and schema effects.",
+        "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable.",
+        "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
+        "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status."
+      ],
+      "stimulus_design_notes": "FastAPI 0.141.1's Annotated example injects an exception into a yield dependency, records it, and re-raises it. The independent workflow exercises the corresponding Annotated route and observes HTTP status/body. Although the case also records an application error class, this mapping does not claim that selector. The case contains a separate direct-signature route; this mapping does not claim stdout, the tutorial's literals, or behavior outside these inputs."
+    },
+    {
+      "feature_ids": [
+        "app-routing",
+        "dependency-security",
+        "public-api-errors",
+        "status-codes"
+      ],
+      "id": "fastapi.docs-example.dependencies-tutorial008d-py310",
+      "independent_workflow_mappings": [
+        {
+          "case_ids": [
+            "fastapi.dependencies.tutorial008d.reraised-yield-exception"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/dependency-yield-errors-tutorials-upstream.yaml",
+          "workflow_id": "dependency-yield-errors-tutorials-upstream"
+        }
+      ],
+      "input_only": true,
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ],
+      "selector_evidence": [
+        {
+          "feature_id": "app-routing",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        },
+        {
+          "feature_id": "dependency-security",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        },
+        {
+          "feature_id": "status-codes",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        }
+      ],
+      "source_evidence": [
+        {
+          "end_line": 26,
+          "path": "docs_src/dependencies/tutorial008d_py310.py",
+          "role": "documented direct Depends yield cleanup and re-raised endpoint exception",
+          "sha256": "614470dd257097853e0252def01d5ae786196487c9879bc7f0816f2b049793b6",
+          "start_line": 10
+        }
+      ],
+      "source_item_id": "documented-example:docs_src/dependencies/tutorial008d_py310.py",
+      "stage": "reviewed partial example-to-input mapping; only the listed cases and selectors are claimed",
+      "starlette_rs_planning_areas": [
+        "applications-requests-responses-background-concurrency",
+        "asgi-http-websocket-lifespan",
+        "middleware-authentication-endpoints-datastructures-status",
+        "routing-converters-mounts-hosts-and-errors"
+      ],
+      "stimulus_design": [
+        "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
+        "Declare the dependency/security graph and credential inputs, invoke the public endpoint, and observe response, call order, cleanup, and schema effects.",
+        "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable.",
+        "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status."
+      ],
+      "stimulus_design_notes": "FastAPI 0.141.1's direct-parameter example injects an exception into a yield dependency, records it, and re-raises it. The independent workflow exercises the corresponding direct-signature route and observes HTTP status/body. Although the case also records an application error class, this mapping does not claim that selector. The case contains a separate Annotated route; this mapping does not claim stdout, the tutorial's literals, or behavior outside these inputs."
+    },
+    {
+      "feature_ids": [
+        "app-routing",
+        "dependency-security",
+        "request-validation"
+      ],
       "id": "fastapi.docs-example.dependencies-tutorial008e-an-py310",
       "independent_workflow_mappings": [
         {
@@ -2123,6 +3056,507 @@
         "Declare the dependency/security graph and credential inputs, invoke the public endpoint, and observe response, call order, cleanup, and schema effects."
       ],
       "stimulus_design_notes": "FastAPI 0.141.1 yields Rick from a function-scoped dependency and prints from its cleanup. The independent tutorial case sends the same `/users/me` request and has a follow-up request that exposes a workload cleanup event; only the first response's status and body match the upstream test assertions. The separate `first-response` action in the lifecycle case probes documented function-scope cleanup relative to a streamed response using an independent workload. These are partial inputs: the tutorial test does not assert cleanup, capture stdout, or assert print order."
+    },
+    {
+      "feature_ids": [
+        "app-routing",
+        "dependency-security",
+        "openapi-docs",
+        "request-validation",
+        "response-serialization"
+      ],
+      "id": "fastapi.docs-example.extra-models-tutorial001-py310",
+      "independent_workflow_mappings": [
+        {
+          "case_ids": [
+            "fastapi.extra-models.tutorial001-flat-user-models"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status",
+            "openapi.document"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/extra-models-tutorials-upstream-wave.yaml",
+          "workflow_id": "extra-models-tutorials-upstream-wave"
+        }
+      ],
+      "input_only": true,
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status",
+        "openapi.document"
+      ],
+      "selector_evidence": [
+        {
+          "feature_id": "app-routing",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        },
+        {
+          "feature_id": "dependency-security",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        },
+        {
+          "feature_id": "openapi-docs",
+          "selectors": [
+            "http.body.bytes",
+            "openapi.document"
+          ]
+        },
+        {
+          "feature_id": "request-validation",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        },
+        {
+          "feature_id": "response-serialization",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        }
+      ],
+      "source_evidence": [
+        {
+          "end_line": 24,
+          "path": "docs_src/extra_models/tutorial001_py310.py",
+          "role": "documented flat input, output, and database user model shapes",
+          "sha256": "b19212af4799db5c408d2dd6ccd1b447694990772505e427a0ed1529e9da6980",
+          "start_line": 7
+        },
+        {
+          "end_line": 41,
+          "path": "docs_src/extra_models/tutorial001_py310.py",
+          "role": "documented user conversion and response_model route",
+          "sha256": "b19212af4799db5c408d2dd6ccd1b447694990772505e427a0ed1529e9da6980",
+          "start_line": 31
+        }
+      ],
+      "source_item_id": "documented-example:docs_src/extra_models/tutorial001_py310.py",
+      "stage": "reviewed partial example-to-input mapping; only the listed cases and selectors are claimed",
+      "starlette_rs_planning_areas": [
+        "applications-requests-responses-background-concurrency",
+        "asgi-http-websocket-lifespan",
+        "middleware-authentication-endpoints-datastructures-status",
+        "routing-converters-mounts-hosts-and-errors",
+        "streaming-headers-cookies-errors-and-cleanup",
+        "wsgi-static-files-templates-schemas-configuration-testclient"
+      ],
+      "stimulus_design": [
+        "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
+        "Declare the dependency/security graph and credential inputs, invoke the public endpoint, and observe response, call order, cleanup, and schema effects.",
+        "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response.",
+        "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
+        "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
+      ],
+      "stimulus_design_notes": "FastAPI 0.141.1 accepts the flat UserIn model, creates a UserInDB value with a hashed_password, and returns it through response_model=UserOut. The independent workflow uses the same model shape with different user/password values and a separate hash prefix; it observes response status/body and selected OpenAPI paths and schemas. This maps request/response model filtering and schema generation only, not the tutorial's hasher, print, values, or TestClient semantics."
+    },
+    {
+      "feature_ids": [
+        "app-routing",
+        "dependency-security",
+        "openapi-docs",
+        "request-validation",
+        "response-serialization"
+      ],
+      "id": "fastapi.docs-example.extra-models-tutorial002-py310",
+      "independent_workflow_mappings": [
+        {
+          "case_ids": [
+            "fastapi.extra-models.tutorial002-inherited-user-models"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status",
+            "openapi.document"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/extra-models-tutorials-upstream-wave.yaml",
+          "workflow_id": "extra-models-tutorials-upstream-wave"
+        }
+      ],
+      "input_only": true,
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status",
+        "openapi.document"
+      ],
+      "selector_evidence": [
+        {
+          "feature_id": "app-routing",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        },
+        {
+          "feature_id": "dependency-security",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        },
+        {
+          "feature_id": "openapi-docs",
+          "selectors": [
+            "http.body.bytes",
+            "openapi.document"
+          ]
+        },
+        {
+          "feature_id": "request-validation",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        },
+        {
+          "feature_id": "response-serialization",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        }
+      ],
+      "source_evidence": [
+        {
+          "end_line": 23,
+          "path": "docs_src/extra_models/tutorial002_py310.py",
+          "role": "documented shared base, input, output, and database user model inheritance",
+          "sha256": "303a663e4d4b77b381459c68697c7200053cc9a3e5ba580f6569c1f5f3c7c849",
+          "start_line": 7
+        },
+        {
+          "end_line": 39,
+          "path": "docs_src/extra_models/tutorial002_py310.py",
+          "role": "documented user conversion and response_model route",
+          "sha256": "303a663e4d4b77b381459c68697c7200053cc9a3e5ba580f6569c1f5f3c7c849",
+          "start_line": 29
+        }
+      ],
+      "source_item_id": "documented-example:docs_src/extra_models/tutorial002_py310.py",
+      "stage": "reviewed partial example-to-input mapping; only the listed cases and selectors are claimed",
+      "starlette_rs_planning_areas": [
+        "applications-requests-responses-background-concurrency",
+        "asgi-http-websocket-lifespan",
+        "middleware-authentication-endpoints-datastructures-status",
+        "routing-converters-mounts-hosts-and-errors",
+        "streaming-headers-cookies-errors-and-cleanup",
+        "wsgi-static-files-templates-schemas-configuration-testclient"
+      ],
+      "stimulus_design": [
+        "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
+        "Declare the dependency/security graph and credential inputs, invoke the public endpoint, and observe response, call order, cleanup, and schema effects.",
+        "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response.",
+        "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
+        "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
+      ],
+      "stimulus_design_notes": "FastAPI 0.141.1 builds UserIn, UserOut, and UserInDB from a shared UserBase model and returns the database-shaped value through response_model=UserOut. The independent workflow reproduces that inheritance shape with separate values and hashing; it observes response status/body and selected OpenAPI paths and schemas. This maps model inheritance, response filtering, and the selected schema output, not the tutorial's helper implementation, values, or TestClient semantics."
+    },
+    {
+      "feature_ids": [
+        "app-routing",
+        "dependency-security",
+        "openapi-docs",
+        "request-validation",
+        "response-serialization"
+      ],
+      "id": "fastapi.docs-example.extra-models-tutorial003-py310",
+      "independent_workflow_mappings": [
+        {
+          "case_ids": [
+            "fastapi.extra-models.tutorial003-union-response-model"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status",
+            "openapi.document"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/extra-models-tutorials-upstream-wave.yaml",
+          "workflow_id": "extra-models-tutorials-upstream-wave"
+        }
+      ],
+      "input_only": true,
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status",
+        "openapi.document"
+      ],
+      "selector_evidence": [
+        {
+          "feature_id": "app-routing",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        },
+        {
+          "feature_id": "dependency-security",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        },
+        {
+          "feature_id": "openapi-docs",
+          "selectors": [
+            "http.body.bytes",
+            "openapi.document"
+          ]
+        },
+        {
+          "feature_id": "request-validation",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        },
+        {
+          "feature_id": "response-serialization",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        }
+      ],
+      "source_evidence": [
+        {
+          "end_line": 18,
+          "path": "docs_src/extra_models/tutorial003_py310.py",
+          "role": "documented base, car, and plane response model definitions",
+          "sha256": "0c231ca8880f39279e29e21e5e909c3fe3eefaca872581cfedbe744c3d56fb7c",
+          "start_line": 7
+        },
+        {
+          "end_line": 33,
+          "path": "docs_src/extra_models/tutorial003_py310.py",
+          "role": "documented variant data and union response_model route",
+          "sha256": "0c231ca8880f39279e29e21e5e909c3fe3eefaca872581cfedbe744c3d56fb7c",
+          "start_line": 21
+        }
+      ],
+      "source_item_id": "documented-example:docs_src/extra_models/tutorial003_py310.py",
+      "stage": "reviewed partial example-to-input mapping; only the listed cases and selectors are claimed",
+      "starlette_rs_planning_areas": [
+        "applications-requests-responses-background-concurrency",
+        "asgi-http-websocket-lifespan",
+        "middleware-authentication-endpoints-datastructures-status",
+        "routing-converters-mounts-hosts-and-errors",
+        "streaming-headers-cookies-errors-and-cleanup",
+        "wsgi-static-files-templates-schemas-configuration-testclient"
+      ],
+      "stimulus_design": [
+        "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
+        "Declare the dependency/security graph and credential inputs, invoke the public endpoint, and observe response, call order, cleanup, and schema effects.",
+        "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response.",
+        "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
+        "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
+      ],
+      "stimulus_design_notes": "FastAPI 0.141.1 declares PlaneItem | CarItem as the route response model. The independent workflow uses the same union model shape and exercises one car-shaped and one plane-shaped response with different item IDs and data, then inspects the selected OpenAPI paths and model schemas. It maps the observed union response filtering and schema only, not the tutorial's item values or TestClient semantics."
+    },
+    {
+      "feature_ids": [
+        "app-routing",
+        "dependency-security",
+        "openapi-docs",
+        "request-validation",
+        "response-serialization"
+      ],
+      "id": "fastapi.docs-example.extra-models-tutorial004-py310",
+      "independent_workflow_mappings": [
+        {
+          "case_ids": [
+            "fastapi.extra-models.tutorial004-typed-list-response"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status",
+            "openapi.document"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/extra-models-tutorials-upstream-wave.yaml",
+          "workflow_id": "extra-models-tutorials-upstream-wave"
+        }
+      ],
+      "input_only": true,
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status",
+        "openapi.document"
+      ],
+      "selector_evidence": [
+        {
+          "feature_id": "app-routing",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        },
+        {
+          "feature_id": "dependency-security",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        },
+        {
+          "feature_id": "openapi-docs",
+          "selectors": [
+            "http.body.bytes",
+            "openapi.document"
+          ]
+        },
+        {
+          "feature_id": "request-validation",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        },
+        {
+          "feature_id": "response-serialization",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        }
+      ],
+      "source_evidence": [
+        {
+          "end_line": 20,
+          "path": "docs_src/extra_models/tutorial004_py310.py",
+          "role": "documented Item response model, list data, and typed-list route",
+          "sha256": "565a155c731327afb01a291bcfe9bd3640cedcfd897d020a4e1a837343622b6f",
+          "start_line": 7
+        }
+      ],
+      "source_item_id": "documented-example:docs_src/extra_models/tutorial004_py310.py",
+      "stage": "reviewed partial example-to-input mapping; only the listed cases and selectors are claimed",
+      "starlette_rs_planning_areas": [
+        "applications-requests-responses-background-concurrency",
+        "asgi-http-websocket-lifespan",
+        "middleware-authentication-endpoints-datastructures-status",
+        "routing-converters-mounts-hosts-and-errors",
+        "streaming-headers-cookies-errors-and-cleanup",
+        "wsgi-static-files-templates-schemas-configuration-testclient"
+      ],
+      "stimulus_design": [
+        "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
+        "Declare the dependency/security graph and credential inputs, invoke the public endpoint, and observe response, call order, cleanup, and schema effects.",
+        "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response.",
+        "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
+        "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
+      ],
+      "stimulus_design_notes": "FastAPI 0.141.1 returns a list of dictionaries through response_model=list[Item]. The independent workflow uses the same Item fields and typed-list route with different catalog values; it observes the response status/body and selected OpenAPI path and Item schema. This maps list response validation/filtering and its selected schema, not the tutorial's literal rows or TestClient semantics."
+    },
+    {
+      "feature_ids": [
+        "app-routing",
+        "dependency-security",
+        "openapi-docs",
+        "request-validation",
+        "response-serialization"
+      ],
+      "id": "fastapi.docs-example.extra-models-tutorial005-py310",
+      "independent_workflow_mappings": [
+        {
+          "case_ids": [
+            "fastapi.extra-models.tutorial005-typed-map-response"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status",
+            "openapi.document"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/extra-models-tutorials-upstream-wave.yaml",
+          "workflow_id": "extra-models-tutorials-upstream-wave"
+        }
+      ],
+      "input_only": true,
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status",
+        "openapi.document"
+      ],
+      "selector_evidence": [
+        {
+          "feature_id": "app-routing",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        },
+        {
+          "feature_id": "dependency-security",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        },
+        {
+          "feature_id": "openapi-docs",
+          "selectors": [
+            "http.body.bytes",
+            "openapi.document"
+          ]
+        },
+        {
+          "feature_id": "request-validation",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        },
+        {
+          "feature_id": "response-serialization",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        }
+      ],
+      "source_evidence": [
+        {
+          "end_line": 8,
+          "path": "docs_src/extra_models/tutorial005_py310.py",
+          "role": "documented dict[str, float] response model and route",
+          "sha256": "65bba303a1785c06c76a8e02e158937f2a31b707ba4c0eb234bbac4c0110c967",
+          "start_line": 6
+        }
+      ],
+      "source_item_id": "documented-example:docs_src/extra_models/tutorial005_py310.py",
+      "stage": "reviewed partial example-to-input mapping; only the listed cases and selectors are claimed",
+      "starlette_rs_planning_areas": [
+        "applications-requests-responses-background-concurrency",
+        "asgi-http-websocket-lifespan",
+        "middleware-authentication-endpoints-datastructures-status",
+        "routing-converters-mounts-hosts-and-errors",
+        "streaming-headers-cookies-errors-and-cleanup",
+        "wsgi-static-files-templates-schemas-configuration-testclient"
+      ],
+      "stimulus_design": [
+        "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
+        "Declare the dependency/security graph and credential inputs, invoke the public endpoint, and observe response, call order, cleanup, and schema effects.",
+        "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response.",
+        "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
+        "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
+      ],
+      "stimulus_design_notes": "FastAPI 0.141.1 declares dict[str, float] as the response model. The independent workflow uses the same typed-map route with different keys and values; it observes response status/body and the OpenAPI paths containing the map response schema. This maps the typed mapping response and its path-level schema only, not the tutorial's literal values or TestClient semantics."
     },
     {
       "feature_ids": [
@@ -3308,6 +4742,104 @@
         "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs."
       ],
       "stimulus_design_notes": "The documented route declares optional list[str] x_token values with Header(default=None). The linked request cases cover an omitted value, one value, and repeated values in order; this partial mapping does not claim other Header options or parameter types."
+    },
+    {
+      "feature_ids": [
+        "app-routing",
+        "openapi-docs",
+        "request-validation",
+        "response-serialization"
+      ],
+      "id": "fastapi.docs-example.json-base64-bytes-tutorial001-py310",
+      "independent_workflow_mappings": [
+        {
+          "case_ids": [
+            "fastapi.docs.json-base64-bytes.input-output-and-schema"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.headers.ordered",
+            "http.status",
+            "openapi.document"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/json_base64_bytes.yaml",
+          "workflow_id": "json-base64-bytes"
+        }
+      ],
+      "input_only": true,
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status",
+        "openapi.document"
+      ],
+      "selector_evidence": [
+        {
+          "feature_id": "app-routing",
+          "selectors": [
+            "http.body.bytes",
+            "http.headers.ordered",
+            "http.status"
+          ]
+        },
+        {
+          "feature_id": "openapi-docs",
+          "selectors": [
+            "http.body.bytes",
+            "openapi.document"
+          ]
+        },
+        {
+          "feature_id": "request-validation",
+          "selectors": [
+            "http.body.bytes",
+            "http.headers.ordered",
+            "http.status"
+          ]
+        },
+        {
+          "feature_id": "response-serialization",
+          "selectors": [
+            "http.body.bytes",
+            "http.headers.ordered",
+            "http.status"
+          ]
+        }
+      ],
+      "source_evidence": [
+        {
+          "end_line": 26,
+          "path": "docs_src/json_base64_bytes/tutorial001_py310.py",
+          "role": "documented base64 input, output, and round-trip model configuration",
+          "sha256": "8822992a3febec5c9e442a1f4fbf3ab70da0376b5ab08bbaf26fede5053343ea",
+          "start_line": 5
+        },
+        {
+          "end_line": 46,
+          "path": "docs_src/json_base64_bytes/tutorial001_py310.py",
+          "role": "documented decode, encode, and round-trip routes",
+          "sha256": "8822992a3febec5c9e442a1f4fbf3ab70da0376b5ab08bbaf26fede5053343ea",
+          "start_line": 32
+        }
+      ],
+      "source_item_id": "documented-example:docs_src/json_base64_bytes/tutorial001_py310.py",
+      "stage": "reviewed partial example-to-input mapping; only the listed cases and selectors are claimed",
+      "starlette_rs_planning_areas": [
+        "applications-requests-responses-background-concurrency",
+        "middleware-authentication-endpoints-datastructures-status",
+        "routing-converters-mounts-hosts-and-errors",
+        "streaming-headers-cookies-errors-and-cleanup",
+        "wsgi-static-files-templates-schemas-configuration-testclient"
+      ],
+      "stimulus_design": [
+        "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
+        "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response.",
+        "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
+        "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
+      ],
+      "stimulus_design_notes": "The pinned example configures base64 validation, serialization, and round-trip models. The independent workflow sends `independent-input` and `roundtrip-input` as distinct valid base64 payloads and returns `independent-output` from its GET route, rather than reusing the source's hardcoded `hello` value or the upstream test payloads. It observes HTTP status, ordered headers, and body bytes for the decode, encode, round-trip, and OpenAPI requests, plus one selected DataInput OpenAPI schema pointer. This is a partial sample of those workflows and that schema field, not all bytes values or every generated schema."
     },
     {
       "feature_ids": [
@@ -7395,6 +8927,73 @@
         "app-routing",
         "request-validation"
       ],
+      "id": "fastapi.docs-example.query-params-tutorial001-py310",
+      "independent_workflow_mappings": [
+        {
+          "case_ids": [
+            "fastapi.query-header-review.query001.items-default",
+            "fastapi.query-header-review.query001.items-skip",
+            "fastapi.query-header-review.query001.items-skip-limit"
+          ],
+          "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/query-header-parameter-query-tutorial001.yaml",
+          "workflow_id": "query-header-parameter-query-tutorial001"
+        }
+      ],
+      "input_only": true,
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ],
+      "selector_evidence": [
+        {
+          "feature_id": "app-routing",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        },
+        {
+          "feature_id": "request-validation",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        }
+      ],
+      "source_evidence": [
+        {
+          "end_line": 10,
+          "path": "docs_src/query_params/tutorial001_py310.py",
+          "role": "documented integer query defaults and list-slice behavior",
+          "sha256": "6adfaedf0f557cb2ebe4b75b805c7f6c783c61e50845572f4020e888dac69489",
+          "start_line": 8
+        }
+      ],
+      "source_item_id": "documented-example:docs_src/query_params/tutorial001_py310.py",
+      "stage": "reviewed partial example-to-input mapping; only the listed cases and selectors are claimed",
+      "starlette_rs_planning_areas": [
+        "applications-requests-responses-background-concurrency",
+        "middleware-authentication-endpoints-datastructures-status",
+        "routing-converters-mounts-hosts-and-errors",
+        "streaming-headers-cookies-errors-and-cleanup"
+      ],
+      "stimulus_design": [
+        "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
+        "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs."
+      ],
+      "stimulus_design_notes": "The FastAPI 0.141.1 example declares integer skip and limit query parameters with defaults and slices the item list. The linked cases exercise the default request, skip=1, and skip=1 with limit=1, observing only response status and body bytes. This is a partial mapping of those pagination inputs; it does not claim invalid-integer behavior, other values, or the OpenAPI document."
+    },
+    {
+      "feature_ids": [
+        "app-routing",
+        "request-validation"
+      ],
       "id": "fastapi.docs-example.query-params-tutorial002-py310",
       "independent_workflow_mappings": [
         {
@@ -7879,6 +9478,186 @@
         "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status."
       ],
       "stimulus_design_notes": "The FastAPI 0.141.1 example returns an existing task at the declared default status and changes the response status to 201 when it creates a task. The independent case samples the existing-record and new-record branches and observes status and body only. Its route path and literal task values differ; this mapping does not claim those literals, OpenAPI, or other response-status behavior."
+    },
+    {
+      "feature_ids": [
+        "app-routing",
+        "dependency-security",
+        "request-validation",
+        "response-serialization"
+      ],
+      "id": "fastapi.docs-example.response-cookies-tutorial001-py310",
+      "independent_workflow_mappings": [
+        {
+          "case_ids": [
+            "fastapi.response.cookies.direct-jsonresponse-set-cookie"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.headers.ordered",
+            "http.status"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/response-cookie-direct-wave.yaml",
+          "workflow_id": "response-cookie-direct-wave"
+        }
+      ],
+      "input_only": true,
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ],
+      "selector_evidence": [
+        {
+          "feature_id": "app-routing",
+          "selectors": [
+            "http.body.bytes",
+            "http.headers.ordered",
+            "http.status"
+          ]
+        },
+        {
+          "feature_id": "dependency-security",
+          "selectors": [
+            "http.body.bytes",
+            "http.headers.ordered",
+            "http.status"
+          ]
+        },
+        {
+          "feature_id": "request-validation",
+          "selectors": [
+            "http.body.bytes",
+            "http.headers.ordered",
+            "http.status"
+          ]
+        },
+        {
+          "feature_id": "response-serialization",
+          "selectors": [
+            "http.body.bytes",
+            "http.headers.ordered",
+            "http.status"
+          ]
+        }
+      ],
+      "source_evidence": [
+        {
+          "end_line": 12,
+          "path": "docs_src/response_cookies/tutorial001_py310.py",
+          "role": "documented JSONResponse route that sets a response cookie",
+          "sha256": "20e088e3f6cad720af9afcd30a9958d601e0eb530c80edde2b60e45997e10700",
+          "start_line": 7
+        }
+      ],
+      "source_item_id": "documented-example:docs_src/response_cookies/tutorial001_py310.py",
+      "stage": "reviewed partial example-to-input mapping; only the listed cases and selectors are claimed",
+      "starlette_rs_planning_areas": [
+        "applications-requests-responses-background-concurrency",
+        "asgi-http-websocket-lifespan",
+        "middleware-authentication-endpoints-datastructures-status",
+        "routing-converters-mounts-hosts-and-errors",
+        "streaming-headers-cookies-errors-and-cleanup"
+      ],
+      "stimulus_design": [
+        "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
+        "Declare the dependency/security graph and credential inputs, invoke the public endpoint, and observe response, call order, cleanup, and schema effects.",
+        "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
+        "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
+      ],
+      "stimulus_design_notes": "The pinned example returns a JSONResponse from `/cookie/` and sets a response cookie. The independent ASGI case keeps the route and method shape but uses a different response message and cookie name/value, and observes status, ordered response headers, and body bytes. This samples the direct response-cookie path; it does not claim TestClient parity."
+    },
+    {
+      "feature_ids": [
+        "openapi-docs",
+        "python-data-encoding",
+        "request-validation",
+        "response-serialization"
+      ],
+      "id": "fastapi.docs-example.response-directly-tutorial001-py310",
+      "independent_workflow_mappings": [
+        {
+          "case_ids": [
+            "fastapi.response-directly.tutorial001.openapi-document",
+            "fastapi.response-directly.tutorial001.path-response"
+          ],
+          "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.headers.ordered",
+            "http.status",
+            "openapi.document"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/response-directly-tutorial001-wave.yaml",
+          "workflow_id": "response-directly-tutorial001-wave"
+        }
+      ],
+      "input_only": true,
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status",
+        "openapi.document"
+      ],
+      "selector_evidence": [
+        {
+          "feature_id": "openapi-docs",
+          "selectors": [
+            "http.body.bytes",
+            "openapi.document"
+          ]
+        },
+        {
+          "feature_id": "request-validation",
+          "selectors": [
+            "http.body.bytes",
+            "http.headers.ordered",
+            "http.status"
+          ]
+        },
+        {
+          "feature_id": "response-serialization",
+          "selectors": [
+            "http.body.bytes",
+            "http.headers.ordered",
+            "http.status"
+          ]
+        }
+      ],
+      "source_evidence": [
+        {
+          "end_line": 12,
+          "path": "docs_src/response_directly/tutorial001_py310.py",
+          "role": "documented Pydantic response input model",
+          "sha256": "d13109e313bc878ba85f606fd247ffdc186a86ca606697bc65cb6a5a88b5a066",
+          "start_line": 9
+        },
+        {
+          "end_line": 21,
+          "path": "docs_src/response_directly/tutorial001_py310.py",
+          "role": "documented route using jsonable_encoder and JSONResponse",
+          "sha256": "d13109e313bc878ba85f606fd247ffdc186a86ca606697bc65cb6a5a88b5a066",
+          "start_line": 18
+        }
+      ],
+      "source_item_id": "documented-example:docs_src/response_directly/tutorial001_py310.py",
+      "stage": "reviewed partial example-to-input mapping; only the listed cases and selectors are claimed",
+      "starlette_rs_planning_areas": [
+        "applications-requests-responses-background-concurrency",
+        "middleware-authentication-endpoints-datastructures-status",
+        "streaming-headers-cookies-errors-and-cleanup",
+        "wsgi-static-files-templates-schemas-configuration-testclient"
+      ],
+      "stimulus_design": [
+        "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response.",
+        "Call the documented FastAPI encoder with representative Python/Pydantic values and options, then observe its public return value and callable signature.",
+        "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
+        "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
+      ],
+      "stimulus_design_notes": "The pinned route validates an Item, passes it through jsonable_encoder, and returns a JSONResponse. The independent inventory route uses a different model, path, field names, and values; it observes only status, ordered headers, and response-body bytes for that analogous direct JSON response. A separate case observes the independent app's full OpenAPI document and status. These are partial samples of the route and generated schema, not claims of matching the tutorial payload or complete schema."
     },
     {
       "feature_ids": [
@@ -8471,6 +10250,113 @@
         "request-validation",
         "status-codes"
       ],
+      "id": "fastapi.docs-example.security-tutorial003-an-py310",
+      "independent_workflow_mappings": [
+        {
+          "case_ids": [
+            "fastapi.security.tutorial-003.oauth2-inactive-user"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.headers.ordered",
+            "http.status"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/security-oauth2-inactive-user-source-wave.yaml",
+          "workflow_id": "security-oauth2-inactive-user-source-wave"
+        }
+      ],
+      "input_only": true,
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ],
+      "selector_evidence": [
+        {
+          "feature_id": "app-routing",
+          "selectors": [
+            "http.body.bytes",
+            "http.headers.ordered",
+            "http.status"
+          ]
+        },
+        {
+          "feature_id": "dependency-security",
+          "selectors": [
+            "http.body.bytes",
+            "http.headers.ordered",
+            "http.status"
+          ]
+        },
+        {
+          "feature_id": "openapi-docs",
+          "selectors": [
+            "http.body.bytes"
+          ]
+        },
+        {
+          "feature_id": "request-validation",
+          "selectors": [
+            "http.body.bytes",
+            "http.headers.ordered",
+            "http.status"
+          ]
+        },
+        {
+          "feature_id": "status-codes",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        }
+      ],
+      "source_evidence": [
+        {
+          "end_line": 74,
+          "path": "docs_src/security/tutorial003_an_py310.py",
+          "role": "documented Annotated bearer and nested active-user dependency checks",
+          "sha256": "281933ce3935deaf2dd9c8451be3d0556cd216703ccfb555208d1e4cea308bf7",
+          "start_line": 58
+        },
+        {
+          "end_line": 94,
+          "path": "docs_src/security/tutorial003_an_py310.py",
+          "role": "documented route depending on the Annotated active-user dependency",
+          "sha256": "281933ce3935deaf2dd9c8451be3d0556cd216703ccfb555208d1e4cea308bf7",
+          "start_line": 90
+        }
+      ],
+      "source_item_id": "documented-example:docs_src/security/tutorial003_an_py310.py",
+      "stage": "reviewed partial example-to-input mapping; only the listed cases and selectors are claimed",
+      "starlette_rs_planning_areas": [
+        "applications-requests-responses-background-concurrency",
+        "asgi-http-websocket-lifespan",
+        "middleware-authentication-endpoints-datastructures-status",
+        "routing-converters-mounts-hosts-and-errors",
+        "streaming-headers-cookies-errors-and-cleanup",
+        "wsgi-static-files-templates-schemas-configuration-testclient"
+      ],
+      "stimulus_design": [
+        "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
+        "Declare the dependency/security graph and credential inputs, invoke the public endpoint, and observe response, call order, cleanup, and schema effects.",
+        "Configure the documented app/route/schema option, then observe the public OpenAPI result or docs endpoint response.",
+        "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable.",
+        "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs.",
+        "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status."
+      ],
+      "stimulus_design_notes": "FastAPI 0.141.1's Annotated example wires OAuth2 bearer extraction through nested current-user and active-user dependencies. The independent case uses the same Annotated dependency shape and sends a token for a disabled user; it substitutes a small dict-backed user store for the tutorial's Pydantic models and observes response status, ordered headers, and body bytes. This mapping covers only that authenticated inactive-user request, not the token route or password flow."
+    },
+    {
+      "feature_ids": [
+        "app-routing",
+        "dependency-security",
+        "openapi-docs",
+        "public-api-errors",
+        "request-validation",
+        "status-codes"
+      ],
       "id": "fastapi.docs-example.security-tutorial003-py310",
       "independent_workflow_mappings": [
         {
@@ -8988,6 +10874,87 @@
         "Enable the named optional integration or middleware, provide deterministic request/filesystem/configuration inputs, and observe its public effect."
       ],
       "stimulus_design_notes": "The pinned test installs a FastAPI dependency override and calls /info through TestClient. The input case observes generic dependency replacement and the route response only; TestClient mechanics and Pydantic Settings behavior are not covered."
+    },
+    {
+      "feature_ids": [
+        "app-routing",
+        "public-api-errors",
+        "request-validation"
+      ],
+      "id": "fastapi.docs-example.strict-content-type-tutorial001-py310",
+      "independent_workflow_mappings": [
+        {
+          "case_ids": [
+            "fastapi.docs.strict-content-type.independent-legacy-no-content-type"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/strict-content-type-documentation-example-independent.yaml",
+          "workflow_id": "strict-content-type-documentation-example-independent"
+        }
+      ],
+      "input_only": true,
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ],
+      "selector_evidence": [
+        {
+          "feature_id": "app-routing",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        },
+        {
+          "feature_id": "request-validation",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ]
+        }
+      ],
+      "source_evidence": [
+        {
+          "end_line": 4,
+          "path": "docs_src/strict_content_type/tutorial001_py310.py",
+          "role": "documented application-level strict_content_type=False setting",
+          "sha256": "15afb6e09773c946b51fc28f9d4ac399a25fffa600c7402ebc498815aaec9a5f",
+          "start_line": 4
+        },
+        {
+          "end_line": 14,
+          "path": "docs_src/strict_content_type/tutorial001_py310.py",
+          "role": "documented POST endpoint and response model on /items/",
+          "sha256": "15afb6e09773c946b51fc28f9d4ac399a25fffa600c7402ebc498815aaec9a5f",
+          "start_line": 12
+        },
+        {
+          "end_line": 82,
+          "path": "docs/en/docs/advanced/strict-content-type.md",
+          "role": "documentation states that no-Content-Type bodies are parsed as JSON when strict checking is disabled",
+          "sha256": "c46698c00f096129b39817750c56134cac627bf74b9e9e0e2c748ae26fd98ac3",
+          "start_line": 78
+        }
+      ],
+      "source_item_id": "documented-example:docs_src/strict_content_type/tutorial001_py310.py",
+      "stage": "reviewed partial example-to-input mapping; only the listed cases and selectors are claimed",
+      "starlette_rs_planning_areas": [
+        "applications-requests-responses-background-concurrency",
+        "middleware-authentication-endpoints-datastructures-status",
+        "routing-converters-mounts-hosts-and-errors",
+        "streaming-headers-cookies-errors-and-cleanup"
+      ],
+      "stimulus_design": [
+        "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
+        "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable.",
+        "Build a fresh app and endpoint with the documented parameter/model declarations, then submit representative valid and invalid HTTP inputs."
+      ],
+      "stimulus_design_notes": "The FastAPI 0.141.1 example sets strict_content_type=False and documents that a request without Content-Type is parsed as JSON. The independent request uses the separately authored /legacy/items/ route, a different model and payload, and only claims the successful status and response body bytes; it does not claim the example's /items/ route or literal values."
     },
     {
       "documented_sections": [
@@ -31903,6 +33870,19 @@
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/strict_content_type.yaml",
           "workflow_id": "strict-content-type"
+        },
+        {
+          "case_ids": [
+            "fastapi.docs.strict-content-type.independent-legacy-no-content-type"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/strict-content-type-documentation-example-independent.yaml",
+          "workflow_id": "strict-content-type-documentation-example-independent"
         }
       ],
       "input_only": true,
@@ -43643,6 +45623,19 @@
         },
         {
           "case_ids": [
+            "fastapi.root-alias-identity.http-reexports"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/root-alias-identity.yaml",
+          "workflow_id": "root-alias-identity"
+        },
+        {
+          "case_ids": [
             "fastapi.routing.include-router.router-and-include-dependencies"
           ],
           "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
@@ -43923,6 +45916,19 @@
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/docs-reference-http.yaml",
           "workflow_id": "docs-reference-http"
+        },
+        {
+          "case_ids": [
+            "fastapi.root-alias-identity.http-reexports"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/root-alias-identity.yaml",
+          "workflow_id": "root-alias-identity"
         }
       ],
       "input_only": true,
@@ -44750,6 +46756,19 @@
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/public-errors-http-websocket-wave.yaml",
           "workflow_id": "public-errors-http-websocket-wave"
+        },
+        {
+          "case_ids": [
+            "fastapi.root-alias-identity.http-reexports"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/root-alias-identity.yaml",
+          "workflow_id": "root-alias-identity"
         }
       ],
       "input_only": true,
@@ -45166,6 +47185,19 @@
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/docs-reference-openapi.yaml",
           "workflow_id": "docs-reference-openapi"
+        },
+        {
+          "case_ids": [
+            "fastapi.root-alias-identity.http-reexports"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/root-alias-identity.yaml",
+          "workflow_id": "root-alias-identity"
         }
       ],
       "input_only": true,
@@ -46135,6 +48167,19 @@
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/docs-reference-http.yaml",
           "workflow_id": "docs-reference-http"
+        },
+        {
+          "case_ids": [
+            "fastapi.root-alias-identity.http-reexports"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/root-alias-identity.yaml",
+          "workflow_id": "root-alias-identity"
         }
       ],
       "input_only": true,
@@ -46599,6 +48644,19 @@
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/docs-reference-http.yaml",
           "workflow_id": "docs-reference-http"
+        },
+        {
+          "case_ids": [
+            "fastapi.root-alias-identity.http-reexports"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/root-alias-identity.yaml",
+          "workflow_id": "root-alias-identity"
         }
       ],
       "input_only": true,
@@ -46824,6 +48882,19 @@
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/docs-reference-http.yaml",
           "workflow_id": "docs-reference-http"
+        },
+        {
+          "case_ids": [
+            "fastapi.root-alias-identity.http-reexports"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/root-alias-identity.yaml",
+          "workflow_id": "root-alias-identity"
         }
       ],
       "input_only": true,
@@ -48571,6 +50642,18 @@
         },
         {
           "case_ids": [
+            "fastapi.root-alias-identity.http-reexports"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.status"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/root-alias-identity.yaml",
+          "workflow_id": "root-alias-identity"
+        },
+        {
+          "case_ids": [
             "fastapi.status-alias.namespace"
           ],
           "coverage_scope": "Partial independent sample across 1 case(s); observes http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
@@ -48785,6 +50868,19 @@
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/docs-reference-asgi.yaml",
           "workflow_id": "docs-reference-asgi"
+        },
+        {
+          "case_ids": [
+            "fastapi.root-alias-identity.http-reexports"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/root-alias-identity.yaml",
+          "workflow_id": "root-alias-identity"
         }
       ],
       "input_only": true,
@@ -49227,6 +51323,19 @@
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/docs-reference-asgi.yaml",
           "workflow_id": "docs-reference-asgi"
+        },
+        {
+          "case_ids": [
+            "fastapi.root-alias-identity.websocket-reexports"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes websocket.event_order, websocket.messages. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "websocket.event_order",
+            "websocket.messages"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/root-alias-identity.yaml",
+          "workflow_id": "root-alias-identity"
         }
       ],
       "input_only": true,

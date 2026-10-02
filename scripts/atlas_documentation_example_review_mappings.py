@@ -6,6 +6,15 @@ case IDs and observation selectors, not the entire example or documentation
 page.
 """
 
+if __package__:
+    from scripts.atlas_strict_content_type_documentation_example_review_mappings import (
+        STRICT_CONTENT_TYPE_DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS,
+    )
+else:
+    from atlas_strict_content_type_documentation_example_review_mappings import (
+        STRICT_CONTENT_TYPE_DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS,
+    )
+
 DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
     "docs_src/authentication_error_status_code/tutorial001_an_py310.py": {
         "rationale": (
@@ -702,6 +711,56 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
             }
         ],
     },
+    "docs_src/cookie_params/tutorial001_py310.py": {
+        "rationale": (
+            "The FastAPI 0.141.1 direct example declares optional ads_id with "
+            "Cookie(default=None). The mapped case includes requests to its separately "
+            "declared direct route with the cookie omitted and supplied, observing response "
+            "status and body bytes. The same case separately exercises the Annotated route "
+            "mapped to its own source example; this mapping does not assert equivalence "
+            "between the two declaration forms or cover other Cookie behavior."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/cookie_params/tutorial001_py310.py",
+                "start_line": 6,
+                "end_line": 8,
+                "role": "documented direct optional Cookie parameter and default",
+            }
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/atlas-pending-tutorials-source-wave.yaml",
+                "case_ids": ["fastapi.pending.tutorials-source-wave.cookie-parameter-cases"],
+                "observation_selectors": ["http.body.bytes", "http.status"],
+            }
+        ],
+    },
+    "docs_src/cookie_params/tutorial001_an_py310.py": {
+        "rationale": (
+            "The FastAPI 0.141.1 Annotated example declares optional ads_id with Cookie() "
+            "and a Python default of None. The mapped case includes requests to its separately "
+            "declared Annotated route with the cookie omitted and supplied, observing response "
+            "status and body bytes. The same case separately exercises the direct route "
+            "mapped to its own source example; this mapping does not assert equivalence "
+            "between the two declaration forms or cover other Cookie behavior."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/cookie_params/tutorial001_an_py310.py",
+                "start_line": 8,
+                "end_line": 10,
+                "role": "documented Annotated optional Cookie parameter and default",
+            }
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/atlas-pending-tutorials-source-wave.yaml",
+                "case_ids": ["fastapi.pending.tutorials-source-wave.cookie-parameter-cases"],
+                "observation_selectors": ["http.body.bytes", "http.status"],
+            }
+        ],
+    },
     "docs_src/header_params/tutorial001_py310.py": {
         "rationale": (
             "The documented route declares user_agent with Header(default=None). The linked "
@@ -1020,6 +1079,34 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
                 "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-configurations-tutorial005-upstream.yaml",
                 "case_ids": ["fastapi.path-operation-configurations.tutorial005"],
                 "observation_selectors": ["http.status", "openapi.document"],
+            }
+        ],
+    },
+    "docs_src/query_params/tutorial001_py310.py": {
+        "rationale": (
+            "The FastAPI 0.141.1 example declares integer skip and limit query parameters "
+            "with defaults and slices the item list. The linked cases exercise the default "
+            "request, skip=1, and skip=1 with limit=1, observing only response status and "
+            "body bytes. This is a partial mapping of those pagination inputs; it does not "
+            "claim invalid-integer behavior, other values, or the OpenAPI document."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/query_params/tutorial001_py310.py",
+                "start_line": 8,
+                "end_line": 10,
+                "role": "documented integer query defaults and list-slice behavior",
+            }
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/query-header-parameter-query-tutorial001.yaml",
+                "case_ids": [
+                    "fastapi.query-header-review.query001.items-default",
+                    "fastapi.query-header-review.query001.items-skip",
+                    "fastapi.query-header-review.query001.items-skip-limit",
+                ],
+                "observation_selectors": ["http.body.bytes", "http.status"],
             }
         ],
     },
@@ -2688,6 +2775,611 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
                     "recipe_path": "tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml",
                     "case_ids": ["fastapi.docs-example.query-params-str-validations.tutorial015"],
                     "observation_selectors": ["http.body.bytes", "http.status", "openapi.document"],
+                }
+            ],
+        },
+    }
+)
+
+# Direct-response and base64-byte examples use independent ASGI workloads with
+# distinct route values. These mappings cover only the listed observations.
+DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
+    {
+        "docs_src/response_cookies/tutorial001_py310.py": {
+            "rationale": (
+                "The pinned example returns a JSONResponse from `/cookie/` and sets a response cookie. "
+                "The independent ASGI case keeps the route and method shape but uses a different response "
+                "message and cookie name/value, and observes status, ordered response headers, and body "
+                "bytes. This samples the direct response-cookie path; it does not claim TestClient parity."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/response_cookies/tutorial001_py310.py",
+                    "start_line": 7,
+                    "end_line": 12,
+                    "role": "documented JSONResponse route that sets a response cookie",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/response-cookie-direct-wave.yaml",
+                    "case_ids": ["fastapi.response.cookies.direct-jsonresponse-set-cookie"],
+                    "observation_selectors": [
+                        "http.body.bytes",
+                        "http.headers.ordered",
+                        "http.status",
+                    ],
+                }
+            ],
+        },
+        "docs_src/response_directly/tutorial001_py310.py": {
+            "rationale": (
+                "The pinned route validates an Item, passes it through jsonable_encoder, and returns a "
+                "JSONResponse. The independent inventory route uses a different model, path, field names, "
+                "and values; it observes only status, ordered headers, and response-body bytes for that "
+                "analogous direct JSON response. A separate case observes the independent app's full "
+                "OpenAPI document and status. These are partial samples of the route and generated schema, "
+                "not claims of matching the tutorial payload or complete schema."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/response_directly/tutorial001_py310.py",
+                    "start_line": 9,
+                    "end_line": 12,
+                    "role": "documented Pydantic response input model",
+                },
+                {
+                    "path": "docs_src/response_directly/tutorial001_py310.py",
+                    "start_line": 18,
+                    "end_line": 21,
+                    "role": "documented route using jsonable_encoder and JSONResponse",
+                },
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/response-directly-tutorial001-wave.yaml",
+                    "case_ids": [
+                        "fastapi.response-directly.tutorial001.openapi-document",
+                        "fastapi.response-directly.tutorial001.path-response",
+                    ],
+                    "observation_selectors": [
+                        "http.body.bytes",
+                        "http.headers.ordered",
+                        "http.status",
+                        "openapi.document",
+                    ],
+                },
+            ],
+        },
+        "docs_src/json_base64_bytes/tutorial001_py310.py": {
+            "rationale": (
+                "The pinned example configures base64 validation, serialization, and round-trip models. "
+                "The independent workflow sends `independent-input` and `roundtrip-input` as distinct valid "
+                "base64 payloads and returns `independent-output` from its GET route, rather than reusing "
+                "the source's hardcoded `hello` value or the upstream test payloads. It observes HTTP "
+                "status, ordered headers, and body bytes for the decode, encode, round-trip, and OpenAPI "
+                "requests, plus one selected DataInput OpenAPI schema pointer. "
+                "This is a partial sample of those workflows and that schema field, not all bytes values or "
+                "every generated schema."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/json_base64_bytes/tutorial001_py310.py",
+                    "start_line": 5,
+                    "end_line": 26,
+                    "role": "documented base64 input, output, and round-trip model configuration",
+                },
+                {
+                    "path": "docs_src/json_base64_bytes/tutorial001_py310.py",
+                    "start_line": 32,
+                    "end_line": 46,
+                    "role": "documented decode, encode, and round-trip routes",
+                },
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/json_base64_bytes.yaml",
+                    "case_ids": ["fastapi.docs.json-base64-bytes.input-output-and-schema"],
+                    "observation_selectors": [
+                        "http.body.bytes",
+                        "http.headers.ordered",
+                        "http.status",
+                        "openapi.document",
+                    ],
+                }
+            ],
+        },
+    }
+)
+
+DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
+    STRICT_CONTENT_TYPE_DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS
+)
+
+# Focused mappings for the five extra-models response-model examples. Their
+# recipes use distinct data and observe response bytes/status plus selected
+# OpenAPI paths and documents.
+DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
+    {
+        "docs_src/extra_models/tutorial001_py310.py": {
+            "rationale": (
+                "FastAPI 0.141.1 accepts the flat UserIn model, creates a UserInDB value with a hashed_password, "
+                "and returns it through response_model=UserOut. The independent workflow uses the same model "
+                "shape with different user/password values and a separate hash prefix; it observes response "
+                "status/body and selected OpenAPI paths and schemas. This maps request/response model filtering "
+                "and schema generation only, not the tutorial's hasher, print, values, or TestClient semantics."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/extra_models/tutorial001_py310.py",
+                    "start_line": 7,
+                    "end_line": 24,
+                    "role": "documented flat input, output, and database user model shapes",
+                },
+                {
+                    "path": "docs_src/extra_models/tutorial001_py310.py",
+                    "start_line": 31,
+                    "end_line": 41,
+                    "role": "documented user conversion and response_model route",
+                },
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/extra-models-tutorials-upstream-wave.yaml",
+                    "case_ids": ["fastapi.extra-models.tutorial001-flat-user-models"],
+                    "observation_selectors": [
+                        "http.body.bytes",
+                        "http.status",
+                        "openapi.document",
+                    ],
+                }
+            ],
+        },
+        "docs_src/extra_models/tutorial002_py310.py": {
+            "rationale": (
+                "FastAPI 0.141.1 builds UserIn, UserOut, and UserInDB from a shared UserBase model and returns "
+                "the database-shaped value through response_model=UserOut. The independent workflow reproduces "
+                "that inheritance shape with separate values and hashing; it observes response status/body and "
+                "selected OpenAPI paths and schemas. This maps model inheritance, response filtering, and the "
+                "selected schema output, not the tutorial's helper implementation, values, or TestClient semantics."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/extra_models/tutorial002_py310.py",
+                    "start_line": 7,
+                    "end_line": 23,
+                    "role": "documented shared base, input, output, and database user model inheritance",
+                },
+                {
+                    "path": "docs_src/extra_models/tutorial002_py310.py",
+                    "start_line": 29,
+                    "end_line": 39,
+                    "role": "documented user conversion and response_model route",
+                },
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/extra-models-tutorials-upstream-wave.yaml",
+                    "case_ids": ["fastapi.extra-models.tutorial002-inherited-user-models"],
+                    "observation_selectors": [
+                        "http.body.bytes",
+                        "http.status",
+                        "openapi.document",
+                    ],
+                }
+            ],
+        },
+        "docs_src/extra_models/tutorial003_py310.py": {
+            "rationale": (
+                "FastAPI 0.141.1 declares PlaneItem | CarItem as the route response model. The independent "
+                "workflow uses the same union model shape and exercises one car-shaped and one plane-shaped "
+                "response with different item IDs and data, then inspects the selected OpenAPI paths and model "
+                "schemas. It maps the observed union response filtering and schema only, not the tutorial's item "
+                "values or TestClient semantics."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/extra_models/tutorial003_py310.py",
+                    "start_line": 7,
+                    "end_line": 18,
+                    "role": "documented base, car, and plane response model definitions",
+                },
+                {
+                    "path": "docs_src/extra_models/tutorial003_py310.py",
+                    "start_line": 21,
+                    "end_line": 33,
+                    "role": "documented variant data and union response_model route",
+                },
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/extra-models-tutorials-upstream-wave.yaml",
+                    "case_ids": ["fastapi.extra-models.tutorial003-union-response-model"],
+                    "observation_selectors": [
+                        "http.body.bytes",
+                        "http.status",
+                        "openapi.document",
+                    ],
+                }
+            ],
+        },
+        "docs_src/extra_models/tutorial004_py310.py": {
+            "rationale": (
+                "FastAPI 0.141.1 returns a list of dictionaries through response_model=list[Item]. The independent "
+                "workflow uses the same Item fields and typed-list route with different catalog values; it observes "
+                "the response status/body and selected OpenAPI path and Item schema. This maps list response "
+                "validation/filtering and its selected schema, not the tutorial's literal rows or TestClient semantics."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/extra_models/tutorial004_py310.py",
+                    "start_line": 7,
+                    "end_line": 20,
+                    "role": "documented Item response model, list data, and typed-list route",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/extra-models-tutorials-upstream-wave.yaml",
+                    "case_ids": ["fastapi.extra-models.tutorial004-typed-list-response"],
+                    "observation_selectors": [
+                        "http.body.bytes",
+                        "http.status",
+                        "openapi.document",
+                    ],
+                }
+            ],
+        },
+        "docs_src/extra_models/tutorial005_py310.py": {
+            "rationale": (
+                "FastAPI 0.141.1 declares dict[str, float] as the response model. The independent workflow uses "
+                "the same typed-map route with different keys and values; it observes response status/body and the "
+                "OpenAPI paths containing the map response schema. This maps the typed mapping response and its "
+                "path-level schema only, not the tutorial's literal values or TestClient semantics."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/extra_models/tutorial005_py310.py",
+                    "start_line": 6,
+                    "end_line": 8,
+                    "role": "documented dict[str, float] response model and route",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/extra-models-tutorials-upstream-wave.yaml",
+                    "case_ids": ["fastapi.extra-models.tutorial005-typed-map-response"],
+                    "observation_selectors": [
+                        "http.body.bytes",
+                        "http.status",
+                        "openapi.document",
+                    ],
+                }
+            ],
+        },
+    }
+)
+
+# Focused mappings for yield-dependency exception handling, scalar Body
+# constraints, nested query/cookie dependencies, and ASGI lifecycle inputs.
+DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
+    {
+        "docs_src/dependencies/tutorial008c_py310.py": {
+            "rationale": (
+                "FastAPI 0.141.1's direct-parameter example injects an exception into a yield dependency, "
+                "catches InternalError without re-raising, and has an endpoint branch that raises it. The "
+                "independent workflow exercises the corresponding direct-signature route and observes HTTP "
+                "status/body; it separately records an application-exception outcome, which this mapping does "
+                "not claim. The case also contains a separate Annotated route. This mapping does not claim "
+                "stdout, the tutorial's literals, or behavior outside these inputs."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/dependencies/tutorial008c_py310.py",
+                    "start_line": 10,
+                    "end_line": 26,
+                    "role": "documented direct Depends yield cleanup and endpoint exception branch",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/dependency-yield-errors-tutorials-upstream.yaml",
+                    "case_ids": ["fastapi.dependencies.tutorial008c.suppressed-yield-exception"],
+                    "observation_selectors": ["http.body.bytes", "http.status"],
+                }
+            ],
+        },
+        "docs_src/dependencies/tutorial008c_an_py310.py": {
+            "rationale": (
+                "FastAPI 0.141.1's Annotated example injects an exception into a yield dependency, catches "
+                "InternalError without re-raising, and has an endpoint branch that raises it. The independent "
+                "workflow exercises the corresponding Annotated route and observes HTTP status/body; it separately "
+                "records an application-exception outcome, which this mapping does not claim. The case also "
+                "contains a separate direct-signature route. This mapping does not claim stdout, the tutorial's "
+                "literals, or behavior outside these inputs."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/dependencies/tutorial008c_an_py310.py",
+                    "start_line": 12,
+                    "end_line": 28,
+                    "role": "documented Annotated Depends yield cleanup and endpoint exception branch",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/dependency-yield-errors-tutorials-upstream.yaml",
+                    "case_ids": ["fastapi.dependencies.tutorial008c.suppressed-yield-exception"],
+                    "observation_selectors": ["http.body.bytes", "http.status"],
+                }
+            ],
+        },
+        "docs_src/dependencies/tutorial008d_py310.py": {
+            "rationale": (
+                "FastAPI 0.141.1's direct-parameter example injects an exception into a yield dependency, "
+                "records it, and re-raises it. The independent workflow exercises the corresponding "
+                "direct-signature route and observes HTTP status/body. Although the case also records an "
+                "application error class, this mapping does not claim that selector. The case contains a separate "
+                "Annotated route; this mapping does not claim stdout, the tutorial's literals, or behavior outside "
+                "these inputs."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/dependencies/tutorial008d_py310.py",
+                    "start_line": 10,
+                    "end_line": 26,
+                    "role": "documented direct Depends yield cleanup and re-raised endpoint exception",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/dependency-yield-errors-tutorials-upstream.yaml",
+                    "case_ids": ["fastapi.dependencies.tutorial008d.reraised-yield-exception"],
+                    "observation_selectors": ["http.body.bytes", "http.status"],
+                }
+            ],
+        },
+        "docs_src/dependencies/tutorial008d_an_py310.py": {
+            "rationale": (
+                "FastAPI 0.141.1's Annotated example injects an exception into a yield dependency, records it, "
+                "and re-raises it. The independent workflow exercises the corresponding Annotated route and "
+                "observes HTTP status/body. Although the case also records an application error class, this "
+                "mapping does not claim that selector. The case contains a separate direct-signature route; this "
+                "mapping does not claim stdout, the tutorial's literals, or behavior outside these inputs."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/dependencies/tutorial008d_an_py310.py",
+                    "start_line": 12,
+                    "end_line": 28,
+                    "role": "documented Annotated Depends yield cleanup and re-raised endpoint exception",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/dependency-yield-errors-tutorials-upstream.yaml",
+                    "case_ids": ["fastapi.dependencies.tutorial008d.reraised-yield-exception"],
+                    "observation_selectors": ["http.body.bytes", "http.status"],
+                }
+            ],
+        },
+        "docs_src/security/tutorial003_an_py310.py": {
+            "rationale": (
+                "FastAPI 0.141.1's Annotated example wires OAuth2 bearer extraction through nested current-user "
+                "and active-user dependencies. The independent case uses the same Annotated dependency shape and "
+                "sends a token for a disabled user; it substitutes a small dict-backed user store for the "
+                "tutorial's Pydantic models and observes response status, ordered headers, and body bytes. This "
+                "mapping covers only that authenticated inactive-user request, not the token route or password flow."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/security/tutorial003_an_py310.py",
+                    "start_line": 58,
+                    "end_line": 74,
+                    "role": "documented Annotated bearer and nested active-user dependency checks",
+                },
+                {
+                    "path": "docs_src/security/tutorial003_an_py310.py",
+                    "start_line": 90,
+                    "end_line": 94,
+                    "role": "documented route depending on the Annotated active-user dependency",
+                },
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/security-oauth2-inactive-user-source-wave.yaml",
+                    "case_ids": ["fastapi.security.tutorial-003.oauth2-inactive-user"],
+                    "observation_selectors": [
+                        "http.body.bytes",
+                        "http.headers.ordered",
+                        "http.status",
+                    ],
+                }
+            ],
+        },
+        "docs_src/body_multiple_params/tutorial004_py310.py": {
+            "rationale": (
+                "FastAPI 0.141.1 declares the importance field as a direct Body(gt=0) scalar inside a request "
+                "that also contains Item and User models. The independent workflow isolates that same "
+                "positive-integer constraint on a scalar JSON body and observes status/body for a positive value and zero. "
+                "It does not claim multi-body embedding, Item/User parsing, the optional q parameter, or the "
+                "tutorial's route and response literals."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/body_multiple_params/tutorial004_py310.py",
+                    "start_line": 19,
+                    "end_line": 30,
+                    "role": "documented direct Body(gt=0) importance field and endpoint result",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/body-gt-zero.yaml",
+                    "case_ids": [
+                        "fastapi.body.gt-zero.positive-integer",
+                        "fastapi.body.gt-zero.zero-rejected",
+                    ],
+                    "observation_selectors": ["http.body.bytes", "http.status"],
+                }
+            ],
+        },
+        "docs_src/body_multiple_params/tutorial004_an_py310.py": {
+            "rationale": (
+                "FastAPI 0.141.1 declares the importance field as Annotated[int, Body(gt=0)] inside a request "
+                "that also contains Item and User models. The independent workflow isolates that same "
+                "positive-integer constraint on a scalar JSON body and observes status/body for a positive value and zero. "
+                "It does not claim multi-body embedding, Item/User parsing, the optional q parameter, or the "
+                "tutorial's route and response literals."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/body_multiple_params/tutorial004_an_py310.py",
+                    "start_line": 21,
+                    "end_line": 32,
+                    "role": "documented Annotated Body(gt=0) importance field and endpoint result",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/body-gt-zero.yaml",
+                    "case_ids": [
+                        "fastapi.body.gt-zero.annotated-positive-integer",
+                        "fastapi.body.gt-zero.annotated-zero-rejected",
+                    ],
+                    "observation_selectors": ["http.body.bytes", "http.status"],
+                }
+            ],
+        },
+        "docs_src/dependencies/tutorial005_py310.py": {
+            "rationale": (
+                "FastAPI 0.141.1's direct/default-parameter example nests a query extractor and a cookie fallback. "
+                "The independent workload covers query precedence, cookie fallback, absence of both values, and "
+                "the query/cookie OpenAPI parameters, but its Python signatures use Annotated declarations. This "
+                "is a behavior-level mapping only; it does not establish parity for the direct declaration style."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/dependencies/tutorial005_py310.py",
+                    "start_line": 6,
+                    "end_line": 20,
+                    "role": "documented direct query dependency, cookie fallback, and endpoint",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/dependency-tutorial005-query-cookie-fallback.yaml",
+                    "case_ids": [
+                        "fastapi.dependencies.tutorial005.query-cookie.fallback",
+                        "fastapi.dependencies.tutorial005.query-cookie.query-precedence",
+                        "fastapi.dependencies.tutorial005.query-cookie.no-query-or-cookie",
+                        "fastapi.dependencies.tutorial005.query-cookie.openapi-parameters",
+                    ],
+                    "observation_selectors": [
+                        "http.body.bytes",
+                        "http.status",
+                        "openapi.paths",
+                    ],
+                }
+            ],
+        },
+        "docs_src/dependencies/tutorial005_an_py310.py": {
+            "rationale": (
+                "FastAPI 0.141.1's Annotated example nests the same query extractor and cookie fallback. The "
+                "independent workload uses Annotated dependency declarations and covers query precedence, cookie "
+                "fallback, absence of both values, and the query/cookie OpenAPI parameters. The mapping is limited "
+                "to those inputs and observations; it does not claim unrelated dependency behavior."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/dependencies/tutorial005_an_py310.py",
+                    "start_line": 8,
+                    "end_line": 25,
+                    "role": "documented Annotated query dependency, cookie fallback, and endpoint",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/dependency-tutorial005-query-cookie-fallback.yaml",
+                    "case_ids": [
+                        "fastapi.dependencies.tutorial005.query-cookie.fallback",
+                        "fastapi.dependencies.tutorial005.query-cookie.query-precedence",
+                        "fastapi.dependencies.tutorial005.query-cookie.no-query-or-cookie",
+                        "fastapi.dependencies.tutorial005.query-cookie.openapi-parameters",
+                    ],
+                    "observation_selectors": [
+                        "http.body.bytes",
+                        "http.status",
+                        "openapi.paths",
+                    ],
+                }
+            ],
+        },
+        "docs_src/app_testing/tutorial003_py310.py": {
+            "rationale": (
+                "FastAPI 0.141.1 registers startup work with on_event and the example runs a request inside a "
+                "TestClient context. The independent workflow observes startup/shutdown through raw ASGI lifespan "
+                "events and also requests the initialized item, but this mapping claims only the lifecycle "
+                "selectors. Direct ASGI lifecycle inputs do not establish TestClient context-manager parity or "
+                "the example's import-time deprecation warning."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/app_testing/tutorial003_py310.py",
+                    "start_line": 9,
+                    "end_line": 24,
+                    "role": "documented startup callback, item route, and TestClient-scoped request",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/testing-tutorial003-lifecycle-upstream.yaml",
+                    "case_ids": [
+                        "fastapi.test.test-tutorial-test-testing-test-tutorial003.startup-items-lifecycle"
+                    ],
+                    "observation_selectors": [
+                        "asgi.lifespan.application_errors",
+                        "asgi.lifespan.event_order",
+                        "asgi.lifespan.shutdown",
+                        "asgi.lifespan.startup",
+                        "asgi.lifespan.workload_trace",
+                    ],
+                }
+            ],
+        },
+        "docs_src/app_testing/tutorial004_py310.py": {
+            "rationale": (
+                "FastAPI 0.141.1 defines a context-manager lifespan that adds items before yield and clears them "
+                "afterward; its example asserts those states around a TestClient context. The independent workflow "
+                "drives startup/shutdown with raw ASGI lifespan events and requests an item while the app is "
+                "started. This mapping claims only lifecycle events and the workload trace; it does not claim the "
+                "HTTP response, TestClient context-manager parity, or the tutorial's before/after state assertions."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/app_testing/tutorial004_py310.py",
+                    "start_line": 9,
+                    "end_line": 23,
+                    "role": "documented context-manager lifespan cleanup and dependent route",
+                },
+                {
+                    "path": "docs_src/app_testing/tutorial004_py310.py",
+                    "start_line": 30,
+                    "end_line": 43,
+                    "role": "documented TestClient lifecycle context and before/after state assertions",
+                },
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/first-steps-application-testing-upstream.yaml",
+                    "case_ids": ["fastapi.application-testing.lifespan-items"],
+                    "observation_selectors": [
+                        "asgi.lifespan.application_errors",
+                        "asgi.lifespan.event_order",
+                        "asgi.lifespan.shutdown",
+                        "asgi.lifespan.startup",
+                        "asgi.lifespan.workload_trace",
+                    ],
                 }
             ],
         },
