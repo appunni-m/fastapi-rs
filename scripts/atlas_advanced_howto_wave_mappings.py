@@ -633,7 +633,7 @@ DOC_PAGE_REVIEW_MAPPINGS = {
             "http.status",
             "openapi.document",
         ],
-        "FastAPI provides independent sub-application instances and adjusts its generated docs/OpenAPI URLs for the mounted root path. Prefix matching, child ASGI scopes, and generic mount dispatch are Starlette-owned and remain in the Starlette-RS mount/routing contract.",
+        "FastAPI provides independent sub-application instances and adjusts its generated docs/OpenAPI URLs for the tested mounted and `/gateway` root-path requests. Prefix matching, child ASGI scopes, and generic mount dispatch belong to Starlette; the latest Starlette-RS pin has a bounded Mount child-scope fixture, while its canonical `Starlette.mount` operation contract remains an explicit gap.",
         [
             _workflow(
                 "tests/fixtures/input-recipes/parity/sub_applications.yaml",
@@ -648,9 +648,28 @@ DOC_PAGE_REVIEW_MAPPINGS = {
                     "openapi.document",
                 ],
                 "One mounted sub-app request and selected OpenAPI document/path projection.",
-            )
+            ),
+            _workflow(
+                "tests/fixtures/input-recipes/parity/sub_applications.yaml",
+                ["fastapi.docs.sub-applications.built-in-routes-root-path"],
+                [
+                    "docs.response.body.bytes",
+                    "docs.response.headers",
+                    "docs.response.status",
+                    "http.body.bytes",
+                    "http.headers.ordered",
+                    "http.status",
+                ],
+                "Parent and mounted docs, ReDoc, and OAuth redirect responses with root_path=/gateway, plus method and trailing-slash behavior.",
+            ),
+            _workflow(
+                "tests/fixtures/input-recipes/parity/sub_applications.yaml",
+                ["fastapi.docs.sub-applications.route-list-after-mount"],
+                ["http.body.bytes", "http.headers.ordered", "http.status"],
+                "Ordered route type/path/name projection after registering a FastAPI sub-application.",
+            ),
         ],
-        "Partial: this case does not cover multiple nested mounts, each app's `/docs` and `/redoc` HTML, root_path override combinations, URL reversal, host mounts, or mount error behavior.",
+        "Partial: these inputs cover one FastAPI sub-app and the single `/gateway` root-path configuration. Nested or multiple mounts, alternate root paths and docs URLs, URL reversal, host routing, WebSocket mounts, and mount error behavior remain unprobed. The OpenAPI `/paths` projections match, but raw response bytes still differ in schema-key ordering.",
         [
             _source(
                 "docs/en/docs/advanced/sub-applications.md",

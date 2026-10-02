@@ -1130,7 +1130,11 @@ reviewed_api_contract_overlay:
         it, as covered by openapi-cache-root-path. Assigning custom
         openapi_schema values, late mutation of already-included routers,
         webhooks, root_path_in_servers configuration, and complete OpenAPI
-        parity remain outside this slice.
+        parity remain outside this slice. In the pinned sub-applications
+        workflow, the parsed `/paths` projections match for the parent and
+        mounted app, but exact response-body bytes differ because the target
+        serializes schema-object keys in a different order; raw OpenAPI bytes
+        remain a parity gap.
     fastapi.routing.APIRouter.include_router:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::include_router
       source_evidence:
@@ -2397,10 +2401,9 @@ reviewed_api_contract_overlay:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Built-in Swagger, ReDoc, and OAuth redirect routes are not implemented; identity-checked parent and mounted Swagger UI inputs observe 404.
           - Mount dispatch is attempted after native FastAPI routes, so registration ordering is incomplete.
           - WebSocket Mount dispatch is not implemented.
-          - FastAPI.routes does not include the registered mounts.
+          - FastAPI-RS does not expose the inherited FastAPI.routes collection, so callers cannot inspect route order or registered mounts.
           - Named-mount reverse URL lookup is not implemented.
       documentation_contract_refs:
         - source_path: docs/en/docs/advanced/sub-applications.md
@@ -2409,6 +2412,10 @@ reviewed_api_contract_overlay:
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/sub_applications.yaml
           case_id: fastapi.docs.sub-applications.mount-and-own-openapi
+        - recipe_path: tests/fixtures/input-recipes/parity/sub_applications.yaml
+          case_id: fastapi.docs.sub-applications.built-in-routes-root-path
+        - recipe_path: tests/fixtures/input-recipes/parity/sub_applications.yaml
+          case_id: fastapi.docs.sub-applications.route-list-after-mount
       feature_ids: [app-routing]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
   warning_classification_reviews:

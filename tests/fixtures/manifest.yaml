@@ -172,7 +172,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@3
-    sha256: b431c02e0697f13e725021131200831804e928dc196b3e98ae5f307deabb24ab
+    sha256: 9f349d4a3805773b00b4f5c1c83f4f0da1dbf516e66eefc979e9ef0e789bd442
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -205,7 +205,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 186b00720ac046129ce9abbb7e4ef0192cb29f554ed17c94a09f447c465b147c
+    sha256: fd680a7fe9491a9ec453ec963baabbe8350430d46b54c2653dde330cc8c7a3d6
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 652
@@ -242,13 +242,13 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@2
-    sha256: 003f0bab37b37288db2e85573cb01b25183d2d099e5f305bc28c8e0845e12cfd
+    sha256: 2cdc5e90e2cd9ba8c7658490fc6aa43797d516b2af55fe092b2e408f5ccc0d16
     schema_path: tests/fixtures/schemas/materialized-input-index.schema.json
     schema_sha256: 56ac1cdfaa6f28b4277ef44b5ef78efebb3122111c5691e1b9c1bce869156aaf
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
       workflows: 494
-      cases: 1932
+      cases: 1933
       partial_source_mappings: 1186
 
 contract_metadata:
@@ -26876,6 +26876,20 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - recipe_path: tests/fixtures/input-recipes/parity/sub_applications.yaml
+      case_id: fastapi.docs.sub-applications.built-in-routes-root-path
+      workload_path: tests/fixtures/workloads/sub_applications.py
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - recipe_path: tests/fixtures/input-recipes/parity/sub_applications.yaml
+      case_id: fastapi.docs.sub-applications.route-list-after-mount
+      workload_path: tests/fixtures/workloads/sub_applications.py
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     feature_ids:
     - app-routing
     - openapi-docs
@@ -26929,10 +26943,9 @@ api_surface_contract:
         sibling_contract_gap_ref: *id026
       status: partial-contract
       known_gaps:
-      - Built-in Swagger, ReDoc, and OAuth redirect routes are not implemented; identity-checked parent
-        and mounted Swagger UI inputs observe 404.
       - Mount dispatch is attempted after native FastAPI routes, so registration ordering is incomplete.
       - WebSocket Mount dispatch is not implemented.
-      - FastAPI.routes does not include the registered mounts.
+      - FastAPI-RS does not expose the inherited FastAPI.routes collection, so callers cannot inspect
+        route order or registered mounts.
       - Named-mount reverse URL lookup is not implemented.
 # END GENERATED PER-SYMBOL API CONTRACT
