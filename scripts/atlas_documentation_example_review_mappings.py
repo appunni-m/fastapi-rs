@@ -7,6 +7,60 @@ page.
 """
 
 DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
+    "docs_src/additional_status_codes/tutorial001_py310.py": {
+        "rationale": (
+            "The FastAPI 0.141.1 example upserts an item: an existing item returns the normal "
+            "response, while a new item returns JSONResponse with HTTP 201. The independent "
+            "cases exercise those two branches with separate identifiers and payloads, observing "
+            "exact status and body bytes only; they do not claim the tutorial's literal values, "
+            "state across requests, response headers, or OpenAPI documentation."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/additional_status_codes/tutorial001_py310.py",
+                "start_line": 9,
+                "end_line": 23,
+                "role": "documented existing-item and new-item PUT response branches",
+            }
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/additional-status-codes-tutorial-upstream.yaml",
+                "case_ids": [
+                    "fastapi.additional-status-codes.tutorial-update-existing",
+                    "fastapi.additional-status-codes.tutorial-create-new",
+                ],
+                "observation_selectors": ["http.body.bytes", "http.status"],
+            }
+        ],
+    },
+    "docs_src/additional_status_codes/tutorial001_an_py310.py": {
+        "rationale": (
+            "The Annotated FastAPI 0.141.1 example upserts an item: an existing item returns the "
+            "normal response, while a new item returns JSONResponse with HTTP 201. The independent "
+            "cases exercise those two branches with separate identifiers and payloads, observing "
+            "exact status and body bytes only; they do not claim the tutorial's literal values, "
+            "state across requests, response headers, or OpenAPI documentation."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/additional_status_codes/tutorial001_an_py310.py",
+                "start_line": 11,
+                "end_line": 25,
+                "role": "documented existing-item and new-item PUT response branches",
+            }
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/additional-status-codes-tutorial-upstream.yaml",
+                "case_ids": [
+                    "fastapi.additional-status-codes.tutorial-update-existing",
+                    "fastapi.additional-status-codes.tutorial-create-new",
+                ],
+                "observation_selectors": ["http.body.bytes", "http.status"],
+            }
+        ],
+    },
     "docs_src/handling_errors/tutorial001_py310.py": {
         "rationale": (
             "The FastAPI 0.141.1 example returns an existing item and raises HTTPException "
@@ -674,6 +728,76 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
             {
                 "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-configurations-tutorial002-upstream.yaml",
                 "case_ids": ["fastapi.path-operation-configurations.tutorial002"],
+                "observation_selectors": ["http.status", "openapi.document"],
+            }
+        ],
+    },
+    "docs_src/path_operation_configuration/tutorial002b_py310.py": {
+        "rationale": (
+            "This FastAPI 0.141.1 example assigns Enum members as tags for GET /items/ and "
+            "GET /users/. The independent case observes HTTP response status and selects the tag "
+            "arrays for those methods, sampling Enum-to-OpenAPI tag serialization. It does not "
+            "claim the example's runtime response bodies, other tag forms, or unrelated OpenAPI "
+            "fields."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/path_operation_configuration/tutorial002b_py310.py",
+                "start_line": 8,
+                "end_line": 19,
+                "role": "documented Enum members used as path-operation tags",
+            }
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-configurations-tutorial002b-upstream.yaml",
+                "case_ids": ["fastapi.path-operation-configurations.tutorial002b"],
+                "observation_selectors": ["http.status", "openapi.document"],
+            }
+        ],
+    },
+    "docs_src/path_operation_configuration/tutorial003_py310.py": {
+        "rationale": (
+            "The example sets explicit summary and description metadata on a POST operation. "
+            "The independent case observes the POST response status and selects those two OpenAPI "
+            "fields from an analogous Item route; it does not claim the tutorial's full schema, "
+            "request validation, or response serialization behavior."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/path_operation_configuration/tutorial003_py310.py",
+                "start_line": 15,
+                "end_line": 20,
+                "role": "documented explicit operation summary and description",
+            }
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-configurations-tutorial003-upstream.yaml",
+                "case_ids": ["fastapi.path-operation-configurations.tutorial003-explicit-description"],
+                "observation_selectors": ["http.status", "openapi.document"],
+            }
+        ],
+    },
+    "docs_src/path_operation_configuration/tutorial004_py310.py": {
+        "rationale": (
+            "The example derives an operation summary and description from the endpoint docstring. "
+            "The independent case observes the POST response status and selects those two OpenAPI "
+            "fields from an analogous Item route; it does not claim the tutorial's full schema, "
+            "request validation, or response serialization behavior."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/path_operation_configuration/tutorial004_py310.py",
+                "start_line": 15,
+                "end_line": 25,
+                "role": "documented endpoint docstring used as OpenAPI description",
+            }
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-configurations-tutorial004-upstream.yaml",
+                "case_ids": ["fastapi.path-operation-configurations.tutorial004-docstring-description"],
                 "observation_selectors": ["http.status", "openapi.document"],
             }
         ],
