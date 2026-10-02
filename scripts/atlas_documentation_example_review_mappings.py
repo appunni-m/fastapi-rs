@@ -635,6 +635,35 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
             }
         ],
     },
+    "docs_src/header_params/tutorial002_py310.py": {
+        "rationale": (
+            "This FastAPI 0.141.1 example declares an optional header with "
+            "convert_underscores=False and returns its value. The independent cases sample the "
+            "missing, irrelevant, underscore-name, and hyphen-name branches with exact response "
+            "status/body observations; they do not claim the OpenAPI parameter schema or other "
+            "Header options."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/header_params/tutorial002_py310.py",
+                "start_line": 6,
+                "end_line": 10,
+                "role": "documented optional header with underscore conversion disabled",
+            }
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/query-header-parameter-header-tutorial002-direct.yaml",
+                "case_ids": [
+                    "fastapi.query-header-review.header002.direct.default-underscore-alias",
+                    "fastapi.query-header-review.header002.direct.irrelevant-x-header",
+                    "fastapi.query-header-review.header002.direct.underscore-alias",
+                    "fastapi.query-header-review.header002.direct.hyphen-does-not-match-underscore-alias",
+                ],
+                "observation_selectors": ["http.body.bytes", "http.status"],
+            }
+        ],
+    },
     "docs_src/header_params/tutorial002_an_py310.py": {
         "rationale": (
             "The linked cases sample the documented Annotated Header(convert_underscores=False) "
