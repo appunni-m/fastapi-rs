@@ -671,7 +671,7 @@ struct RouterIncludePolicy<'policy> {
 #[pymethods]
 impl PyFastApi {
     #[new]
-    #[pyo3(signature = (*, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", docs_url = "/docs", redoc_url = "/redoc", terms_of_service = None, contact = None, license_info = None, openapi_external_docs = None, dependencies = None, default_response_class = None, exception_handlers = None, on_startup = None, on_shutdown = None, lifespan = None, strict_content_type = true))]
+    #[pyo3(signature = (*, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", docs_url = "/docs", redoc_url = "/redoc", terms_of_service = None, contact = None, license_info = None, openapi_external_docs = None, dependencies = None, default_response_class = None, middleware = None, exception_handlers = None, on_startup = None, on_shutdown = None, lifespan = None, strict_content_type = true))]
     // lint-exception: PyO3 needs one Rust argument per Python constructor keyword.
     #[allow(
         clippy::too_many_arguments,
@@ -692,12 +692,21 @@ impl PyFastApi {
         openapi_external_docs: Option<Py<PyAny>>,
         dependencies: Option<Vec<Py<PyAny>>>,
         default_response_class: Option<Py<PyAny>>,
+        middleware: Option<Py<PyAny>>,
         exception_handlers: Option<Py<PyAny>>,
         on_startup: Option<Py<PyAny>>,
         on_shutdown: Option<Py<PyAny>>,
         lifespan: Option<Py<PyAny>>,
         strict_content_type: bool,
     ) -> PyResult<Self> {
+        let user_middleware = match middleware {
+            Some(middleware) => py
+                .import("builtins")?
+                .getattr("list")?
+                .call1((middleware,))?
+                .extract()?,
+            None => Vec::new(),
+        };
         let state = py
             .import("starlette.datastructures")?
             .getattr("State")?
@@ -781,7 +790,7 @@ impl PyFastApi {
             mounted_routes: Vec::new(),
             frontend_routes: Vec::new(),
             websocket_routes: Vec::new(),
-            user_middleware: Vec::new(),
+            user_middleware,
             middleware_stack: None,
         })
     }
@@ -2484,6 +2493,7 @@ impl PyApiRouter {
                 None,
                 None,
                 default_response_class,
+                None,
                 None,
                 on_startup,
                 on_shutdown,

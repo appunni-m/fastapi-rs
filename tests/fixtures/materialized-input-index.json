@@ -760,6 +760,18 @@
       ]
     },
     {
+      "id": "constructor-middleware-order",
+      "input_path": "tests/fixtures/inputs/parity/constructor-middleware-order.json",
+      "input_sha256": "cad4c3f5bc87c5d1b009080b024eaf61af10c2e75da044a5020b870123281083",
+      "recipe_path": "tests/fixtures/input-recipes/parity/constructor-middleware-order.yaml",
+      "recipe_sha256": "00c96b2df8752c6dc0066b73ac2081bb6d27c12c9a1483714c48653c733e4268",
+      "workload_path": "tests/fixtures/workloads/constructor_middleware.py",
+      "workload_sha256": "702af116f84ba86226e9ef28fb300e8f3898479b17af46ddedf1c42ee48c9ef0",
+      "case_ids": [
+        "fastapi.applications.constructor-middleware-order"
+      ]
+    },
+    {
       "id": "cookie-parameter-surface-review",
       "input_path": "tests/fixtures/inputs/parity/cookie-parameter-surface-review.json",
       "input_sha256": "819dcfee03571ad78b237dceef9813c352add95857d77ddfab861de9c127274d",
@@ -10513,6 +10525,36 @@
       ],
       "observation_selectors": [
         "construction.outcome"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:advanced/middleware.md",
+      "fixture_id": "fastapi.docs.advanced-middleware",
+      "workflow_id": "constructor-middleware-order",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.applications.constructor-middleware-order"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_ws_router.py",
+      "fixture_id": "fastapi.test.test-ws-router",
+      "workflow_id": "constructor-middleware-order",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.applications.constructor-middleware-order"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
       ]
     },
     {

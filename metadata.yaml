@@ -391,6 +391,8 @@ reviewed_api_contract_overlay:
         - {path: tests/test_ws_dependencies.py, symbol: test_index}
         - {path: tests/test_ws_dependencies.py, symbol: test_routerindex}
         - {path: tests/test_ws_dependencies.py, symbol: test_routerprefixindex}
+        - {path: tests/test_ws_router.py, symbol: test_depend_err_middleware}
+        - {path: docs/en/docs/advanced/middleware.md}
         - {path: tests/test_dependency_overrides.py, symbol: test_override_simple}
         - {path: tests/test_request_params/test_query/test_required_str.py, symbol: test_required_alias_missing}
         - {path: tests/test_request_params/test_query/test_required_str.py, symbol: test_required_alias_by_alias}
@@ -421,6 +423,9 @@ reviewed_api_contract_overlay:
         - {path: tests/test_router_events.py, symbol: test_router_async_generator_lifespan}
         - {path: tests/test_router_events.py, symbol: test_startup_shutdown_handlers_as_parameters}
         - {path: docs/en/docs/advanced/events.md}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/constructor-middleware-order.yaml
+          case_id: fastapi.applications.constructor-middleware-order
       feature_ids: [public-api-errors, app-routing, dependency-security, request-validation, websocket-lifecycle, openapi-docs]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes, websocket.event_order, websocket.messages, openapi.document, asgi.lifespan.event_order, asgi.lifespan.startup, asgi.lifespan.shutdown, asgi.lifespan.application_errors, asgi.lifespan.workload_trace, warnings.category_message]
       supported_slice: >-
@@ -470,6 +475,11 @@ reviewed_api_contract_overlay:
         `strict-content-type-router-level-upstream`, which also observes
         nested app/router inheritance. Other media types are not treated as JSON
         unless they are `application/json` or an `application/*+json` subtype.
+        The constructor's `middleware` sequence is also copied and applied in
+        its declared order; the constructor-middleware-order workflow observes
+        two user middleware entries over HTTP. FastAPI's additional
+        AsyncExitStackMiddleware behavior and other constructor options remain
+        outside this slice.
     fastapi.applications.FastAPI.exception_handler:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::exception_handler
       source_evidence:
