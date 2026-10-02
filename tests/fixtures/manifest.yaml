@@ -172,7 +172,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@3
-    sha256: 3e78db1d1e7ae6df5770a12e251ba2c1213d2fd9f62614480ed424b4e45d26ba
+    sha256: b7a737762d239290a753b4eab1994ba24ec066c3d79f69fe583f443de1a61de1
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -205,7 +205,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 992eabe1531a175fea28f854f1e10f2b59d7fe4a0b7e437e7128b6c8abc37551
+    sha256: 0cfc676996623702b903e48e684c7719e642d3655c78a994318a87cd9e55cdba
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 652
@@ -242,14 +242,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@2
-    sha256: 904ca53207559534a6eb363e5b47e6fb4aa2ae78a594fe802119bf82a103b8b7
+    sha256: ede7e3c8a6addb9f98ccf0c8d4f9997d80d64e1c90acd4ac55b61bdac279d207
     schema_path: tests/fixtures/schemas/materialized-input-index.schema.json
     schema_sha256: 56ac1cdfaa6f28b4277ef44b5ef78efebb3122111c5691e1b9c1bce869156aaf
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
       workflows: 494
-      cases: 1929
-      partial_source_mappings: 1183
+      cases: 1931
+      partial_source_mappings: 1185
 
 contract_metadata:
   aliases:
@@ -334,15 +334,17 @@ unresolved:
     comparison_schema_id: fastapi-rs/python-asgi-comparison@2
     comparison_schema_path: tests/fixtures/schemas/python-asgi-comparison-v2.schema.json
     comparison_schema_sha256: 3e9cb95f0786f370f795e65316e8c69c7b23c9f0ce613e40c40ae8fe987d84c3
-    input_state: HTTP and WebSocket workflow schemas define stimuli; the first HTTP slice has ten input-only cases
+    input_state: HTTP and WebSocket workflow schemas define stimuli; the first HTTP slice has twelve input-only cases
     oracle_environment: isolated environment from the FastAPI 0.141.1 lock with local Starlette 1.6.0 override
     recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-    recipe_sha256: 18867dd5a0ffa68530bd606a246e113b605ac178bbdf07de46ce3fd5160ef3d2
+    recipe_sha256: 54a6e3101eb040f85e535dedbcbb70489684d74cd3bffd09c369a2e7e4fc3386
     first_slice_workload:
       path: tests/fixtures/workloads/first_slice.py
       sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
     case_ids:
       - fastapi.first-slice.create-item-valid
+      - fastapi.first-slice.create-item-optional-query-default
+      - fastapi.first-slice.path-not-found
       - fastapi.first-slice.create-item-chunked-body
       - fastapi.first-slice.create-item-missing-header
       - fastapi.first-slice.create-item-invalid
@@ -361,11 +363,12 @@ unresolved:
     pointer: /unresolved_compatibility_points
     item_id: fixture-recipe-execution-contract
     atlas_question_narrowing: >-
-      Ten input-only cases cover valid and invalid requests, chunked ASGI
-      bodies, required inputs, malformed JSON, aggregated validation, JSON
-      media-type suffix handling, and OpenAPI. They define a first vertical
-      slice; run outcomes belong in ignored parity-results artifacts and the
-      broader public API remains pending.
+      Twelve input-only cases cover valid and invalid requests, chunked ASGI
+      bodies, omitted optional query input, route misses, required inputs,
+      malformed JSON, aggregated validation, JSON media-type suffix handling,
+      and OpenAPI. They define a first vertical slice; run outcomes belong in
+      ignored parity-results artifacts and the broader public API remains
+      pending.
   python_asgi_workflow_v3:
     state: schema-and-runner-present; 15 indexed v3 workflows include constructor, WebSocket, and lifecycle cases
     schema_id: fastapi-rs/python-asgi-workflow@3

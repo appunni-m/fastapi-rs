@@ -9387,6 +9387,12 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             "evidence": "FastAPI 0.141.1 declares the `fastapi` entrypoint and delegates its implementation to the separate fastapi-cli package; the current workflow schemas cannot execute or observe subprocesses, and no CLI package pin is selected.",
         },
         {
+            "id": "fastapi-testclient-public-alias",
+            "status": "optional-target-profile-and-alias-parity-pending",
+            "question": "Can FastAPI-RS expose `fastapi.testclient.TestClient` with the source alias identity and exact public signature under the matching optional profile, while delegating HTTP, WebSocket, and lifespan behavior to Starlette-RS?",
+            "evidence": "FastAPI 0.141.1 defines fastapi/testclient.py as a direct re-export of starlette.testclient.TestClient, and the candidate is reflected only in the standard optional profile. The pinned Starlette-RS source provides a TestClient facade over its Rust-owned transport, but the FastAPI-RS target has no standard-profile lock or direct API workflow for this alias. Both current core-profile interpreters fail to import the source and target TestClient modules because the optional httpx2 package is absent, so alias identity, signature, and client behavior parity are not established.",
+        },
+        {
             "id": "fastapi-security-module-runtime-surface",
             "status": "two-case-identity-checked-parity-passing; broader-security-contract-pending",
             "question": "Does FastAPI-RS expose the documented `fastapi.security` module and preserve `HTTPBearer` subclass overrides for missing-credential responses?",
@@ -9430,7 +9436,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                 "openapi-docs",
             ],
             "fixture_ids": first_slice_workflow["case_ids"],
-            "acceptance": "POST /items/{item_id} through FastAPI public API; path/query/header dependency; Pydantic request validation; response-model field filtering; observe exact HTTP response and ordered ASGI send message types; observe generated OpenAPI; execute the same input against identity-checked oracle and target workers.",
+            "acceptance": "POST /items/{item_id} through FastAPI public API; path/query/header dependency including the omitted optional-query default; Pydantic request validation and a route-miss 404; response-model field filtering; observe exact HTTP response and ordered ASGI send message types; observe generated OpenAPI; execute the same input against identity-checked oracle and target workers.",
             "starlette_rs_planning_areas": [
                 "asgi-http-websocket-lifespan",
                 "applications-requests-responses-background-concurrency",

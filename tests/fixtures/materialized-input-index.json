@@ -2308,13 +2308,15 @@
     {
       "id": "first-asgi-request",
       "input_path": "tests/fixtures/inputs/parity/first-asgi-request.json",
-      "input_sha256": "323221f9411c5291122336ad44d8f222ede7a95c749287a5603db54d8feeca01",
+      "input_sha256": "b22280138b86cee8ab23c71db5cb6048fbe6920de2edc58e19aec1f1a126e2ef",
       "recipe_path": "tests/fixtures/input-recipes/parity/first-asgi-request.yaml",
-      "recipe_sha256": "18867dd5a0ffa68530bd606a246e113b605ac178bbdf07de46ce3fd5160ef3d2",
+      "recipe_sha256": "54a6e3101eb040f85e535dedbcbb70489684d74cd3bffd09c369a2e7e4fc3386",
       "workload_path": "tests/fixtures/workloads/first_slice.py",
       "workload_sha256": "da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec",
       "case_ids": [
         "fastapi.first-slice.create-item-valid",
+        "fastapi.first-slice.create-item-optional-query-default",
+        "fastapi.first-slice.path-not-found",
         "fastapi.first-slice.create-item-chunked-body",
         "fastapi.first-slice.create-item-missing-header",
         "fastapi.first-slice.create-item-invalid",
@@ -13688,6 +13690,21 @@
       ]
     },
     {
+      "source_item_id": "documented-page:tutorial/query-params.md",
+      "fixture_id": "fastapi.docs.tutorial-query-params",
+      "workflow_id": "first-asgi-request",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.first-slice.create-item-optional-query-default"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
       "source_item_id": "documented-page:tutorial/response-model.md",
       "fixture_id": "fastapi.docs.tutorial-response-model",
       "workflow_id": "first-asgi-request",
@@ -13710,11 +13727,12 @@
       "fixture_id": "fastapi.test.test-application",
       "workflow_id": "first-asgi-request",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 3 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 4 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.first-slice.create-item-chunked-body",
         "fastapi.first-slice.create-item-valid",
-        "fastapi.first-slice.openapi"
+        "fastapi.first-slice.openapi",
+        "fastapi.first-slice.path-not-found"
       ],
       "observation_selectors": [
         "asgi.send.message_types",
@@ -13746,6 +13764,22 @@
         "http.status",
         "openapi.document",
         "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_query.py",
+      "fixture_id": "fastapi.test.test-query",
+      "workflow_id": "first-asgi-request",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.first-slice.create-item-optional-query-default"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
       ]
     },
     {
