@@ -52,7 +52,7 @@ Python-facade or FastAPI parity results.
 
 ## Parity suite
 
-The first ten-case HTTP request/response slice now has a Rust-owned target,
+The first twelve-case HTTP request/response slice now has a Rust-owned target,
 pass-through `fastapi` facade, isolated workers, and an exact comparator. The
 `make parity-first-slice` command runs both pinned products and stores the
 comparison in ignored `parity-results/`; CI runs this gate. This only validates
@@ -142,20 +142,24 @@ target internals to manufacture compatibility.
 
 `benchmarks/workloads/first-slice-valid-asgi.yaml` defines the first runnable
 measurement. `make benchmark-first-slice` rebuilds the pinned target extension
-with Cargo's release profile, runs the complete ten-case identity-checked
+with Cargo's release profile, runs the complete twelve-case identity-checked
 parity gate, then measures the valid item request in three
 isolated processes: FastAPI 0.141.1 with Starlette 1.6.0, the FastAPI-RS release
 extension with the pinned Starlette-RS source, and a plain Starlette 1.6.0
 route/response control. The untimed output must match exactly across all three
 subjects before timing proceeds.
 
-This lane measures one direct ASGI application invocation. App construction,
-scope/event setup, interpreter startup, HTTP client, and network are outside
-per-request timing; the Python facade, PyO3/native dispatch, application,
-validation, response serialization, and ASGI send capture are inside. It uses
-50 warmups and 1,000 sequential samples in five rounds, retains every sample,
-and reports min/median/p95/p99/max/mean plus sequential loop throughput. The
-Starlette control is contextual and its time is never subtracted from FastAPI.
+Per-request latency measures one direct ASGI call, timed only around
+`await app(scope, receive, send)`. App construction, scope/event setup,
+interpreter startup, HTTP client, and network are outside that latency timer;
+the Python facade, PyO3/native dispatch, application, validation, response
+serialization, and captured ASGI sends are inside. Sequential request-loop
+throughput uses a wider timer that also includes scope copies, callback
+construction, response signature extraction and equality checks, and loop
+bookkeeping. It is a harness-level rate, not app-only throughput. The runner
+uses 50 warmups and 1,000 measured samples in five rounds and retains every
+latency sample. The Starlette control is contextual and its time is never
+subtracted from FastAPI.
 Each artifact stores workload/input digests, fresh parity evidence, source
 revisions, Python/host identity, Cargo profile/features, and Rust/Cargo versions
 under ignored `benchmark-results/`.

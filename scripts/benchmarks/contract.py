@@ -35,12 +35,14 @@ RESULT_ROOT = (ROOT / "parity-results").resolve()
 _EXPECTED_EXCLUSIONS = {
     "interpreter and module startup",
     "app construction and route registration",
-    "ASGI scope and receive/send callback construction",
+    "ASGI scope and receive/send callback construction from per-request latency",
+    "response signature extraction and correctness checks from per-request latency",
+    "sequential loop bookkeeping from per-request latency",
     "network and HTTP client",
 }
 _EXPECTED_METRICS = {
     "per-request latency nanoseconds: min, median, p95, p99, max, mean",
-    "sequential request-loop throughput",
+    "sequential request-loop throughput including per-call setup, response observation, correctness checks, and loop bookkeeping",
 }
 _EXPECTED_KINDS = {"fastapi", "fastapi-rs"}
 _SUBJECT_IDS = {

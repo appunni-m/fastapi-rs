@@ -23,7 +23,7 @@ subjects:
   kind: fastapi-rs
   environment: target
 timing:
-  boundary: One direct ASGI request through an async nested override with two explicit query aliases
+  boundary: direct ASGI per-request latency times only await app(scope, receive, send); sequential request-loop throughput also includes per-call setup, response observation, correctness checks, and loop bookkeeping
   includes:
   - FastAPI dependency override resolution and query extraction/validation
   - FastAPI-RS Python facade and PyO3 value conversion
@@ -32,7 +32,9 @@ timing:
   excludes:
   - interpreter and module startup
   - app construction and route registration
-  - ASGI scope and receive/send callback construction
+  - ASGI scope and receive/send callback construction from per-request latency
+  - response signature extraction and correctness checks from per-request latency
+  - sequential loop bookkeeping from per-request latency
   - HTTP server startup and server-side request processing
   - network and HTTP client
   warmups: 50
@@ -41,7 +43,7 @@ timing:
   concurrency: 1
   metrics:
   - "per-request latency nanoseconds: min, median, p95, p99, max, mean"
-  - sequential request-loop throughput
+  - sequential request-loop throughput including per-call setup, response observation, correctness checks, and loop bookkeeping
   raw_samples: retain all per-request latency samples
 reporting:
   fastapi_rs_over_fastapi: report median and p95 ratios only
