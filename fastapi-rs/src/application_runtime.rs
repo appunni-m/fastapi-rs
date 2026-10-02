@@ -334,6 +334,7 @@ struct FastApiRoute {
     status_code: u16,
     include_in_schema: bool,
     response_class: Option<Py<PyAny>>,
+    strict_content_type: Option<bool>,
     sse_stream: bool,
     generator_kind: FastApiGeneratorKind,
     stream_item_type: Option<Py<PyAny>>,
@@ -425,6 +426,7 @@ pub(crate) struct PyFastApi {
     openapi_external_docs: Option<Py<PyAny>>,
     dependencies: Vec<Py<PyAny>>,
     default_response_class: Option<Py<PyAny>>,
+    strict_content_type: Option<bool>,
     exception_handlers: Py<PyAny>,
     lifespan: FastApiLifespan,
     dependency_overrides: Py<PyDict>,
@@ -540,6 +542,7 @@ pub(crate) struct PyApiRouter {
     deprecated: Option<bool>,
     include_in_schema: bool,
     dependencies: Vec<Py<PyAny>>,
+    strict_content_type: Option<bool>,
 }
 
 struct RouterIncludePolicy<'policy> {
@@ -548,12 +551,13 @@ struct RouterIncludePolicy<'policy> {
     dependencies: &'policy [Py<PyAny>],
     deprecated: Option<bool>,
     include_in_schema: bool,
+    strict_content_type: Option<bool>,
 }
 
 #[pymethods]
 impl PyFastApi {
     #[new]
-    #[pyo3(signature = (*, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", docs_url = "/docs", redoc_url = "/redoc", terms_of_service = None, contact = None, license_info = None, openapi_external_docs = None, dependencies = None, default_response_class = None, exception_handlers = None, on_startup = None, on_shutdown = None, lifespan = None))]
+    #[pyo3(signature = (*, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", docs_url = "/docs", redoc_url = "/redoc", terms_of_service = None, contact = None, license_info = None, openapi_external_docs = None, dependencies = None, default_response_class = None, exception_handlers = None, on_startup = None, on_shutdown = None, lifespan = None, strict_content_type = true))]
     // lint-exception: PyO3 needs one Rust argument per Python constructor keyword.
     #[allow(
         clippy::too_many_arguments,
@@ -578,6 +582,7 @@ impl PyFastApi {
         on_startup: Option<Py<PyAny>>,
         on_shutdown: Option<Py<PyAny>>,
         lifespan: Option<Py<PyAny>>,
+        strict_content_type: bool,
     ) -> PyResult<Self> {
         let state = py
             .import("starlette.datastructures")?
@@ -643,6 +648,7 @@ impl PyFastApi {
             openapi_external_docs,
             dependencies: dependencies.unwrap_or_default(),
             default_response_class,
+            strict_content_type: Some(strict_content_type),
             exception_handlers: exception_handlers.unbind().into_any(),
             lifespan,
             dependency_overrides: PyDict::new(py).unbind(),
@@ -668,6 +674,16 @@ impl PyFastApi {
     #[getter]
     fn state(&self, py: Python<'_>) -> Py<PyAny> {
         self.state.clone_ref(py)
+    }
+
+    #[getter]
+    fn strict_content_type(&self) -> bool {
+        self.strict_content_type.unwrap_or(true)
+    }
+
+    #[setter]
+    fn set_strict_content_type(&mut self, strict_content_type: bool) {
+        self.strict_content_type = Some(strict_content_type);
     }
 
     #[setter]
@@ -1432,6 +1448,7 @@ impl PyFastApi {
                 dependencies: &inherited_dependencies,
                 deprecated,
                 include_in_schema,
+                strict_content_type: self.strict_content_type,
             },
         )?;
         self.lifespan.include_router(py, &source.lifespan)?;
@@ -2235,7 +2252,7 @@ impl PyFastApi {
 #[pymethods]
 impl PyApiRouter {
     #[new]
-    #[pyo3(signature = (*, prefix = "", tags = None, dependencies = None, default_response_class = None, on_startup = None, on_shutdown = None, lifespan = None, deprecated = None, include_in_schema = true))]
+    #[pyo3(signature = (*, prefix = "", tags = None, dependencies = None, default_response_class = None, on_startup = None, on_shutdown = None, lifespan = None, deprecated = None, include_in_schema = true, strict_content_type = None))]
     // lint-exception: preserve the FastAPI-compatible APIRouter constructor keyword signature.
     #[allow(
         clippy::too_many_arguments,
@@ -2252,6 +2269,7 @@ impl PyApiRouter {
         lifespan: Option<Py<PyAny>>,
         deprecated: Option<bool>,
         include_in_schema: bool,
+        strict_content_type: Option<bool>,
     ) -> PyResult<Self> {
         validate_router_prefix(prefix)?;
         let inner = Py::new(
@@ -2275,9 +2293,14 @@ impl PyApiRouter {
                 on_startup,
                 on_shutdown,
                 lifespan,
+                strict_content_type.unwrap_or(true),
             )?,
         )?;
-        inner.bind(py).borrow_mut().route_scope_prefix = prefix.to_owned();
+        {
+            let mut inner = inner.bind(py).borrow_mut();
+            inner.route_scope_prefix = prefix.to_owned();
+            inner.strict_content_type = strict_content_type;
+        }
         Ok(Self {
             inner,
             prefix: prefix.to_owned(),
@@ -2285,12 +2308,24 @@ impl PyApiRouter {
             deprecated,
             include_in_schema,
             dependencies: dependencies.unwrap_or_default(),
+            strict_content_type,
         })
     }
 
     #[getter]
     fn prefix(&self) -> &str {
         &self.prefix
+    }
+
+    #[getter]
+    fn strict_content_type(&self) -> bool {
+        self.strict_content_type.unwrap_or(true)
+    }
+
+    #[setter]
+    fn set_strict_content_type(&mut self, py: Python<'_>, strict_content_type: bool) {
+        self.strict_content_type = Some(strict_content_type);
+        self.inner.bind(py).borrow_mut().strict_content_type = Some(strict_content_type);
     }
 
     fn add_event_handler(
@@ -2368,6 +2403,7 @@ impl PyApiRouter {
                 "Cannot include an APIRouter instance that already includes this router. Did you mean to include a different router?",
             ));
         }
+        let inherited_strict_content_type = destination.strict_content_type;
         merge_router_routes(
             py,
             &mut destination,
@@ -2378,6 +2414,7 @@ impl PyApiRouter {
                 dependencies: &dependencies,
                 deprecated,
                 include_in_schema,
+                strict_content_type: inherited_strict_content_type,
             },
         )?;
         destination.lifespan.include_router(py, &source.lifespan)
@@ -2771,6 +2808,7 @@ fn merge_router_routes(
         dependencies: inherited_dependencies,
         deprecated: inherited_deprecated,
         include_in_schema: inherited_include_in_schema,
+        strict_content_type: inherited_strict_content_type,
     } = policy;
     for source_route in &source.routes {
         let path = format!("{prefix}{}", source_route.path);
@@ -2837,6 +2875,10 @@ fn merge_router_routes(
             status_code: source_route.status_code,
             include_in_schema: inherited_include_in_schema && source_route.include_in_schema,
             response_class,
+            strict_content_type: source_route
+                .strict_content_type
+                .or(source.strict_content_type)
+                .or(inherited_strict_content_type),
             sse_stream,
             generator_kind: source_route.generator_kind,
             stream_item_type: source_route
@@ -3269,6 +3311,7 @@ impl PyOperationDecorator {
         app.router
             .set_parameters(index, inputs)
             .ok_or_else(|| PyRuntimeError::new_err("registered FastAPI operation was lost"))?;
+        let strict_content_type = app.strict_content_type;
         app.routes.push(FastApiRoute {
             path: self.path.clone(),
             path_format,
@@ -3285,6 +3328,7 @@ impl PyOperationDecorator {
             status_code: self.status_code,
             include_in_schema: self.include_in_schema,
             response_class,
+            strict_content_type,
             sse_stream,
             generator_kind,
             stream_item_type,
@@ -6150,17 +6194,21 @@ enum InputDecodeError {
     Other(PyErr),
 }
 
-fn should_parse_json_body(headers: &[(Vec<u8>, Vec<u8>)]) -> bool {
+fn should_parse_json_body(headers: &[(Vec<u8>, Vec<u8>)], strict_content_type: bool) -> bool {
     let Some((_, value)) = headers
         .iter()
         .find(|(name, _)| name.eq_ignore_ascii_case(b"content-type"))
     else {
+        return !strict_content_type;
+    };
+    if value.is_empty() {
+        return !strict_content_type;
+    }
+    let media_type = value.split(|byte| *byte == b';').next().unwrap_or_default();
+    let Ok(media_type) = std::str::from_utf8(media_type) else {
         return false;
     };
-    let Ok(value) = std::str::from_utf8(value) else {
-        return false;
-    };
-    let media_type = value.split(';').next().unwrap_or_default().trim();
+    let media_type = media_type.trim();
     let Some((media_type, subtype)) = media_type.split_once('/') else {
         return false;
     };
@@ -7603,7 +7651,22 @@ impl FastApiCall {
         let headers: Vec<(Vec<u8>, Vec<u8>)> = scope
             .call_method1("get", ("headers", PyList::empty(py)))?
             .extract()?;
-        self.invoke_http_route(py, &body, should_parse_json_body(&headers))
+        let strict_content_type = self
+            .route_index
+            .and_then(|index| {
+                self.app
+                    .bind(py)
+                    .borrow()
+                    .routes
+                    .get(index)
+                    .and_then(|route| route.strict_content_type)
+            })
+            .unwrap_or(true);
+        self.invoke_http_route(
+            py,
+            &body,
+            should_parse_json_body(&headers, strict_content_type),
+        )
     }
 
     fn invoke_http_route(

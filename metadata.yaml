@@ -334,6 +334,8 @@ reviewed_api_contract_overlay:
           kind: source-definition
           start_line: 58
           end_line: 61
+        - {path: tests/test_strict_content_type_app_level.py}
+        - {path: docs/en/docs/advanced/strict-content-type.md}
         - {path: fastapi/applications.py, symbol: __init__}
         - {path: tests/test_ws_dependencies.py, symbol: test_index}
         - {path: tests/test_ws_dependencies.py, symbol: test_routerindex}
@@ -410,7 +412,13 @@ reviewed_api_contract_overlay:
         Startup/shutdown failure parity and combining an explicit lifespan with
         legacy constructor callbacks are not established. The mounted-subapp
         case confirms that the parent lifespan does not start the mounted app.
-        TestClient.app_state remains outside this direct-ASGI workflow.
+        TestClient.app_state remains outside this direct-ASGI workflow. The
+        `strict_content_type` constructor option is also covered: the default
+        rejects a JSON body without a content-type, while `False` parses that
+        body as JSON. App-level behavior is mapped by
+        `strict-content-type-router-level-upstream`, which also observes
+        nested app/router inheritance. Other media types are not treated as JSON
+        unless they are `application/json` or an `application/*+json` subtype.
     fastapi.applications.FastAPI.exception_handler:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::exception_handler
       source_evidence:
@@ -844,12 +852,27 @@ reviewed_api_contract_overlay:
       source_evidence:
         - {path: fastapi/routing.py, symbol: get_route_handler}
         - {path: fastapi/routing.py, symbol: get_request_handler}
-      feature_ids: [response-serialization]
+        - {path: tests/test_strict_content_type_app_level.py}
+        - {path: tests/test_strict_content_type_router_level.py}
+        - {path: tests/test_strict_content_type_nested.py}
+        - {path: docs/en/docs/advanced/strict-content-type.md}
+      feature_ids: [request-validation, response-serialization]
       observation_selectors:
+        - http.status
+        - http.body.bytes
         - asgi.application_error.exception
         - validation.error_class
         - validation.error_details
       error_contract_ids: [fastapi.exceptions.ResponseValidationError]
+      supported_slice: >-
+        When a route has a body field, the selected strict-content-type setting
+        parses absent or empty Content-Type as JSON only when false. Present
+        media types parse JSON only for `application/json` and
+        `application/*+json`, including parameters; other types remain raw
+        bytes. The strict app, router, and nested inheritance cases are
+        exercised by `strict-content-type-router-level-upstream`.
+        Route-level `APIRoute` mutation and
+        custom route classes remain outside the reviewed slice.
     fastapi.encoders.jsonable_encoder:
       rust_binding: fastapi-rs-py/src/lib.rs::PyJsonableEncoder::__call__
       source_evidence:
@@ -952,6 +975,8 @@ reviewed_api_contract_overlay:
       source_evidence:
         - {path: fastapi/applications.py, symbol: include_router}
         - {path: fastapi/routing.py, symbol: include_router}
+        - {path: tests/test_strict_content_type_router_level.py}
+        - {path: tests/test_strict_content_type_nested.py}
         - {path: tests/test_ws_dependencies.py, symbol: test_routerindex}
         - {path: tests/test_ws_dependencies.py, symbol: test_routerprefixindex}
         - {path: tests/test_router_include_context.py, symbol: test_router_and_include_prefix_path_params_reach_endpoint_and_openapi}
@@ -997,6 +1022,9 @@ reviewed_api_contract_overlay:
         lifecycle workflow observes successful startup/shutdown order and
         request-visible merged state, including app precedence for duplicate
         keys; lifecycle error paths and TestClient.app_state are not covered.
+        The app's `strict_content_type` value is the root context for included
+        routers; `strict-content-type-router-level-upstream` observes
+        absent-header rejection or JSON parsing under app and router overrides.
     fastapi.applications.FastAPI.on_event:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::on_event
       source_evidence:
@@ -1047,6 +1075,7 @@ reviewed_api_contract_overlay:
       source_evidence:
         - {path: fastapi/routing.py, symbol: include_router}
         - {path: fastapi/routing.py, symbol: APIRouter}
+        - {path: tests/test_strict_content_type_nested.py}
         - {path: tests/test_router_include_context.py, symbol: test_repeated_deep_inclusions_handle_all_concrete_paths}
         - {path: tests/test_router_include_context.py, symbol: test_router_include_context_matches_flattened_include_metadata}
         - {path: tests/test_router_events.py, symbol: test_router_nested_lifespan_state}
@@ -1066,7 +1095,11 @@ reviewed_api_contract_overlay:
         Nested router inclusion also composes the tested startup/shutdown
         handlers and lifespan contexts. The source-defined self/transitive
         inclusion guard is compared at construction; lifecycle failures and
-        other router-level options remain outside this slice.
+        other router-level options remain outside this slice. Strict content
+        type values from explicit child routers take precedence; omitted child
+        values inherit the parent/include context, including across nested
+        inclusions. `strict-content-type-router-level-upstream` covers lax
+        outer and strict inner routers and defaults under a lax app.
     fastapi.routing.APIRouter.frontend:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::frontend
       source_evidence:
@@ -1088,6 +1121,9 @@ reviewed_api_contract_overlay:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::new
       source_evidence:
         - {path: fastapi/routing.py, symbol: APIRouter}
+        - {path: tests/test_strict_content_type_router_level.py}
+        - {path: tests/test_strict_content_type_nested.py}
+        - {path: docs/en/docs/advanced/strict-content-type.md}
         - {path: tests/test_router_include_context.py, symbol: test_router_and_include_prefix_path_params_reach_endpoint_and_openapi}
         - {path: tests/test_router_include_context.py, symbol: test_router_include_context_matches_flattened_include_metadata}
         - {path: tests/test_router_events.py, symbol: test_app_lifespan_state}
@@ -1110,7 +1146,13 @@ reviewed_api_contract_overlay:
         dependencies-isolated. Lifecycle options include legacy startup and
         shutdown callbacks, async context managers, and sync/async generator
         lifespans. Successful nested execution and request-visible yielded
-        state are covered; lifecycle error paths are not.
+        state are covered; lifecycle error paths are not. The
+        `strict_content_type` option accepts an explicit boolean; omission
+        remains an inheritable default placeholder. The
+        `strict-content-type-router-level-upstream` workflow covers default,
+        lax, strict, and inherited behavior. Direct inspection of the
+        placeholder value and per-route
+        `add_api_route(strict_content_type=...)` remain outside this slice.
     fastapi.routing.APIRouter.add_event_handler:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::add_event_handler
       source_evidence:

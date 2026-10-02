@@ -7899,13 +7899,14 @@
     {
       "id": "strict-content-type-router-level-upstream",
       "input_path": "tests/fixtures/inputs/parity/strict-content-type-router-level-upstream.json",
-      "input_sha256": "4b4b93c72ae4388d981c255ec0974859aa517bf3ed4f47e0e4a024b4b62e4f5c",
+      "input_sha256": "9a68709f327a5046b61cfb7c75cfb1062bf956e8709b8fa87791bf92f19b5a15",
       "recipe_path": "tests/fixtures/input-recipes/parity/strict-content-type-router-level-upstream.yaml",
-      "recipe_sha256": "1b75deb6158e028febceaf919999bff6c011ee548ea47bb63d933d4a7b336e63",
+      "recipe_sha256": "abae6efd5c4239cdda08d4ee31e25d165b9f18289deda3c11c396ca91019d131",
       "workload_path": "tests/fixtures/workloads/strict_content_type_router_level_upstream.py",
-      "workload_sha256": "7e5f952076d64a8ad753dc678bce57c93738ad3c8b49049af77c0c7fee6c4d01",
+      "workload_sha256": "ae9f8ebcfaa6ddac1a80fac4d01a0f35e2edd9f1a4238493228695e67519e8ca",
       "case_ids": [
-        "fastapi.request.strict-content-type.router-level-upstream"
+        "fastapi.request.strict-content-type.router-level-upstream",
+        "fastapi.request.strict-content-type.app-and-nested-upstream"
       ]
     },
     {
@@ -26496,6 +26497,34 @@
       "observation_selectors": [
         "http.body.bytes",
         "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_strict_content_type_app_level.py",
+      "fixture_id": "fastapi.test.test-strict-content-type-app-level",
+      "workflow_id": "strict-content-type-router-level-upstream",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.request.strict-content-type.app-and-nested-upstream"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_strict_content_type_nested.py",
+      "fixture_id": "fastapi.test.test-strict-content-type-nested",
+      "workflow_id": "strict-content-type-router-level-upstream",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.request.strict-content-type.app-and-nested-upstream"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
         "http.status"
       ]
     },
