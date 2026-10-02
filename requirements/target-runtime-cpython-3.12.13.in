@@ -1,7 +1,8 @@
 # External Python runtime closure for the target CPython 3.12.13 parity profile.
 # Keep Starlette-RS itself out of this registry lock: parity-prepare-target
 # installs it separately from STARLETTE_RS_SOURCE with --no-deps.
-# AnyIO is the external runtime dependency declared by starlette-rs-py==0.1.0.
+# AnyIO and typing-extensions are runtime dependencies declared by
+# starlette-rs-py==0.1.0; typing-extensions supplies generic state TypeVar defaults.
 # pydantic-core is listed directly because fastapi-rs calls its runtime APIs.
 # annotated-doc is included only to preserve the parity comparator's shared
 # source/target package identity set; FastAPI-RS does not import it.

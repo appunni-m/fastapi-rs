@@ -438,7 +438,8 @@ The Python distribution directly pins `pydantic==2.13.4`,
 Pydantic's Python package builds schemas and exposes model behavior, while the
 separately installed `pydantic-core` wheel supplies its Rust
 validation/serialization engine. `starlette-rs-py` is a separate Rust/Python
-package and declares AnyIO `>=3.6.2,<5` in its own manifest. Maturin 1.14.1 is
+package and declares AnyIO `>=3.6.2,<5` plus typing-extensions `>=4.12.0` in
+its own manifest. Maturin 1.14.1 is
 the Python build-system dependency. The external target runtime closure is
 hash-locked for CPython 3.12.13 in
 [`requirements/target-runtime-cpython-3.12.13.lock`](../requirements/target-runtime-cpython-3.12.13.lock);

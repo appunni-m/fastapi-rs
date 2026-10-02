@@ -2863,6 +2863,32 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
 # response value; neither mapping claims that it captures stdout or print order.
 DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
     {
+        "docs_src/server_sent_events/tutorial004_py310.py": {
+            "rationale": (
+                "This independent input exercises the documented SSE route from the beginning and after "
+                "Last-Event-ID values 0 and 1. It compares status, ordered headers, and concatenated body "
+                "bytes. It does not claim 15-second keepalive timing or ASGI send-chunk boundaries."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/server_sent_events/tutorial004_py310.py",
+                    "start_line": 23,
+                    "end_line": 31,
+                    "role": "documented SSE event stream and Last-Event-ID resume behavior",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/server-sent-events-tutorial004-upstream.yaml",
+                    "case_ids": ["fastapi.tutorial.server-sent-events.tutorial004.resume-stream"],
+                    "observation_selectors": [
+                        "http.body.bytes",
+                        "http.headers.ordered",
+                        "http.status",
+                    ],
+                }
+            ],
+        },
         "docs_src/dependencies/tutorial008e_py310.py": {
             "rationale": (
                 "FastAPI 0.141.1 yields Rick from a function-scoped dependency and prints from its cleanup. "

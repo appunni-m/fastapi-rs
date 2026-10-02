@@ -3660,6 +3660,54 @@
       ]
     },
     {
+      "id": "openapi-get-openapi-public-api",
+      "input_path": "tests/fixtures/inputs/parity/openapi-get-openapi-public-api.json",
+      "input_sha256": "29d53396ae531b88d61c589f8bfba8e8295290634031cc4d2e6b2fc93b779403",
+      "recipe_path": "tests/fixtures/input-recipes/parity/openapi-get-openapi-public-api.yaml",
+      "recipe_sha256": "f289000d06a511cf72c390920ff218179214dd362fe3143a90d7ee60fcaa5cb3",
+      "workload_path": "tests/fixtures/workloads/openapi_get_openapi_public_api.py",
+      "workload_sha256": "c537d9ce6ab385eb186af19d52b38e21d4e93d270c183dda96259047a69a4478",
+      "case_ids": [
+        "fastapi.openapi.get-openapi.empty-routes",
+        "fastapi.openapi.get-openapi.document-metadata"
+      ],
+      "api_definitions": [
+        {
+          "case_id": "fastapi.openapi.get-openapi.document-metadata",
+          "symbol_id": "fastapi.openapi.utils.get_openapi",
+          "path": "fastapi/openapi/utils.py",
+          "sha256": "81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527"
+        },
+        {
+          "case_id": "fastapi.openapi.get-openapi.empty-routes",
+          "symbol_id": "fastapi.openapi.utils.get_openapi",
+          "path": "fastapi/openapi/utils.py",
+          "sha256": "81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527"
+        }
+      ],
+      "api_probes": [
+        {
+          "case_id": "fastapi.openapi.get-openapi.document-metadata",
+          "probe_id": "metadata-options",
+          "symbol_id": "fastapi.openapi.utils.get_openapi",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi.get-openapi.empty-routes",
+          "probe_id": "empty-routes",
+          "symbol_id": "fastapi.openapi.utils.get_openapi",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value",
+            "python.signature"
+          ]
+        }
+      ]
+    },
+    {
       "id": "openapi-operations",
       "input_path": "tests/fixtures/inputs/parity/openapi-operations.json",
       "input_sha256": "eaf026037b5cbc46e170e47cda26793fa104d60b6d476c2f5055044a963d50d2",
@@ -6446,7 +6494,7 @@
       "input_path": "tests/fixtures/inputs/parity/response-model-data-filter-exclude-unset-none-review.json",
       "input_sha256": "e8df817a4df31b3f2f646068c8a9286416ff13577822d1fc572bbc5d8eb34a17",
       "recipe_path": "tests/fixtures/input-recipes/parity/response-model-data-filter-exclude-unset-none-review.yaml",
-      "recipe_sha256": "91238c27fe8ffc2f9516a10e49098511c3742eb513477cbdaedbd1bc0f3292f7",
+      "recipe_sha256": "34911302848943e0bc908616fe0b2bb02be0491e744d853126cc12fe7dded7cd",
       "workload_path": "tests/fixtures/workloads/response_model_data_filter_exclude_unset_none_review.py",
       "workload_sha256": "24b60f06b2472a0254c9ae15d0b208e0edd99d3cb8a3833696d343bacd0c13cd",
       "case_ids": [
@@ -7604,9 +7652,9 @@
     {
       "id": "server-sent-events-tutorial004-upstream",
       "input_path": "tests/fixtures/inputs/parity/server-sent-events-tutorial004-upstream.json",
-      "input_sha256": "ab4621ef8c7315036204cfe8e474c8887a7ac7555228ba04dc8a1552e0b95d05",
+      "input_sha256": "d850380c0747af95e4bf0abfb8a4511734b57340e97da5d643b6328f4b735648",
       "recipe_path": "tests/fixtures/input-recipes/parity/server-sent-events-tutorial004-upstream.yaml",
-      "recipe_sha256": "95215d3c153baca2ab1db970f9b0a3647786beaec3c02b33e615d69b67147c94",
+      "recipe_sha256": "91fd2e897e3efb8a730dcd4f944592efdc71188495a2f750f7bbd643811e83c8",
       "workload_path": "tests/fixtures/workloads/server_sent_events_tutorials_upstream.py",
       "workload_sha256": "7bc11ec303835a35d8d8eaa353c0fd3abe5090b19e6def9db005577ef5a24fb0",
       "case_ids": [
@@ -26113,6 +26161,21 @@
         "http.headers.ordered",
         "http.status",
         "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "documented-example:docs_src/server_sent_events/tutorial004_py310.py",
+      "fixture_id": "fastapi.docs-example.server-sent-events-tutorial004-py310",
+      "workflow_id": "server-sent-events-tutorial004-upstream",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.tutorial.server-sent-events.tutorial004.resume-stream"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
       ]
     },
     {
