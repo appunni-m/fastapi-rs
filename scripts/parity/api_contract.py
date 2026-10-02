@@ -13,12 +13,17 @@ from typing import Any
 
 import yaml
 
-from scripts.parity.contract import MATERIALIZED_INPUT_INDEX_SCHEMA_ID, ContractError
+from scripts.parity.contract import (
+    MATERIALIZED_INPUT_INDEX_SCHEMA_ID,
+    ContractError,
+    load_workflow,
+    sha256_file,
+)
 
-CONTRACT_SCHEMA = "fastapi-rs/public-api-contract@4"
+CONTRACT_SCHEMA = "fastapi-rs/public-api-contract@5"
 TARGET_PROFILE = "fastapi-rs-python-consumer"
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-OVERLAY_SCHEMA = "fastapi-rs/reviewed-api-contract-overlay@3"
+OVERLAY_SCHEMA = "fastapi-rs/reviewed-api-contract-overlay@4"
 
 
 def _read_project_metadata() -> dict[str, Any]:
@@ -886,6 +891,345 @@ def _reviewed_deprecation_references(
     return dict(references)
 
 
+def _reviewed_identity_workflow_references(
+    reviewed_refs: Any,
+    *,
+    candidates_by_id: dict[str, dict[str, Any]],
+    candidate_indexes: dict[str, int],
+    atlas_aliases: list[dict[str, Any]],
+    alias_refs: dict[str, list[str]],
+    materialized_input_index: dict[str, Any],
+    selector_support: dict[str, str],
+) -> dict[str, list[dict[str, Any]]]:
+    """Link reviewed root import identity checks to current ASGI inputs and source aliases."""
+    if not isinstance(reviewed_refs, dict):
+        raise ContractError("reviewed identity workflow references must be a mapping")
+    from scripts.parity.materialized import _selected_selectors
+
+    root_aliases: dict[str, dict[str, Any]] = {}
+    module_aliases: dict[str, dict[str, Any]] = {}
+    for alias in atlas_aliases:
+        if not isinstance(alias, dict) or not isinstance(alias.get("id"), str):
+            raise ContractError("source identity aliases must be mappings with stable IDs")
+        if alias.get("identity_alias") is not True:
+            continue
+        if alias.get("root_export") is True:
+            symbol_id = alias["id"]
+            if symbol_id in root_aliases:
+                raise ContractError(f"root identity alias is duplicated: {symbol_id}")
+            root_aliases[symbol_id] = alias
+        elif alias["id"].startswith("fastapi."):
+            if alias["id"] in module_aliases:
+                raise ContractError(f"FastAPI module identity alias is duplicated: {alias['id']}")
+            module_aliases[alias["id"]] = alias
+
+    if set(reviewed_refs) != set(root_aliases):
+        missing = sorted(set(root_aliases) - set(reviewed_refs))
+        extra = sorted(set(reviewed_refs) - set(root_aliases))
+        raise ContractError(
+            "reviewed identity workflow references must cover every root identity alias "
+            f"exactly once (missing={missing}, extra={extra})"
+        )
+
+    workflow_rows_by_case: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for workflow_ref in materialized_input_index.get("workflows", []):
+        if not isinstance(workflow_ref, dict):
+            raise ContractError("materialized workflow row is invalid for identity references")
+        for case_id in workflow_ref.get("case_ids", []):
+            workflow_rows_by_case[case_id].append(workflow_ref)
+    source_mappings = materialized_input_index.get("mappings", [])
+    workflow_cache: dict[str, tuple[dict[str, Any], dict[str, Any], set[str]]] = {}
+    result: dict[str, list[dict[str, Any]]] = defaultdict(list)
+
+    for symbol_id, rows in reviewed_refs.items():
+        candidate = candidates_by_id.get(symbol_id)
+        root_alias = root_aliases[symbol_id]
+        if (
+            not isinstance(candidate, dict)
+            or candidate.get("classification") != "supported"
+            or candidate.get("kind") != "import_binding"
+            or candidate.get("root_export") is not True
+            or candidate.get("identity_alias") is not True
+            or candidate.get("target_path") != root_alias.get("target_path")
+            or candidate.get("local_name") != root_alias.get("local_name")
+            or root_alias.get("source_module") != candidate.get("imported_module")
+            or root_alias.get("source_name") != candidate.get("imported_name")
+        ):
+            raise ContractError(
+                f"reviewed identity reference lacks a matching supported root source alias: "
+                f"{symbol_id}"
+            )
+        if not isinstance(rows, list) or not rows:
+            raise ContractError(f"reviewed identity workflow references are empty: {symbol_id}")
+
+        target_path = root_alias.get("target_path")
+        module_candidate = (
+            candidates_by_id.get(target_path) if isinstance(target_path, str) else None
+        )
+        module_alias = module_aliases.get(target_path) if isinstance(target_path, str) else None
+        if candidate.get("imported_module") == "starlette":
+            if (
+                not isinstance(target_path, str)
+                or candidate.get("imported_name") is None
+                or target_path != f"starlette.{candidate['imported_name']}"
+            ):
+                raise ContractError(
+                    f"direct Starlette root alias has an invalid target: {symbol_id}"
+                )
+            expected_relations = {"root_to_starlette_module"}
+        else:
+            expected_module_path = (
+                f"fastapi.{candidate['imported_module']}.{candidate['imported_name']}"
+            )
+            if target_path != expected_module_path or not isinstance(module_candidate, dict):
+                raise ContractError(
+                    f"root alias does not resolve to its public FastAPI module source: {symbol_id}"
+                )
+            if module_candidate.get("classification") != "supported":
+                raise ContractError(
+                    f"root alias module source is not a supported API candidate: {symbol_id}"
+                )
+            module_candidate_target = module_candidate.get("target_path")
+            module_targets_starlette = isinstance(
+                module_candidate_target, str
+            ) and module_candidate_target.startswith("starlette.")
+            if module_targets_starlette and not isinstance(module_alias, dict):
+                raise ContractError(
+                    f"FastAPI module Starlette target has no reviewed identity alias: {symbol_id}"
+                )
+            expected_relations = {"root_to_public_module"}
+            if isinstance(module_alias, dict):
+                if (
+                    module_candidate.get("kind") != "import_binding"
+                    or module_alias.get("id") != target_path
+                    or module_alias.get("local_name") != module_candidate.get("local_name")
+                    or module_alias.get("source_module") != module_candidate.get("imported_module")
+                    or module_alias.get("source_name") != module_candidate.get("imported_name")
+                    or module_alias.get("target_path") != module_candidate.get("target_path")
+                ):
+                    raise ContractError(
+                        "FastAPI module import candidate differs from its source alias: "
+                        f"{symbol_id}"
+                    )
+            if module_targets_starlette and isinstance(module_alias, dict):
+                imported_module = module_candidate.get("imported_module")
+                imported_name = module_candidate.get("imported_name")
+                if (
+                    not isinstance(imported_module, str)
+                    or not imported_module.startswith("starlette.")
+                    or not isinstance(imported_name, str)
+                    or module_alias.get("target_path") != module_candidate_target
+                    or module_candidate_target != f"{imported_module}.{imported_name}"
+                ):
+                    raise ContractError(
+                        f"FastAPI module alias has an inconsistent Starlette target: {symbol_id}"
+                    )
+                expected_relations.update(
+                    {"root_to_starlette_module", "public_module_to_starlette"}
+                )
+
+        relation_rows: dict[str, dict[str, Any]] = {}
+        for row in rows:
+            if not isinstance(row, dict) or set(row) != {
+                "case_id",
+                "relation",
+                "observation_selector",
+                "projection",
+            }:
+                raise ContractError(
+                    f"reviewed identity workflow row has unsupported fields: {symbol_id}"
+                )
+            relation = row.get("relation")
+            if not isinstance(relation, str) or relation in relation_rows:
+                raise ContractError(
+                    f"reviewed identity workflow relation is invalid or duplicated: {symbol_id}"
+                )
+            relation_rows[relation] = row
+        if set(relation_rows) != expected_relations:
+            raise ContractError(
+                f"reviewed identity relations differ from the source alias chain: {symbol_id}; "
+                f"expected={sorted(expected_relations)}, found={sorted(relation_rows)}"
+            )
+
+        expected_case = (
+            "fastapi.root-alias-identity.websocket-reexports"
+            if candidate.get("imported_module") == "websockets"
+            else "fastapi.root-alias-identity.http-reexports"
+        )
+        expected_selector = (
+            "websocket.messages"
+            if candidate.get("imported_module") == "websockets"
+            else "http.body.bytes"
+        )
+        expected_projection = (
+            "websocket_send_text_json_boolean"
+            if candidate.get("imported_module") == "websockets"
+            else "http_json_body_boolean"
+        )
+
+        for relation, row in relation_rows.items():
+            if row.get("case_id") != expected_case:
+                raise ContractError(
+                    f"identity alias mapped to the wrong source case: {symbol_id}::{relation}"
+                )
+            selector = row.get("observation_selector")
+            if selector != expected_selector or selector_support.get(selector) not in {
+                "supported",
+                "partial",
+            }:
+                raise ContractError(
+                    f"identity alias uses an unsupported or incorrect selector: "
+                    f"{symbol_id}::{relation} -> {selector}"
+                )
+            if row.get("projection") != expected_projection:
+                raise ContractError(
+                    f"identity alias projection differs from its transport observation: "
+                    f"{symbol_id}::{relation}"
+                )
+
+            matching_workflows = workflow_rows_by_case.get(expected_case, [])
+            if len(matching_workflows) != 1:
+                raise ContractError(
+                    f"identity alias case is missing or ambiguous in the materialized index: "
+                    f"{expected_case}"
+                )
+            workflow_ref = matching_workflows[0]
+            workflow_id = workflow_ref.get("id")
+            if not isinstance(workflow_id, str):
+                raise ContractError("identity workflow index row has no stable ID")
+            if workflow_id not in workflow_cache:
+                workflow_path = PROJECT_ROOT / workflow_ref["input_path"]
+                workflow, resolved_path, input_digest, workload_path = load_workflow(workflow_path)
+                if (
+                    input_digest != workflow_ref.get("input_sha256")
+                    or resolved_path.relative_to(PROJECT_ROOT).as_posix()
+                    != workflow_ref.get("input_path")
+                    or workflow["workload"].get("file") != workflow_ref.get("workload_path")
+                    or sha256_file(workload_path) != workflow_ref.get("workload_sha256")
+                    or sha256_file(PROJECT_ROOT / workflow_ref["recipe_path"])
+                    != workflow_ref.get("recipe_sha256")
+                ):
+                    raise ContractError(
+                        f"identity workflow differs from its materialized index row: {workflow_id}"
+                    )
+                cases_by_id = {case["case_id"]: case for case in workflow["cases"]}
+                if len(cases_by_id) != len(workflow["cases"]):
+                    raise ContractError(f"identity workflow repeats a case ID: {workflow_id}")
+                workflow_cache[workflow_id] = (
+                    workflow,
+                    cases_by_id,
+                    {
+                        selector
+                        for case in workflow["cases"]
+                        for selector in _selected_selectors(
+                            case, workflow_schema=workflow["schema"]
+                        )
+                    },
+                )
+
+            workflow, cases_by_id, workflow_selectors = workflow_cache[workflow_id]
+            case = cases_by_id.get(expected_case)
+            if case is None:
+                raise ContractError(f"identity workflow is missing case {expected_case}")
+            case_selectors = _selected_selectors(case, workflow_schema=workflow["schema"])
+            if selector not in case_selectors or selector not in workflow_selectors:
+                raise ContractError(
+                    f"identity workflow case does not observe its declared selector: "
+                    f"{expected_case} -> {selector}"
+                )
+            expected_action_kind = (
+                "websocket_session"
+                if candidate.get("imported_module") == "websockets"
+                else "http_request"
+            )
+            if not any(
+                action.get("kind") == expected_action_kind for action in case.get("actions", [])
+            ):
+                raise ContractError(
+                    f"identity workflow case has no matching transport action: {expected_case}"
+                )
+            if not any(
+                mapping.get("workflow_id") == workflow_id
+                and expected_case in mapping.get("case_ids", [])
+                and selector in mapping.get("observation_selectors", [])
+                for mapping in source_mappings
+            ):
+                raise ContractError(
+                    f"identity workflow case has no current source mapping for selector: "
+                    f"{expected_case} -> {selector}"
+                )
+
+            pointer_key = {
+                "root_to_public_module": "root_to_public_module",
+                "root_to_starlette_module": "root_to_starlette_module",
+                "public_module_to_starlette": "public_module_to_starlette",
+            }[relation]
+            pointer_name = (
+                module_alias.get("local_name")
+                if relation == "public_module_to_starlette" and module_alias
+                else candidate.get("local_name")
+            )
+            if not isinstance(pointer_name, str):
+                raise ContractError(
+                    f"identity alias has no source-backed output name: {symbol_id}::{relation}"
+                )
+            source_alias_ids = [symbol_id]
+            if relation == "public_module_to_starlette" and target_path != symbol_id:
+                source_alias_ids = [target_path]
+            elif relation == "root_to_starlette_module" and module_alias:
+                source_alias_ids.append(target_path)
+            source_alias_ids = list(dict.fromkeys(source_alias_ids))
+            source_alias_pointers: list[str] = []
+            for source_alias_id in source_alias_ids:
+                pointers = alias_refs.get(source_alias_id, [])
+                if not pointers:
+                    raise ContractError(
+                        f"identity workflow source alias is absent from the atlas: "
+                        f"{source_alias_id}"
+                    )
+                source_alias_pointers.extend(pointers)
+
+            source_candidate_ids = [symbol_id]
+            if isinstance(target_path, str) and target_path in candidate_indexes:
+                source_candidate_ids.append(target_path)
+            source_candidate_pointers = [
+                _pointer("api_candidates", candidate_indexes[source_id])
+                for source_id in dict.fromkeys(source_candidate_ids)
+            ]
+            result[symbol_id].append(
+                {
+                    "workflow_id": workflow_id,
+                    "input_path": workflow_ref["input_path"],
+                    "input_sha256": workflow_ref["input_sha256"],
+                    "recipe_path": workflow_ref["recipe_path"],
+                    "recipe_sha256": workflow_ref["recipe_sha256"],
+                    "workload_path": workflow_ref["workload_path"],
+                    "workload_sha256": workflow_ref["workload_sha256"],
+                    "case_id": expected_case,
+                    "relation": relation,
+                    "observation_selector": selector,
+                    "projection": {
+                        "kind": row["projection"],
+                        "pointer": f"/{pointer_key}/{pointer_name}",
+                    },
+                    "source_candidate_refs": source_candidate_pointers,
+                    "source_alias_refs": list(dict.fromkeys(source_alias_pointers)),
+                }
+            )
+
+    return {
+        symbol_id: sorted(
+            references,
+            key=lambda reference: (
+                reference["case_id"],
+                reference["relation"],
+                reference["observation_selector"],
+            ),
+        )
+        for symbol_id, references in result.items()
+    }
+
+
 def build_api_surface_contract(
     *,
     inventory: dict[str, Any],
@@ -1153,6 +1497,20 @@ def build_api_surface_contract(
         for row in selector_catalog.get("selectors", [])
         if isinstance(row, dict) and isinstance(row.get("id"), str)
     }
+    selector_support = {
+        row["id"]: row.get("workflow_support")
+        for row in selector_catalog.get("selectors", [])
+        if isinstance(row, dict) and isinstance(row.get("id"), str)
+    }
+    identity_workflow_refs_by_symbol = _reviewed_identity_workflow_references(
+        overlay.get("identity_workflow_refs"),
+        candidates_by_id=candidates_by_id,
+        candidate_indexes=candidate_indexes,
+        atlas_aliases=atlas["aliases"],
+        alias_refs=aliases,
+        materialized_input_index=materialized_input_index,
+        selector_support=selector_support,
+    )
     matched_error_rules: set[str] = set()
     rule_ids: set[str] = set()
     for rule in error_selector_rules:
@@ -1761,6 +2119,7 @@ def build_api_surface_contract(
         feature_ids: set[str] = set()
         reviewed_operation = overlay_operations.get(symbol_id, {})
         input_workflow_refs = api_input_refs_by_symbol.get(symbol_id, [])
+        identity_workflow_refs = identity_workflow_refs_by_symbol.get(symbol_id, [])
         for source_path in sorted(_source_doc_paths(candidate.get("public_evidence", []))):
             row_ref = coverage_by_doc_path.get(source_path)
             if row_ref is None:
@@ -1841,6 +2200,7 @@ def build_api_surface_contract(
                 "error_contract_refs": error_refs,
                 "documentation_contract_refs": documentation_refs,
                 "input_workflow_refs": input_workflow_refs,
+                "identity_workflow_refs": identity_workflow_refs,
                 "feature_ids": sorted(feature_ids),
                 "observation_selectors": sorted(selectors),
                 "behavior_contract_state": (
@@ -1885,6 +2245,9 @@ def build_api_surface_contract(
         "public_import": "fastapi",
         "classification_source": "source_artifacts.compatibility_atlas.api_candidates",
         "reviewed_operation_overlay_source": "metadata.yaml:/reviewed_api_contract_overlay",
+        "identity_workflow_source": (
+            "metadata.yaml:/reviewed_api_contract_overlay/identity_workflow_refs"
+        ),
         "inherited_operation_source": (
             "metadata.yaml:/reviewed_api_contract_overlay/inherited_operations"
         ),
@@ -1898,6 +2261,8 @@ def build_api_surface_contract(
             "source_artifacts.compatibility_atlas.coverage_matrix",
             "source_artifacts.fixture_backlog",
             "source_artifacts.materialized_input_index.api_probes",
+            "source_artifacts.materialized_input_index.workflows",
+            "source_artifacts.materialized_input_index.mappings",
         ],
         "counts": {
             "required_public_symbols": len(symbols),
@@ -1925,6 +2290,12 @@ def build_api_surface_contract(
             ),
             "symbols_with_direct_api_input_workflow_refs": sum(
                 bool(symbol["input_workflow_refs"]) for symbol in symbols
+            ),
+            "symbols_with_identity_workflow_refs": sum(
+                bool(symbol["identity_workflow_refs"]) for symbol in symbols
+            ),
+            "identity_workflow_refs": sum(
+                len(symbol["identity_workflow_refs"]) for symbol in symbols
             ),
         },
         "symbols": symbols,

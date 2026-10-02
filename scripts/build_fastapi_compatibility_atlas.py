@@ -9539,7 +9539,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         row["id"]: index for index, row in enumerate(source_api_candidates)
     }
     reviewed_api_overlay = project_metadata.get("reviewed_api_contract_overlay", {})
-    if reviewed_api_overlay.get("schema") != "fastapi-rs/reviewed-api-contract-overlay@3":
+    if reviewed_api_overlay.get("schema") != "fastapi-rs/reviewed-api-contract-overlay@4":
         raise AtlasError("metadata.yaml reviewed API contract overlay schema is unsupported")
     inherited_api_overlay = reviewed_api_overlay.get("inherited_operations", {})
     if not isinstance(inherited_api_overlay, dict):
@@ -9876,6 +9876,7 @@ def render_markdown(atlas: dict[str, Any]) -> str:
         "fastapi-rs/public-api-contract@2",
         "fastapi-rs/public-api-contract@3",
         "fastapi-rs/public-api-contract@4",
+        "fastapi-rs/public-api-contract@5",
     }:
         raise AtlasError("manifest has no generated per-symbol source API contract")
     required_public_symbols = api_contract_counts.get("required_public_symbols", 0)
@@ -10177,12 +10178,43 @@ def _replace_manifest_artifact_block(text: str, artifact_name: str, updates: dic
     remainder = text[block_start:]
     next_block = re.search(r"^  [A-Za-z0-9_-]+:\n", remainder, re.MULTILINE)
     end = block_start + next_block.start() if next_block else len(text)
-    block = text[start:end]
+    block_lines = text[start:end].splitlines()
     for key, value in updates.items():
-        field = re.compile(rf"^(\s+{re.escape(key)}: ).*$", re.MULTILINE)
-        block, replacements = field.subn(rf"\g<1>{value}", block, count=1)
-        if replacements != 1:
+        field = re.compile(rf"^(\s+){re.escape(key)}:(?:\s.*)?$")
+        start_line = next(
+            (index for index, line in enumerate(block_lines) if field.match(line)), None
+        )
+        if start_line is None:
             raise AtlasError(f"manifest {artifact_name} block is missing generated field {key}")
+        match = field.match(block_lines[start_line])
+        assert match is not None
+        indentation = len(match.group(1))
+        end_line = start_line + 1
+        if isinstance(value, (dict, list)):
+            while end_line < len(block_lines):
+                line = block_lines[end_line]
+                if line.strip() and len(line) - len(line.lstrip()) <= indentation:
+                    break
+                end_line += 1
+            header = f"{' ' * indentation}{key}:"
+            if not value:
+                replacement_lines = [header + (" {}" if isinstance(value, dict) else " []")]
+            else:
+                nested = yaml.safe_dump(
+                    value,
+                    allow_unicode=True,
+                    default_flow_style=False,
+                    sort_keys=False,
+                    width=100,
+                ).rstrip()
+                child_indent = " " * (indentation + 2)
+                replacement_lines = [header] + [child_indent + line for line in nested.splitlines()]
+        else:
+            replacement_lines = [f"{' ' * indentation}{key}: {value}"]
+        block_lines[start_line:end_line] = replacement_lines
+    block = "\n".join(block_lines)
+    if text[start:end].endswith("\n"):
+        block += "\n"
     return text[:start] + block + text[end:]
 
 
@@ -10220,6 +10252,37 @@ def _sync_manifest_artifact_metadata(
             "documentation_python_examples_excluded": counts[
                 "documentation_python_examples_excluded"
             ],
+        },
+    )
+    import_binding_review = atlas["api_import_binding_classification_review"]
+    import_binding_scope = import_binding_review["scope"]
+    import_binding_recommendations = import_binding_scope["recommendation_counts"]
+    pinned_sources = import_binding_review["pinned_starlette_rs_sources"]
+    manifest_text = _replace_manifest_artifact_block(
+        manifest_text,
+        "api_import_binding_classification_review",
+        {
+            "schema": import_binding_review["schema"],
+            "sha256": import_binding_review["sha256"],
+            "source_identity": import_binding_review["source_identity"],
+            "starlette_rs_contract_id": pinned_sources["contract_id"],
+            "counts": {
+                "candidates": import_binding_scope["candidate_count"],
+                "supported": import_binding_recommendations["supported"],
+                "private_or_internal": import_binding_recommendations["private/internal"],
+                "uncertain": import_binding_recommendations["uncertain"],
+                "starlette_rs_reviewed_candidates": import_binding_scope[
+                    "starlette_rs_reviewed_candidate_count"
+                ],
+                "starlette_rs_unreviewed_unique_targets": import_binding_scope[
+                    "starlette_rs_unreviewed_unique_target_count"
+                ],
+            },
+            "candidate_ids_sha256": import_binding_scope["candidate_ids_sha256"],
+            "pinned_starlette_rs_sources": {
+                f"{name}_sha256": pinned_sources["files"][name]["sha256"]
+                for name in ("metadata", "manifest", "api_catalog", "api_review")
+            },
         },
     )
     source_api_review = atlas["api_source_classification_review"]

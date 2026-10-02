@@ -37,7 +37,7 @@ def create_app() -> FastAPI:
 
     @app.get("/data")
     def encode_data() -> DataOutput:
-        return DataOutput(description="sample output", data=b"hello")
+        return DataOutput(description="independent output", data=b"independent-output")
 
     @app.post("/data-in-out")
     def roundtrip_data(body: DataInputOutput) -> DataInputOutput:

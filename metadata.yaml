@@ -80,14 +80,14 @@ api_inventory:
 import_binding_classification_review:
   artifact: tests/fixtures/api-import-binding-classification-review.json
   schema: fastapi-starlette-import-binding-review/v1
-  sha256: 808a20d7abe6fe85888baac1f87f816d9562f70e5741b4bd1fd9cebaa69d6a5f
+  sha256: b9a5e4e2d9c1f678d6d02d9928f61efd74a62ad1baa445b70ce2bda1444476f4
   source_identity:
     package: FastAPI
     version: 0.141.1
     source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
     selected_starlette_profile: 1.6.0
     starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
-    starlette_rs_contract_commit: 51a5b967e23b25304ba395233c798884a50b0703
+    starlette_rs_contract_commit: 44d02bf0236533c055ba00e1496e4e4347442a4e
   starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
   counts:
     candidates: 97
@@ -98,10 +98,10 @@ import_binding_classification_review:
     starlette_rs_unreviewed_unique_targets: 4
   candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
   pinned_starlette_rs_sources:
-    metadata_sha256: 1baeaa65df032816231736829df4a09f40066273d31b529df95c6e24ff6960b1
-    manifest_sha256: 7a36d378e7921e3dc1101b5cc55ff65ef77abd27f18b5b968d71acc51f69514f
+    metadata_sha256: 90f805ed7d2497833422db870f88d53319dbaaf31a675f89b1ad21fdd4a123d5
+    manifest_sha256: cce52cfe2c444f3e4269f759b398e5a5e294a3b45a7cd29fdc48709fc27258b8
     api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
-    api_review_sha256: 39a9fc59a070d6956aa65c7578e236980a917105f806eb557920261bf68060ef
+    api_review_sha256: fcd2856436ae9696a4ccb93539c1ffeec882199b4b4905bc069226acc1958ff8
 
 source_api_classification_review:
   artifact: tests/fixtures/api-source-classification-review.json
@@ -187,7 +187,7 @@ classification_atlas:
 starlette_rs:
   owner: ../starlette-rs
   repository: https://github.com/appunni-m/starlette-rs
-  commit: 51a5b967e23b25304ba395233c798884a50b0703
+  commit: 44d02bf0236533c055ba00e1496e4e4347442a4e
   distribution_version: 0.1.0
   contract_id: starlette-1.6.0-asgi-http-config-session-slice
   metadata: ../starlette-rs/metadata.yaml
@@ -226,14 +226,65 @@ cargo_dependency_inventory:
       source_description: Python-API bindings for the PyO3 ecosystem
 
 reviewed_api_contract_overlay:
-  schema: fastapi-rs/reviewed-api-contract-overlay@3
+  schema: fastapi-rs/reviewed-api-contract-overlay@4
   purpose: >-
     Source-backed overlays link selected supported operations to documented
     features, observable selectors, and candidate error records. Inherited
     operations record FastAPI exposure and either delegate to a canonical pinned
     Starlette-RS operation or state the exact sibling-contract gap and source
-    signature. An error link does not promote an uncertain exception into the
-    public import contract.
+    signature. Identity workflow references link the root import bindings to
+    exact runtime identity relations carried by selected ASGI observations;
+    those links establish object identity only. An error link does not promote
+    an uncertain exception into the public import contract.
+  identity_workflow_refs:
+    fastapi.status:
+      - {case_id: fastapi.root-alias-identity.http-reexports, relation: root_to_starlette_module, observation_selector: http.body.bytes, projection: http_json_body_boolean}
+    fastapi.FastAPI:
+      - {case_id: fastapi.root-alias-identity.http-reexports, relation: root_to_public_module, observation_selector: http.body.bytes, projection: http_json_body_boolean}
+    fastapi.BackgroundTasks:
+      - {case_id: fastapi.root-alias-identity.http-reexports, relation: root_to_public_module, observation_selector: http.body.bytes, projection: http_json_body_boolean}
+    fastapi.UploadFile:
+      - {case_id: fastapi.root-alias-identity.http-reexports, relation: root_to_public_module, observation_selector: http.body.bytes, projection: http_json_body_boolean}
+    fastapi.HTTPException:
+      - {case_id: fastapi.root-alias-identity.http-reexports, relation: root_to_public_module, observation_selector: http.body.bytes, projection: http_json_body_boolean}
+    fastapi.WebSocketException:
+      - {case_id: fastapi.root-alias-identity.http-reexports, relation: root_to_public_module, observation_selector: http.body.bytes, projection: http_json_body_boolean}
+    fastapi.Body:
+      - {case_id: fastapi.root-alias-identity.http-reexports, relation: root_to_public_module, observation_selector: http.body.bytes, projection: http_json_body_boolean}
+    fastapi.Cookie:
+      - {case_id: fastapi.root-alias-identity.http-reexports, relation: root_to_public_module, observation_selector: http.body.bytes, projection: http_json_body_boolean}
+    fastapi.Depends:
+      - {case_id: fastapi.root-alias-identity.http-reexports, relation: root_to_public_module, observation_selector: http.body.bytes, projection: http_json_body_boolean}
+    fastapi.File:
+      - {case_id: fastapi.root-alias-identity.http-reexports, relation: root_to_public_module, observation_selector: http.body.bytes, projection: http_json_body_boolean}
+    fastapi.Form:
+      - {case_id: fastapi.root-alias-identity.http-reexports, relation: root_to_public_module, observation_selector: http.body.bytes, projection: http_json_body_boolean}
+    fastapi.Header:
+      - {case_id: fastapi.root-alias-identity.http-reexports, relation: root_to_public_module, observation_selector: http.body.bytes, projection: http_json_body_boolean}
+    fastapi.Path:
+      - {case_id: fastapi.root-alias-identity.http-reexports, relation: root_to_public_module, observation_selector: http.body.bytes, projection: http_json_body_boolean}
+    fastapi.Query:
+      - {case_id: fastapi.root-alias-identity.http-reexports, relation: root_to_public_module, observation_selector: http.body.bytes, projection: http_json_body_boolean}
+    fastapi.Security:
+      - {case_id: fastapi.root-alias-identity.http-reexports, relation: root_to_public_module, observation_selector: http.body.bytes, projection: http_json_body_boolean}
+    fastapi.Request:
+      - {case_id: fastapi.root-alias-identity.http-reexports, relation: root_to_public_module, observation_selector: http.body.bytes, projection: http_json_body_boolean}
+      - {case_id: fastapi.root-alias-identity.http-reexports, relation: root_to_starlette_module, observation_selector: http.body.bytes, projection: http_json_body_boolean}
+      - {case_id: fastapi.root-alias-identity.http-reexports, relation: public_module_to_starlette, observation_selector: http.body.bytes, projection: http_json_body_boolean}
+    fastapi.Response:
+      - {case_id: fastapi.root-alias-identity.http-reexports, relation: root_to_public_module, observation_selector: http.body.bytes, projection: http_json_body_boolean}
+      - {case_id: fastapi.root-alias-identity.http-reexports, relation: root_to_starlette_module, observation_selector: http.body.bytes, projection: http_json_body_boolean}
+      - {case_id: fastapi.root-alias-identity.http-reexports, relation: public_module_to_starlette, observation_selector: http.body.bytes, projection: http_json_body_boolean}
+    fastapi.APIRouter:
+      - {case_id: fastapi.root-alias-identity.http-reexports, relation: root_to_public_module, observation_selector: http.body.bytes, projection: http_json_body_boolean}
+    fastapi.WebSocket:
+      - {case_id: fastapi.root-alias-identity.websocket-reexports, relation: root_to_public_module, observation_selector: websocket.messages, projection: websocket_send_text_json_boolean}
+      - {case_id: fastapi.root-alias-identity.websocket-reexports, relation: root_to_starlette_module, observation_selector: websocket.messages, projection: websocket_send_text_json_boolean}
+      - {case_id: fastapi.root-alias-identity.websocket-reexports, relation: public_module_to_starlette, observation_selector: websocket.messages, projection: websocket_send_text_json_boolean}
+    fastapi.WebSocketDisconnect:
+      - {case_id: fastapi.root-alias-identity.websocket-reexports, relation: root_to_public_module, observation_selector: websocket.messages, projection: websocket_send_text_json_boolean}
+      - {case_id: fastapi.root-alias-identity.websocket-reexports, relation: root_to_starlette_module, observation_selector: websocket.messages, projection: websocket_send_text_json_boolean}
+      - {case_id: fastapi.root-alias-identity.websocket-reexports, relation: public_module_to_starlette, observation_selector: websocket.messages, projection: websocket_send_text_json_boolean}
   error_selector_rules:
     - id: http-exception
       candidate_ids:

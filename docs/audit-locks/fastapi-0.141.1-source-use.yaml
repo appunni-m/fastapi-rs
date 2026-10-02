@@ -27,6 +27,23 @@ source_backed:
     evidence:
       - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/docs/en/docs/tutorial/security/oauth2-jwt.md
       - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml
+  certifi:
+    purpose: HTTPX's default TLS verification context uses certifi's bundled CA file unless SSL_CERT_FILE or SSL_CERT_DIR overrides it; this supports FastAPI's optional HTTPX client and TestClient paths.
+    evidence:
+      - https://github.com/encode/httpx/blob/26d48e0634e6ee9cdc0533996db289ce4b430177/httpx/_config.py#L23-L40
+      - https://github.com/certifi/python-certifi/blob/9044f1ba68a28fef3b3f51229227178407fefc96/certifi/core.py#L40-L47
+  click:
+    purpose: Uvicorn uses Click to define its command-line options and to style server log levels and status codes; this is optional server command-line and terminal-output support.
+    evidence:
+      - https://github.com/Kludex/uvicorn/blob/9ff60042a53cd1bbfd5580ab0a91ea2d1d8f2f8c/uvicorn/main.py#L14-L36
+      - https://github.com/Kludex/uvicorn/blob/9ff60042a53cd1bbfd5580ab0a91ea2d1d8f2f8c/uvicorn/main.py#L62-L86
+      - https://github.com/Kludex/uvicorn/blob/9ff60042a53cd1bbfd5580ab0a91ea2d1d8f2f8c/uvicorn/logging.py#L9-L30
+      - https://github.com/Kludex/uvicorn/blob/9ff60042a53cd1bbfd5580ab0a91ea2d1d8f2f8c/uvicorn/logging.py#L73-L80
+  colorama:
+    purpose: Click wraps Windows output streams with Colorama to support ANSI colors, and Uvicorn uses Click's styled output for server logs; this is conditional Windows terminal support.
+    evidence:
+      - https://github.com/pallets/click/blob/fd183b2ced1cb5857784fe7fb22f4982f671f098/src/click/_compat.py#L509-L538
+      - https://github.com/Kludex/uvicorn/blob/9ff60042a53cd1bbfd5580ab0a91ea2d1d8f2f8c/uvicorn/logging.py#L9-L30
   cross-web:
     purpose: A FastAPI Strawberry tutorial test filters a deprecation warning containing cross_web; this is test warning handling, not an application dependency.
     evidence:
@@ -45,10 +62,30 @@ source_backed:
     evidence:
       - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/docs/en/docs/index.md
       - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/docs/en/docs/deployment/fastapicloud.md
+  fastar:
+    purpose: FastAPI Cloud CLI's deployment command uses fastar to write application files into a zstd-compressed tar archive for upload; this is optional deployment packaging.
+    evidence:
+      - https://github.com/fastapilabs/fastapi-cloud-cli/blob/fae7dee8a48ec5aa4a69999d0b3a88f1d8a8c608/fastapi_cloud_cli/commands/deploy.py#L71-L90
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L59-L66
   griffe-typingdoc:
     purpose: FastAPI's documentation configuration enables the Griffe typing documentation extension for API reference generation.
     evidence:
       - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/docs/en/mkdocs.yml
+  h11:
+    purpose: Uvicorn's HTTP/1.1 protocol handler constructs an h11 server connection and uses it to parse and frame requests and responses for FastAPI applications.
+    evidence:
+      - https://github.com/Kludex/uvicorn/blob/9ff60042a53cd1bbfd5580ab0a91ea2d1d8f2f8c/uvicorn/protocols/http/h11_impl.py#L11-L12
+      - https://github.com/Kludex/uvicorn/blob/9ff60042a53cd1bbfd5580ab0a91ea2d1d8f2f8c/uvicorn/protocols/http/h11_impl.py#L40-L62
+      - https://github.com/Kludex/uvicorn/blob/9ff60042a53cd1bbfd5580ab0a91ea2d1d8f2f8c/uvicorn/config.py#L42-L46
+  httpcore:
+    purpose: HTTPX's synchronous and asynchronous default transports create httpcore connection pools and forward requests through them; this is part of FastAPI's optional HTTPX client and TestClient dependency path.
+    evidence:
+      - https://github.com/encode/httpx/blob/26d48e0634e6ee9cdc0533996db289ce4b430177/httpx/_transports/default.py#L140-L167
+      - https://github.com/encode/httpx/blob/26d48e0634e6ee9cdc0533996db289ce4b430177/httpx/_transports/default.py#L279-L311
+  httptools:
+    purpose: FastAPI recommends Uvicorn as its ASGI server and documents that Uvicorn is built on httptools; this is an optional server implementation dependency, not FastAPI's in-process ASGI behavior.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/docs/en/docs/alternatives.md#L465-L471
   httpx2:
     purpose: FastAPI's documentation tests use HTTPX2 and CI has a matrix case that removes it; this is a docs-test profile, not the ASGI server path.
     evidence:
@@ -95,6 +132,11 @@ source_backed:
     purpose: FastAPI's test script invokes pytest-xdist for parallel test execution.
     evidence:
       - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/test.sh
+  python-dotenv:
+    purpose: FastAPI's settings guide says Pydantic Settings uses an external library for dotenv files and explicitly directs users to install python-dotenv to read them.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/docs/en/docs/advanced/settings.md#L199-L203
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/docs/en/docs/advanced/settings.md#L216-L228
   pyyaml:
     purpose: FastAPI docs and scripts parse YAML, and the all extra includes the Starlette schema-related feature; it is not required by the ordinary request path.
     evidence:
@@ -298,8 +340,503 @@ source_backed:
     purpose: FastAPI uses is_typealiastype while extracting dependency and endpoint annotations.
     evidence:
       - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/fastapi/dependencies/utils.py
+  urllib3:
+    purpose: FastAPI Cloud CLI initializes Sentry for authenticated users, and Sentry's HTTP event transport uses urllib3 connection pools; this is optional deployment CLI telemetry, outside FastAPI request handling.
+    evidence:
+      - https://github.com/fastapilabs/fastapi-cloud-cli/blob/fae7dee8a48ec5aa4a69999d0b3a88f1d8a8c608/fastapi_cloud_cli/utils/sentry.py#L9-L19
+      - https://github.com/getsentry/sentry-python/blob/bcec57806fcb8ef0aa228052aeddf10272df43ba/sentry_sdk/transport.py#L18-L25
+      - https://github.com/getsentry/sentry-python/blob/bcec57806fcb8ef0aa228052aeddf10272df43ba/sentry_sdk/transport.py#L586-L620
+      - https://github.com/getsentry/sentry-python/blob/bcec57806fcb8ef0aa228052aeddf10272df43ba/sentry_sdk/transport.py#L631-L684
   uvicorn:
     purpose: FastAPI's debugging tutorial runs an ASGI app with Uvicorn; the standard extra is optional.
     evidence:
       - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/docs_src/debugging/tutorial001_py310.py
       - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml
+  uvloop:
+    purpose: FastAPI documents that its standard extra installs uvicorn[standard] and that this Uvicorn extra includes uvloop for higher-performance asyncio serving.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/docs/en/docs/deployment/manually.md#L94-L98
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/docs/en/docs/index.md#L557-L561
+  watchfiles:
+    purpose: FastAPI's CLI development guide shows the fastapi dev reloader using WatchFiles; this optional feature watches project files during local development.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/docs/en/docs/fastapi-cli.md#L7-L41
+  websockets:
+    purpose: Uvicorn's WebSocket protocol implementation uses the websockets server API, and its automatic protocol selector chooses that implementation when websockets is installed; this serves FastAPI WebSocket routes.
+    evidence:
+      - https://github.com/Kludex/uvicorn/blob/9ff60042a53cd1bbfd5580ab0a91ea2d1d8f2f8c/uvicorn/protocols/websockets/auto.py#L6-L21
+      - https://github.com/Kludex/uvicorn/blob/9ff60042a53cd1bbfd5580ab0a91ea2d1d8f2f8c/uvicorn/protocols/websockets/websockets_impl.py#L10-L18
+      - https://github.com/Kludex/uvicorn/blob/9ff60042a53cd1bbfd5580ab0a91ea2d1d8f2f8c/uvicorn/config.py#L47-L52
+  dnspython:
+    purpose: The email-validator deliverability path uses dnspython's resolver to query MX records and fall back to A or AAAA lookups; that path is loaded only when deliverability checking is enabled.
+    evidence:
+      - https://github.com/JoshData/python-email-validator/blob/030a63a183a6a66450e98381ca9a23ab9769706a/email_validator/validate_email.py#L191-L203
+      - https://github.com/JoshData/python-email-validator/blob/030a63a183a6a66450e98381ca9a23ab9769706a/email_validator/deliverability.py#L7-L18
+      - https://github.com/JoshData/python-email-validator/blob/030a63a183a6a66450e98381ca9a23ab9769706a/email_validator/deliverability.py#L48-L90
+  markdown-it-py:
+    purpose: Rich's Markdown renderable uses MarkdownIt to parse markup into tokens for terminal rendering; this is optional CLI presentation functionality reached through Rich.
+    evidence:
+      - https://github.com/Textualize/rich/blob/0752ff047295131d98f24284e1d949300cd6f4c1/rich/markdown.py#L7-L8
+      - https://github.com/Textualize/rich/blob/0752ff047295131d98f24284e1d949300cd6f4c1/rich/markdown.py#L548-L560
+      - https://github.com/Textualize/rich/blob/0752ff047295131d98f24284e1d949300cd6f4c1/rich/markdown.py#L578-L592
+  mdurl:
+    purpose: markdown-it-py uses mdurl to parse, normalize, encode, and decode Markdown link URLs.
+    evidence:
+      - https://github.com/executablebooks/markdown-it-py/blob/c62983f1554124391b47170180e6c62df4d476ca/markdown_it/common/normalize_url.py#L8-L8
+      - https://github.com/executablebooks/markdown-it-py/blob/c62983f1554124391b47170180e6c62df4d476ca/markdown_it/common/normalize_url.py#L15-L37
+      - https://github.com/executablebooks/markdown-it-py/blob/c62983f1554124391b47170180e6c62df4d476ca/markdown_it/common/normalize_url.py#L40-L63
+  pygments:
+    purpose: Rich uses Pygments lexers and token styles to highlight code in terminal syntax and traceback renderables; this is optional CLI output functionality reached through Rich.
+    evidence:
+      - https://github.com/Textualize/rich/blob/0752ff047295131d98f24284e1d949300cd6f4c1/rich/syntax.py#L23-L40
+      - https://github.com/Textualize/rich/blob/0752ff047295131d98f24284e1d949300cd6f4c1/rich/syntax.py#L138-L173
+      - https://github.com/Textualize/rich/blob/0752ff047295131d98f24284e1d949300cd6f4c1/rich/syntax.py#L495-L537
+  rich-toolkit:
+    purpose: FastAPI CLI builds its RichToolkit wrapper and uses it for styled CLI status and output; this is optional command-line presentation support.
+    evidence:
+      - https://github.com/fastapi/fastapi-cli/blob/52eb236bbd174366a36698abc6005fd3da23f3f7/src/fastapi_cli/utils/cli.py#L9-L11
+      - https://github.com/fastapi/fastapi-cli/blob/52eb236bbd174366a36698abc6005fd3da23f3f7/src/fastapi_cli/utils/cli.py#L189-L190
+      - https://github.com/fastapi/fastapi-cli/blob/52eb236bbd174366a36698abc6005fd3da23f3f7/src/fastapi_cli/cli.py#L147-L157
+  rignore:
+    purpose: FastAPI Cloud CLI calls rignore.walk while packaging a deployment archive, applying its own exclusions and the .fastapicloudignore file.
+    evidence:
+      - https://github.com/fastapilabs/fastapi-cloud-cli/blob/fae7dee8a48ec5aa4a69999d0b3a88f1d8a8c608/src/fastapi_cloud_cli/commands/deploy.py#L71-L78
+      - https://github.com/fastapilabs/fastapi-cloud-cli/blob/fae7dee8a48ec5aa4a69999d0b3a88f1d8a8c608/src/fastapi_cloud_cli/commands/deploy.py#L80-L90
+  sentry-sdk:
+    purpose: FastAPI Cloud CLI initializes Sentry's Typer integration when its command runs for a logged-in user, providing optional deployment CLI error reporting.
+    evidence:
+      - https://github.com/fastapilabs/fastapi-cloud-cli/blob/fae7dee8a48ec5aa4a69999d0b3a88f1d8a8c608/src/fastapi_cloud_cli/cli.py#L12-L14
+      - https://github.com/fastapilabs/fastapi-cloud-cli/blob/fae7dee8a48ec5aa4a69999d0b3a88f1d8a8c608/src/fastapi_cloud_cli/cli.py#L45-L47
+      - https://github.com/fastapilabs/fastapi-cloud-cli/blob/fae7dee8a48ec5aa4a69999d0b3a88f1d8a8c608/src/fastapi_cloud_cli/utils/sentry.py#L9-L20
+  shellingham:
+    purpose: Typer uses shellingham.detect_shell in its completion helper to identify the current shell; this supports shell completion for FastAPI's optional CLI.
+    evidence:
+      - https://github.com/fastapi/typer/blob/b210c0e2376d99344f79f11fab3ad34cf890cc20/typer/_completion_shared.py#L7-L7
+      - https://github.com/fastapi/typer/blob/b210c0e2376d99344f79f11fab3ad34cf890cc20/typer/_completion_shared.py#L240-L254
+  tomli:
+    purpose: FastAPI CLI uses tomli as a Python 3.10 TOML-parser fallback when tomllib is unavailable, to read FastAPI's pyproject.toml configuration.
+    evidence:
+      - https://github.com/fastapi/fastapi-cli/blob/52eb236bbd174366a36698abc6005fd3da23f3f7/src/fastapi_cli/config.py#L22-L34
+  attrs:
+    purpose: Trio defines scheduler and synchronization records with attrs classes and field factories; this supports the optional Trio backend selected for FastAPI's tests.
+    evidence:
+      - https://github.com/python-trio/trio/blob/c0b394a55594dc39f353bae87e745083acff172e/src/trio/_core/_run.py#L27-L30
+      - https://github.com/python-trio/trio/blob/c0b394a55594dc39f353bae87e745083acff172e/src/trio/_core/_run.py#L1742-L1749
+      - https://github.com/python-trio/trio/blob/c0b394a55594dc39f353bae87e745083acff172e/src/trio/_core/_entry_queue.py#L8-L35
+  cffi:
+    purpose: Trio's Windows I/O backend builds its generated kernel bindings with CFFI, and the generated module calls CFFI's native backend; this is the Trio optional backend's Windows-specific FFI dependency.
+    evidence:
+      - https://github.com/python-trio/trio/blob/c0b394a55594dc39f353bae87e745083acff172e/pyproject.toml#L48-L51
+      - https://github.com/python-trio/trio/blob/c0b394a55594dc39f353bae87e745083acff172e/src/trio/_tools/windows_ffi_build.py#L1-L5
+      - https://github.com/python-trio/trio/blob/c0b394a55594dc39f353bae87e745083acff172e/src/trio/_tools/windows_ffi_build.py#L214-L220
+      - https://github.com/python-trio/trio/blob/c0b394a55594dc39f353bae87e745083acff172e/src/trio/_core/_generated_windows_ffi.py#L1-L7
+      - https://github.com/python-cffi/cffi/blob/6366c01d84e9a78e7e85f12ebe9760ba5d19b6d3/setup.py#L180-L195
+  httpcore2:
+    purpose: HTTPX2's optional client transport wraps requests and responses with httpcore2 pools and protocol exceptions; FastAPI's docs-test client path reaches this transport through Starlette's TestClient.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml
+      - https://github.com/Kludex/starlette/blob/4f250d6b814587e20c5365f0a5f0c4d42bcb929f/starlette/testclient.py
+      - https://github.com/pydantic/httpx2/blob/9b7ee8ec8c06e8f35a9e7fb437c6fb2f552108bf/src/httpx2/httpx2/_transports/default.py#L68-L88
+      - https://github.com/pydantic/httpx2/blob/9b7ee8ec8c06e8f35a9e7fb437c6fb2f552108bf/src/httpx2/httpx2/_transports/default.py#L225-L245
+      - https://github.com/pydantic/httpx2/blob/9b7ee8ec8c06e8f35a9e7fb437c6fb2f552108bf/src/httpx2/pyproject.toml
+  iniconfig:
+    purpose: Pytest parses its INI configuration with iniconfig; FastAPI's test command runs pytest for the repository test suite.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/test.sh
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml
+      - https://github.com/pytest-dev/pytest/blob/3d10b5148e03eb82b3ee29181dbdc73cf82699e2/src/_pytest/config/findpaths.py#L13-L54
+  librt:
+    purpose: FastAPI's lint script invokes the locked Mypy 2.1.0, which uses librt's binary read/write helpers for options and cache serialization; this is a development-tool native runtime dependency.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/lint.sh
+      - https://github.com/python/mypy/blob/c1c336d7e34eb313080c79b156518c58d27c7234/pyproject.toml#L53-L62
+      - https://github.com/python/mypy/blob/c1c336d7e34eb313080c79b156518c58d27c7234/mypy/build.py#L46-L57
+      - https://github.com/python/mypy/blob/c1c336d7e34eb313080c79b156518c58d27c7234/mypy/cache.py#L53-L70
+  outcome:
+    purpose: Trio uses Outcome, Value, Error, and capture to carry task completion and scheduler results in its core run loop; this supports FastAPI's optional Trio test backend.
+    evidence:
+      - https://github.com/python-trio/trio/blob/c0b394a55594dc39f353bae87e745083acff172e/src/trio/_core/_run.py#L27-L30
+      - https://github.com/python-trio/trio/blob/c0b394a55594dc39f353bae87e745083acff172e/src/trio/_core/_run.py#L1742-L1770
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml
+  packaging:
+    purpose: Pytest uses packaging.version and packaging.requirements to enforce its configured minimum version and required plugin constraints; FastAPI runs pytest in its test suite.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/test.sh
+      - https://github.com/pytest-dev/pytest/blob/3d10b5148e03eb82b3ee29181dbdc73cf82699e2/src/_pytest/config/__init__.py#L1410-L1455
+      - https://github.com/pytest-dev/pytest/blob/3d10b5148e03eb82b3ee29181dbdc73cf82699e2/src/_pytest/outcomes.py#L295-L307
+  pluggy:
+    purpose: Pytest builds its plugin manager and hook markers from pluggy, which provides the hook mechanism for FastAPI's test runner.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/test.sh
+      - https://github.com/pytest-dev/pytest/blob/3d10b5148e03eb82b3ee29181dbdc73cf82699e2/src/_pytest/config/__init__.py#L41-L46
+  prek:
+    purpose: FastAPI's pre-commit workflow runs hooks with prek, and its hook-update workflow runs prek auto-update; this is repository automation rather than product runtime behavior.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/.github/workflows/pre-commit.yml#L56-L58
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/.github/workflows/bump-pre-commit-hooks.yml#L38-L45
+  pycparser:
+    purpose: CFFI's C declaration parser constructs pycparser.CParser and parses cdef input with it; this supports CFFI's foreign-function declarations used by Trio's Windows bindings.
+    evidence:
+      - https://github.com/python-cffi/cffi/blob/6366c01d84e9a78e7e85f12ebe9760ba5d19b6d3/pyproject.toml#L9-L14
+      - https://github.com/python-cffi/cffi/blob/6366c01d84e9a78e7e85f12ebe9760ba5d19b6d3/src/cffi/cparser.py#L1-L8
+      - https://github.com/python-cffi/cffi/blob/6366c01d84e9a78e7e85f12ebe9760ba5d19b6d3/src/cffi/cparser.py#L50-L54
+      - https://github.com/python-cffi/cffi/blob/6366c01d84e9a78e7e85f12ebe9760ba5d19b6d3/src/cffi/cparser.py#L328-L342
+  sniffio:
+    purpose: Trio sets and restores sniffio's thread-local async-library marker while its scheduler runs so async-library detection reports Trio correctly.
+    evidence:
+      - https://github.com/python-trio/trio/blob/c0b394a55594dc39f353bae87e745083acff172e/src/trio/_core/_run.py#L27-L30
+      - https://github.com/python-trio/trio/blob/c0b394a55594dc39f353bae87e745083acff172e/src/trio/_core/_run.py#L1751-L1763
+      - https://github.com/python-trio/trio/blob/c0b394a55594dc39f353bae87e745083acff172e/src/trio/_core/_run.py#L2531-L2543
+  sortedcontainers:
+    purpose: Trio stores its idle-task waiter mapping in SortedDict, using sortedcontainers for the scheduler's ordered waiter collection.
+    evidence:
+      - https://github.com/python-trio/trio/blob/c0b394a55594dc39f353bae87e745083acff172e/src/trio/_core/_run.py#L27-L30
+      - https://github.com/python-trio/trio/blob/c0b394a55594dc39f353bae87e745083acff172e/src/trio/_core/_run.py#L2251-L2253
+  trio:
+    purpose: FastAPI's dev and test dependency groups select AnyIO's Trio extra, and AnyIO's pinned Trio backend adapts task, cancellation, and I/O operations to Trio; this is optional test-backend support.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L160-L162
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/docs/en/docs/async.md#L366-L368
+      - https://github.com/agronholm/anyio/blob/4.12.1/src/anyio/_backends/_trio.py#L38-L47
+  truststore:
+    purpose: HTTPX2 and httpcore2 create their default TLS contexts with truststore's system trust store; FastAPI reaches this only through its optional docs-test HTTPX2 client path.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml
+      - https://github.com/Kludex/starlette/blob/4f250d6b814587e20c5365f0a5f0c4d42bcb929f/starlette/testclient.py
+      - https://github.com/pydantic/httpx2/blob/9b7ee8ec8c06e8f35a9e7fb437c6fb2f552108bf/src/httpx2/httpx2/_config.py#L23-L40
+      - https://github.com/pydantic/httpx2/blob/9b7ee8ec8c06e8f35a9e7fb437c6fb2f552108bf/src/httpcore2/httpcore2/_ssl.py#L1-L12
+  zensical:
+    purpose: FastAPI's docs build script invokes zensical build to generate the documentation site.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/docs.py#L284-L298
+  ast-serialize:
+    purpose: Mypy 2.1.0 ships a Rust-backed native parser module that calls ast_serialize.parse to produce serialized syntax trees; this is an optional static-analysis parser path in FastAPI's lint toolchain.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/lint.sh
+      - https://github.com/python/mypy/blob/c1c336d7e34eb313080c79b156518c58d27c7234/pyproject.toml#L53-L62
+      - https://github.com/python/mypy/blob/c1c336d7e34eb313080c79b156518c58d27c7234/mypy/nativeparse.py#L1-L30
+      - https://github.com/python/mypy/blob/c1c336d7e34eb313080c79b156518c58d27c7234/mypy/nativeparse.py#L250-L268
+  asttokens:
+    purpose: Inline-snapshot uses asttokens token positions and ranges to rewrite snapshot expressions in FastAPI tests.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/tests/test_security_http_digest.py#L1-L4
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L160-L166
+      - https://github.com/15r10nk/inline-snapshot/blob/d2fcb985f0753ba09ee8aa37df40d6d70084d90b/src/inline_snapshot/_change.py#L12-L19
+      - https://github.com/15r10nk/inline-snapshot/blob/d2fcb985f0753ba09ee8aa37df40d6d70084d90b/src/inline_snapshot/_change.py#L160-L164
+      - https://github.com/15r10nk/inline-snapshot/blob/d2fcb985f0753ba09ee8aa37df40d6d70084d90b/src/inline_snapshot/_source_file.py#L45-L62
+  cyclic:
+    purpose: The enabled mdx-include Markdown extension uses Cyclic to track recursive file inclusions and reject cycles in FastAPI's documentation build.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/docs/en/mkdocs.yml#L283-L284
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/docs.py#L284-L298
+      - https://github.com/neurobin/mdx_include/blob/744c6f9dbeb635329e88375aa7f093220c783e16/mdx_include/mdx_include.py#L36-L37
+      - https://github.com/neurobin/mdx_include/blob/744c6f9dbeb635329e88375aa7f093220c783e16/mdx_include/mdx_include.py#L198-L204
+      - https://github.com/neurobin/mdx_include/blob/744c6f9dbeb635329e88375aa7f093220c783e16/mdx_include/mdx_include.py#L352-L355
+  deepmerge:
+    purpose: Zensical merges inherited and child documentation configuration dictionaries with deepmerge's always_merger while building FastAPI's docs site.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/docs.py#L284-L298
+      - https://github.com/zensical/zensical/blob/aa1e93c7fcf3051e5aa26bf1d3fdf639b542e6c2/python/zensical/config.py#L37-L45
+      - https://github.com/zensical/zensical/blob/aa1e93c7fcf3051e5aa26bf1d3fdf639b542e6c2/python/zensical/config.py#L197-L207
+  execnet:
+    purpose: FastAPI's pytest-xdist command runs worker processes through execnet gateways and groups to distribute tests.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/test.sh#L6-L7
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L178-L178
+      - https://github.com/pytest-dev/pytest-xdist/blob/1e3e4dc16523c8a8f6c67d95a950166420718c99/src/xdist/workermanage.py#L17-L23
+      - https://github.com/pytest-dev/pytest-xdist/blob/1e3e4dc16523c8a8f6c67d95a950166420718c99/src/xdist/workermanage.py#L44-L60
+  executing:
+    purpose: Inline-snapshot uses executing to locate the source expression at a snapshot call site and check pytest compatibility in FastAPI's tests.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/tests/test_security_http_digest.py#L1-L4
+      - https://github.com/15r10nk/inline-snapshot/blob/d2fcb985f0753ba09ee8aa37df40d6d70084d90b/src/inline_snapshot/_snapshot_arg.py#L10-L15
+      - https://github.com/15r10nk/inline-snapshot/blob/d2fcb985f0753ba09ee8aa37df40d6d70084d90b/src/inline_snapshot/_snapshot_arg.py#L122-L132
+  graphql-core:
+    purpose: Strawberry's schema execution, parsing, validation, and GraphQL type handling call graphql-core; FastAPI's tutorial test exercises that Strawberry GraphQL route.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/docs_src/graphql_/tutorial001_py310.py#L1-L25
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/tests/test_tutorial/test_graphql/test_tutorial001.py#L13-L24
+      - https://github.com/strawberry-graphql/strawberry/blob/8ec0d496afb20a89dc85b07fcd31e66cb30bdae7/strawberry/schema/schema.py#L16-L38
+  markdown:
+    purpose: FastAPI enables mdx-include and markdown-include-variants in its docs configuration; both Markdown extensions import Markdown's Extension and Preprocessor APIs to process the site content.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/docs/en/mkdocs.yml#L283-L284
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/docs.py#L284-L298
+      - https://github.com/neurobin/mdx_include/blob/744c6f9dbeb635329e88375aa7f093220c783e16/mdx_include/mdx_include.py#L17-L18
+      - https://github.com/neurobin/mdx_include/blob/744c6f9dbeb635329e88375aa7f093220c783e16/mdx_include/mdx_include.py#L83-L84
+      - https://github.com/tiangolo/markdown-include-variants/blob/f1718503ed03dfd3a165c964ffb99c2fdeee2f27/src/markdown_include_variants/_main.py#L6-L7
+  mypy-extensions:
+    purpose: Mypy uses mypy-extensions trait, fixed-width integer, and FlexibleAlias types in its checker and cache implementation; FastAPI's lint script invokes Mypy.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/lint.sh#L6-L7
+      - https://github.com/python/mypy/blob/c1c336d7e34eb313080c79b156518c58d27c7234/mypy/typetraverser.py#L1-L9
+      - https://github.com/python/mypy/blob/c1c336d7e34eb313080c79b156518c58d27c7234/mypy/cache.py#L53-L70
+      - https://github.com/python/mypy/blob/c1c336d7e34eb313080c79b156518c58d27c7234/mypy/bogus_type.py#L13-L28
+      - https://github.com/python/mypy/blob/c1c336d7e34eb313080c79b156518c58d27c7234/pyproject.toml#L53-L62
+  pathspec:
+    purpose: Mypy uses pathspec's GitIgnoreSpec to parse repository ignore files while discovering modules for FastAPI's lint check.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/lint.sh#L6-L7
+      - https://github.com/python/mypy/blob/c1c336d7e34eb313080c79b156518c58d27c7234/mypy/modulefinder.py#L18-L21
+      - https://github.com/python/mypy/blob/c1c336d7e34eb313080c79b156518c58d27c7234/mypy/modulefinder.py#L726-L750
+      - https://github.com/python/mypy/blob/c1c336d7e34eb313080c79b156518c58d27c7234/pyproject.toml#L53-L62
+  pyee:
+    purpose: Playwright builds its browser-protocol channels and connection objects on pyee event emitters; FastAPI uses Playwright scripts to capture documentation screenshots.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L127-L129
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/playwright/request_form_models/image01.py#L4-L14
+      - https://github.com/microsoft/playwright-python/blob/bd499b293b93a1f9e4d2667df06f9708c65f6dde/playwright/_impl/_connection.py#L36-L58
+      - https://github.com/microsoft/playwright-python/blob/bd499b293b93a1f9e4d2667df06f9708c65f6dde/playwright/_impl/_connection.py#L261-L270
+  psutil:
+    purpose: FastAPI runs pytest-xdist with `-n auto`; the psutil extra lets xdist count logical or physical CPUs when choosing test workers.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/test.sh#L6-L7
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L178-L178
+      - https://github.com/pytest-dev/pytest-xdist/blob/1e3e4dc16523c8a8f6c67d95a950166420718c99/src/xdist/plugin.py#L15-L34
+  pytest-sugar:
+    purpose: FastAPI's test group installs pytest-sugar, which registers as a pytest11 plugin and replaces the terminal reporter with a progress and failure display.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/test.sh#L6-L7
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L180-L180
+      - https://github.com/Teemu/pytest-sugar/blob/81335030b95741d90ae489f9216759c009854fa9/setup.py#L39-L44
+      - https://github.com/Teemu/pytest-sugar/blob/81335030b95741d90ae489f9216759c009854fa9/pytest_sugar.py#L192-L212
+  rcslice:
+    purpose: The enabled mdx-include Markdown extension uses RowSlice to select requested source line ranges from included documentation files.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/docs/en/mkdocs.yml#L283-L284
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/docs.py#L284-L298
+      - https://github.com/neurobin/mdx_include/blob/744c6f9dbeb635329e88375aa7f093220c783e16/mdx_include/mdx_include.py#L36-L37
+      - https://github.com/neurobin/mdx_include/blob/744c6f9dbeb635329e88375aa7f093220c783e16/mdx_include/mdx_include.py#L168-L172
+      - https://github.com/neurobin/mdx_include/blob/744c6f9dbeb635329e88375aa7f093220c783e16/mdx_include/mdx_include.py#L272-L280
+  termcolor:
+    purpose: Pytest-sugar imports termcolor's colored helper for its test-status symbols and progress display; it is optional test-terminal presentation.
+    evidence:
+      - https://github.com/Teemu/pytest-sugar/blob/81335030b95741d90ae489f9216759c009854fa9/setup.py#L39-L44
+      - https://github.com/Teemu/pytest-sugar/blob/81335030b95741d90ae489f9216759c009854fa9/pytest_sugar.py#L21-L30
+      - https://github.com/Teemu/pytest-sugar/blob/81335030b95741d90ae489f9216759c009854fa9/pytest_sugar.py#L215-L242
+  blinker:
+    purpose: The exercised WSGI tutorial request enters Flask dispatch, which constructs Flask signals and sends request-started and request-finished signals; Blinker supplies that signal namespace and signal implementation.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/docs_src/wsgi/tutorial001_py310.py#L1-L23
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/tests/test_tutorial/test_wsgi/test_tutorial001.py#L8-L11
+      - https://github.com/pallets/flask/blob/22d924701a6ae2e4cd01e9a15bbaf3946094af65/src/flask/signals.py#L1-L15
+      - https://github.com/pallets/flask/blob/22d924701a6ae2e4cd01e9a15bbaf3946094af65/src/flask/app.py#L913-L920
+      - https://github.com/pallets/flask/blob/22d924701a6ae2e4cd01e9a15bbaf3946094af65/src/flask/app.py#L939-L944
+  charset-normalizer:
+    purpose: Requests uses charset-normalizer for response encoding detection when no response charset is declared and no chardet package is available; FastAPI's GitHub automation uses PyGithub, whose response adapter reads Requests response text, so this is a conditional API-response decoding fallback.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/deploy_docs_status.py#L25-L47
+      - https://github.com/PyGithub/PyGithub/blob/73742d410da73e44a477b0e3f05dfba1749022af/github/Requester.py#L127-L139
+      - https://github.com/psf/requests/blob/bc04dfd6dad4cb02cd92f5daa81eb562d280a761/src/requests/compat.py#L30-L42
+      - https://github.com/psf/requests/blob/bc04dfd6dad4cb02cd92f5daa81eb562d280a761/src/requests/models.py#L792-L799
+      - https://github.com/psf/requests/blob/bc04dfd6dad4cb02cd92f5daa81eb562d280a761/src/requests/models.py#L925-L935
+      - https://github.com/jawah/charset_normalizer/blob/b30ffdcc2f11043c0d34e60fe66d3815cd49b32b/src/charset_normalizer/legacy.py#L19-L48
+  griffelib:
+    purpose: FastAPI's enabled mkdocstrings Python handler imports Griffe's loader and extension APIs to inspect Python modules and render the configured API reference; griffelib supplies the griffe module.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/docs/en/mkdocs.yml#L54-L75
+      - https://github.com/zensical/zensical/blob/aa1e93c7fcf3051e5aa26bf1d3fdf639b542e6c2/python/zensical/compat/mkdocstrings.py#L62-L98
+      - https://github.com/mkdocstrings/mkdocstrings-python/blob/a0b99c5ed6ac44b627e2e57375e474e0939ea02e/src/mkdocstrings_handlers/python/_internal/handler.py#L14-L28
+      - https://github.com/mkdocstrings/griffe/blob/bc86dc3d06487330d0327ed1814a0bbd9513bb60/packages/griffelib/src/griffe/__init__.py#L159-L180
+  mkdocs:
+    purpose: FastAPI's docs build enables the mkdocstrings Python handler through Zensical; that handler uses MkDocs' PluginError API while validating the configured API-reference options.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/docs/en/mkdocs.yml#L54-L75
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/docs.py#L284-L299
+      - https://github.com/zensical/zensical/blob/aa1e93c7fcf3051e5aa26bf1d3fdf639b542e6c2/python/zensical/compat/mkdocstrings.py#L62-L98
+      - https://github.com/mkdocstrings/mkdocstrings-python/blob/a0b99c5ed6ac44b627e2e57375e474e0939ea02e/src/mkdocstrings_handlers/python/_internal/handler.py#L14-L25
+      - https://github.com/mkdocstrings/mkdocstrings-python/blob/a0b99c5ed6ac44b627e2e57375e474e0939ea02e/src/mkdocstrings_handlers/python/_internal/handler.py#L170-L175
+  mkdocs-autorefs:
+    purpose: FastAPI's enabled mkdocstrings handler uses mkdocs-autorefs to create reference and backlink extensions for API documentation links.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/docs/en/mkdocs.yml#L54-L75
+      - https://github.com/zensical/zensical/blob/aa1e93c7fcf3051e5aa26bf1d3fdf639b542e6c2/python/zensical/compat/mkdocstrings.py#L62-L97
+      - https://github.com/mkdocstrings/mkdocstrings/blob/a938528b51b42cde52465d06d8b1a52484837366/src/mkdocstrings/_internal/plugin.py#L23-L30
+      - https://github.com/mkdocstrings/mkdocstrings/blob/a938528b51b42cde52465d06d8b1a52484837366/src/mkdocstrings/_internal/plugin.py#L155-L170
+      - https://github.com/mkdocstrings/mkdocstrings-python/blob/a0b99c5ed6ac44b627e2e57375e474e0939ea02e/src/mkdocstrings_handlers/python/_internal/handler.py#L14-L28
+      - https://github.com/mkdocstrings/mkdocstrings-python/blob/a0b99c5ed6ac44b627e2e57375e474e0939ea02e/src/mkdocstrings_handlers/python/_internal/rendering.py#L34-L42
+  requests:
+    purpose: FastAPI's GitHub workflow scripts make repository and pull-request API calls through PyGithub; PyGithub's Requester uses Requests sessions and adapts Requests responses for API decoding.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/.github/workflows/deploy-docs.yml#L39-L47
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/deploy_docs_status.py#L5-L7
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/deploy_docs_status.py#L25-L47
+      - https://github.com/PyGithub/PyGithub/blob/73742d410da73e44a477b0e3f05dfba1749022af/github/Requester.py#L105-L108
+      - https://github.com/PyGithub/PyGithub/blob/73742d410da73e44a477b0e3f05dfba1749022af/github/Requester.py#L155-L170
+      - https://github.com/PyGithub/PyGithub/blob/73742d410da73e44a477b0e3f05dfba1749022af/github/Requester.py#L127-L144
+  text-unidecode:
+    purpose: FastAPI's docs script slugifies headings through python-slugify; the pinned python-slugify release declares text-unidecode as its default dependency and calls its transliterator when ASCII slugs are requested.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/docs.py#L92-L101
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/docs.py#L872-L883
+      - https://github.com/un33k/python-slugify/blob/f85f9488520148d5f6899b5639199882b605e30a/setup.py#L11-L16
+      - https://github.com/un33k/python-slugify/blob/f85f9488520148d5f6899b5639199882b605e30a/slugify/slugify.py#L8-L12
+      - https://github.com/un33k/python-slugify/blob/f85f9488520148d5f6899b5639199882b605e30a/slugify/slugify.py#L120-L125
+      - https://github.com/kmike/text-unidecode/blob/a0005d7a0b43a6aa21ce8a63f1da48c6c44f03e1/src/text_unidecode/__init__.py#L6-L20
+  werkzeug:
+    purpose: FastAPI's exercised WSGI tutorial sends a request through Flask, whose default request wrapper subclasses Werkzeug's Request; the tutorial reads request.args and Werkzeug parses that query string into the Flask route's parameters.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/docs_src/wsgi/tutorial001_py310.py#L1-L12
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/tests/test_tutorial/test_wsgi/test_tutorial001.py#L8-L11
+      - https://github.com/pallets/flask/blob/22d924701a6ae2e4cd01e9a15bbaf3946094af65/src/flask/app.py#L212-L218
+      - https://github.com/pallets/flask/blob/22d924701a6ae2e4cd01e9a15bbaf3946094af65/src/flask/wrappers.py#L5-L12
+      - https://github.com/pallets/werkzeug/blob/04da1b5221b7a7b57e82246e4b5741d37a6b2e56/src/werkzeug/sansio/request.py#L157-L177
+  zizmor:
+    purpose: FastAPI's pre-commit configuration runs `zizmor .` on workflow and lock-file changes to audit the repository's GitHub Actions automation; this is contributor tooling.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/.pre-commit-config.yaml#L102-L107
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L122-L130
+      - https://github.com/zizmorcore/zizmor/blob/597db4d7dc5730bdc1370197bf5678a5ca028abb/crates/zizmor/src/main.rs#L121-L139
+      - https://github.com/zizmorcore/zizmor/blob/597db4d7dc5730bdc1370197bf5678a5ca028abb/crates/zizmor/src/main.rs#L1073-L1080
+  greenlet:
+    purpose: FastAPI's screenshot-generation script uses Playwright's synchronous API; Playwright switches greenlets between the calling code and its protocol dispatcher while it drives the asyncio loop. This is contributor screenshot tooling, outside FastAPI runtime.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L123-L129
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/playwright/request_form_models/image01.py#L4-L5
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/playwright/request_form_models/image01.py#L35-L36
+      - https://github.com/microsoft/playwright-python/blob/bd499b293b93a1f9e4d2667df06f9708c65f6dde/playwright/_impl/_sync_base.py#L33-L55
+      - https://github.com/microsoft/playwright-python/blob/bd499b293b93a1f9e4d2667df06f9708c65f6dde/playwright/sync_api/_context_manager.py#L18-L22
+      - https://github.com/microsoft/playwright-python/blob/bd499b293b93a1f9e4d2667df06f9708c65f6dde/playwright/sync_api/_context_manager.py#L52-L68
+      - https://github.com/microsoft/playwright-python/blob/bd499b293b93a1f9e4d2667df06f9708c65f6dde/playwright/_impl/_greenlets.py#L17-L39
+  pydantic-ai-slim:
+    purpose: FastAPI's translation automation installs Pydantic AI and calls its Agent API to generate translated pages; the pinned slim distribution supplies the pydantic_ai package used by that tool, not FastAPI request handling.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L183-L186
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/.github/workflows/translate.yml#L69-L70
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L10-L15
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L135-L153
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/.github/workflows/translate.yml#L123-L129
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pyproject.toml#L13-L16
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pydantic_ai/__init__.py#L3-L15
+  pydantic-graph:
+    purpose: Pydantic AI's Agent run used by FastAPI's translation script builds and executes its graph with pydantic-graph; this is a transitive dependency of the optional translation toolchain.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L15-L15
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L135-L153
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pyproject.toml#L58-L67
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pydantic_ai/_agent_graph.py#L29-L30
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pydantic_ai/_agent_graph.py#L1635-L1664
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pydantic_ai/agent/__init__.py#L1146-L1157
+  openai:
+    purpose: FastAPI's translator selects the openai-chat provider and model, and Pydantic AI's provider calls the OpenAI chat-completions API through the OpenAI Python client; this is optional translation automation.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L135-L153
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/.github/workflows/translate.yml#L121-L129
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pyproject.toml#L69-L75
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pydantic_ai/models/__init__.py#L1044-L1047
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pydantic_ai/providers/openai.py#L13-L19
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pydantic_ai/models/openai.py#L727-L775
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pydantic_ai/models/openai.py#L925-L955
+  gitdb:
+    purpose: FastAPI's translation staleness command reads commit timestamps through GitPython; GitPython's commit objects obtain their data from its object database, whose command-backed implementation uses GitDB's object-stream interfaces. This is transitive support for translation automation.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L356-L376
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L183-L186
+      - https://github.com/PyGithub/GitPython/blob/5a294a6fc7ed5dc0946d4b576257bf926178f269/git/repo/base.py#L773-L804
+      - https://github.com/PyGithub/GitPython/blob/5a294a6fc7ed5dc0946d4b576257bf926178f269/git/objects/commit.py#L241-L256
+      - https://github.com/PyGithub/GitPython/blob/5a294a6fc7ed5dc0946d4b576257bf926178f269/git/objects/commit.py#L300-L349
+      - https://github.com/PyGithub/GitPython/blob/5a294a6fc7ed5dc0946d4b576257bf926178f269/git/db.py#L8-L10
+      - https://github.com/PyGithub/GitPython/blob/5a294a6fc7ed5dc0946d4b576257bf926178f269/git/db.py#L27-L47
+  smmap:
+    purpose: GitPython closes its Repo object through a finalizer and calls GitDB's shared memory-map collector; GitDB constructs that manager with smmap's SlidingWindowMapManager. This is transitive repository-resource cleanup in FastAPI's translation tooling.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L356-L376
+      - https://github.com/PyGithub/GitPython/blob/5a294a6fc7ed5dc0946d4b576257bf926178f269/git/repo/base.py#L345-L365
+      - https://github.com/PyGithub/GitPython/blob/5a294a6fc7ed5dc0946d4b576257bf926178f/git/repo/base.py#L348-L352
+      - https://github.com/gitpython-developers/gitdb/blob/104138c742a56d85bd2cb2cd8a9f90336daa5483/gitdb/util.py#L14-L22
+      - https://github.com/gitpython-developers/smmap/blob/f31bfa378c8840d38d31e7e11ef2b84f191a491e/smmap/mman.py#L408-L411
+  distro:
+    purpose: FastAPI's translation job runs on Ubuntu and makes an OpenAI chat request; the OpenAI client detects the Linux distribution with distro.id() to set its X-Stainless-OS request header. This is conditional platform metadata for translation automation.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/.github/workflows/translate.yml#L80-L89
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L135-L153
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pydantic_ai/providers/openai.py#L13-L19
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pydantic_ai/models/openai.py#L828-L838
+      - https://github.com/openai/openai-python/blob/e507a4ebeea4c3f93cd48986014a3e2ca79230c2/src/openai/_base_client.py#L1584-L1597
+      - https://github.com/openai/openai-python/blob/e507a4ebeea4c3f93cd48986014a3e2ca79230c2/src/openai/_base_client.py#L2077-L2111
+      - https://github.com/openai/openai-python/blob/e507a4ebeea4c3f93cd48986014a3e2ca79230c2/src/openai/_base_client.py#L2120-L2128
+      - https://github.com/python-distro/distro/blob/8d88a2d72a3dbdb1d1443788c2e0142658b2b0ba/src/distro/distro.py#L203-L221
+  genai-prices:
+    purpose: Pydantic AI extracts usage from the OpenAI response through genai-prices' bundled provider data when FastAPI's translation Agent completes its request; this supports token-usage accounting in the optional translation toolchain.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L135-L153
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pydantic_ai/models/openai.py#L828-L838
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pydantic_ai/models/openai.py#L1032-L1068
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pydantic_ai/models/openai.py#L4192-L4199
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pydantic_ai/usage.py#L148-L179
+      - https://github.com/pydantic/genai-prices/blob/7b7d82a50f96ed3228ff7e0b4723803e877198ac/packages/python/genai_prices/data_snapshot.py#L17-L27
+      - https://github.com/pydantic/genai-prices/blob/7b7d82a50f96ed3228ff7e0b4723803e877198ac/packages/python/genai_prices/data_snapshot.py#L115-L139
+      - https://github.com/pydantic/genai-prices/blob/7b7d82a50f96ed3228ff7e0b4723803e877198ac/packages/python/genai_prices/types.py#L312-L330
+  opentelemetry-api:
+    purpose: FastAPI's translation Agent runs with Pydantic AI's default instrumentation disabled; each run uses OpenTelemetry's NoOpTracer to represent the absent tracer. This is a transitive runtime support dependency of translation automation, not an exported trace pipeline.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L135-L153
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pyproject.toml#L58-L67
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pydantic_ai/agent/__init__.py#L17-L18
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pydantic_ai/agent/__init__.py#L236-L236
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pydantic_ai/agent/__init__.py#L1194-L1205
+  cairosvg:
+    purpose: FastAPI includes CairoSVG in its documentation dependency group, and its docs CLI configures Cairo's macOS library lookup before invoking the Zensical build. CairoSVG provides the docs toolchain's SVG rendering/conversion path, outside FastAPI runtime.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L131-L145
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/docs.py#L126-L129
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/docs.py#L284-L299
+      - https://github.com/Kozea/CairoSVG/blob/2.9.0/setup.cfg#L45-L51
+      - https://github.com/Kozea/CairoSVG/blob/2.9.0/cairosvg/surface.py#L9-L23
+  cairocffi:
+    purpose: CairoSVG's drawing backend imports cairocffi as its Cairo interface; this CFFI bridge to the system Cairo library supports FastAPI's documentation rendering toolchain.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L131-L145
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/docs.py#L126-L129
+      - https://github.com/Kozea/CairoSVG/blob/2.9.0/setup.cfg#L45-L51
+      - https://github.com/Kozea/CairoSVG/blob/2.9.0/cairosvg/surface.py#L9-L23
+      - https://github.com/Kozea/cairocffi/blob/v1.7.1/cairocffi/__init__.py#L1-L18
+  cssselect2:
+    purpose: CairoSVG uses cssselect2 to match CSS selectors against SVG elements while rendering documentation assets; it is a transitive docs-tool dependency.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L131-L145
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/docs.py#L126-L129
+      - https://github.com/Kozea/CairoSVG/blob/2.9.0/setup.cfg#L45-L51
+      - https://github.com/Kozea/CairoSVG/blob/2.9.0/cairosvg/parser.py#L11-L17
+      - https://github.com/Kozea/CairoSVG/blob/2.9.0/cairosvg/css.py#L6-L8
+      - https://github.com/Kozea/cssselect2/blob/0.8.0/cssselect2/__init__.py#L1-L16
+  defusedxml:
+    purpose: CairoSVG uses defusedxml.ElementTree when parsing SVG XML for the documentation rendering path, providing hardened XML parsing as a transitive docs-tool dependency.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L131-L145
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/docs.py#L126-L129
+      - https://github.com/Kozea/CairoSVG/blob/2.9.0/setup.cfg#L45-L51
+      - https://github.com/Kozea/CairoSVG/blob/2.9.0/cairosvg/parser.py#L9-L17
+      - https://github.com/tiran/defusedxml/blob/v0.7.1/defusedxml/ElementTree.py#L1-L17
+  pillow:
+    purpose: CairoSVG uses Pillow to decode and orient embedded raster images before converting them to PNG for Cairo drawing; this supports documentation SVG rendering and is not a FastAPI runtime dependency.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L131-L145
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/docs.py#L126-L129
+      - https://github.com/Kozea/CairoSVG/blob/2.9.0/setup.cfg#L45-L51
+      - https://github.com/Kozea/CairoSVG/blob/2.9.0/cairosvg/image.py#L9-L14
+      - https://github.com/Kozea/CairoSVG/blob/2.9.0/cairosvg/image.py#L78-L90
+  tinycss2:
+    purpose: CairoSVG parses SVG style sheets and declarations with tinycss2 as part of documentation asset rendering; this is a transitive docs-tool dependency.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L131-L145
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/docs.py#L126-L129
+      - https://github.com/Kozea/CairoSVG/blob/2.9.0/setup.cfg#L45-L51
+      - https://github.com/Kozea/CairoSVG/blob/2.9.0/cairosvg/css.py#L6-L8
+      - https://github.com/Kozea/CairoSVG/blob/2.9.0/cairosvg/css.py#L12-L25
+      - https://github.com/Kozea/tinycss2/blob/v1.5.1/tinycss2/bytes.py#L1-L25
+  webencodings:
+    purpose: tinycss2 uses webencodings to decode CSS byte streams and encoding labels consumed by CairoSVG; this is transitive support for FastAPI's documentation SVG rendering path.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L131-L145
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/docs.py#L126-L129
+      - https://github.com/Kozea/CairoSVG/blob/2.9.0/setup.cfg#L45-L51
+      - https://github.com/Kozea/CairoSVG/blob/2.9.0/cairosvg/css.py#L6-L8
+      - https://github.com/Kozea/tinycss2/blob/v1.5.1/tinycss2/bytes.py#L1-L25
+      - https://github.com/Kozea/cssselect2/blob/0.8.0/cssselect2/__init__.py#L7-L16
+      - https://github.com/SimonSapin/python-webencodings/blob/v0.5.1/webencodings/__init__.py#L7-L22
+  black:
+    purpose: FastAPI's Ruff config assigns E501 line-length handling to Black and lists Black in the optional docs tool group; it supports repository formatting, not FastAPI runtime.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L131-L134
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L275-L276
