@@ -968,7 +968,9 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
         "workflow_cases": [
             {
                 "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-configurations-tutorial003-upstream.yaml",
-                "case_ids": ["fastapi.path-operation-configurations.tutorial003-explicit-description"],
+                "case_ids": [
+                    "fastapi.path-operation-configurations.tutorial003-explicit-description"
+                ],
                 "observation_selectors": ["http.status", "openapi.document"],
             }
         ],
@@ -991,7 +993,9 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
         "workflow_cases": [
             {
                 "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-configurations-tutorial004-upstream.yaml",
-                "case_ids": ["fastapi.path-operation-configurations.tutorial004-docstring-description"],
+                "case_ids": [
+                    "fastapi.path-operation-configurations.tutorial004-docstring-description"
+                ],
                 "observation_selectors": ["http.status", "openapi.document"],
             }
         ],

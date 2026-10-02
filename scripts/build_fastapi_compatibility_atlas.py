@@ -9388,9 +9388,9 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         },
         {
             "id": "fastapi-security-module-runtime-surface",
-            "status": "identity-checked-target-module-import-failure",
+            "status": "two-case-identity-checked-parity-passing; broader-security-contract-pending",
             "question": "Does FastAPI-RS expose the documented `fastapi.security` module and preserve `HTTPBearer` subclass overrides for missing-credential responses?",
-            "evidence": "The independently authored authentication-error-status-code-tutorial workflow completes both the legacy-403 and valid-bearer cases on FastAPI 0.141.1 with Starlette 1.6.0. The FastAPI-RS target runtime boundary preflight confirms the target package is installed and upstream FastAPI is absent, but the target worker then fails before either case with `ModuleNotFoundError: No module named 'fastapi.security'`. The Rust-backed public package currently has no `fastapi/security.py` facade, so both the module export and the HTTPBearer override behavior remain unsupported pending implementation and exact parity.",
+            "evidence": "FastAPI-RS exposes `fastapi.security` through direct native re-exports and its Rust HTTPBearer dependency passes both cases in the independently authored authentication-error-status-code-tutorial workflow against FastAPI 0.141.1 and Starlette 1.6.0 (two exact observations, including a subclass override that returns 403 and valid Bearer credential extraction). The target process verifies FastAPI-RS 0.1.0, CPython 3.12.13, and the pinned Starlette-RS revision; upstream FastAPI is absent. This establishes only the reviewed default-construction, missing-credential override, and valid-Bearer slice. Other schemes, optional authentication, non-Bearer and empty credentials, full HTTPBase inheritance, and OpenAPI security remain pending.",
         },
         {
             "id": "fixture-recipe-execution-contract",

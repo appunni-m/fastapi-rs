@@ -172,7 +172,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@3
-    sha256: 4081a8a0bcf1a9085c067bb72359d15e313cd3bf89085971d8b88bf66769e096
+    sha256: 1bdc50ee5a1e19b8af5ca7c61db02b9468e2b62b2eb52c48fab02232d9233c56
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -22275,7 +22275,7 @@ api_surface_contract:
     - openapi.security
     - validation.error_class
     - validation.error_details
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.security.HTTPAuthorizationCredentials
@@ -22286,7 +22286,7 @@ api_surface_contract:
         - /api_candidates/1412
         - /api_candidates/1453
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/security.rs::create_credentials_model
   - id: fastapi.security.HTTPBasic
     kind: import_binding
     source_candidate_ref: /api_candidates/1413
@@ -22436,10 +22436,20 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-security-index
       fixture_design_ref: /fixture_designs/148
       observation_selectors: *id017
+    - coverage_matrix_ref: /coverage_matrix/518
+      source_path: docs/en/docs/how-to/authentication-error-status-code.md
+      mapping_status: candidate
+      fixture_id: fastapi.docs.how-to-authentication-error-status-code
+      fixture_design_ref: /fixture_designs/127
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     input_workflow_refs: []
     feature_ids:
     - dependency-security
     - openapi-docs
+    - public-api-errors
     - request-validation
     observation_selectors:
     - dependency.call_order
@@ -22452,7 +22462,7 @@ api_surface_contract:
     - openapi.security
     - validation.error_class
     - validation.error_details
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.security.HTTPBearer
@@ -22463,7 +22473,7 @@ api_surface_contract:
         - /api_candidates/1415
         - /api_candidates/1470
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/security.rs::PyHttpBearer
   - id: fastapi.security.HTTPDigest
     kind: import_binding
     source_candidate_ref: /api_candidates/1416
@@ -23632,7 +23642,7 @@ api_surface_contract:
     - openapi.security
     - validation.error_class
     - validation.error_details
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.security.http.HTTPAuthorizationCredentials
@@ -23642,7 +23652,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1453
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/security.rs::create_credentials_model
   - id: fastapi.security.http.HTTPAuthorizationCredentials.credentials
     kind: field
     source_candidate_ref: /api_candidates/1454
@@ -23689,7 +23699,7 @@ api_surface_contract:
     - openapi.security
     - validation.error_class
     - validation.error_details
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.security.http.HTTPAuthorizationCredentials.credentials
@@ -23699,7 +23709,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1454
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/security.rs::create_credentials_model
   - id: fastapi.security.http.HTTPAuthorizationCredentials.scheme
     kind: field
     source_candidate_ref: /api_candidates/1455
@@ -24232,10 +24242,20 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-security-index
       fixture_design_ref: /fixture_designs/148
       observation_selectors: *id017
+    - coverage_matrix_ref: /coverage_matrix/518
+      source_path: docs/en/docs/how-to/authentication-error-status-code.md
+      mapping_status: candidate
+      fixture_id: fastapi.docs.how-to-authentication-error-status-code
+      fixture_design_ref: /fixture_designs/127
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     input_workflow_refs: []
     feature_ids:
     - dependency-security
     - openapi-docs
+    - public-api-errors
     - request-validation
     observation_selectors:
     - dependency.call_order
@@ -24248,7 +24268,7 @@ api_surface_contract:
     - openapi.security
     - validation.error_class
     - validation.error_details
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.security.http.HTTPBearer
@@ -24258,7 +24278,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1470
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/security.rs::PyHttpBearer
   - id: fastapi.security.http.HTTPBearer.__call__
     kind: protocol_method
     source_candidate_ref: /api_candidates/1471
@@ -24294,6 +24314,7 @@ api_surface_contract:
     feature_ids:
     - dependency-security
     - openapi-docs
+    - public-api-errors
     - request-validation
     observation_selectors:
     - dependency.call_order
@@ -24306,7 +24327,7 @@ api_surface_contract:
     - openapi.security
     - validation.error_class
     - validation.error_details
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.security.http.HTTPBearer.__call__
@@ -24316,7 +24337,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1471
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/security.rs::PyHttpBearer::__call__
   - id: fastapi.security.http.HTTPBearer.__init__
     kind: protocol_method
     source_candidate_ref: /api_candidates/1472
@@ -24364,7 +24385,7 @@ api_surface_contract:
     - openapi.security
     - validation.error_class
     - validation.error_details
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.security.http.HTTPBearer.__init__
@@ -24374,7 +24395,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1472
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/security.rs::PyHttpBearer::new
   - id: fastapi.security.http.HTTPDigest
     kind: class
     source_candidate_ref: /api_candidates/1474

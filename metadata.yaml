@@ -2036,6 +2036,139 @@ reviewed_api_contract_overlay:
         signature and builds a Rust dependency marker with the supplied
         dependency, scopes, and cache policy. Scope propagation, security
         scheme execution, and OpenAPI security output remain unsupported.
+    fastapi.security.HTTPBearer:
+      rust_binding: fastapi-rs/src/security.rs::PyHttpBearer
+      source_evidence:
+        - {path: fastapi/security/http.py, symbol: HTTPBearer}
+      documentation_contract_refs:
+        - source_path: docs/en/docs/how-to/authentication-error-status-code.md
+          fixture_id: fastapi.docs.how-to-authentication-error-status-code
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/authentication-error-status-code-tutorial.yaml
+          case_id: fastapi.docs.auth-error-status.legacy-forbidden
+        - recipe_path: tests/fixtures/input-recipes/parity/authentication-error-status-code-tutorial.yaml
+          case_id: fastapi.docs.auth-error-status.valid-bearer
+      feature_ids: [dependency-security, public-api-errors]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      supported_slice: >-
+        Partial native HTTPBearer slice: the documented root import constructs
+        a bearer dependency with default arguments. The independent
+        authentication-error-status-code-tutorial workflow covers a subclass
+        that overrides the missing-credential response and a valid bearer
+        credential. OpenAPI security, optional authentication, non-bearer and
+        empty credentials, constructor options, and the full HTTPBase hierarchy
+        remain outside this slice.
+    fastapi.security.http.HTTPBearer:
+      rust_binding: fastapi-rs/src/security.rs::PyHttpBearer
+      source_evidence:
+        - path: fastapi/security/http.py
+          symbol: HTTPBearer
+          kind: source-definition
+          start_line: 222
+          end_line: 316
+      documentation_contract_refs:
+        - source_path: docs/en/docs/how-to/authentication-error-status-code.md
+          fixture_id: fastapi.docs.how-to-authentication-error-status-code
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/authentication-error-status-code-tutorial.yaml
+          case_id: fastapi.docs.auth-error-status.legacy-forbidden
+        - recipe_path: tests/fixtures/input-recipes/parity/authentication-error-status-code-tutorial.yaml
+          case_id: fastapi.docs.auth-error-status.valid-bearer
+      feature_ids: [dependency-security, public-api-errors]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      supported_slice: >-
+        Partial native HTTPBearer slice: exposes a Python-subclassable Rust
+        dependency with an awaitable Request call path. Identity-checked ASGI
+        cases cover dynamic missing-credential error overrides and valid Bearer
+        extraction. The separate HTTPBase type, other authentication schemes,
+        optional authentication, and OpenAPI security remain unsupported.
+    fastapi.security.http.HTTPBearer.__init__:
+      rust_binding: fastapi-rs/src/security.rs::PyHttpBearer::new
+      source_evidence:
+        - path: fastapi/security/http.py
+          symbol: __init__
+          kind: source-definition
+          start_line: 254
+          end_line: 301
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/authentication-error-status-code-tutorial.yaml
+          case_id: fastapi.docs.auth-error-status.legacy-forbidden
+        - recipe_path: tests/fixtures/input-recipes/parity/authentication-error-status-code-tutorial.yaml
+          case_id: fastapi.docs.auth-error-status.valid-bearer
+      feature_ids: [dependency-security]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      supported_slice: >-
+        Partial constructor slice: the reviewed workflow constructs HTTPBearer
+        and its Python subclass with all defaults. Non-default options and full
+        annotated signature parity remain outside this slice.
+    fastapi.security.http.HTTPBearer.__call__:
+      rust_binding: fastapi-rs/src/security.rs::PyHttpBearer::__call__
+      source_evidence:
+        - path: fastapi/security/http.py
+          symbol: __call__
+          kind: source-definition
+          start_line: 303
+          end_line: 316
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/authentication-error-status-code-tutorial.yaml
+          case_id: fastapi.docs.auth-error-status.legacy-forbidden
+        - recipe_path: tests/fixtures/input-recipes/parity/authentication-error-status-code-tutorial.yaml
+          case_id: fastapi.docs.auth-error-status.valid-bearer
+      feature_ids: [dependency-security, public-api-errors]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      supported_slice: >-
+        Partial call slice: parses the Authorization header, returns
+        HTTPAuthorizationCredentials for a valid Bearer value, and dynamically
+        calls the subclass's make_not_authenticated_error hook for a missing
+        header. Empty credentials, other schemes, auto_error=False, and all
+        OpenAPI security behavior remain outside this slice.
+    fastapi.security.HTTPAuthorizationCredentials:
+      rust_binding: fastapi-rs/src/security.rs::create_credentials_model
+      source_evidence:
+        - {path: fastapi/security/http.py, symbol: HTTPAuthorizationCredentials}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/authentication-error-status-code-tutorial.yaml
+          case_id: fastapi.docs.auth-error-status.valid-bearer
+      feature_ids: [dependency-security]
+      observation_selectors: [http.body.bytes]
+      supported_slice: >-
+        Partial model slice: the documented root import provides the native
+        Pydantic credentials type returned by HTTPBearer; the valid-bearer case
+        observes the extracted credentials field in the response. Other model
+        schema and validation behavior remains outside this slice.
+    fastapi.security.http.HTTPAuthorizationCredentials:
+      rust_binding: fastapi-rs/src/security.rs::create_credentials_model
+      source_evidence:
+        - path: fastapi/security/http.py
+          symbol: HTTPAuthorizationCredentials
+          kind: source-definition
+          start_line: 29
+          end_line: 66
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/authentication-error-status-code-tutorial.yaml
+          case_id: fastapi.docs.auth-error-status.valid-bearer
+      feature_ids: [dependency-security]
+      observation_selectors: [http.body.bytes]
+      supported_slice: >-
+        Partial model slice: exposes the native Pydantic credentials class used
+        by HTTPBearer, with the valid-bearer case observing its credentials
+        field. Full schema, field documentation, and validation parity remain
+        outside this slice.
+    fastapi.security.http.HTTPAuthorizationCredentials.credentials:
+      rust_binding: fastapi-rs/src/security.rs::create_credentials_model
+      source_evidence:
+        - {path: fastapi/security/http.py}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/authentication-error-status-code-tutorial.yaml
+          case_id: fastapi.docs.auth-error-status.valid-bearer
+      feature_ids: [dependency-security]
+      observation_selectors: [http.body.bytes]
+      supported_slice: >-
+        The valid-bearer ASGI case observes this field by returning its value
+        from the endpoint. Other field-level validation and schema behavior is
+        not established.
     fastapi.exceptions.RequestValidationError:
       rust_binding: fastapi-rs/src/errors.rs::RequestValidationError
       source_evidence:

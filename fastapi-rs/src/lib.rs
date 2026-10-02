@@ -15,6 +15,7 @@ mod lifespan;
 mod openapi;
 mod operation;
 mod parameters;
+mod security;
 mod sse;
 
 use pyo3::prelude::*;
@@ -33,6 +34,7 @@ pub fn register_python_api(module: &Bound<'_, PyModule>) -> PyResult<()> {
     parameters::register(module)?;
     datastructures::register(module)?;
     deprecated_api::register(module)?;
+    security::register(module)?;
     sse::register(module)?;
     application_runtime::register(module)
 }

@@ -4467,6 +4467,9 @@ fn dependency_override_callable(
     {
         return Ok(DependencyOverrideCallable::AsyncCallableInstance);
     }
+    if crate::security::is_native_async_callable(py, value)? {
+        return Ok(DependencyOverrideCallable::CoroutineFunction);
+    }
     Ok(DependencyOverrideCallable::Sync)
 }
 
