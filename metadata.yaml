@@ -138,7 +138,7 @@ api_public_candidate_classification_review:
 
 classification_atlas:
   artifact: tests/fixtures/compatibility-atlas.json
-  schema: fastapi-rs/compatibility-atlas@3
+  schema: fastapi-rs/compatibility-atlas@4
   candidates_pointer: /api_candidates
   inherited_candidates_pointer: /reviewed_inherited_api_candidates
   classification_pointer: /classification
@@ -226,7 +226,7 @@ cargo_dependency_inventory:
       source_description: Python-API bindings for the PyO3 ecosystem
 
 reviewed_api_contract_overlay:
-  schema: fastapi-rs/reviewed-api-contract-overlay@2
+  schema: fastapi-rs/reviewed-api-contract-overlay@3
   purpose: >-
     Source-backed overlays link selected supported operations to documented
     features, observable selectors, and candidate error records. Inherited
@@ -2403,7 +2403,6 @@ reviewed_api_contract_overlay:
         known_gaps:
           - Mount dispatch is attempted after native FastAPI routes, so registration ordering is incomplete.
           - WebSocket Mount dispatch is not implemented.
-          - FastAPI-RS does not expose the inherited FastAPI.routes collection, so callers cannot inspect route order or registered mounts.
           - Named-mount reverse URL lookup is not implemented.
       documentation_contract_refs:
         - source_path: docs/en/docs/advanced/sub-applications.md
@@ -2414,10 +2413,45 @@ reviewed_api_contract_overlay:
           case_id: fastapi.docs.sub-applications.mount-and-own-openapi
         - recipe_path: tests/fixtures/input-recipes/parity/sub_applications.yaml
           case_id: fastapi.docs.sub-applications.built-in-routes-root-path
-        - recipe_path: tests/fixtures/input-recipes/parity/sub_applications.yaml
-          case_id: fastapi.docs.sub-applications.route-list-after-mount
       feature_ids: [app-routing]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+    fastapi.applications.FastAPI.routes:
+      kind: inherited_property
+      fastapi_exposure_candidate_id: fastapi.applications.FastAPI
+      canonical_operation_id: starlette.applications.Starlette.routes
+      source_evidence:
+        - path: fastapi/applications.py
+          kind: class-inheritance
+          symbol: FastAPI
+          base_class: Starlette
+          line: 42
+        - path: fastapi/applications.py
+          kind: source-definition
+          symbol: openapi
+          start_line: 1070
+          end_line: 1103
+        - path: docs/en/docs/how-to/extending-openapi.md
+          kind: documentation-text
+          start_line: 28
+          end_line: 34
+          required_text:
+            - "`routes`: The routes from the application, taken from `app.routes`. FastAPI uses them to collect the registered *path operations*, including those from included routers."
+            - "You can still pass `app.routes` to `get_openapi()`. FastAPI will traverse that route tree to collect the effective path operations."
+      documentation_contract_refs:
+        - source_path: docs/en/docs/how-to/extending-openapi.md
+          fixture_id: fastapi.docs.how-to-extending-openapi
+          observation_selectors: [http.body.bytes]
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/sub_applications.yaml
+          case_id: fastapi.docs.sub-applications.route-list-after-mount
+      feature_ids: [openapi-docs]
+      observation_selectors: [http.body.bytes]
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - FastAPI-RS does not expose the inherited routes property, so callers cannot inspect the ordered route collection or pass app.routes to get_openapi.
+          - The FastAPI input projects route type, path, and name after one mount; route identity, methods, endpoint shape, child-route details, and other route configurations remain uncovered under the canonical Starlette contract.
   warning_classification_reviews:
     fastapi.exceptions.FastAPIDeprecationWarning:
       classification: uncertain

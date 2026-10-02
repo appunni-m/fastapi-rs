@@ -8025,9 +8025,9 @@
     {
       "id": "sub-applications",
       "input_path": "tests/fixtures/inputs/parity/sub_applications.json",
-      "input_sha256": "533d38a87aa5f195f917b5fdbfe88eba390140c94a69a7ed17a18a8e562e943e",
+      "input_sha256": "d3d1628ec815175504718e8d84cb4015a49d9930bb3db484e0a15f0b245f4888",
       "recipe_path": "tests/fixtures/input-recipes/parity/sub_applications.yaml",
-      "recipe_sha256": "5e0a92355317036f45d35c60d1c7036ff3f75104f12587b468761543c9d6ea66",
+      "recipe_sha256": "10c3e07e5e52ff927286fdcb0517a6883173119899d6fa1f90a2359052edd707",
       "workload_path": "tests/fixtures/workloads/sub_applications.py",
       "workload_sha256": "02cf4c1990934ec043547a8e496d6acbaff009756a68fc9dd8289753566da4f4",
       "case_ids": [
@@ -9055,13 +9055,14 @@
       "fixture_id": "fastapi.docs.how-to-extending-openapi",
       "workflow_id": "atlas-openapi-custom-schema-cache-interface-review",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 2 case(s); observes docs.response.status, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes docs.response.status, http.body.bytes, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.atlas-openapi-tutorial.custom-document-cache",
         "fastapi.atlas-openapi-tutorial.custom-document-route"
       ],
       "observation_selectors": [
         "docs.response.status",
+        "http.body.bytes",
         "http.status",
         "openapi.document"
       ]
@@ -15596,11 +15597,12 @@
       "fixture_id": "fastapi.docs.how-to-extending-openapi",
       "workflow_id": "openapi-cache-direct-add-api-route",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.applications.openapi.cache-direct-add-api-route"
       ],
       "observation_selectors": [
+        "http.body.bytes",
         "http.status",
         "openapi.document"
       ]
@@ -27103,6 +27105,20 @@
         "http.headers.ordered",
         "http.status",
         "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:how-to/extending-openapi.md",
+      "fixture_id": "fastapi.docs.how-to-extending-openapi",
+      "workflow_id": "sub-applications",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.docs.sub-applications.route-list-after-mount"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
       ]
     },
     {

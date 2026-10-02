@@ -359,7 +359,7 @@ def validate_compatibility_artifacts(
     starlette_source: Path,
 ) -> dict[str, Any]:
     """Check source evidence, complete module/page links, and input-only designs."""
-    _require(atlas.get("schema") == "fastapi-rs/compatibility-atlas@3", "unsupported atlas schema")
+    _require(atlas.get("schema") == "fastapi-rs/compatibility-atlas@4", "unsupported atlas schema")
     _require(
         backlog.get("schema") == "fastapi-rs/fixture-backlog@1",
         "unsupported fixture backlog schema",
@@ -609,8 +609,9 @@ def validate_compatibility_artifacts(
         )
         inherited_ids.add(identifier)
         _require(
-            row.get("kind") == "inherited_method" and row.get("classification") == "supported",
-            f"{identifier} must be a supported inherited-method candidate",
+            row.get("kind") in {"inherited_method", "inherited_property"}
+            and row.get("classification") == "supported",
+            f"{identifier} must be a supported inherited-method or inherited-property candidate",
         )
         sibling_gap = row.get("sibling_contract_gap")
         if sibling_gap is None:

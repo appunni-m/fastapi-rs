@@ -102,6 +102,14 @@ _STARLETTE_MOUNT = (
         "Starlette 1.6.0 Mount matches prefixes and creates the child ASGI scope; generic mounted dispatch belongs to Starlette-RS.",
     ),
 )
+_STARLETTE_ROUTES = (
+    _source(
+        "starlette/applications.py",
+        85,
+        87,
+        "Starlette 1.6.0 exposes the configured route list in order; generic route collection semantics belong to Starlette-RS.",
+    ),
+)
 _STARLETTE_EXCEPTION = (
     _source(
         "starlette/middleware/exceptions.py",
@@ -1049,7 +1057,7 @@ DOC_PAGE_REVIEW_MAPPINGS = {
     ),
     "how-to/extending-openapi.md": _review(
         ["openapi-docs"],
-        ["docs.response.status", "http.status", "openapi.document"],
+        ["docs.response.status", "http.body.bytes", "http.status", "openapi.document"],
         "FastAPI owns `app.openapi()` caching and delegates document construction to its `get_openapi` utility; users may override the method and add fields. OpenAPI specification semantics and any external documentation renderer are not claimed by the input.",
         [
             _workflow(
@@ -1057,9 +1065,21 @@ DOC_PAGE_REVIEW_MAPPINGS = {
                 ["fastapi.docs.openapi-interface.how-to-extending-openapi.custom-openapi-fields"],
                 ["docs.response.status", "http.status", "openapi.document"],
                 "The schema endpoint response and selected info/custom-root-field/path pointers are observed.",
-            )
+            ),
+            _workflow(
+                "tests/fixtures/input-recipes/parity/atlas-openapi-custom-schema-cache-interface-review.yaml",
+                ["fastapi.atlas-openapi-tutorial.custom-document-cache"],
+                ["docs.response.status", "http.status", "openapi.document"],
+                "The custom get_openapi call passes app.routes and observes the served document across repeated requests.",
+            ),
+            _workflow(
+                "tests/fixtures/input-recipes/parity/sub_applications.yaml",
+                ["fastapi.docs.sub-applications.route-list-after-mount"],
+                ["http.body.bytes"],
+                "The workload reads the inherited app.routes property and returns an ordered route type/path/name projection after mount registration.",
+            ),
         ],
-        "Partial: a single customized document projection does not exercise cache hit/invalidation behavior, all `get_openapi` inputs, custom route-tree traversal, or all possible merge/override shapes.",
+        "Partial: inputs cover one custom get_openapi call with app.routes, repeated schema requests, and one ordered route-list projection after a mount. Cache invalidation, every get_openapi input, route identity/method/endpoint details, and all merge/override shapes remain unprobed.",
         [
             _source(
                 "docs/en/docs/how-to/extending-openapi.md",
@@ -1086,7 +1106,7 @@ DOC_PAGE_REVIEW_MAPPINGS = {
                 "FastAPI builds the OpenAPI document from application route metadata.",
             ),
         ],
-        _STARLETTE_RESPONSE,
+        _STARLETTE_ROUTES + _STARLETTE_RESPONSE,
     ),
     "how-to/separate-openapi-schemas.md": _review(
         ["openapi-docs", "request-validation", "response-serialization"],

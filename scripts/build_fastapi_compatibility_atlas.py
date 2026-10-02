@@ -9492,7 +9492,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         row["id"]: index for index, row in enumerate(source_api_candidates)
     }
     reviewed_api_overlay = project_metadata.get("reviewed_api_contract_overlay", {})
-    if reviewed_api_overlay.get("schema") != "fastapi-rs/reviewed-api-contract-overlay@2":
+    if reviewed_api_overlay.get("schema") != "fastapi-rs/reviewed-api-contract-overlay@3":
         raise AtlasError("metadata.yaml reviewed API contract overlay schema is unsupported")
     inherited_api_overlay = reviewed_api_overlay.get("inherited_operations", {})
     if not isinstance(inherited_api_overlay, dict):
@@ -9521,11 +9521,11 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             )
         inherited_candidate = {
             "id": operation_id,
-            "kind": "inherited_method",
+            "kind": operation.get("kind", "inherited_method"),
             "classification": "supported",
             "classification_evidence_rule": (
                 "FastAPI class inheritance and reviewed user documentation expose the "
-                "Starlette-owned method on FastAPI"
+                "Starlette-owned API operation on FastAPI"
             ),
             "exposure_candidate_id": exposure_candidate_id,
             "exposure_candidate_ref": (
@@ -9577,7 +9577,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         reviewed_inherited_api_candidates.append(inherited_candidate)
 
     atlas = {
-        "schema": "fastapi-rs/compatibility-atlas@3",
+        "schema": "fastapi-rs/compatibility-atlas@4",
         "purpose": "Source-backed FastAPI API classification and merged upstream test/documentation fixture backlog; not parity evidence.",
         "authorities": {
             "fastapi": {
@@ -9828,6 +9828,7 @@ def render_markdown(atlas: dict[str, Any]) -> str:
         "fastapi-rs/public-api-contract@1",
         "fastapi-rs/public-api-contract@2",
         "fastapi-rs/public-api-contract@3",
+        "fastapi-rs/public-api-contract@4",
     }:
         raise AtlasError("manifest has no generated per-symbol source API contract")
     required_public_symbols = api_contract_counts.get("required_public_symbols", 0)

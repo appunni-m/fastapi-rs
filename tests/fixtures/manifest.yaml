@@ -171,12 +171,12 @@ source_artifacts:
       uncertain_candidate_id_prefixes: ["fastapi.exception_handlers.", "fastapi.responses.EventSourceResponse", "fastapi.responses.FastAPIDeprecationWarning", "fastapi.responses.deprecated", "fastapi.sse."]
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
-    schema: fastapi-rs/compatibility-atlas@3
-    sha256: 443b849cec7a0fcdb45bba3a88004d96f7449d8dcb4935e1624fb1ca3d22301f
+    schema: fastapi-rs/compatibility-atlas@4
+    sha256: 8b87502cf77773965a42b2c0faf765e83355558b389f8a29e073d221a0d06785
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
-      reviewed_inherited_api_candidates: 3
+      reviewed_inherited_api_candidates: 4
       reviewed_import_binding_candidates: 97
       reviewed_source_api_candidates: 162
       source_classifications:
@@ -205,7 +205,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: fd680a7fe9491a9ec453ec963baabbe8350430d46b54c2653dde330cc8c7a3d6
+    sha256: 820352496d8a8f9535637185d25736a8245a495d650663c5cb530a1b5f7d35ca
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 652
@@ -242,14 +242,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@2
-    sha256: 9789fb96edf293ab5ee516e93545864ba7d52d81a4f8b0f52c6eb1c0fefa5136
+    sha256: d26ae409c9a9e418edf42e5a0d7d6fd3d91ad291bde27fa467c110343fbf9396
     schema_path: tests/fixtures/schemas/materialized-input-index.schema.json
     schema_sha256: 56ac1cdfaa6f28b4277ef44b5ef78efebb3122111c5691e1b9c1bce869156aaf
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
       workflows: 494
       cases: 1933
-      partial_source_mappings: 1186
+      partial_source_mappings: 1187
 
 contract_metadata:
   aliases:
@@ -514,7 +514,7 @@ evidence_policy:
 
 # BEGIN GENERATED PER-SYMBOL API CONTRACT
 api_surface_contract:
-  schema: fastapi-rs/public-api-contract@3
+  schema: fastapi-rs/public-api-contract@4
   status: source-api-linked; behavior-and-target-contract-incomplete
   authority:
     fastapi:
@@ -545,8 +545,8 @@ api_surface_contract:
   - source_artifacts.materialized_input_index.api_probes
   counts:
     required_public_symbols: 461
-    required_inherited_operations: 3
-    required_public_api_candidates: 464
+    required_inherited_operations: 4
+    required_public_api_candidates: 465
     signature_contract_states:
       module-object-no-call-signature: 1
       non-callable-surface: 235
@@ -556,7 +556,7 @@ api_surface_contract:
       fastapi-rs: 430
       starlette-rs: 31
     inherited_implementation_owner_plans:
-      fastapi-rs: 2
+      fastapi-rs: 3
       starlette-rs: 1
     symbols_with_documented_feature_refs: 454
     symbols_with_alias_refs: 46
@@ -26691,6 +26691,7 @@ api_surface_contract:
       manifest_path: ../starlette-rs/tests/fixtures/manifest.yaml
       manifest_contract_pointer: /scope/id
       canonical_operation_id: starlette.applications.Starlette.add_middleware
+      canonical_operation_kind: method
       target_support:
         rust-native:
           status: unimplemented
@@ -26793,6 +26794,7 @@ api_surface_contract:
       manifest_path: ../starlette-rs/tests/fixtures/manifest.yaml
       manifest_contract_pointer: /scope/id
       canonical_operation_id: starlette.applications.Starlette.add_exception_handler
+      canonical_operation_kind: method
       target_support:
         rust-native:
           status: unimplemented
@@ -26883,13 +26885,6 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
-    - recipe_path: tests/fixtures/input-recipes/parity/sub_applications.yaml
-      case_id: fastapi.docs.sub-applications.route-list-after-mount
-      workload_path: tests/fixtures/workloads/sub_applications.py
-      observation_selectors:
-      - http.body.bytes
-      - http.headers.ordered
-      - http.status
     feature_ids:
     - app-routing
     - openapi-docs
@@ -26945,7 +26940,92 @@ api_surface_contract:
       known_gaps:
       - Mount dispatch is attempted after native FastAPI routes, so registration ordering is incomplete.
       - WebSocket Mount dispatch is not implemented.
-      - FastAPI-RS does not expose the inherited FastAPI.routes collection, so callers cannot inspect
-        route order or registered mounts.
       - Named-mount reverse URL lookup is not implemented.
+  - id: fastapi.applications.FastAPI.routes
+    kind: inherited_property
+    exposure: inherited-from-starlette
+    reviewed_candidate_ref: /reviewed_inherited_api_candidates/3
+    fastapi_exposure_candidate_ref: /api_candidates/186
+    exposure_evidence:
+    - path: fastapi/applications.py
+      kind: class-inheritance
+      symbol: FastAPI
+      base_class: Starlette
+      line: 42
+    - path: fastapi/applications.py
+      kind: source-definition
+      symbol: openapi
+      start_line: 1070
+      end_line: 1103
+    - path: docs/en/docs/how-to/extending-openapi.md
+      kind: documentation-text
+      start_line: 28
+      end_line: 34
+      required_text:
+      - '`routes`: The routes from the application, taken from `app.routes`. FastAPI uses them to collect
+        the registered *path operations*, including those from included routers.'
+      - You can still pass `app.routes` to `get_openapi()`. FastAPI will traverse that route tree to collect
+        the effective path operations.
+    documentation_contract_refs:
+    - coverage_matrix_ref: /coverage_matrix/523
+      source_path: docs/en/docs/how-to/extending-openapi.md
+      mapping_status: candidate
+      fixture_id: fastapi.docs.how-to-extending-openapi
+      fixture_design_ref: /fixture_designs/132
+      observation_selectors:
+      - http.body.bytes
+    fixture_refs:
+    - recipe_path: tests/fixtures/input-recipes/parity/sub_applications.yaml
+      case_id: fastapi.docs.sub-applications.route-list-after-mount
+      workload_path: tests/fixtures/workloads/sub_applications.py
+      observation_selectors:
+      - http.body.bytes
+    feature_ids:
+    - openapi-docs
+    observation_selectors:
+    - http.body.bytes
+    canonical_operation_ref: &id027
+      contract_id: starlette-1.6.0-asgi-http-config-session-slice
+      manifest_path: ../starlette-rs/tests/fixtures/manifest.yaml
+      manifest_contract_pointer: /scope/id
+      canonical_operation_id: starlette.applications.Starlette.routes
+      canonical_operation_kind: property_get
+      target_support:
+        rust-native:
+          status: unimplemented
+          manifest_target_ref:
+            path: ../starlette-rs/tests/fixtures/manifest.yaml
+            json_pointer: /surfaces/0/operations/7/targets/0
+        python-package:
+          status: supported
+          manifest_target_ref:
+            path: ../starlette-rs/tests/fixtures/manifest.yaml
+            json_pointer: /surfaces/0/operations/7/targets/1
+      manifest_operation_ref:
+        path: ../starlette-rs/tests/fixtures/manifest.yaml
+        json_pointer: /surfaces/0/operations/7
+      source_operation_ref:
+        path: ../starlette-rs/metadata.yaml
+        json_pointer: /api_sources/0/operations/7
+      api_catalog_ref:
+        path: ../starlette-rs/docs/api-surface.csv
+        line: 45
+      api_review_ref:
+        path: ../starlette-rs/docs/atlas/api-review.csv
+        line: 45
+    signature_contract_state: delegated-to-canonical-starlette-rs-operation
+    target_binding:
+      target_profile: fastapi-rs-python-consumer
+      public_python_path: fastapi.applications.FastAPI.routes
+      implementation_owner: fastapi-rs
+      implementation_owner_evidence:
+        kind: canonical-sibling-operation-reference
+        canonical_operation_ref: *id027
+      status: partial-contract
+      known_gaps:
+      - FastAPI-RS does not expose the inherited routes property, so callers cannot inspect the ordered
+        route collection or pass app.routes to get_openapi.
+      - The FastAPI input projects route type, path, and name after one mount; route identity, methods,
+        endpoint shape, child-route details, and other route configurations remain uncovered under the
+        canonical Starlette contract.
 # END GENERATED PER-SYMBOL API CONTRACT

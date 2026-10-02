@@ -15,10 +15,10 @@ import yaml
 
 from scripts.parity.contract import MATERIALIZED_INPUT_INDEX_SCHEMA_ID, ContractError
 
-CONTRACT_SCHEMA = "fastapi-rs/public-api-contract@3"
+CONTRACT_SCHEMA = "fastapi-rs/public-api-contract@4"
 TARGET_PROFILE = "fastapi-rs-python-consumer"
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-OVERLAY_SCHEMA = "fastapi-rs/reviewed-api-contract-overlay@2"
+OVERLAY_SCHEMA = "fastapi-rs/reviewed-api-contract-overlay@3"
 
 
 def _read_project_metadata() -> dict[str, Any]:
@@ -433,7 +433,7 @@ def _starlette_rs_contract_gap_reference(
 
 
 def _starlette_rs_operation_reference(
-    project_metadata: dict[str, Any], operation_id: str
+    project_metadata: dict[str, Any], operation_id: str, *, inherited_kind: str
 ) -> dict[str, Any]:
     starlette_rs = project_metadata.get("starlette_rs")
     if not isinstance(starlette_rs, dict):
@@ -502,6 +502,16 @@ def _starlette_rs_operation_reference(
             f"{operation_id}"
         )
     manifest_surface_index, manifest_operation_index, manifest_operation = manifest_matches[0]
+    canonical_kind = manifest_operation.get("kind")
+    expected_canonical_kind = {
+        "inherited_method": "method",
+        "inherited_property": "property_get",
+    }.get(inherited_kind)
+    if expected_canonical_kind is None or canonical_kind != expected_canonical_kind:
+        raise ContractError(
+            "canonical inherited API operation kind differs from its FastAPI exposure: "
+            f"{operation_id} ({inherited_kind} -> {canonical_kind})"
+        )
     manifest_targets = manifest_operation.get("targets", [])
     target_support: dict[str, dict[str, Any]] = {}
     for target_id in ("rust-native", "python-package"):
@@ -567,6 +577,7 @@ def _starlette_rs_operation_reference(
         "manifest_path": starlette_rs["manifest"],
         "manifest_contract_pointer": manifest_contract_pointer,
         "canonical_operation_id": operation_id,
+        "canonical_operation_kind": canonical_kind,
         "target_support": target_support,
         "manifest_operation_ref": {
             "path": starlette_rs["manifest"],
@@ -589,6 +600,7 @@ def _validate_inherited_fixture_reference(
     expected_doc_paths: set[str],
     expected_selectors: list[str],
     operation_id: str,
+    inherited_kind: str,
 ) -> dict[str, Any]:
     recipe_path = fixture_reference.get("recipe_path")
     case_id = fixture_reference.get("case_id")
@@ -666,23 +678,37 @@ def _validate_inherited_fixture_reference(
         and node.value.func.id == "FastAPI"
     ]
     method_name = operation_id.rsplit(".", 1)[-1]
-    operation_calls = [
-        node
-        for node in ast.walk(factory_node)
-        if isinstance(node, ast.Call)
-        and isinstance(node.func, ast.Attribute)
-        and node.func.attr == method_name
-        and isinstance(node.func.value, ast.Name)
-        and node.func.value.id == "app"
-    ]
+    if inherited_kind == "inherited_method":
+        operation_usages = [
+            node
+            for node in ast.walk(factory_node)
+            if isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Attribute)
+            and node.func.attr == method_name
+            and isinstance(node.func.value, ast.Name)
+            and node.func.value.id == "app"
+        ]
+    elif inherited_kind == "inherited_property":
+        operation_usages = [
+            node
+            for node in ast.walk(factory_node)
+            if isinstance(node, ast.Attribute)
+            and node.attr == method_name
+            and isinstance(node.value, ast.Name)
+            and node.value.id == "app"
+        ]
+    else:
+        raise ContractError(
+            f"inherited API fixture kind is unsupported: {operation_id} ({inherited_kind})"
+        )
     if (
         not app_initializations
-        or not operation_calls
-        or min(node.lineno for node in operation_calls)
+        or not operation_usages
+        or min(node.lineno for node in operation_usages)
         <= min(node.lineno for node in app_initializations)
     ):
         raise ContractError(
-            f"inherited API fixture does not call FastAPI.{method_name}: {workload_path}"
+            f"inherited API fixture does not use FastAPI.{method_name}: {workload_path}"
         )
 
     observed_short_selectors = {
@@ -925,6 +951,11 @@ def build_api_surface_contract(
             raise ContractError(
                 "inherited API overlays must point to the canonical sibling contract without "
                 f"copying its signature or requirements: {operation_id}"
+            )
+        inherited_kind = operation.get("kind", "inherited_method")
+        if inherited_kind not in {"inherited_method", "inherited_property"}:
+            raise ContractError(
+                f"reviewed inherited API kind is unsupported: {operation_id} ({inherited_kind})"
             )
         has_gap = "sibling_contract_gap" in operation
         if has_gap:
@@ -1406,8 +1437,9 @@ def build_api_surface_contract(
             "/reviewed_api_contract_overlay/inherited_operations/"
             + operation_id.replace("~", "~0").replace("/", "~1")
         )
+        inherited_kind = operation.get("kind", "inherited_method")
         if (
-            reviewed_candidate.get("kind") != "inherited_method"
+            reviewed_candidate.get("kind") != inherited_kind
             or reviewed_candidate.get("classification") != "supported"
             or reviewed_candidate.get("exposure_candidate_id") != exposure_candidate_id
             or reviewed_candidate.get("source_evidence") != operation.get("source_evidence")
@@ -1525,6 +1557,7 @@ def build_api_surface_contract(
                     expected_doc_paths=documentation_paths,
                     expected_selectors=operation_selectors,
                     operation_id=operation_id,
+                    inherited_kind=inherited_kind,
                 )
             )
         if not fixture_refs:
@@ -1534,7 +1567,7 @@ def build_api_surface_contract(
 
         inherited_contract = {
             "id": operation_id,
-            "kind": "inherited_method",
+            "kind": inherited_kind,
             "exposure": "inherited-from-starlette",
             "reviewed_candidate_ref": _pointer(
                 "reviewed_inherited_api_candidates",
@@ -1588,7 +1621,7 @@ def build_api_surface_contract(
             )
         else:
             canonical_operation_ref = _starlette_rs_operation_reference(
-                metadata, canonical_operation_id
+                metadata, canonical_operation_id, inherited_kind=inherited_kind
             )
             target_binding = operation.get("target_binding")
             if target_binding is None:
