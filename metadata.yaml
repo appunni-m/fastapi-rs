@@ -781,8 +781,10 @@ reviewed_api_contract_overlay:
         annotated as Request receive the live per-call Request object, which is
         omitted from input validation and OpenAPI. Body parsing uses the same
         Request body state so raw body access remains available to the endpoint.
-        Generic Request API parity remains owned by Starlette-RS and is not
-        established by these FastAPI integration cases.
+        The request-injection workflow also checks app-state access through
+        request.app and identity between request.app and request.scope["app"];
+        other generic Request behavior remains owned by Starlette-RS and is not
+        established by this FastAPI integration workflow.
     fastapi.requests.HTTPConnection:
       rust_binding: fastapi-rs/src/application_runtime.rs::parameter_source
       source_evidence:

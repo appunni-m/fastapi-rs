@@ -15,6 +15,7 @@ async def read_body(request: Request) -> str:
 
 def create_app() -> FastAPI:
     app = FastAPI()
+    app.state.request_marker = "request-app-state"
 
     @app.post("/raw-body/{item_id}")
     async def raw_body(item_id: str, request: Request) -> dict[str, object]:
@@ -32,6 +33,13 @@ def create_app() -> FastAPI:
             "message": payload.message,
             "is_request_class": type(request) is Request,
             "root_and_module_aliases_match": Request is RequestsModuleRequest,
+        }
+
+    @app.get("/request-app-state")
+    async def request_app_state(request: Request) -> dict[str, object]:
+        return {
+            "state": request.app.state.request_marker,
+            "is_scope_app": request.app is request.scope["app"],
         }
 
     @app.post("/dependency-body")
