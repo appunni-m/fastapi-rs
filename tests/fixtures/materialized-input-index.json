@@ -2315,15 +2315,17 @@
     {
       "id": "first-steps-application-testing-upstream",
       "input_path": "tests/fixtures/inputs/parity/first-steps-application-testing-upstream.json",
-      "input_sha256": "1ca0c39b94a912875bc26138246765706f0fb0f766396f2e7c231e0cb2c354a2",
+      "input_sha256": "fd0bae0d40d133db54a41579e4a5aa268a8b28298c997d172df3e8a5698bcd7e",
       "recipe_path": "tests/fixtures/input-recipes/parity/first-steps-application-testing-upstream.yaml",
-      "recipe_sha256": "86f72346d76609654b6973bfd596d008c0a63305473d54e025a848a2582353b1",
+      "recipe_sha256": "5e25a341ddea3cf1cba15a54a5a9298ba64a504a5efecf012c38c93f06fcc404",
       "workload_path": "tests/fixtures/workloads/first_steps_and_application_testing.py",
-      "workload_sha256": "1b4e3400a2785bdf3001c913140fbdebf0d77c85cbf248f138166d478a529dac",
+      "workload_sha256": "bf2dfd2a79e3904533625200f4bff5e0791376baf6e67e541ddaaad4943069f5",
       "case_ids": [
         "fastapi.first-steps.async-home",
         "fastapi.first-steps.async-missing-route",
         "fastapi.first-steps.sync-openapi",
+        "fastapi.first-steps.async-independent-route",
+        "fastapi.first-steps.sync-independent-route",
         "fastapi.application-testing.read-main",
         "fastapi.application-testing.openapi",
         "fastapi.application-testing.lifespan-items"
@@ -13699,6 +13701,34 @@
         "http.headers.ordered",
         "http.status",
         "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "documented-example:docs_src/first_steps/tutorial001_py310.py",
+      "fixture_id": "fastapi.docs-example.first-steps-tutorial001-py310",
+      "workflow_id": "first-steps-application-testing-upstream",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.first-steps.async-independent-route"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-example:docs_src/first_steps/tutorial003_py310.py",
+      "fixture_id": "fastapi.docs-example.first-steps-tutorial003-py310",
+      "workflow_id": "first-steps-application-testing-upstream",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.first-steps.sync-independent-route"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
       ]
     },
     {

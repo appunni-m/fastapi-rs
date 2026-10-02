@@ -22,6 +22,18 @@ def create_app(factory_input: dict, event_trace: list[str]) -> FastAPI:
         def root():
             return {"message": "Hello World"}
 
+    elif app_kind == "first_steps_async_independent":
+
+        @app.get("/welcome")
+        async def independent_welcome():
+            return {"message": "Welcome to the independent sample"}
+
+    elif app_kind == "first_steps_sync_independent":
+
+        @app.get("/portal")
+        def independent_portal():
+            return {"message": "Independent synchronous sample"}
+
     elif app_kind == "application_testing":
 
         @app.get("/")

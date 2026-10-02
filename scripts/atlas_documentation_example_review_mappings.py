@@ -77,6 +77,52 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
             }
         ],
     },
+    "docs_src/first_steps/tutorial001_py310.py": {
+        "rationale": (
+            "The FastAPI 0.141.1 example registers an async root route and returns a JSON "
+            "object. An independent app exposes `/welcome` and returns different data, then the "
+            "workflow requests that route and compares status and body bytes; it does not reuse "
+            "the example's route or response literals."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/first_steps/tutorial001_py310.py",
+                "start_line": 6,
+                "end_line": 8,
+                "role": "documented async root route and JSON response",
+            }
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/first-steps-application-testing-upstream.yaml",
+                "case_ids": ["fastapi.first-steps.async-independent-route"],
+                "observation_selectors": ["http.body.bytes", "http.status"],
+            }
+        ],
+    },
+    "docs_src/first_steps/tutorial003_py310.py": {
+        "rationale": (
+            "The FastAPI 0.141.1 example registers a synchronous root route with a JSON return "
+            "value. An independent app exposes `/portal` and returns different data, then the "
+            "workflow requests that route and compares status and body bytes; it does not reuse "
+            "the example's route or response literals."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/first_steps/tutorial003_py310.py",
+                "start_line": 6,
+                "end_line": 8,
+                "role": "documented synchronous root route and JSON response",
+            }
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/first-steps-application-testing-upstream.yaml",
+                "case_ids": ["fastapi.first-steps.sync-independent-route"],
+                "observation_selectors": ["http.body.bytes", "http.status"],
+            }
+        ],
+    },
     "docs_src/additional_status_codes/tutorial001_py310.py": {
         "rationale": (
             "The FastAPI 0.141.1 example upserts an item: an existing item returns the normal "
