@@ -1369,6 +1369,31 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
             }
         ],
     },
+    "docs_src/request_files/tutorial001_02_py310.py": {
+        "rationale": (
+            "The FastAPI 0.141.1 example declares an optional UploadFile parameter. The linked "
+            "independent request omits the multipart body and observes the HTTP response only; "
+            "its route additionally declares separate File.alias and validation_alias values, "
+            "but this documentation mapping claims only the omitted optional-upload branch. "
+            "Alias acceptance and OpenAPI projection are mapped separately to the pinned test "
+            "functions."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/request_files/tutorial001_02_py310.py",
+                "start_line": 14,
+                "end_line": 18,
+                "role": "documented optional UploadFile endpoint and absent-file response branch",
+            }
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/request-optional-upload-alias-validation-alias-review.yaml",
+                "case_ids": ["fastapi.request-optional-upload.optional-missing-doc-example"],
+                "observation_selectors": ["http.body.bytes", "http.status"],
+            }
+        ],
+    },
     "docs_src/response_model/tutorial002_py310.py": {
         "rationale": (
             "The pinned example deliberately uses UserIn for both the request and response, "

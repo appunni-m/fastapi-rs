@@ -766,7 +766,9 @@ def _validate_reviewed_operation_fixture_reference(
     recipe_path = fixture_reference.get("recipe_path")
     case_id = fixture_reference.get("case_id")
     if not isinstance(recipe_path, str) or not isinstance(case_id, str):
-        raise ContractError(f"reviewed API operation fixture reference is incomplete: {operation_id}")
+        raise ContractError(
+            f"reviewed API operation fixture reference is incomplete: {operation_id}"
+        )
 
     matching_workflows = [
         workflow
@@ -797,7 +799,9 @@ def _validate_reviewed_operation_fixture_reference(
     ):
         relative_path = workflow.get(field)
         if not isinstance(relative_path, str):
-            raise ContractError(f"materialized API operation workflow has no {field}: {recipe_path}")
+            raise ContractError(
+                f"materialized API operation workflow has no {field}: {recipe_path}"
+            )
         path = (PROJECT_ROOT / relative_path).resolve()
         try:
             path.relative_to(root)

@@ -526,6 +526,16 @@ _TAIL_WAVE_RECIPE = (
     "tests/fixtures/input-recipes/parity/request-parameter-alias-validation-tail-wave.yaml"
 )
 _TAIL_WAVE_WORKLOAD = "tests/fixtures/workloads/request_parameter_alias_validation_tail_wave.py"
+_OPTIONAL_UPLOAD_ALIAS_CASE_ID = (
+    "fastapi.request-optional-upload.alias-validation-alias.source-review"
+)
+_OPTIONAL_UPLOAD_MISSING_CASE_ID = "fastapi.request-optional-upload.optional-missing-doc-example"
+_OPTIONAL_UPLOAD_RECIPE = (
+    "tests/fixtures/input-recipes/parity/request-optional-upload-alias-validation-alias-review.yaml"
+)
+_OPTIONAL_UPLOAD_WORKLOAD = (
+    "tests/fixtures/workloads/optional_upload_alias_validation_alias_review.py"
+)
 
 
 def _tail_function_mapping(
@@ -559,6 +569,46 @@ def _tail_function_mapping(
         "rationale": behavior,
         "contract_gate": (
             "This is a representative request-source/alias input. It compares raw HTTP response selectors; it does not establish the entire source test's complete Pydantic error object, field-default matrix, or complete OpenAPI snapshot."
+        ),
+    }
+
+
+def _optional_upload_function_mapping(
+    test_path: str,
+    function_name: str,
+    case_id: str,
+    action_ids: list[str],
+    observation_selectors: list[str],
+    behavior: str,
+) -> dict[str, Any]:
+    tree = ast.parse((FASTAPI_ROOT / test_path).read_text(encoding="utf-8"))
+    matches = [
+        node
+        for node in tree.body
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == function_name
+    ]
+    if len(matches) != 1:
+        raise ValueError(f"expected exact source function {function_name} in {test_path}")
+    function = matches[0]
+    return {
+        "source_span": _source(
+            test_path,
+            function.lineno,
+            function.end_lineno or function.lineno,
+            f"upstream FastAPI 0.141.1 test function {function_name}",
+        ),
+        "workflow_case": {
+            "recipe_path": _OPTIONAL_UPLOAD_RECIPE,
+            "case_id": case_id,
+            "action_ids": list(action_ids),
+            "observation_selectors": list(observation_selectors),
+        },
+        "rationale": behavior,
+        "contract_gate": (
+            "This maps only the UploadFile path in a pinned parametrized test; the sibling bytes path is not claimed. "
+            "The alias cases distinguish the Python field name, File alias, and validation_alias, and the schema case "
+            "observes the independent workload's request-body projection. Multipart framing and UploadFile parsing "
+            "remain Starlette 1.6.0 / Starlette-RS-owned; the workflow does not establish full test-module behavior."
         ),
     }
 
@@ -606,32 +656,72 @@ REQUEST_PARAMETER_FUNCTION_MAPPINGS = {
             "The combined File alias case sends the Pydantic validation alias as a multipart part name.",
         ),
     },
+    "tests/test_request_params/test_file/test_optional.py": {
+        "test_optional_alias_and_validation_alias_schema": _optional_upload_function_mapping(
+            "tests/test_request_params/test_file/test_optional.py",
+            "test_optional_alias_and_validation_alias_schema",
+            _OPTIONAL_UPLOAD_ALIAS_CASE_ID,
+            ["optional-upload-openapi-schema"],
+            ["openapi.document", "openapi.paths"],
+            "The pinned schema function checks both bytes and UploadFile routes; this link covers only the independent optional UploadFile route and observes its validation-alias request schema.",
+        ),
+        "test_optional_alias_and_validation_alias_missing": _optional_upload_function_mapping(
+            "tests/test_request_params/test_file/test_optional.py",
+            "test_optional_alias_and_validation_alias_missing",
+            _OPTIONAL_UPLOAD_MISSING_CASE_ID,
+            ["optional-upload-missing"],
+            ["http.body.bytes", "http.status"],
+            "The pinned parametrized test checks omission for both bytes and UploadFile; this independent case maps only the UploadFile omission branch.",
+        ),
+        "test_optional_alias_and_validation_alias_by_name": _optional_upload_function_mapping(
+            "tests/test_request_params/test_file/test_optional.py",
+            "test_optional_alias_and_validation_alias_by_name",
+            _OPTIONAL_UPLOAD_ALIAS_CASE_ID,
+            ["optional-upload-python-name"],
+            ["http.body.bytes", "http.status"],
+            "The pinned parametrized test sends the Python field name; this link exercises that name on the independent optional UploadFile declaration.",
+        ),
+        "test_optional_alias_and_validation_alias_by_alias": _optional_upload_function_mapping(
+            "tests/test_request_params/test_file/test_optional.py",
+            "test_optional_alias_and_validation_alias_by_alias",
+            _OPTIONAL_UPLOAD_ALIAS_CASE_ID,
+            ["optional-upload-declared-alias"],
+            ["http.body.bytes", "http.status"],
+            "The pinned parametrized test sends File.alias; this link observes the optional UploadFile behavior for a separately named declared alias.",
+        ),
+        "test_optional_alias_and_validation_alias_by_validation_alias": _optional_upload_function_mapping(
+            "tests/test_request_params/test_file/test_optional.py",
+            "test_optional_alias_and_validation_alias_by_validation_alias",
+            _OPTIONAL_UPLOAD_ALIAS_CASE_ID,
+            ["optional-upload-validation-alias"],
+            ["http.body.bytes", "http.status"],
+            "The pinned parametrized test sends File.validation_alias; this link observes accepted extraction for the optional UploadFile path.",
+        ),
+    },
 }
 
 for _test_path, _function_rows in REQUEST_PARAMETER_FUNCTION_MAPPINGS.items():
     _entry = REQUEST_PARAMETER_TEST_REVIEW_MAPPINGS[_test_path]
     _entry["function_mappings"] = _function_rows
-    _entry["workflow_cases"].append(
-        {
-            "recipe_path": _TAIL_WAVE_RECIPE,
-            "case_id": _TAIL_WAVE_CASE_ID,
-            "action_ids": [
-                action_id
-                for row in _function_rows.values()
-                for action_id in row["workflow_case"]["action_ids"]
-            ],
-            "observation_selectors": [
-                "http.body.bytes",
-                "http.status",
-                "openapi.document",
-                "openapi.paths",
-            ],
-        }
-    )
-    _entry["observation_selectors"] = sorted(
-        set(_entry["observation_selectors"])
-        | {"http.body.bytes", "http.status", "openapi.document", "openapi.paths"}
-    )
+    _groups: dict[tuple[str, str], dict[str, set[str]]] = {}
+    for _row in _function_rows.values():
+        _workflow = _row["workflow_case"]
+        _key = (_workflow["recipe_path"], _workflow["case_id"])
+        _group = _groups.setdefault(_key, {"action_ids": set(), "selectors": set()})
+        _group["action_ids"].update(_workflow["action_ids"])
+        _group["selectors"].update(_workflow["observation_selectors"])
+    for (_recipe_path, _case_id), _group in _groups.items():
+        _entry["workflow_cases"].append(
+            {
+                "recipe_path": _recipe_path,
+                "case_id": _case_id,
+                "action_ids": sorted(_group["action_ids"]),
+                "observation_selectors": sorted(_group["selectors"]),
+            }
+        )
+        _entry["observation_selectors"] = sorted(
+            set(_entry["observation_selectors"]) | _group["selectors"]
+        )
 
 
 def validate_request_parameter_mappings() -> list[str]:
@@ -753,6 +843,14 @@ def validate_request_parameter_mappings() -> list[str]:
     tail_cases = tail.get("cases", [])
     if len(tail_cases) != 1 or tail_cases[0].get("case_id") != _TAIL_WAVE_CASE_ID:
         errors.append("tail alias recipe does not contain its one declared case")
+    optional_upload_path = PROJECT_ROOT / _OPTIONAL_UPLOAD_RECIPE
+    optional_upload = yaml.safe_load(optional_upload_path.read_text(encoding="utf-8"))
+    optional_upload_cases = {case.get("case_id"): case for case in optional_upload.get("cases", [])}
+    if set(optional_upload_cases) != {
+        _OPTIONAL_UPLOAD_ALIAS_CASE_ID,
+        _OPTIONAL_UPLOAD_MISSING_CASE_ID,
+    }:
+        errors.append("optional UploadFile alias recipe does not contain its two reviewed cases")
     forbidden = {
         "expected",
         "expected_output",
@@ -773,10 +871,17 @@ def validate_request_parameter_mappings() -> list[str]:
                 scan_input_only(item, f"{location}[{index}]")
 
     scan_input_only(tail, str(tail_path.relative_to(PROJECT_ROOT)))
+    scan_input_only(optional_upload, str(optional_upload_path.relative_to(PROJECT_ROOT)))
     if not (PROJECT_ROOT / _TAIL_WAVE_WORKLOAD).is_file():
         errors.append("tail recipe workload file is missing")
     if tail.get("workload", {}).get("file") != _TAIL_WAVE_WORKLOAD:
         errors.append("tail recipe references a different workload than the reviewed one")
+    if not (PROJECT_ROOT / _OPTIONAL_UPLOAD_WORKLOAD).is_file():
+        errors.append("optional UploadFile alias workload file is missing")
+    if optional_upload.get("workload", {}).get("file") != _OPTIONAL_UPLOAD_WORKLOAD:
+        errors.append(
+            "optional UploadFile alias recipe references a different workload than the reviewed one"
+        )
     tail_actions = {
         action.get("action_id") for case in tail_cases for action in case.get("actions", [])
     }
@@ -784,12 +889,27 @@ def validate_request_parameter_mappings() -> list[str]:
         action_id
         for rows in REQUEST_PARAMETER_FUNCTION_MAPPINGS.values()
         for row in rows.values()
+        if row["workflow_case"]["case_id"] == _TAIL_WAVE_CASE_ID
         for action_id in row["workflow_case"]["action_ids"]
     }
     if not referenced_tail_actions <= tail_actions:
         errors.append(
             f"tail function mapping references unknown action IDs: {sorted(referenced_tail_actions - tail_actions)}"
         )
+    for case_id, case in optional_upload_cases.items():
+        declared_actions = {action.get("action_id") for action in case.get("actions", [])}
+        referenced_actions = {
+            action_id
+            for rows in REQUEST_PARAMETER_FUNCTION_MAPPINGS.values()
+            for row in rows.values()
+            if row["workflow_case"]["case_id"] == case_id
+            for action_id in row["workflow_case"]["action_ids"]
+        }
+        if not referenced_actions <= declared_actions:
+            errors.append(
+                f"optional UploadFile mapping references unknown actions for {case_id}: "
+                f"{sorted(referenced_actions - declared_actions)}"
+            )
 
     tail_spans = {
         (
@@ -805,11 +925,45 @@ def validate_request_parameter_mappings() -> list[str]:
         for function_name, row in rows.items():
             span = row["source_span"]
             if not (1 <= span["start_line"] <= span["end_line"] <= len(source_lines)):
-                errors.append(f"invalid tail function source span: {test_path}:{function_name}")
-            if row["workflow_case"]["case_id"] != _TAIL_WAVE_CASE_ID:
-                errors.append(f"tail function case ID mismatch: {test_path}:{function_name}")
-            if row["workflow_case"]["recipe_path"] != _TAIL_WAVE_RECIPE:
-                errors.append(f"tail function recipe path mismatch: {test_path}:{function_name}")
+                errors.append(
+                    f"invalid request-parameter function source span: {test_path}:{function_name}"
+                )
+            workflow = row["workflow_case"]
+            expected_recipe = (
+                _TAIL_WAVE_RECIPE
+                if workflow["case_id"] == _TAIL_WAVE_CASE_ID
+                else _OPTIONAL_UPLOAD_RECIPE
+            )
+            valid_case_ids = {
+                _TAIL_WAVE_CASE_ID,
+                _OPTIONAL_UPLOAD_ALIAS_CASE_ID,
+                _OPTIONAL_UPLOAD_MISSING_CASE_ID,
+            }
+            if workflow["case_id"] not in valid_case_ids:
+                errors.append(
+                    f"request-parameter function case ID mismatch: {test_path}:{function_name}"
+                )
+            if workflow["recipe_path"] != expected_recipe:
+                errors.append(
+                    f"request-parameter function recipe path mismatch: {test_path}:{function_name}"
+                )
+            case_map = {case["case_id"]: case for case in tail_cases} | optional_upload_cases
+            case = case_map.get(workflow["case_id"])
+            if case is None:
+                errors.append(
+                    f"unknown request-parameter function case: {test_path}:{function_name}"
+                )
+                continue
+            declared_action_ids = {action.get("action_id") for action in case.get("actions", [])}
+            if not set(workflow["action_ids"]) <= declared_action_ids:
+                errors.append(
+                    f"request-parameter function action mismatch: {test_path}:{function_name}"
+                )
+            actual_selectors = set(_workflow_selectors(case))
+            if not set(workflow["observation_selectors"]) <= actual_selectors:
+                errors.append(
+                    f"request-parameter function selectors mismatch: {test_path}:{function_name}"
+                )
     if len(tail_spans) != sum(len(rows) for rows in REQUEST_PARAMETER_FUNCTION_MAPPINGS.values()):
         errors.append("tail function mappings reuse an ambiguous source span")
     return errors

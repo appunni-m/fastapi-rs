@@ -266,6 +266,298 @@ source_backed:
     purpose: Translation automation uses Pydantic AI's Agent API to generate translations.
     evidence:
       - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py
+  # Transitive optional integration closure selected by group:translations via its pydantic-ai root.
+  aiofile:
+    purpose: >-
+      The translations group installs Pydantic AI, whose pinned [mcp] integration activates
+      FastMCP's client extra; FastMCP selects py-key-value-aio[filetree], which brings aiofile
+      for asynchronous file-backed storage. This is an optional MCP storage capability in the
+      locked development toolchain; FastAPI's translator configures an OpenAI agent and does not
+      demonstrate MCP or file-storage use.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L183-L187
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L15
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L135
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pyproject.toml#L586-L660
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/uv.lock
+  anthropic:
+    purpose: >-
+      The translations group installs Pydantic AI, whose pinned [anthropic] provider extra
+      brings the Anthropic SDK. This is an optional model-provider capability in the locked
+      development toolchain; FastAPI's translator configures an OpenAI agent and does not
+      demonstrate Anthropic use.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L183-L187
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L15
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L135
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pyproject.toml#L586-L660
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/uv.lock
+  argcomplete:
+    purpose: >-
+      The translations group installs Pydantic AI, whose pinned [cli] extra includes argcomplete
+      for command-line completion. This is an optional Pydantic AI CLI capability in the locked
+      development toolchain; FastAPI's translator configures an OpenAI agent and does not
+      demonstrate use of that CLI.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L183-L187
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L15
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L135
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pyproject.toml#L586-L660
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/uv.lock
+  authlib:
+    purpose: >-
+      The translations group installs Pydantic AI, whose pinned [mcp] integration activates
+      FastMCP's client extra; Authlib is in that optional client dependency set for OAuth and
+      OpenID Connect. This is an optional MCP-client capability in the locked development
+      toolchain; FastAPI's translator does not demonstrate MCP or Authlib use.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L183-L187
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L15
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L135
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pyproject.toml#L586-L660
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/uv.lock
+  backports-tarfile:
+    purpose: >-
+      The translations group installs Pydantic AI's pinned [mcp] integration and FastMCP client
+      storage extras, which reach keyring and jaraco-context; on Python below 3.12, jaraco-
+      context selects this tarfile backport. This is a conditional optional storage-toolchain
+      dependency; FastAPI's translator does not demonstrate keyring use.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L183-L187
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L15
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L135
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pyproject.toml#L586-L660
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/uv.lock
+  beartype:
+    purpose: >-
+      The translations group installs Pydantic AI's pinned [mcp] integration and FastMCP client
+      storage extras; py-key-value-aio's selected filetree, keyring, and memory extras bring
+      beartype as a runtime type-checking helper. This is optional storage support in the locked
+      development toolchain; FastAPI's translator does not demonstrate it.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L183-L187
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L15
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L135
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pyproject.toml#L586-L660
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/uv.lock
+  cachetools:
+    purpose: >-
+      The translations group installs Pydantic AI's pinned [mcp] integration; FastMCP client
+      selects py-key-value-aio[memory], which brings cachetools for its in-memory storage
+      capability. This is optional MCP storage support in the locked development toolchain;
+      FastAPI's translator does not demonstrate memory-store use.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L183-L187
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L15
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L135
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pyproject.toml#L586-L660
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/uv.lock
+  docstring-parser:
+    purpose: >-
+      The translations group installs Pydantic AI's pinned [anthropic] provider extra, which
+      brings the Anthropic SDK and its docstring-parser dependency. This is part of the optional
+      Anthropic SDK closure; FastAPI's translator configures an OpenAI agent and does not
+      demonstrate Anthropic or docstring-parser use.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L183-L187
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L15
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L135
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pyproject.toml#L586-L660
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/uv.lock
+  google-auth:
+    purpose: >-
+      The translations group installs Pydantic AI's pinned [google] provider extra, which brings
+      google-genai; that SDK selects google-auth[requests] for Google API credentials. This is
+      optional Google-provider authentication support in the locked development toolchain;
+      FastAPI's translator configures an OpenAI agent and does not demonstrate Google-provider
+      use.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L183-L187
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L15
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L135
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pyproject.toml#L586-L660
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/uv.lock
+  google-genai:
+    purpose: >-
+      The translations group installs Pydantic AI's pinned [google] provider extra, which brings
+      Google's GenAI SDK for Google model access. This is an optional model-provider capability
+      in the locked development toolchain; FastAPI's translator configures an OpenAI agent and
+      does not demonstrate Google-provider use.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L183-L187
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L15
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L135
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pyproject.toml#L586-L660
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/uv.lock
+  googleapis-common-protos:
+    purpose: >-
+      The translations group installs Pydantic AI's pinned [logfire] extra, which brings
+      Logfire's HTTPX and OpenTelemetry exporter path; the OTLP HTTP exporter depends on
+      googleapis-common-protos for protocol definitions. This is optional telemetry transport
+      support; FastAPI's translator does not configure Logfire or telemetry export.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L183-L187
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L15
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L135
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pyproject.toml#L586-L660
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/uv.lock
+  importlib-metadata:
+    purpose: >-
+      The translations group installs Pydantic AI's pinned [logfire] and [mcp] integrations; the
+      locked OpenTelemetry API and optional keyring paths reach importlib-metadata, with
+      keyring's edge conditional on Python below 3.12. This is package-metadata compatibility
+      plumbing in optional tooling; FastAPI's translator does not configure telemetry or
+      keyring.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L183-L187
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L15
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L135
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pyproject.toml#L586-L660
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/uv.lock
+  jaraco-classes:
+    purpose: >-
+      The translations group installs Pydantic AI's pinned [mcp] integration and FastMCP client
+      keyring storage extra; keyring brings jaraco-classes as a helper for class utilities. This
+      is an optional credential-storage backend dependency; FastAPI's translator does not
+      demonstrate keyring use.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L183-L187
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L15
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L135
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pyproject.toml#L586-L660
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/uv.lock
+  jaraco-context:
+    purpose: >-
+      The translations group installs Pydantic AI's pinned [mcp] integration and FastMCP client
+      keyring storage extra; keyring brings jaraco-context for context-manager helpers, with
+      backports-tarfile additionally selected below Python 3.12. This is optional credential-
+      storage support; FastAPI's translator does not demonstrate keyring use.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L183-L187
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L15
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L135
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pyproject.toml#L586-L660
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/uv.lock
+  jaraco-functools:
+    purpose: >-
+      The translations group installs Pydantic AI's pinned [mcp] integration and FastMCP client
+      keyring storage extra; keyring brings jaraco-functools as a helper dependency. This is
+      optional credential-storage support in the locked toolchain; FastAPI's translator does not
+      demonstrate keyring use.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L183-L187
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L15
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L135
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pyproject.toml#L586-L660
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/uv.lock
+  jeepney:
+    purpose: >-
+      The translations group installs Pydantic AI's pinned [mcp] integration and FastMCP client
+      keyring storage extra; the Linux keyring and Secret Service paths use jeepney for D-Bus
+      messaging. This is platform-conditional optional credential storage; FastAPI's translator
+      does not demonstrate keyring use.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L183-L187
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L15
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L135
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pyproject.toml#L586-L660
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/uv.lock
+  joserfc:
+    purpose: >-
+      The translations group installs Pydantic AI's pinned [mcp] integration; FastMCP's client
+      extra brings Authlib, which depends on joserfc for JOSE/JWT primitives. This is optional
+      MCP-client authentication support; FastAPI's translator does not demonstrate MCP or
+      Authlib use.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L183-L187
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L15
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L135
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pyproject.toml#L586-L660
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/uv.lock
+  jsonschema:
+    purpose: >-
+      The translations group installs Pydantic AI's pinned [mcp] integration and FastMCP client
+      extra, which brings the MCP SDK and its JSON Schema validator dependency. This is optional
+      MCP-client schema support in the locked development toolchain; FastAPI's translator does
+      not demonstrate MCP use.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L183-L187
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L15
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L135
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pyproject.toml#L586-L660
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/uv.lock
+  jsonschema-specifications:
+    purpose: >-
+      The translations group installs Pydantic AI's pinned [mcp] integration and FastMCP client
+      extra, which brings MCP's jsonschema dependency and its schema-specification registry
+      data. This is optional MCP-client validation support; FastAPI's translator does not
+      demonstrate MCP use.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L183-L187
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L15
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L135
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pyproject.toml#L586-L660
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/uv.lock
+  keyring:
+    purpose: >-
+      The translations group installs Pydantic AI's pinned [mcp] integration; FastMCP's client
+      extra selects py-key-value-aio[keyring], which brings keyring for optional credential
+      storage. This is an optional MCP-client storage capability in the locked development
+      toolchain; FastAPI's translator does not demonstrate keyring use.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L183-L187
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L15
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L135
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pyproject.toml#L586-L660
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/uv.lock
+  logfire:
+    purpose: >-
+      The translations group installs Pydantic AI's pinned [logfire] extra, which selects
+      Logfire with its [httpx] OpenTelemetry instrumentation. This is optional observability
+      support in the locked development toolchain; FastAPI's translator configures an OpenAI
+      agent and does not configure Logfire or telemetry.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L183-L187
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L15
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L135
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pyproject.toml#L586-L660
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/uv.lock
+  logfire-api:
+    purpose: >-
+      The translations group installs Pydantic AI's pinned evaluation integration and graph
+      base; pydantic-evals and pydantic-graph bring logfire-api, a shim that stays inert unless
+      Logfire is installed. This is optional agent-tooling telemetry plumbing; FastAPI's
+      translator does not demonstrate telemetry use.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L183-L187
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L15
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L135
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pyproject.toml#L586-L660
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/uv.lock
+  mcp:
+    purpose: >-
+      The translations group installs Pydantic AI's pinned [mcp] extra, which selects FastMCP's
+      client-only extra and the Model Context Protocol SDK. This is an optional MCP client
+      integration in the locked development toolchain; FastAPI's translator does not demonstrate
+      MCP use.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L183-L187
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L15
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L135
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pyproject.toml#L586-L660
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/uv.lock
+  pyperclip:
+    purpose: >-
+      The translations group installs Pydantic AI, whose pinned [cli] extra includes pyperclip
+      for clipboard integration. This is an optional Pydantic AI CLI capability in the locked
+      development toolchain; FastAPI's translator configures an OpenAI agent and does not
+      demonstrate CLI or clipboard use.
+    evidence:
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/pyproject.toml#L183-L187
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L15
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/scripts/translate.py#L135
+      - https://github.com/pydantic/pydantic-ai/blob/7ab3bff5e09ae950992a714f00b49c7a8e700054/pydantic_ai_slim/pyproject.toml#L586-L660
+      - https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/uv.lock
   pydantic-core:
     purpose: FastAPI directly imports CoreSchema, PydanticUndefined, Url, and core-schema helpers.
     evidence:

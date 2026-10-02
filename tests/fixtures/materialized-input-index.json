@@ -6196,6 +6196,20 @@
       "oracle_profile_extension": "standard-multipart"
     },
     {
+      "id": "request-optional-upload-alias-validation-alias-review",
+      "input_path": "tests/fixtures/inputs/parity/request-optional-upload-alias-validation-alias-review.json",
+      "input_sha256": "9c7d40256e57eb786a52160664a50499e93e5dad0c34eaadd86b7ff42aa6ed17",
+      "recipe_path": "tests/fixtures/input-recipes/parity/request-optional-upload-alias-validation-alias-review.yaml",
+      "recipe_sha256": "331e4144c01e9541e434dcc5ef649e9383e3f730d54ecd36d5764a1c27ac5335",
+      "workload_path": "tests/fixtures/workloads/optional_upload_alias_validation_alias_review.py",
+      "workload_sha256": "69190f65b8bbbe33aee23cd3dd4132742f6792625f77516cde5a2684ce7ec906",
+      "case_ids": [
+        "fastapi.request-optional-upload.alias-validation-alias.source-review",
+        "fastapi.request-optional-upload.optional-missing-doc-example"
+      ],
+      "oracle_profile_extension": "standard-multipart"
+    },
+    {
       "id": "request-param-model-field-aliases-wave",
       "input_path": "tests/fixtures/inputs/parity/request-param-model-field-aliases-wave.json",
       "input_sha256": "375b89103ef39e35367e72a38c724ff53823dc784901da33ae206c532f373665",
@@ -21898,6 +21912,51 @@
       "observation_selectors": [
         "http.body.bytes",
         "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-example:docs_src/request_files/tutorial001_02_py310.py",
+      "fixture_id": "fastapi.docs-example.request-files-tutorial001-02-py310",
+      "workflow_id": "request-optional-upload-alias-validation-alias-review",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.request-optional-upload.optional-missing-doc-example"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/request-files.md",
+      "fixture_id": "fastapi.docs.tutorial-request-files",
+      "workflow_id": "request-optional-upload-alias-validation-alias-review",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.request-optional-upload.optional-missing-doc-example"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_request_params/test_file/test_optional.py",
+      "fixture_id": "fastapi.test.test-request-params-test-file-test-optional",
+      "workflow_id": "request-optional-upload-alias-validation-alias-review",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.request-optional-upload.alias-validation-alias.source-review",
+        "fastapi.request-optional-upload.optional-missing-doc-example"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status",
+        "openapi.document",
+        "openapi.paths"
       ]
     },
     {

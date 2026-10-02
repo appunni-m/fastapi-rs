@@ -3,7 +3,7 @@ PYTHON ?= $(if $(wildcard $(CURDIR)/.venv/bin/python),$(CURDIR)/.venv/bin/python
 PYO3_PYTHON ?= $(PYTHON)
 export PYO3_PYTHON
 CARGO ?= cargo
-MATURIN ?= $(PYTHON) -m maturin
+MATURIN ?= $(BUILD_TOOLS_PYTHON) -m maturin
 UV ?= uv
 ORACLE_PYTHON ?= $(CURDIR)/.venv-oracle/bin/python
 ORACLE_STANDARD_ENV ?= $(CURDIR)/.venv-oracle-standard
@@ -11,6 +11,9 @@ ORACLE_STANDARD_PYTHON ?= $(ORACLE_STANDARD_ENV)/bin/python
 TARGET_ENV ?= $(CURDIR)/.venv-target
 TARGET_PYTHON ?= $(TARGET_ENV)/bin/python
 TARGET_RUNTIME_LOCK ?= $(CURDIR)/requirements/target-runtime-cpython-3.12.13.lock
+BUILD_TOOLS_ENV ?= $(CURDIR)/.venv-build-tools
+BUILD_TOOLS_PYTHON ?= $(BUILD_TOOLS_ENV)/bin/python
+BUILD_TOOLS_LOCK ?= $(CURDIR)/requirements/build-tools-cpython-3.12.13.lock
 FASTAPI_SOURCE ?= $(abspath ../fastapi)
 STARLETTE_SOURCE ?= $(abspath ../starlette)
 STARLETTE_RS_SOURCE ?= $(abspath ../starlette-rs)
@@ -21,7 +24,7 @@ PARITY_API_INPUT ?= tests/fixtures/inputs/parity/encoding.json
 BENCHMARK_WORKLOAD ?= benchmarks/workloads/first-slice-valid-asgi.yaml
 
 .DEFAULT_GOAL := help
-.PHONY: help fmt format clippy build build-rust build-python python-facade-check rust-policy-check compatibility-atlas-update api-contract-update api-contract-check metadata-check dependency-inventory-update dependency-inventory-check dependency-graph-update dependency-graph-check parity-inputs parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-target parity-api-runtime parity-validate parity-index-update parity-index-check parity-oracle parity-oracle-standard parity-target parity-compare parity-api-validate parity-api-oracle parity-api-target parity-api-compare parity-first-slice benchmark-contract-check benchmark-first-slice verify clean
+.PHONY: help fmt format clippy build build-rust build-python build-tools-prepare python-facade-check rust-policy-check compatibility-atlas-update api-contract-update api-contract-check metadata-check dependency-inventory-update dependency-inventory-check dependency-graph-update dependency-graph-check parity-inputs parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-target parity-api-runtime parity-validate parity-index-update parity-index-check parity-oracle parity-oracle-standard parity-target parity-compare parity-api-validate parity-api-oracle parity-api-target parity-api-compare parity-first-slice benchmark-contract-check benchmark-first-slice verify clean
 
 help: ## Show common development commands
 	@printf '%s\n' \
@@ -34,6 +37,7 @@ help: ## Show common development commands
 	  '  make build          Build the Rust crates and Python wheel' \
 	  '  make build-rust     Build all Rust workspace crates' \
 	  '  make build-python   Build the Python wheel under target/wheels' \
+	  '  make build-tools-prepare Prepare hash-locked CPython 3.12.13 Maturin environment' \
 	  '  make compatibility-atlas-update Rebuild the source atlas, backlog, index, and API contract' \
 	  '  make api-contract-update Refresh per-symbol source/runtime API links in manifest.yaml' \
 	  '  make api-contract-check Check per-symbol API links are current' \
@@ -60,7 +64,7 @@ help: ## Show common development commands
 	  '  make benchmark-first-slice Gate and measure the selected direct-ASGI workload' \
 	  '  make verify         Run formatting, lint, static contracts, and wheel build' \
 	  '  make clean          Remove Cargo outputs under target/' '' \
-	  'PYTHON defaults to the pinned 3.12 development baseline; override PYTHON, CARGO, or MATURIN as needed.'
+	  'Builds use the separate hash-locked CPython 3.12.13 Maturin environment; override BUILD_TOOLS_ENV, CARGO, or MATURIN as needed.'
 
 fmt: rust-policy-check ## Check Rust formatting and Python lint
 	$(CARGO) fmt --package fastapi-rs --package fastapi-rs-py -- --check
@@ -84,8 +88,14 @@ clippy: rust-policy-check ## Run strict workspace Clippy
 build-rust: ## Build all Rust workspace crates
 	$(CARGO) build --workspace --all-features --locked
 
-build-python: ## Build the Python wheel under target/wheels
-	$(MATURIN) build --release --out target/wheels
+build-tools-prepare: ## Prepare isolated hash-locked CPython 3.12.13 build tools
+	test -x "$(BUILD_TOOLS_PYTHON)" || $(UV) venv --python 3.12.13 "$(BUILD_TOOLS_ENV)"
+	$(BUILD_TOOLS_PYTHON) -c 'import platform, sys; (platform.python_implementation() == "CPython" and sys.version_info[:3] == (3, 12, 13)) or sys.exit("build-tool lock requires CPython 3.12.13")'
+	$(UV) pip sync --python "$(BUILD_TOOLS_PYTHON)" --require-hashes "$(BUILD_TOOLS_LOCK)"
+	$(BUILD_TOOLS_PYTHON) -m maturin --version
+
+build-python: build-tools-prepare ## Build the Python wheel under target/wheels
+	PYO3_PYTHON="$(BUILD_TOOLS_PYTHON)" $(MATURIN) build --release --out target/wheels
 
 compatibility-atlas-update: parity-inputs ## Rebuild generated source atlas, fixture backlog, index, and contract
 	$(PYTHON) scripts/build_fastapi_compatibility_atlas.py --fastapi-source "$(FASTAPI_SOURCE)" --starlette-source "$(STARLETTE_SOURCE)" --starlette-rs-root "$(STARLETTE_RS_SOURCE)"

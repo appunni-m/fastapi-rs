@@ -1,0 +1,135 @@
+schema: fastapi-rs/python-asgi-workflow@2
+oracle_profile_extension: standard-multipart
+workload:
+  file: tests/fixtures/workloads/optional_upload_alias_validation_alias_review.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.request-optional-upload.alias-validation-alias.source-review
+  actions:
+  - action_id: optional-upload-python-name
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /wire/optional-upload
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      - [content-type, multipart/form-data; boundary=upload-alias-review]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: "--upload-alias-review\r\nContent-Disposition: form-data; name=\"upload\"; filename=\"sample.txt\"\r\nContent-Type: text/plain\r\n\r\nmaple\r\n--upload-alias-review--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: optional-upload-declared-alias
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /wire/optional-upload
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      - [content-type, multipart/form-data; boundary=upload-alias-review]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: "--upload-alias-review\r\nContent-Disposition: form-data; name=\"public-upload\"; filename=\"sample.txt\"\r\nContent-Type: text/plain\r\n\r\nmaple\r\n--upload-alias-review--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: optional-upload-validation-alias
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /wire/optional-upload
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      - [content-type, multipart/form-data; boundary=upload-alias-review]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: "--upload-alias-review\r\nContent-Disposition: form-data; name=\"wire-upload\"; filename=\"sample.txt\"\r\nContent-Type: text/plain\r\n\r\nmaple\r\n--upload-alias-review--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: optional-upload-openapi-schema
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths/~1wire~1optional-upload/post/requestBody
+      - /components/schemas
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_file/test_optional.py
+    kind: upstream_test
+- case_id: fastapi.request-optional-upload.optional-missing-doc-example
+  actions:
+  - action_id: optional-upload-missing
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /wire/optional-upload
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_file/test_optional.py
+    kind: upstream_test
+  - path: docs_src/request_files/tutorial001_02_py310.py
+    kind: upstream_documentation_example
+  - path: docs/en/docs/tutorial/request-files.md
+    kind: upstream_documentation

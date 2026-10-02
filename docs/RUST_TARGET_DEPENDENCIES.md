@@ -155,6 +155,28 @@ the local Starlette-RS source install is separately pinned. The FastAPI
 0.141.1 oracle closure is separately locked and documented in
 [`DEPENDENCY_GRAPH.md`](DEPENDENCY_GRAPH.md).
 
+### Isolated Python build-tool closure
+
+`requirements/build-tools-cpython-3.12.13.in` and its hash-locked output
+[`requirements/build-tools-cpython-3.12.13.lock`](../requirements/build-tools-cpython-3.12.13.lock)
+define a CPython 3.12.13 build-tool environment, separate from the target
+runtime lock. Its lock SHA-256 is
+`79bf062099794b29573f762f255848d53a7168accfba456c6c1d4ed6937ee7d8`. The lock resolves the full Python distribution closure. Each
+listed artifact has a recorded SHA-256, and `make build-tools-prepare` installs
+it with `uv pip sync --require-hashes`.
+
+| Distribution | Role | Purpose | Implementation / native parts | Release license | Artifact hashes |
+| --- | --- | --- | --- | --- | --- |
+| maturin 1.14.1 | build | Pinned PEP 517 backend that invokes Cargo and packages the Rust extension as a Python wheel. | Python backend shim plus a Rust native CLI shipped in platform-specific py3-none wheels | MIT OR Apache-2.0 | 14 SHA-256 artifact hashes |
+
+The locked closure contains 1 Python distribution; the
+CPython 3.12.13 profile selects no additional Python distributions. Maturin
+1.14.1's metadata adds `tomli` only below Python 3.11; its optional `patchelf`
+and `ziglang` extras are not selected. Maturin is the project's PEP 517 backend
+and runs Cargo to build the extension.
+[Maturin 1.14.1 backend documentation](https://github.com/PyO3/maturin/blob/v1.14.1/README.md), [Maturin 1.14.1 package license metadata](https://github.com/PyO3/maturin/blob/v1.14.1/Cargo.toml), [Maturin 1.14.1 PyPI requirements metadata](https://pypi.org/pypi/maturin/1.14.1/json).
+
+
 ### Narrow Pydantic Core encoder bridge
 
 FastAPI 0.141.1's public `jsonable_encoder` imports
