@@ -1,0 +1,52 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/inherited_fastapi_add_route.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.applications.add-route.registration-dispatch
+  actions:
+  - action_id: dispatch-added-route
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /compat-records/item-62
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+  source_evidence:
+  - path: docs/en/docs/tutorial/first-steps.md
+    kind: upstream_documentation
+- case_id: fastapi.applications.add-route.registration-method-miss
+  actions:
+  - action_id: reject-wrong-method
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /compat-records/item-62
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+  source_evidence:
+  - path: docs/en/docs/tutorial/first-steps.md
+    kind: upstream_documentation

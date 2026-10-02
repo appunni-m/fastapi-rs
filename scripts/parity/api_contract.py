@@ -668,15 +668,17 @@ def _validate_inherited_fixture_reference(
             f"inherited API workload factory is not unique: {workload_path}:{factory}"
         )
     factory_node = factories[0]
-    app_initializations = [
-        node
+    exposure_class = operation_id.rsplit(".", 2)[-2]
+    receiver_names = {
+        target.id
         for node in ast.walk(factory_node)
         if isinstance(node, ast.Assign)
-        and any(isinstance(target, ast.Name) and target.id == "app" for target in node.targets)
         and isinstance(node.value, ast.Call)
         and isinstance(node.value.func, ast.Name)
-        and node.value.func.id == "FastAPI"
-    ]
+        and node.value.func.id == exposure_class
+        for target in node.targets
+        if isinstance(target, ast.Name)
+    }
     method_name = operation_id.rsplit(".", 1)[-1]
     if inherited_kind == "inherited_method":
         operation_usages = [
@@ -686,7 +688,7 @@ def _validate_inherited_fixture_reference(
             and isinstance(node.func, ast.Attribute)
             and node.func.attr == method_name
             and isinstance(node.func.value, ast.Name)
-            and node.func.value.id == "app"
+            and node.func.value.id in receiver_names
         ]
     elif inherited_kind == "inherited_property":
         operation_usages = [
@@ -695,20 +697,27 @@ def _validate_inherited_fixture_reference(
             if isinstance(node, ast.Attribute)
             and node.attr == method_name
             and isinstance(node.value, ast.Name)
-            and node.value.id == "app"
+            and node.value.id in receiver_names
         ]
     else:
         raise ContractError(
             f"inherited API fixture kind is unsupported: {operation_id} ({inherited_kind})"
         )
     if (
-        not app_initializations
+        not receiver_names
         or not operation_usages
         or min(node.lineno for node in operation_usages)
-        <= min(node.lineno for node in app_initializations)
+        <= min(
+            node.lineno
+            for node in ast.walk(factory_node)
+            if isinstance(node, ast.Assign)
+            and isinstance(node.value, ast.Call)
+            and isinstance(node.value.func, ast.Name)
+            and node.value.func.id == exposure_class
+        )
     ):
         raise ContractError(
-            f"inherited API fixture does not use FastAPI.{method_name}: {workload_path}"
+            f"inherited API fixture does not use {exposure_class}.{method_name}: {workload_path}"
         )
 
     observed_short_selectors = {
@@ -978,6 +987,7 @@ def build_api_surface_contract(
                     f"{operation_id}"
                 )
             known_gaps = target_binding.get("known_gaps")
+            rust_binding = target_binding.get("rust_binding")
             if (
                 target_binding.get("status") != "partial-contract"
                 or target_binding.get("implementation_owner") != "fastapi-rs"
@@ -985,6 +995,10 @@ def build_api_surface_contract(
                 or not known_gaps
                 or any(not isinstance(value, str) or not value.strip() for value in known_gaps)
                 or len(known_gaps) != len(set(known_gaps))
+                or (
+                    rust_binding is not None
+                    and (not isinstance(rust_binding, str) or not rust_binding.strip())
+                )
             ):
                 raise ContractError(
                     "inherited API sibling-gap target binding must declare partial-contract, "
@@ -1000,6 +1014,9 @@ def build_api_surface_contract(
             known_gaps = (
                 target_binding.get("known_gaps") if isinstance(target_binding, dict) else None
             )
+            rust_binding = (
+                target_binding.get("rust_binding") if isinstance(target_binding, dict) else None
+            )
             if (
                 not isinstance(target_binding, dict)
                 or target_binding.get("implementation_owner") != "fastapi-rs"
@@ -1008,6 +1025,10 @@ def build_api_surface_contract(
                 or not known_gaps
                 or any(not isinstance(value, str) or not value.strip() for value in known_gaps)
                 or len(known_gaps) != len(set(known_gaps))
+                or (
+                    rust_binding is not None
+                    and (not isinstance(rust_binding, str) or not rust_binding.strip())
+                )
             ):
                 raise ContractError(
                     "inherited canonical target binding must declare FastAPI-RS ownership, "
@@ -1641,6 +1662,8 @@ def build_api_surface_contract(
             }
             if "known_gaps" in target_binding:
                 rendered_target_binding["known_gaps"] = target_binding["known_gaps"]
+            if "rust_binding" in target_binding:
+                rendered_target_binding["rust_binding"] = target_binding["rust_binding"]
             inherited_contract.update(
                 {
                     "canonical_operation_ref": canonical_operation_ref,

@@ -37,6 +37,77 @@ _WORKFLOW = {
     "observation_selectors": list(_SELECTORS),
 }
 
+_APP_URL_PATH_FOR_WORKFLOW = {
+    "recipe_path": "tests/fixtures/input-recipes/parity/inherited-app-url-path-for.yaml",
+    "case_id": "fastapi.applications.url-path-for.included-router-context",
+    "action_ids": ["reverse-included-route"],
+    "observation_selectors": ["http.status", "http.headers.ordered", "http.body.bytes"],
+}
+
+_APIRouter_URL_PATH_FOR_WORKFLOW = {
+    "recipe_path": "tests/fixtures/input-recipes/parity/inherited-apirouter-url-path-for.yaml",
+    "case_id": "fastapi.apirouter.url-path-for.repeated-inclusion-context",
+    "action_ids": ["reverse-parent-router-route"],
+    "observation_selectors": ["http.status", "http.headers.ordered", "http.body.bytes"],
+}
+
+_APP_URL_PATH_FOR_MAPPING = {
+    "review_status": "reviewed_partial",
+    "feature_ids": ["app-routing"],
+    "observation_selectors": list(_APP_URL_PATH_FOR_WORKFLOW["observation_selectors"]),
+    "rationale": (
+        "A FastAPI application reverses a route added to an APIRouter after the router was included, then "
+        "returns the URLPath string through an independent HTTP endpoint. The route prefix and value are input-only."
+    ),
+    "replace_features": True,
+    "contract_gate": (
+        "Partial: this case observes the path string for one explicitly named route added after router inclusion. "
+        "It does not claim URLPath host/protocol metadata, missing names, or other converter values."
+    ),
+    "workflow_cases": [_APP_URL_PATH_FOR_WORKFLOW],
+    "stimulus_notes": (
+        "The recipe includes an empty router before adding its named route, then requests a separate probe "
+        "endpoint that returns the lookup result as response text; no expected path is embedded in the input."
+    ),
+    "supporting_sources": [
+        _source(
+            _TEST,
+            310,
+            320,
+            "pinned FastAPI test_url_path_for_uses_effective_context_for_live_included_route and its public app.url_path_for assertion",
+        )
+    ],
+}
+
+_APIRouter_URL_PATH_FOR_MAPPING = {
+    "review_status": "reviewed_partial",
+    "feature_ids": ["app-routing"],
+    "observation_selectors": list(_APIRouter_URL_PATH_FOR_WORKFLOW["observation_selectors"]),
+    "rationale": (
+        "A parent APIRouter reverses a route from a child router included under two prefixes. The workflow "
+        "selects the public parent.url_path_for result through an independent HTTP endpoint."
+    ),
+    "replace_features": True,
+    "contract_gate": (
+        "Partial: the workflow observes the public parent router's first matching URLPath string. The "
+        "source test's direct routes[1].url_path_for assertion concerns the mutable route collection and "
+        "is not claimed by this public API case. URLPath metadata and other inclusion shapes remain open."
+    ),
+    "workflow_cases": [_APIRouter_URL_PATH_FOR_WORKFLOW],
+    "stimulus_notes": (
+        "The independent routers use distinct prefixes and an entry identifier. The expected path is not "
+        "stored in the YAML input."
+    ),
+    "supporting_sources": [
+        _source(
+            _TEST,
+            322,
+            335,
+            "pinned FastAPI test_url_path_for_uses_distinct_repeated_inclusion_contexts and its public parent_router.url_path_for assertion",
+        )
+    ],
+}
+
 _LIVE_ROUTE_MAPPING = {
     "review_status": "reviewed_partial",
     "feature_ids": ["app-routing"],
@@ -105,7 +176,9 @@ ROUTER_LIVE_ROUTE_AFTER_INCLUDE_SOURCE_REVIEW = {
     "workload_path": _WORKLOAD,
     "test_module": _TEST,
     "test_mappings": {
-        "test_live_route_addition_uses_include_metadata_for_runtime_and_openapi": _LIVE_ROUTE_MAPPING
+        "test_live_route_addition_uses_include_metadata_for_runtime_and_openapi": _LIVE_ROUTE_MAPPING,
+        "test_url_path_for_uses_effective_context_for_live_included_route": _APP_URL_PATH_FOR_MAPPING,
+        "test_url_path_for_uses_distinct_repeated_inclusion_contexts": _APIRouter_URL_PATH_FOR_MAPPING,
     },
     "exclusions": {
         "test_openapi_cache_updates_after_live_route_addition": {
@@ -127,15 +200,12 @@ ROUTER_LIVE_ROUTE_AFTER_INCLUDE_SOURCE_REVIEW = {
             "source_span": {"path": _TEST, "start_line": 286, "end_line": 308},
             "reason": "Repeated nested inclusion prefixes and several concrete paths are outside this focused case.",
         },
-        "test_url_path_for_uses_effective_context_for_live_included_route": {
-            "source_span": {"path": _TEST, "start_line": 310, "end_line": 320},
-            "reason": "URL path generation is a Python API observation, not the selected public ASGI/OpenAPI workflow.",
-        },
     },
     "observation_boundary": (
-        "Public FastAPI ASGI request and the selected OpenAPI operation tags/responses pointers. "
-        "The entire OpenAPI document, schema generation internals, TestClient behavior, and generic Starlette "
-        "route matching are not claimed."
+        "Public FastAPI ASGI responses for late-route dispatch, selected OpenAPI operation tags/responses "
+        "pointers, and inherited url_path_for path strings returned through probe endpoints. The entire "
+        "OpenAPI document, URLPath host/protocol metadata, TestClient behavior, and generic Starlette route "
+        "matching and reversal internals are not claimed."
     ),
 }
 

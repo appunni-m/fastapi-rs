@@ -80,14 +80,14 @@ api_inventory:
 import_binding_classification_review:
   artifact: tests/fixtures/api-import-binding-classification-review.json
   schema: fastapi-starlette-import-binding-review/v1
-  sha256: 27e75cb63651255bac3fd49ddf3333c0821ebe5bcb1a5f571dbed424f782e6cf
+  sha256: 82a957bedec0ba651b2944f25a873bc34827520199b0f5ed1290bd4619713499
   source_identity:
     package: FastAPI
     version: 0.141.1
     source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
     selected_starlette_profile: 1.6.0
     starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
-    starlette_rs_contract_commit: df2559fa26eb0e6ad83a12f8d985b3129f8f7f91
+    starlette_rs_contract_commit: 8d63ce729a789ae2d6c9fab9d37ae4b1e7b2ac89
   starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
   counts:
     candidates: 97
@@ -99,7 +99,7 @@ import_binding_classification_review:
   candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
   pinned_starlette_rs_sources:
     metadata_sha256: 1baeaa65df032816231736829df4a09f40066273d31b529df95c6e24ff6960b1
-    manifest_sha256: b24e42bb0ce9f4a1346b38f23f89a7edc9f972f91871bd4ad46e97753d49c689
+    manifest_sha256: c36f4ffed557f8be689e4bc043e20834f8823bc8097860cdf639d7fe8f2c61b6
     api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
     api_review_sha256: 39a9fc59a070d6956aa65c7578e236980a917105f806eb557920261bf68060ef
 
@@ -187,7 +187,7 @@ classification_atlas:
 starlette_rs:
   owner: ../starlette-rs
   repository: https://github.com/appunni-m/starlette-rs
-  commit: df2559fa26eb0e6ad83a12f8d985b3129f8f7f91
+  commit: 8d63ce729a789ae2d6c9fab9d37ae4b1e7b2ac89
   distribution_version: 0.1.0
   contract_id: starlette-1.6.0-asgi-http-config-session-slice
   metadata: ../starlette-rs/metadata.yaml
@@ -979,23 +979,11 @@ reviewed_api_contract_overlay:
       feature_ids: [openapi-docs]
       observation_selectors: [python.call_outcome]
     fastapi.applications.FastAPI:
-      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::url_path_for
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::new
       source_evidence:
         - {path: fastapi/applications.py, symbol: FastAPI}
-        - {path: tests/test_starlette_urlconvertors.py, symbol: test_url_path_for_path_convertor}
       feature_ids: [app-routing]
-      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
-      supported_slice: >-
-        The source-backed FastAPI URLPath operation inherits
-        Starlette.Application.url_path_for(name, /, **path_params). This native
-        slice resolves a directly registered FastAPI route by its default
-        endpoint name and exact path-parameter names, formats values through
-        the pinned Starlette converter boundary and Starlette-RS named-route
-        table, and returns Starlette's URLPath class. The mapped
-        test_url_path_for_path_convertor workflow observes the formatted path
-        through an HTTP response. Direct URLPath metadata, explicit route-name
-        overrides, non-path converter values, Router/APIRouter lookups, and
-        nested Host or Mount routes remain unverified.
+      observation_selectors: [python.signature]
     fastapi.applications.FastAPI.__call__:
       rust_binding: fastapi-rs/src/application_runtime.rs::FastApiCall::finish_endpoint
       source_evidence:
@@ -2319,6 +2307,148 @@ reviewed_api_contract_overlay:
         - websocket.close_code
         - websocket.close_reason
   inherited_operations:
+    fastapi.applications.FastAPI.add_route:
+      fastapi_exposure_candidate_id: fastapi.applications.FastAPI
+      canonical_operation_id: starlette.applications.Starlette.add_route
+      source_evidence:
+        - path: fastapi/applications.py
+          kind: class-inheritance
+          symbol: FastAPI
+          base_class: Starlette
+          line: 42
+        - path: docs/en/docs/tutorial/first-steps.md
+          kind: documentation-text
+          start_line: 239
+          end_line: 241
+          required_text:
+            - '`FastAPI` is a class that inherits directly from `Starlette`.'
+            - 'You can use all the [Starlette](https://starlette.dev/) functionality with `FastAPI` too.'
+      documentation_contract_refs:
+        - source_path: docs/en/docs/tutorial/first-steps.md
+          fixture_id: fastapi.docs.tutorial-first-steps
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/inherited-fastapi-add-route.yaml
+          case_id: fastapi.applications.add-route.registration-dispatch
+        - recipe_path: tests/fixtures/input-recipes/parity/inherited-fastapi-add-route.yaml
+          case_id: fastapi.applications.add-route.registration-method-miss
+      feature_ids: [app-routing]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: unimplemented
+        known_gaps:
+          - FastAPI-RS does not expose the inherited add_route method or bridge arbitrary Starlette Route registration through its FastAPI router.
+    fastapi.applications.FastAPI.host:
+      fastapi_exposure_candidate_id: fastapi.applications.FastAPI
+      source_evidence:
+        - path: fastapi/applications.py
+          kind: class-inheritance
+          symbol: FastAPI
+          base_class: Starlette
+          line: 42
+        - path: docs/en/docs/tutorial/first-steps.md
+          kind: documentation-text
+          start_line: 239
+          end_line: 241
+          required_text:
+            - '`FastAPI` is a class that inherits directly from `Starlette`.'
+            - 'You can use all the [Starlette](https://starlette.dev/) functionality with `FastAPI` too.'
+      signature_source:
+        repository: starlette
+        path: starlette/applications.py
+        owner: Starlette
+        symbol: host
+        start_line: 101
+        end_line: 102
+      sibling_contract_gap:
+        expected_operation_id: starlette.applications.Starlette.host
+        reason: >-
+          The pinned Starlette-RS review classifies Starlette.host as supported, but the API source
+          catalog and manifest do not define a canonical registration-operation contract for it.
+          Its supported API-catalog candidate does not provide a method signature or registration
+          behavior contract.
+      documentation_contract_refs:
+        - source_path: docs/en/docs/tutorial/first-steps.md
+          fixture_id: fastapi.docs.tutorial-first-steps
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/inherited-fastapi-host.yaml
+          case_id: fastapi.applications.host.named-subdomain-dispatch
+      feature_ids: [app-routing]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - FastAPI-RS does not expose inherited host registration, subdomain matching, or named host-route reversal.
+    fastapi.applications.FastAPI.url_path_for:
+      fastapi_exposure_candidate_id: fastapi.applications.FastAPI
+      canonical_operation_id: starlette.applications.Starlette.url_path_for
+      source_evidence:
+        - path: fastapi/applications.py
+          kind: class-inheritance
+          symbol: FastAPI
+          base_class: Starlette
+          line: 42
+        - path: docs/en/docs/tutorial/first-steps.md
+          kind: documentation-text
+          start_line: 239
+          end_line: 241
+          required_text:
+            - '`FastAPI` is a class that inherits directly from `Starlette`.'
+            - 'You can use all the [Starlette](https://starlette.dev/) functionality with `FastAPI` too.'
+      documentation_contract_refs:
+        - source_path: docs/en/docs/tutorial/first-steps.md
+          fixture_id: fastapi.docs.tutorial-first-steps
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/starlette-url-converters-upstream.yaml
+          case_id: fastapi.test.test-starlette-urlconvertors.test-url-path-for-path-convertor
+        - recipe_path: tests/fixtures/input-recipes/parity/starlette-url-converters-upstream.yaml
+          case_id: fastapi.applications.url-path-for.explicit-route-name
+        - recipe_path: tests/fixtures/input-recipes/parity/inherited-app-url-path-for.yaml
+          case_id: fastapi.applications.url-path-for.included-router-context
+      feature_ids: [app-routing]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::url_path_for
+        known_gaps:
+          - Direct URLPath metadata and non-path converter values are not fully established.
+          - Late APIRouter route additions, repeated inclusion, Mount, and Host route-context lookup are not fully established.
+    fastapi.routing.APIRouter.url_path_for:
+      fastapi_exposure_candidate_id: fastapi.routing.APIRouter
+      canonical_operation_id: starlette.routing.Router.url_path_for
+      source_evidence:
+        - path: fastapi/routing.py
+          kind: class-inheritance
+          symbol: APIRouter
+          base_class: Router
+          line: 2255
+        - path: docs/en/docs/tutorial/bigger-applications.md
+          kind: documentation-text
+          start_line: 90
+          end_line: 100
+          required_text:
+            - '### *Path operations* with `APIRouter` { #path-operations-with-apirouter }'
+            - 'You can think of `APIRouter` as a "mini `FastAPI`" class.'
+            - 'All the same options are supported.'
+      documentation_contract_refs:
+        - source_path: docs/en/docs/tutorial/bigger-applications.md
+          fixture_id: fastapi.docs.tutorial-bigger-applications
+          observation_selectors: [http.status, http.body.bytes]
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/inherited-apirouter-url-path-for.yaml
+          case_id: fastapi.apirouter.url-path-for.repeated-inclusion-context
+      feature_ids: [app-routing]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: unimplemented
+        known_gaps:
+          - FastAPI-RS does not expose inherited APIRouter URLPath lookup or preserve repeated inclusion-context selection.
     fastapi.applications.FastAPI.add_middleware:
       fastapi_exposure_candidate_id: fastapi.applications.FastAPI
       canonical_operation_id: starlette.applications.Starlette.add_middleware

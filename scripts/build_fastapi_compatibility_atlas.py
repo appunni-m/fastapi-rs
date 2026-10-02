@@ -8041,6 +8041,35 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             or re.search(r"\.\s*middleware\s*\(", source_text)
         )
 
+    def has_gzip_middleware_evidence(coverage_item: dict[str, Any]) -> bool:
+        """Recognize reviewed FastAPI GZip re-export and docs evidence."""
+        if "gzip" in str(coverage_item.get("source_path", "")).lower():
+            return True
+        evidence = coverage_item.get("mapping_evidence")
+        if not isinstance(evidence, dict):
+            return False
+        module_mapping = evidence.get("reviewed_module_mapping")
+        if not isinstance(module_mapping, dict):
+            module_mapping = {}
+        supporting_sources = module_mapping.get("supporting_sources", [])
+        if not isinstance(supporting_sources, list):
+            supporting_sources = []
+        if any(
+            source.get("path") == "fastapi/middleware/gzip.py"
+            and "re-export" in str(source.get("role", "")).lower()
+            for source in supporting_sources
+            if isinstance(source, dict)
+        ):
+            return True
+        documented_sections = evidence.get("documented_sections", [])
+        if not isinstance(documented_sections, list):
+            return False
+        return any(
+            "gzipmiddleware" in str(section.get("heading", "")).lower()
+            for section in documented_sections
+            if isinstance(section, dict)
+        )
+
     def starlette_contract_mappings_for(coverage_item: dict[str, Any]) -> list[dict[str, Any]]:
         source_path = str(coverage_item.get("source_path", "")).lower()
         mappings = []
@@ -8186,10 +8215,10 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                             ),
                         ],
                     )
-                elif "gzip" in source_path:
+                elif has_gzip_middleware_evidence(coverage_item):
                     specs = (
                         "shared GZipMiddleware boundary",
-                        "Only the separately inventoried GZipMiddleware contract is in the current sibling slice; other middleware, integrations, and CLI behavior remain outside it.",
+                        "Only the separately inventoried GZipMiddleware contract is in the current sibling slice; other middleware, integrations, and CLI behavior remain outside it. The current FastAPI workflow observes status and gzip response headers, but it does not cover response-body equality, default media-type boundaries, empty streaming chunks, or the thread_minimum_size boundary; these links map shared ownership and backlog, not complete FastAPI integration parity.",
                         [
                             (
                                 "starlette.middleware.gzip.GZipMiddleware",
@@ -8208,6 +8237,10 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                                     "starlette.middleware.gzip.GZipMiddleware.pathsend",
                                     "starlette.middleware.gzip.GZipMiddleware.existing-encoding-stream-bypass",
                                     "starlette.middleware.gzip.GZipMiddleware.partial-response-stream-bypass",
+                                    "starlette.middleware.gzip.GZipMiddleware.default-excluded-content-type",
+                                    "starlette.middleware.gzip.GZipMiddleware.default-allowed-content-type",
+                                    "starlette.middleware.gzip.GZipMiddleware.streaming-empty-chunk",
+                                    "starlette.middleware.gzip.GZipMiddleware.thread-minimum-size",
                                 ],
                             ),
                         ],
