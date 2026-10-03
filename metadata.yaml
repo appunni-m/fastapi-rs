@@ -722,6 +722,10 @@ reviewed_api_contract_overlay:
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/constructor-middleware-order.yaml
           case_id: fastapi.applications.constructor-middleware-order
+        - recipe_path: tests/fixtures/input-recipes/parity/redirect-slashes-forwarding.yaml
+          case_id: fastapi.applications.constructor.redirect-slashes-enabled
+        - recipe_path: tests/fixtures/input-recipes/parity/redirect-slashes-forwarding.yaml
+          case_id: fastapi.applications.constructor.redirect-slashes-disabled
       feature_ids: [public-api-errors, app-routing, dependency-security, request-validation, websocket-lifecycle, openapi-docs]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes, websocket.event_order, websocket.messages, openapi.document, asgi.lifespan.event_order, asgi.lifespan.startup, asgi.lifespan.shutdown, asgi.lifespan.application_errors, asgi.lifespan.workload_trace, warnings.category_message]
       supported_slice: >-
@@ -735,6 +739,10 @@ reviewed_api_contract_overlay:
         disabled ReDoc route. Attribute access to those stored values and other
         documentation options, including disabling OpenAPI with `None`, remain
         outside this slice.
+        FastAPI forwards its redirect_slashes constructor option into the
+        router. Independent request workflows cover the enabled default and
+        explicit disabled setting; slash matching and redirect response
+        mechanics remain owned by Starlette-RS.
         The application exposes a
         mutable dependency_overrides mapping used by the reviewed synchronous
         and asynchronous override slices in Depends. The synchronous slice

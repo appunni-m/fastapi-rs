@@ -39,6 +39,7 @@ ANNOTATION_RECIPE = "tests/fixtures/input-recipes/parity/source-wave-b-annotatio
 STARLETTE_RECIPE = "tests/fixtures/input-recipes/parity/source-wave-b-starlette-integration.yaml"
 CUSTOM_ROUTE_RECIPE = "tests/fixtures/input-recipes/parity/source-wave-b-custom-routes.yaml"
 REQUEST_RECIPE = "tests/fixtures/input-recipes/parity/source-wave-b-request-direct.yaml"
+REDIRECT_RECIPE = "tests/fixtures/input-recipes/parity/redirect-slashes-forwarding.yaml"
 
 _HTTP = ["http.status", "http.body.bytes"]
 _HTTP_HEADERS = ["http.status", "http.headers.ordered", "http.body.bytes"]
@@ -543,18 +544,38 @@ _PREFIX_MAPPINGS = _module(
 _REDIRECT_TEST = "tests/test_router_redirect_slashes.py"
 _REDIRECT_MAPPINGS = _module(
     _REDIRECT_TEST,
-    "These assertions select only Starlette Router's generic redirect_slashes routing policy. FastAPI forwards the constructor option, while Starlette owns slash probing and response generation.",
+    "FastAPI constructor forwarding is mapped through independent ASGI inputs; slash matching, redirect targets, and response generation remain assigned to the pinned Starlette-RS contract.",
     {
-        "test_redirect_slashes_enabled": _excluded(
+        "test_redirect_slashes_enabled": _mapped(
             _REDIRECT_TEST,
             "test_redirect_slashes_enabled",
-            "Excluded from this FastAPI source wave: FastAPI passes redirect_slashes to APIRouter, but route matching, slash-adjusted probing, and the 307 response are implemented by the pinned Starlette Router. Track this behavior in the Starlette-RS sibling contract.",
+            ["app-routing"],
+            "The independent workflow constructs FastAPI with the default enabled policy, serves a route on the root application router, and observes exact and slash-adjusted requests.",
+            "Partial sample of FastAPI's enabled default; the upstream test uses APIRouter inclusion, and generic slash matching and redirect responses remain supplied by Starlette-RS.",
+            [
+                _link(
+                    REDIRECT_RECIPE,
+                    "fastapi.applications.constructor.redirect-slashes-enabled",
+                    ["exact-route", "missing-trailing-slash"],
+                    _HTTP_HEADERS,
+                )
+            ],
             (_FASTAPI_APP_ROUTER_OPTIONS, _STARLETTE_REDIRECT_SLASHES, _STARLETTE_REDIRECT_MATCH),
         ),
-        "test_redirect_slashes_disabled": _excluded(
+        "test_redirect_slashes_disabled": _mapped(
             _REDIRECT_TEST,
             "test_redirect_slashes_disabled",
-            "Excluded from this FastAPI source wave: FastAPI exposes and forwards redirect_slashes=False, but whether a missing-slash path redirects or reaches the not-found handler is generic Starlette Router behavior. Track the routing policy in the Starlette-RS sibling contract.",
+            ["app-routing"],
+            "The independent workflow constructs FastAPI with redirect_slashes disabled, serves a route on the root application router, and observes exact and slash-adjusted requests.",
+            "Partial sample of FastAPI's explicit disabled option; the upstream test uses APIRouter inclusion, and generic route matching and not-found responses remain supplied by Starlette-RS.",
+            [
+                _link(
+                    REDIRECT_RECIPE,
+                    "fastapi.applications.constructor.redirect-slashes-disabled",
+                    ["exact-route", "missing-trailing-slash"],
+                    _HTTP_HEADERS,
+                )
+            ],
             (_FASTAPI_APP_ROUTER_OPTIONS, _STARLETTE_REDIRECT_SLASHES, _STARLETTE_REDIRECT_MATCH),
         ),
     },
@@ -1146,6 +1167,7 @@ SOURCE_WAVE_B_REVIEW = {
     "test_modules": SOURCE_WAVE_B_TEST_REVIEW_MAPPINGS,
     "recipe_paths": [
         ROUTER_RECIPE,
+        REDIRECT_RECIPE,
         ANNOTATION_RECIPE,
         STARLETTE_RECIPE,
         CUSTOM_ROUTE_RECIPE,
@@ -1153,6 +1175,7 @@ SOURCE_WAVE_B_REVIEW = {
     ],
     "workload_paths": [
         "tests/fixtures/workloads/source_wave_b_router_config.py",
+        "tests/fixtures/workloads/redirect_slashes_forwarding.py",
         "tests/fixtures/workloads/source_wave_b_annotations.py",
         "tests/fixtures/workloads/source_wave_b_starlette_integration.py",
         "tests/fixtures/workloads/source_wave_b_custom_routes.py",
@@ -1213,13 +1236,17 @@ def validate_source_wave_b_review_mappings() -> dict[str, int]:
     if set(SOURCE_WAVE_B_TEST_REVIEW_MAPPINGS) != expected_modules:
         raise ValueError("source-wave-b module paths do not match the requested denominator")
 
-    schema = json.loads(
-        (PROJECT_ROOT / "tests/fixtures/schemas/python-asgi-workflow-v2.schema.json").read_text(
-            encoding="utf-8"
+    validators: dict[str, Any] = {}
+    for version in (2, 3):
+        schema = json.loads(
+            (
+                PROJECT_ROOT / f"tests/fixtures/schemas/python-asgi-workflow-v{version}.schema.json"
+            ).read_text(encoding="utf-8")
         )
-    )
-    jsonschema.Draft202012Validator.check_schema(schema)
-    validator = jsonschema.Draft202012Validator(schema)
+        jsonschema.Draft202012Validator.check_schema(schema)
+        validators[f"fastapi-rs/python-asgi-workflow@{version}"] = jsonschema.Draft202012Validator(
+            schema
+        )
     recipes: dict[str, dict[str, Any]] = {}
     workloads: set[str] = set()
     all_case_ids: set[str] = set()
@@ -1227,6 +1254,9 @@ def validate_source_wave_b_review_mappings() -> dict[str, int]:
 
     for recipe_path in SOURCE_WAVE_B_REVIEW["recipe_paths"]:
         recipe = yaml.safe_load((PROJECT_ROOT / recipe_path).read_text(encoding="utf-8"))
+        validator = validators.get(recipe.get("schema"))
+        if validator is None:
+            raise ValueError(f"unsupported source-wave-b workflow schema: {recipe.get('schema')}")
         validator.validate(recipe)
         workload_path = recipe["workload"]["file"]
         if workload_path in workloads:

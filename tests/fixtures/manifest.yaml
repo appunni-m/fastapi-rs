@@ -411,7 +411,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@5
-    sha256: 8f0d17eb102346eaa7f6ea59809a69763143b35d51b4ecb9abd95d16bd3f6175
+    sha256: 73731c923b310bf6907dfb9017aabe108395a06b8e2de98cffdc4a647a2899b6
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -447,11 +447,11 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 9b607ef839f14f2a04df974d3e8eca2c1d0a57aba60fee161b368c00da9e287e
+    sha256: 56cb726ff3c0af06af13fc4de3347aa15bd3b00c4ec6f0753805f8f081affc04
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
-      designs: 889
-      test_case_designs: 2116
+      designs: 890
+      test_case_designs: 2118
     source_artifact_pointer: /fixture_backlog_ref
   observation_selector_catalog:
     path: tests/fixtures/observation-selectors.json
@@ -484,14 +484,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@2
-    sha256: 69e13b7afefe04cefe4d26ff2384814ee05319c8d2702e339abb3212e7290e0e
+    sha256: 177eb3aca7d685d9f2ada0e1061a463f8381da939db8c51d5c6369043af06f97
     schema_path: tests/fixtures/schemas/materialized-input-index.schema.json
     schema_sha256: 56ac1cdfaa6f28b4277ef44b5ef78efebb3122111c5691e1b9c1bce869156aaf
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 515
-      cases: 2038
-      partial_source_mappings: 1470
+      workflows: 516
+      cases: 2040
+      partial_source_mappings: 1471
 
 contract_metadata:
   aliases:
@@ -814,7 +814,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 34
     symbols_with_operation_fixture_refs: 52
-    operation_fixture_refs: 282
+    operation_fixture_refs: 284
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -3235,6 +3235,36 @@ api_surface_contract:
       workload_path: tests/fixtures/workloads/constructor_middleware.py
       workload_sha256: 702af116f84ba86226e9ef28fb300e8f3898479b17af46ddedf1c42ee48c9ef0
       case_id: fastapi.applications.constructor-middleware-order
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: redirect-slashes-forwarding
+      input_path: tests/fixtures/inputs/parity/redirect-slashes-forwarding.json
+      input_sha256: 5590aee25e5aa67ad56f11958ddcf1dbc13f2dbda6a42080e8ecea0af79d105b
+      recipe_path: tests/fixtures/input-recipes/parity/redirect-slashes-forwarding.yaml
+      recipe_sha256: bd6acf6dcf223f7feb97084e7da36f4bcb6202a79a841688af5b67f696f2ac22
+      workload_path: tests/fixtures/workloads/redirect_slashes_forwarding.py
+      workload_sha256: 1151e7a716fe0668f9acbdd71d68787f131092134afde3d1100c3d68ad140aaa
+      case_id: fastapi.applications.constructor.redirect-slashes-enabled
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: redirect-slashes-forwarding
+      input_path: tests/fixtures/inputs/parity/redirect-slashes-forwarding.json
+      input_sha256: 5590aee25e5aa67ad56f11958ddcf1dbc13f2dbda6a42080e8ecea0af79d105b
+      recipe_path: tests/fixtures/input-recipes/parity/redirect-slashes-forwarding.yaml
+      recipe_sha256: bd6acf6dcf223f7feb97084e7da36f4bcb6202a79a841688af5b67f696f2ac22
+      workload_path: tests/fixtures/workloads/redirect_slashes_forwarding.py
+      workload_sha256: 1151e7a716fe0668f9acbdd71d68787f131092134afde3d1100c3d68ad140aaa
+      case_id: fastapi.applications.constructor.redirect-slashes-disabled
       observation_selectors:
       - construction.exception_class
       - construction.exception_message

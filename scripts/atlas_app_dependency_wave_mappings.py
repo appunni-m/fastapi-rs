@@ -1795,10 +1795,6 @@ APP_DEPENDENCY_TEST_MODULE_EXCLUSIONS: dict[str, dict[str, object]] = {
         "tests/test_router_prefix_with_template.py",
         "The module checks Starlette path-converter and path-parameter behavior under a router prefix; those behaviors are assigned to the request-parameter/Starlette-RS routing contracts.",
     ),
-    "tests/test_router_redirect_slashes.py": _module_exclusion(
-        "tests/test_router_redirect_slashes.py",
-        "The module asserts generic slash redirects from the Starlette Router; FastAPI adds no distinct behavior in these assertions, so the pinned Starlette 1.6.0 contract is authoritative.",
-    ),
     "tests/test_strict_content_type_router_level.py": _module_exclusion(
         "tests/test_strict_content_type_router_level.py",
         "The module checks request Content-Type parsing/validation and router-level inheritance, assigned to the request-validation wave.",

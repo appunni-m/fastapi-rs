@@ -282,6 +282,26 @@ impl FastApiOperationRouter {
         }
     }
 
+    /// Returns the trailing-slash alternative when it matches a FastAPI operation.
+    ///
+    /// Matching and root-path handling use Starlette-RS's public route-table
+    /// API. The internal GET method preserves FastAPI's exact method semantics.
+    #[must_use]
+    pub(crate) fn find_slash_redirect_path(
+        &self,
+        path: &str,
+        root_path: &str,
+        method: &str,
+    ) -> Option<String> {
+        let route_method = if method == "GET" {
+            INTERNAL_GET_METHOD
+        } else {
+            method
+        };
+        self.route_table
+            .find_slash_redirect_path(path, root_path, route_method)
+    }
+
     /// Returns operation metadata by its stable insertion index.
     #[must_use]
     pub fn operation(&self, index: usize) -> Option<&FastApiOperation> {

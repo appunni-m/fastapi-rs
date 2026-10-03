@@ -908,6 +908,7 @@ pub(crate) struct PyFastApi {
     openapi_external_docs: Option<Py<PyAny>>,
     dependencies: Vec<Py<PyAny>>,
     default_response_class: Option<Py<PyAny>>,
+    redirect_slashes: bool,
     strict_content_type: Option<bool>,
     exception_handlers: Py<PyAny>,
     lifespan: FastApiLifespan,
@@ -1041,7 +1042,7 @@ struct RouterIncludePolicy<'policy> {
 #[pymethods]
 impl PyFastApi {
     #[new]
-    #[pyo3(signature = (*, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", docs_url = "/docs", redoc_url = "/redoc", swagger_ui_init_oauth = None, terms_of_service = None, contact = None, license_info = None, openapi_external_docs = None, dependencies = None, default_response_class = None, middleware = None, exception_handlers = None, on_startup = None, on_shutdown = None, lifespan = None, strict_content_type = true))]
+    #[pyo3(signature = (*, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", docs_url = "/docs", redoc_url = "/redoc", swagger_ui_init_oauth = None, terms_of_service = None, contact = None, license_info = None, openapi_external_docs = None, dependencies = None, default_response_class = None, redirect_slashes = true, middleware = None, exception_handlers = None, on_startup = None, on_shutdown = None, lifespan = None, strict_content_type = true))]
     // lint-exception: PyO3 needs one Rust argument per Python constructor keyword.
     #[allow(
         clippy::too_many_arguments,
@@ -1063,6 +1064,7 @@ impl PyFastApi {
         openapi_external_docs: Option<Py<PyAny>>,
         dependencies: Option<Vec<Py<PyAny>>>,
         default_response_class: Option<Py<PyAny>>,
+        redirect_slashes: bool,
         middleware: Option<Py<PyAny>>,
         exception_handlers: Option<Py<PyAny>>,
         on_startup: Option<Py<PyAny>>,
@@ -1143,6 +1145,7 @@ impl PyFastApi {
             openapi_external_docs,
             dependencies: dependencies.unwrap_or_default(),
             default_response_class,
+            redirect_slashes,
             strict_content_type: Some(strict_content_type),
             exception_handlers: exception_handlers.unbind().into_any(),
             lifespan,
@@ -2904,6 +2907,7 @@ impl PyApiRouter {
                 None,
                 None,
                 default_response_class,
+                true,
                 None,
                 None,
                 on_startup,
@@ -8596,19 +8600,22 @@ impl FastApiCall {
             .ok_or_else(|| PyRuntimeError::new_err("selected FastAPI frontend was lost"))
     }
 
-    fn redirect_docs_slash(
+    fn redirect_http_slash(
         &mut self,
         py: Python<'_>,
         path: &str,
         root_path: &str,
         method: &str,
     ) -> PyResult<Option<MachineAction>> {
-        let redirect_path = self
-            .app
-            .bind(py)
-            .borrow()
-            .docs_router
-            .find_slash_redirect_path(path, root_path, method);
+        let redirect_path = {
+            let app = self.app.bind(py).borrow();
+            if !app.redirect_slashes {
+                return Ok(None);
+            }
+            app.docs_router
+                .find_slash_redirect_path(path, root_path, method)
+                .or_else(|| app.router.find_slash_redirect_path(path, root_path, method))
+        };
         let Some(redirect_path) = redirect_path else {
             return Ok(None);
         };
@@ -8816,12 +8823,8 @@ impl FastApiCall {
                 if let Some(action) = self.dispatch_mounted_app(py)? {
                     return Ok(action);
                 }
-                if !openapi_url.is_empty() {
-                    if let Some(action) =
-                        self.redirect_docs_slash(py, &path, &root_path, &method)?
-                    {
-                        return Ok(action);
-                    }
+                if let Some(action) = self.redirect_http_slash(py, &path, &root_path, &method)? {
+                    return Ok(action);
                 }
                 if let Some(action) = self.dispatch_frontend_route(py, &route_path, &method)? {
                     return Ok(action);

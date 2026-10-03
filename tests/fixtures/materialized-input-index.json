@@ -6064,6 +6064,19 @@
       ]
     },
     {
+      "id": "redirect-slashes-forwarding",
+      "input_path": "tests/fixtures/inputs/parity/redirect-slashes-forwarding.json",
+      "input_sha256": "5590aee25e5aa67ad56f11958ddcf1dbc13f2dbda6a42080e8ecea0af79d105b",
+      "recipe_path": "tests/fixtures/input-recipes/parity/redirect-slashes-forwarding.yaml",
+      "recipe_sha256": "bd6acf6dcf223f7feb97084e7da36f4bcb6202a79a841688af5b67f696f2ac22",
+      "workload_path": "tests/fixtures/workloads/redirect_slashes_forwarding.py",
+      "workload_sha256": "1151e7a716fe0668f9acbdd71d68787f131092134afde3d1100c3d68ad140aaa",
+      "case_ids": [
+        "fastapi.applications.constructor.redirect-slashes-enabled",
+        "fastapi.applications.constructor.redirect-slashes-disabled"
+      ]
+    },
+    {
       "id": "repeated-cookie-headers-upstream",
       "input_path": "tests/fixtures/inputs/parity/repeated-cookie-headers-upstream.json",
       "input_sha256": "c9fae3e34238bfb7580a939cdabc3fc3b381e72ba1c401abc38e46e7c6be96ae",
@@ -23272,6 +23285,22 @@
         "http.status",
         "openapi.document",
         "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_router_redirect_slashes.py",
+      "fixture_id": "fastapi.test.test-router-redirect-slashes",
+      "workflow_id": "redirect-slashes-forwarding",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.applications.constructor.redirect-slashes-disabled",
+        "fastapi.applications.constructor.redirect-slashes-enabled"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
       ]
     },
     {
