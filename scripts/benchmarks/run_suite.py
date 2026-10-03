@@ -204,9 +204,9 @@ def _runner_result(
         "--starlette-rs-source",
         str(starlette_rs_source.resolve()),
         "--oracle-python",
-        str(oracle_python.resolve()),
+        str(oracle_python.absolute()),
         "--target-python",
-        str(target_python.resolve()),
+        str(target_python.absolute()),
     ]
     before = set(RESULT_ROOT.glob("*.json"))
     process = subprocess.run(

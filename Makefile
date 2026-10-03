@@ -209,7 +209,7 @@ benchmark-contract-check: parity-inputs ## Validate workload/suite schemas, save
 	$(PYTHON) -m scripts.benchmarks.contract --check
 	$(PYTHON) -m scripts.benchmarks.run_suite --check
 
-benchmark-first-slice: benchmark-contract-check parity-prepare-target ## Prepare the release target, gate parity, and measure the selected direct-ASGI workload
+benchmark-first-slice: benchmark-contract-check parity-prepare-oracle parity-prepare-target ## Prepare isolated runtimes, gate parity, and measure the selected direct-ASGI workload
 	$(PYTHON) scripts/benchmarks/run_first_slice.py \
 	  --workload "$(BENCHMARK_WORKLOAD)" \
 	  --fastapi-source "$(FASTAPI_SOURCE)" \
@@ -218,7 +218,7 @@ benchmark-first-slice: benchmark-contract-check parity-prepare-target ## Prepare
 	  --oracle-python "$(ORACLE_PYTHON)" \
 	  --target-python "$(TARGET_PYTHON)"
 
-benchmark-suite: benchmark-contract-check ## Gate and measure the complete reviewed benchmark set
+benchmark-suite: benchmark-contract-check parity-prepare-oracle ## Prepare the oracle, then gate and measure the complete reviewed benchmark set
 	$(PYTHON) -m scripts.benchmarks.run_suite \
 	  --preflight-only \
 	  --fastapi-source "$(FASTAPI_SOURCE)" \
