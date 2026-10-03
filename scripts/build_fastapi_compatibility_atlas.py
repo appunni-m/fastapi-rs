@@ -9717,11 +9717,14 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         row["id"]: index for index, row in enumerate(source_api_candidates)
     }
     reviewed_api_overlay = project_metadata.get("reviewed_api_contract_overlay", {})
-    if reviewed_api_overlay.get("schema") != "fastapi-rs/reviewed-api-contract-overlay@4":
+    if reviewed_api_overlay.get("schema") != "fastapi-rs/reviewed-api-contract-overlay@6":
         raise AtlasError("metadata.yaml reviewed API contract overlay schema is unsupported")
     inherited_api_overlay = reviewed_api_overlay.get("inherited_operations", {})
     if not isinstance(inherited_api_overlay, dict):
         raise AtlasError("metadata.yaml inherited API operation overlay must be a mapping")
+    inherited_candidate_reviews = reviewed_api_overlay.get("inherited_candidate_reviews", {})
+    if not isinstance(inherited_candidate_reviews, dict):
+        raise AtlasError("metadata.yaml inherited API candidate reviews must be a mapping")
     reviewed_inherited_api_candidates = []
     for operation_id, operation in sorted(inherited_api_overlay.items()):
         if not isinstance(operation, dict):
@@ -9744,6 +9747,50 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             raise AtlasError(
                 "inherited API candidate must reference a supported FastAPI class: " + operation_id
             )
+        operation_evidence = operation.get("source_evidence")
+        if not isinstance(operation_evidence, list) or any(
+            not isinstance(reference, dict) for reference in operation_evidence
+        ):
+            raise AtlasError("inherited API candidate source evidence is invalid: " + operation_id)
+        inheritance_refs = [
+            reference
+            for reference in operation_evidence
+            if reference.get("kind") == "class-inheritance"
+        ]
+        class_source_refs = exposure_candidate.get("source_evidence", [])
+        class_name = exposure_candidate_id.rsplit(".", 1)[-1]
+        if (
+            len(inheritance_refs) != 1
+            or not isinstance(class_source_refs, list)
+            or inheritance_refs[0].get("symbol") != class_name
+            or not any(
+                isinstance(source_ref, dict)
+                and source_ref.get("path") == inheritance_refs[0].get("path")
+                and source_ref.get("line") == inheritance_refs[0].get("line")
+                for source_ref in class_source_refs
+            )
+        ):
+            raise AtlasError(
+                "inherited API class evidence does not match its exposure candidate: "
+                + operation_id
+            )
+        if any(
+            reference.get("kind") == "class-inheritance"
+            and reference.get("symbol") == "APIRouter"
+            and not {
+                "base_expression",
+                "base_import_module",
+                "base_import_name",
+                "base_import_alias",
+                "base_import_line",
+            }
+            <= set(reference)
+            for reference in operation_evidence
+        ):
+            raise AtlasError(
+                "inherited APIRouter operation does not document its Starlette base binding: "
+                + operation_id
+            )
         inherited_candidate = {
             "id": operation_id,
             "kind": operation.get("kind", "inherited_method"),
@@ -9756,7 +9803,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             "exposure_candidate_ref": (
                 "/api_candidates/" + str(source_api_candidate_indexes[exposure_candidate_id])
             ),
-            "source_evidence": operation.get("source_evidence", []),
+            "source_evidence": operation_evidence,
             "documentation_contract_refs": operation.get("documentation_contract_refs", []),
             "fixture_refs": operation.get("fixture_refs", []),
             "feature_ids": operation.get("feature_ids", []),
@@ -9801,8 +9848,213 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                 inherited_candidate["target_binding"] = target_binding
         reviewed_inherited_api_candidates.append(inherited_candidate)
 
+    duplicate_candidate_reviews = set(inherited_candidate_reviews) & (
+        set(inherited_api_overlay) | set(candidates)
+    )
+    if duplicate_candidate_reviews:
+        raise AtlasError(
+            "classification-only inherited candidates must be separate from source and "
+            "operation contracts: " + ", ".join(sorted(duplicate_candidate_reviews))
+        )
+    for candidate_id, review in sorted(inherited_candidate_reviews.items()):
+        if not isinstance(review, dict):
+            raise AtlasError(
+                f"metadata.yaml inherited API candidate review must be a mapping: {candidate_id}"
+            )
+        candidate_kind = review.get("kind", "inherited_method")
+        classification = review.get("classification")
+        rationale = review.get("classification_evidence_rule")
+        if (
+            candidate_kind not in {"inherited_method", "inherited_property"}
+            or classification not in {"private/internal", "uncertain"}
+            or not isinstance(rationale, str)
+            or not rationale.strip()
+        ):
+            raise AtlasError(
+                "classification-only inherited candidates need a supported kind, "
+                "non-supported classification, and rationale: " + candidate_id
+            )
+        operation_fields = {
+            "canonical_operation_id",
+            "sibling_contract_gap",
+            "signature_source",
+            "target_binding",
+            "documentation_contract_refs",
+            "fixture_refs",
+            "feature_ids",
+            "observation_selectors",
+        }
+        if operation_fields & set(review):
+            raise AtlasError(
+                "classification-only inherited candidates must not declare operation "
+                "contracts, bindings, docs, or fixtures: " + candidate_id
+            )
+        exposure_candidate_id = review.get("fastapi_exposure_candidate_id")
+        exposure_candidate = candidates.get(exposure_candidate_id)
+        if (
+            not isinstance(exposure_candidate_id, str)
+            or exposure_candidate is None
+            or exposure_candidate.get("kind") != "class"
+            or exposure_candidate.get("classification") != "supported"
+        ):
+            raise AtlasError(
+                "inherited API candidate review must reference a supported FastAPI class: "
+                + candidate_id
+            )
+        source_evidence = review.get("source_evidence")
+        if (
+            not isinstance(source_evidence, list)
+            or not source_evidence
+            or any(not isinstance(reference, dict) for reference in source_evidence)
+        ):
+            raise AtlasError(
+                "inherited API candidate review needs source evidence: " + candidate_id
+            )
+        evidence_kinds = {reference.get("kind") for reference in source_evidence}
+        if not {"class-inheritance", "source-definition"} <= evidence_kinds:
+            raise AtlasError(
+                "inherited API candidate review needs FastAPI inheritance and Starlette "
+                "definition evidence: " + candidate_id
+            )
+        inheritance_refs = [
+            reference
+            for reference in source_evidence
+            if reference.get("kind") == "class-inheritance"
+        ]
+        starlette_definition_refs = [
+            reference
+            for reference in source_evidence
+            if reference.get("kind") == "source-definition"
+        ]
+        if len(inheritance_refs) != 1 or len(starlette_definition_refs) != 1:
+            raise AtlasError(
+                "inherited API candidate needs exactly one FastAPI inheritance and one "
+                "Starlette method definition reference: " + candidate_id
+            )
+        inheritance_ref = inheritance_refs[0]
+        starlette_definition_ref = starlette_definition_refs[0]
+        if inheritance_ref.get("symbol") == "APIRouter" and not {
+            "base_expression",
+            "base_import_module",
+            "base_import_name",
+            "base_import_alias",
+            "base_import_line",
+        } <= set(inheritance_ref):
+            raise AtlasError(
+                "inherited APIRouter candidate does not document its Starlette base binding: "
+                + candidate_id
+            )
+        fastapi_module = (
+            Path(str(inheritance_ref.get("path", ""))).with_suffix("").as_posix().replace("/", ".")
+        )
+        starlette_module = (
+            Path(str(starlette_definition_ref.get("path", "")))
+            .with_suffix("")
+            .as_posix()
+            .replace("/", ".")
+        )
+        expected_exposure_id = f"{fastapi_module}.{inheritance_ref.get('symbol')}"
+        expected_candidate_id = f"{expected_exposure_id}.{starlette_definition_ref.get('symbol')}"
+        expected_starlette_name = (
+            f"{starlette_module}.{starlette_definition_ref.get('owner')}"
+            f".{starlette_definition_ref.get('symbol')}"
+        )
+        if (
+            exposure_candidate_id != expected_exposure_id
+            or candidate_id != expected_candidate_id
+            or inheritance_ref.get("base_class") != starlette_definition_ref.get("owner")
+        ):
+            raise AtlasError(
+                "inherited API candidate ID does not match its FastAPI class and Starlette "
+                "base member evidence: " + candidate_id
+            )
+        starlette_rs_review = review.get("starlette_rs_review")
+        if not isinstance(starlette_rs_review, dict):
+            raise AtlasError(
+                "inherited API candidate review needs a pinned Starlette-RS disposition: "
+                + candidate_id
+            )
+        qualified_name = starlette_rs_review.get("qualified_name")
+        api_disposition = starlette_rs_review.get("api_disposition")
+        sibling_rows = starlette_review_records.get(qualified_name, [])
+        if (
+            not isinstance(qualified_name, str)
+            or qualified_name != expected_starlette_name
+            or api_disposition != classification
+            or len(sibling_rows) != 1
+            or sibling_rows[0].get("api_disposition") != api_disposition
+        ):
+            raise AtlasError(
+                "inherited API candidate disposition differs from the pinned Starlette-RS "
+                "review: " + candidate_id
+            )
+        for reference in starlette_definition_refs:
+            if reference.get("source_authority") != f"Starlette {STARLETTE_VERSION}":
+                raise AtlasError(
+                    "inherited Starlette method evidence must name the pinned source: "
+                    + candidate_id
+                )
+            relative_path = reference.get("path")
+            owner = reference.get("owner")
+            symbol = reference.get("symbol")
+            start_line = reference.get("line")
+            end_line = reference.get("end_line")
+            source_path = (starlette_root / str(relative_path)).resolve()
+            if (
+                not isinstance(relative_path, str)
+                or not isinstance(owner, str)
+                or not isinstance(symbol, str)
+                or not isinstance(start_line, int)
+                or isinstance(start_line, bool)
+                or not isinstance(end_line, int)
+                or isinstance(end_line, bool)
+                or not source_path.is_file()
+                or starlette_root not in source_path.parents
+            ):
+                raise AtlasError(
+                    "inherited Starlette method evidence is malformed: " + candidate_id
+                )
+            source_tree = ast.parse(source_path.read_text(encoding="utf-8"), filename=relative_path)
+            methods = [
+                method
+                for class_node in source_tree.body
+                if isinstance(class_node, ast.ClassDef) and class_node.name == owner
+                for method in class_node.body
+                if isinstance(method, (ast.FunctionDef, ast.AsyncFunctionDef))
+                and method.name == symbol
+                and method.lineno == start_line
+                and getattr(method, "end_lineno", None) == end_line
+            ]
+            if len(methods) != 1:
+                raise AtlasError(
+                    "inherited Starlette method evidence does not match pinned source: "
+                    + candidate_id
+                )
+        reviewed_inherited_api_candidates.append(
+            {
+                "id": candidate_id,
+                "kind": candidate_kind,
+                "classification": classification,
+                "classification_evidence_rule": rationale,
+                "exposure_candidate_id": exposure_candidate_id,
+                "exposure_candidate_ref": (
+                    "/api_candidates/" + str(source_api_candidate_indexes[exposure_candidate_id])
+                ),
+                "source_evidence": source_evidence,
+                "starlette_rs_review_ref": {
+                    "path": "docs/atlas/api-review.csv",
+                    **starlette_rs_review,
+                },
+                "reviewed_overlay_ref": (
+                    "/reviewed_api_contract_overlay/inherited_candidate_reviews/"
+                    + candidate_id.replace("~", "~0").replace("/", "~1")
+                ),
+            }
+        )
+    reviewed_inherited_api_candidates.sort(key=lambda row: row["id"])
+
     atlas = {
-        "schema": "fastapi-rs/compatibility-atlas@4",
+        "schema": "fastapi-rs/compatibility-atlas@5",
         "purpose": "Source-backed FastAPI API classification and merged upstream test/documentation fixture backlog; not parity evidence.",
         "authorities": {
             "fastapi": {
@@ -10059,7 +10311,10 @@ def render_markdown(atlas: dict[str, Any]) -> str:
     }:
         raise AtlasError("manifest has no generated per-symbol source API contract")
     required_public_symbols = api_contract_counts.get("required_public_symbols", 0)
-    required_inherited_operations = counts.get("reviewed_inherited_api_candidates", 0)
+    reviewed_inherited_api_candidate_count = counts.get("reviewed_inherited_api_candidates", 0)
+    required_inherited_operations = atlas["counts"]["inherited_api_classifications"].get(
+        "supported", 0
+    )
     required_public_api_candidates = required_public_symbols + required_inherited_operations
     facade_tree = ast.parse(
         (PROJECT / "fastapi-rs-py/python/fastapi/__init__.py").read_text(encoding="utf-8")
@@ -10161,12 +10416,27 @@ def render_markdown(atlas: dict[str, Any]) -> str:
         "",
         "`api_candidates` in the machine-readable atlas carries a FastAPI source path/line for every row plus public evidence or an explicit uncertainty/private rule. `supported` classifies the upstream API surface only; it does not claim target implementation support.",
         "",
+        "## Inherited APIRouter member classification",
+        "",
+        "| Candidates | Supported operation contracts | Private/internal | Uncertain |",
+        "|---:|---:|---:|---:|",
+        "| %d | %d | %d | %d |"
+        % (
+            counts["reviewed_inherited_api_candidates"],
+            counts["inherited_api_classifications"].get("supported", 0),
+            counts["inherited_api_classifications"].get("private/internal", 0),
+            counts["inherited_api_classifications"].get("uncertain", 0),
+        ),
+        "",
+        "Supported inherited candidates link FastAPI inheritance, documentation, and sibling operation or gap evidence. Classification-only candidates link inheritance, pinned Starlette source, and the pinned Starlette-RS disposition. Only the supported subset enters the public operation contract and fixture requirements.",
+        "",
         "## Per-symbol API contract in the active manifest",
         "",
-        "The single `tests/fixtures/manifest.yaml` indexes %d source-supported symbols and %d separately reviewed inherited API candidates (%d public API candidates total). Direct symbols link to the pinned AST inventory and both runtime-reflection profiles; inherited candidates either delegate to a canonical Starlette-RS operation or record a pinned source signature and explicit sibling-contract gap, without treating registration as ASGI dispatch. The contract links alias, deprecation, error, documented-feature, direct API workflow, selector, and planned Python import-path evidence; %d direct symbols link to a documented-page fixture design and %d to a direct API input workflow. The current Python facade directly re-exports %d native names; this source contract does not measure behavioral completeness, and broader operation-level review remains pending."
+        "The single `tests/fixtures/manifest.yaml` indexes %d source-supported symbols and %d supported inherited operations from %d reviewed inherited candidates (%d supported public API entries total). The remaining inherited candidates have explicit private/internal or uncertain dispositions and do not create target operation contracts. Supported inherited operations delegate to a canonical Starlette-RS operation or record a pinned source signature and explicit sibling-contract gap. The contract links alias, deprecation, error, documented-feature, direct API workflow, selector, and planned Python import-path evidence; %d direct symbols link to a documented-page fixture design and %d to a direct API input workflow. The current Python facade directly re-exports %d native names; this source contract does not measure behavioral completeness, and broader operation-level review remains pending."
         % (
             required_public_symbols,
             required_inherited_operations,
+            reviewed_inherited_api_candidate_count,
             required_public_api_candidates,
             symbols_with_documented_refs,
             symbols_with_api_workflow_refs,
@@ -10423,6 +10693,11 @@ def _sync_manifest_artifact_metadata(
             "sha256": sha256(atlas_path),
             "api_candidates": counts["api_candidates"],
             "reviewed_inherited_api_candidates": counts["reviewed_inherited_api_candidates"],
+            "inherited_supported": counts["inherited_api_classifications"].get("supported", 0),
+            "inherited_private_or_internal": counts["inherited_api_classifications"].get(
+                "private/internal", 0
+            ),
+            "inherited_uncertain": counts["inherited_api_classifications"].get("uncertain", 0),
             "reviewed_import_binding_candidates": counts["reviewed_import_binding_candidates"],
             "reviewed_source_api_candidates": counts["reviewed_source_api_candidates"],
             "supported": counts["api_classifications"]["supported"],

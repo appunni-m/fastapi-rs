@@ -6,7 +6,7 @@ This source-backed compatibility atlas indexes the API denominator and candidate
 
 - FastAPI: 0.141.1 at `95f8322ee1dcda7ceace7b1c4f6c9915b36d748f`.
 - Starlette oracle contract: 1.6.0 at `4f250d6b814587e20c5365f0a5f0c4d42bcb929f` (the sole selected Starlette version).
-- Starlette-RS implementation contract: at `d1badbaafa3630e50bdd8f5e31fb3647f637d38f`.
+- Starlette-RS implementation contract: at `fc05f53a55614885f26929b7d188106b24d00ca7`.
 - FastAPI declares `starlette>=0.46.0`, which admits the selected contract. Its upstream lock graph is dependency-inventory evidence, not another compatibility profile.
 - Pydantic: 2.13.4 source-lock baseline; Python support is `>=3.10`.
 
@@ -18,9 +18,17 @@ This source-backed compatibility atlas indexes the API denominator and candidate
 
 `api_candidates` in the machine-readable atlas carries a FastAPI source path/line for every row plus public evidence or an explicit uncertainty/private rule. `supported` classifies the upstream API surface only; it does not claim target implementation support.
 
+## Inherited APIRouter member classification
+
+| Candidates | Supported operation contracts | Private/internal | Uncertain |
+|---:|---:|---:|---:|
+| 12 | 8 | 1 | 3 |
+
+Supported inherited candidates link FastAPI inheritance, documentation, and sibling operation or gap evidence. Classification-only candidates link inheritance, pinned Starlette source, and the pinned Starlette-RS disposition. Only the supported subset enters the public operation contract and fixture requirements.
+
 ## Per-symbol API contract in the active manifest
 
-The single `tests/fixtures/manifest.yaml` indexes 461 source-supported symbols and 8 separately reviewed inherited API candidates (469 public API candidates total). Direct symbols link to the pinned AST inventory and both runtime-reflection profiles; inherited candidates either delegate to a canonical Starlette-RS operation or record a pinned source signature and explicit sibling-contract gap, without treating registration as ASGI dispatch. The contract links alias, deprecation, error, documented-feature, direct API workflow, selector, and planned Python import-path evidence; 455 direct symbols link to a documented-page fixture design and 34 to a direct API input workflow. The current Python facade directly re-exports 21 native names; this source contract does not measure behavioral completeness, and broader operation-level review remains pending.
+The single `tests/fixtures/manifest.yaml` indexes 461 source-supported symbols and 8 supported inherited operations from 12 reviewed inherited candidates (469 supported public API entries total). The remaining inherited candidates have explicit private/internal or uncertain dispositions and do not create target operation contracts. Supported inherited operations delegate to a canonical Starlette-RS operation or record a pinned source signature and explicit sibling-contract gap. The contract links alias, deprecation, error, documented-feature, direct API workflow, selector, and planned Python import-path evidence; 455 direct symbols link to a documented-page fixture design and 34 to a direct API input workflow. The current Python facade directly re-exports 21 native names; this source contract does not measure behavioral completeness, and broader operation-level review remains pending.
 
 | Signature/shape evidence | Symbols |
 |---|---:|
@@ -575,7 +583,7 @@ The merged coverage matrix links each FastAPI test, documented feature, or examp
 |---:|---:|---:|---:|
 | 924 | 2408 | 487 | 10 |
 
-The sibling Starlette-RS manifest, API review, and coverage matrix remain the sole Starlette API inventory. FastAPI's atlas stores only relevant requirement references plus manifest/catalog/review/matrix SHA-256 digests. The inspected Starlette-RS implementation revision is d1badbaafa3630e50bdd8f5e31fb3647f637d38f (pinned, clean Starlette-RS checkout).
+The sibling Starlette-RS manifest, API review, and coverage matrix remain the sole Starlette API inventory. FastAPI's atlas stores only relevant requirement references plus manifest/catalog/review/matrix SHA-256 digests. The inspected Starlette-RS implementation revision is fc05f53a55614885f26929b7d188106b24d00ca7 (pinned, clean Starlette-RS checkout).
 
 ## Errors, aliases, optional features, and deprecations
 

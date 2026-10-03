@@ -80,14 +80,14 @@ api_inventory:
 import_binding_classification_review:
   artifact: tests/fixtures/api-import-binding-classification-review.json
   schema: fastapi-starlette-import-binding-review/v1
-  sha256: 00c6c029e520d631515f30ce10b7f840b46c83a7fd29896d69a541e60aa1c8f1
+  sha256: e0884d00d2e25fb28fb6e7b571e73e5ef14ca322db83b68c2817f0fb0663a91e
   source_identity:
     package: FastAPI
     version: 0.141.1
     source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
     selected_starlette_profile: 1.6.0
     starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
-    starlette_rs_contract_commit: d1badbaafa3630e50bdd8f5e31fb3647f637d38f
+    starlette_rs_contract_commit: fc05f53a55614885f26929b7d188106b24d00ca7
   starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
   counts:
     candidates: 97
@@ -99,7 +99,7 @@ import_binding_classification_review:
   candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
   pinned_starlette_rs_sources:
     metadata_sha256: 90f805ed7d2497833422db870f88d53319dbaaf31a675f89b1ad21fdd4a123d5
-    manifest_sha256: c04a8cae108905aec133a46c6e818dda58c5fb9b8aa3584c5caa09165b6e3e8b
+    manifest_sha256: 5833a16365c9557392b5d41eb3a29fa41ace33a5f2a0fd17f00a481ebab1e8dc
     api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
     api_review_sha256: 8b25f2e3a46753316446077bfde97b6ac8a342233e2f4e50b12d3d01eafbe099
 
@@ -377,7 +377,7 @@ api_public_candidate_classification_review:
 
 classification_atlas:
   artifact: tests/fixtures/compatibility-atlas.json
-  schema: fastapi-rs/compatibility-atlas@4
+  schema: fastapi-rs/compatibility-atlas@5
   candidates_pointer: /api_candidates
   inherited_candidates_pointer: /reviewed_inherited_api_candidates
   classification_pointer: /classification
@@ -396,6 +396,15 @@ classification_atlas:
     reviewed_inherited_api_candidates:
       artifact: /counts/reviewed_inherited_api_candidates
       manifest: /source_artifacts/compatibility_atlas/counts/reviewed_inherited_api_candidates
+    inherited_supported:
+      artifact: /counts/inherited_api_classifications/supported
+      manifest: /source_artifacts/compatibility_atlas/counts/inherited_supported
+    inherited_private_or_internal:
+      artifact: /counts/inherited_api_classifications/private~1internal
+      manifest: /source_artifacts/compatibility_atlas/counts/inherited_private_or_internal
+    inherited_uncertain:
+      artifact: /counts/inherited_api_classifications/uncertain
+      manifest: /source_artifacts/compatibility_atlas/counts/inherited_uncertain
     reviewed_import_binding_candidates:
       artifact: /counts/reviewed_import_binding_candidates
       manifest: /source_artifacts/compatibility_atlas/counts/reviewed_import_binding_candidates
@@ -426,7 +435,7 @@ classification_atlas:
 starlette_rs:
   owner: ../starlette-rs
   repository: https://github.com/appunni-m/starlette-rs
-  commit: d1badbaafa3630e50bdd8f5e31fb3647f637d38f
+  commit: fc05f53a55614885f26929b7d188106b24d00ca7
   distribution_version: 0.1.0
   contract_id: starlette-1.6.0-asgi-http-config-session-slice
   metadata: ../starlette-rs/metadata.yaml
@@ -465,16 +474,16 @@ cargo_dependency_inventory:
       source_description: Python-API bindings for the PyO3 ecosystem
 
 reviewed_api_contract_overlay:
-  schema: fastapi-rs/reviewed-api-contract-overlay@4
+  schema: fastapi-rs/reviewed-api-contract-overlay@6
   purpose: >-
     Source-backed overlays link selected supported operations to documented
     features, observable selectors, and candidate error records. Inherited
-    operations record FastAPI exposure and either delegate to a canonical pinned
-    Starlette-RS operation or state the exact sibling-contract gap and source
-    signature. Identity workflow references link the root import bindings to
-    exact runtime identity relations carried by selected ASGI observations;
-    those links establish object identity only. An error link does not promote
-    an uncertain exception into the public import contract.
+    operations delegate to a canonical pinned Starlette-RS operation or state
+    the exact sibling-contract gap and source signature. Classification-only
+    inherited candidates record their reviewed source disposition without
+    creating a target operation contract. Identity workflow references link
+    root import bindings to runtime identity relations; an error link does not
+    promote an uncertain exception into the public import contract.
   identity_workflow_refs:
     fastapi.status:
       - {case_id: fastapi.root-alias-identity.http-reexports, relation: root_to_starlette_module, observation_selector: http.body.bytes, projection: http_json_body_boolean}
@@ -3013,6 +3022,63 @@ reviewed_api_contract_overlay:
         - python.signature
         - websocket.close_code
         - websocket.close_reason
+  inherited_candidate_reviews:
+    fastapi.routing.APIRouter.host:
+      kind: inherited_method
+      fastapi_exposure_candidate_id: fastapi.routing.APIRouter
+      classification: uncertain
+      classification_evidence_rule: >-
+        APIRouter inherits this Router method from Starlette 1.6.0, but the
+        pinned API review does not establish this exact member path as a
+        consumer-facing contract.
+      source_evidence:
+        - {path: fastapi/routing.py, kind: class-inheritance, symbol: APIRouter, base_class: Router, base_expression: routing.Router, base_import_module: starlette, base_import_name: routing, base_import_alias: routing, base_import_line: 91, line: 2255}
+        - {path: starlette/routing.py, kind: source-definition, source_authority: Starlette 1.6.0, owner: Router, symbol: host, line: 729, start_line: 729, end_line: 731}
+      starlette_rs_review:
+        qualified_name: starlette.routing.Router.host
+        api_disposition: uncertain
+    fastapi.routing.APIRouter.lifespan:
+      kind: inherited_method
+      fastapi_exposure_candidate_id: fastapi.routing.APIRouter
+      classification: uncertain
+      classification_evidence_rule: >-
+        APIRouter inherits this ASGI lifecycle handler from Starlette 1.6.0,
+        but the pinned API review does not establish this direct Router member
+        path as a consumer-facing contract.
+      source_evidence:
+        - {path: fastapi/routing.py, kind: class-inheritance, symbol: APIRouter, base_class: Router, base_expression: routing.Router, base_import_module: starlette, base_import_name: routing, base_import_alias: routing, base_import_line: 91, line: 2255}
+        - {path: starlette/routing.py, kind: source-definition, source_authority: Starlette 1.6.0, owner: Router, symbol: lifespan, line: 639, start_line: 639, end_line: 664}
+      starlette_rs_review:
+        qualified_name: starlette.routing.Router.lifespan
+        api_disposition: uncertain
+    fastapi.routing.APIRouter.mount:
+      kind: inherited_method
+      fastapi_exposure_candidate_id: fastapi.routing.APIRouter
+      classification: uncertain
+      classification_evidence_rule: >-
+        APIRouter inherits this route-registration method from Starlette
+        1.6.0, but the pinned API review does not establish this exact direct
+        Router member path as a consumer-facing contract.
+      source_evidence:
+        - {path: fastapi/routing.py, kind: class-inheritance, symbol: APIRouter, base_class: Router, base_expression: routing.Router, base_import_module: starlette, base_import_name: routing, base_import_alias: routing, base_import_line: 91, line: 2255}
+        - {path: starlette/routing.py, kind: source-definition, source_authority: Starlette 1.6.0, owner: Router, symbol: mount, line: 725, start_line: 725, end_line: 727}
+      starlette_rs_review:
+        qualified_name: starlette.routing.Router.mount
+        api_disposition: uncertain
+    fastapi.routing.APIRouter.not_found:
+      kind: inherited_method
+      fastapi_exposure_candidate_id: fastapi.routing.APIRouter
+      classification: private/internal
+      classification_evidence_rule: >-
+        Starlette Router assigns this handler as internal fallback dispatch;
+        the pinned API review classifies it as private/internal rather than a
+        direct consumer-facing method.
+      source_evidence:
+        - {path: fastapi/routing.py, kind: class-inheritance, symbol: APIRouter, base_class: Router, base_expression: routing.Router, base_import_module: starlette, base_import_name: routing, base_import_alias: routing, base_import_line: 91, line: 2255}
+        - {path: starlette/routing.py, kind: source-definition, source_authority: Starlette 1.6.0, owner: Router, symbol: not_found, line: 616, start_line: 616, end_line: 629}
+      starlette_rs_review:
+        qualified_name: starlette.routing.Router.not_found
+        api_disposition: private/internal
   inherited_operations:
     fastapi.applications.FastAPI.add_route:
       fastapi_exposure_candidate_id: fastapi.applications.FastAPI
@@ -3133,6 +3199,11 @@ reviewed_api_contract_overlay:
           kind: class-inheritance
           symbol: APIRouter
           base_class: Router
+          base_expression: routing.Router
+          base_import_module: starlette
+          base_import_name: routing
+          base_import_alias: routing
+          base_import_line: 91
           line: 2255
         - path: docs/en/docs/tutorial/bigger-applications.md
           kind: documentation-text

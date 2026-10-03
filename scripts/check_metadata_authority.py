@@ -989,6 +989,22 @@ def validate() -> None:
         atlas_counts["reviewed_inherited_api_candidates"],
         len(inherited_candidates),
     )
+    inherited_classifications = Counter(
+        row.get("classification") for row in inherited_candidates if isinstance(row, dict)
+    )
+    require_equal(
+        "atlas inherited API classifications",
+        {
+            "supported": inherited_classifications.get("supported", 0),
+            "private/internal": inherited_classifications.get("private/internal", 0),
+            "uncertain": inherited_classifications.get("uncertain", 0),
+        },
+        {
+            "supported": atlas_counts["inherited_supported"],
+            "private/internal": atlas_counts["inherited_private_or_internal"],
+            "uncertain": atlas_counts["inherited_uncertain"],
+        },
+    )
     for name, expected in classifications.items():
         count_name = "private_or_internal" if name == "private/internal" else name
         require_equal(f"atlas {name} candidate count", atlas_counts[count_name], expected)

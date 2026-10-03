@@ -23,7 +23,7 @@ from scripts.parity.contract import (
 CONTRACT_SCHEMA = "fastapi-rs/public-api-contract@6"
 TARGET_PROFILE = "fastapi-rs-python-consumer"
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-OVERLAY_SCHEMA = "fastapi-rs/reviewed-api-contract-overlay@4"
+OVERLAY_SCHEMA = "fastapi-rs/reviewed-api-contract-overlay@6"
 
 
 def _read_project_metadata() -> dict[str, Any]:
@@ -1365,6 +1365,9 @@ def build_api_surface_contract(
     inherited_operations = overlay.get("inherited_operations", {})
     if not isinstance(inherited_operations, dict):
         raise ContractError("reviewed inherited API operations must be a mapping")
+    inherited_candidate_reviews = overlay.get("inherited_candidate_reviews", {})
+    if not isinstance(inherited_candidate_reviews, dict):
+        raise ContractError("reviewed inherited API candidate reviews must be a mapping")
     error_selector_rules = overlay.get("error_selector_rules", [])
     if not isinstance(error_selector_rules, list) or any(
         not isinstance(rule, dict) for rule in error_selector_rules
@@ -1529,6 +1532,60 @@ def build_api_surface_contract(
                 raise ContractError(
                     f"reviewed inherited API docs selectors must be a string list: {operation_id}"
                 )
+    inherited_operation_only_fields = {
+        "canonical_operation_id",
+        "sibling_contract_gap",
+        "signature_source",
+        "target_binding",
+        "documentation_contract_refs",
+        "fixture_refs",
+        "feature_ids",
+        "observation_selectors",
+        "signature",
+        "parameters",
+        "requirements",
+    }
+    for candidate_id, review in inherited_candidate_reviews.items():
+        if not isinstance(review, dict):
+            raise ContractError(
+                f"reviewed inherited API candidate review must be a mapping: {candidate_id}"
+            )
+        if review.get("kind", "inherited_method") not in {
+            "inherited_method",
+            "inherited_property",
+        }:
+            raise ContractError(
+                f"reviewed inherited API candidate kind is unsupported: {candidate_id}"
+            )
+        if review.get("classification") not in {"private/internal", "uncertain"}:
+            raise ContractError(
+                "classification-only inherited API candidate must be private/internal or "
+                f"uncertain: {candidate_id}"
+            )
+        rationale = review.get("classification_evidence_rule")
+        if not isinstance(rationale, str) or not rationale.strip():
+            raise ContractError(
+                f"reviewed inherited API candidate has no classification rationale: {candidate_id}"
+            )
+        if inherited_operation_only_fields & set(review):
+            raise ContractError(
+                "classification-only inherited API candidate declares operation fields: "
+                f"{candidate_id}"
+            )
+        evidence = review.get("source_evidence")
+        sibling_review = review.get("starlette_rs_review")
+        if (
+            not isinstance(evidence, list)
+            or not evidence
+            or any(not isinstance(reference, dict) for reference in evidence)
+            or not isinstance(sibling_review, dict)
+            or not isinstance(sibling_review.get("qualified_name"), str)
+            or sibling_review.get("api_disposition") != review.get("classification")
+        ):
+            raise ContractError(
+                f"reviewed inherited API candidate has incomplete source/review evidence: "
+                f"{candidate_id}"
+            )
     inventory_refs = _inventory_rows(inventory)
     core_refs = _runtime_rows(runtime_core)
     standard_refs = _runtime_rows(runtime_standard)
@@ -1584,16 +1641,38 @@ def build_api_surface_contract(
             "reviewed API overlay references operations outside the supported source contract: "
             + ", ".join(sorted(unsupported_overlay_operations))
         )
-    duplicate_inherited_candidates = set(inherited_operations) & set(candidates_by_id)
+    duplicate_inherited_candidates = (
+        set(inherited_operations) | set(inherited_candidate_reviews)
+    ) & set(candidates_by_id)
     if duplicate_inherited_candidates:
         raise ContractError(
             "inherited API overlays must remain separate from source-declared candidates: "
             + ", ".join(sorted(duplicate_inherited_candidates))
         )
-    if set(inherited_operations) != set(inherited_candidates_by_id):
+    if set(inherited_operations) & set(inherited_candidate_reviews):
         raise ContractError(
-            "reviewed inherited API overlays differ from the generated atlas candidates: "
-            + ", ".join(sorted(set(inherited_operations) ^ set(inherited_candidates_by_id)))
+            "inherited operation overlays and classification reviews must be disjoint"
+        )
+    supported_inherited_candidate_ids = {
+        candidate_id
+        for candidate_id, candidate in inherited_candidates_by_id.items()
+        if candidate.get("classification") == "supported"
+    }
+    classification_only_candidate_ids = set(inherited_candidates_by_id) - (
+        supported_inherited_candidate_ids
+    )
+    if set(inherited_operations) != supported_inherited_candidate_ids:
+        raise ContractError(
+            "reviewed inherited API operations differ from supported atlas candidates: "
+            + ", ".join(sorted(set(inherited_operations) ^ supported_inherited_candidate_ids))
+        )
+    if set(inherited_candidate_reviews) != classification_only_candidate_ids:
+        raise ContractError(
+            "reviewed inherited API candidate reviews differ from non-supported atlas "
+            "candidates: "
+            + ", ".join(
+                sorted(set(inherited_candidate_reviews) ^ classification_only_candidate_ids)
+            )
         )
     reviewed_deprecation_refs = _reviewed_deprecation_references(
         deprecation_reference_rules,
@@ -1676,16 +1755,51 @@ def build_api_surface_contract(
 
     authority = metadata.get("authority", {})
     source_root = (PROJECT_ROOT / authority.get("checkout", "../fastapi")).resolve()
+    starlette_authority = authority.get("starlette", {})
+    starlette_checkout_text = starlette_authority.get("checkout", "../starlette")
+    starlette_source_root = Path(
+        os.environ.get("STARLETTE_SOURCE", str(PROJECT_ROOT / starlette_checkout_text))
+    ).resolve()
 
     def verify_source_evidence(reference: dict[str, Any], context: str) -> None:
         source_path = reference.get("path")
         if not isinstance(source_path, str):
             raise ContractError(f"reviewed source evidence has no path: {context}")
-        path = (source_root / source_path).resolve()
-        if source_root not in path.parents or not path.is_file():
+        source_authority = reference.get("source_authority")
+        if source_authority is not None:
+            expected_authority = f"Starlette {starlette_authority.get('version')}"
+            if source_authority != expected_authority:
+                raise ContractError(f"reviewed Starlette source authority differs: {context}")
+            evidence_root = starlette_source_root
+        else:
+            evidence_root = source_root
+        path = (evidence_root / source_path).resolve()
+        if evidence_root not in path.parents or not path.is_file():
             raise ContractError(
                 f"reviewed source evidence path is missing or escapes checkout: {context}"
             )
+        if source_authority is not None:
+            expected_commit = starlette_authority.get("commit")
+            try:
+                observed_commit = subprocess.run(
+                    ["git", "-C", str(evidence_root), "rev-parse", "HEAD"],
+                    check=True,
+                    capture_output=True,
+                    text=True,
+                ).stdout.strip()
+                committed_source = subprocess.run(
+                    ["git", "-C", str(evidence_root), "show", f"{expected_commit}:{source_path}"],
+                    check=True,
+                    capture_output=True,
+                ).stdout
+            except (OSError, subprocess.CalledProcessError) as exc:
+                raise ContractError(
+                    f"reviewed Starlette source identity cannot be verified: {context}"
+                ) from exc
+            if observed_commit != expected_commit or path.read_bytes() != committed_source:
+                raise ContractError(
+                    f"reviewed Starlette source differs from its pinned commit: {context}"
+                )
         source_text = path.read_text(encoding="utf-8")
         symbol = reference.get("symbol")
         if symbol is not None:
@@ -1711,12 +1825,32 @@ def build_api_surface_contract(
                 raise ContractError(
                     f"reviewed source evidence is not valid Python: {source_path}"
                 ) from exc
-            definitions = [
-                node
-                for node in ast.walk(tree)
-                if isinstance(node, (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef))
-                and node.name == reference.get("symbol")
-            ]
+            owner = reference.get("owner")
+            owner_nodes = (
+                [
+                    node
+                    for node in tree.body
+                    if isinstance(node, ast.ClassDef) and node.name == owner
+                ]
+                if isinstance(owner, str)
+                else []
+            )
+            definitions = (
+                [
+                    node
+                    for owner_node in owner_nodes
+                    for node in owner_node.body
+                    if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+                    and node.name == reference.get("symbol")
+                ]
+                if isinstance(owner, str)
+                else [
+                    node
+                    for node in ast.walk(tree)
+                    if isinstance(node, (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef))
+                    and node.name == reference.get("symbol")
+                ]
+            )
             if not any(
                 node.lineno == reference.get("start_line")
                 and getattr(node, "end_lineno", None) == reference.get("end_line")
@@ -1749,20 +1883,69 @@ def build_api_surface_contract(
                 for node in ast.walk(tree)
                 if isinstance(node, ast.ClassDef) and node.name == symbol
             ]
-            if (
-                not isinstance(line, int)
-                or not isinstance(base_class, str)
-                or not any(
-                    node.lineno == line
-                    and any(
-                        (isinstance(base, ast.Name) and base.id == base_class)
-                        or (isinstance(base, ast.Attribute) and base.attr == base_class)
-                        for base in node.bases
-                    )
-                    for node in classes
-                )
-            ):
+            matching_bases = [
+                base
+                for node in classes
+                if node.lineno == line
+                for base in node.bases
+                if (isinstance(base, ast.Name) and base.id == base_class)
+                or (isinstance(base, ast.Attribute) and base.attr == base_class)
+            ]
+            if not isinstance(line, int) or not isinstance(base_class, str) or not matching_bases:
                 raise ContractError(f"reviewed class inheritance differs: {source_path}:{symbol}")
+            binding_fields = {
+                "base_expression",
+                "base_import_module",
+                "base_import_name",
+                "base_import_alias",
+                "base_import_line",
+            }
+            supplied_binding_fields = binding_fields & set(reference)
+            if supplied_binding_fields or reference.get("symbol") == "APIRouter":
+                if supplied_binding_fields != binding_fields:
+                    raise ContractError(
+                        f"reviewed class base import binding is incomplete: {source_path}:{symbol}"
+                    )
+                expression = reference.get("base_expression")
+                import_module = reference.get("base_import_module")
+                import_name = reference.get("base_import_name")
+                import_alias = reference.get("base_import_alias")
+                import_line = reference.get("base_import_line")
+                expression_bases = [
+                    base for base in matching_bases if ast.unparse(base) == expression
+                ]
+                root_names = []
+                for base in expression_bases:
+                    root = base
+                    while isinstance(root, ast.Attribute):
+                        root = root.value
+                    if isinstance(root, ast.Name):
+                        root_names.append(root.id)
+                imported_aliases = [
+                    alias.asname or alias.name
+                    for node in tree.body
+                    if isinstance(node, ast.ImportFrom)
+                    and node.level == 0
+                    and node.module == import_module
+                    and node.lineno == import_line
+                    for alias in node.names
+                    if alias.name == import_name
+                ]
+                if (
+                    not isinstance(expression, str)
+                    or not isinstance(import_module, str)
+                    or not isinstance(import_name, str)
+                    or not isinstance(import_alias, str)
+                    or not isinstance(import_line, int)
+                    or isinstance(import_line, bool)
+                    or not expression_bases
+                    or root_names != [import_alias]
+                    or imported_aliases != [import_alias]
+                ):
+                    raise ContractError(
+                        f"reviewed class base does not resolve through its source import: "
+                        f"{source_path}:{symbol}"
+                    )
         if reference.get("kind") == "documentation-text":
             lines = source_text.splitlines()
             start_line = reference.get("start_line")
@@ -1929,6 +2112,104 @@ def build_api_surface_contract(
                 )
 
     inherited_operation_contracts: list[dict[str, Any]] = []
+    for candidate_id, review in inherited_candidate_reviews.items():
+        reviewed_candidate = inherited_candidates_by_id[candidate_id]
+        exposure_candidate_id = review.get("fastapi_exposure_candidate_id")
+        exposure_candidate = candidates_by_id.get(exposure_candidate_id)
+        if (
+            reviewed_candidate.get("classification") != review.get("classification")
+            or reviewed_candidate.get("kind") != review.get("kind", "inherited_method")
+            or reviewed_candidate.get("classification_evidence_rule")
+            != review.get("classification_evidence_rule")
+            or reviewed_candidate.get("exposure_candidate_id") != exposure_candidate_id
+            or not isinstance(exposure_candidate, dict)
+            or exposure_candidate.get("classification") != "supported"
+            or exposure_candidate.get("kind") != "class"
+            or reviewed_candidate.get("source_evidence") != review.get("source_evidence")
+            or reviewed_candidate.get("starlette_rs_review_ref", {}).get("qualified_name")
+            != review.get("starlette_rs_review", {}).get("qualified_name")
+            or reviewed_candidate.get("starlette_rs_review_ref", {}).get("api_disposition")
+            != review.get("starlette_rs_review", {}).get("api_disposition")
+            or reviewed_candidate.get("reviewed_overlay_ref")
+            != (
+                "/reviewed_api_contract_overlay/inherited_candidate_reviews/"
+                + candidate_id.replace("~", "~0").replace("/", "~1")
+            )
+        ):
+            raise ContractError(
+                f"atlas inherited API classification differs from reviewed metadata: {candidate_id}"
+            )
+        evidence = review.get("source_evidence", [])
+        evidence_kinds = {reference.get("kind") for reference in evidence}
+        if not {"class-inheritance", "source-definition"} <= evidence_kinds:
+            raise ContractError(
+                f"inherited API candidate lacks source evidence kinds: {candidate_id}"
+            )
+        inheritance_refs = [
+            reference for reference in evidence if reference.get("kind") == "class-inheritance"
+        ]
+        starlette_refs = [
+            reference for reference in evidence if reference.get("kind") == "source-definition"
+        ]
+        if len(inheritance_refs) != 1 or len(starlette_refs) != 1:
+            raise ContractError(
+                f"inherited API candidate must have one FastAPI base and Starlette member ref: "
+                f"{candidate_id}"
+            )
+        inheritance_ref = inheritance_refs[0]
+        starlette_ref = starlette_refs[0]
+        if inheritance_ref.get("symbol") == "APIRouter" and not {
+            "base_expression",
+            "base_import_module",
+            "base_import_name",
+            "base_import_alias",
+            "base_import_line",
+        } <= set(inheritance_ref):
+            raise ContractError(
+                f"inherited APIRouter candidate does not document its Starlette base binding: "
+                f"{candidate_id}"
+            )
+        fastapi_module = (
+            Path(str(inheritance_ref.get("path", ""))).with_suffix("").as_posix().replace("/", ".")
+        )
+        starlette_module = (
+            Path(str(starlette_ref.get("path", ""))).with_suffix("").as_posix().replace("/", ".")
+        )
+        expected_exposure_id = f"{fastapi_module}.{inheritance_ref.get('symbol')}"
+        expected_candidate_id = f"{expected_exposure_id}.{starlette_ref.get('symbol')}"
+        expected_starlette_name = (
+            f"{starlette_module}.{starlette_ref.get('owner')}.{starlette_ref.get('symbol')}"
+        )
+        if (
+            exposure_candidate_id != expected_exposure_id
+            or candidate_id != expected_candidate_id
+            or inheritance_ref.get("base_class") != starlette_ref.get("owner")
+            or review.get("starlette_rs_review", {}).get("qualified_name")
+            != expected_starlette_name
+        ):
+            raise ContractError(
+                f"inherited API candidate ID or sibling review does not match its evidence: "
+                f"{candidate_id}"
+            )
+        for reference in evidence:
+            verify_source_evidence(reference, candidate_id)
+        if not starlette_refs or any(
+            reference.get("source_authority") != f"Starlette {starlette_authority.get('version')}"
+            for reference in starlette_refs
+        ):
+            raise ContractError(
+                f"inherited API candidate has no exact Starlette source definition: {candidate_id}"
+            )
+        sibling_review = review.get("starlette_rs_review", {})
+        if sibling_review.get("api_disposition") != review.get(
+            "classification"
+        ) or reviewed_candidate.get("starlette_rs_review_ref", {}).get("path") != atlas.get(
+            "authorities", {}
+        ).get("starlette_rs", {}).get("api_review_path"):
+            raise ContractError(
+                f"inherited API candidate Starlette-RS review reference differs: {candidate_id}"
+            )
+
     for operation_id, operation in inherited_operations.items():
         if operation_id in overlay_operations or operation_id in candidates_by_id:
             raise ContractError(
@@ -2001,6 +2282,26 @@ def build_api_surface_contract(
             )
         for reference in evidence:
             verify_source_evidence(reference, operation_id)
+        inheritance_refs = [
+            reference for reference in evidence if reference.get("kind") == "class-inheritance"
+        ]
+        class_source_refs = exposure_candidate.get("source_evidence", [])
+        class_name = exposure_candidate_id.rsplit(".", 1)[-1]
+        if (
+            len(inheritance_refs) != 1
+            or not isinstance(class_source_refs, list)
+            or inheritance_refs[0].get("symbol") != class_name
+            or not any(
+                isinstance(source_ref, dict)
+                and source_ref.get("path") == inheritance_refs[0].get("path")
+                and source_ref.get("line") == inheritance_refs[0].get("line")
+                for source_ref in class_source_refs
+            )
+        ):
+            raise ContractError(
+                f"inherited API operation class evidence does not match its exposure candidate: "
+                f"{operation_id}"
+            )
         evidence_kinds = {reference.get("kind") for reference in evidence}
         if not {"class-inheritance", "documentation-text"} <= evidence_kinds:
             raise ContractError(

@@ -359,7 +359,7 @@ def validate_compatibility_artifacts(
     starlette_source: Path,
 ) -> dict[str, Any]:
     """Check source evidence, complete module/page links, and input-only designs."""
-    _require(atlas.get("schema") == "fastapi-rs/compatibility-atlas@4", "unsupported atlas schema")
+    _require(atlas.get("schema") == "fastapi-rs/compatibility-atlas@5", "unsupported atlas schema")
     _require(
         backlog.get("schema") == "fastapi-rs/fixture-backlog@1",
         "unsupported fixture backlog schema",
@@ -598,6 +598,7 @@ def validate_compatibility_artifacts(
         isinstance(inherited_rows, list), "reviewed inherited API candidate inventory is missing"
     )
     inherited_ids: set[str] = set()
+    inherited_classifications: Counter[str] = Counter()
     api_indexes = {row["id"]: index for index, row in enumerate(api_rows)}
     for row in inherited_rows:
         identifier = row.get("id")
@@ -608,11 +609,134 @@ def validate_compatibility_artifacts(
             "inherited API candidate IDs must be unique and separate from source candidates",
         )
         inherited_ids.add(identifier)
+        classification = row.get("classification")
+        inherited_classifications[classification] += 1
         _require(
             row.get("kind") in {"inherited_method", "inherited_property"}
-            and row.get("classification") == "supported",
-            f"{identifier} must be a supported inherited-method or inherited-property candidate",
+            and classification in {"supported", "private/internal", "uncertain"}
+            and isinstance(row.get("classification_evidence_rule"), str)
+            and bool(row["classification_evidence_rule"].strip()),
+            f"{identifier} must have an inherited kind, reviewed classification, and rationale",
         )
+        exposure_candidate_id = row.get("exposure_candidate_id")
+        _require(
+            exposure_candidate_id in api_indexes
+            and api_rows[api_indexes[exposure_candidate_id]].get("kind") == "class"
+            and api_rows[api_indexes[exposure_candidate_id]].get("classification") == "supported"
+            and row.get("exposure_candidate_ref")
+            == f"/api_candidates/{api_indexes[exposure_candidate_id]}",
+            f"{identifier} does not point to its supported FastAPI class candidate",
+        )
+        evidence = row.get("source_evidence")
+        _require(
+            isinstance(evidence, list) and bool(evidence), f"{identifier} has no exposure evidence"
+        )
+        _walk_source_references(evidence, fastapi_source, starlette_source, identifier)
+        inheritance_refs = [
+            item
+            for item in evidence
+            if isinstance(item, dict) and item.get("kind") == "class-inheritance"
+        ]
+        class_source_refs = api_rows[api_indexes[exposure_candidate_id]].get("source_evidence", [])
+        class_name = exposure_candidate_id.rsplit(".", 1)[-1]
+        _require(
+            len(inheritance_refs) == 1
+            and isinstance(class_source_refs, list)
+            and inheritance_refs[0].get("symbol") == class_name
+            and any(
+                isinstance(source_ref, dict)
+                and source_ref.get("path") == inheritance_refs[0].get("path")
+                and source_ref.get("line") == inheritance_refs[0].get("line")
+                for source_ref in class_source_refs
+            ),
+            f"{identifier} class evidence does not match its exposure candidate",
+        )
+        for inheritance_ref in (
+            item
+            for item in evidence
+            if isinstance(item, dict)
+            and item.get("kind") == "class-inheritance"
+            and item.get("symbol") == "APIRouter"
+        ):
+            _require(
+                inheritance_ref.get("base_class") == "Router"
+                and inheritance_ref.get("base_expression") == "routing.Router"
+                and inheritance_ref.get("base_import_module") == "starlette"
+                and inheritance_ref.get("base_import_name") == "routing"
+                and inheritance_ref.get("base_import_alias") == "routing"
+                and inheritance_ref.get("base_import_line") == 91,
+                f"{identifier} does not bind APIRouter's Router base through Starlette",
+            )
+        if classification != "supported":
+            _require(
+                not any(
+                    field in row
+                    for field in (
+                        "canonical_operation_id",
+                        "sibling_contract_gap",
+                        "signature_source",
+                        "target_binding",
+                        "documentation_contract_refs",
+                        "fixture_refs",
+                        "feature_ids",
+                        "observation_selectors",
+                    )
+                ),
+                f"{identifier} classification-only candidate must not imply an operation contract",
+            )
+            _require(
+                {item.get("kind") for item in evidence if isinstance(item, dict)}
+                >= {"class-inheritance", "source-definition"},
+                f"{identifier} lacks FastAPI inheritance or Starlette method source evidence",
+            )
+            inheritance_refs = [
+                item
+                for item in evidence
+                if isinstance(item, dict) and item.get("kind") == "class-inheritance"
+            ]
+            starlette_refs = [
+                item
+                for item in evidence
+                if isinstance(item, dict) and item.get("kind") == "source-definition"
+            ]
+            _require(
+                len(inheritance_refs) == 1 and len(starlette_refs) == 1,
+                f"{identifier} must have one FastAPI inheritance and one Starlette method ref",
+            )
+            inheritance_ref = inheritance_refs[0]
+            starlette_ref = starlette_refs[0]
+            fastapi_module = (
+                Path(str(inheritance_ref.get("path", "")))
+                .with_suffix("")
+                .as_posix()
+                .replace("/", ".")
+            )
+            starlette_module = (
+                Path(str(starlette_ref.get("path", "")))
+                .with_suffix("")
+                .as_posix()
+                .replace("/", ".")
+            )
+            _require(
+                exposure_candidate_id == f"{fastapi_module}.{inheritance_ref.get('symbol')}"
+                and identifier == f"{exposure_candidate_id}.{starlette_ref.get('symbol')}"
+                and inheritance_ref.get("base_class") == starlette_ref.get("owner"),
+                f"{identifier} candidate ID does not match its FastAPI and Starlette source refs",
+            )
+            sibling_review = row.get("starlette_rs_review_ref")
+            _require(
+                isinstance(sibling_review, dict)
+                and isinstance(sibling_review.get("qualified_name"), str)
+                and sibling_review.get("qualified_name")
+                == (
+                    f"{starlette_module}.{starlette_ref.get('owner')}.{starlette_ref.get('symbol')}"
+                )
+                and sibling_review.get("api_disposition") == classification
+                and sibling_review.get("path")
+                == atlas.get("authorities", {}).get("starlette_rs", {}).get("api_review_path"),
+                f"{identifier} lacks matching pinned Starlette-RS classification evidence",
+            )
+            continue
         sibling_gap = row.get("sibling_contract_gap")
         if sibling_gap is None:
             _require(
@@ -723,19 +847,6 @@ def validate_compatibility_artifacts(
                 f"{identifier} must link its source signature without copying an operation "
                 "contract",
             )
-        exposure_candidate_id = row.get("exposure_candidate_id")
-        _require(
-            exposure_candidate_id in api_indexes
-            and api_rows[api_indexes[exposure_candidate_id]].get("kind") == "class"
-            and api_rows[api_indexes[exposure_candidate_id]].get("classification") == "supported"
-            and row.get("exposure_candidate_ref")
-            == f"/api_candidates/{api_indexes[exposure_candidate_id]}",
-            f"{identifier} does not point to its supported FastAPI class candidate",
-        )
-        evidence = row.get("source_evidence")
-        _require(
-            isinstance(evidence, list) and bool(evidence), f"{identifier} has no exposure evidence"
-        )
         _require(
             {item.get("kind") for item in evidence if isinstance(item, dict)}
             >= {"class-inheritance", "documentation-text"},
@@ -751,6 +862,11 @@ def validate_compatibility_artifacts(
     _require(
         atlas.get("counts", {}).get("reviewed_inherited_api_candidates") == len(inherited_rows),
         "reviewed inherited API candidate count differs from its rows",
+    )
+    _require(
+        atlas.get("counts", {}).get("inherited_api_classifications")
+        == dict(sorted(inherited_classifications.items())),
+        "reviewed inherited API classification counts differ from their rows",
     )
 
     for group, rows in (

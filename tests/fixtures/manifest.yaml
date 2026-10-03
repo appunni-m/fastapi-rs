@@ -91,7 +91,7 @@ target:
     name: starlette-rs-py
     version: 0.1.0
     starlette_contract: 1.6.0
-    commit: d1badbaafa3630e50bdd8f5e31fb3647f637d38f
+    commit: fc05f53a55614885f26929b7d188106b24d00ca7
   external_python_runtime_lock:
     path: requirements/target-runtime-cpython-3.12.13.lock
     sha256: efb7ca633fc9a9c8587a6f59f8ee9b509151f6f77ceb75a56dd3cdeff2be99f7
@@ -128,13 +128,13 @@ source_artifacts:
   api_import_binding_classification_review:
     path: tests/fixtures/api-import-binding-classification-review.json
     schema: fastapi-starlette-import-binding-review/v1
-    sha256: 00c6c029e520d631515f30ce10b7f840b46c83a7fd29896d69a541e60aa1c8f1
+    sha256: e0884d00d2e25fb28fb6e7b571e73e5ef14ca322db83b68c2817f0fb0663a91e
     purpose: Reviewed source-backed disposition of uncertain FastAPI import bindings from the selected Starlette profile
     source_identity:
       package: FastAPI
       selected_starlette_profile: 1.6.0
       source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
-      starlette_rs_contract_commit: d1badbaafa3630e50bdd8f5e31fb3647f637d38f
+      starlette_rs_contract_commit: fc05f53a55614885f26929b7d188106b24d00ca7
       starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
       version: 0.141.1
     starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
@@ -148,7 +148,7 @@ source_artifacts:
     candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
     pinned_starlette_rs_sources:
       metadata_sha256: 90f805ed7d2497833422db870f88d53319dbaaf31a675f89b1ad21fdd4a123d5
-      manifest_sha256: c04a8cae108905aec133a46c6e818dda58c5fb9b8aa3584c5caa09165b6e3e8b
+      manifest_sha256: 5833a16365c9557392b5d41eb3a29fa41ace33a5f2a0fd17f00a481ebab1e8dc
       api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
       api_review_sha256: 8b25f2e3a46753316446077bfde97b6ac8a342233e2f4e50b12d3d01eafbe099
   api_source_classification_review:
@@ -410,12 +410,15 @@ source_artifacts:
         - fastapi.sse.
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
-    schema: fastapi-rs/compatibility-atlas@4
-    sha256: 2812690f27e423976af8f02bef386156b6d45321e3d478c1e90c911297c1eb45
+    schema: fastapi-rs/compatibility-atlas@5
+    sha256: bf491362513d76686cd87aba82732185de3c9dd3fc9a143c11879a40a40d1de0
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
-      reviewed_inherited_api_candidates: 8
+      reviewed_inherited_api_candidates: 12
+      inherited_supported: 8
+      inherited_private_or_internal: 1
+      inherited_uncertain: 3
       reviewed_import_binding_candidates: 97
       reviewed_source_api_candidates: 392
       source_classifications:
@@ -481,7 +484,7 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@2
-    sha256: 3ce903ffab412beba0384d6f08b32d010b1c3d4da1d3cc685ed2d342572084c4
+    sha256: 2bcf3100685326a53e32acbb98d8ffeffe6d909236b7dce899dc4fdd1dcb99e3
     schema_path: tests/fixtures/schemas/materialized-input-index.schema.json
     schema_sha256: 56ac1cdfaa6f28b4277ef44b5ef78efebb3122111c5691e1b9c1bce869156aaf
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
@@ -29080,13 +29083,18 @@ api_surface_contract:
   - id: fastapi.routing.APIRouter.url_path_for
     kind: inherited_method
     exposure: inherited-from-starlette
-    reviewed_candidate_ref: /reviewed_inherited_api_candidates/7
+    reviewed_candidate_ref: /reviewed_inherited_api_candidates/11
     fastapi_exposure_candidate_ref: /api_candidates/1058
     exposure_evidence:
     - path: fastapi/routing.py
       kind: class-inheritance
       symbol: APIRouter
       base_class: Router
+      base_expression: routing.Router
+      base_import_module: starlette
+      base_import_name: routing
+      base_import_alias: routing
+      base_import_line: 91
       line: 2255
     - path: docs/en/docs/tutorial/bigger-applications.md
       kind: documentation-text
