@@ -20,7 +20,7 @@ from scripts.parity.contract import (
     sha256_file,
 )
 
-CONTRACT_SCHEMA = "fastapi-rs/public-api-contract@6"
+CONTRACT_SCHEMA = "fastapi-rs/public-api-contract@7"
 TARGET_PROFILE = "fastapi-rs-python-consumer"
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 OVERLAY_SCHEMA = "fastapi-rs/reviewed-api-contract-overlay@6"
@@ -1445,6 +1445,13 @@ def build_api_surface_contract(
             raise ContractError(
                 f"reviewed API fixture references must be a list of mappings: {operation_id}"
             )
+        supported_slice = operation.get("supported_slice")
+        if supported_slice is not None and (
+            not isinstance(supported_slice, str) or not supported_slice.strip()
+        ):
+            raise ContractError(
+                f"reviewed API supported_slice must be a nonempty string: {operation_id}"
+            )
         for field in ("feature_ids", "observation_selectors", "error_contract_ids"):
             values = operation.get(field, [])
             if not isinstance(values, list) or any(not isinstance(value, str) for value in values):
@@ -2692,6 +2699,14 @@ def build_api_surface_contract(
             raise ContractError(
                 f"reviewed Rust binding for {symbol_id} must be a nonempty source path"
             )
+        supported_slice = reviewed_operation.get("supported_slice")
+        operation_scope = {
+            "status": "slice-described" if supported_slice else "scope-review-pending",
+        }
+        if supported_slice:
+            operation_scope["metadata_ref"] = _pointer(
+                "reviewed_api_contract_overlay", "operations", symbol_id, "supported_slice"
+            )
         for documentation_ref in reviewed_operation.get("documentation_contract_refs", []):
             coverage_pointer, coverage_row = coverage_by_doc_path[documentation_ref["source_path"]]
             fixture_id = coverage_row.get("fixture_id")
@@ -2749,6 +2764,7 @@ def build_api_surface_contract(
                 "identity_workflow_refs": identity_workflow_refs,
                 "feature_ids": sorted(feature_ids),
                 "observation_selectors": sorted(selectors),
+                "operation_scope": operation_scope,
                 "behavior_contract_state": (
                     "reviewed-operation-and-documentation-links; full compatibility pending"
                     if reviewed_operation
@@ -2815,6 +2831,9 @@ def build_api_surface_contract(
             "required_inherited_operations": len(inherited_operation_contracts),
             "required_public_api_candidates": len(symbols) + len(inherited_operation_contracts),
             "signature_contract_states": dict(sorted(signature_statuses.items())),
+            "operation_scope_statuses": dict(
+                sorted(Counter(symbol["operation_scope"]["status"] for symbol in symbols).items())
+            ),
             "implementation_owner_plans": dict(sorted(owner_counts.items())),
             "inherited_implementation_owner_plans": dict(
                 sorted(

@@ -10371,6 +10371,7 @@ def render_markdown(atlas: dict[str, Any]) -> str:
         "fastapi-rs/public-api-contract@4",
         "fastapi-rs/public-api-contract@5",
         "fastapi-rs/public-api-contract@6",
+        "fastapi-rs/public-api-contract@7",
     }:
         raise AtlasError("manifest has no generated per-symbol source API contract")
     required_public_symbols = api_contract_counts.get("required_public_symbols", 0)
@@ -10393,6 +10394,9 @@ def render_markdown(atlas: dict[str, Any]) -> str:
     symbols_with_api_workflow_refs = api_contract_counts.get(
         "symbols_with_direct_api_input_workflow_refs", 0
     )
+    operation_scope_statuses = api_contract_counts.get("operation_scope_statuses", {})
+    slice_described_symbols = operation_scope_statuses.get("slice-described", 0)
+    scope_review_pending_symbols = operation_scope_statuses.get("scope-review-pending", 0)
     materialized_index = json.loads(
         (PROJECT / "tests/fixtures/materialized-input-index.json").read_text(encoding="utf-8")
     )
@@ -10495,7 +10499,7 @@ def render_markdown(atlas: dict[str, Any]) -> str:
         "",
         "## Per-symbol API contract in the active manifest",
         "",
-        "The single `tests/fixtures/manifest.yaml` indexes %d source-supported symbols and %d supported inherited operations from %d reviewed inherited candidates (%d supported public API entries total). The remaining inherited candidates have explicit private/internal or uncertain dispositions and do not create target operation contracts. Supported inherited operations delegate to a canonical Starlette-RS operation or record a pinned source signature and explicit sibling-contract gap. The contract links alias, deprecation, error, documented-feature, direct API workflow, selector, and planned Python import-path evidence; %d direct symbols link to a documented-page fixture design and %d to a direct API input workflow. The current Python facade directly re-exports %d native names; this source contract does not measure behavioral completeness, and broader operation-level review remains pending."
+        "The single `tests/fixtures/manifest.yaml` indexes %d source-supported symbols and %d supported inherited operations from %d reviewed inherited candidates (%d supported public API entries total). The remaining inherited candidates have explicit private/internal or uncertain dispositions and do not create target operation contracts. Supported inherited operations delegate to a canonical Starlette-RS operation or record a pinned source signature and explicit sibling-contract gap. The contract links alias, deprecation, error, documented-feature, direct API workflow, selector, and planned Python import-path evidence; %d direct symbols link to a documented-page fixture design and %d to a direct API input workflow. Its operation-scope field distinguishes %d source-described slices from %d symbols still awaiting a slice description; slice descriptions are scope metadata, not parity evidence. The current Python facade directly re-exports %d native names; this source contract does not measure behavioral completeness, and broader operation-level review remains pending."
         % (
             required_public_symbols,
             required_inherited_operations,
@@ -10503,6 +10507,8 @@ def render_markdown(atlas: dict[str, Any]) -> str:
             required_public_api_candidates,
             symbols_with_documented_refs,
             symbols_with_api_workflow_refs,
+            slice_described_symbols,
+            scope_review_pending_symbols,
             native_facade_exports,
         ),
         "",
