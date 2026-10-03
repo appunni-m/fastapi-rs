@@ -3573,18 +3573,19 @@
     {
       "id": "middleware",
       "input_path": "tests/fixtures/inputs/parity/middleware.json",
-      "input_sha256": "af75ce679d9a8ab3f1d1f8725a26801af29bd9ca21c6d508ebdafda915b60211",
+      "input_sha256": "3d04cf1d9f9a34db21ba56fb38699e7312737c2c1ace3dc8d2cb0610133faf31",
       "recipe_path": "tests/fixtures/input-recipes/parity/middleware.yaml",
-      "recipe_sha256": "3d3d5b9db9d2f802cdc3b9dfc8f650739eb48066fd3a6b7fa65df306fd3ee3d4",
+      "recipe_sha256": "21ea37b7fdc1e402bdf1a92648418c151e76aba7502151cc62e424b170a2d6d1",
       "workload_path": "tests/fixtures/workloads/middleware.py",
-      "workload_sha256": "d4ae5a56102fff0147dbb6072d90550f81ef1f879be0f84c1f571aa0c077bc7e",
+      "workload_sha256": "3c5044ed8a4556c9b0605321251612ee72e58482184e93a75a8fd01bd913b101",
       "case_ids": [
         "fastapi.middleware.decorator-openapi",
         "fastapi.middleware.https-redirect-http",
         "fastapi.middleware.trusted-host-wildcard-allowed",
         "fastapi.middleware.trusted-host-rejected",
         "fastapi.middleware.custom-asgi-body-accepted",
-        "fastapi.middleware.custom-asgi-body-exceeded"
+        "fastapi.middleware.custom-asgi-body-exceeded",
+        "fastapi.middleware.decorator-body-replay"
       ]
     },
     {
@@ -6762,7 +6763,7 @@
       "input_path": "tests/fixtures/inputs/parity/response-model-data-filter-exclude-unset-none-review.json",
       "input_sha256": "e8df817a4df31b3f2f646068c8a9286416ff13577822d1fc572bbc5d8eb34a17",
       "recipe_path": "tests/fixtures/input-recipes/parity/response-model-data-filter-exclude-unset-none-review.yaml",
-      "recipe_sha256": "44a38fd138d5f8835d41db21da63e9fb2afe87d74aa7022f7cdeef13a9260259",
+      "recipe_sha256": "c46f62999e3d73f150bb911653a5ef662c69a97a1da30a6b95c6d06d0b39ec61",
       "workload_path": "tests/fixtures/workloads/response_model_data_filter_exclude_unset_none_review.py",
       "workload_sha256": "24b60f06b2472a0254c9ae15d0b208e0edd99d3cb8a3833696d343bacd0c13cd",
       "case_ids": [
@@ -17674,11 +17675,13 @@
       "fixture_id": "fastapi.docs.tutorial-middleware",
       "workflow_id": "middleware",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
+        "fastapi.middleware.decorator-body-replay",
         "fastapi.middleware.decorator-openapi"
       ],
       "observation_selectors": [
+        "http.body.bytes",
         "http.headers.ordered",
         "http.status"
       ]
@@ -17735,13 +17738,15 @@
       "fixture_id": "fastapi.test.test-tutorial-test-middleware-test-tutorial001",
       "workflow_id": "middleware",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.headers, docs.response.status, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
+        "fastapi.middleware.decorator-body-replay",
         "fastapi.middleware.decorator-openapi"
       ],
       "observation_selectors": [
         "docs.response.headers",
         "docs.response.status",
+        "http.body.bytes",
         "http.headers.ordered",
         "http.status",
         "openapi.document"

@@ -8,10 +8,11 @@ use std::sync::Mutex;
 use std::sync::atomic::{AtomicU64, Ordering};
 
 use pyo3::exceptions::{
-    PyAssertionError, PyAttributeError, PyException, PyNameError, PyNotImplementedError,
-    PyRuntimeError, PyStopAsyncIteration, PyTypeError, PyValueError,
+    PyAssertionError, PyAttributeError, PyException, PyKeyError, PyNameError,
+    PyNotImplementedError, PyRuntimeError, PyStopAsyncIteration, PyTypeError, PyValueError,
 };
 use pyo3::prelude::*;
+use pyo3::sync::PyOnceLock;
 use pyo3::types::{PyBool, PyBytes, PyDict, PyInt, PyList, PyModule, PyString, PyTuple, PyType};
 use starlette_rs::{DetailedRouteMatch, NamedRouteError, NamedRouteTable, QueryParams, RouteTable};
 
@@ -119,6 +120,24 @@ fn frontend_dependency_endpoint() {}
 
 fn omitted_response_model() -> Py<PyAny> {
     Python::attach(|py| py.NotImplemented())
+}
+
+fn middleware_cached_request_type(py: Python<'_>) -> PyResult<Py<PyAny>> {
+    static CACHED_REQUEST_TYPE: PyOnceLock<Py<PyAny>> = PyOnceLock::new();
+    CACHED_REQUEST_TYPE
+        .get_or_try_init(py, || {
+            let request_type = py.import("starlette.requests")?.getattr("Request")?;
+            let descriptor = Py::new(py, PyFastApiCachedReceiveDescriptor)?.into_any();
+            let namespace = PyDict::new(py);
+            namespace.set_item("__module__", "starlette.middleware.base")?;
+            namespace.set_item("wrapped_receive", descriptor)?;
+            let bases = PyTuple::new(py, [request_type])?;
+            py.import("builtins")?
+                .getattr("type")?
+                .call1(("_CachedRequest", bases, namespace))
+                .map(Bound::unbind)
+        })
+        .map(|request_type| request_type.clone_ref(py))
 }
 
 fn default_frontend_auto() -> Py<PyAny> {
@@ -961,6 +980,18 @@ struct PyFastApiHttpMiddleware {
 )]
 struct PyFastApiMessageCapture {
     messages: Py<PyList>,
+}
+
+#[pyclass(
+    name = "_FastAPICachedReceiveDescriptor",
+    module = "fastapi_rs._core",
+    unsendable
+)]
+struct PyFastApiCachedReceiveDescriptor;
+
+#[pyclass(unsendable)]
+struct PyFastApiCachedReceive {
+    request: Py<PyAny>,
 }
 
 #[pyclass(name = "_FastAPIHTTPExceptionHandler", module = "fastapi_rs._core")]
@@ -2173,6 +2204,199 @@ impl PyFastApiMessageCapture {
 }
 
 #[pymethods]
+impl PyFastApiCachedReceiveDescriptor {
+    fn __get__(
+        slf: Py<Self>,
+        py: Python<'_>,
+        request: Option<Bound<'_, PyAny>>,
+        _owner: Option<Bound<'_, PyAny>>,
+    ) -> PyResult<Py<PyAny>> {
+        let Some(request) = request else {
+            return Ok(slf.into_any());
+        };
+        Py::new(
+            py,
+            PyFastApiCachedReceive {
+                request: request.unbind(),
+            },
+        )
+        .map(Into::into)
+    }
+}
+
+#[pymethods]
+impl PyFastApiCachedReceive {
+    fn __call__(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
+        into_python_awaitable(
+            py,
+            FastApiCachedReceiveMachine {
+                request: self.request.clone_ref(py),
+                pending: None,
+            },
+        )
+    }
+}
+
+type FastApiMiddlewareBodyReceiveState = (Option<Py<PyAny>>, bool, bool, bool, bool);
+
+enum FastApiCachedReceivePending {
+    StreamChunk,
+    ConsumedReceive,
+}
+
+struct FastApiCachedReceiveMachine {
+    request: Py<PyAny>,
+    pending: Option<FastApiCachedReceivePending>,
+}
+
+impl AwaitableStateMachine for FastApiCachedReceiveMachine {
+    fn resume(&mut self, py: Python<'_>, input: MachineResume) -> PyResult<MachineAction> {
+        match input {
+            MachineResume::Start => self.start(py),
+            MachineResume::Value(value) => match self.pending.take() {
+                Some(FastApiCachedReceivePending::StreamChunk) => self.stream_chunk(py, value),
+                Some(FastApiCachedReceivePending::ConsumedReceive) => {
+                    self.consumed_receive(py, value)
+                }
+                None => Err(PyRuntimeError::new_err(
+                    "cached request resumed without a pending receive",
+                )),
+            },
+            MachineResume::Error(error) => self.receive_error(py, error),
+        }
+    }
+}
+
+impl FastApiCachedReceiveMachine {
+    fn start(&mut self, py: Python<'_>) -> PyResult<MachineAction> {
+        let request = self.request.bind(py);
+        let (body, stream_consumed, request_disconnected, disconnected, consumed) =
+            fastapi_middleware_body_receive_state(request)?;
+        if disconnected {
+            return fastapi_cached_disconnect_message(py);
+        }
+        if consumed {
+            if request_disconnected {
+                set_fastapi_cached_receive_flags(request, Some(true), None)?;
+                return fastapi_cached_disconnect_message(py);
+            }
+            return self.await_original_receive(py);
+        }
+        if let Some(body) = body {
+            set_fastapi_cached_receive_flags(request, None, Some(true))?;
+            return fastapi_cached_request_message(py, body, false);
+        }
+        if stream_consumed {
+            set_fastapi_cached_receive_flags(request, None, Some(true))?;
+            return fastapi_cached_request_message(
+                py,
+                PyBytes::new(py, b"").into_any().unbind(),
+                false,
+            );
+        }
+
+        let stream = request.call_method0("stream")?;
+        let awaitable = stream.call_method0("__anext__")?;
+        self.pending = Some(FastApiCachedReceivePending::StreamChunk);
+        Ok(MachineAction::Await(awaitable.unbind()))
+    }
+
+    fn await_original_receive(&mut self, py: Python<'_>) -> PyResult<MachineAction> {
+        let receive = self
+            .request
+            .bind(py)
+            .getattr("_body_state")?
+            .getattr("receive")?
+            .call_method0("__call__")?;
+        self.pending = Some(FastApiCachedReceivePending::ConsumedReceive);
+        Ok(MachineAction::Await(receive.unbind()))
+    }
+
+    fn stream_chunk(&mut self, py: Python<'_>, chunk: Py<PyAny>) -> PyResult<MachineAction> {
+        let request = self.request.bind(py);
+        let (_, stream_consumed, _, _, _) = fastapi_middleware_body_receive_state(request)?;
+        set_fastapi_cached_receive_flags(request, None, Some(stream_consumed))?;
+        fastapi_cached_request_message(py, chunk, !stream_consumed)
+    }
+
+    fn consumed_receive(&mut self, py: Python<'_>, message: Py<PyAny>) -> PyResult<MachineAction> {
+        let message_bound = message.bind(py).cast::<PyDict>()?;
+        let message_type = message_bound
+            .get_item("type")?
+            .ok_or_else(|| PyKeyError::new_err("type"))?
+            .extract::<String>()?;
+        if message_type != "http.disconnect" {
+            return Err(PyRuntimeError::new_err(format!(
+                "Unexpected message received: {message_type}"
+            )));
+        }
+        set_fastapi_cached_receive_flags(self.request.bind(py), Some(true), None)?;
+        Ok(MachineAction::Complete(message))
+    }
+
+    fn receive_error(&mut self, py: Python<'_>, error: PyErr) -> PyResult<MachineAction> {
+        match self.pending.take() {
+            Some(FastApiCachedReceivePending::StreamChunk) => {
+                let client_disconnect = py
+                    .import("starlette.requests")?
+                    .getattr("ClientDisconnect")?;
+                if error.value(py).is_instance(&client_disconnect)? {
+                    set_fastapi_cached_receive_flags(self.request.bind(py), Some(true), None)?;
+                    return fastapi_cached_disconnect_message(py);
+                }
+                Err(error)
+            }
+            Some(FastApiCachedReceivePending::ConsumedReceive) | None => Err(error),
+        }
+    }
+}
+
+fn fastapi_middleware_body_receive_state(
+    request: &Bound<'_, PyAny>,
+) -> PyResult<FastApiMiddlewareBodyReceiveState> {
+    request
+        .getattr("_body_state")?
+        .call_method0("_base_http_wrapped_receive_state")?
+        .extract()
+}
+
+fn set_fastapi_cached_receive_flags(
+    request: &Bound<'_, PyAny>,
+    disconnected: Option<bool>,
+    consumed: Option<bool>,
+) -> PyResult<()> {
+    if let Some(disconnected) = disconnected {
+        request.setattr("_wrapped_rcv_disconnected", disconnected)?;
+    }
+    if let Some(consumed) = consumed {
+        request.setattr("_wrapped_rcv_consumed", consumed)?;
+    }
+    request.getattr("_body_state")?.call_method1(
+        "_base_http_set_wrapped_receive_flags",
+        (disconnected, consumed),
+    )?;
+    Ok(())
+}
+
+fn fastapi_cached_disconnect_message(py: Python<'_>) -> PyResult<MachineAction> {
+    let message = PyDict::new(py);
+    message.set_item("type", "http.disconnect")?;
+    Ok(MachineAction::Complete(message.into_any().unbind()))
+}
+
+fn fastapi_cached_request_message(
+    py: Python<'_>,
+    body: Py<PyAny>,
+    more_body: bool,
+) -> PyResult<MachineAction> {
+    let message = PyDict::new(py);
+    message.set_item("type", "http.request")?;
+    message.set_item("body", body)?;
+    message.set_item("more_body", more_body)?;
+    Ok(MachineAction::Complete(message.into_any().unbind()))
+}
+
+#[pymethods]
 impl PyFastApiHttpExceptionHandler {
     fn __call__(
         &self,
@@ -2276,8 +2500,13 @@ impl AwaitableStateMachine for FastApiHttpMiddlewareCall {
     fn resume(&mut self, py: Python<'_>, input: MachineResume) -> PyResult<MachineAction> {
         match input {
             MachineResume::Start if self.pending.is_none() => {
-                let request_type = py.import("starlette.requests")?.getattr("Request")?;
-                let request = request_type.call1((self.scope.bind(py), self.receive.bind(py)))?;
+                let request_type = middleware_cached_request_type(py)?;
+                let request = request_type
+                    .bind(py)
+                    .call1((self.scope.bind(py), self.receive.bind(py)))?;
+                request.setattr("_wrapped_rcv_disconnected", false)?;
+                request.setattr("_wrapped_rcv_consumed", false)?;
+                self.receive = request.getattr("wrapped_receive")?.unbind();
                 let call_next = Py::new(
                     py,
                     PyFastApiCallNext {
@@ -10242,6 +10471,8 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     module.add_class::<PyFastApiAsgiApp>()?;
     module.add_class::<PyMiddlewareDecorator>()?;
     module.add_class::<PyFastApiHttpMiddleware>()?;
+    module.add_class::<PyFastApiCachedReceiveDescriptor>()?;
+    module.add_class::<PyFastApiCachedReceive>()?;
     module.add_class::<PyFastApiMessageCapture>()?;
     module.add_class::<PyFastApiHttpExceptionHandler>()?;
     module.add_class::<PyFastApiRequestValidationExceptionHandler>()?;

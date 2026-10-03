@@ -80,14 +80,14 @@ api_inventory:
 import_binding_classification_review:
   artifact: tests/fixtures/api-import-binding-classification-review.json
   schema: fastapi-starlette-import-binding-review/v1
-  sha256: c16e7f41b36eb69d3dbc2761a53c2e7c020aeae027f828523597daf1d9d27255
+  sha256: 9f65372e68b0349abf4a28d75c8ff745e7157eab175bb550b51685476f857aaa
   source_identity:
     package: FastAPI
     version: 0.141.1
     source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
     selected_starlette_profile: 1.6.0
     starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
-    starlette_rs_contract_commit: fbaf4b030411242e585939dea4131f5774500415
+    starlette_rs_contract_commit: d54271705ec898a1160b0bc37036c1c8d1646cc5
   starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
   counts:
     candidates: 97
@@ -435,7 +435,7 @@ classification_atlas:
 starlette_rs:
   owner: ../starlette-rs
   repository: https://github.com/appunni-m/starlette-rs
-  commit: fbaf4b030411242e585939dea4131f5774500415
+  commit: d54271705ec898a1160b0bc37036c1c8d1646cc5
   distribution_version: 0.1.0
   contract_id: starlette-1.6.0-asgi-http-config-session-slice
   metadata: ../starlette-rs/metadata.yaml
@@ -1529,6 +1529,97 @@ reviewed_api_contract_overlay:
         emits the observed deprecation warning, and runs the callback in the
         direct-ASGI lifespan workflow. Invalid event types and warning-filter
         error behavior are outside this slice.
+    fastapi.applications.FastAPI.middleware:
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::middleware
+      source_evidence:
+        - path: fastapi/applications.py
+          kind: source-definition
+          symbol: middleware
+          start_line: 4683
+          end_line: 4727
+        - path: fastapi/applications.py
+          kind: source-definition
+          symbol: build_middleware_stack
+          start_line: 1020
+          end_line: 1068
+        - path: starlette/applications.py
+          kind: source-definition
+          source_authority: Starlette 1.6.0
+          owner: Starlette
+          symbol: add_middleware
+          start_line: 104
+          end_line: 107
+        - path: starlette/middleware/__init__.py
+          kind: source-definition
+          source_authority: Starlette 1.6.0
+          owner: Middleware
+          symbol: __init__
+          start_line: 22
+          end_line: 25
+        - path: starlette/applications.py
+          kind: source-definition
+          source_authority: Starlette 1.6.0
+          owner: Starlette
+          symbol: __call__
+          start_line: 92
+          end_line: 96
+        - path: starlette/middleware/base.py
+          kind: source-definition
+          source_authority: Starlette 1.6.0
+          owner: BaseHTTPMiddleware
+          symbol: __init__
+          start_line: 97
+          end_line: 99
+        - path: starlette/middleware/base.py
+          kind: source-definition
+          source_authority: Starlette 1.6.0
+          owner: BaseHTTPMiddleware
+          symbol: __call__
+          start_line: 101
+          end_line: 198
+        - path: starlette/middleware/base.py
+          kind: source-definition
+          source_authority: Starlette 1.6.0
+          owner: _CachedRequest
+          symbol: wrapped_receive
+          start_line: 34
+          end_line: 93
+        - path: starlette/requests.py
+          kind: source-definition
+          source_authority: Starlette 1.6.0
+          owner: Request
+          symbol: body
+          start_line: 254
+          end_line: 260
+        - path: tests/middleware/test_base.py
+          kind: upstream_test
+          source_authority: Starlette 1.6.0
+          symbol: test_read_request_body_in_app_after_middleware_calls_body
+          start_line: 689
+          end_line: 712
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/middleware.yaml
+          case_id: fastapi.middleware.decorator-openapi
+        - recipe_path: tests/fixtures/input-recipes/parity/middleware.yaml
+          case_id: fastapi.middleware.decorator-body-replay
+      feature_ids: [middleware-integrations, openapi-docs]
+      observation_selectors: [docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths]
+      supported_slice: >-
+        Partial native decorator slice: the documented "http" decorator accepts
+        a dispatch callable and returns that callable. FastAPI-RS routes the
+        callback through a Rust-owned HTTP adapter with a Rust-owned
+        call_next/receive bridge. The identity-checked middleware.yaml cases
+        observe exact response status and headers plus selected OpenAPI fields
+        for GET /openapi.json, and exact status and response body for POST
+        /body-replay. In the latter, dispatch reads Request.body() before
+        call_next and the endpoint observes the same bytes afterward. The
+        behavior is checked against FastAPI's Starlette 1.6.0 BaseHTTPMiddleware
+        path: _CachedRequest.wrapped_receive replays the cached body and tracks
+        consumed/disconnected state using the same Request body state. FastAPI's
+        pinned build_middleware_stack override places user middleware within its
+        stack. Other middleware_type values, arbitrary dispatch behavior,
+        composition and ordering beyond these cases, and broader middleware
+        error, lifecycle, and protocol behavior remain outside this slice.
     fastapi.applications.FastAPI.openapi:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::openapi
       source_evidence:

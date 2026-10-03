@@ -269,3 +269,55 @@ cases:
     kind: upstream_test
   - path: docs/en/docs/advanced/middleware.md
     kind: upstream_documentation
+
+# FastAPI 0.141.1 fastapi/applications.py::FastAPI.middleware registers the
+# decorated callable as Starlette BaseHTTPMiddleware. In the pinned Starlette
+# 1.6.0 starlette/middleware/base.py, _CachedRequest.wrapped_receive replays
+# cached _body bytes after dispatch calls Request.body();
+# starlette/requests.py::Request.body supplies that cache. The response body is
+# the endpoint's independent read of the same input bytes, so status+body
+# observe replay without prescribing hidden middleware state or embedding
+# oracle output in this input recipe.
+- case_id: fastapi.middleware.decorator-body-replay
+  actions:
+  - action_id: read-body-after-middleware-consumption
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: https
+      path: /body-replay
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - example.com
+      - - content-type
+        - text/plain
+      - - content-length
+        - '4'
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - example.com
+      - 443
+    receive_events:
+    - type: http.request
+      body: tiny
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/tutorial/middleware.md
+    kind: upstream_documentation
+  - path: tests/test_tutorial/test_middleware/test_tutorial001.py
+    kind: upstream_test

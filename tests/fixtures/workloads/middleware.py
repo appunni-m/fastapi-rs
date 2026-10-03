@@ -48,6 +48,8 @@ def create_app() -> FastAPI:
 
     @app.middleware("http")
     async def mark_response(request: Request, call_next: Any) -> Any:
+        if request.url.path == "/body-replay":
+            await request.body()
         response = await call_next(request)
         response.headers["X-FastAPI-Middleware"] = "active"
         return response
@@ -58,6 +60,11 @@ def create_app() -> FastAPI:
 
     @app.post("/echo")
     async def echo(request: Request) -> PlainTextResponse:
+        body = await request.body()
+        return PlainTextResponse(body.decode("utf-8"))
+
+    @app.post("/body-replay")
+    async def body_replay(request: Request) -> PlainTextResponse:
         body = await request.body()
         return PlainTextResponse(body.decode("utf-8"))
 
