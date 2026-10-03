@@ -1,0 +1,62 @@
+schema: fastapi-rs/python-asgi-workflow@3
+workload:
+  file: tests/fixtures/workloads/exception_handler_after_stack_cache.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.applications.exception-handler.after-stack-cache
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: lifespan
+    kind: lifespan
+    events: [lifespan.startup, lifespan.shutdown]
+    observations:
+    - {kind: asgi_lifespan, selector: event_order, comparison: ordered}
+    - {kind: asgi_lifespan, selector: startup, comparison: exact}
+    - {kind: asgi_lifespan, selector: shutdown, comparison: exact}
+    - {kind: asgi_lifespan, selector: application_errors, comparison: exact}
+    - {kind: asgi_lifespan, selector: workload_trace, comparison: ordered}
+  - action_id: arm-handler
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /arm-handler
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+  - action_id: dispatch-after-cache
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /raise-probe
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+    - {kind: application_error, selector: exception, comparison: exact}
+  source_evidence:
+  - {path: tests/test_exception_handlers.py, kind: upstream_test}
+  - {path: docs/en/docs/tutorial/handling-errors.md, kind: upstream_documentation}

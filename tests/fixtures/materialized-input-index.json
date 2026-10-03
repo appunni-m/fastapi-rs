@@ -2379,6 +2379,18 @@
       ]
     },
     {
+      "id": "exception-handler-after-stack-cache",
+      "input_path": "tests/fixtures/inputs/parity/exception-handler-after-stack-cache.json",
+      "input_sha256": "48469342379967a65890f1555736df46dd6293fb93fb3bf7017ee5d4c203f007",
+      "recipe_path": "tests/fixtures/input-recipes/parity/exception-handler-after-stack-cache.yaml",
+      "recipe_sha256": "b0388fc817a8ff6e499d9b14ccb2dbef252f32a24917e6e5c90ab5d9fce82359",
+      "workload_path": "tests/fixtures/workloads/exception_handler_after_stack_cache.py",
+      "workload_sha256": "1476467b027fd7a2c0fce300df831a321067072fa395e5fff889f079adec0ee4",
+      "case_ids": [
+        "fastapi.applications.exception-handler.after-stack-cache"
+      ]
+    },
+    {
       "id": "exception-handlers-test-review",
       "input_path": "tests/fixtures/inputs/parity/exception-handlers-test-review.json",
       "input_sha256": "bf2361b0950509efe6e0d9354087415bcf8e3fb30991889c952cf3b2c1c19314",
@@ -15858,6 +15870,35 @@
       "observation_selectors": [
         "python.attribute_value",
         "python.signature"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/handling-errors.md",
+      "fixture_id": "fastapi.docs.tutorial-handling-errors",
+      "workflow_id": "exception-handler-after-stack-cache",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.applications.exception-handler.after-stack-cache"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_exception_handlers.py",
+      "fixture_id": "fastapi.test.test-exception-handlers",
+      "workflow_id": "exception-handler-after-stack-cache",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.applications.exception-handler.after-stack-cache"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
       ]
     },
     {

@@ -791,6 +791,11 @@ reviewed_api_contract_overlay:
           end_line: 102
           required_text:
             - "You could add a custom exception handler with `@app.exception_handler()`:"
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/inherited-exception-handler-registration.yaml
+          case_id: fastapi.applications.exception-handler.decorator
+        - recipe_path: tests/fixtures/input-recipes/parity/exception-handler-after-stack-cache.yaml
+          case_id: fastapi.applications.exception-handler.after-stack-cache
       feature_ids: [public-api-errors]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.lifespan.workload_trace]
       supported_slice: >-
