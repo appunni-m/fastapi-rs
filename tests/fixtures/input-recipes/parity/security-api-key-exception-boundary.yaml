@@ -1,0 +1,46 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/security_credentials_upstream.py
+  factory: create_exception_boundary_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.security.api-key-header.fastapi-http-exception-handler-boundary
+  actions:
+  - action_id: request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /api-key/exception-boundary
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_api_key_header_description.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/handling-errors.md
+    kind: upstream_documentation

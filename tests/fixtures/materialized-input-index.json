@@ -6737,7 +6737,7 @@
       "input_path": "tests/fixtures/inputs/parity/response-model-data-filter-exclude-unset-none-review.json",
       "input_sha256": "e8df817a4df31b3f2f646068c8a9286416ff13577822d1fc572bbc5d8eb34a17",
       "recipe_path": "tests/fixtures/input-recipes/parity/response-model-data-filter-exclude-unset-none-review.yaml",
-      "recipe_sha256": "3244e48d7931e10c573ab96db92ec0fc2bb6eed20836e6b73eb74bd77c223c1a",
+      "recipe_sha256": "66add69e245ce1f103586c499114fad395fa80cc12ad8f171f0996ef95f461d3",
       "workload_path": "tests/fixtures/workloads/response_model_data_filter_exclude_unset_none_review.py",
       "workload_sha256": "24b60f06b2472a0254c9ae15d0b208e0edd99d3cb8a3833696d343bacd0c13cd",
       "case_ids": [
@@ -7070,11 +7070,11 @@
     {
       "id": "root-alias-identity",
       "input_path": "tests/fixtures/inputs/parity/root-alias-identity.json",
-      "input_sha256": "10572193f885b96ce1492810b2a73a87d695116e00ea67f645d4a3748662fa22",
+      "input_sha256": "4113becb3c2fc41b631895f5e0f17a1a1c662c26d8619a58d4ab8216e68e3e1d",
       "recipe_path": "tests/fixtures/input-recipes/parity/root-alias-identity.yaml",
-      "recipe_sha256": "25cd730773f7dab107c8833f4957e48f9817ae52ec9c34a1d87a89ee205792ff",
+      "recipe_sha256": "4f7186ec29a4ea3f6e6fe34a4a946d662f4a061265297b0b859065624899888f",
       "workload_path": "tests/fixtures/workloads/root_alias_identity.py",
-      "workload_sha256": "9b29ea45f81990b469cc14fd4e7345b4d0243c396bbd5bd9afecf9d540076bd5",
+      "workload_sha256": "6e00762c3937ac0efbca7459ec0a260074150b354926a2394c6cc523ab38144d",
       "case_ids": [
         "fastapi.root-alias-identity.http-reexports",
         "fastapi.root-alias-identity.websocket-reexports"
@@ -7408,6 +7408,18 @@
       ]
     },
     {
+      "id": "security-api-key-exception-boundary",
+      "input_path": "tests/fixtures/inputs/parity/security-api-key-exception-boundary.json",
+      "input_sha256": "ce92252104c33d8cf5b4f5b363b2be372e56940f8f35991e97acad3c84eaedf6",
+      "recipe_path": "tests/fixtures/input-recipes/parity/security-api-key-exception-boundary.yaml",
+      "recipe_sha256": "931a8a69943d3552b8e11836022cbc3a77a1d12becbbe250ff4fc0aff9c264f3",
+      "workload_path": "tests/fixtures/workloads/security_credentials_upstream.py",
+      "workload_sha256": "cd847beec32b56aae20840bb882f402f82bbcfde434a46214de14627fa3b889f",
+      "case_ids": [
+        "fastapi.security.api-key-header.fastapi-http-exception-handler-boundary"
+      ]
+    },
+    {
       "id": "security-api-key-header-openapi",
       "input_path": "tests/fixtures/inputs/parity/security_api_key_header_openapi.json",
       "input_sha256": "1061bf187e69a4c9c5781f0a9a6835b11fac08d624797d0751475c92671c51a9",
@@ -7443,11 +7455,11 @@
     {
       "id": "security-credentials-upstream",
       "input_path": "tests/fixtures/inputs/parity/security_credentials_upstream.json",
-      "input_sha256": "a8ff7be0376435287074d8cb7a013dac4790edf8efc82ff3e85902bffb2d4cf7",
+      "input_sha256": "24db451f130a07b454af785220c7748a0431f3e00079910a99ac9d7f0d3f833e",
       "recipe_path": "tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml",
-      "recipe_sha256": "921202d6210833540e5ad8463ab4540b57046539114e33a155e292c5aa1de55c",
+      "recipe_sha256": "1529e00721082110ba4a45caf6cc5976d1e1108c5f4f8ef3c2cc7f4a18697874",
       "workload_path": "tests/fixtures/workloads/security_credentials_upstream.py",
-      "workload_sha256": "0edc6738c3d9b6c5ce8176920bcb9f8d41c11078aacdf7c3507c096fd83a46d8",
+      "workload_sha256": "cd847beec32b56aae20840bb882f402f82bbcfde434a46214de14627fa3b889f",
       "case_ids": [
         "fastapi.security.api-key-cookie.test-security-api-key",
         "fastapi.security.api-key-cookie.test-security-api-key-no-key",
@@ -7491,7 +7503,11 @@
         "fastapi.security.http-bearer-description.test-openapi-schema",
         "fastapi.security.http-base-optional.test-security-http-base",
         "fastapi.security.http-base-optional.test-security-http-base-no-credentials",
-        "fastapi.security.http-base-optional.test-openapi-schema"
+        "fastapi.security.http-base-optional.test-openapi-schema",
+        "fastapi.security.api-key-cookie.empty-string-credential",
+        "fastapi.security.api-key-query.empty-string-credential",
+        "fastapi.security.api-key-header.empty-string-credential",
+        "fastapi.security.base.custom-subclass-openapi-scheme"
       ]
     },
     {
@@ -7624,7 +7640,7 @@
       "recipe_path": "tests/fixtures/input-recipes/parity/security-http-basic-realm-description-gap-wave.yaml",
       "recipe_sha256": "ac2542ced0a9b427b27980c3bacfb382a0856b518d5dda9af5c89d93bee8407a",
       "workload_path": "tests/fixtures/workloads/security_credentials_upstream.py",
-      "workload_sha256": "0edc6738c3d9b6c5ce8176920bcb9f8d41c11078aacdf7c3507c096fd83a46d8",
+      "workload_sha256": "cd847beec32b56aae20840bb882f402f82bbcfde434a46214de14627fa3b889f",
       "case_ids": [
         "fastapi.security-gap.http-basic-realm-description.test-security-http-basic"
       ]
@@ -7636,7 +7652,7 @@
       "recipe_path": "tests/fixtures/input-recipes/parity/security-http-basic-realm-description-gaps-wave.yaml",
       "recipe_sha256": "100d624328a60c5e2ad5457a9617d2731262c0f893da7a4ccb360812d925a477",
       "workload_path": "tests/fixtures/workloads/security_credentials_upstream.py",
-      "workload_sha256": "0edc6738c3d9b6c5ce8176920bcb9f8d41c11078aacdf7c3507c096fd83a46d8",
+      "workload_sha256": "cd847beec32b56aae20840bb882f402f82bbcfde434a46214de14627fa3b889f",
       "case_ids": [
         "fastapi.security-gap.http-basic-realm-description.test-security-http-basic-invalid-credentials",
         "fastapi.security-gap.http-basic-realm-description.test-security-http-basic-non-basic-credentials"
@@ -27496,6 +27512,62 @@
       ]
     },
     {
+      "source_item_id": "documented-page:tutorial/security/first-steps.md",
+      "fixture_id": "fastapi.docs.tutorial-security-first-steps",
+      "workflow_id": "root-alias-identity",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.root-alias-identity.http-reexports"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_security_api_key_cookie.py",
+      "fixture_id": "fastapi.test.test-security-api-key-cookie",
+      "workflow_id": "root-alias-identity",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.root-alias-identity.http-reexports"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_security_api_key_header_description.py",
+      "fixture_id": "fastapi.test.test-security-api-key-header-description",
+      "workflow_id": "root-alias-identity",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.root-alias-identity.http-reexports"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_security_api_key_query.py",
+      "fixture_id": "fastapi.test.test-security-api-key-query",
+      "workflow_id": "root-alias-identity",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.root-alias-identity.http-reexports"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
       "source_item_id": "documented-page:advanced/behind-a-proxy.md",
       "fixture_id": "fastapi.docs.advanced-behind-a-proxy",
       "workflow_id": "root-path-proxy",
@@ -28437,6 +28509,36 @@
       ]
     },
     {
+      "source_item_id": "documented-page:tutorial/handling-errors.md",
+      "fixture_id": "fastapi.docs.tutorial-handling-errors",
+      "workflow_id": "security-api-key-exception-boundary",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.security.api-key-header.fastapi-http-exception-handler-boundary"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_security_api_key_header_description.py",
+      "fixture_id": "fastapi.test.test-security-api-key-header-description",
+      "workflow_id": "security-api-key-exception-boundary",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.security.api-key-header.fastapi-http-exception-handler-boundary"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
       "source_item_id": "upstream-test:tests/test_security_api_key_header.py",
       "fixture_id": "fastapi.test.test-security-api-key-header",
       "workflow_id": "security-api-key-header-openapi",
@@ -28590,23 +28692,40 @@
       ]
     },
     {
+      "source_item_id": "documented-page:tutorial/security/first-steps.md",
+      "fixture_id": "fastapi.docs.tutorial-security-first-steps",
+      "workflow_id": "security-credentials-upstream",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.headers.ordered, http.status, openapi.document, openapi.security. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.security.base.custom-subclass-openapi-scheme"
+      ],
+      "observation_selectors": [
+        "http.headers.ordered",
+        "http.status",
+        "openapi.document",
+        "openapi.security"
+      ]
+    },
+    {
       "source_item_id": "upstream-test:tests/test_security_api_key_cookie.py",
       "fixture_id": "fastapi.test.test-security-api-key-cookie",
       "workflow_id": "security-credentials-upstream",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 3 case(s); observes docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.security. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 4 case(s); observes docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.security. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
+        "fastapi.security.api-key-cookie.empty-string-credential",
         "fastapi.security.api-key-cookie.test-openapi-schema",
         "fastapi.security.api-key-cookie.test-security-api-key",
         "fastapi.security.api-key-cookie.test-security-api-key-no-key"
       ],
       "observation_selectors": [
-        "docs.response.body.bytes",
         "docs.response.headers",
         "docs.response.status",
         "http.body.bytes",
         "http.headers.ordered",
         "http.status",
+        "openapi.document",
         "openapi.security"
       ]
     },
@@ -28615,19 +28734,19 @@
       "fixture_id": "fastapi.test.test-security-api-key-cookie-description",
       "workflow_id": "security-credentials-upstream",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 3 case(s); observes docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.security. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.security. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.security.api-key-cookie-description.test-openapi-schema",
         "fastapi.security.api-key-cookie-description.test-security-api-key",
         "fastapi.security.api-key-cookie-description.test-security-api-key-no-key"
       ],
       "observation_selectors": [
-        "docs.response.body.bytes",
         "docs.response.headers",
         "docs.response.status",
         "http.body.bytes",
         "http.headers.ordered",
         "http.status",
+        "openapi.document",
         "openapi.security"
       ]
     },
@@ -28636,19 +28755,19 @@
       "fixture_id": "fastapi.test.test-security-api-key-cookie-optional",
       "workflow_id": "security-credentials-upstream",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 3 case(s); observes docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.security. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.security. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.security.api-key-cookie-optional.test-openapi-schema",
         "fastapi.security.api-key-cookie-optional.test-security-api-key",
         "fastapi.security.api-key-cookie-optional.test-security-api-key-no-key"
       ],
       "observation_selectors": [
-        "docs.response.body.bytes",
         "docs.response.headers",
         "docs.response.status",
         "http.body.bytes",
         "http.headers.ordered",
         "http.status",
+        "openapi.document",
         "openapi.security"
       ]
     },
@@ -28657,19 +28776,21 @@
       "fixture_id": "fastapi.test.test-security-api-key-header-description",
       "workflow_id": "security-credentials-upstream",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 3 case(s); observes docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.security. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 5 case(s); observes docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.security. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.security.api-key-header-description.test-openapi-schema",
         "fastapi.security.api-key-header-description.test-security-api-key",
-        "fastapi.security.api-key-header-description.test-security-api-key-no-key"
+        "fastapi.security.api-key-header-description.test-security-api-key-no-key",
+        "fastapi.security.api-key-header.empty-string-credential",
+        "fastapi.security.base.custom-subclass-openapi-scheme"
       ],
       "observation_selectors": [
-        "docs.response.body.bytes",
         "docs.response.headers",
         "docs.response.status",
         "http.body.bytes",
         "http.headers.ordered",
         "http.status",
+        "openapi.document",
         "openapi.security"
       ]
     },
@@ -28678,19 +28799,20 @@
       "fixture_id": "fastapi.test.test-security-api-key-query",
       "workflow_id": "security-credentials-upstream",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 3 case(s); observes docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.security. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 4 case(s); observes docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.security. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
+        "fastapi.security.api-key-query.empty-string-credential",
         "fastapi.security.api-key-query.test-openapi-schema",
         "fastapi.security.api-key-query.test-security-api-key",
         "fastapi.security.api-key-query.test-security-api-key-no-key"
       ],
       "observation_selectors": [
-        "docs.response.body.bytes",
         "docs.response.headers",
         "docs.response.status",
         "http.body.bytes",
         "http.headers.ordered",
         "http.status",
+        "openapi.document",
         "openapi.security"
       ]
     },
@@ -28699,19 +28821,19 @@
       "fixture_id": "fastapi.test.test-security-api-key-query-description",
       "workflow_id": "security-credentials-upstream",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 3 case(s); observes docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.security. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.security. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.security.api-key-query-description.test-openapi-schema",
         "fastapi.security.api-key-query-description.test-security-api-key",
         "fastapi.security.api-key-query-description.test-security-api-key-no-key"
       ],
       "observation_selectors": [
-        "docs.response.body.bytes",
         "docs.response.headers",
         "docs.response.status",
         "http.body.bytes",
         "http.headers.ordered",
         "http.status",
+        "openapi.document",
         "openapi.security"
       ]
     },
@@ -28720,19 +28842,19 @@
       "fixture_id": "fastapi.test.test-security-api-key-query-optional",
       "workflow_id": "security-credentials-upstream",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 3 case(s); observes docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.security. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.security. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.security.api-key-query-optional.test-openapi-schema",
         "fastapi.security.api-key-query-optional.test-security-api-key",
         "fastapi.security.api-key-query-optional.test-security-api-key-no-key"
       ],
       "observation_selectors": [
-        "docs.response.body.bytes",
         "docs.response.headers",
         "docs.response.status",
         "http.body.bytes",
         "http.headers.ordered",
         "http.status",
+        "openapi.document",
         "openapi.security"
       ]
     },
@@ -28741,19 +28863,19 @@
       "fixture_id": "fastapi.test.test-security-http-base-optional",
       "workflow_id": "security-credentials-upstream",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 3 case(s); observes docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.security. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.security. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.security.http-base-optional.test-openapi-schema",
         "fastapi.security.http-base-optional.test-security-http-base",
         "fastapi.security.http-base-optional.test-security-http-base-no-credentials"
       ],
       "observation_selectors": [
-        "docs.response.body.bytes",
         "docs.response.headers",
         "docs.response.status",
         "http.body.bytes",
         "http.headers.ordered",
         "http.status",
+        "openapi.document",
         "openapi.security"
       ]
     },
@@ -28762,7 +28884,7 @@
       "fixture_id": "fastapi.test.test-security-http-basic-optional",
       "workflow_id": "security-credentials-upstream",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 5 case(s); observes docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.security. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 5 case(s); observes docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.security. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.security.http-basic-optional.test-openapi-schema",
         "fastapi.security.http-basic-optional.test-security-http-basic",
@@ -28771,12 +28893,12 @@
         "fastapi.security.http-basic-optional.test-security-http-basic-non-basic-credentials"
       ],
       "observation_selectors": [
-        "docs.response.body.bytes",
         "docs.response.headers",
         "docs.response.status",
         "http.body.bytes",
         "http.headers.ordered",
         "http.status",
+        "openapi.document",
         "openapi.security"
       ]
     },
@@ -28785,18 +28907,18 @@
       "fixture_id": "fastapi.test.test-security-http-basic-realm-description",
       "workflow_id": "security-credentials-upstream",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 2 case(s); observes docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.security. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.security. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.security.http-basic-realm-description.test-openapi-schema",
         "fastapi.security.http-basic-realm-description.test-security-http-basic-no-credentials"
       ],
       "observation_selectors": [
-        "docs.response.body.bytes",
         "docs.response.headers",
         "docs.response.status",
         "http.body.bytes",
         "http.headers.ordered",
         "http.status",
+        "openapi.document",
         "openapi.security"
       ]
     },
@@ -28805,7 +28927,7 @@
       "fixture_id": "fastapi.test.test-security-http-bearer",
       "workflow_id": "security-credentials-upstream",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 4 case(s); observes docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.security. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 4 case(s); observes docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.security. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.security.http-bearer.test-openapi-schema",
         "fastapi.security.http-bearer.test-security-http-bearer",
@@ -28813,12 +28935,12 @@
         "fastapi.security.http-bearer.test-security-http-bearer-no-credentials"
       ],
       "observation_selectors": [
-        "docs.response.body.bytes",
         "docs.response.headers",
         "docs.response.status",
         "http.body.bytes",
         "http.headers.ordered",
         "http.status",
+        "openapi.document",
         "openapi.security"
       ]
     },
@@ -28827,7 +28949,7 @@
       "fixture_id": "fastapi.test.test-security-http-bearer-description",
       "workflow_id": "security-credentials-upstream",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 4 case(s); observes docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.security. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 4 case(s); observes docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.security. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.security.http-bearer-description.test-openapi-schema",
         "fastapi.security.http-bearer-description.test-security-http-bearer",
@@ -28835,12 +28957,12 @@
         "fastapi.security.http-bearer-description.test-security-http-bearer-no-credentials"
       ],
       "observation_selectors": [
-        "docs.response.body.bytes",
         "docs.response.headers",
         "docs.response.status",
         "http.body.bytes",
         "http.headers.ordered",
         "http.status",
+        "openapi.document",
         "openapi.security"
       ]
     },
@@ -28849,7 +28971,7 @@
       "fixture_id": "fastapi.test.test-security-http-bearer-optional",
       "workflow_id": "security-credentials-upstream",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 4 case(s); observes docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.security. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 4 case(s); observes docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.security. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.security.http-bearer-optional.test-openapi-schema",
         "fastapi.security.http-bearer-optional.test-security-http-bearer",
@@ -28857,12 +28979,12 @@
         "fastapi.security.http-bearer-optional.test-security-http-bearer-no-credentials"
       ],
       "observation_selectors": [
-        "docs.response.body.bytes",
         "docs.response.headers",
         "docs.response.status",
         "http.body.bytes",
         "http.headers.ordered",
         "http.status",
+        "openapi.document",
         "openapi.security"
       ]
     },

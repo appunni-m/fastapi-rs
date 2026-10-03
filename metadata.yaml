@@ -80,14 +80,14 @@ api_inventory:
 import_binding_classification_review:
   artifact: tests/fixtures/api-import-binding-classification-review.json
   schema: fastapi-starlette-import-binding-review/v1
-  sha256: 9bde014405cd7ae756a64cce080271126047c807a792c7b2524583e650bdb02b
+  sha256: e40cb450d080f4876d3c1bacd49d29672d1fa142c40232d7c692e55040f769a8
   source_identity:
     package: FastAPI
     version: 0.141.1
     source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
     selected_starlette_profile: 1.6.0
     starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
-    starlette_rs_contract_commit: 366b6b93bc0f2769fdb01f17444909966e570b30
+    starlette_rs_contract_commit: 2f9978d4c8e28443a176b83fb9a6f2b9966d0953
   starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
   counts:
     candidates: 97
@@ -99,7 +99,7 @@ import_binding_classification_review:
   candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
   pinned_starlette_rs_sources:
     metadata_sha256: 90f805ed7d2497833422db870f88d53319dbaaf31a675f89b1ad21fdd4a123d5
-    manifest_sha256: f49efdc08bc40a40e2ae0334928b5c7d30dc965162a87bd27934441894d8dae4
+    manifest_sha256: aa3108780be0d225f0e1e234768417446b945f0f7b16b1f013aa1a221d73ddec
     api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
     api_review_sha256: 8b25f2e3a46753316446077bfde97b6ac8a342233e2f4e50b12d3d01eafbe099
 
@@ -435,7 +435,7 @@ classification_atlas:
 starlette_rs:
   owner: ../starlette-rs
   repository: https://github.com/appunni-m/starlette-rs
-  commit: 366b6b93bc0f2769fdb01f17444909966e570b30
+  commit: 2f9978d4c8e28443a176b83fb9a6f2b9966d0953
   distribution_version: 0.1.0
   contract_id: starlette-1.6.0-asgi-http-config-session-slice
   metadata: ../starlette-rs/metadata.yaml
@@ -3070,6 +3070,576 @@ reviewed_api_contract_overlay:
         - python.signature
         - websocket.close_code
         - websocket.close_reason
+    fastapi.security.APIKeyCookie:
+      rust_binding: fastapi-rs/src/security.rs::PyApiKeyCookie
+      source_evidence:
+        - path: fastapi/security/__init__.py
+          symbol: APIKeyCookie
+          kind: import-binding
+          line: 1
+          imported_module: api_key
+          relative_level: 1
+          imported_name: APIKeyCookie
+          alias_spelling: APIKeyCookie
+          local_name: APIKeyCookie
+          target_path: fastapi.security.api_key.APIKeyCookie
+        - path: fastapi/security/api_key.py
+          symbol: APIKeyCookie
+          kind: source-definition
+          start_line: 235
+          end_line: 320
+      fixture_refs: &api_key_cookie_fixtures
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.api-key-cookie.test-security-api-key
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.api-key-cookie.test-security-api-key-no-key
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.api-key-cookie-optional.test-security-api-key
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.api-key-cookie-optional.test-security-api-key-no-key
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.api-key-cookie.test-openapi-schema
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.api-key-cookie-optional.test-openapi-schema
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.api-key-cookie-description.test-security-api-key
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.api-key-cookie-description.test-security-api-key-no-key
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.api-key-cookie-description.test-openapi-schema
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.api-key-cookie.empty-string-credential
+      feature_ids: [dependency-security, openapi-docs]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.security]
+      supported_slice: >-
+        Partial Rust-owned API-key dependency slice for the documented
+        `fastapi.security` export. The selected input cases cover cookie
+        extraction, required and `auto_error=False` missing-key responses,
+        scheme names/descriptions, and OpenAPI security scheme and requirement
+        output. Direct alias-object identity and behavior outside those cases
+        remain unverified; live identity-bound parity is pending.
+    fastapi.security.APIKeyHeader:
+      rust_binding: fastapi-rs/src/security.rs::PyApiKeyHeader
+      source_evidence:
+        - path: fastapi/security/__init__.py
+          symbol: APIKeyHeader
+          kind: import-binding
+          line: 2
+          imported_module: api_key
+          relative_level: 1
+          imported_name: APIKeyHeader
+          alias_spelling: APIKeyHeader
+          local_name: APIKeyHeader
+          target_path: fastapi.security.api_key.APIKeyHeader
+        - path: fastapi/security/api_key.py
+          symbol: APIKeyHeader
+          kind: source-definition
+          start_line: 147
+          end_line: 232
+      fixture_refs: &api_key_header_fixtures
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.api-key-header-description.test-security-api-key
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.api-key-header-description.test-security-api-key-no-key
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.api-key-header-description.test-openapi-schema
+        - recipe_path: tests/fixtures/input-recipes/parity/security_api_key_header_openapi.yaml
+          case_id: fastapi.test.security-api-key-header.default-name-openapi
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.api-key-header.empty-string-credential
+        - recipe_path: tests/fixtures/input-recipes/parity/security-api-key-exception-boundary.yaml
+          case_id: fastapi.security.api-key-header.fastapi-http-exception-handler-boundary
+      feature_ids: [dependency-security, openapi-docs]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.security]
+      supported_slice: >-
+        Partial Rust-owned API-key dependency slice for the documented
+        `fastapi.security` export. The selected input cases cover header
+        extraction, required missing-key responses, descriptions and scheme
+        names, and OpenAPI security scheme and requirement output, including a
+        configured header name. Direct alias-object identity and behavior
+        outside those cases remain unverified; live identity-bound parity is
+        pending.
+    fastapi.security.APIKeyQuery:
+      rust_binding: fastapi-rs/src/security.rs::PyApiKeyQuery
+      source_evidence:
+        - path: fastapi/security/__init__.py
+          symbol: APIKeyQuery
+          kind: import-binding
+          line: 3
+          imported_module: api_key
+          relative_level: 1
+          imported_name: APIKeyQuery
+          alias_spelling: APIKeyQuery
+          local_name: APIKeyQuery
+          target_path: fastapi.security.api_key.APIKeyQuery
+        - path: fastapi/security/api_key.py
+          symbol: APIKeyQuery
+          kind: source-definition
+          start_line: 55
+          end_line: 144
+      fixture_refs: &api_key_query_fixtures
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.api-key-query.test-security-api-key
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.api-key-query.test-security-api-key-no-key
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.api-key-query-optional.test-security-api-key
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.api-key-query-optional.test-security-api-key-no-key
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.api-key-query.test-openapi-schema
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.api-key-query-optional.test-openapi-schema
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.api-key-query-description.test-security-api-key
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.api-key-query-description.test-security-api-key-no-key
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.api-key-query-description.test-openapi-schema
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.api-key-query.empty-string-credential
+      feature_ids: [dependency-security, openapi-docs]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.security]
+      supported_slice: >-
+        Partial Rust-owned API-key dependency slice for the documented
+        `fastapi.security` export. The selected input cases cover query
+        extraction, required and `auto_error=False` missing-key responses,
+        scheme names/descriptions, and OpenAPI security scheme and requirement
+        output. Direct alias-object identity and behavior outside those cases
+        remain unverified; live identity-bound parity is pending.
+    fastapi.security.api_key.APIKeyCookie:
+      rust_binding: fastapi-rs/src/security.rs::PyApiKeyCookie
+      source_evidence:
+        - path: fastapi/security/api_key.py
+          symbol: APIKeyCookie
+          kind: source-definition
+          start_line: 235
+          end_line: 320
+      fixture_refs: *api_key_cookie_fixtures
+      feature_ids: [dependency-security, openapi-docs]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.security]
+      supported_slice: >-
+        Partial native class slice: construction preserves the configured
+        cookie name, scheme name, optional description, and `auto_error`
+        setting. Its awaitable reads the named cookie, returns its value,
+        returns None for a missing optional key, and raises the documented 401
+        APIKey challenge for a missing required key. Selected OpenAPI cases
+        cover the cookie scheme and operation requirement; other constructor
+        validation and direct identity checks remain unverified.
+    fastapi.security.api_key.APIKeyCookie.__call__:
+      rust_binding: fastapi-rs/src/security.rs::PyApiKeyCookie::__call__
+      source_evidence:
+        - path: fastapi/security/api_key.py
+          symbol: __call__
+          kind: source-definition
+          start_line: 318
+          end_line: 320
+      fixture_refs: *api_key_cookie_fixtures
+      feature_ids: [dependency-security, public-api-errors]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      supported_slice: >-
+        Partial awaitable slice extracts the configured cookie value, returns
+        None for a missing key when `auto_error=False`, and raises the 401
+        response with the APIKey `WWW-Authenticate` challenge when a required
+        key is missing. Callable-object introspection projects the `Request`
+        parameter and `str | None` return annotation; direct bound-method
+        annotation parity and `inspect.iscoroutinefunction` remain partial
+        because the target returns a native custom awaitable.
+        Cookie parsing edge cases remain outside this slice.
+    fastapi.security.api_key.APIKeyCookie.__init__:
+      rust_binding: fastapi-rs/src/security.rs::PyApiKeyCookie::new
+      source_evidence:
+        - path: fastapi/security/api_key.py
+          symbol: __init__
+          kind: source-definition
+          start_line: 267
+          end_line: 316
+      fixture_refs: *api_key_cookie_fixtures
+      feature_ids: [dependency-security, openapi-docs]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.security]
+      supported_slice: >-
+        Partial constructor slice accepts the required keyword-only cookie
+        name, optional scheme name and description, and `auto_error`. Selected
+        request and OpenAPI cases exercise those values. Constructor
+        `Annotated`/`Doc` annotations, complete signature metadata, invalid
+        argument outcomes, and other parameter combinations remain partial or
+        unverified.
+    fastapi.security.api_key.APIKeyHeader:
+      rust_binding: fastapi-rs/src/security.rs::PyApiKeyHeader
+      source_evidence:
+        - path: fastapi/security/api_key.py
+          symbol: APIKeyHeader
+          kind: source-definition
+          start_line: 147
+          end_line: 232
+      fixture_refs: *api_key_header_fixtures
+      feature_ids: [dependency-security, openapi-docs]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.security]
+      supported_slice: >-
+        Partial native class slice: construction preserves the configured
+        header name, scheme name, optional description, and `auto_error`
+        setting. Its awaitable reads the named header, returns its value,
+        returns None for a missing optional key, and raises the documented 401
+        APIKey challenge for a missing required key. Selected OpenAPI cases
+        cover the header scheme and operation requirement; other constructor
+        validation and direct identity checks remain unverified.
+    fastapi.security.api_key.APIKeyHeader.__call__:
+      rust_binding: fastapi-rs/src/security.rs::PyApiKeyHeader::__call__
+      source_evidence:
+        - path: fastapi/security/api_key.py
+          symbol: __call__
+          kind: source-definition
+          start_line: 230
+          end_line: 232
+      fixture_refs: *api_key_header_fixtures
+      feature_ids: [dependency-security, public-api-errors]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      supported_slice: >-
+        Partial awaitable slice extracts the configured header value, returns
+        None for a missing key when `auto_error=False`, and raises the 401
+        response with the APIKey `WWW-Authenticate` challenge when a required
+        key is missing. Callable-object introspection projects the `Request`
+        parameter and `str | None` return annotation; direct bound-method
+        annotation parity and `inspect.iscoroutinefunction` remain partial
+        because the target returns a native custom awaitable.
+        Header normalization edge cases remain outside this slice.
+    fastapi.security.api_key.APIKeyHeader.__init__:
+      rust_binding: fastapi-rs/src/security.rs::PyApiKeyHeader::new
+      source_evidence:
+        - path: fastapi/security/api_key.py
+          symbol: __init__
+          kind: source-definition
+          start_line: 179
+          end_line: 228
+      fixture_refs: *api_key_header_fixtures
+      feature_ids: [dependency-security, openapi-docs]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.security]
+      supported_slice: >-
+        Partial constructor slice accepts the required keyword-only header
+        name, optional scheme name and description, and `auto_error`. Selected
+        request and OpenAPI cases exercise those values. Constructor
+        `Annotated`/`Doc` annotations, complete signature metadata, invalid
+        argument outcomes, and other parameter combinations remain partial or
+        unverified.
+    fastapi.security.api_key.APIKeyQuery:
+      rust_binding: fastapi-rs/src/security.rs::PyApiKeyQuery
+      source_evidence:
+        - path: fastapi/security/api_key.py
+          symbol: APIKeyQuery
+          kind: source-definition
+          start_line: 55
+          end_line: 144
+      fixture_refs: *api_key_query_fixtures
+      feature_ids: [dependency-security, openapi-docs]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.security]
+      supported_slice: >-
+        Partial native class slice: construction preserves the configured
+        query name, scheme name, optional description, and `auto_error`
+        setting. Its awaitable reads the named query parameter, returns its
+        value, returns None for a missing optional key, and raises the
+        documented 401 APIKey challenge for a missing required key. Selected
+        OpenAPI cases cover the query scheme and operation requirement; other
+        constructor validation and direct identity checks remain unverified.
+    fastapi.security.api_key.APIKeyQuery.__call__:
+      rust_binding: fastapi-rs/src/security.rs::PyApiKeyQuery::__call__
+      source_evidence:
+        - path: fastapi/security/api_key.py
+          symbol: __call__
+          kind: source-definition
+          start_line: 142
+          end_line: 144
+      fixture_refs: *api_key_query_fixtures
+      feature_ids: [dependency-security, public-api-errors]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      supported_slice: >-
+        Partial awaitable slice extracts the configured query value, returns
+        None for a missing key when `auto_error=False`, and raises the 401
+        response with the APIKey `WWW-Authenticate` challenge when a required
+        key is missing. Callable-object introspection projects the `Request`
+        parameter and `str | None` return annotation; direct bound-method
+        annotation parity and `inspect.iscoroutinefunction` remain partial
+        because the target returns a native custom awaitable.
+        Query parsing edge cases remain outside this slice.
+    fastapi.security.api_key.APIKeyQuery.__init__:
+      rust_binding: fastapi-rs/src/security.rs::PyApiKeyQuery::new
+      source_evidence:
+        - path: fastapi/security/api_key.py
+          symbol: __init__
+          kind: source-definition
+          start_line: 87
+          end_line: 140
+      fixture_refs: *api_key_query_fixtures
+      feature_ids: [dependency-security, openapi-docs]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.security]
+      supported_slice: >-
+        Partial constructor slice accepts the required keyword-only query
+        name, optional scheme name and description, and `auto_error`. Selected
+        request and OpenAPI cases exercise those values. Constructor
+        `Annotated`/`Doc` annotations, complete signature metadata, invalid
+        argument outcomes, and other parameter combinations remain partial or
+        unverified.
+    fastapi.security.api_key.APIKeyBase.make_not_authenticated_error:
+      rust_binding: fastapi-rs/src/security.rs::PyApiKeyBase::make_not_authenticated_error
+      source_evidence:
+        - path: fastapi/security/api_key.py
+          symbol: make_not_authenticated_error
+          kind: source-definition
+          start_line: 31
+          end_line: 45
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.api-key-cookie.test-security-api-key-no-key
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.api-key-query.test-security-api-key-no-key
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.api-key-header-description.test-security-api-key-no-key
+        - recipe_path: tests/fixtures/input-recipes/parity/security-api-key-exception-boundary.yaml
+          case_id: fastapi.security.api-key-header.fastapi-http-exception-handler-boundary
+      feature_ids: [dependency-security, public-api-errors]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      supported_slice: >-
+        The selected required-credential cases exercise the documented
+        authentication failure: status 401, detail `Not authenticated`, and
+        `WWW-Authenticate: APIKey`. Direct invocation and subclass override
+        behavior remain outside this slice.
+    fastapi.security.base.SecurityBase:
+      rust_binding: fastapi-rs/src/security.rs::PySecurityBase
+      source_evidence:
+        - path: fastapi/security/base.py
+          symbol: SecurityBase
+          kind: source-definition
+          start_line: 4
+          end_line: 6
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.base.custom-subclass-openapi-scheme
+      feature_ids: [dependency-security]
+      supported_slice: >-
+        Native base type is used in the same inheritance position for the
+        APIKey security dependencies and carries the source `model` and
+        `scheme_name` annotations. Direct base-class identity and MRO parity
+        remain unverified by a dedicated input workflow.
+    fastapi.openapi.models.APIKey:
+      rust_binding: fastapi-rs/src/security.rs::create_api_key_models
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          symbol: APIKey
+          kind: source-definition
+          start_line: 339
+          end_line: 342
+      fixture_refs: &api_key_openapi_fixtures
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.api-key-cookie.test-openapi-schema
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.api-key-cookie-optional.test-openapi-schema
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.api-key-cookie-description.test-openapi-schema
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.api-key-query.test-openapi-schema
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.api-key-query-optional.test-openapi-schema
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.api-key-query-description.test-openapi-schema
+        - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+          case_id: fastapi.security.api-key-header-description.test-openapi-schema
+        - recipe_path: tests/fixtures/input-recipes/parity/security_api_key_header_openapi.yaml
+          case_id: fastapi.test.security-api-key-header.default-name-openapi
+      feature_ids: [openapi-docs, dependency-security]
+      observation_selectors: [openapi.document, openapi.security]
+      supported_slice: >-
+        Native Pydantic APIKey model is exposed at the pinned OpenAPI model
+        path with the documented `type`, `in`, `name`, and optional
+        `description` fields. Selected APIKey OpenAPI cases exercise its
+        serialized scheme fields and operation requirements. Direct model
+        identity, full validation/schema behavior, and unknown extra fields
+        remain unverified pending live parity.
+    fastapi.openapi.models.APIKey.in_:
+      rust_binding: fastapi-rs/src/security.rs::create_api_key_models
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          symbol: APIKey
+          kind: class-field
+          start_line: 341
+          end_line: 341
+      fixture_refs: *api_key_openapi_fixtures
+      feature_ids: [openapi-docs, dependency-security]
+      observation_selectors: [openapi.document, openapi.security]
+      supported_slice: >-
+        The selected OpenAPI cases serialize the APIKey location as the `in`
+        field for header, query, and cookie schemes; direct field validation
+        remains unverified.
+    fastapi.openapi.models.APIKey.name:
+      rust_binding: fastapi-rs/src/security.rs::create_api_key_models
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          symbol: APIKey
+          kind: class-field
+          start_line: 342
+          end_line: 342
+      fixture_refs: *api_key_openapi_fixtures
+      feature_ids: [openapi-docs, dependency-security]
+      observation_selectors: [openapi.document, openapi.security]
+      supported_slice: >-
+        The selected OpenAPI cases serialize the configured APIKey header,
+        query, or cookie name; direct field validation remains unverified.
+    fastapi.openapi.models.APIKey.type_:
+      rust_binding: fastapi-rs/src/security.rs::create_api_key_models
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          symbol: APIKey
+          kind: class-field
+          start_line: 340
+          end_line: 340
+      fixture_refs: *api_key_openapi_fixtures
+      feature_ids: [openapi-docs, dependency-security]
+      observation_selectors: [openapi.document, openapi.security]
+      supported_slice: >-
+        The selected OpenAPI cases serialize the APIKey scheme type as
+        `apiKey`; direct field validation remains unverified.
+    fastapi.openapi.models.APIKeyIn:
+      rust_binding: fastapi-rs/src/security.rs::create_api_key_models
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          symbol: APIKeyIn
+          kind: source-definition
+          start_line: 333
+          end_line: 336
+      fixture_refs: *api_key_openapi_fixtures
+      feature_ids: [openapi-docs, dependency-security]
+      observation_selectors: [openapi.document, openapi.security]
+      supported_slice: >-
+        Native enum supplies the query, header, and cookie APIKey locations
+        serialized by the selected OpenAPI cases. Direct enum identity parity
+        remains unverified.
+    fastapi.openapi.models.APIKeyIn.cookie:
+      rust_binding: fastapi-rs/src/security.rs::create_api_key_models
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          symbol: APIKeyIn
+          kind: enum-member
+          start_line: 336
+          end_line: 336
+      fixture_refs: *api_key_openapi_fixtures
+      feature_ids: [openapi-docs, dependency-security]
+      observation_selectors: [openapi.document, openapi.security]
+      supported_slice: >-
+        The selected cookie OpenAPI cases serialize this enum member as the
+        APIKey `in` value `cookie`.
+    fastapi.openapi.models.APIKeyIn.header:
+      rust_binding: fastapi-rs/src/security.rs::create_api_key_models
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          symbol: APIKeyIn
+          kind: enum-member
+          start_line: 335
+          end_line: 335
+      fixture_refs: *api_key_openapi_fixtures
+      feature_ids: [openapi-docs, dependency-security]
+      observation_selectors: [openapi.document, openapi.security]
+      supported_slice: >-
+        The selected header OpenAPI cases serialize this enum member as the
+        APIKey `in` value `header`.
+    fastapi.openapi.models.APIKeyIn.query:
+      rust_binding: fastapi-rs/src/security.rs::create_api_key_models
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          symbol: APIKeyIn
+          kind: enum-member
+          start_line: 334
+          end_line: 334
+      fixture_refs: *api_key_openapi_fixtures
+      feature_ids: [openapi-docs, dependency-security]
+      observation_selectors: [openapi.document, openapi.security]
+      supported_slice: >-
+        The selected query OpenAPI cases serialize this enum member as the
+        APIKey `in` value `query`.
+    fastapi.openapi.models.BaseModelWithConfig:
+      rust_binding: fastapi-rs/src/security.rs::create_api_key_models
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          symbol: BaseModelWithConfig
+          kind: source-definition
+          start_line: 57
+          end_line: 58
+      feature_ids: [openapi-docs]
+      supported_slice: >-
+        Native Pydantic base model is used in the APIKey model inheritance
+        chain with the source extra-field configuration. Standalone extra-field
+        validation and schema parity remain unverified.
+    fastapi.openapi.models.SecurityBase:
+      rust_binding: fastapi-rs/src/security.rs::create_api_key_models
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          symbol: SecurityBase
+          kind: source-definition
+          start_line: 328
+          end_line: 330
+      fixture_refs: *api_key_openapi_fixtures
+      feature_ids: [openapi-docs, dependency-security]
+      observation_selectors: [openapi.document, openapi.security]
+      supported_slice: >-
+        Native Pydantic base model provides the type and description fields
+        inherited by APIKey. Selected APIKey OpenAPI cases exercise those
+        serialized fields; direct model identity and full validation remain
+        unverified.
+    fastapi.openapi.models.SecurityBase.description:
+      rust_binding: fastapi-rs/src/security.rs::create_api_key_models
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          symbol: SecurityBase
+          kind: class-field
+          start_line: 330
+          end_line: 330
+      fixture_refs: *api_key_openapi_fixtures
+      feature_ids: [openapi-docs, dependency-security]
+      observation_selectors: [openapi.document, openapi.security]
+      supported_slice: >-
+        The selected described APIKey OpenAPI cases serialize the optional
+        scheme description; other description values and validation remain
+        unverified.
+    fastapi.openapi.models.SecurityBase.type_:
+      rust_binding: fastapi-rs/src/security.rs::create_api_key_models
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          symbol: SecurityBase
+          kind: class-field
+          start_line: 329
+          end_line: 329
+      fixture_refs: *api_key_openapi_fixtures
+      feature_ids: [openapi-docs, dependency-security]
+      observation_selectors: [openapi.document, openapi.security]
+      supported_slice: >-
+        The selected APIKey OpenAPI cases serialize the inherited security
+        scheme type; direct base-model validation remains unverified.
+    fastapi.openapi.models.SecuritySchemeType:
+      rust_binding: fastapi-rs/src/security.rs::create_api_key_models
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          symbol: SecuritySchemeType
+          kind: source-definition
+          start_line: 321
+          end_line: 325
+      fixture_refs: *api_key_openapi_fixtures
+      feature_ids: [openapi-docs, dependency-security]
+      observation_selectors: [openapi.document, openapi.security]
+      supported_slice: >-
+        Native enum supplies the APIKey scheme type serialized by the selected
+        OpenAPI cases. Non-APIKey security scheme enum values remain outside
+        this slice.
+    fastapi.openapi.models.SecuritySchemeType.apiKey:
+      rust_binding: fastapi-rs/src/security.rs::create_api_key_models
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          symbol: SecuritySchemeType
+          kind: enum-member
+          start_line: 322
+          end_line: 322
+      fixture_refs: *api_key_openapi_fixtures
+      feature_ids: [openapi-docs, dependency-security]
+      observation_selectors: [openapi.document, openapi.security]
+      supported_slice: >-
+        The selected APIKey OpenAPI cases serialize this enum member as the
+        scheme type value `apiKey`.
   inherited_candidate_reviews:
     fastapi.routing.APIRouter.host:
       kind: inherited_method

@@ -1850,7 +1850,62 @@ def build_api_surface_contract(
                 raise ContractError(
                     f"reviewed source evidence is not valid Python: {source_path}"
                 ) from exc
-            if not any(
+            if reference.get("kind") == "import-binding":
+                line = reference.get("line")
+                imported_module = reference.get("imported_module")
+                relative_level = reference.get("relative_level")
+                imported_name = reference.get("imported_name")
+                alias_spelling = reference.get("alias_spelling")
+                local_name = reference.get("local_name")
+                target_path = reference.get("target_path")
+                if (
+                    not isinstance(line, int)
+                    or not isinstance(imported_module, str)
+                    or not isinstance(relative_level, int)
+                    or relative_level < 0
+                    or not isinstance(imported_name, str)
+                    or not isinstance(alias_spelling, str)
+                    or not isinstance(local_name, str)
+                    or not isinstance(target_path, str)
+                    or symbol != local_name
+                ):
+                    raise ContractError(
+                        f"reviewed source import binding differs: {source_path}:{line}:{symbol}"
+                    )
+                matching_bindings = [
+                    alias
+                    for node in ast.walk(tree)
+                    if isinstance(node, ast.ImportFrom)
+                    and node.lineno == line
+                    and node.module == imported_module
+                    and node.level == relative_level
+                    for alias in node.names
+                    if alias.name == imported_name
+                    and alias.asname == alias_spelling
+                    and (alias.asname or alias.name) == local_name
+                ]
+                if not matching_bindings:
+                    raise ContractError(
+                        f"reviewed source import binding differs: {source_path}:{line}:{symbol}"
+                    )
+                source_parts = list(Path(source_path).with_suffix("").parts)
+                package_parts = source_parts[:-1]
+                if relative_level > len(package_parts):
+                    raise ContractError(
+                        f"reviewed source import level is invalid: {source_path}:{line}"
+                    )
+                resolved_parts = package_parts[: len(package_parts) - relative_level + 1]
+                resolved_module_parts = (
+                    resolved_parts + imported_module.split(".")
+                    if relative_level
+                    else imported_module.split(".")
+                )
+                observed_target_path = ".".join(resolved_module_parts + [imported_name])
+                if observed_target_path != target_path:
+                    raise ContractError(
+                        f"reviewed source import target differs: {source_path}:{line}:{target_path}"
+                    )
+            elif not any(
                 isinstance(
                     node,
                     (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef),

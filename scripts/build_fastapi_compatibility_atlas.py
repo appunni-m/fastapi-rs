@@ -8255,6 +8255,17 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             if isinstance(section, dict)
         )
 
+    def has_cors_middleware_evidence(coverage_item: dict[str, Any]) -> bool:
+        """Recognize FastAPI CORS source paths and reviewed CORS documentation evidence."""
+        source_path = str(coverage_item.get("source_path", "")).lower()
+        if re.search(r"(?:^|[/_.-])cors(?:$|[/_.-])", source_path):
+            return True
+        evidence = coverage_item.get("mapping_evidence")
+        if not isinstance(evidence, dict):
+            return False
+        evidence_text = json.dumps(evidence, sort_keys=True).lower()
+        return "corsmiddleware" in evidence_text or "starlette.middleware.cors" in evidence_text
+
     def starlette_contract_mappings_for(coverage_item: dict[str, Any]) -> list[dict[str, Any]]:
         source_path = str(coverage_item.get("source_path", "")).lower()
         mappings = []
@@ -8400,10 +8411,59 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                             ),
                         ],
                     )
+                elif has_cors_middleware_evidence(coverage_item):
+                    operation_specs = [
+                        (
+                            "starlette.middleware.cors.CORSMiddleware",
+                            "__init__",
+                            ["starlette.middleware.cors.CORSMiddleware.construct"],
+                        ),
+                        (
+                            "starlette.middleware.cors.CORSMiddleware",
+                            "__call__",
+                            [
+                                "starlette.middleware.cors.CORSMiddleware.simple-wildcard-credential-reflection-vary-merge",
+                                "starlette.middleware.cors.CORSMiddleware.credentialed-wildcard-origin-reflection-without-cookie",
+                                "starlette.middleware.cors.CORSMiddleware.explicit-origin-match-reflects-and-varies",
+                                "starlette.middleware.cors.CORSMiddleware.preflight-wildcard-credential-private-network",
+                                "starlette.middleware.cors.CORSMiddleware.preflight-denial-failure-order",
+                                "starlette.middleware.cors.CORSMiddleware.private-network-access-denial",
+                                "starlette.middleware.cors.CORSMiddleware.simple-denied-origin-preserves-app-response",
+                                "starlette.middleware.cors.CORSMiddleware.reused-instance-origin-isolation",
+                                "starlette.middleware.cors.CORSMiddleware.allow-all-except-credentials",
+                                "starlette.middleware.cors.CORSMiddleware.regex-fullmatch-origin",
+                                "starlette.middleware.cors.CORSMiddleware.missing-origin-passthrough",
+                                "starlette.middleware.cors.CORSMiddleware.non-http-passthrough",
+                                "starlette.middleware.cors.CORSMiddleware.wildcard-method-preflight-and-simple-passthrough",
+                                "starlette.middleware.cors.CORSMiddleware.preflight-credentialed-wildcard-origin-reflection",
+                                "starlette.middleware.cors.CORSMiddleware.private-network-access-allowed",
+                                "starlette.middleware.cors.CORSMiddleware.wildcard-noncredentialed-vary-preserved",
+                                "starlette.middleware.cors.CORSMiddleware.regex-origin-reflection",
+                            ],
+                        ),
+                    ]
+                    if has_middleware_registration_source(coverage_item):
+                        operation_specs.append(
+                            (
+                                "starlette.applications.Starlette",
+                                "add_middleware",
+                                [
+                                    "starlette.applications.Starlette.add_middleware.positional-order-and-cache",
+                                    "starlette.applications.Starlette.add_middleware.factory-keyword-arguments",
+                                    "starlette.applications.Starlette.add_middleware.after-start-error",
+                                    "starlette.applications.Starlette.add_middleware.per-application-stack-cache",
+                                ],
+                            )
+                        )
+                    specs = (
+                        "shared FastAPI/Starlette CORSMiddleware boundary",
+                        "The pinned sibling contract owns generic CORSMiddleware construction and ASGI dispatch. These references record ownership only; where linked, FastAPI workflows cover a partial CORS slice and do not establish complete sibling-requirement coverage or FastAPI-RS parity. FastAPI middleware registration and application integration remain FastAPI-owned.",
+                        operation_specs,
+                    )
                 elif has_gzip_middleware_evidence(coverage_item):
                     specs = (
                         "shared GZipMiddleware boundary",
-                        "Only the separately inventoried GZipMiddleware contract is in the current sibling slice; other middleware, integrations, and CLI behavior remain outside it. The current FastAPI workflow observes status and gzip response headers, but it does not cover response-body equality, default media-type boundaries, empty streaming chunks, or the thread_minimum_size boundary; these links map shared ownership and backlog, not complete FastAPI integration parity.",
+                        "The sibling GZipMiddleware contract now includes source-derived input cases for exact body and event behavior, default media-type handling, empty chunks, and the thread_minimum_size boundary. The current FastAPI workflow observes status and gzip response headers but does not verify exact body bytes or these edge cases; these references map shared ownership and backlog, not complete FastAPI integration parity. Other middleware, integrations, and CLI behavior remain outside the sibling slice.",
                         [
                             (
                                 "starlette.middleware.gzip.GZipMiddleware",
@@ -8426,6 +8486,9 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                                     "starlette.middleware.gzip.GZipMiddleware.default-allowed-content-type",
                                     "starlette.middleware.gzip.GZipMiddleware.streaming-empty-chunk",
                                     "starlette.middleware.gzip.GZipMiddleware.thread-minimum-size",
+                                    "starlette.middleware.gzip.GZipMiddleware.identity-streaming-response",
+                                    "starlette.middleware.gzip.GZipMiddleware.cleared-exclude-content-types",
+                                    "starlette.middleware.gzip.GZipMiddleware.identity-excluded-content-type",
                                 ],
                             ),
                         ],
@@ -8450,7 +8513,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                 else:
                     specs = (
                         "Starlette-RS integration outside the current slice",
-                        "The sibling manifest currently declares only GZipMiddleware from this broad integration family; this behavior has no matching current operation or requirement.",
+                        "The sibling contract contains bounded CORSMiddleware and GZipMiddleware slices; this behavior has no exact matching operation or requirement in the current FastAPI mapping. Other middleware, integrations, and CLI behavior remain outside those slices.",
                         [],
                     )
             elif feature_id in specifications:

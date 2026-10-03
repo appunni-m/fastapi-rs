@@ -9,6 +9,10 @@ import fastapi.middleware.gzip as fastapi_gzip
 import fastapi.middleware.httpsredirect as fastapi_httpsredirect
 import fastapi.middleware.trustedhost as fastapi_trustedhost
 import fastapi.middleware.wsgi as fastapi_wsgi
+import fastapi.openapi.models as fastapi_openapi_models
+import fastapi.security as fastapi_security
+import fastapi.security.api_key as fastapi_security_api_key
+import fastapi.security.base as fastapi_security_base
 import fastapi.staticfiles as fastapi_staticfiles
 import starlette.datastructures as starlette_datastructures
 import starlette.middleware.cors as starlette_cors
@@ -114,6 +118,23 @@ def _http_identity_relations() -> dict[str, dict[str, bool]]:
             ),
             "URL": datastructures.URL is starlette_datastructures.URL,
             "WSGIMiddleware": fastapi_wsgi.WSGIMiddleware is starlette_wsgi.WSGIMiddleware,
+        },
+        "security_package_to_api_key_module": {
+            "APIKeyCookie": fastapi_security.APIKeyCookie is fastapi_security_api_key.APIKeyCookie,
+            "APIKeyHeader": fastapi_security.APIKeyHeader is fastapi_security_api_key.APIKeyHeader,
+            "APIKeyQuery": fastapi_security.APIKeyQuery is fastapi_security_api_key.APIKeyQuery,
+        },
+        "security_api_key_to_openapi_models": {
+            "APIKey": fastapi_security_api_key.APIKey is fastapi_openapi_models.APIKey,
+            "APIKeyIn": fastapi_security_api_key.APIKeyIn is fastapi_openapi_models.APIKeyIn,
+        },
+        "security_api_key_to_security_base": {
+            "SecurityBase": fastapi_security_api_key.SecurityBase
+            is fastapi_security_base.SecurityBase,
+        },
+        "security_base_to_openapi_models": {
+            "SecurityBaseModel": fastapi_security_base.SecurityBaseModel
+            is fastapi_openapi_models.SecurityBase,
         },
     }
 

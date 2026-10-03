@@ -6,13 +6,281 @@ use crate::awaitable::{
 use base64::Engine;
 use base64::engine::general_purpose::{GeneralPurpose, GeneralPurposeConfig};
 use pyo3::exceptions::PyRuntimeError;
-use pyo3::prelude::*;
-use pyo3::types::{PyDict, PyList, PyString, PyType};
+use pyo3::types::{PyBool, PyDict, PyList, PyString, PyType};
+use pyo3::{PyClassInitializer, prelude::*};
 
 static PYTHON_COMPATIBLE_STANDARD_BASE64: GeneralPurpose = GeneralPurpose::new(
     &base64::alphabet::STANDARD,
     GeneralPurposeConfig::new().with_decode_allow_trailing_bits(true),
 );
+
+#[pyclass(
+    name = "SecurityBase",
+    module = "fastapi.security.base",
+    subclass,
+    dict
+)]
+struct PySecurityBase;
+
+#[pymethods]
+impl PySecurityBase {
+    #[new]
+    fn new() -> Self {
+        Self
+    }
+}
+
+#[pyclass(
+    name = "APIKeyBase",
+    module = "fastapi.security.api_key",
+    extends = PySecurityBase,
+    subclass,
+    dict
+)]
+struct PyApiKeyBase {
+    model: Py<PyAny>,
+    scheme_name: Py<PyAny>,
+    scheme_name_is_default: bool,
+    auto_error: Py<PyAny>,
+}
+
+#[derive(Clone, Copy)]
+enum ApiKeyInputKind {
+    Header,
+    Query,
+    Cookie,
+}
+
+struct ApiKeyModels {
+    security_scheme_type: Py<PyAny>,
+    api_key_in_type: Py<PyAny>,
+    base_model_type: Py<PyAny>,
+    security_base_model_type: Py<PyAny>,
+    api_key_model_type: Py<PyAny>,
+}
+
+#[pyclass(
+    name = "APIKeyHeader",
+    module = "fastapi.security.api_key",
+    extends = PyApiKeyBase,
+    subclass,
+    dict
+)]
+struct PyApiKeyHeader;
+
+#[pyclass(
+    name = "APIKeyQuery",
+    module = "fastapi.security.api_key",
+    extends = PyApiKeyBase,
+    subclass,
+    dict
+)]
+struct PyApiKeyQuery;
+
+#[pyclass(
+    name = "APIKeyCookie",
+    module = "fastapi.security.api_key",
+    extends = PyApiKeyBase,
+    subclass,
+    dict
+)]
+struct PyApiKeyCookie;
+
+#[pymethods]
+impl PyApiKeyBase {
+    #[new]
+    #[pyo3(signature = (location, name, description, scheme_name, auto_error))]
+    fn new(
+        py: Python<'_>,
+        location: Py<PyAny>,
+        name: Py<PyAny>,
+        description: Py<PyAny>,
+        scheme_name: Py<PyAny>,
+        auto_error: Py<PyAny>,
+    ) -> PyResult<PyClassInitializer<Self>> {
+        let model =
+            create_api_key_model(py, location.bind(py), name.bind(py), description.bind(py))?;
+        let scheme_name_is_default = !scheme_name.bind(py).is_truthy()?;
+        Ok(PyClassInitializer::from(PySecurityBase).add_subclass(Self {
+            model,
+            scheme_name,
+            scheme_name_is_default,
+            auto_error,
+        }))
+    }
+
+    #[getter]
+    fn model(&self, py: Python<'_>) -> Py<PyAny> {
+        self.model.clone_ref(py)
+    }
+
+    #[setter]
+    fn set_model(&mut self, model: Py<PyAny>) {
+        self.model = model;
+    }
+
+    #[getter]
+    fn scheme_name(slf: Py<Self>, py: Python<'_>) -> PyResult<Py<PyAny>> {
+        let instance = slf.bind(py);
+        let (stored, scheme_name_is_default) = {
+            let borrowed = instance.borrow();
+            (
+                borrowed.scheme_name.clone_ref(py),
+                borrowed.scheme_name_is_default,
+            )
+        };
+        if !scheme_name_is_default {
+            return Ok(stored);
+        }
+        let class_name = instance.get_type().name()?.to_string();
+        Ok(PyString::new(py, &class_name).unbind().into_any())
+    }
+
+    #[setter]
+    fn set_scheme_name(&mut self, scheme_name: Py<PyAny>) {
+        self.scheme_name = scheme_name;
+        self.scheme_name_is_default = false;
+    }
+
+    #[getter]
+    fn auto_error(&self, py: Python<'_>) -> Py<PyAny> {
+        self.auto_error.clone_ref(py)
+    }
+
+    #[setter]
+    fn set_auto_error(&mut self, auto_error: Py<PyAny>) {
+        self.auto_error = auto_error;
+    }
+
+    fn make_not_authenticated_error(slf: Py<Self>, py: Python<'_>) -> PyResult<Py<PyAny>> {
+        let instance = slf.bind(py);
+        let exception_type = instance
+            .get_type()
+            .getattr("_fastapi_rs_http_exception_type")?;
+        let headers = PyDict::new(py);
+        headers.set_item("WWW-Authenticate", "APIKey")?;
+        let arguments = PyDict::new(py);
+        arguments.set_item("status_code", 401)?;
+        arguments.set_item("detail", "Not authenticated")?;
+        arguments.set_item("headers", headers)?;
+        exception_type.call((), Some(&arguments)).map(Bound::unbind)
+    }
+
+    fn check_api_key(slf: Py<Self>, py: Python<'_>, api_key: Py<PyAny>) -> PyResult<Py<PyAny>> {
+        let instance = slf.bind(py);
+        if !api_key.bind(py).is_truthy()? {
+            let auto_error = instance.borrow().auto_error.clone_ref(py);
+            if auto_error.bind(py).is_truthy()? {
+                let error = instance.call_method0("make_not_authenticated_error")?;
+                return Err(PyErr::from_value(error));
+            }
+            return Ok(py.None());
+        }
+        Ok(api_key)
+    }
+}
+
+#[pymethods]
+impl PyApiKeyHeader {
+    #[new]
+    #[pyo3(signature = (*, name, scheme_name=None, description=None, auto_error=api_key_auto_error_default()))]
+    fn new(
+        py: Python<'_>,
+        name: Py<PyAny>,
+        scheme_name: Option<Py<PyAny>>,
+        description: Option<Py<PyAny>>,
+        auto_error: Py<PyAny>,
+    ) -> PyResult<PyClassInitializer<Self>> {
+        let base = create_api_key_initializer(
+            py,
+            ApiKeyInputKind::Header,
+            name,
+            scheme_name,
+            description,
+            auto_error,
+        )?;
+        Ok(base.add_subclass(Self))
+    }
+
+    fn __call__(slf: Py<Self>, py: Python<'_>, request: Py<PyAny>) -> PyResult<Py<PyAny>> {
+        into_python_awaitable(
+            py,
+            ApiKeyCall {
+                security: slf.into_any(),
+                request,
+                input_kind: ApiKeyInputKind::Header,
+            },
+        )
+    }
+}
+
+#[pymethods]
+impl PyApiKeyQuery {
+    #[new]
+    #[pyo3(signature = (*, name, scheme_name=None, description=None, auto_error=api_key_auto_error_default()))]
+    fn new(
+        py: Python<'_>,
+        name: Py<PyAny>,
+        scheme_name: Option<Py<PyAny>>,
+        description: Option<Py<PyAny>>,
+        auto_error: Py<PyAny>,
+    ) -> PyResult<PyClassInitializer<Self>> {
+        let base = create_api_key_initializer(
+            py,
+            ApiKeyInputKind::Query,
+            name,
+            scheme_name,
+            description,
+            auto_error,
+        )?;
+        Ok(base.add_subclass(Self))
+    }
+
+    fn __call__(slf: Py<Self>, py: Python<'_>, request: Py<PyAny>) -> PyResult<Py<PyAny>> {
+        into_python_awaitable(
+            py,
+            ApiKeyCall {
+                security: slf.into_any(),
+                request,
+                input_kind: ApiKeyInputKind::Query,
+            },
+        )
+    }
+}
+
+#[pymethods]
+impl PyApiKeyCookie {
+    #[new]
+    #[pyo3(signature = (*, name, scheme_name=None, description=None, auto_error=api_key_auto_error_default()))]
+    fn new(
+        py: Python<'_>,
+        name: Py<PyAny>,
+        scheme_name: Option<Py<PyAny>>,
+        description: Option<Py<PyAny>>,
+        auto_error: Py<PyAny>,
+    ) -> PyResult<PyClassInitializer<Self>> {
+        let base = create_api_key_initializer(
+            py,
+            ApiKeyInputKind::Cookie,
+            name,
+            scheme_name,
+            description,
+            auto_error,
+        )?;
+        Ok(base.add_subclass(Self))
+    }
+
+    fn __call__(slf: Py<Self>, py: Python<'_>, request: Py<PyAny>) -> PyResult<Py<PyAny>> {
+        into_python_awaitable(
+            py,
+            ApiKeyCall {
+                security: slf.into_any(),
+                request,
+                input_kind: ApiKeyInputKind::Cookie,
+            },
+        )
+    }
+}
 
 #[pyclass(name = "HTTPBearer", module = "fastapi.security.http", subclass, dict)]
 struct PyHttpBearer {
@@ -46,6 +314,35 @@ impl HttpBearerIntrospectionDescriptor {
         match self.kind {
             HttpBearerIntrospectionKind::Annotations => dependency_annotations(py),
             HttpBearerIntrospectionKind::Signature => dependency_signature(py),
+        }
+    }
+}
+
+#[derive(Clone, Copy)]
+enum ApiKeyIntrospectionKind {
+    Annotations,
+    Signature,
+}
+
+#[pyclass]
+struct ApiKeyIntrospectionDescriptor {
+    kind: ApiKeyIntrospectionKind,
+}
+
+#[pymethods]
+impl ApiKeyIntrospectionDescriptor {
+    fn __get__(
+        &self,
+        py: Python<'_>,
+        instance: Option<Bound<'_, PyAny>>,
+        _owner: Bound<'_, PyAny>,
+    ) -> PyResult<Py<PyAny>> {
+        if instance.is_none() {
+            return Ok(py.None());
+        }
+        match self.kind {
+            ApiKeyIntrospectionKind::Annotations => api_key_dependency_annotations(py),
+            ApiKeyIntrospectionKind::Signature => api_key_dependency_signature(py),
         }
     }
 }
@@ -861,6 +1158,36 @@ struct OAuth2PasswordBearerCall {
     request: Py<PyAny>,
 }
 
+struct ApiKeyCall {
+    security: Py<PyAny>,
+    request: Py<PyAny>,
+    input_kind: ApiKeyInputKind,
+}
+
+impl AwaitableStateMachine for ApiKeyCall {
+    fn resume(&mut self, py: Python<'_>, input: MachineResume) -> PyResult<MachineAction> {
+        if !matches!(input, MachineResume::Start) {
+            return Err(PyRuntimeError::new_err(
+                "API key dependency resumed more than once",
+            ));
+        }
+
+        let security = self.security.bind(py);
+        let request = self.request.bind(py);
+        let model = security.getattr("model")?;
+        let name = model.getattr("name")?;
+        let source = match self.input_kind {
+            ApiKeyInputKind::Header => request.getattr("headers")?,
+            ApiKeyInputKind::Query => request.getattr("query_params")?,
+            ApiKeyInputKind::Cookie => request.getattr("cookies")?,
+        };
+        let api_key = source.call_method1("get", (name,))?;
+        security
+            .call_method1("check_api_key", (api_key,))
+            .map(|value| MachineAction::Complete(value.unbind()))
+    }
+}
+
 impl AwaitableStateMachine for OAuth2PasswordBearerCall {
     fn resume(&mut self, py: Python<'_>, input: MachineResume) -> PyResult<MachineAction> {
         if !matches!(input, MachineResume::Start) {
@@ -960,6 +1287,43 @@ fn dependency_signature(py: Python<'_>) -> PyResult<Py<PyAny>> {
         .map(Bound::unbind)
 }
 
+fn api_key_dependency_annotations(py: Python<'_>) -> PyResult<Py<PyAny>> {
+    let annotations = PyDict::new(py);
+    annotations.set_item(
+        "request",
+        py.import("starlette.requests")?.getattr("Request")?,
+    )?;
+    annotations.set_item("return", api_key_return_annotation(py)?)?;
+    Ok(annotations.unbind().into_any())
+}
+
+fn api_key_dependency_signature(py: Python<'_>) -> PyResult<Py<PyAny>> {
+    let inspect = py.import("inspect")?;
+    let parameter_type = inspect.getattr("Parameter")?;
+    let kind = parameter_type.getattr("POSITIONAL_OR_KEYWORD")?;
+    let parameter_kwargs = PyDict::new(py);
+    parameter_kwargs.set_item(
+        "annotation",
+        py.import("starlette.requests")?.getattr("Request")?,
+    )?;
+    let request = parameter_type.call(("request", kind), Some(&parameter_kwargs))?;
+    let parameters = PyList::new(py, [request])?;
+    let signature_kwargs = PyDict::new(py);
+    signature_kwargs.set_item("return_annotation", api_key_return_annotation(py)?)?;
+    inspect
+        .getattr("Signature")?
+        .call((parameters,), Some(&signature_kwargs))
+        .map(Bound::unbind)
+}
+
+fn api_key_return_annotation<'py>(py: Python<'py>) -> PyResult<Bound<'py, PyAny>> {
+    let string_type = py.get_type::<PyString>();
+    let none_type = py.import("types")?.getattr("NoneType")?;
+    py.import("operator")?
+        .getattr("or_")?
+        .call1((string_type.as_any(), none_type))
+}
+
 fn attach_dependency_introspection(py: Python<'_>, class: &Bound<'_, PyType>) -> PyResult<()> {
     class.setattr(
         "__annotations__",
@@ -976,6 +1340,31 @@ fn attach_dependency_introspection(py: Python<'_>, class: &Bound<'_, PyType>) ->
             py,
             HttpBearerIntrospectionDescriptor {
                 kind: HttpBearerIntrospectionKind::Signature,
+            },
+        )?,
+    )?;
+    Ok(())
+}
+
+fn attach_api_key_dependency_introspection(
+    py: Python<'_>,
+    class: &Bound<'_, PyType>,
+) -> PyResult<()> {
+    class.setattr(
+        "__annotations__",
+        Py::new(
+            py,
+            ApiKeyIntrospectionDescriptor {
+                kind: ApiKeyIntrospectionKind::Annotations,
+            },
+        )?,
+    )?;
+    class.setattr(
+        "__signature__",
+        Py::new(
+            py,
+            ApiKeyIntrospectionDescriptor {
+                kind: ApiKeyIntrospectionKind::Signature,
             },
         )?,
     )?;
@@ -1132,6 +1521,156 @@ fn create_http_bearer_model(py: Python<'_>) -> PyResult<Py<PyAny>> {
         .map(Bound::unbind)
 }
 
+fn create_string_enum(py: Python<'_>, name: &str, members: &[(&str, &str)]) -> PyResult<Py<PyAny>> {
+    let enum_members = PyDict::new(py);
+    for (member, value) in members {
+        enum_members.set_item(member, value)?;
+    }
+    let arguments = PyDict::new(py);
+    arguments.set_item("module", "fastapi.openapi.models")?;
+    py.import("enum")?
+        .getattr("Enum")?
+        .call((name, enum_members), Some(&arguments))
+        .map(Bound::unbind)
+}
+
+fn create_api_key_models(py: Python<'_>) -> PyResult<ApiKeyModels> {
+    let security_scheme_type = create_string_enum(
+        py,
+        "SecuritySchemeType",
+        &[
+            ("apiKey", "apiKey"),
+            ("http", "http"),
+            ("oauth2", "oauth2"),
+            ("openIdConnect", "openIdConnect"),
+        ],
+    )?;
+    let api_key_in = create_string_enum(
+        py,
+        "APIKeyIn",
+        &[
+            ("query", "query"),
+            ("header", "header"),
+            ("cookie", "cookie"),
+        ],
+    )?;
+
+    let pydantic = py.import("pydantic")?;
+    let extra_config = PyDict::new(py);
+    extra_config.set_item("extra", "allow")?;
+    let base_fields = PyDict::new(py);
+    base_fields.set_item("__module__", "fastapi.openapi.models")?;
+    base_fields.set_item("__config__", extra_config)?;
+    let base_model = pydantic
+        .getattr("create_model")?
+        .call(("BaseModelWithConfig",), Some(&base_fields))?;
+
+    let string_type = py.get_type::<PyString>();
+    let optional_string = optional_type(py, string_type.as_any())?;
+    let type_field_arguments = PyDict::new(py);
+    type_field_arguments.set_item("alias", "type")?;
+    let required_type_field = pydantic
+        .getattr("Field")?
+        .call((), Some(&type_field_arguments))?;
+    let security_base_fields = PyDict::new(py);
+    security_base_fields.set_item("__module__", "fastapi.openapi.models")?;
+    security_base_fields.set_item("__base__", base_model.as_any())?;
+    security_base_fields.set_item(
+        "type_",
+        (security_scheme_type.bind(py).as_any(), required_type_field),
+    )?;
+    security_base_fields.set_item("description", (optional_string, py.None()))?;
+    let security_base_model = pydantic
+        .getattr("create_model")?
+        .call(("SecurityBase",), Some(&security_base_fields))?;
+
+    let api_key_type = security_scheme_type.bind(py).getattr("apiKey")?;
+    let api_key_type_field_arguments = PyDict::new(py);
+    api_key_type_field_arguments.set_item("default", api_key_type)?;
+    api_key_type_field_arguments.set_item("alias", "type")?;
+    let api_key_type_field = pydantic
+        .getattr("Field")?
+        .call((), Some(&api_key_type_field_arguments))?;
+    let api_key_location_field_arguments = PyDict::new(py);
+    api_key_location_field_arguments.set_item("alias", "in")?;
+    let api_key_location_field = pydantic
+        .getattr("Field")?
+        .call((), Some(&api_key_location_field_arguments))?;
+    let api_key_fields = PyDict::new(py);
+    api_key_fields.set_item("__module__", "fastapi.openapi.models")?;
+    api_key_fields.set_item("__base__", security_base_model.as_any())?;
+    api_key_fields.set_item(
+        "type_",
+        (security_scheme_type.bind(py).as_any(), api_key_type_field),
+    )?;
+    api_key_fields.set_item(
+        "in_",
+        (api_key_in.bind(py).as_any(), api_key_location_field),
+    )?;
+    api_key_fields.set_item("name", string_type.as_any())?;
+    let api_key_model = pydantic
+        .getattr("create_model")?
+        .call(("APIKey",), Some(&api_key_fields))?;
+
+    Ok(ApiKeyModels {
+        security_scheme_type,
+        api_key_in_type: api_key_in,
+        base_model_type: base_model.unbind(),
+        security_base_model_type: security_base_model.unbind(),
+        api_key_model_type: api_key_model.unbind(),
+    })
+}
+
+fn create_api_key_model(
+    py: Python<'_>,
+    location: &Bound<'_, PyAny>,
+    name: &Bound<'_, PyAny>,
+    description: &Bound<'_, PyAny>,
+) -> PyResult<Py<PyAny>> {
+    let model_type = py.import("fastapi_rs._core")?.getattr("_APIKeyModel")?;
+    let arguments = PyDict::new(py);
+    arguments.set_item("in", location)?;
+    arguments.set_item("name", name)?;
+    arguments.set_item("description", description)?;
+    model_type.call((), Some(&arguments)).map(Bound::unbind)
+}
+
+fn api_key_location_name(location: ApiKeyInputKind) -> &'static str {
+    match location {
+        ApiKeyInputKind::Header => "header",
+        ApiKeyInputKind::Query => "query",
+        ApiKeyInputKind::Cookie => "cookie",
+    }
+}
+
+fn create_api_key_initializer(
+    py: Python<'_>,
+    location: ApiKeyInputKind,
+    name: Py<PyAny>,
+    scheme_name: Option<Py<PyAny>>,
+    description: Option<Py<PyAny>>,
+    auto_error: Py<PyAny>,
+) -> PyResult<PyClassInitializer<PyApiKeyBase>> {
+    let api_key_in = py.import("fastapi_rs._core")?.getattr("_APIKeyIn")?;
+    let location = api_key_in.getattr(api_key_location_name(location))?;
+    let description = description.unwrap_or_else(|| py.None());
+    let model = create_api_key_model(py, &location, name.bind(py), description.bind(py))?;
+    let scheme_name = scheme_name.unwrap_or_else(|| py.None());
+    let scheme_name_is_default = !scheme_name.bind(py).is_truthy()?;
+    Ok(
+        PyClassInitializer::from(PySecurityBase).add_subclass(PyApiKeyBase {
+            model,
+            scheme_name,
+            scheme_name_is_default,
+            auto_error,
+        }),
+    )
+}
+
+fn api_key_auto_error_default() -> Py<PyAny> {
+    Python::attach(|py| PyBool::new(py, true).to_owned().into_any().unbind())
+}
+
 fn make_not_authenticated_error(instance: &Bound<'_, PyAny>) -> PyResult<Py<PyAny>> {
     let exception_type = instance
         .get_type()
@@ -1149,6 +1688,28 @@ fn make_not_authenticated_error(instance: &Bound<'_, PyAny>) -> PyResult<Py<PyAn
 /// Register the reviewed native HTTP bearer authentication surface.
 pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     let py = module.py();
+    let api_key_models = create_api_key_models(py)?;
+    module.add(
+        "SecuritySchemeType",
+        api_key_models.security_scheme_type.bind(py),
+    )?;
+    module.add("APIKeyIn", api_key_models.api_key_in_type.bind(py))?;
+    module.add("_APIKeyIn", api_key_models.api_key_in_type.bind(py))?;
+    module.add(
+        "BaseModelWithConfig",
+        api_key_models.base_model_type.bind(py),
+    )?;
+    module.add(
+        "OpenAPISecurityBaseModel",
+        api_key_models.security_base_model_type.bind(py),
+    )?;
+    module.add(
+        "SecurityBaseModel",
+        api_key_models.security_base_model_type.bind(py),
+    )?;
+    module.add("APIKey", api_key_models.api_key_model_type.bind(py))?;
+    module.add("_APIKeyModel", api_key_models.api_key_model_type.bind(py))?;
+
     let credentials_type = create_credentials_model(py)?;
     module.add("HTTPAuthorizationCredentials", credentials_type.bind(py))?;
     let model_type = create_http_bearer_model(py)?;
@@ -1162,6 +1723,39 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     module.add("_OAuth2FlowsModel", flows_model.bind(py))?;
     module.add("_OAuth2Model", oauth2_model.bind(py))?;
     let exception_type = module.getattr("HTTPException")?;
+    let starlette_http_exception_type = py
+        .import("starlette.exceptions")?
+        .getattr("HTTPException")?;
+
+    module.add_class::<PySecurityBase>()?;
+    let security_base_type = py.get_type::<PySecurityBase>();
+    let security_base_annotations = PyDict::new(py);
+    security_base_annotations
+        .set_item("model", api_key_models.security_base_model_type.bind(py))?;
+    security_base_annotations.set_item("scheme_name", py.get_type::<PyString>())?;
+    security_base_type.setattr("__annotations__", security_base_annotations)?;
+
+    module.add_class::<PyApiKeyBase>()?;
+    let api_key_base_type = py.get_type::<PyApiKeyBase>();
+    let api_key_base_annotations = PyDict::new(py);
+    api_key_base_annotations.set_item("model", api_key_models.api_key_model_type.bind(py))?;
+    api_key_base_type.setattr("__annotations__", api_key_base_annotations)?;
+    api_key_base_type.setattr(
+        "_fastapi_rs_http_exception_type",
+        starlette_http_exception_type,
+    )?;
+
+    module.add_class::<PyApiKeyHeader>()?;
+    let api_key_header_type = py.get_type::<PyApiKeyHeader>();
+    attach_api_key_dependency_introspection(py, &api_key_header_type)?;
+
+    module.add_class::<PyApiKeyQuery>()?;
+    let api_key_query_type = py.get_type::<PyApiKeyQuery>();
+    attach_api_key_dependency_introspection(py, &api_key_query_type)?;
+
+    module.add_class::<PyApiKeyCookie>()?;
+    let api_key_cookie_type = py.get_type::<PyApiKeyCookie>();
+    attach_api_key_dependency_introspection(py, &api_key_cookie_type)?;
 
     module.add_class::<PyHttpBearer>()?;
     let http_bearer_type = py.get_type::<PyHttpBearer>();
@@ -1210,8 +1804,10 @@ pub(crate) fn openapi_security_metadata(
         || callable.is_instance_of::<PyHttpBearer>()
         || callable.is_instance_of::<PyHttpBase>()
         || callable.is_instance_of::<PyHttpDigest>()
+        || callable.is_instance_of::<PyApiKeyBase>()
         || callable.is_instance_of::<PyOAuth2>()
-        || callable.is_instance_of::<PyOAuth2PasswordBearer>())
+        || callable.is_instance_of::<PyOAuth2PasswordBearer>()
+        || callable.is_instance_of::<PySecurityBase>())
     {
         return Ok(None);
     }
@@ -1230,6 +1826,12 @@ pub(crate) fn is_native_async_callable(py: Python<'_>, value: &Bound<'_, PyAny>)
     let base_call = base_namespace.get_item("__call__")?;
     let digest_namespace = py.get_type::<PyHttpDigest>().getattr("__dict__")?;
     let digest_call = digest_namespace.get_item("__call__")?;
+    let api_key_header_namespace = py.get_type::<PyApiKeyHeader>().getattr("__dict__")?;
+    let api_key_header_call = api_key_header_namespace.get_item("__call__")?;
+    let api_key_query_namespace = py.get_type::<PyApiKeyQuery>().getattr("__dict__")?;
+    let api_key_query_call = api_key_query_namespace.get_item("__call__")?;
+    let api_key_cookie_namespace = py.get_type::<PyApiKeyCookie>().getattr("__dict__")?;
+    let api_key_cookie_call = api_key_cookie_namespace.get_item("__call__")?;
     let oauth2_base_namespace = py.get_type::<PyOAuth2>().getattr("__dict__")?;
     let oauth2_base_call = oauth2_base_namespace.get_item("__call__")?;
     let oauth2_namespace = py
@@ -1246,6 +1848,9 @@ pub(crate) fn is_native_async_callable(py: Python<'_>, value: &Bound<'_, PyAny>)
                 || call.is(&basic_call)
                 || call.is(&base_call)
                 || call.is(&digest_call)
+                || call.is(&api_key_header_call)
+                || call.is(&api_key_query_call)
+                || call.is(&api_key_cookie_call)
                 || call.is(&oauth2_base_call)
                 || call.is(&oauth2_call));
         }

@@ -1,10 +1,11 @@
 """Independently authored credentials workload for upstream security behavior."""
 
-from __future__ import annotations
-
 from typing import Annotated
 
-from fastapi import FastAPI, Security
+from fastapi import FastAPI, Request, Security
+from fastapi.exceptions import HTTPException as FastAPIHTTPException
+from fastapi.openapi.models import APIKey, APIKeyIn
+from fastapi.responses import JSONResponse
 from fastapi.security import (
     APIKeyCookie,
     APIKeyHeader,
@@ -12,11 +13,21 @@ from fastapi.security import (
     HTTPBasic,
     HTTPBearer,
 )
+from fastapi.security.base import SecurityBase
 from fastapi.security.http import (
     HTTPAuthorizationCredentials,
     HTTPBase,
     HTTPBasicCredentials,
 )
+
+
+class CustomHeaderSecurity(SecurityBase):
+    def __init__(self) -> None:
+        self.model = APIKey(**{"in": APIKeyIn.header}, name="x-custom-security-key")
+        self.scheme_name = "CustomHeaderSecurity"
+
+    async def __call__(self, request: Request) -> str | None:
+        return request.headers.get("x-custom-security-key")
 
 
 def _optional_user(value: str | None) -> dict[str, str]:
@@ -91,6 +102,14 @@ def create_app() -> FastAPI:
     ) -> dict[str, str]:
         return {"username": key}
 
+    custom_security = CustomHeaderSecurity()
+
+    @app.get("/api-key/custom-security-base")
+    async def read_custom_security_key(
+        key: Annotated[str | None, Security(custom_security)],
+    ) -> dict[str, str | None]:
+        return {"username": key}
+
     basic_optional = HTTPBasic(auto_error=False, scheme_name="OptionalHTTPBasic")
 
     @app.get("/http/basic-optional")
@@ -159,5 +178,28 @@ def create_app() -> FastAPI:
             "scheme": credentials.scheme,
             "credentials": credentials.credentials,
         }
+
+    return app
+
+
+def create_exception_boundary_app() -> FastAPI:
+    app = FastAPI()
+
+    @app.exception_handler(FastAPIHTTPException)
+    async def handle_fastapi_http_exception(
+        request: Request, exc: FastAPIHTTPException
+    ) -> JSONResponse:
+        return JSONResponse({"handler": "fastapi-http-exception"}, status_code=418)
+
+    exception_boundary_key = APIKeyHeader(
+        name="exception-key",
+        scheme_name="ExceptionBoundaryKey",
+    )
+
+    @app.get("/api-key/exception-boundary")
+    async def read_exception_boundary_key(
+        key: Annotated[str, Security(exception_boundary_key)],
+    ) -> dict[str, str]:
+        return {"username": key}
 
     return app
