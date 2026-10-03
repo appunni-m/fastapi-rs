@@ -3,6 +3,7 @@ from fastapi_rs._core import (
     HTTPBasic,
     HTTPBasicCredentials,
     HTTPBearer,
+    HTTPDigest,
     OAuth2PasswordBearer,
 )
 
@@ -11,5 +12,6 @@ __all__ = [
     "HTTPBasic",
     "HTTPBasicCredentials",
     "HTTPBearer",
+    "HTTPDigest",
     "OAuth2PasswordBearer",
 ]

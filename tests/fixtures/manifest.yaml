@@ -805,8 +805,8 @@ api_surface_contract:
     symbols_with_deprecation_refs: 15
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 34
-    symbols_with_operation_fixture_refs: 9
-    operation_fixture_refs: 23
+    symbols_with_operation_fixture_refs: 13
+    operation_fixture_refs: 31
     symbols_with_identity_workflow_refs: 20
     identity_workflow_refs: 28
   symbols:
@@ -23913,10 +23913,36 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: http-digest-auth-upstream
+      input_path: tests/fixtures/inputs/parity/http-digest-auth-upstream.json
+      input_sha256: 42e0837d0419589be26f406b465c6a4747512d15279214bdd837b43325c3f18d
+      recipe_path: tests/fixtures/input-recipes/parity/http-digest-auth-upstream.yaml
+      recipe_sha256: 9f84339f1b744a878d60b09b0557c6ecf023501f03450fa633eca0f8f83cd5de
+      workload_path: tests/fixtures/workloads/http_digest_auth_upstream.py
+      workload_sha256: 91cf2dfde99e883acd5a8cbbd77468b3550c8f275b8180f085159a8ee6a09d1d
+      case_id: fastapi.test.test-security-http-digest-description.test-security-http-digest-no-credentials
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: http-digest-auth-upstream
+      input_path: tests/fixtures/inputs/parity/http-digest-auth-upstream.json
+      input_sha256: 42e0837d0419589be26f406b465c6a4747512d15279214bdd837b43325c3f18d
+      recipe_path: tests/fixtures/input-recipes/parity/http-digest-auth-upstream.yaml
+      recipe_sha256: 9f84339f1b744a878d60b09b0557c6ecf023501f03450fa633eca0f8f83cd5de
+      workload_path: tests/fixtures/workloads/http_digest_auth_upstream.py
+      workload_sha256: 91cf2dfde99e883acd5a8cbbd77468b3550c8f275b8180f085159a8ee6a09d1d
+      case_id: fastapi.test.test-security-http-digest-description.test-security-http-digest-incorrect-scheme-credentials
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
     - openapi-docs
+    - public-api-errors
     - request-validation
     observation_selectors:
     - dependency.call_order
@@ -23929,7 +23955,7 @@ api_surface_contract:
     - openapi.security
     - validation.error_class
     - validation.error_details
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.security.HTTPDigest
@@ -23940,7 +23966,7 @@ api_surface_contract:
         - /api_candidates/1416
         - /api_candidates/1474
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/security.rs::PyHttpDigest
   - id: fastapi.security.OAuth2
     kind: import_binding
     source_candidate_ref: /api_candidates/1417
@@ -25976,10 +26002,36 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: http-digest-auth-upstream
+      input_path: tests/fixtures/inputs/parity/http-digest-auth-upstream.json
+      input_sha256: 42e0837d0419589be26f406b465c6a4747512d15279214bdd837b43325c3f18d
+      recipe_path: tests/fixtures/input-recipes/parity/http-digest-auth-upstream.yaml
+      recipe_sha256: 9f84339f1b744a878d60b09b0557c6ecf023501f03450fa633eca0f8f83cd5de
+      workload_path: tests/fixtures/workloads/http_digest_auth_upstream.py
+      workload_sha256: 91cf2dfde99e883acd5a8cbbd77468b3550c8f275b8180f085159a8ee6a09d1d
+      case_id: fastapi.test.test-security-http-digest-description.test-security-http-digest-no-credentials
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: http-digest-auth-upstream
+      input_path: tests/fixtures/inputs/parity/http-digest-auth-upstream.json
+      input_sha256: 42e0837d0419589be26f406b465c6a4747512d15279214bdd837b43325c3f18d
+      recipe_path: tests/fixtures/input-recipes/parity/http-digest-auth-upstream.yaml
+      recipe_sha256: 9f84339f1b744a878d60b09b0557c6ecf023501f03450fa633eca0f8f83cd5de
+      workload_path: tests/fixtures/workloads/http_digest_auth_upstream.py
+      workload_sha256: 91cf2dfde99e883acd5a8cbbd77468b3550c8f275b8180f085159a8ee6a09d1d
+      case_id: fastapi.test.test-security-http-digest-description.test-security-http-digest-incorrect-scheme-credentials
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
     - openapi-docs
+    - public-api-errors
     - request-validation
     observation_selectors:
     - dependency.call_order
@@ -25992,7 +26044,7 @@ api_surface_contract:
     - openapi.security
     - validation.error_class
     - validation.error_details
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.security.http.HTTPDigest
@@ -26002,7 +26054,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1474
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/security.rs::PyHttpDigest
   - id: fastapi.security.http.HTTPDigest.__call__
     kind: protocol_method
     source_candidate_ref: /api_candidates/1475
@@ -26035,10 +26087,36 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: http-digest-auth-upstream
+      input_path: tests/fixtures/inputs/parity/http-digest-auth-upstream.json
+      input_sha256: 42e0837d0419589be26f406b465c6a4747512d15279214bdd837b43325c3f18d
+      recipe_path: tests/fixtures/input-recipes/parity/http-digest-auth-upstream.yaml
+      recipe_sha256: 9f84339f1b744a878d60b09b0557c6ecf023501f03450fa633eca0f8f83cd5de
+      workload_path: tests/fixtures/workloads/http_digest_auth_upstream.py
+      workload_sha256: 91cf2dfde99e883acd5a8cbbd77468b3550c8f275b8180f085159a8ee6a09d1d
+      case_id: fastapi.test.test-security-http-digest-description.test-security-http-digest-no-credentials
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: http-digest-auth-upstream
+      input_path: tests/fixtures/inputs/parity/http-digest-auth-upstream.json
+      input_sha256: 42e0837d0419589be26f406b465c6a4747512d15279214bdd837b43325c3f18d
+      recipe_path: tests/fixtures/input-recipes/parity/http-digest-auth-upstream.yaml
+      recipe_sha256: 9f84339f1b744a878d60b09b0557c6ecf023501f03450fa633eca0f8f83cd5de
+      workload_path: tests/fixtures/workloads/http_digest_auth_upstream.py
+      workload_sha256: 91cf2dfde99e883acd5a8cbbd77468b3550c8f275b8180f085159a8ee6a09d1d
+      case_id: fastapi.test.test-security-http-digest-description.test-security-http-digest-incorrect-scheme-credentials
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
     - openapi-docs
+    - public-api-errors
     - request-validation
     observation_selectors:
     - dependency.call_order
@@ -26051,7 +26129,7 @@ api_surface_contract:
     - openapi.security
     - validation.error_class
     - validation.error_details
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.security.http.HTTPDigest.__call__
@@ -26061,7 +26139,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1475
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/security.rs::PyHttpDigest::__call__
   - id: fastapi.security.http.HTTPDigest.__init__
     kind: protocol_method
     source_candidate_ref: /api_candidates/1476
@@ -26094,6 +26172,31 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: http-digest-auth-upstream
+      input_path: tests/fixtures/inputs/parity/http-digest-auth-upstream.json
+      input_sha256: 42e0837d0419589be26f406b465c6a4747512d15279214bdd837b43325c3f18d
+      recipe_path: tests/fixtures/input-recipes/parity/http-digest-auth-upstream.yaml
+      recipe_sha256: 9f84339f1b744a878d60b09b0557c6ecf023501f03450fa633eca0f8f83cd5de
+      workload_path: tests/fixtures/workloads/http_digest_auth_upstream.py
+      workload_sha256: 91cf2dfde99e883acd5a8cbbd77468b3550c8f275b8180f085159a8ee6a09d1d
+      case_id: fastapi.test.test-security-http-digest-description.test-security-http-digest-no-credentials
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: http-digest-auth-upstream
+      input_path: tests/fixtures/inputs/parity/http-digest-auth-upstream.json
+      input_sha256: 42e0837d0419589be26f406b465c6a4747512d15279214bdd837b43325c3f18d
+      recipe_path: tests/fixtures/input-recipes/parity/http-digest-auth-upstream.yaml
+      recipe_sha256: 9f84339f1b744a878d60b09b0557c6ecf023501f03450fa633eca0f8f83cd5de
+      workload_path: tests/fixtures/workloads/http_digest_auth_upstream.py
+      workload_sha256: 91cf2dfde99e883acd5a8cbbd77468b3550c8f275b8180f085159a8ee6a09d1d
+      case_id: fastapi.test.test-security-http-digest-description.test-security-http-digest-incorrect-scheme-credentials
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -26110,7 +26213,7 @@ api_surface_contract:
     - openapi.security
     - validation.error_class
     - validation.error_details
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.security.http.HTTPDigest.__init__
@@ -26120,7 +26223,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1476
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/security.rs::PyHttpDigest::new
   - id: fastapi.security.oauth2.OAuth2
     kind: class
     source_candidate_ref: /api_candidates/1490

@@ -262,6 +262,96 @@ impl PyHttpBasic {
     }
 }
 
+#[pyclass(name = "HTTPDigest", module = "fastapi.security.http", subclass, dict)]
+struct PyHttpDigest {
+    model: Py<PyAny>,
+    scheme_name: Py<PyAny>,
+    auto_error: bool,
+}
+
+#[pymethods]
+impl PyHttpDigest {
+    #[new]
+    #[pyo3(signature = (*, scheme_name=None, description=None, auto_error=true))]
+    fn new(
+        py: Python<'_>,
+        scheme_name: Option<Py<PyAny>>,
+        description: Option<Py<PyAny>>,
+        auto_error: bool,
+    ) -> PyResult<Self> {
+        let module = py.import("fastapi_rs._core")?;
+        let model_type = module.getattr("_HTTPBasicModel")?;
+        let model_arguments = PyDict::new(py);
+        model_arguments.set_item("scheme", "digest")?;
+        model_arguments.set_item("description", description.unwrap_or_else(|| py.None()))?;
+        let model = model_type.call((), Some(&model_arguments))?.unbind();
+
+        Ok(Self {
+            model,
+            scheme_name: scheme_name.unwrap_or_else(|| py.None()),
+            auto_error,
+        })
+    }
+
+    #[getter]
+    fn model(&self, py: Python<'_>) -> Py<PyAny> {
+        self.model.clone_ref(py)
+    }
+
+    #[setter]
+    fn set_model(&mut self, model: Py<PyAny>) {
+        self.model = model;
+    }
+
+    #[getter]
+    fn scheme_name(slf: Py<Self>, py: Python<'_>) -> PyResult<Py<PyAny>> {
+        let instance = slf.bind(py);
+        let stored = instance.borrow().scheme_name.clone_ref(py);
+        if stored.bind(py).is_truthy()? {
+            return Ok(stored);
+        }
+        let class_name = instance.get_type().name()?.to_string();
+        Ok(PyString::new(py, &class_name).unbind().into_any())
+    }
+
+    #[setter]
+    fn set_scheme_name(&mut self, scheme_name: Py<PyAny>) {
+        self.scheme_name = scheme_name;
+    }
+
+    #[getter]
+    fn auto_error(&self) -> bool {
+        self.auto_error
+    }
+
+    #[setter]
+    fn set_auto_error(&mut self, auto_error: bool) {
+        self.auto_error = auto_error;
+    }
+
+    fn make_authenticate_headers(slf: Py<Self>, py: Python<'_>) -> PyResult<Py<PyAny>> {
+        let scheme = slf.bind(py).getattr("model")?.getattr("scheme")?;
+        let challenge = scheme.call_method0("title")?;
+        let headers = PyDict::new(py);
+        headers.set_item("WWW-Authenticate", challenge)?;
+        Ok(headers.unbind().into_any())
+    }
+
+    fn make_not_authenticated_error(slf: Py<Self>, py: Python<'_>) -> PyResult<Py<PyAny>> {
+        make_not_authenticated_error(slf.bind(py).as_any())
+    }
+
+    fn __call__(slf: Py<Self>, py: Python<'_>, request: Py<PyAny>) -> PyResult<Py<PyAny>> {
+        into_python_awaitable(
+            py,
+            HttpDigestCall {
+                security: slf.into_any(),
+                request,
+            },
+        )
+    }
+}
+
 #[pyclass(
     name = "OAuth2PasswordBearer",
     module = "fastapi.security.oauth2",
@@ -464,6 +554,49 @@ impl AwaitableStateMachine for HttpBasicCall {
         let arguments = PyDict::new(py);
         arguments.set_item("username", username)?;
         arguments.set_item("password", password)?;
+        credentials_type
+            .call((), Some(&arguments))
+            .map(|credentials| MachineAction::Complete(credentials.unbind()))
+    }
+}
+
+struct HttpDigestCall {
+    security: Py<PyAny>,
+    request: Py<PyAny>,
+}
+
+impl AwaitableStateMachine for HttpDigestCall {
+    fn resume(&mut self, py: Python<'_>, input: MachineResume) -> PyResult<MachineAction> {
+        if !matches!(input, MachineResume::Start) {
+            return Err(PyRuntimeError::new_err(
+                "HTTPDigest dependency resumed more than once",
+            ));
+        }
+
+        let security = self.security.bind(py);
+        let headers = self.request.bind(py).getattr("headers")?;
+        let authorization = headers.call_method1("get", ("Authorization",))?;
+        let authorization_is_present = authorization.is_truthy()?;
+        let (scheme, credentials) = authorization_parts(&authorization)?;
+        let is_digest = authorization_is_present
+            && !scheme.is_empty()
+            && !credentials.is_empty()
+            && scheme.to_lowercase() == "digest";
+
+        if !is_digest {
+            if security.getattr("auto_error")?.is_truthy()? {
+                let exception = security.call_method0("make_not_authenticated_error")?;
+                return Err(PyErr::from_value(exception));
+            }
+            return Ok(MachineAction::Complete(py.None()));
+        }
+
+        let credentials_type = security
+            .get_type()
+            .getattr("_fastapi_rs_credentials_type")?;
+        let arguments = PyDict::new(py);
+        arguments.set_item("scheme", scheme)?;
+        arguments.set_item("credentials", credentials)?;
         credentials_type
             .call((), Some(&arguments))
             .map(|credentials| MachineAction::Complete(credentials.unbind()))
@@ -792,6 +925,12 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     )?;
     http_basic_type.setattr("_fastapi_rs_http_exception_type", exception_type.clone())?;
 
+    module.add_class::<PyHttpDigest>()?;
+    let http_digest_type = py.get_type::<PyHttpDigest>();
+    attach_dependency_introspection(py, &http_digest_type)?;
+    http_digest_type.setattr("_fastapi_rs_credentials_type", credentials_type.bind(py))?;
+    http_digest_type.setattr("_fastapi_rs_http_exception_type", exception_type.clone())?;
+
     module.add_class::<PyOAuth2PasswordBearer>()?;
     let oauth2_password_bearer_type = py.get_type::<PyOAuth2PasswordBearer>();
     attach_dependency_introspection(py, &oauth2_password_bearer_type)?;
@@ -805,6 +944,8 @@ pub(crate) fn is_native_async_callable(py: Python<'_>, value: &Bound<'_, PyAny>)
     let bearer_call = bearer_namespace.get_item("__call__")?;
     let basic_namespace = py.get_type::<PyHttpBasic>().getattr("__dict__")?;
     let basic_call = basic_namespace.get_item("__call__")?;
+    let digest_namespace = py.get_type::<PyHttpDigest>().getattr("__dict__")?;
+    let digest_call = digest_namespace.get_item("__call__")?;
     let oauth2_namespace = py
         .get_type::<PyOAuth2PasswordBearer>()
         .getattr("__dict__")?;
@@ -815,7 +956,10 @@ pub(crate) fn is_native_async_callable(py: Python<'_>, value: &Bound<'_, PyAny>)
         let namespace = owner.getattr("__dict__")?;
         if namespace.contains("__call__")? {
             let call = namespace.get_item("__call__")?;
-            return Ok(call.is(&bearer_call) || call.is(&basic_call) || call.is(&oauth2_call));
+            return Ok(call.is(&bearer_call)
+                || call.is(&basic_call)
+                || call.is(&digest_call)
+                || call.is(&oauth2_call));
         }
     }
     Ok(false)

@@ -2612,6 +2612,85 @@ reviewed_api_contract_overlay:
         raises the native 401 response. Invalid Base64 and missing username
         separator always raise the authentication response. Live parity and
         Python exception-cause parity remain unverified.
+    fastapi.security.HTTPDigest:
+      rust_binding: fastapi-rs/src/security.rs::PyHttpDigest
+      source_evidence:
+        - {path: fastapi/security/__init__.py}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/http-digest-auth-upstream.yaml
+          case_id: fastapi.test.test-security-http-digest-description.test-security-http-digest-no-credentials
+        - recipe_path: tests/fixtures/input-recipes/parity/http-digest-auth-upstream.yaml
+          case_id: fastapi.test.test-security-http-digest-description.test-security-http-digest-incorrect-scheme-credentials
+      feature_ids: [dependency-security, public-api-errors]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      supported_slice: >-
+        Partial Rust-owned Digest dependency with keyword-only constructor,
+        HTTP Digest challenge, case-insensitive scheme recognition, and
+        HTTPAuthorizationCredentials extraction. The pinned upstream workflow
+        observes missing and wrong-scheme challenges. Valid credentials,
+        optional authentication, HTTPBase inheritance, and OpenAPI security
+        generation remain outside this evidenced slice.
+    fastapi.security.http.HTTPDigest:
+      rust_binding: fastapi-rs/src/security.rs::PyHttpDigest
+      source_evidence:
+        - path: fastapi/security/http.py
+          symbol: HTTPDigest
+          kind: source-definition
+          start_line: 319
+          end_line: 417
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/http-digest-auth-upstream.yaml
+          case_id: fastapi.test.test-security-http-digest-description.test-security-http-digest-no-credentials
+        - recipe_path: tests/fixtures/input-recipes/parity/http-digest-auth-upstream.yaml
+          case_id: fastapi.test.test-security-http-digest-description.test-security-http-digest-incorrect-scheme-credentials
+      feature_ids: [dependency-security, public-api-errors]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      supported_slice: >-
+        Partial native implementation handles Digest authorization parsing and
+        authentication errors in Rust. Source HTTPBase inheritance, optional
+        authentication, successful credential extraction, and OpenAPI scheme
+        generation are not established here.
+    fastapi.security.http.HTTPDigest.__init__:
+      rust_binding: fastapi-rs/src/security.rs::PyHttpDigest::new
+      source_evidence:
+        - path: fastapi/security/http.py
+          symbol: __init__
+          kind: source-definition
+          start_line: 357
+          end_line: 402
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/http-digest-auth-upstream.yaml
+          case_id: fastapi.test.test-security-http-digest-description.test-security-http-digest-no-credentials
+        - recipe_path: tests/fixtures/input-recipes/parity/http-digest-auth-upstream.yaml
+          case_id: fastapi.test.test-security-http-digest-description.test-security-http-digest-incorrect-scheme-credentials
+      feature_ids: [dependency-security]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      supported_slice: >-
+        Partial constructor supports the reviewed description argument and
+        keyword-only scheme_name and auto_error options. Annotated Doc metadata,
+        subclass naming edge cases, and all constructor outcomes are not fully
+        reflected by the selected workflow.
+    fastapi.security.http.HTTPDigest.__call__:
+      rust_binding: fastapi-rs/src/security.rs::PyHttpDigest::__call__
+      source_evidence:
+        - path: fastapi/security/http.py
+          symbol: __call__
+          kind: source-definition
+          start_line: 404
+          end_line: 417
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/http-digest-auth-upstream.yaml
+          case_id: fastapi.test.test-security-http-digest-description.test-security-http-digest-no-credentials
+        - recipe_path: tests/fixtures/input-recipes/parity/http-digest-auth-upstream.yaml
+          case_id: fastapi.test.test-security-http-digest-description.test-security-http-digest-incorrect-scheme-credentials
+      feature_ids: [dependency-security, public-api-errors]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      supported_slice: >-
+        Partial awaitable checks that Digest credentials are present and that
+        the scheme matches case-insensitively, then returns the native
+        authorization-credentials model. The selected workflow verifies missing
+        and wrong-scheme challenges; valid and optional credential cases remain
+        unverified.
     fastapi.security.HTTPBasicCredentials:
       rust_binding: fastapi-rs/src/security.rs::create_http_basic_credentials_model
       source_evidence:
