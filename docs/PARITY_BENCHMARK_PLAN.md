@@ -227,6 +227,31 @@ server or a native-only Rust boundary. Those measurements remain separate
 future workloads; do not infer them by subtracting the Starlette control or
 from the end-to-end target time.
 
+#### Recorded six-workload baseline
+
+The completed run at `2026-10-03T23:18:10Z` used FastAPI-RS commit
+`50c54729727768a260f6da7277da4c385ebae58f`, FastAPI `0.141.1` at
+`95f8322ee1dcda7ceace7b1c4f6c9915b36d748f`, Starlette `1.6.0` at
+`4f250d6b814587e20c5365f0a5f0c4d42bcb929f`, and Starlette-RS at
+`2de1e56b38c32d9d1b89445190f37bd1e7739515`. It ran on CPython 3.12.13,
+macOS 15.7.7 ARM64, with Cargo's release profile. All six workload parity
+gates passed (41/41 selected cases). The table reports median direct-ASGI
+latency; the ratio is FastAPI-RS divided by FastAPI, so values above `1.0x`
+mean FastAPI-RS took longer on this host.
+
+| Workload | FastAPI median | FastAPI-RS median | Median ratio |
+| --- | ---: | ---: | ---: |
+| Async nested dependencies, distinct query aliases | 511.0 µs | 693.9 µs | 1.358x |
+| Async nested dependencies, two query parameters | 408.1 µs | 568.5 µs | 1.393x |
+| Chunked request body | 133.3 µs | 132.3 µs | 0.993x |
+| Invalid request | 145.5 µs | 309.6 µs | 2.129x |
+| Valid request | 132.5 µs | 130.7 µs | 0.986x |
+| Repeated sequence query | 98.5 µs | 84.4 µs | 0.857x |
+
+This is one machine's baseline for the declared direct-ASGI boundary. It does
+not measure network/server latency or isolate native Rust time; compare later
+runs only when their source identities and workload contracts match.
+
 | Tier | Workload | Timing boundary and purpose |
 | --- | --- | --- |
 | 1. Request path | Preserve sync/async input-model validation; small dict/model output with and without `response_model`; nested dependencies; large request payload; and large dict/model response with and without `response_model`. The upstream large response contains 300 items with 25 integers each plus metadata. Add a plain-route control implemented with Starlette 1.6.0's public `Route` and response APIs. | Match upstream's in-process `TestClient` path. Construct the app and client outside the timed request; exclude the one warmup request. Keep the raw Starlette control to the same simple request/response work; it is not a feature-equivalent FastAPI comparison. This is an integrated Python/ASGI/client measurement, not network-server latency. |
