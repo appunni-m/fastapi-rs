@@ -1,7 +1,11 @@
 # Draft: recursive dependency mapping audit
 
-**Status:** draft evidence review, 2026-09-30. This note records an audit and
-follow-up backlog; it is not a new dependency or compatibility contract.
+**Status:** historical draft, 2026-09-30; superseded for current state by
+[`DEPENDENCY_GRAPH.md`](../DEPENDENCY_GRAPH.md),
+[`RUST_TARGET_DEPENDENCIES.md`](../RUST_TARGET_DEPENDENCIES.md), and
+[`LICENSING.md`](../LICENSING.md). This dated note records the earlier audit
+and backlog; its target build-tool gap predates the hash-locked
+`requirements/build-tools-cpython-3.12.13.lock` profile.
 
 ## Audit result
 

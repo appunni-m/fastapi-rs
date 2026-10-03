@@ -541,9 +541,16 @@ def render(metadata: dict[str, Any], starlette_rs_revision: str) -> str:
         for dependency in sorted(node["deps"], key=lambda item: item["name"]):
             target = packages[dependency["pkg"]]
             edge_name = f"{target['name']} {target['version']}"
-            kinds = sorted({dep_kind["kind"] or "normal" for dep_kind in dependency["dep_kinds"]})
-            if kinds != ["normal"]:
-                edge_name += f" ({', '.join(kinds)})"
+            edge_kinds = {
+                (dep_kind.get("kind") or "normal", dep_kind.get("target"))
+                for dep_kind in dependency.get("dep_kinds", [])
+            }
+            labels = sorted(
+                f"{kind} if {target_predicate}" if target_predicate else kind
+                for kind, target_predicate in edge_kinds
+            ) or ["normal"]
+            if labels != ["normal"]:
+                edge_name += f" ({'; '.join(labels)})"
             edges.append(edge_name)
         rows.append(
             "| "
@@ -572,6 +579,9 @@ from `cargo metadata --locked --format-version 1 --features
 pyo3/extension-module`. It describes the current Cargo.lock graph, including the
 local Starlette-RS path dependency at reviewed commit
 `{starlette_rs_revision}` and the extension-module feature used by Maturin.
+Dependency edges retain Cargo kind and target predicates; a conditional edge
+applies only to targets matching its predicate. Package roles summarize the
+resolved graph and do not make every conditional edge active on every platform.
 Regenerate after changing a Cargo manifest, the lockfile, or the reviewed
 Starlette-RS revision. The lock snapshot is [`Cargo.lock`](../Cargo.lock); a
 clean checkout of the pinned Starlette-RS revision is required to resolve the
