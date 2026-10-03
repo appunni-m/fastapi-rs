@@ -3,7 +3,7 @@
     "This artifact classifies FastAPI import-binding paths, not the canonical Starlette target path; sibling dispositions do not automatically make FastAPI re-exports supported.",
     "The pinned Starlette-RS review has exact dispositions for 93 of 97 binding candidates across 46 of 50 unique target paths. Four targets have no exact sibling review row; absence is not a claim that the targets are unsupported.",
     "The selected Starlette-RS contract is a partial slice. Generic Starlette behavior stays sibling-owned only to the extent represented by that pinned contract; FastAPI-specific integration remains FastAPI-owned.",
-    "The reviewed Starlette-RS lineage adds input-only coverage for mounted middleware, TestClient HTTP and WebSocket interactions, root-path route graphs and URL generation, double-mount reverse URL lookup, URLPath absolute URL construction, WebSocket URL fields and iterator behavior, streaming/file-backed denial responses, TrustedHost, exception formatting, duplicate-close handling, StaticFiles root symlinks, BaseHTTP background tasks, FileResponse repeat calls, and Router.url_path_for converter-error propagation, unmatched-name error propagation, while migrating the parity input schema. The metadata, API catalog, and API review are unchanged; the manifest is pinned alongside them. Each identity-bearing sibling file is pinned to its exact blob and SHA-256; the atlas builder verifies those files and every reviewed target against the selected commit.",
+    "The reviewed Starlette-RS lineage adds input-only coverage for mounted middleware, TestClient HTTP and WebSocket interactions, root-path route graphs and URL generation, double-mount reverse URL lookup, URLPath absolute URL construction, WebSocket URL fields and iterator behavior, streaming/file-backed denial responses, TrustedHost, exception formatting, duplicate-close handling, StaticFiles root symlinks, BaseHTTP background tasks, FileResponse repeat calls, Router.url_path_for converter-error and unmatched-name propagation, and ServerErrorMiddleware debug-HTML responses, post-response exception propagation, and non-HTTP pass-through, while migrating the parity input schema. The metadata, API catalog, and API review are unchanged; the manifest is pinned alongside them. Each identity-bearing sibling file is pinned to its exact blob and SHA-256; the atlas builder verifies those files and every reviewed target against the selected commit.",
     "The pinned sibling manifest adds input-only coverage for Router.url_path_for named Mount, host-route subdomain reverse lookup, and nested Route resolution through a named Mount under a named Host; these remain sibling-owned generic routing behaviors, not FastAPI-RS support or parity claims.",
     "These are source/API classification recommendations, not FastAPI-RS runtime support or parity claims."
   ],
@@ -21,9 +21,9 @@
         "sha256": "8b25f2e3a46753316446077bfde97b6ac8a342233e2f4e50b12d3d01eafbe099"
       },
       "manifest": {
-        "git_blob": "49e4ea7b691cc702a501a42ad336e5f7944445ef",
+        "git_blob": "0f5655aac5aace4012b8409bf49df39fd67da06e",
         "path": "tests/fixtures/manifest.yaml",
-        "sha256": "aa3108780be0d225f0e1e234768417446b945f0f7b16b1f013aa1a221d73ddec"
+        "sha256": "2204f557bc423a6d324000735d8245693e136248703e089bb2200fde73ba453e"
       },
       "metadata": {
         "git_blob": "ed5e382c1ceafc1eaf37e337eb54f0a898a49e6c",
@@ -31,7 +31,7 @@
         "sha256": "90f805ed7d2497833422db870f88d53319dbaaf31a675f89b1ad21fdd4a123d5"
       }
     },
-    "manifest_sha256": "aa3108780be0d225f0e1e234768417446b945f0f7b16b1f013aa1a221d73ddec",
+    "manifest_sha256": "2204f557bc423a6d324000735d8245693e136248703e089bb2200fde73ba453e",
     "metadata_sha256": "90f805ed7d2497833422db870f88d53319dbaaf31a675f89b1ad21fdd4a123d5"
   },
   "rows": [
@@ -5436,7 +5436,7 @@
     "package": "FastAPI",
     "selected_starlette_profile": "1.6.0",
     "source_commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
-    "starlette_rs_contract_commit": "2f9978d4c8e28443a176b83fb9a6f2b9966d0953",
+    "starlette_rs_contract_commit": "baea19981ba3119d362be8c3a1b0913e4824313e",
     "starlette_source_commit": "4f250d6b814587e20c5365f0a5f0c4d42bcb929f",
     "version": "0.141.1"
   }
