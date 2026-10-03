@@ -24,7 +24,7 @@ PARITY_API_INPUT ?= tests/fixtures/inputs/parity/encoding.json
 BENCHMARK_WORKLOAD ?= benchmarks/workloads/first-slice-valid-asgi.yaml
 
 .DEFAULT_GOAL := help
-.PHONY: help fmt format clippy build build-rust build-python build-tools-prepare python-facade-check rust-policy-check compatibility-atlas-update api-contract-update api-contract-check metadata-check dependency-inventory-update dependency-inventory-check dependency-graph-update dependency-graph-check parity-inputs parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-target parity-api-runtime parity-validate parity-index-update parity-index-check parity-oracle parity-oracle-standard parity-target parity-compare parity-api-validate parity-api-oracle parity-api-target parity-api-compare parity-first-slice benchmark-contract-check benchmark-first-slice benchmark-suite verify clean
+.PHONY: help fmt format clippy build build-rust build-python build-tools-prepare python-facade-check rust-policy-check compatibility-atlas-update api-contract-update api-contract-check metadata-check dependency-inventory-update dependency-inventory-check dependency-graph-update dependency-graph-check parity-inputs parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-target parity-api-runtime parity-validate parity-index-update parity-index-check parity-oracle parity-oracle-standard parity-target parity-compare parity-api-validate parity-api-oracle parity-api-target parity-api-compare parity-first-slice benchmark-input-check benchmark-contract-check benchmark-first-slice benchmark-suite verify clean
 
 help: ## Show common development commands
 	@printf '%s\n' \
@@ -60,6 +60,7 @@ help: ## Show common development commands
 	  '  make parity-compare  Compare live source/target result artifacts exactly' \
 	  '  make parity-api-*    Validate, run, and compare direct Python API probes' \
 	  '  make parity-first-slice Run and compare the pinned first HTTP slice end to end' \
+	  '  make benchmark-input-check Validate workload declarations and their parity inputs' \
 	  '  make benchmark-contract-check Validate benchmark workloads against parity inputs and runner policy' \
 	  '  make benchmark-first-slice Gate and measure the selected direct-ASGI workload' \
 	  '  make benchmark-suite  Gate and measure all six reviewed direct-ASGI workloads' \
@@ -205,11 +206,14 @@ parity-first-slice: parity-validate ## Run and exactly compare the pinned first 
 	  --oracle-python "$(ORACLE_PYTHON)" \
 	  --target-python "$(TARGET_PYTHON)"
 
-benchmark-contract-check: parity-inputs ## Validate workload/suite schemas, saved suite references, and parity references
+benchmark-input-check: parity-inputs ## Validate benchmark workload declarations and parity-input references
+	$(PYTHON) -m scripts.benchmarks.contract --check
+
+benchmark-contract-check: parity-inputs ## Validate workload declarations and current saved suite/parity references
 	$(PYTHON) -m scripts.benchmarks.contract --check
 	$(PYTHON) -m scripts.benchmarks.run_suite --check
 
-benchmark-first-slice: benchmark-contract-check parity-prepare-oracle parity-prepare-target ## Prepare isolated runtimes, gate parity, and measure the selected direct-ASGI workload
+benchmark-first-slice: benchmark-input-check parity-prepare-oracle parity-prepare-target ## Prepare isolated runtimes, gate parity, and measure the selected direct-ASGI workload
 	$(PYTHON) scripts/benchmarks/run_first_slice.py \
 	  --workload "$(BENCHMARK_WORKLOAD)" \
 	  --fastapi-source "$(FASTAPI_SOURCE)" \
@@ -218,7 +222,7 @@ benchmark-first-slice: benchmark-contract-check parity-prepare-oracle parity-pre
 	  --oracle-python "$(ORACLE_PYTHON)" \
 	  --target-python "$(TARGET_PYTHON)"
 
-benchmark-suite: benchmark-contract-check parity-prepare-oracle ## Prepare the oracle, then gate and measure the complete reviewed benchmark set
+benchmark-suite: benchmark-input-check parity-prepare-oracle ## Prepare the oracle, then gate and measure the complete reviewed benchmark set
 	$(PYTHON) -m scripts.benchmarks.run_suite \
 	  --preflight-only \
 	  --fastapi-source "$(FASTAPI_SOURCE)" \
