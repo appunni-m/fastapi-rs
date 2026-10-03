@@ -1,0 +1,1250 @@
+schema: fastapi-rs/python-asgi-workflow@2
+oracle_profile_extension: standard-multipart
+workload:
+  file: tests/fixtures/workloads/request_form_upload_source_review_independent.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.docs-example-wave-f.request-files.required-annotated-files
+  actions:
+  - action_id: required-bytes-annotated
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /review/annotated/files/required-bytes
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=FastapiWaveFBoundary
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: "--FastapiWaveFBoundary\r\nContent-Disposition: form-data; name=\"file\"\
+        ; filename=\"wave-f-note.bin\"\r\nContent-Type: application/octet-stream\r\
+        \n\r\ncobalt specimen\r\n--FastapiWaveFBoundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: required-upload-annotated
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /review/annotated/files/required-upload
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=FastapiWaveFBoundary
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: "--FastapiWaveFBoundary\r\nContent-Disposition: form-data; name=\"file\"\
+        ; filename=\"wave-f-note.bin\"\r\nContent-Type: application/octet-stream\r\
+        \n\r\ncobalt specimen\r\n--FastapiWaveFBoundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs_src/request_files/tutorial001_an_py310.py
+    kind: upstream_documentation_example
+- case_id: fastapi.docs-example-wave-f.request-files.optional-presence
+  actions:
+  - action_id: optional-bytes-absent-plain
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /review/plain/files/optional-bytes
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: optional-bytes-absent-annotated
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /review/annotated/files/optional-bytes
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: optional-upload-absent-plain
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /review/plain/files/optional-upload
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: optional-upload-absent-annotated
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /review/annotated/files/optional-upload
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: optional-bytes-present-plain
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /review/plain/files/optional-bytes
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=FastapiWaveFBoundary
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: "--FastapiWaveFBoundary\r\nContent-Disposition: form-data; name=\"file\"\
+        ; filename=\"wave-f-note.bin\"\r\nContent-Type: application/octet-stream\r\
+        \n\r\ncobalt specimen\r\n--FastapiWaveFBoundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: optional-bytes-present-annotated
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /review/annotated/files/optional-bytes
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=FastapiWaveFBoundary
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: "--FastapiWaveFBoundary\r\nContent-Disposition: form-data; name=\"file\"\
+        ; filename=\"wave-f-note.bin\"\r\nContent-Type: application/octet-stream\r\
+        \n\r\ncobalt specimen\r\n--FastapiWaveFBoundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: optional-upload-present-plain
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /review/plain/files/optional-upload
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=FastapiWaveFBoundary
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: "--FastapiWaveFBoundary\r\nContent-Disposition: form-data; name=\"file\"\
+        ; filename=\"wave-f-note.bin\"\r\nContent-Type: application/octet-stream\r\
+        \n\r\ncobalt specimen\r\n--FastapiWaveFBoundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: optional-upload-present-annotated
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /review/annotated/files/optional-upload
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=FastapiWaveFBoundary
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: "--FastapiWaveFBoundary\r\nContent-Disposition: form-data; name=\"file\"\
+        ; filename=\"wave-f-note.bin\"\r\nContent-Type: application/octet-stream\r\
+        \n\r\ncobalt specimen\r\n--FastapiWaveFBoundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs_src/request_files/tutorial001_02_an_py310.py
+    kind: upstream_documentation_example
+- case_id: fastapi.docs-example-wave-f.request-files.single-file-description
+  actions:
+  - action_id: described-bytes-plain
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /review/plain/files/described-bytes
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=FastapiWaveFBoundary
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: "--FastapiWaveFBoundary\r\nContent-Disposition: form-data; name=\"file\"\
+        ; filename=\"wave-f-note.bin\"\r\nContent-Type: application/octet-stream\r\
+        \n\r\ncobalt specimen\r\n--FastapiWaveFBoundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: described-bytes-annotated
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /review/annotated/files/described-bytes
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=FastapiWaveFBoundary
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: "--FastapiWaveFBoundary\r\nContent-Disposition: form-data; name=\"file\"\
+        ; filename=\"wave-f-note.bin\"\r\nContent-Type: application/octet-stream\r\
+        \n\r\ncobalt specimen\r\n--FastapiWaveFBoundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: described-upload-plain
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /review/plain/files/described-upload
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=FastapiWaveFBoundary
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: "--FastapiWaveFBoundary\r\nContent-Disposition: form-data; name=\"file\"\
+        ; filename=\"wave-f-note.bin\"\r\nContent-Type: application/octet-stream\r\
+        \n\r\ncobalt specimen\r\n--FastapiWaveFBoundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: described-upload-annotated
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /review/annotated/files/described-upload
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=FastapiWaveFBoundary
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: "--FastapiWaveFBoundary\r\nContent-Disposition: form-data; name=\"file\"\
+        ; filename=\"wave-f-note.bin\"\r\nContent-Type: application/octet-stream\r\
+        \n\r\ncobalt specimen\r\n--FastapiWaveFBoundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: described-file-schema
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /paths/~1review~1plain~1files~1described-bytes/post/requestBody
+      - /paths/~1review~1annotated~1files~1described-bytes/post/requestBody
+      - /paths/~1review~1plain~1files~1described-upload/post/requestBody
+      - /paths/~1review~1annotated~1files~1described-upload/post/requestBody
+      comparison: exact
+  source_evidence:
+  - path: docs_src/request_files/tutorial001_03_py310.py
+    kind: upstream_documentation_example
+  - path: docs_src/request_files/tutorial001_03_an_py310.py
+    kind: upstream_documentation_example
+- case_id: fastapi.docs-example-wave-f.request-files.multiple-files
+  actions:
+  - action_id: multiple-bytes-plain
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /review/plain/files/multiple-bytes
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=FastapiWaveFBoundary
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: "--FastapiWaveFBoundary\r\nContent-Disposition: form-data; name=\"files\"\
+        ; filename=\"wave-f-leaf.txt\"\r\nContent-Type: text/plain\r\n\r\nmaple sample\r\
+        \n--FastapiWaveFBoundary\r\nContent-Disposition: form-data; name=\"files\"\
+        ; filename=\"wave-f-stone.txt\"\r\nContent-Type: text/plain\r\n\r\ngranite\
+        \ sample\r\n--FastapiWaveFBoundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: multiple-bytes-annotated
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /review/annotated/files/multiple-bytes
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=FastapiWaveFBoundary
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: "--FastapiWaveFBoundary\r\nContent-Disposition: form-data; name=\"files\"\
+        ; filename=\"wave-f-leaf.txt\"\r\nContent-Type: text/plain\r\n\r\nmaple sample\r\
+        \n--FastapiWaveFBoundary\r\nContent-Disposition: form-data; name=\"files\"\
+        ; filename=\"wave-f-stone.txt\"\r\nContent-Type: text/plain\r\n\r\ngranite\
+        \ sample\r\n--FastapiWaveFBoundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: multiple-upload-plain
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /review/plain/files/multiple-upload
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=FastapiWaveFBoundary
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: "--FastapiWaveFBoundary\r\nContent-Disposition: form-data; name=\"files\"\
+        ; filename=\"wave-f-leaf.txt\"\r\nContent-Type: text/plain\r\n\r\nmaple sample\r\
+        \n--FastapiWaveFBoundary\r\nContent-Disposition: form-data; name=\"files\"\
+        ; filename=\"wave-f-stone.txt\"\r\nContent-Type: text/plain\r\n\r\ngranite\
+        \ sample\r\n--FastapiWaveFBoundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: multiple-upload-annotated
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /review/annotated/files/multiple-upload
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=FastapiWaveFBoundary
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: "--FastapiWaveFBoundary\r\nContent-Disposition: form-data; name=\"files\"\
+        ; filename=\"wave-f-leaf.txt\"\r\nContent-Type: text/plain\r\n\r\nmaple sample\r\
+        \n--FastapiWaveFBoundary\r\nContent-Disposition: form-data; name=\"files\"\
+        ; filename=\"wave-f-stone.txt\"\r\nContent-Type: text/plain\r\n\r\ngranite\
+        \ sample\r\n--FastapiWaveFBoundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs_src/request_files/tutorial002_py310.py
+    kind: upstream_documentation_example
+  - path: docs_src/request_files/tutorial002_an_py310.py
+    kind: upstream_documentation_example
+- case_id: fastapi.docs-example-wave-f.request-files.multiple-file-description
+  actions:
+  - action_id: described-multiple-bytes-plain
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /review/plain/files/described-multiple-bytes
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=FastapiWaveFBoundary
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: "--FastapiWaveFBoundary\r\nContent-Disposition: form-data; name=\"files\"\
+        ; filename=\"wave-f-leaf.txt\"\r\nContent-Type: text/plain\r\n\r\nmaple sample\r\
+        \n--FastapiWaveFBoundary\r\nContent-Disposition: form-data; name=\"files\"\
+        ; filename=\"wave-f-stone.txt\"\r\nContent-Type: text/plain\r\n\r\ngranite\
+        \ sample\r\n--FastapiWaveFBoundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: described-multiple-bytes-annotated
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /review/annotated/files/described-multiple-bytes
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=FastapiWaveFBoundary
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: "--FastapiWaveFBoundary\r\nContent-Disposition: form-data; name=\"files\"\
+        ; filename=\"wave-f-leaf.txt\"\r\nContent-Type: text/plain\r\n\r\nmaple sample\r\
+        \n--FastapiWaveFBoundary\r\nContent-Disposition: form-data; name=\"files\"\
+        ; filename=\"wave-f-stone.txt\"\r\nContent-Type: text/plain\r\n\r\ngranite\
+        \ sample\r\n--FastapiWaveFBoundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: described-multiple-upload-plain
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /review/plain/files/described-multiple-upload
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=FastapiWaveFBoundary
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: "--FastapiWaveFBoundary\r\nContent-Disposition: form-data; name=\"files\"\
+        ; filename=\"wave-f-leaf.txt\"\r\nContent-Type: text/plain\r\n\r\nmaple sample\r\
+        \n--FastapiWaveFBoundary\r\nContent-Disposition: form-data; name=\"files\"\
+        ; filename=\"wave-f-stone.txt\"\r\nContent-Type: text/plain\r\n\r\ngranite\
+        \ sample\r\n--FastapiWaveFBoundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: described-multiple-upload-annotated
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /review/annotated/files/described-multiple-upload
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=FastapiWaveFBoundary
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: "--FastapiWaveFBoundary\r\nContent-Disposition: form-data; name=\"files\"\
+        ; filename=\"wave-f-leaf.txt\"\r\nContent-Type: text/plain\r\n\r\nmaple sample\r\
+        \n--FastapiWaveFBoundary\r\nContent-Disposition: form-data; name=\"files\"\
+        ; filename=\"wave-f-stone.txt\"\r\nContent-Type: text/plain\r\n\r\ngranite\
+        \ sample\r\n--FastapiWaveFBoundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: described-multiple-file-schema
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /paths/~1review~1plain~1files~1described-multiple-bytes/post/requestBody
+      - /paths/~1review~1annotated~1files~1described-multiple-bytes/post/requestBody
+      - /paths/~1review~1plain~1files~1described-multiple-upload/post/requestBody
+      - /paths/~1review~1annotated~1files~1described-multiple-upload/post/requestBody
+      comparison: exact
+  source_evidence:
+  - path: docs_src/request_files/tutorial003_py310.py
+    kind: upstream_documentation_example
+  - path: docs_src/request_files/tutorial003_an_py310.py
+    kind: upstream_documentation_example
+- case_id: fastapi.docs-example-wave-f.request-form-models.valid-model
+  actions:
+  - action_id: form-model-plain
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /review/plain/forms/model
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/x-www-form-urlencoded
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: username=elm&password=wave-f-secret
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: form-model-annotated
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /review/annotated/forms/model
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/x-www-form-urlencoded
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: username=elm&password=wave-f-secret
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs_src/request_form_models/tutorial001_an_py310.py
+    kind: upstream_documentation_example
+- case_id: fastapi.docs-example-wave-f.request-form-models.extra-forbidden
+  actions:
+  - action_id: strict-form-model-plain
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /review/plain/forms/model-extra-forbid
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/x-www-form-urlencoded
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: username=ash&password=wave-f-secret&unexpected=visitor
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: strict-form-model-annotated
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /review/annotated/forms/model-extra-forbid
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/x-www-form-urlencoded
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: username=ash&password=wave-f-secret&unexpected=visitor
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs_src/request_form_models/tutorial002_py310.py
+    kind: upstream_documentation_example
+  - path: docs_src/request_form_models/tutorial002_an_py310.py
+    kind: upstream_documentation_example
+- case_id: fastapi.docs-example-wave-f.request-forms.required-fields
+  actions:
+  - action_id: form-fields-plain
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /review/plain/forms/fields
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/x-www-form-urlencoded
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: username=elm&password=wave-f-secret
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: form-fields-annotated
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /review/annotated/forms/fields
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/x-www-form-urlencoded
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: username=elm&password=wave-f-secret
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs_src/request_forms/tutorial001_py310.py
+    kind: upstream_documentation_example
+  - path: docs_src/request_forms/tutorial001_an_py310.py
+    kind: upstream_documentation_example
+- case_id: fastapi.docs-example-wave-f.request-forms-and-files.mixed-multipart
+  actions:
+  - action_id: mixed-form-files-plain
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /review/plain/forms-and-files
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=FastapiWaveFBoundary
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: "--FastapiWaveFBoundary\r\nContent-Disposition: form-data; name=\"file\"\
+        ; filename=\"wave-f-data.bin\"\r\nContent-Type: application/octet-stream\r\
+        \n\r\nsilver sample\r\n--FastapiWaveFBoundary\r\nContent-Disposition: form-data;\
+        \ name=\"fileb\"; filename=\"wave-f-report.txt\"\r\nContent-Type: text/plain\r\
+        \n\r\nfield notes\r\n--FastapiWaveFBoundary\r\nContent-Disposition: form-data;\
+        \ name=\"token\"\r\n\r\nwave-f-token-31\r\n--FastapiWaveFBoundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: mixed-form-files-annotated
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /review/annotated/forms-and-files
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=FastapiWaveFBoundary
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: "--FastapiWaveFBoundary\r\nContent-Disposition: form-data; name=\"file\"\
+        ; filename=\"wave-f-data.bin\"\r\nContent-Type: application/octet-stream\r\
+        \n\r\nsilver sample\r\n--FastapiWaveFBoundary\r\nContent-Disposition: form-data;\
+        \ name=\"fileb\"; filename=\"wave-f-report.txt\"\r\nContent-Type: text/plain\r\
+        \n\r\nfield notes\r\n--FastapiWaveFBoundary\r\nContent-Disposition: form-data;\
+        \ name=\"token\"\r\n\r\nwave-f-token-31\r\n--FastapiWaveFBoundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: mixed-form-files-schema
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /paths/~1review~1plain~1forms-and-files/post/requestBody
+      - /paths/~1review~1annotated~1forms-and-files/post/requestBody
+      comparison: exact
+  source_evidence:
+  - path: docs_src/request_forms_and_files/tutorial001_py310.py
+    kind: upstream_documentation_example
+  - path: docs_src/request_forms_and_files/tutorial001_an_py310.py
+    kind: upstream_documentation_example

@@ -12,6 +12,12 @@ class TypedTagEntry(BaseModel):
     tags: list[str] = Field(default_factory=list)
 
 
+class BareTagEntry(BaseModel):
+    name: str
+    price: float
+    tags: list = []
+
+
 class UniqueTagEntry(BaseModel):
     name: str
     score: float
@@ -48,6 +54,10 @@ def create_app() -> FastAPI:
 
     @app.put("/tag-forms/typed/{entry_id}")
     async def replace_typed_tags(entry_id: int, entry: TypedTagEntry):
+        return {"entry_id": entry_id, "entry": entry}
+
+    @app.put("/tag-forms/bare/{entry_id}")
+    async def replace_bare_tags(entry_id: int, entry: BareTagEntry):
         return {"entry_id": entry_id, "entry": entry}
 
     @app.put("/tag-forms/unique/{entry_id}")

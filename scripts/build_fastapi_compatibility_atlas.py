@@ -4127,6 +4127,20 @@ DOC_EXAMPLE_EXCLUSION_OVERRIDES = {
     ),
 }
 
+from atlas_documentation_example_review_wave_f import (  # noqa: E402
+    DOC_EXAMPLE_EXCLUSION_WAVE_F,
+)
+from atlas_documentation_example_review_wave_g import (  # noqa: E402
+    DOC_EXAMPLE_EXCLUSION_WAVE_G,
+)
+from atlas_documentation_example_review_wave_h import (  # noqa: E402
+    DOC_EXAMPLE_EXCLUSION_WAVE_H,
+)
+
+DOC_EXAMPLE_EXCLUSION_OVERRIDES.update(DOC_EXAMPLE_EXCLUSION_WAVE_F)
+DOC_EXAMPLE_EXCLUSION_OVERRIDES.update(DOC_EXAMPLE_EXCLUSION_WAVE_G)
+DOC_EXAMPLE_EXCLUSION_OVERRIDES.update(DOC_EXAMPLE_EXCLUSION_WAVE_H)
+
 DOC_RELATED_USAGE_SOURCES = {
     "reference/encoders.md": [
         {

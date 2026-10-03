@@ -1,0 +1,557 @@
+schema: fastapi-rs/python-asgi-workflow@3
+workload:
+  file: tests/fixtures/workloads/documentation_example_review_wave_h.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.documentation-example.wave-h.proxy-items-route
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  factory_input:
+    scenario: proxy-items
+  actions:
+  - action_id: items-through-proxy-route
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs_src/behind_a_proxy/tutorial001_01_py310.py
+    kind: upstream_documentation_example
+- case_id: fastapi.documentation-example.wave-h.bigger-applications.users-router
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  factory_input:
+    scenario: bigger-applications
+  actions:
+  - action_id: users-router
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /users/me
+      query_string: token=jessica
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs_src/bigger_applications/app_an_py310/main.py
+    kind: upstream_documentation_example
+  - path: docs_src/bigger_applications/app_an_py310/routers/users.py
+    kind: upstream_documentation_example
+- case_id: fastapi.documentation-example.wave-h.bigger-applications.items-router
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  factory_input:
+    scenario: bigger-applications
+  actions:
+  - action_id: items-router
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/plumbus
+      query_string: token=jessica
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - x-token
+        - fake-super-secret-token
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs_src/bigger_applications/app_an_py310/dependencies.py
+    kind: upstream_documentation_example
+  - path: docs_src/bigger_applications/app_an_py310/main.py
+    kind: upstream_documentation_example
+  - path: docs_src/bigger_applications/app_an_py310/routers/items.py
+    kind: upstream_documentation_example
+- case_id: fastapi.documentation-example.wave-h.bigger-applications.admin-router
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  factory_input:
+    scenario: bigger-applications
+  actions:
+  - action_id: admin-router
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /admin/
+      query_string: token=jessica
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - x-token
+        - fake-super-secret-token
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs_src/bigger_applications/app_an_py310/dependencies.py
+    kind: upstream_documentation_example
+  - path: docs_src/bigger_applications/app_an_py310/internal/admin.py
+    kind: upstream_documentation_example
+  - path: docs_src/bigger_applications/app_an_py310/main.py
+    kind: upstream_documentation_example
+- case_id: fastapi.documentation-example.wave-h.bigger-applications.openapi-projection
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  factory_input:
+    scenario: bigger-applications
+  actions:
+  - action_id: router-openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /paths/~1items~1{item_id}/get/responses/404
+      - /paths/~1admin~1/post/responses/418
+      - /paths/~1users~1me/get/tags
+      comparison: exact
+  source_evidence:
+  - path: docs_src/bigger_applications/app_an_py310/main.py
+    kind: upstream_documentation_example
+  - path: docs_src/bigger_applications/app_an_py310/internal/admin.py
+    kind: upstream_documentation_example
+  - path: docs_src/bigger_applications/app_an_py310/routers/items.py
+    kind: upstream_documentation_example
+  - path: docs_src/bigger_applications/app_an_py310/routers/users.py
+    kind: upstream_documentation_example
+- case_id: fastapi.documentation-example.wave-h.dependencies.callable-class
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  factory_input:
+    scenario: class-dependency
+  actions:
+  - action_id: class-callable-dependency
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/class
+      query_string: q=oak&skip=1&limit=1
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs_src/dependencies/tutorial003_an_py310.py
+    kind: upstream_documentation_example
+  - path: docs_src/dependencies/tutorial003_py310.py
+    kind: upstream_documentation_example
+- case_id: fastapi.documentation-example.wave-h.dependencies.inferred-class
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  factory_input:
+    scenario: class-dependency
+  actions:
+  - action_id: inferred-class-dependency
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /items/inferred
+      query_string: q=elm&skip=0&limit=2
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs_src/dependencies/tutorial004_an_py310.py
+    kind: upstream_documentation_example
+- case_id: fastapi.documentation-example.wave-h.settings.global-projection
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  factory_input:
+    scenario: settings-direct
+  actions:
+  - action_id: global-settings-projection
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /info
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs_src/settings/app01_py310/main.py
+    kind: upstream_documentation_example
+  - path: docs_src/settings/tutorial001_py310.py
+    kind: upstream_documentation_example
+- case_id: fastapi.documentation-example.wave-h.settings.dependency-projection
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  factory_input:
+    scenario: settings-dependency
+  actions:
+  - action_id: dependency-settings-projection
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /info
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs_src/settings/app03_an_py310/main.py
+    kind: upstream_documentation_example
+  - path: docs_src/settings/app03_py310/main.py
+    kind: upstream_documentation_example
+- case_id: fastapi.documentation-example.wave-h.custom-route.timed-dispatch
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  factory_input:
+    scenario: timed-route
+  actions:
+  - action_id: timed-route-response
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /timed
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs_src/custom_request_and_route/tutorial003_py310.py
+    kind: upstream_documentation_example
+- case_id: fastapi.documentation-example.wave-h.websockets.echo
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  factory_input:
+    scenario: websocket-echo
+  actions:
+  - action_id: echo-one-message
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /ws
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.receive
+      text: independent message
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
+    - kind: websocket
+      selector: messages
+      comparison: ordered
+  source_evidence:
+  - path: docs_src/websockets_/tutorial001_py310.py
+    kind: upstream_documentation_example
+- case_id: fastapi.documentation-example.wave-h.frontend.explicit-404
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  factory_input:
+    scenario: frontend-explicit-404
+  actions:
+  - action_id: missing-path-uses-explicit-404-fallback
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /missing
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs_src/frontend/tutorial003_py310.py
+    kind: upstream_documentation_example

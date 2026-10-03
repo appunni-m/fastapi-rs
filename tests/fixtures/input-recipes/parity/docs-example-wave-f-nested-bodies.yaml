@@ -1,0 +1,443 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/nested_body_tutorial_review.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.docs-example-wave-f.nested-body.list-tags-valid
+  actions:
+  - action_id: submit-typed-tag-list
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: PUT
+      scheme: http
+      path: /tag-forms/typed/86
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"name":"Copper guide","score":6.75,"tags":["fir","ash"]}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs_src/body_nested_models/tutorial002_py310.py
+    kind: upstream_documentation_example
+- case_id: fastapi.docs-example-wave-f.nested-body.set-tags-deduplicated
+  actions:
+  - action_id: submit-unique-tag-set
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: PUT
+      scheme: http
+      path: /tag-forms/unique/94
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"name":"Teal compass","score":8.5,"tags":["moss","fern","moss"]}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs_src/body_nested_models/tutorial003_py310.py
+    kind: upstream_documentation_example
+  - path: docs_src/body_nested_models/tutorial004_py310.py
+    kind: upstream_documentation_example
+- case_id: fastapi.docs-example-wave-f.nested-body.optional-image-present
+  actions:
+  - action_id: submit-nested-image
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: PUT
+      scheme: http
+      path: /assets/107
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"name":"Field lantern","cost":31.25,"image":{"href":"https://assets.example.invalid/lantern.png","caption":"Side
+        view"}}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs_src/body_nested_models/tutorial004_py310.py
+    kind: upstream_documentation_example
+  - path: docs_src/body_nested_models/tutorial005_py310.py
+    kind: upstream_documentation_example
+- case_id: fastapi.docs-example-wave-f.nested-body.http-url-invalid
+  actions:
+  - action_id: reject-invalid-image-url
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: PUT
+      scheme: http
+      path: /assets/119
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"name":"Canvas pouch","cost":17.5,"image":{"href":"plain-address","caption":"Front"}}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs_src/body_nested_models/tutorial005_py310.py
+    kind: upstream_documentation_example
+- case_id: fastapi.docs-example-wave-f.nested-body.optional-image-list-present
+  actions:
+  - action_id: submit-image-list
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: PUT
+      scheme: http
+      path: /assets/123
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"name":"Map case","cost":23.0,"images":[{"href":"https://assets.example.invalid/map-front.png","caption":"Front"},{"href":"https://assets.example.invalid/map-back.png","caption":"Back"}]}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs_src/body_nested_models/tutorial006_py310.py
+    kind: upstream_documentation_example
+- case_id: fastapi.docs-example-wave-f.nested-body.offer-nested-items
+  actions:
+  - action_id: submit-offer-with-nested-line
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /offers/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"name":"Trail bundle","cost":64.5,"lines":[{"name":"Survey notebook","cost":12.0,"labels":["waterproof","grid"],"images":[{"href":"https://assets.example.invalid/notebook.png","caption":"Cover"}]},{"name":"Compass
+        case","cost":21.5}]}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs_src/body_nested_models/tutorial007_py310.py
+    kind: upstream_documentation_example
+- case_id: fastapi.docs-example-wave-f.nested-body.top-level-image-list
+  actions:
+  - action_id: submit-image-array
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /image-batches/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '[{"href":"https://assets.example.invalid/leaf.png","caption":"Leaf"},{"href":"https://assets.example.invalid/stone.png","caption":"Stone"}]'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs_src/body_nested_models/tutorial008_py310.py
+    kind: upstream_documentation_example
+- case_id: fastapi.docs-example-wave-f.nested-body.integer-float-map
+  actions:
+  - action_id: submit-weight-map
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /weight-maps/
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"17":2.25,"29":4.75}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs_src/body_nested_models/tutorial009_py310.py
+    kind: upstream_documentation_example
+- case_id: fastapi.docs-example-wave-f.nested-body.optional-image-absent
+  actions:
+  - action_id: submit-item-without-image
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: PUT
+      scheme: http
+      path: /assets/134
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"name":"Canvas roll","cost":18.75}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs_src/body_nested_models/tutorial004_py310.py
+    kind: upstream_documentation_example
+  - path: docs_src/body_nested_models/tutorial005_py310.py
+    kind: upstream_documentation_example
+- case_id: fastapi.docs-example-wave-f.nested-body.optional-image-list-absent
+  actions:
+  - action_id: submit-item-without-images
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: PUT
+      scheme: http
+      path: /assets/138
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"name":"Pine case","cost":27.0}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs_src/body_nested_models/tutorial006_py310.py
+    kind: upstream_documentation_example
+- case_id: fastapi.docs-example-wave-f.nested-body.bare-list-values-preserved
+  actions:
+  - action_id: submit-heterogeneous-bare-list
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: PUT
+      scheme: http
+      path: /tag-forms/bare/151
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"name":"Basalt field card","price":12.75,"tags":["birch",17,{"shade":"amber"}]}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs_src/body_nested_models/tutorial001_py310.py
+    kind: upstream_documentation_example

@@ -1,0 +1,333 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/request_models.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.docs-example-wave-f.query-model.defaults-and-repeated-tags
+  actions:
+  - action_id: query-model-defaults
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /filters
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: query-model-repeated-tags
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /filters
+      query_string: limit=23&offset=6&order_by=updated_at&tags=cedar&tags=willow
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs_src/query_param_models/tutorial001_py310.py
+    kind: upstream_documentation_example
+  - path: docs_src/query_param_models/tutorial001_an_py310.py
+    kind: upstream_documentation_example
+- case_id: fastapi.docs-example-wave-f.query-model.extra-forbidden
+  actions:
+  - action_id: query-model-extra-field
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /filters
+      query_string: limit=19&offset=2&order_by=created_at&tags=elm&debug=true
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs_src/query_param_models/tutorial002_py310.py
+    kind: upstream_documentation_example
+  - path: docs_src/query_param_models/tutorial002_an_py310.py
+    kind: upstream_documentation_example
+- case_id: fastapi.docs-example-wave-f.cookie-model.valid-fields
+  actions:
+  - action_id: cookie-model-valid
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /session
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - cookie
+        - session_id=wave-f-session; fatebook_tracker=mailing-list-3
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs_src/cookie_param_models/tutorial001_an_py310.py
+    kind: upstream_documentation_example
+- case_id: fastapi.docs-example-wave-f.cookie-model.extra-forbidden
+  actions:
+  - action_id: cookie-model-extra
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /session
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - cookie
+        - session_id=wave-f-session; unexpected_tracker=campaign-8
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs_src/cookie_param_models/tutorial002_py310.py
+    kind: upstream_documentation_example
+  - path: docs_src/cookie_param_models/tutorial002_an_py310.py
+    kind: upstream_documentation_example
+- case_id: fastapi.docs-example-wave-f.header-model.repeated-list-default-conversion
+  actions:
+  - action_id: header-model-repeated-tags
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /trace
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - save-data
+        - 'true'
+      - - if-modified-since
+        - Wed, 21 Oct 2015 07:28:00 GMT
+      - - traceparent
+        - 00-aabbccddeeff00112233445566778899-0123456789abcdef-01
+      - - x-tag
+        - cedar
+      - - x-tag
+        - willow
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs_src/header_param_models/tutorial001_an_py310.py
+    kind: upstream_documentation_example
+- case_id: fastapi.docs-example-wave-f.header-model.extra-forbidden
+  actions:
+  - action_id: header-model-extra
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /trace
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - save-data
+        - 'true'
+      - - x-unlisted
+        - wave-f
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs_src/header_param_models/tutorial002_py310.py
+    kind: upstream_documentation_example
+  - path: docs_src/header_param_models/tutorial002_an_py310.py
+    kind: upstream_documentation_example
+- case_id: fastapi.docs-example-wave-f.header-model.underscore-preserved
+  actions:
+  - action_id: header-model-underscore
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /trace-literal
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - save_data
+        - 'true'
+      - - if_modified_since
+        - Tue, 10 Mar 2026 10:30:00 GMT
+      - - x_tag
+        - ash
+      - - x_tag
+        - birch
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs_src/header_param_models/tutorial003_py310.py
+    kind: upstream_documentation_example
+  - path: docs_src/header_param_models/tutorial003_an_py310.py
+    kind: upstream_documentation_example

@@ -1,0 +1,127 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/body_surface.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.docs-example-wave-f.multiple-body.optional-model-absent
+  actions:
+  - action_id: put-without-product
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: PUT
+      scheme: http
+      path: /products/208
+      query_string: q=summary
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs_src/body_multiple_params/tutorial001_py310.py
+    kind: upstream_documentation_example
+  - path: docs_src/body_multiple_params/tutorial001_an_py310.py
+    kind: upstream_documentation_example
+- case_id: fastapi.docs-example-wave-f.multiple-body.optional-model-present
+  actions:
+  - action_id: put-with-product
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: PUT
+      scheme: http
+      path: /products/209
+      query_string: q=details
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"name":"Alpine kit","price":29.5,"description":"Compact set","tax":1.6}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs_src/body_multiple_params/tutorial001_py310.py
+    kind: upstream_documentation_example
+  - path: docs_src/body_multiple_params/tutorial001_an_py310.py
+    kind: upstream_documentation_example
+- case_id: fastapi.docs-example-wave-f.multiple-body.model-and-scalar
+  actions:
+  - action_id: put-bundle-priority
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /bundles
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"product":{"name":"Trail mug","price":16.0,"description":"Steel cup","tax":0.8},"priority":7}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: docs_src/body_multiple_params/tutorial003_py310.py
+    kind: upstream_documentation_example
+  - path: docs_src/body_multiple_params/tutorial003_an_py310.py
+    kind: upstream_documentation_example

@@ -2858,6 +2858,46 @@ else:
 
 DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(DOC_EXAMPLE_CITATION_WAVE_E)
 
+if __package__:
+    from scripts.atlas_documentation_example_review_wave_f import (
+        DOC_EXAMPLE_CITATION_WAVE_F,
+    )
+    from scripts.atlas_documentation_example_review_wave_g import (
+        DOC_EXAMPLE_CITATION_WAVE_G,
+    )
+    from scripts.atlas_documentation_example_review_wave_h import (
+        DOC_EXAMPLE_CITATION_WAVE_H,
+    )
+    from scripts.atlas_documentation_example_review_wave_i_security import (
+        DOC_EXAMPLE_CITATION_WAVE_I,
+    )
+    from scripts.atlas_documentation_example_review_wave_j_custom_docs import (
+        DOC_EXAMPLE_CITATION_WAVE_J,
+    )
+    from scripts.atlas_documentation_example_review_wave_k_reuse import (
+        DOC_EXAMPLE_CITATION_WAVE_K,
+    )
+else:
+    from atlas_documentation_example_review_wave_f import DOC_EXAMPLE_CITATION_WAVE_F
+    from atlas_documentation_example_review_wave_g import DOC_EXAMPLE_CITATION_WAVE_G
+    from atlas_documentation_example_review_wave_h import DOC_EXAMPLE_CITATION_WAVE_H
+    from atlas_documentation_example_review_wave_i_security import (
+        DOC_EXAMPLE_CITATION_WAVE_I,
+    )
+    from atlas_documentation_example_review_wave_j_custom_docs import (
+        DOC_EXAMPLE_CITATION_WAVE_J,
+    )
+    from atlas_documentation_example_review_wave_k_reuse import (
+        DOC_EXAMPLE_CITATION_WAVE_K,
+    )
+
+DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(DOC_EXAMPLE_CITATION_WAVE_F)
+DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(DOC_EXAMPLE_CITATION_WAVE_G)
+DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(DOC_EXAMPLE_CITATION_WAVE_H)
+DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(DOC_EXAMPLE_CITATION_WAVE_I)
+DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(DOC_EXAMPLE_CITATION_WAVE_J)
+DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(DOC_EXAMPLE_CITATION_WAVE_K)
+
 DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
     {
         "docs_src/cookie_param_models/tutorial001_py310.py": {
