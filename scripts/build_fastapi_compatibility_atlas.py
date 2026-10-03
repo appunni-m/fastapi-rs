@@ -9335,13 +9335,20 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             else []
         )
         if reviewed_example_mapping and independent_workflow_mappings:
+            expected_by_recipe: dict[str, dict[str, set[str]]] = {}
+            for workflow_case in reviewed_example_mapping["workflow_cases"]:
+                expected = expected_by_recipe.setdefault(
+                    workflow_case["recipe_path"], {"case_ids": set(), "selectors": set()}
+                )
+                expected["case_ids"].update(workflow_case["case_ids"])
+                expected["selectors"].update(workflow_case["observation_selectors"])
             expected_mappings = sorted(
                 (
-                    mapping["recipe_path"],
-                    tuple(sorted(mapping["case_ids"])),
-                    tuple(sorted(mapping["observation_selectors"])),
+                    recipe_path,
+                    tuple(sorted(values["case_ids"])),
+                    tuple(sorted(values["selectors"])),
                 )
-                for mapping in reviewed_example_mapping["workflow_cases"]
+                for recipe_path, values in expected_by_recipe.items()
             )
             actual_mappings = sorted(
                 (
@@ -10351,8 +10358,17 @@ def _replace_manifest_artifact_block(text: str, artifact_name: str, updates: dic
         if isinstance(value, (dict, list)):
             while end_line < len(block_lines):
                 line = block_lines[end_line]
-                if line.strip() and len(line) - len(line.lstrip()) <= indentation:
-                    break
+                if line.strip():
+                    current_indent = len(line) - len(line.lstrip())
+                    same_indent_list_item = (
+                        isinstance(value, list)
+                        and current_indent == indentation
+                        and line.lstrip().startswith("-")
+                    )
+                    if current_indent < indentation or (
+                        current_indent == indentation and not same_indent_list_item
+                    ):
+                        break
                 end_line += 1
             header = f"{' ' * indentation}{key}:"
             if not value:
@@ -10457,12 +10473,10 @@ def _sync_manifest_artifact_metadata(
             "private_or_internal": source_api_counts["private/internal"],
             "uncertain": source_api_counts["uncertain"],
             "candidate_ids_sha256": source_api_scope["candidate_ids_sha256"],
-            "uncertain_imported_modules": json.dumps(
-                source_api_selection["uncertain_imported_modules"]
-            ),
-            "uncertain_candidate_id_prefixes": json.dumps(
-                source_api_selection["uncertain_candidate_id_prefixes"]
-            ),
+            "uncertain_imported_modules": source_api_selection["uncertain_imported_modules"],
+            "uncertain_candidate_id_prefixes": source_api_selection[
+                "uncertain_candidate_id_prefixes"
+            ],
         },
     )
     manifest_text = _replace_manifest_artifact_block(

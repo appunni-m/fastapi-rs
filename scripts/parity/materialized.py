@@ -407,10 +407,15 @@ def validate_materialized_input_index(
                 _fail(f"workflow case lacks matching source evidence: {case_id} -> {source_id}")
             workflow_schema = workflow_schemas[workflow_id]
             used_selectors.update(_selected_selectors(case, workflow_schema=workflow_schema))
+            source_candidates = set(coverage["observation_selectors"])
+            if coverage["kind"] == "documented_python_example_source":
+                source_candidates = set(
+                    coverage.get("mapping_evidence", {}).get("example_observation_selectors", [])
+                )
             source_selectors.update(
                 _source_selectors_for_case(
                     case,
-                    set(coverage["observation_selectors"]),
+                    source_candidates,
                     workflow_schema=workflow_schema,
                 )
             )

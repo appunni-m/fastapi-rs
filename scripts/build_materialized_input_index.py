@@ -71,13 +71,16 @@ def _validate_reviewed_documentation_example_mappings(index: dict[str, Any]) -> 
 
     for source_path, review in DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.items():
         source_id = "documented-example:" + source_path
-        expected = sorted(
-            (
-                workflow_case["recipe_path"],
-                tuple(sorted(workflow_case["case_ids"])),
-                tuple(sorted(workflow_case["observation_selectors"])),
+        expected_by_recipe: dict[str, dict[str, set[str]]] = {}
+        for workflow_case in review["workflow_cases"]:
+            expected = expected_by_recipe.setdefault(
+                workflow_case["recipe_path"], {"case_ids": set(), "selectors": set()}
             )
-            for workflow_case in review["workflow_cases"]
+            expected["case_ids"].update(workflow_case["case_ids"])
+            expected["selectors"].update(workflow_case["observation_selectors"])
+        expected = sorted(
+            (recipe_path, tuple(sorted(values["case_ids"])), tuple(sorted(values["selectors"])))
+            for recipe_path, values in expected_by_recipe.items()
         )
         actual = sorted(
             (
@@ -258,6 +261,21 @@ def build_index() -> dict[str, Any]:
         workflow_rows[workflow_id] = workflow_ref
 
         new_mapping_cases: dict[str, dict[str, Any]] = {}
+        reviewed_doc_required_selectors: dict[str, set[str]] = {}
+        reviewed_doc_case_selectors = {
+            (source_path, case_id): set(workflow_case["observation_selectors"])
+            for source_path, review in DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.items()
+            for workflow_case in review["workflow_cases"]
+            if workflow_case["recipe_path"] == workflow_ref["recipe_path"]
+            for case_id in workflow_case["case_ids"]
+        }
+        for source_path, review in DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.items():
+            for workflow_case in review["workflow_cases"]:
+                if workflow_case["recipe_path"] == workflow_ref["recipe_path"]:
+                    reviewed_doc_required_selectors.setdefault(source_path, set()).update(
+                        workflow_case["observation_selectors"]
+                    )
+        reviewed_doc_observed_selectors: dict[str, set[str]] = {}
         for case in workflow["cases"]:
             candidates: list[tuple[str, set[str]]] = []
             for evidence in case["source_evidence"]:
@@ -265,9 +283,14 @@ def build_index() -> dict[str, Any]:
                 if source_id is None:
                     continue
                 coverage = next(row for row in atlas["coverage_matrix"] if row["id"] == source_id)
+                source_selectors = set(coverage["observation_selectors"])
+                if evidence["kind"] == "upstream_documentation_example":
+                    source_selectors = set(
+                        coverage["mapping_evidence"].get("example_observation_selectors", [])
+                    )
                 usable = _source_selectors_for_case(
                     case,
-                    set(coverage["observation_selectors"]),
+                    source_selectors,
                     workflow_schema=workflow["schema"],
                 )
                 usable = {
@@ -275,6 +298,17 @@ def build_index() -> dict[str, Any]:
                     for selector in usable
                     if selector_support.get(selector) in {"supported", "partial"}
                 }
+                if evidence["kind"] == "upstream_documentation_example":
+                    reviewed = reviewed_doc_case_selectors.get((evidence["path"], case["case_id"]))
+                    if reviewed is None:
+                        raise ContractError(
+                            "documentation example source evidence has no reviewed case mapping: "
+                            f"{evidence['path']} -> {case['case_id']}"
+                        )
+                    usable &= reviewed
+                    reviewed_doc_observed_selectors.setdefault(evidence["path"], set()).update(
+                        usable
+                    )
                 if usable and source_id in backlog_by_source:
                     candidates.append((source_id, usable))
             if not candidates:
@@ -294,6 +328,14 @@ def build_index() -> dict[str, Any]:
                 )
                 mapping["case_ids"].add(case["case_id"])
                 mapping["observation_selectors"].update(usable)
+
+        for source_path, required in reviewed_doc_required_selectors.items():
+            missing = required - reviewed_doc_observed_selectors.get(source_path, set())
+            if missing:
+                raise ContractError(
+                    "reviewed documentation-example selectors are not observed by the mapped "
+                    f"workflow cases: {source_path}: {', '.join(sorted(missing))}"
+                )
 
         for source_id, detail in new_mapping_cases.items():
             old = mappings.get((source_id, workflow_id))

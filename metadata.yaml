@@ -80,14 +80,14 @@ api_inventory:
 import_binding_classification_review:
   artifact: tests/fixtures/api-import-binding-classification-review.json
   schema: fastapi-starlette-import-binding-review/v1
-  sha256: 172507536f1a6edad5b7466b0713fa6923b84166cf3ac0311e4c11b73d3f56ab
+  sha256: 4c358ba9c39a2ced8d2ffa86c5c8bc97f9a75f73470c2f90f2522ab3d54ee23b
   source_identity:
     package: FastAPI
     version: 0.141.1
     source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
     selected_starlette_profile: 1.6.0
     starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
-    starlette_rs_contract_commit: 222c2228e1c57d9e38a9861b231ac970d843f236
+    starlette_rs_contract_commit: 92b0c0c5c6057c1701765ebfcf70749efa0d89fa
   starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
   counts:
     candidates: 97
@@ -99,7 +99,7 @@ import_binding_classification_review:
   candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
   pinned_starlette_rs_sources:
     metadata_sha256: 90f805ed7d2497833422db870f88d53319dbaaf31a675f89b1ad21fdd4a123d5
-    manifest_sha256: cebcac7c69380279c581c7e2a42b679dd1d0448600bc98efe04f65a6b5eb5a21
+    manifest_sha256: 26880cbbcb7af7c49cbe3849127543e9b6b270e210e1dd939debce4b1345bc98
     api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
     api_review_sha256: 8b25f2e3a46753316446077bfde97b6ac8a342233e2f4e50b12d3d01eafbe099
 
@@ -426,7 +426,7 @@ classification_atlas:
 starlette_rs:
   owner: ../starlette-rs
   repository: https://github.com/appunni-m/starlette-rs
-  commit: 222c2228e1c57d9e38a9861b231ac970d843f236
+  commit: 92b0c0c5c6057c1701765ebfcf70749efa0d89fa
   distribution_version: 0.1.0
   contract_id: starlette-1.6.0-asgi-http-config-session-slice
   metadata: ../starlette-rs/metadata.yaml
@@ -1547,6 +1547,9 @@ reviewed_api_contract_overlay:
         - {path: docs/en/docs/advanced/strict-content-type.md}
         - {path: tests/test_router_include_context.py, symbol: test_router_and_include_prefix_path_params_reach_endpoint_and_openapi}
         - {path: tests/test_router_include_context.py, symbol: test_router_include_context_matches_flattened_include_metadata}
+        - {path: tests/test_router_include_context.py, symbol: test_included_starlette_mount_keeps_prefix_runtime_and_url_path_for}
+        - {path: tests/test_router_include_context.py, symbol: test_included_starlette_host_keeps_prefix_runtime_and_url_path_for}
+        - {path: tests/test_router_include_context.py, symbol: test_included_starlette_host_without_prefix_keeps_original_app}
         - {path: tests/test_router_events.py, symbol: test_app_lifespan_state}
         - {path: tests/test_router_events.py, symbol: test_router_nested_lifespan_state}
         - {path: tests/test_router_events.py, symbol: test_router_sync_generator_lifespan}
@@ -1574,6 +1577,13 @@ reviewed_api_contract_overlay:
         lax, strict, and inherited behavior. Direct inspection of the
         placeholder value and per-route
         `add_api_route(strict_content_type=...)` remain outside this slice.
+        FastAPI 0.141.1 also accepts inherited `routes`, `redirect_slashes`, and
+        `default` constructor arguments. `routes` is explicitly deprecated in
+        the source signature. The native binding currently omits those
+        arguments, so generic Starlette Route, Mount, and Host objects supplied
+        through `routes` are not represented or dispatched; mixed declaration
+        order and the documented include-prefix rules remain an open
+        compatibility requirement.
     fastapi.routing.APIRouter.add_event_handler:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::add_event_handler
       source_evidence:

@@ -1839,6 +1839,15 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
     },
 }
 
+if __package__:
+    from scripts.atlas_documentation_example_review_wave_d import (
+        DOC_EXAMPLE_CITATION_WAVE_D,
+    )
+else:
+    from atlas_documentation_example_review_wave_d import DOC_EXAMPLE_CITATION_WAVE_D
+
+DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(DOC_EXAMPLE_CITATION_WAVE_D)
+
 
 # Query parameter tutorial examples: exact source-to-input workflow links.
 DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
@@ -2839,6 +2848,15 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
         },
     }
 )
+
+if __package__:
+    from scripts.atlas_documentation_example_review_wave_e import (
+        DOC_EXAMPLE_CITATION_WAVE_E,
+    )
+else:
+    from atlas_documentation_example_review_wave_e import DOC_EXAMPLE_CITATION_WAVE_E
+
+DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(DOC_EXAMPLE_CITATION_WAVE_E)
 
 DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
     {
