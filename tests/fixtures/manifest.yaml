@@ -91,7 +91,7 @@ target:
     name: starlette-rs-py
     version: 0.1.0
     starlette_contract: 1.6.0
-    commit: b11428bb5093a44281d96d09b9bbcb37a998a947
+    commit: b688e03da62e43b30f0f28a9f50d2b756a7669c2
   external_python_runtime_lock:
     path: requirements/target-runtime-cpython-3.12.13.lock
     sha256: efb7ca633fc9a9c8587a6f59f8ee9b509151f6f77ceb75a56dd3cdeff2be99f7
@@ -128,13 +128,13 @@ source_artifacts:
   api_import_binding_classification_review:
     path: tests/fixtures/api-import-binding-classification-review.json
     schema: fastapi-starlette-import-binding-review/v1
-    sha256: 83368fd8e140387a9fc30136dcc1a65954f3595a1965220227d54418b67128b5
+    sha256: c67d0592cc74094f2ec24d1be1f738114942a691d867ef8fba12405f6799aa87
     purpose: Reviewed source-backed disposition of uncertain FastAPI import bindings from the selected Starlette profile
     source_identity:
       package: FastAPI
       selected_starlette_profile: 1.6.0
       source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
-      starlette_rs_contract_commit: b11428bb5093a44281d96d09b9bbcb37a998a947
+      starlette_rs_contract_commit: b688e03da62e43b30f0f28a9f50d2b756a7669c2
       starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
       version: 0.141.1
     starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
@@ -148,7 +148,7 @@ source_artifacts:
     candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
     pinned_starlette_rs_sources:
       metadata_sha256: 90f805ed7d2497833422db870f88d53319dbaaf31a675f89b1ad21fdd4a123d5
-      manifest_sha256: b2b739fc18091af448584d36adb4b54b24fbe30a0a56ba183d0be2e46d40896a
+      manifest_sha256: 416afedcab5c72bfdc8d4cf6145fee7ec09cc5dc96365d432cd26d50c97c1f46
       api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
       api_review_sha256: 8b25f2e3a46753316446077bfde97b6ac8a342233e2f4e50b12d3d01eafbe099
   api_source_classification_review:
@@ -411,7 +411,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@4
-    sha256: 189a2897c04e15f1d33d510e0a78da6c8fb95aee2b0fd2cb51e1de37bfbda120
+    sha256: 2bafd4f6bd51d332e6180419aef6ece1e2071c86de9ca75cfccb6cbe5206653b
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -444,7 +444,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: fc1c4e1b4e5aefa5b6092c166055589e808e7feb153a296e50ff3ce4d88d36e7
+    sha256: af05642aa6945cda6a008ad264f9cb366b3ad42632c300e1d5205299f12d9eea
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 889
@@ -481,14 +481,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@2
-    sha256: e99b93e296f4a29a2e1d0222a3dc7bf3b05210ce8b5afac8c921bc1357673de8
+    sha256: 474cd8319f24c926863205d5b1d015faf980bc4ffb2acdcfa3ceb2f6d6dfeff0
     schema_path: tests/fixtures/schemas/materialized-input-index.schema.json
     schema_sha256: 56ac1cdfaa6f28b4277ef44b5ef78efebb3122111c5691e1b9c1bce869156aaf
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
       workflows: 513
-      cases: 2031
-      partial_source_mappings: 1460
+      cases: 2032
+      partial_source_mappings: 1461
 
 contract_metadata:
   aliases:
@@ -805,8 +805,8 @@ api_surface_contract:
     symbols_with_deprecation_refs: 15
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 34
-    symbols_with_operation_fixture_refs: 13
-    operation_fixture_refs: 31
+    symbols_with_operation_fixture_refs: 24
+    operation_fixture_refs: 67
     symbols_with_identity_workflow_refs: 20
     identity_workflow_refs: 28
   symbols:
@@ -23694,6 +23694,103 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: security-wave
+      input_path: tests/fixtures/inputs/parity/security-wave.json
+      input_sha256: f64907c9eba2420bc1c09e2c7ef5d8a53131de58027d13170cd5bf2591684b72
+      recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
+      recipe_sha256: 2fc349b70d6723bc7df1b43f2ea4900cefb073f7dc0e0080b7f18c3bb5b1c6d6
+      workload_path: tests/fixtures/workloads/security_wave.py
+      workload_sha256: 104f9f5aa25fda81d723fec673301450d9a832bd90c79a4d595837f2ac234ba7
+      case_id: fastapi.security-wave.http-basic-tutorial-006.test-security-http-basic
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-wave
+      input_path: tests/fixtures/inputs/parity/security-wave.json
+      input_sha256: f64907c9eba2420bc1c09e2c7ef5d8a53131de58027d13170cd5bf2591684b72
+      recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
+      recipe_sha256: 2fc349b70d6723bc7df1b43f2ea4900cefb073f7dc0e0080b7f18c3bb5b1c6d6
+      workload_path: tests/fixtures/workloads/security_wave.py
+      workload_sha256: 104f9f5aa25fda81d723fec673301450d9a832bd90c79a4d595837f2ac234ba7
+      case_id: fastapi.security-wave.http-basic-tutorial-007.test-security-http-basic-invalid-password
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-wave
+      input_path: tests/fixtures/inputs/parity/security-wave.json
+      input_sha256: f64907c9eba2420bc1c09e2c7ef5d8a53131de58027d13170cd5bf2591684b72
+      recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
+      recipe_sha256: 2fc349b70d6723bc7df1b43f2ea4900cefb073f7dc0e0080b7f18c3bb5b1c6d6
+      workload_path: tests/fixtures/workloads/security_wave.py
+      workload_sha256: 104f9f5aa25fda81d723fec673301450d9a832bd90c79a4d595837f2ac234ba7
+      case_id: fastapi.security-wave.http-basic-tutorials.missing-credentials
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-wave
+      input_path: tests/fixtures/inputs/parity/security-wave.json
+      input_sha256: f64907c9eba2420bc1c09e2c7ef5d8a53131de58027d13170cd5bf2591684b72
+      recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
+      recipe_sha256: 2fc349b70d6723bc7df1b43f2ea4900cefb073f7dc0e0080b7f18c3bb5b1c6d6
+      workload_path: tests/fixtures/workloads/security_wave.py
+      workload_sha256: 104f9f5aa25fda81d723fec673301450d9a832bd90c79a4d595837f2ac234ba7
+      case_id: fastapi.security-wave.http-basic-tutorials.malformed-credentials
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-wave
+      input_path: tests/fixtures/inputs/parity/security-wave.json
+      input_sha256: f64907c9eba2420bc1c09e2c7ef5d8a53131de58027d13170cd5bf2591684b72
+      recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
+      recipe_sha256: 2fc349b70d6723bc7df1b43f2ea4900cefb073f7dc0e0080b7f18c3bb5b1c6d6
+      workload_path: tests/fixtures/workloads/security_wave.py
+      workload_sha256: 104f9f5aa25fda81d723fec673301450d9a832bd90c79a4d595837f2ac234ba7
+      case_id: fastapi.security-wave.http-basic-tutorials.non-basic-credentials
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-wave
+      input_path: tests/fixtures/inputs/parity/security-wave.json
+      input_sha256: f64907c9eba2420bc1c09e2c7ef5d8a53131de58027d13170cd5bf2591684b72
+      recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
+      recipe_sha256: 2fc349b70d6723bc7df1b43f2ea4900cefb073f7dc0e0080b7f18c3bb5b1c6d6
+      workload_path: tests/fixtures/workloads/security_wave.py
+      workload_sha256: 104f9f5aa25fda81d723fec673301450d9a832bd90c79a4d595837f2ac234ba7
+      case_id: fastapi.security-wave.http-basic-tutorial-007.valid-credentials
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-wave
+      input_path: tests/fixtures/inputs/parity/security-wave.json
+      input_sha256: f64907c9eba2420bc1c09e2c7ef5d8a53131de58027d13170cd5bf2591684b72
+      recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
+      recipe_sha256: 2fc349b70d6723bc7df1b43f2ea4900cefb073f7dc0e0080b7f18c3bb5b1c6d6
+      workload_path: tests/fixtures/workloads/security_wave.py
+      workload_sha256: 104f9f5aa25fda81d723fec673301450d9a832bd90c79a4d595837f2ac234ba7
+      case_id: fastapi.security-wave.http-basic-tutorial-007.invalid-username
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-wave
+      input_path: tests/fixtures/inputs/parity/security-wave.json
+      input_sha256: f64907c9eba2420bc1c09e2c7ef5d8a53131de58027d13170cd5bf2591684b72
+      recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
+      recipe_sha256: 2fc349b70d6723bc7df1b43f2ea4900cefb073f7dc0e0080b7f18c3bb5b1c6d6
+      workload_path: tests/fixtures/workloads/security_wave.py
+      workload_sha256: 104f9f5aa25fda81d723fec673301450d9a832bd90c79a4d595837f2ac234ba7
+      case_id: fastapi.security-wave.http-basic-tutorials.openapi
+      observation_selectors:
+      - docs.response.status
+      - http.status
+      - openapi.security
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -23706,10 +23803,9 @@ api_surface_contract:
     - http.headers.ordered
     - http.status
     - openapi.document
+    - openapi.paths
     - openapi.request_schema
     - openapi.security
-    - python.import_path
-    - python.object_identity
     - validation.error_class
     - validation.error_details
     behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
@@ -23999,10 +24095,36 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: security-wave
+      input_path: tests/fixtures/inputs/parity/security-wave.json
+      input_sha256: f64907c9eba2420bc1c09e2c7ef5d8a53131de58027d13170cd5bf2591684b72
+      recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
+      recipe_sha256: 2fc349b70d6723bc7df1b43f2ea4900cefb073f7dc0e0080b7f18c3bb5b1c6d6
+      workload_path: tests/fixtures/workloads/security_wave.py
+      workload_sha256: 104f9f5aa25fda81d723fec673301450d9a832bd90c79a4d595837f2ac234ba7
+      case_id: fastapi.security-wave.oauth2-base.test-security-oauth2
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-wave
+      input_path: tests/fixtures/inputs/parity/security-wave.json
+      input_sha256: f64907c9eba2420bc1c09e2c7ef5d8a53131de58027d13170cd5bf2591684b72
+      recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
+      recipe_sha256: 2fc349b70d6723bc7df1b43f2ea4900cefb073f7dc0e0080b7f18c3bb5b1c6d6
+      workload_path: tests/fixtures/workloads/security_wave.py
+      workload_sha256: 104f9f5aa25fda81d723fec673301450d9a832bd90c79a4d595837f2ac234ba7
+      case_id: fastapi.security-wave.oauth2-optional.test-security-oauth2-password-bearer-no-header
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
     - openapi-docs
+    - public-api-errors
     - request-validation
     observation_selectors:
     - dependency.call_order
@@ -24015,7 +24137,7 @@ api_surface_contract:
     - openapi.security
     - validation.error_class
     - validation.error_details
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.security.OAuth2
@@ -24026,7 +24148,7 @@ api_surface_contract:
         - /api_candidates/1417
         - /api_candidates/1490
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/security.rs::PyOAuth2
   - id: fastapi.security.OAuth2AuthorizationCodeBearer
     kind: import_binding
     source_candidate_ref: /api_candidates/1418
@@ -24119,6 +24241,19 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: security-wave
+      input_path: tests/fixtures/inputs/parity/security-wave.json
+      input_sha256: f64907c9eba2420bc1c09e2c7ef5d8a53131de58027d13170cd5bf2591684b72
+      recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
+      recipe_sha256: 2fc349b70d6723bc7df1b43f2ea4900cefb073f7dc0e0080b7f18c3bb5b1c6d6
+      workload_path: tests/fixtures/workloads/security_wave.py
+      workload_sha256: 104f9f5aa25fda81d723fec673301450d9a832bd90c79a4d595837f2ac234ba7
+      case_id: fastapi.security-wave.oauth2-scope-propagation.nested-same-scheme-openapi
+      observation_selectors:
+      - docs.response.status
+      - http.status
+      - openapi.security
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -24131,10 +24266,9 @@ api_surface_contract:
     - http.headers.ordered
     - http.status
     - openapi.document
+    - openapi.paths
     - openapi.request_schema
     - openapi.security
-    - python.import_path
-    - python.object_identity
     - validation.error_class
     - validation.error_details
     behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
@@ -25348,6 +25482,103 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: security-wave
+      input_path: tests/fixtures/inputs/parity/security-wave.json
+      input_sha256: f64907c9eba2420bc1c09e2c7ef5d8a53131de58027d13170cd5bf2591684b72
+      recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
+      recipe_sha256: 2fc349b70d6723bc7df1b43f2ea4900cefb073f7dc0e0080b7f18c3bb5b1c6d6
+      workload_path: tests/fixtures/workloads/security_wave.py
+      workload_sha256: 104f9f5aa25fda81d723fec673301450d9a832bd90c79a4d595837f2ac234ba7
+      case_id: fastapi.security-wave.http-basic-tutorial-006.test-security-http-basic
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-wave
+      input_path: tests/fixtures/inputs/parity/security-wave.json
+      input_sha256: f64907c9eba2420bc1c09e2c7ef5d8a53131de58027d13170cd5bf2591684b72
+      recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
+      recipe_sha256: 2fc349b70d6723bc7df1b43f2ea4900cefb073f7dc0e0080b7f18c3bb5b1c6d6
+      workload_path: tests/fixtures/workloads/security_wave.py
+      workload_sha256: 104f9f5aa25fda81d723fec673301450d9a832bd90c79a4d595837f2ac234ba7
+      case_id: fastapi.security-wave.http-basic-tutorial-007.test-security-http-basic-invalid-password
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-wave
+      input_path: tests/fixtures/inputs/parity/security-wave.json
+      input_sha256: f64907c9eba2420bc1c09e2c7ef5d8a53131de58027d13170cd5bf2591684b72
+      recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
+      recipe_sha256: 2fc349b70d6723bc7df1b43f2ea4900cefb073f7dc0e0080b7f18c3bb5b1c6d6
+      workload_path: tests/fixtures/workloads/security_wave.py
+      workload_sha256: 104f9f5aa25fda81d723fec673301450d9a832bd90c79a4d595837f2ac234ba7
+      case_id: fastapi.security-wave.http-basic-tutorials.missing-credentials
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-wave
+      input_path: tests/fixtures/inputs/parity/security-wave.json
+      input_sha256: f64907c9eba2420bc1c09e2c7ef5d8a53131de58027d13170cd5bf2591684b72
+      recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
+      recipe_sha256: 2fc349b70d6723bc7df1b43f2ea4900cefb073f7dc0e0080b7f18c3bb5b1c6d6
+      workload_path: tests/fixtures/workloads/security_wave.py
+      workload_sha256: 104f9f5aa25fda81d723fec673301450d9a832bd90c79a4d595837f2ac234ba7
+      case_id: fastapi.security-wave.http-basic-tutorials.malformed-credentials
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-wave
+      input_path: tests/fixtures/inputs/parity/security-wave.json
+      input_sha256: f64907c9eba2420bc1c09e2c7ef5d8a53131de58027d13170cd5bf2591684b72
+      recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
+      recipe_sha256: 2fc349b70d6723bc7df1b43f2ea4900cefb073f7dc0e0080b7f18c3bb5b1c6d6
+      workload_path: tests/fixtures/workloads/security_wave.py
+      workload_sha256: 104f9f5aa25fda81d723fec673301450d9a832bd90c79a4d595837f2ac234ba7
+      case_id: fastapi.security-wave.http-basic-tutorials.non-basic-credentials
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-wave
+      input_path: tests/fixtures/inputs/parity/security-wave.json
+      input_sha256: f64907c9eba2420bc1c09e2c7ef5d8a53131de58027d13170cd5bf2591684b72
+      recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
+      recipe_sha256: 2fc349b70d6723bc7df1b43f2ea4900cefb073f7dc0e0080b7f18c3bb5b1c6d6
+      workload_path: tests/fixtures/workloads/security_wave.py
+      workload_sha256: 104f9f5aa25fda81d723fec673301450d9a832bd90c79a4d595837f2ac234ba7
+      case_id: fastapi.security-wave.http-basic-tutorial-007.valid-credentials
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-wave
+      input_path: tests/fixtures/inputs/parity/security-wave.json
+      input_sha256: f64907c9eba2420bc1c09e2c7ef5d8a53131de58027d13170cd5bf2591684b72
+      recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
+      recipe_sha256: 2fc349b70d6723bc7df1b43f2ea4900cefb073f7dc0e0080b7f18c3bb5b1c6d6
+      workload_path: tests/fixtures/workloads/security_wave.py
+      workload_sha256: 104f9f5aa25fda81d723fec673301450d9a832bd90c79a4d595837f2ac234ba7
+      case_id: fastapi.security-wave.http-basic-tutorial-007.invalid-username
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-wave
+      input_path: tests/fixtures/inputs/parity/security-wave.json
+      input_sha256: f64907c9eba2420bc1c09e2c7ef5d8a53131de58027d13170cd5bf2591684b72
+      recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
+      recipe_sha256: 2fc349b70d6723bc7df1b43f2ea4900cefb073f7dc0e0080b7f18c3bb5b1c6d6
+      workload_path: tests/fixtures/workloads/security_wave.py
+      workload_sha256: 104f9f5aa25fda81d723fec673301450d9a832bd90c79a4d595837f2ac234ba7
+      case_id: fastapi.security-wave.http-basic-tutorials.openapi
+      observation_selectors:
+      - docs.response.status
+      - http.status
+      - openapi.security
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -25360,10 +25591,9 @@ api_surface_contract:
     - http.headers.ordered
     - http.status
     - openapi.document
+    - openapi.paths
     - openapi.request_schema
     - openapi.security
-    - python.call_outcome
-    - python.signature
     - validation.error_class
     - validation.error_details
     behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
@@ -25409,6 +25639,91 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: security-wave
+      input_path: tests/fixtures/inputs/parity/security-wave.json
+      input_sha256: f64907c9eba2420bc1c09e2c7ef5d8a53131de58027d13170cd5bf2591684b72
+      recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
+      recipe_sha256: 2fc349b70d6723bc7df1b43f2ea4900cefb073f7dc0e0080b7f18c3bb5b1c6d6
+      workload_path: tests/fixtures/workloads/security_wave.py
+      workload_sha256: 104f9f5aa25fda81d723fec673301450d9a832bd90c79a4d595837f2ac234ba7
+      case_id: fastapi.security-wave.http-basic-tutorial-006.test-security-http-basic
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-wave
+      input_path: tests/fixtures/inputs/parity/security-wave.json
+      input_sha256: f64907c9eba2420bc1c09e2c7ef5d8a53131de58027d13170cd5bf2591684b72
+      recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
+      recipe_sha256: 2fc349b70d6723bc7df1b43f2ea4900cefb073f7dc0e0080b7f18c3bb5b1c6d6
+      workload_path: tests/fixtures/workloads/security_wave.py
+      workload_sha256: 104f9f5aa25fda81d723fec673301450d9a832bd90c79a4d595837f2ac234ba7
+      case_id: fastapi.security-wave.http-basic-tutorial-007.test-security-http-basic-invalid-password
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-wave
+      input_path: tests/fixtures/inputs/parity/security-wave.json
+      input_sha256: f64907c9eba2420bc1c09e2c7ef5d8a53131de58027d13170cd5bf2591684b72
+      recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
+      recipe_sha256: 2fc349b70d6723bc7df1b43f2ea4900cefb073f7dc0e0080b7f18c3bb5b1c6d6
+      workload_path: tests/fixtures/workloads/security_wave.py
+      workload_sha256: 104f9f5aa25fda81d723fec673301450d9a832bd90c79a4d595837f2ac234ba7
+      case_id: fastapi.security-wave.http-basic-tutorials.missing-credentials
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-wave
+      input_path: tests/fixtures/inputs/parity/security-wave.json
+      input_sha256: f64907c9eba2420bc1c09e2c7ef5d8a53131de58027d13170cd5bf2591684b72
+      recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
+      recipe_sha256: 2fc349b70d6723bc7df1b43f2ea4900cefb073f7dc0e0080b7f18c3bb5b1c6d6
+      workload_path: tests/fixtures/workloads/security_wave.py
+      workload_sha256: 104f9f5aa25fda81d723fec673301450d9a832bd90c79a4d595837f2ac234ba7
+      case_id: fastapi.security-wave.http-basic-tutorials.malformed-credentials
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-wave
+      input_path: tests/fixtures/inputs/parity/security-wave.json
+      input_sha256: f64907c9eba2420bc1c09e2c7ef5d8a53131de58027d13170cd5bf2591684b72
+      recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
+      recipe_sha256: 2fc349b70d6723bc7df1b43f2ea4900cefb073f7dc0e0080b7f18c3bb5b1c6d6
+      workload_path: tests/fixtures/workloads/security_wave.py
+      workload_sha256: 104f9f5aa25fda81d723fec673301450d9a832bd90c79a4d595837f2ac234ba7
+      case_id: fastapi.security-wave.http-basic-tutorials.non-basic-credentials
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-wave
+      input_path: tests/fixtures/inputs/parity/security-wave.json
+      input_sha256: f64907c9eba2420bc1c09e2c7ef5d8a53131de58027d13170cd5bf2591684b72
+      recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
+      recipe_sha256: 2fc349b70d6723bc7df1b43f2ea4900cefb073f7dc0e0080b7f18c3bb5b1c6d6
+      workload_path: tests/fixtures/workloads/security_wave.py
+      workload_sha256: 104f9f5aa25fda81d723fec673301450d9a832bd90c79a4d595837f2ac234ba7
+      case_id: fastapi.security-wave.http-basic-tutorial-007.valid-credentials
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-wave
+      input_path: tests/fixtures/inputs/parity/security-wave.json
+      input_sha256: f64907c9eba2420bc1c09e2c7ef5d8a53131de58027d13170cd5bf2591684b72
+      recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
+      recipe_sha256: 2fc349b70d6723bc7df1b43f2ea4900cefb073f7dc0e0080b7f18c3bb5b1c6d6
+      workload_path: tests/fixtures/workloads/security_wave.py
+      workload_sha256: 104f9f5aa25fda81d723fec673301450d9a832bd90c79a4d595837f2ac234ba7
+      case_id: fastapi.security-wave.http-basic-tutorial-007.invalid-username
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -25424,7 +25739,6 @@ api_surface_contract:
     - openapi.document
     - openapi.request_schema
     - openapi.security
-    - python.call_outcome
     - validation.error_class
     - validation.error_details
     behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
@@ -25470,6 +25784,31 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: security-wave
+      input_path: tests/fixtures/inputs/parity/security-wave.json
+      input_sha256: f64907c9eba2420bc1c09e2c7ef5d8a53131de58027d13170cd5bf2591684b72
+      recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
+      recipe_sha256: 2fc349b70d6723bc7df1b43f2ea4900cefb073f7dc0e0080b7f18c3bb5b1c6d6
+      workload_path: tests/fixtures/workloads/security_wave.py
+      workload_sha256: 104f9f5aa25fda81d723fec673301450d9a832bd90c79a4d595837f2ac234ba7
+      case_id: fastapi.security-wave.http-basic-tutorial-006.test-security-http-basic
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-wave
+      input_path: tests/fixtures/inputs/parity/security-wave.json
+      input_sha256: f64907c9eba2420bc1c09e2c7ef5d8a53131de58027d13170cd5bf2591684b72
+      recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
+      recipe_sha256: 2fc349b70d6723bc7df1b43f2ea4900cefb073f7dc0e0080b7f18c3bb5b1c6d6
+      workload_path: tests/fixtures/workloads/security_wave.py
+      workload_sha256: 104f9f5aa25fda81d723fec673301450d9a832bd90c79a4d595837f2ac234ba7
+      case_id: fastapi.security-wave.http-basic-tutorials.openapi
+      observation_selectors:
+      - docs.response.status
+      - http.status
+      - openapi.security
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -25482,10 +25821,9 @@ api_surface_contract:
     - http.headers.ordered
     - http.status
     - openapi.document
+    - openapi.paths
     - openapi.request_schema
     - openapi.security
-    - python.call_outcome
-    - python.signature
     - validation.error_class
     - validation.error_details
     behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
@@ -26255,10 +26593,36 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: security-wave
+      input_path: tests/fixtures/inputs/parity/security-wave.json
+      input_sha256: f64907c9eba2420bc1c09e2c7ef5d8a53131de58027d13170cd5bf2591684b72
+      recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
+      recipe_sha256: 2fc349b70d6723bc7df1b43f2ea4900cefb073f7dc0e0080b7f18c3bb5b1c6d6
+      workload_path: tests/fixtures/workloads/security_wave.py
+      workload_sha256: 104f9f5aa25fda81d723fec673301450d9a832bd90c79a4d595837f2ac234ba7
+      case_id: fastapi.security-wave.oauth2-base.test-security-oauth2
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-wave
+      input_path: tests/fixtures/inputs/parity/security-wave.json
+      input_sha256: f64907c9eba2420bc1c09e2c7ef5d8a53131de58027d13170cd5bf2591684b72
+      recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
+      recipe_sha256: 2fc349b70d6723bc7df1b43f2ea4900cefb073f7dc0e0080b7f18c3bb5b1c6d6
+      workload_path: tests/fixtures/workloads/security_wave.py
+      workload_sha256: 104f9f5aa25fda81d723fec673301450d9a832bd90c79a4d595837f2ac234ba7
+      case_id: fastapi.security-wave.oauth2-optional.test-security-oauth2-password-bearer-no-header
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
     - openapi-docs
+    - public-api-errors
     - request-validation
     observation_selectors:
     - dependency.call_order
@@ -26271,7 +26635,7 @@ api_surface_contract:
     - openapi.security
     - validation.error_class
     - validation.error_details
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.security.oauth2.OAuth2
@@ -26281,7 +26645,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1490
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/security.rs::PyOAuth2
   - id: fastapi.security.oauth2.OAuth2.__call__
     kind: protocol_method
     source_candidate_ref: /api_candidates/1491
@@ -26314,10 +26678,36 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: security-wave
+      input_path: tests/fixtures/inputs/parity/security-wave.json
+      input_sha256: f64907c9eba2420bc1c09e2c7ef5d8a53131de58027d13170cd5bf2591684b72
+      recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
+      recipe_sha256: 2fc349b70d6723bc7df1b43f2ea4900cefb073f7dc0e0080b7f18c3bb5b1c6d6
+      workload_path: tests/fixtures/workloads/security_wave.py
+      workload_sha256: 104f9f5aa25fda81d723fec673301450d9a832bd90c79a4d595837f2ac234ba7
+      case_id: fastapi.security-wave.oauth2-base.test-security-oauth2
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-wave
+      input_path: tests/fixtures/inputs/parity/security-wave.json
+      input_sha256: f64907c9eba2420bc1c09e2c7ef5d8a53131de58027d13170cd5bf2591684b72
+      recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
+      recipe_sha256: 2fc349b70d6723bc7df1b43f2ea4900cefb073f7dc0e0080b7f18c3bb5b1c6d6
+      workload_path: tests/fixtures/workloads/security_wave.py
+      workload_sha256: 104f9f5aa25fda81d723fec673301450d9a832bd90c79a4d595837f2ac234ba7
+      case_id: fastapi.security-wave.oauth2-optional.test-security-oauth2-password-bearer-no-header
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
     - openapi-docs
+    - public-api-errors
     - request-validation
     observation_selectors:
     - dependency.call_order
@@ -26330,7 +26720,7 @@ api_surface_contract:
     - openapi.security
     - validation.error_class
     - validation.error_details
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.security.oauth2.OAuth2.__call__
@@ -26340,7 +26730,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1491
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/security.rs::PyOAuth2::__call__
   - id: fastapi.security.oauth2.OAuth2.__init__
     kind: protocol_method
     source_candidate_ref: /api_candidates/1492
@@ -26373,6 +26763,31 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: security-wave
+      input_path: tests/fixtures/inputs/parity/security-wave.json
+      input_sha256: f64907c9eba2420bc1c09e2c7ef5d8a53131de58027d13170cd5bf2591684b72
+      recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
+      recipe_sha256: 2fc349b70d6723bc7df1b43f2ea4900cefb073f7dc0e0080b7f18c3bb5b1c6d6
+      workload_path: tests/fixtures/workloads/security_wave.py
+      workload_sha256: 104f9f5aa25fda81d723fec673301450d9a832bd90c79a4d595837f2ac234ba7
+      case_id: fastapi.security-wave.oauth2-base.test-security-oauth2
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: security-wave
+      input_path: tests/fixtures/inputs/parity/security-wave.json
+      input_sha256: f64907c9eba2420bc1c09e2c7ef5d8a53131de58027d13170cd5bf2591684b72
+      recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
+      recipe_sha256: 2fc349b70d6723bc7df1b43f2ea4900cefb073f7dc0e0080b7f18c3bb5b1c6d6
+      workload_path: tests/fixtures/workloads/security_wave.py
+      workload_sha256: 104f9f5aa25fda81d723fec673301450d9a832bd90c79a4d595837f2ac234ba7
+      case_id: fastapi.security-wave.oauth2-optional.test-security-oauth2-password-bearer-no-header
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -26389,7 +26804,7 @@ api_surface_contract:
     - openapi.security
     - validation.error_class
     - validation.error_details
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.security.oauth2.OAuth2.__init__
@@ -26399,7 +26814,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1492
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/security.rs::PyOAuth2::new
   - id: fastapi.security.oauth2.OAuth2.make_not_authenticated_error
     kind: method
     source_candidate_ref: /api_candidates/1493
@@ -26674,6 +27089,19 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: security-wave
+      input_path: tests/fixtures/inputs/parity/security-wave.json
+      input_sha256: f64907c9eba2420bc1c09e2c7ef5d8a53131de58027d13170cd5bf2591684b72
+      recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
+      recipe_sha256: 2fc349b70d6723bc7df1b43f2ea4900cefb073f7dc0e0080b7f18c3bb5b1c6d6
+      workload_path: tests/fixtures/workloads/security_wave.py
+      workload_sha256: 104f9f5aa25fda81d723fec673301450d9a832bd90c79a4d595837f2ac234ba7
+      case_id: fastapi.security-wave.oauth2-scope-propagation.nested-same-scheme-openapi
+      observation_selectors:
+      - docs.response.status
+      - http.status
+      - openapi.security
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -26686,10 +27114,9 @@ api_surface_contract:
     - http.headers.ordered
     - http.status
     - openapi.document
+    - openapi.paths
     - openapi.request_schema
     - openapi.security
-    - python.call_outcome
-    - python.signature
     - validation.error_class
     - validation.error_details
     behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
@@ -26796,6 +27223,19 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: security-wave
+      input_path: tests/fixtures/inputs/parity/security-wave.json
+      input_sha256: f64907c9eba2420bc1c09e2c7ef5d8a53131de58027d13170cd5bf2591684b72
+      recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
+      recipe_sha256: 2fc349b70d6723bc7df1b43f2ea4900cefb073f7dc0e0080b7f18c3bb5b1c6d6
+      workload_path: tests/fixtures/workloads/security_wave.py
+      workload_sha256: 104f9f5aa25fda81d723fec673301450d9a832bd90c79a4d595837f2ac234ba7
+      case_id: fastapi.security-wave.oauth2-scope-propagation.nested-same-scheme-openapi
+      observation_selectors:
+      - docs.response.status
+      - http.status
+      - openapi.security
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -26810,8 +27250,6 @@ api_surface_contract:
     - openapi.document
     - openapi.request_schema
     - openapi.security
-    - python.call_outcome
-    - python.signature
     - validation.error_class
     - validation.error_details
     behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending

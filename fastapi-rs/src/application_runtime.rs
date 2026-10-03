@@ -1,7 +1,7 @@
 //! Rust-owned FastAPI application registration and ASGI request flow.
 
 use std::cell::RefCell;
-use std::collections::{BTreeSet, HashMap, VecDeque};
+use std::collections::{BTreeMap, BTreeSet, HashMap, VecDeque};
 use std::path::Path;
 use std::rc::Rc;
 use std::sync::Mutex;
@@ -173,11 +173,13 @@ enum ParameterSource {
         plan: Box<CallablePlan>,
         use_cache: bool,
         scope: Option<String>,
+        security_scopes: Vec<String>,
         bind_value: bool,
     },
 }
 
 type DependencyCacheKey = (usize, Option<String>);
+type OpenApiSecurityVisitKey = (usize, Option<String>, Vec<String>);
 
 struct CallableParameter {
     name: String,
@@ -226,11 +228,13 @@ impl ParameterSource {
                 plan,
                 use_cache,
                 scope,
+                security_scopes,
                 bind_value,
             } => Self::Dependency {
                 plan: Box::new(plan.clone_ref(py)),
                 use_cache: *use_cache,
                 scope: scope.clone(),
+                security_scopes: security_scopes.clone(),
                 bind_value: *bind_value,
             },
         }
@@ -2646,6 +2650,15 @@ impl PyFastApi {
             })
             .collect::<PyResult<Vec<_>>>()?;
         let validation_parameters_present = route.plan.has_openapi_parameter_inputs();
+        let mut security_schemes = BTreeMap::new();
+        let mut security_requirements = Vec::new();
+        route.plan.collect_openapi_security(
+            py,
+            &mut security_schemes,
+            &mut security_requirements,
+            &[],
+            &mut Vec::new(),
+        )?;
 
         let has_form_body = route.plan.has_form_inputs();
         let (request_model_name, request_schema, request_required, request_media_type) =
@@ -2816,6 +2829,8 @@ impl PyFastApi {
                     .map(|response_class| response_class.bind(py)),
             )?,
             parameters,
+            security_schemes,
+            security_requirements,
             validation_parameters_present,
             request_model_name,
             request_schema,
@@ -4112,9 +4127,15 @@ impl CallablePlan {
         let signature = inspect.getattr("signature")?.call1((callable.bind(py),))?;
         let hints_kwargs = PyDict::new(py);
         hints_kwargs.set_item("include_extras", true)?;
-        let hints = typing
-            .getattr("get_type_hints")?
-            .call((callable.bind(py),), Some(&hints_kwargs))?;
+        let get_type_hints = typing.getattr("get_type_hints")?;
+        let hints = match get_type_hints.call((callable.bind(py),), Some(&hints_kwargs)) {
+            Ok(hints) => hints,
+            Err(error) if error.is_instance_of::<PyTypeError>(py) => {
+                let call_method = callable.bind(py).getattr("__call__")?;
+                get_type_hints.call((call_method,), Some(&hints_kwargs))?
+            }
+            Err(error) => return Err(error),
+        };
         let empty = inspect.getattr("_empty")?;
         let raw_return_annotation = signature.getattr("return_annotation")?;
         let return_annotation =
@@ -4240,6 +4261,7 @@ impl CallablePlan {
                 plan,
                 use_cache,
                 scope,
+                security_scopes,
                 ..
             } = source
             else {
@@ -4264,6 +4286,7 @@ impl CallablePlan {
                     plan,
                     use_cache,
                     scope,
+                    security_scopes,
                     bind_value: false,
                 },
             });
@@ -4433,6 +4456,69 @@ impl CallablePlan {
             if let ParameterSource::Dependency { plan, .. } = &parameter.source {
                 plan.populate_form_inputs(py, form, inputs, form_body_embedded, file_reads)?;
             }
+        }
+        Ok(())
+    }
+
+    fn collect_openapi_security(
+        &self,
+        py: Python<'_>,
+        security_schemes: &mut BTreeMap<String, Py<PyAny>>,
+        security_requirements: &mut Vec<(String, Vec<String>)>,
+        inherited_scopes: &[String],
+        visited: &mut Vec<OpenApiSecurityVisitKey>,
+    ) -> PyResult<()> {
+        for parameter in &self.parameters {
+            let ParameterSource::Dependency {
+                plan,
+                security_scopes,
+                ..
+            } = &parameter.source
+            else {
+                continue;
+            };
+
+            let mut effective_scopes = inherited_scopes.to_vec();
+            for scope in security_scopes {
+                if !effective_scopes.contains(scope) {
+                    effective_scopes.push(scope.clone());
+                }
+            }
+            let cache_key = (
+                plan.callable.as_ptr() as usize,
+                plan.computed_scope.clone(),
+                effective_scopes.clone(),
+            );
+            if visited.contains(&cache_key) {
+                continue;
+            }
+            visited.push(cache_key);
+
+            let callable = plan.callable.bind(py);
+            if let Some((scheme_name, model)) =
+                crate::security::openapi_security_metadata(callable)?
+            {
+                security_schemes.insert(scheme_name.clone(), model);
+                if let Some((_, required_scopes)) = security_requirements
+                    .iter_mut()
+                    .find(|(name, _)| name == &scheme_name)
+                {
+                    for scope in &effective_scopes {
+                        if !required_scopes.contains(scope) {
+                            required_scopes.push(scope.clone());
+                        }
+                    }
+                } else {
+                    security_requirements.push((scheme_name, effective_scopes.clone()));
+                }
+            }
+            plan.collect_openapi_security(
+                py,
+                security_schemes,
+                security_requirements,
+                &effective_scopes,
+                visited,
+            )?;
         }
         Ok(())
     }
@@ -4978,6 +5064,7 @@ impl CallablePlan {
                 use_cache,
                 scope,
                 bind_value,
+                ..
             } = &parameter.source
             {
                 let edge_index = dependency_edge_index;
@@ -5493,12 +5580,22 @@ fn parameter_source(
         };
         let use_cache = marker.getattr("use_cache")?.extract::<bool>()?;
         let scope = marker.getattr("scope")?.extract::<Option<String>>()?;
+        let marker_scopes = marker.getattr("scopes")?;
+        let security_scopes = if marker_scopes.is_none() {
+            Vec::new()
+        } else {
+            marker_scopes
+                .try_iter()?
+                .map(|scope| scope?.extract::<String>())
+                .collect::<PyResult<Vec<_>>>()?
+        };
         let path_names = path_parameters.to_vec();
         return CallablePlan::build(py, dependency, &path_names, scope.clone()).map(|plan| {
             ParameterSource::Dependency {
                 plan: Box::new(plan),
                 use_cache,
                 scope,
+                security_scopes,
                 bind_value: true,
             }
         });

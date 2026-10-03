@@ -1,5 +1,6 @@
 from fastapi_rs._core import (
     HTTPAuthorizationCredentials,
+    HTTPBase,
     HTTPBasic,
     HTTPBasicCredentials,
     HTTPBearer,
@@ -8,6 +9,7 @@ from fastapi_rs._core import (
 
 __all__ = [
     "HTTPAuthorizationCredentials",
+    "HTTPBase",
     "HTTPBasic",
     "HTTPBasicCredentials",
     "HTTPBearer",

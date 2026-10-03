@@ -26,6 +26,17 @@ class OwnershipFailure(Exception):
     pass
 
 
+async def common_listing(q: str | None = None, skip: int = 0, limit: int = 3):
+    return {"q": q, "skip": skip, "limit": limit}
+
+
+async def current_account():
+    try:
+        yield "account-north"
+    except OwnershipFailure as error:
+        raise HTTPException(status_code=400, detail=f"access denied: {error}") from error
+
+
 def create_app() -> FastAPI:
     app = FastAPI()
 
@@ -34,9 +45,6 @@ def create_app() -> FastAPI:
         {"title": "Cedar Atlas"},
         {"title": "Willow Almanac"},
     ]
-
-    async def common_listing(q: str | None = None, skip: int = 0, limit: int = 3):
-        return {"q": q, "skip": skip, "limit": limit}
 
     @app.get("/library/")
     # Keep this legacy signature form in the workload under review.
@@ -97,12 +105,6 @@ def create_app() -> FastAPI:
         matched: Annotated[bool, Depends(SearchPhrase("willow"))],
     ) -> dict[str, bool]:
         return {"matched": matched}
-
-    async def current_account():
-        try:
-            yield "account-north"
-        except OwnershipFailure as error:
-            raise HTTPException(status_code=400, detail=f"access denied: {error}") from error
 
     records = {
         "compass": {"description": "Trail compass", "owner": "account-south"},

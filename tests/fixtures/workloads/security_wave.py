@@ -92,4 +92,23 @@ def create_app() -> FastAPI:
     ) -> dict[str, str]:
         return {"scheme": credentials.scheme, "credentials": credentials.credentials}
 
+    scoped_oauth = OAuth2PasswordBearer(
+        tokenUrl="/scope-token",
+        scopes={"scope:read": "Read scoped records", "scope:write": "Write scoped records"},
+        scheme_name="ScopedOAuth2",
+    )
+
+    async def get_scoped_token(token: Annotated[str, Depends(scoped_oauth)]) -> str:
+        return token
+
+    @app.get(
+        "/security/scoped-admin",
+        dependencies=[
+            Security(get_scoped_token, scopes=["scope:read"]),
+            Security(get_scoped_token, scopes=["scope:write"]),
+        ],
+    )
+    async def read_scoped_admin() -> dict[str, str]:
+        return {"access": "granted"}
+
     return app

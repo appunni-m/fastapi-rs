@@ -38,6 +38,8 @@ pub(crate) struct OpenApiOperation {
     /// The OpenAPI response key derived from an explicit status or response-class default.
     pub(crate) response_status_key: Option<String>,
     pub(crate) parameters: Vec<OpenApiParameter>,
+    pub(crate) security_schemes: BTreeMap<String, Py<PyAny>>,
+    pub(crate) security_requirements: Vec<(String, Vec<String>)>,
     pub(crate) validation_parameters_present: bool,
     pub(crate) request_model_name: Option<String>,
     pub(crate) request_schema: Option<Py<PyAny>>,
@@ -78,7 +80,11 @@ pub(crate) fn openapi_document(
     root_path: Option<&str>,
 ) -> PyResult<Py<PyAny>> {
     let mut schemas = BTreeMap::<String, Py<PyAny>>::new();
+    let mut security_schemes = BTreeMap::<String, Py<PyAny>>::new();
     for operation in operations {
+        for (name, scheme) in &operation.security_schemes {
+            security_schemes.insert(name.clone(), scheme.clone_ref(py));
+        }
         for parameter in &operation.parameters {
             collect_schema_definitions(py, &mut schemas, &parameter.schema, false)?;
         }
@@ -175,6 +181,19 @@ pub(crate) fn openapi_document(
                 parameters.append(parameter_document)?;
             }
             operation_document.set_item("parameters", parameters)?;
+        }
+        if !operation.security_requirements.is_empty() {
+            let security = PyList::empty(py);
+            for (scheme_name, scopes) in &operation.security_requirements {
+                let requirement = PyDict::new(py);
+                let required_scopes = PyList::empty(py);
+                for scope in scopes {
+                    required_scopes.append(scope)?;
+                }
+                requirement.set_item(scheme_name, required_scopes)?;
+                security.append(requirement)?;
+            }
+            operation_document.set_item("security", security)?;
         }
 
         if operation.request_body_present {
@@ -421,13 +440,22 @@ pub(crate) fn openapi_document(
         }
     }
 
-    if !schemas.is_empty() {
+    if !schemas.is_empty() || !security_schemes.is_empty() {
         let components = PyDict::new(py);
-        let component_schemas = PyDict::new(py);
-        for (name, schema) in schemas {
-            component_schemas.set_item(name, schema.bind(py))?;
+        if !schemas.is_empty() {
+            let component_schemas = PyDict::new(py);
+            for (name, schema) in schemas {
+                component_schemas.set_item(name, schema.bind(py))?;
+            }
+            components.set_item("schemas", component_schemas)?;
         }
-        components.set_item("schemas", component_schemas)?;
+        if !security_schemes.is_empty() {
+            let definitions = PyDict::new(py);
+            for (name, scheme) in security_schemes {
+                definitions.set_item(name, scheme.bind(py))?;
+            }
+            components.set_item("securitySchemes", definitions)?;
+        }
         document.set_item("components", components)?;
     }
 

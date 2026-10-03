@@ -161,6 +161,13 @@ struct PyHttpBasic {
     auto_error: bool,
 }
 
+#[pyclass(name = "HTTPBase", module = "fastapi.security.http", subclass, dict)]
+struct PyHttpBase {
+    model: Py<PyAny>,
+    scheme_name: Py<PyAny>,
+    auto_error: bool,
+}
+
 #[pymethods]
 impl PyHttpBasic {
     #[new]
@@ -262,6 +269,90 @@ impl PyHttpBasic {
     }
 }
 
+#[pymethods]
+impl PyHttpBase {
+    #[new]
+    #[pyo3(signature = (*, scheme, scheme_name=None, description=None, auto_error=true))]
+    fn new(
+        py: Python<'_>,
+        scheme: Py<PyAny>,
+        scheme_name: Option<Py<PyAny>>,
+        description: Option<Py<PyAny>>,
+        auto_error: bool,
+    ) -> PyResult<Self> {
+        let module = py.import("fastapi_rs._core")?;
+        let model_type = module.getattr("_HTTPBasicModel")?;
+        let model_arguments = PyDict::new(py);
+        model_arguments.set_item("scheme", scheme)?;
+        model_arguments.set_item("description", description.unwrap_or_else(|| py.None()))?;
+        let model = model_type.call((), Some(&model_arguments))?.unbind();
+
+        Ok(Self {
+            model,
+            scheme_name: scheme_name.unwrap_or_else(|| py.None()),
+            auto_error,
+        })
+    }
+
+    #[getter]
+    fn model(&self, py: Python<'_>) -> Py<PyAny> {
+        self.model.clone_ref(py)
+    }
+
+    #[setter]
+    fn set_model(&mut self, model: Py<PyAny>) {
+        self.model = model;
+    }
+
+    #[getter]
+    fn scheme_name(slf: Py<Self>, py: Python<'_>) -> PyResult<Py<PyAny>> {
+        let instance = slf.bind(py);
+        let stored = instance.borrow().scheme_name.clone_ref(py);
+        if stored.bind(py).is_truthy()? {
+            return Ok(stored);
+        }
+        let class_name = instance.get_type().name()?.to_string();
+        Ok(PyString::new(py, &class_name).unbind().into_any())
+    }
+
+    #[setter]
+    fn set_scheme_name(&mut self, scheme_name: Py<PyAny>) {
+        self.scheme_name = scheme_name;
+    }
+
+    #[getter]
+    fn auto_error(&self) -> bool {
+        self.auto_error
+    }
+
+    #[setter]
+    fn set_auto_error(&mut self, auto_error: bool) {
+        self.auto_error = auto_error;
+    }
+
+    fn make_authenticate_headers(slf: Py<Self>, py: Python<'_>) -> PyResult<Py<PyAny>> {
+        let scheme = slf.bind(py).getattr("model")?.getattr("scheme")?;
+        let challenge = scheme.call_method0("title")?;
+        let headers = PyDict::new(py);
+        headers.set_item("WWW-Authenticate", challenge)?;
+        Ok(headers.unbind().into_any())
+    }
+
+    fn make_not_authenticated_error(slf: Py<Self>, py: Python<'_>) -> PyResult<Py<PyAny>> {
+        make_not_authenticated_error(slf.bind(py).as_any())
+    }
+
+    fn __call__(slf: Py<Self>, py: Python<'_>, request: Py<PyAny>) -> PyResult<Py<PyAny>> {
+        into_python_awaitable(
+            py,
+            HttpBaseCall {
+                security: slf.into_any(),
+                request,
+            },
+        )
+    }
+}
+
 #[pyclass(name = "HTTPDigest", module = "fastapi.security.http", subclass, dict)]
 struct PyHttpDigest {
     model: Py<PyAny>,
@@ -352,6 +443,102 @@ impl PyHttpDigest {
     }
 }
 
+#[pyclass(name = "OAuth2", module = "fastapi.security.oauth2", subclass, dict)]
+struct PyOAuth2 {
+    model: Py<PyAny>,
+    scheme_name: Py<PyAny>,
+    auto_error: bool,
+}
+
+#[pymethods]
+impl PyOAuth2 {
+    #[new]
+    #[pyo3(signature = (*, flows=None, scheme_name=None, description=None, auto_error=true))]
+    fn new(
+        py: Python<'_>,
+        flows: Option<Py<PyAny>>,
+        scheme_name: Option<Py<PyAny>>,
+        description: Option<Py<PyAny>>,
+        auto_error: bool,
+    ) -> PyResult<Self> {
+        let module = py.import("fastapi_rs._core")?;
+        let model_type = module.getattr("_OAuth2Model")?;
+        let model_arguments = PyDict::new(py);
+        model_arguments.set_item(
+            "flows",
+            flows.unwrap_or_else(|| PyDict::new(py).unbind().into_any()),
+        )?;
+        model_arguments.set_item("description", description.unwrap_or_else(|| py.None()))?;
+        let model = model_type.call((), Some(&model_arguments))?.unbind();
+
+        Ok(Self {
+            model,
+            scheme_name: scheme_name.unwrap_or_else(|| py.None()),
+            auto_error,
+        })
+    }
+
+    #[getter]
+    fn model(&self, py: Python<'_>) -> Py<PyAny> {
+        self.model.clone_ref(py)
+    }
+
+    #[setter]
+    fn set_model(&mut self, model: Py<PyAny>) {
+        self.model = model;
+    }
+
+    #[getter]
+    fn scheme_name(slf: Py<Self>, py: Python<'_>) -> PyResult<Py<PyAny>> {
+        let instance = slf.bind(py);
+        let stored = instance.borrow().scheme_name.clone_ref(py);
+        if stored.bind(py).is_truthy()? {
+            return Ok(stored);
+        }
+        let class_name = instance.get_type().name()?.to_string();
+        Ok(PyString::new(py, &class_name).unbind().into_any())
+    }
+
+    #[setter]
+    fn set_scheme_name(&mut self, scheme_name: Py<PyAny>) {
+        self.scheme_name = scheme_name;
+    }
+
+    #[getter]
+    fn auto_error(&self) -> bool {
+        self.auto_error
+    }
+
+    #[setter]
+    fn set_auto_error(&mut self, auto_error: bool) {
+        self.auto_error = auto_error;
+    }
+
+    fn make_not_authenticated_error(slf: Py<Self>, py: Python<'_>) -> PyResult<Py<PyAny>> {
+        let exception_type = slf
+            .bind(py)
+            .get_type()
+            .getattr("_fastapi_rs_http_exception_type")?;
+        let headers = PyDict::new(py);
+        headers.set_item("WWW-Authenticate", "Bearer")?;
+        let arguments = PyDict::new(py);
+        arguments.set_item("status_code", 401)?;
+        arguments.set_item("detail", "Not authenticated")?;
+        arguments.set_item("headers", headers)?;
+        exception_type.call((), Some(&arguments)).map(Bound::unbind)
+    }
+
+    fn __call__(slf: Py<Self>, py: Python<'_>, request: Py<PyAny>) -> PyResult<Py<PyAny>> {
+        into_python_awaitable(
+            py,
+            OAuth2Call {
+                security: slf.into_any(),
+                request,
+            },
+        )
+    }
+}
+
 #[pyclass(
     name = "OAuth2PasswordBearer",
     module = "fastapi.security.oauth2",
@@ -399,7 +586,7 @@ impl PyOAuth2PasswordBearer {
         flows_arguments.set_item("password", password_flow)?;
         let flows = flows_type.call((), Some(&flows_arguments))?.unbind();
 
-        let model_type = module.getattr("_OAuth2PasswordBearerModel")?;
+        let model_type = module.getattr("_OAuth2Model")?;
         let model_arguments = PyDict::new(py);
         model_arguments.set_item("flows", flows)?;
         model_arguments.set_item("description", description.unwrap_or_else(|| py.None()))?;
@@ -560,6 +747,44 @@ impl AwaitableStateMachine for HttpBasicCall {
     }
 }
 
+struct HttpBaseCall {
+    security: Py<PyAny>,
+    request: Py<PyAny>,
+}
+
+impl AwaitableStateMachine for HttpBaseCall {
+    fn resume(&mut self, py: Python<'_>, input: MachineResume) -> PyResult<MachineAction> {
+        if !matches!(input, MachineResume::Start) {
+            return Err(PyRuntimeError::new_err(
+                "HTTPBase dependency resumed more than once",
+            ));
+        }
+
+        let security = self.security.bind(py);
+        let headers = self.request.bind(py).getattr("headers")?;
+        let authorization = headers.call_method1("get", ("Authorization",))?;
+        let authorization_is_present = authorization.is_truthy()?;
+        let (scheme, credentials) = authorization_parts(&authorization)?;
+        if !authorization_is_present || scheme.is_empty() || credentials.is_empty() {
+            if security.getattr("auto_error")?.is_truthy()? {
+                let exception = security.call_method0("make_not_authenticated_error")?;
+                return Err(PyErr::from_value(exception));
+            }
+            return Ok(MachineAction::Complete(py.None()));
+        }
+
+        let credentials_type = security
+            .get_type()
+            .getattr("_fastapi_rs_credentials_type")?;
+        let arguments = PyDict::new(py);
+        arguments.set_item("scheme", scheme)?;
+        arguments.set_item("credentials", credentials)?;
+        credentials_type
+            .call((), Some(&arguments))
+            .map(|credentials| MachineAction::Complete(credentials.unbind()))
+    }
+}
+
 struct HttpDigestCall {
     security: Py<PyAny>,
     request: Py<PyAny>,
@@ -600,6 +825,34 @@ impl AwaitableStateMachine for HttpDigestCall {
         credentials_type
             .call((), Some(&arguments))
             .map(|credentials| MachineAction::Complete(credentials.unbind()))
+    }
+}
+
+struct OAuth2Call {
+    security: Py<PyAny>,
+    request: Py<PyAny>,
+}
+
+impl AwaitableStateMachine for OAuth2Call {
+    fn resume(&mut self, py: Python<'_>, input: MachineResume) -> PyResult<MachineAction> {
+        if !matches!(input, MachineResume::Start) {
+            return Err(PyRuntimeError::new_err(
+                "OAuth2 dependency resumed more than once",
+            ));
+        }
+
+        let security = self.security.bind(py);
+        let headers = self.request.bind(py).getattr("headers")?;
+        let authorization = headers.call_method1("get", ("Authorization",))?;
+        if !authorization.is_truthy()? {
+            if security.getattr("auto_error")?.is_truthy()? {
+                let exception = security.call_method0("make_not_authenticated_error")?;
+                return Err(PyErr::from_value(exception));
+            }
+            return Ok(MachineAction::Complete(py.None()));
+        }
+
+        Ok(MachineAction::Complete(authorization.unbind()))
     }
 }
 
@@ -907,7 +1160,7 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     let (password_flow_model, flows_model, oauth2_model) = create_oauth2_password_models(py)?;
     module.add("_OAuth2PasswordFlowModel", password_flow_model.bind(py))?;
     module.add("_OAuth2FlowsModel", flows_model.bind(py))?;
-    module.add("_OAuth2PasswordBearerModel", oauth2_model.bind(py))?;
+    module.add("_OAuth2Model", oauth2_model.bind(py))?;
     let exception_type = module.getattr("HTTPException")?;
 
     module.add_class::<PyHttpBearer>()?;
@@ -925,11 +1178,22 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     )?;
     http_basic_type.setattr("_fastapi_rs_http_exception_type", exception_type.clone())?;
 
+    module.add_class::<PyHttpBase>()?;
+    let http_base_type = py.get_type::<PyHttpBase>();
+    attach_dependency_introspection(py, &http_base_type)?;
+    http_base_type.setattr("_fastapi_rs_credentials_type", credentials_type.bind(py))?;
+    http_base_type.setattr("_fastapi_rs_http_exception_type", exception_type.clone())?;
+
     module.add_class::<PyHttpDigest>()?;
     let http_digest_type = py.get_type::<PyHttpDigest>();
     attach_dependency_introspection(py, &http_digest_type)?;
     http_digest_type.setattr("_fastapi_rs_credentials_type", credentials_type.bind(py))?;
     http_digest_type.setattr("_fastapi_rs_http_exception_type", exception_type.clone())?;
+
+    module.add_class::<PyOAuth2>()?;
+    let oauth2_type = py.get_type::<PyOAuth2>();
+    attach_dependency_introspection(py, &oauth2_type)?;
+    oauth2_type.setattr("_fastapi_rs_http_exception_type", exception_type.clone())?;
 
     module.add_class::<PyOAuth2PasswordBearer>()?;
     let oauth2_password_bearer_type = py.get_type::<PyOAuth2PasswordBearer>();
@@ -938,14 +1202,36 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     Ok(())
 }
 
+/// Return the OpenAPI scheme name and model for a native FastAPI security callable.
+pub(crate) fn openapi_security_metadata(
+    callable: &Bound<'_, PyAny>,
+) -> PyResult<Option<(String, Py<PyAny>)>> {
+    if !(callable.is_instance_of::<PyHttpBasic>()
+        || callable.is_instance_of::<PyHttpBearer>()
+        || callable.is_instance_of::<PyHttpBase>()
+        || callable.is_instance_of::<PyHttpDigest>()
+        || callable.is_instance_of::<PyOAuth2>()
+        || callable.is_instance_of::<PyOAuth2PasswordBearer>())
+    {
+        return Ok(None);
+    }
+    let scheme_name = callable.getattr("scheme_name")?.extract::<String>()?;
+    let model = callable.getattr("model")?.unbind();
+    Ok(Some((scheme_name, model)))
+}
+
 /// Check whether `value` inherits a native FastAPI security call implementation.
 pub(crate) fn is_native_async_callable(py: Python<'_>, value: &Bound<'_, PyAny>) -> PyResult<bool> {
     let bearer_namespace = py.get_type::<PyHttpBearer>().getattr("__dict__")?;
     let bearer_call = bearer_namespace.get_item("__call__")?;
     let basic_namespace = py.get_type::<PyHttpBasic>().getattr("__dict__")?;
     let basic_call = basic_namespace.get_item("__call__")?;
+    let base_namespace = py.get_type::<PyHttpBase>().getattr("__dict__")?;
+    let base_call = base_namespace.get_item("__call__")?;
     let digest_namespace = py.get_type::<PyHttpDigest>().getattr("__dict__")?;
     let digest_call = digest_namespace.get_item("__call__")?;
+    let oauth2_base_namespace = py.get_type::<PyOAuth2>().getattr("__dict__")?;
+    let oauth2_base_call = oauth2_base_namespace.get_item("__call__")?;
     let oauth2_namespace = py
         .get_type::<PyOAuth2PasswordBearer>()
         .getattr("__dict__")?;
@@ -958,7 +1244,9 @@ pub(crate) fn is_native_async_callable(py: Python<'_>, value: &Bound<'_, PyAny>)
             let call = namespace.get_item("__call__")?;
             return Ok(call.is(&bearer_call)
                 || call.is(&basic_call)
+                || call.is(&base_call)
                 || call.is(&digest_call)
+                || call.is(&oauth2_base_call)
                 || call.is(&oauth2_call));
         }
     }

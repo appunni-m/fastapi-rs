@@ -1410,7 +1410,7 @@
       "recipe_path": "tests/fixtures/input-recipes/parity/dependency-tutorial-review-upstream.yaml",
       "recipe_sha256": "322a9e2e273ae4e51c398b8676fa36e1df8b3b5b8409e0e1cc587c7f387e028b",
       "workload_path": "tests/fixtures/workloads/dependency_tutorial_review_upstream.py",
-      "workload_sha256": "a23ccda7e7742cd3f62056ab314802d140bbf76e2191bc81c9b5b26c65ad8b03",
+      "workload_sha256": "9fec9667a7c713fd95bf75387a0c8b0d752a634fa605ed4d178679a39018ef31",
       "case_ids": [
         "fastapi.dependencies.tutorial-review.basic-defaults",
         "fastapi.dependencies.tutorial-review.basic-partial-query",
@@ -6737,7 +6737,7 @@
       "input_path": "tests/fixtures/inputs/parity/response-model-data-filter-exclude-unset-none-review.json",
       "input_sha256": "e8df817a4df31b3f2f646068c8a9286416ff13577822d1fc572bbc5d8eb34a17",
       "recipe_path": "tests/fixtures/input-recipes/parity/response-model-data-filter-exclude-unset-none-review.yaml",
-      "recipe_sha256": "0c64d8fab21a0845f64c76e0b414ce4b4b7e3b0f20c428e9bbf9b8341ed0ac7a",
+      "recipe_sha256": "d1fe7f154cbc8662382f1443f10e0232c178ab21a53b3b7573a6081bb1ae7787",
       "workload_path": "tests/fixtures/workloads/response_model_data_filter_exclude_unset_none_review.py",
       "workload_sha256": "24b60f06b2472a0254c9ae15d0b208e0edd99d3cb8a3833696d343bacd0c13cd",
       "case_ids": [
@@ -7848,11 +7848,11 @@
     {
       "id": "security-wave",
       "input_path": "tests/fixtures/inputs/parity/security-wave.json",
-      "input_sha256": "8de6c5f786a81ed679df7764b375ab32cb9a898653521648040d7b31800b022c",
+      "input_sha256": "f64907c9eba2420bc1c09e2c7ef5d8a53131de58027d13170cd5bf2591684b72",
       "recipe_path": "tests/fixtures/input-recipes/parity/security-wave.yaml",
-      "recipe_sha256": "d7b0685a122fbeceae5f9fb6b5646778a9af7de0543a5973af92e089de89ed8e",
+      "recipe_sha256": "2fc349b70d6723bc7df1b43f2ea4900cefb073f7dc0e0080b7f18c3bb5b1c6d6",
       "workload_path": "tests/fixtures/workloads/security_wave.py",
-      "workload_sha256": "ddd72711c00b308048e7197ee2bf3fe7a8606f2b49ab8a5eeea80f1289170f54",
+      "workload_sha256": "104f9f5aa25fda81d723fec673301450d9a832bd90c79a4d595837f2ac234ba7",
       "case_ids": [
         "fastapi.security-wave.http-base-scheme.test-security-http-base",
         "fastapi.security-wave.http-digest.test-security-http-digest",
@@ -7869,7 +7869,8 @@
         "fastapi.security-wave.http-basic-tutorial-007.valid-credentials",
         "fastapi.security-wave.http-basic-tutorial-007.invalid-username",
         "fastapi.security-wave.http-basic-tutorials.openapi",
-        "fastapi.security-wave.authentication-error-status.test-get-me-no-credentials"
+        "fastapi.security-wave.authentication-error-status.test-get-me-no-credentials",
+        "fastapi.security-wave.oauth2-scope-propagation.nested-same-scheme-openapi"
       ]
     },
     {
@@ -29953,6 +29954,21 @@
         "http.body.bytes",
         "http.headers.ordered",
         "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_security_scopes_dont_propagate.py",
+      "fixture_id": "fastapi.test.test-security-scopes-dont-propagate",
+      "workflow_id": "security-wave",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.status, openapi.security. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.security-wave.oauth2-scope-propagation.nested-same-scheme-openapi"
+      ],
+      "observation_selectors": [
+        "docs.response.status",
+        "http.status",
+        "openapi.security"
       ]
     },
     {
