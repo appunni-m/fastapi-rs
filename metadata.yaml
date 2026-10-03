@@ -80,14 +80,14 @@ api_inventory:
 import_binding_classification_review:
   artifact: tests/fixtures/api-import-binding-classification-review.json
   schema: fastapi-starlette-import-binding-review/v1
-  sha256: 4c358ba9c39a2ced8d2ffa86c5c8bc97f9a75f73470c2f90f2522ab3d54ee23b
+  sha256: 83368fd8e140387a9fc30136dcc1a65954f3595a1965220227d54418b67128b5
   source_identity:
     package: FastAPI
     version: 0.141.1
     source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
     selected_starlette_profile: 1.6.0
     starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
-    starlette_rs_contract_commit: 6e512d420dc65097fefd2cf1a5383c5b47dccb09
+    starlette_rs_contract_commit: b11428bb5093a44281d96d09b9bbcb37a998a947
   starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
   counts:
     candidates: 97
@@ -99,7 +99,7 @@ import_binding_classification_review:
   candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
   pinned_starlette_rs_sources:
     metadata_sha256: 90f805ed7d2497833422db870f88d53319dbaaf31a675f89b1ad21fdd4a123d5
-    manifest_sha256: 6e433a46178057e32ce80df26856f2188bbba6bf507da9e3a3536a293bd37d34
+    manifest_sha256: b2b739fc18091af448584d36adb4b54b24fbe30a0a56ba183d0be2e46d40896a
     api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
     api_review_sha256: 8b25f2e3a46753316446077bfde97b6ac8a342233e2f4e50b12d3d01eafbe099
 
@@ -426,7 +426,7 @@ classification_atlas:
 starlette_rs:
   owner: ../starlette-rs
   repository: https://github.com/appunni-m/starlette-rs
-  commit: 6e512d420dc65097fefd2cf1a5383c5b47dccb09
+  commit: b11428bb5093a44281d96d09b9bbcb37a998a947
   distribution_version: 0.1.0
   contract_id: starlette-1.6.0-asgi-http-config-session-slice
   metadata: ../starlette-rs/metadata.yaml
@@ -2555,6 +2555,143 @@ reviewed_api_contract_overlay:
         calls the subclass's make_not_authenticated_error hook for a missing
         header. Empty credentials, other schemes, auto_error=False, and all
         OpenAPI security behavior remain outside this slice.
+    fastapi.security.HTTPBasic:
+      rust_binding: fastapi-rs/src/security.rs::PyHttpBasic
+      source_evidence:
+        - {path: fastapi/security/__init__.py}
+      feature_ids: [dependency-security]
+      observation_selectors: [python.import_path, python.object_identity]
+      supported_slice: >-
+        Native root alias to the Rust-owned HTTPBasic class. Request behavior
+        and dependency-to-OpenAPI security integration are not established by
+        an identity-checked fixture mapping in this record.
+    fastapi.security.http.HTTPBasic:
+      rust_binding: fastapi-rs/src/security.rs::PyHttpBasic
+      source_evidence:
+        - path: fastapi/security/http.py
+          symbol: HTTPBasic
+          kind: source-definition
+          start_line: 105
+          end_line: 219
+      feature_ids: [dependency-security]
+      observation_selectors: [python.signature, python.call_outcome]
+      supported_slice: >-
+        Partial native implementation: exposes a Python-subclassable Rust
+        dependency, Basic challenge construction, optional-auth handling,
+        Base64 credential parsing, and the HTTPBasicCredentials result model.
+        No active identity-checked workflow currently establishes those
+        request outcomes; OpenAPI security generation remains unsupported.
+    fastapi.security.http.HTTPBasic.__init__:
+      rust_binding: fastapi-rs/src/security.rs::PyHttpBasic::new
+      source_evidence:
+        - path: fastapi/security/http.py
+          symbol: __init__
+          kind: source-definition
+          start_line: 140
+          end_line: 195
+      feature_ids: [dependency-security]
+      observation_selectors: [python.signature, python.call_outcome]
+      supported_slice: >-
+        Native constructor preserves the keyword-only scheme_name, realm,
+        description, and auto_error options. Annotated parameter metadata and
+        identity-checked constructor parity remain unverified.
+    fastapi.security.http.HTTPBasic.__call__:
+      rust_binding: fastapi-rs/src/security.rs::PyHttpBasic::__call__
+      source_evidence:
+        - path: fastapi/security/http.py
+          symbol: __call__
+          kind: source-definition
+          start_line: 202
+          end_line: 219
+      feature_ids: [dependency-security, public-api-errors]
+      observation_selectors: [python.call_outcome]
+      supported_slice: >-
+        Native awaitable parses the Authorization scheme in Rust, returns the
+        Pydantic HTTPBasicCredentials model on valid input, returns None for
+        absent or wrong-scheme input when auto_error is false, and otherwise
+        raises the native 401 response. Invalid Base64 and missing username
+        separator always raise the authentication response. Live parity and
+        Python exception-cause parity remain unverified.
+    fastapi.security.HTTPBasicCredentials:
+      rust_binding: fastapi-rs/src/security.rs::create_http_basic_credentials_model
+      source_evidence:
+        - {path: fastapi/security/__init__.py}
+      feature_ids: [dependency-security]
+      observation_selectors: [python.import_path, python.object_identity]
+      supported_slice: >-
+        Native root alias to the Pydantic credentials model created by the
+        Rust registration layer; field validation and schema parity are not
+        established by an identity-checked fixture mapping here.
+    fastapi.security.http.HTTPBasicCredentials:
+      rust_binding: fastapi-rs/src/security.rs::create_http_basic_credentials_model
+      source_evidence:
+        - path: fastapi/security/http.py
+          symbol: HTTPBasicCredentials
+          kind: source-definition
+          start_line: 16
+          end_line: 26
+      feature_ids: [dependency-security]
+      observation_selectors: [python.call_outcome]
+      supported_slice: >-
+        Partial model implementation has required username and password
+        string fields and the documented field descriptions. Schema parity
+        and field-level validation outcomes remain unverified.
+    fastapi.security.OAuth2PasswordBearer:
+      rust_binding: fastapi-rs/src/security.rs::PyOAuth2PasswordBearer
+      source_evidence:
+        - {path: fastapi/security/__init__.py}
+      feature_ids: [dependency-security]
+      observation_selectors: [python.import_path, python.object_identity]
+      supported_slice: >-
+        Native root alias to the Rust-owned OAuth2PasswordBearer class.
+        Request behavior and dependency-to-OpenAPI security integration are
+        not established by an identity-checked fixture mapping in this record.
+    fastapi.security.oauth2.OAuth2PasswordBearer:
+      rust_binding: fastapi-rs/src/security.rs::PyOAuth2PasswordBearer
+      source_evidence:
+        - path: fastapi/security/oauth2.py
+          symbol: OAuth2PasswordBearer
+          kind: source-definition
+          start_line: 433
+          end_line: 544
+      feature_ids: [dependency-security]
+      observation_selectors: [python.signature, python.call_outcome]
+      supported_slice: >-
+        Partial native implementation exposes the password-flow model and
+        Rust-owned Bearer token extraction with optional-auth handling. The
+        separate OAuth2 base API, scope propagation, security requirements,
+        OpenAPI security generation, and live parity remain unsupported or
+        unverified.
+    fastapi.security.oauth2.OAuth2PasswordBearer.__init__:
+      rust_binding: fastapi-rs/src/security.rs::PyOAuth2PasswordBearer::new
+      source_evidence:
+        - path: fastapi/security/oauth2.py
+          symbol: __init__
+          kind: source-definition
+          start_line: 442
+          end_line: 534
+      feature_ids: [dependency-security]
+      observation_selectors: [python.signature, python.call_outcome]
+      supported_slice: >-
+        Native constructor preserves the positional tokenUrl parameter and
+        scheme_name, scopes, description, auto_error, and refreshUrl options;
+        falsey scopes produce an empty mapping. Annotated parameter metadata
+        and identity-checked constructor parity remain unverified.
+    fastapi.security.oauth2.OAuth2PasswordBearer.__call__:
+      rust_binding: fastapi-rs/src/security.rs::PyOAuth2PasswordBearer::__call__
+      source_evidence:
+        - path: fastapi/security/oauth2.py
+          symbol: __call__
+          kind: source-definition
+          start_line: 536
+          end_line: 544
+      feature_ids: [dependency-security, public-api-errors]
+      observation_selectors: [python.call_outcome]
+      supported_slice: >-
+        Native awaitable accepts a case-insensitive Bearer scheme, returns its
+        trimmed token parameter including an empty token, returns None when
+        optional authentication has no Bearer header, and otherwise raises the
+        native 401 response. Live parity remains unverified.
     fastapi.security.HTTPAuthorizationCredentials:
       rust_binding: fastapi-rs/src/security.rs::create_credentials_model
       source_evidence:

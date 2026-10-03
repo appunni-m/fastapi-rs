@@ -1,7 +1,9 @@
 //! Rust-owned FastAPI application registration and ASGI request flow.
 
+use std::cell::RefCell;
 use std::collections::{BTreeSet, HashMap, VecDeque};
 use std::path::Path;
+use std::rc::Rc;
 use std::sync::Mutex;
 use std::sync::atomic::{AtomicU64, Ordering};
 
@@ -294,6 +296,319 @@ impl CallablePlan {
     }
 }
 
+impl DependencyExecutionNode {
+    fn build(
+        original_plan: &CallablePlan,
+        use_cache: bool,
+        scope: Option<String>,
+        binding_index: usize,
+        context: &InvocationContext<'_, '_>,
+    ) -> PyResult<Self> {
+        let original_callable = original_plan.callable.bind(context.py);
+        let replacement = context.dependency_overrides.get_item(original_callable)?;
+        let plan = match replacement {
+            Some(replacement) if !replacement.is(original_callable) => CallablePlan::build(
+                context.py,
+                replacement.unbind(),
+                &original_plan.path_parameters,
+                scope,
+            )?,
+            _ => original_plan.clone_ref(context.py),
+        };
+        let callable_kind =
+            dependency_override_callable(context.py, plan.callable.bind(context.py))?;
+        if callable_kind == DependencyOverrideCallable::AsyncCallableInstance {
+            return Err(PyNotImplementedError::new_err(
+                "async dependency graphs do not support callable-instance dependencies",
+            ));
+        }
+        let generator_kind =
+            dependency_callable_generator_kind(context.py, plan.callable.bind(context.py))?;
+        let cache_key = (
+            original_plan.callable.as_ptr() as usize,
+            original_plan.computed_scope.clone(),
+        );
+        let mut children = Vec::new();
+        let mut dependency_edge_index = 0;
+        for parameter in &plan.parameters {
+            let ParameterSource::Dependency {
+                plan: child_plan,
+                use_cache: child_use_cache,
+                scope: child_scope,
+                ..
+            } = &parameter.source
+            else {
+                continue;
+            };
+            children.push(Self::build(
+                child_plan,
+                *child_use_cache,
+                child_scope.clone(),
+                dependency_edge_index,
+                context,
+            )?);
+            dependency_edge_index += 1;
+        }
+        Ok(Self {
+            plan,
+            cache_key,
+            use_cache,
+            binding_index,
+            callable_kind,
+            generator_kind,
+            children,
+            result: None,
+            awaiting: false,
+            failed: false,
+        })
+    }
+
+    fn has_nested_generator(&self) -> bool {
+        self.children
+            .iter()
+            .any(|child| child.generator_kind.is_some() || child.has_nested_generator())
+    }
+
+    fn advance(
+        &mut self,
+        context: &mut InvocationContext<'_, '_>,
+        path: &mut Vec<usize>,
+    ) -> PyResult<DependencyGraphStep> {
+        if self.failed {
+            return Ok(DependencyGraphStep::Invalid);
+        }
+        if let Some(result) = self.result.as_ref() {
+            return Ok(DependencyGraphStep::Ready(result.clone_ref(context.py)));
+        }
+        if self.use_cache {
+            if let Some(result) = context.dependency_cache.get(&self.cache_key) {
+                self.result = Some(result.clone_ref(context.py));
+                return Ok(DependencyGraphStep::Ready(result.clone_ref(context.py)));
+            }
+        }
+
+        let mut child_failed = false;
+        for (index, child) in self.children.iter_mut().enumerate() {
+            path.push(index);
+            let step = child.advance(context, path);
+            path.pop();
+            match step? {
+                DependencyGraphStep::Ready(_) => {}
+                DependencyGraphStep::Invalid => child_failed = true,
+                DependencyGraphStep::Await { awaitable, path } => {
+                    return Ok(DependencyGraphStep::Await { awaitable, path });
+                }
+            }
+        }
+        if child_failed {
+            self.failed = true;
+            return Ok(DependencyGraphStep::Invalid);
+        }
+
+        let mut prepared_dependencies = HashMap::with_capacity(self.children.len());
+        for child in &self.children {
+            let value = child.result.as_ref().ok_or_else(|| {
+                PyRuntimeError::new_err("resolved dependency graph omitted a child value")
+            })?;
+            prepared_dependencies.insert(child.binding_index, value.clone_ref(context.py));
+        }
+        let invoke_plan = if let Some(generator_kind) = self.generator_kind {
+            let decorator = context
+                .py
+                .import("contextlib")?
+                .getattr(match generator_kind {
+                    DependencyGeneratorKind::Sync => "contextmanager",
+                    DependencyGeneratorKind::Async => "asynccontextmanager",
+                })?;
+            let mut plan = self.plan.clone_ref(context.py);
+            plan.callable = decorator
+                .call1((self.plan.callable.bind(context.py),))?
+                .unbind();
+            plan
+        } else {
+            self.plan.clone_ref(context.py)
+        };
+        let use_threadpool =
+            self.generator_kind.is_none() && self.callable_kind == DependencyOverrideCallable::Sync;
+        let Some(value) = invoke_plan.invoke_with_threadpool(
+            context,
+            None,
+            None,
+            use_threadpool,
+            Some(&prepared_dependencies),
+        )?
+        else {
+            self.failed = true;
+            return Ok(DependencyGraphStep::Invalid);
+        };
+
+        let awaitable = if let Some(generator_kind) = self.generator_kind {
+            let context_manager = match generator_kind {
+                DependencyGeneratorKind::Async => value,
+                DependencyGeneratorKind::Sync => Py::new(
+                    context.py,
+                    ThreadpoolDependencyContextManager {
+                        context_manager: value,
+                    },
+                )?
+                .into_any(),
+            };
+            let exit_stack = if self.plan.computed_scope.as_deref() == Some("function") {
+                context.function_dependency_exit_stack
+            } else {
+                context.dependency_exit_stack
+            };
+            Some(
+                exit_stack
+                    .call_method1("enter_async_context", (context_manager.bind(context.py),))?
+                    .unbind(),
+            )
+        } else if is_awaitable(context.py, value.bind(context.py))? {
+            Some(value)
+        } else {
+            self.store_result(context, value.clone_ref(context.py));
+            return Ok(DependencyGraphStep::Ready(value));
+        };
+
+        let awaitable = awaitable.ok_or_else(|| {
+            PyRuntimeError::new_err("dependency graph entered a context without an awaitable")
+        })?;
+        self.awaiting = true;
+        Ok(DependencyGraphStep::Await {
+            awaitable,
+            path: path.clone(),
+        })
+    }
+
+    fn store_result(&mut self, context: &mut InvocationContext<'_, '_>, value: Py<PyAny>) {
+        let py = context.py;
+        context
+            .dependency_cache
+            .entry(self.cache_key.clone())
+            .or_insert_with(|| value.clone_ref(py));
+        self.result = Some(value);
+    }
+
+    fn store_result_at_path(
+        &mut self,
+        path: &[usize],
+        context: &mut InvocationContext<'_, '_>,
+        value: Py<PyAny>,
+    ) -> PyResult<()> {
+        let Some((index, remaining)) = path.split_first() else {
+            if !self.awaiting {
+                return Err(PyRuntimeError::new_err(
+                    "dependency graph resumed without a pending node",
+                ));
+            }
+            self.awaiting = false;
+            self.store_result(context, value);
+            return Ok(());
+        };
+        let child = self.children.get_mut(*index).ok_or_else(|| {
+            PyRuntimeError::new_err("dependency graph resume path does not identify a child")
+        })?;
+        child.store_result_at_path(remaining, context, value)
+    }
+}
+
+impl DependencyExecutionGraph {
+    fn build(plan: &CallablePlan, context: &InvocationContext<'_, '_>) -> PyResult<Self> {
+        let mut roots = Vec::new();
+        let mut dependency_edge_index = 0;
+        for parameter in &plan.parameters {
+            let ParameterSource::Dependency {
+                plan: dependency_plan,
+                use_cache,
+                scope,
+                ..
+            } = &parameter.source
+            else {
+                continue;
+            };
+            roots.push(DependencyExecutionNode::build(
+                dependency_plan,
+                *use_cache,
+                scope.clone(),
+                dependency_edge_index,
+                context,
+            )?);
+            dependency_edge_index += 1;
+        }
+        Ok(Self {
+            roots,
+            next_root: 0,
+            in_progress_root: None,
+            pending_path: None,
+        })
+    }
+
+    fn has_nested_generator(&self) -> bool {
+        self.roots
+            .iter()
+            .any(DependencyExecutionNode::has_nested_generator)
+    }
+
+    fn advance(
+        &mut self,
+        context: &mut InvocationContext<'_, '_>,
+    ) -> PyResult<DependencyGraphAdvance> {
+        while self.next_root < self.roots.len() {
+            let root_index = self.next_root;
+            let edge_index = self.roots[root_index].binding_index;
+            if edge_index < *context.dependency_override_cursor
+                && self.in_progress_root != Some(root_index)
+            {
+                self.next_root += 1;
+                continue;
+            }
+            self.in_progress_root = Some(root_index);
+            *context.dependency_override_cursor = edge_index + 1;
+            let step = self.roots[root_index].advance(context, &mut vec![root_index]);
+            match step? {
+                DependencyGraphStep::Ready(value) => {
+                    context.prepared_dependency_values.insert(edge_index, value);
+                    self.next_root += 1;
+                    self.in_progress_root = None;
+                }
+                DependencyGraphStep::Invalid => {
+                    self.next_root += 1;
+                    self.in_progress_root = None;
+                }
+                DependencyGraphStep::Await { awaitable, path } => {
+                    self.pending_path = Some(path);
+                    return Ok(DependencyGraphAdvance::Await(awaitable));
+                }
+            }
+        }
+        if context.failures.is_empty() {
+            Ok(DependencyGraphAdvance::Ready)
+        } else {
+            Ok(DependencyGraphAdvance::Invalid)
+        }
+    }
+
+    fn resume(
+        &mut self,
+        context: &mut InvocationContext<'_, '_>,
+        value: Py<PyAny>,
+    ) -> PyResult<DependencyGraphAdvance> {
+        let path = self.pending_path.take().ok_or_else(|| {
+            PyRuntimeError::new_err("dependency graph resumed without a pending awaitable")
+        })?;
+        let Some((root_index, remaining)) = path.split_first() else {
+            return Err(PyRuntimeError::new_err(
+                "dependency graph resume path omitted its root",
+            ));
+        };
+        let root = self.roots.get_mut(*root_index).ok_or_else(|| {
+            PyRuntimeError::new_err("dependency graph resume path does not identify a root")
+        })?;
+        root.store_result_at_path(remaining, context, value)?;
+        self.advance(context)
+    }
+}
+
 struct InvocationContext<'context, 'py> {
     py: Python<'py>,
     inputs: &'context Bound<'py, PyDict>,
@@ -339,6 +654,10 @@ struct FormFileReadPlan {
 
 enum RouteInvocation {
     Ready(Option<Py<PyAny>>),
+    AwaitDependencyGraph {
+        awaitable: Py<PyAny>,
+        graph: Box<DependencyExecutionGraph>,
+    },
     AwaitDependency {
         awaitable: Py<PyAny>,
         cache_key: DependencyCacheKey,
@@ -355,6 +674,10 @@ enum RouteInvocation {
 enum OverridePreparation {
     Ready,
     Invalid,
+    AwaitDependencyGraph {
+        awaitable: Py<PyAny>,
+        graph: Box<DependencyExecutionGraph>,
+    },
     Await {
         awaitable: Py<PyAny>,
         cache_key: DependencyCacheKey,
@@ -379,6 +702,41 @@ enum DependencyOverrideCallable {
 enum DependencyGeneratorKind {
     Sync,
     Async,
+}
+
+struct DependencyExecutionNode {
+    plan: CallablePlan,
+    cache_key: DependencyCacheKey,
+    use_cache: bool,
+    binding_index: usize,
+    callable_kind: DependencyOverrideCallable,
+    generator_kind: Option<DependencyGeneratorKind>,
+    children: Vec<Self>,
+    result: Option<Py<PyAny>>,
+    awaiting: bool,
+    failed: bool,
+}
+
+struct DependencyExecutionGraph {
+    roots: Vec<DependencyExecutionNode>,
+    next_root: usize,
+    in_progress_root: Option<usize>,
+    pending_path: Option<Vec<usize>>,
+}
+
+enum DependencyGraphStep {
+    Ready(Py<PyAny>),
+    Invalid,
+    Await {
+        awaitable: Py<PyAny>,
+        path: Vec<usize>,
+    },
+}
+
+enum DependencyGraphAdvance {
+    Ready,
+    Invalid,
+    Await(Py<PyAny>),
 }
 
 #[pyclass]
@@ -533,6 +891,7 @@ pub(crate) struct PyFastApi {
     description: String,
     version: String,
     openapi_url: String,
+    swagger_ui_init_oauth: Option<Py<PyAny>>,
     terms_of_service: Option<String>,
     contact: Option<Py<PyAny>>,
     license_info: Option<Py<PyAny>>,
@@ -613,6 +972,7 @@ struct PyFastApiCallNext {
     app: Py<PyAny>,
     scope: Py<PyAny>,
     receive: Py<PyAny>,
+    post_response_error: Rc<RefCell<Option<PyErr>>>,
 }
 
 #[pymethods]
@@ -671,7 +1031,7 @@ struct RouterIncludePolicy<'policy> {
 #[pymethods]
 impl PyFastApi {
     #[new]
-    #[pyo3(signature = (*, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", docs_url = "/docs", redoc_url = "/redoc", terms_of_service = None, contact = None, license_info = None, openapi_external_docs = None, dependencies = None, default_response_class = None, middleware = None, exception_handlers = None, on_startup = None, on_shutdown = None, lifespan = None, strict_content_type = true))]
+    #[pyo3(signature = (*, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", docs_url = "/docs", redoc_url = "/redoc", swagger_ui_init_oauth = None, terms_of_service = None, contact = None, license_info = None, openapi_external_docs = None, dependencies = None, default_response_class = None, middleware = None, exception_handlers = None, on_startup = None, on_shutdown = None, lifespan = None, strict_content_type = true))]
     // lint-exception: PyO3 needs one Rust argument per Python constructor keyword.
     #[allow(
         clippy::too_many_arguments,
@@ -686,6 +1046,7 @@ impl PyFastApi {
         openapi_url: &str,
         docs_url: Option<&str>,
         redoc_url: Option<&str>,
+        swagger_ui_init_oauth: Option<Py<PyAny>>,
         terms_of_service: Option<String>,
         contact: Option<Py<PyAny>>,
         license_info: Option<Py<PyAny>>,
@@ -765,6 +1126,7 @@ impl PyFastApi {
             description: description.to_owned(),
             version: version.to_owned(),
             openapi_url: openapi_url.to_owned(),
+            swagger_ui_init_oauth,
             terms_of_service,
             contact,
             license_info,
@@ -1783,6 +2145,7 @@ impl PyFastApiHttpMiddleware {
                 receive,
                 send,
                 pending: None,
+                post_response_error: Rc::new(RefCell::new(None)),
             },
         )
     }
@@ -1875,6 +2238,7 @@ impl PyFastApiCallNext {
                 receive: self.receive.clone_ref(py),
                 messages,
                 pending: false,
+                post_response_error: self.post_response_error.clone(),
             },
         )
     }
@@ -1892,6 +2256,7 @@ struct FastApiHttpMiddlewareCall {
     receive: Py<PyAny>,
     send: Py<PyAny>,
     pending: Option<FastApiHttpMiddlewarePending>,
+    post_response_error: Rc<RefCell<Option<PyErr>>>,
 }
 
 impl AwaitableStateMachine for FastApiHttpMiddlewareCall {
@@ -1906,6 +2271,7 @@ impl AwaitableStateMachine for FastApiHttpMiddlewareCall {
                         app: self.app.clone_ref(py),
                         scope: self.scope.clone_ref(py),
                         receive: self.receive.clone_ref(py),
+                        post_response_error: self.post_response_error.clone(),
                     },
                 )?
                 .into_any();
@@ -1924,7 +2290,10 @@ impl AwaitableStateMachine for FastApiHttpMiddlewareCall {
                     Ok(MachineAction::Await(awaitable.unbind()))
                 }
                 Some(FastApiHttpMiddlewarePending::Response) => {
-                    Ok(MachineAction::Complete(py.None()))
+                    match self.post_response_error.borrow_mut().take() {
+                        Some(error) => Err(error),
+                        None => Ok(MachineAction::Complete(py.None())),
+                    }
                 }
                 None => Err(PyRuntimeError::new_err(
                     "HTTP middleware resumed without a pending operation",
@@ -1962,6 +2331,7 @@ struct FastApiCallNextMachine {
     receive: Py<PyAny>,
     messages: Py<PyList>,
     pending: bool,
+    post_response_error: Rc<RefCell<Option<PyErr>>>,
 }
 
 impl AwaitableStateMachine for FastApiCallNextMachine {
@@ -1989,13 +2359,33 @@ impl AwaitableStateMachine for FastApiCallNextMachine {
             }
             MachineResume::Error(error) if self.pending => {
                 self.pending = false;
-                Err(error)
+                if captured_response_started(self.messages.bind(py))? {
+                    let response = response_from_captured_messages(py, self.messages.bind(py))?;
+                    *self.post_response_error.borrow_mut() = Some(error);
+                    Ok(MachineAction::Complete(response))
+                } else {
+                    Err(error)
+                }
             }
             MachineResume::Value(_) | MachineResume::Error(_) | MachineResume::Start => Err(
                 PyRuntimeError::new_err("call_next resumed without a pending application call"),
             ),
         }
     }
+}
+
+fn captured_response_started(messages: &Bound<'_, PyList>) -> PyResult<bool> {
+    for message in messages.iter() {
+        let message = message.cast::<PyDict>()?;
+        let message_type = message
+            .get_item("type")?
+            .ok_or_else(|| PyValueError::new_err("ASGI response message has no type"))?
+            .extract::<String>()?;
+        if message_type == "http.response.start" {
+            return Ok(true);
+        }
+    }
+    Ok(false)
 }
 
 fn response_from_captured_messages(
@@ -2484,6 +2874,7 @@ impl PyApiRouter {
                 "",
                 "0.1.0",
                 "/openapi.json",
+                None,
                 None,
                 None,
                 None,
@@ -4197,6 +4588,20 @@ impl CallablePlan {
             return Err(PyNotImplementedError::new_err(
                 "async dependencies require flat direct dependencies; async callable-instance endpoints are not supported",
             ));
+        }
+
+        let mut dependency_graph = DependencyExecutionGraph::build(self, context)?;
+        if dependency_graph.has_nested_generator() {
+            return match dependency_graph.advance(context)? {
+                DependencyGraphAdvance::Ready => Ok(OverridePreparation::Ready),
+                DependencyGraphAdvance::Invalid => Ok(OverridePreparation::Invalid),
+                DependencyGraphAdvance::Await(awaitable) => {
+                    Ok(OverridePreparation::AwaitDependencyGraph {
+                        awaitable,
+                        graph: Box::new(dependency_graph),
+                    })
+                }
+            };
         }
 
         // Validate every effective edge before invoking any dependency. The
@@ -7078,6 +7483,7 @@ enum PendingAction {
         cache_key: DependencyCacheKey,
         edge_index: usize,
     },
+    DependencyGraph(Box<DependencyExecutionGraph>),
     OverrideSubdependency {
         parent_plan: Box<CallablePlan>,
         cache_key: DependencyCacheKey,
@@ -7987,9 +8393,15 @@ impl FastApiCall {
             .call1((scope,))?
             .extract::<String>()?;
         let root_path = parse_scope_string(scope, "root_path", "")?;
-        let (openapi_url, title) = {
+        let (openapi_url, title, init_oauth) = {
             let app = self.app.bind(py).borrow();
-            (app.openapi_url.clone(), app.title.clone())
+            (
+                app.openapi_url.clone(),
+                app.title.clone(),
+                app.swagger_ui_init_oauth
+                    .as_ref()
+                    .map(|configuration| configuration.clone_ref(py)),
+            )
         };
         if !openapi_url.is_empty() && route_path == openapi_url && method == "GET" {
             let root_path = root_path.trim_end_matches('/');
@@ -8021,12 +8433,15 @@ impl FastApiCall {
                             PyRuntimeError::new_err("matched FastAPI docs route was lost")
                         })?;
                     let docs_root_path = root_path.trim_end_matches('/');
+                    let init_oauth_bound = init_oauth.as_ref().map(|value| value.bind(py));
                     let html = match docs_route {
-                        FastApiDocsRoute::SwaggerUi => docs::swagger_ui_html(
+                        FastApiDocsRoute::SwaggerUi => docs::swagger_ui_html_with_init_oauth(
+                            py,
                             &format!("{docs_root_path}{openapi_url}"),
                             &format!("{docs_root_path}/docs/oauth2-redirect"),
                             &format!("{title} - Swagger UI"),
-                        ),
+                            init_oauth_bound,
+                        )?,
                         FastApiDocsRoute::OAuth2Redirect => docs::oauth2_redirect_html().to_owned(),
                         FastApiDocsRoute::ReDoc => docs::redoc_html(
                             &format!("{docs_root_path}{openapi_url}"),
@@ -8635,6 +9050,9 @@ impl FastApiCall {
                 background_tasks: &mut invocation.background_tasks,
             };
             match plan.prepare_direct_dependency_overrides(&mut context)? {
+                OverridePreparation::AwaitDependencyGraph { awaitable, graph } => {
+                    RouteInvocation::AwaitDependencyGraph { awaitable, graph }
+                }
                 OverridePreparation::Await {
                     awaitable,
                     cache_key,
@@ -8662,6 +9080,10 @@ impl FastApiCall {
             }
         };
         match route_invocation {
+            RouteInvocation::AwaitDependencyGraph { awaitable, graph } => {
+                self.pending = Some(PendingAction::DependencyGraph(graph));
+                Ok(MachineAction::Await(awaitable))
+            }
             RouteInvocation::AwaitDependency {
                 awaitable,
                 cache_key,
@@ -8784,6 +9206,56 @@ impl FastApiCall {
             .prepared_dependency_values
             .insert(edge_index, value);
         self.invoke_route(py)
+    }
+
+    fn dependency_graph_resumed(
+        &mut self,
+        py: Python<'_>,
+        mut graph: DependencyExecutionGraph,
+        value: Py<PyAny>,
+    ) -> PyResult<MachineAction> {
+        let request = self.request.as_ref().map(|request| request.bind(py));
+        let websocket = self.websocket.as_ref().map(|socket| socket.bind(py));
+        let injected_response = self
+            .injected_response
+            .as_ref()
+            .map(|response| response.bind(py));
+        let route_body_fields_embedded = self.selected_body_fields_embedded(py)?;
+        let advance = {
+            let invocation = self
+                .invocation
+                .as_mut()
+                .ok_or_else(|| PyRuntimeError::new_err("request invocation state was lost"))?;
+            let app = self.app.bind(py).borrow();
+            let mut context = InvocationContext {
+                py,
+                inputs: invocation.inputs.bind(py),
+                request,
+                websocket,
+                response: injected_response,
+                query_params: &invocation.query_params,
+                body_fields_embedded: invocation.form_body_embedded || route_body_fields_embedded,
+                form_body_embedded: invocation.form_body_embedded,
+                failures: &mut invocation.failures,
+                dependency_overrides: app.dependency_overrides.bind(py),
+                dependency_cache: &mut invocation.dependency_cache,
+                prepared_dependency_values: &mut invocation.prepared_dependency_values,
+                dependency_override_cursor: &mut invocation.dependency_override_cursor,
+                dependency_exit_stack: invocation.dependency_exit_stack.bind(py),
+                function_dependency_exit_stack: invocation.function_dependency_exit_stack.bind(py),
+                background_tasks: &mut invocation.background_tasks,
+            };
+            graph.resume(&mut context, value)?
+        };
+        match advance {
+            DependencyGraphAdvance::Await(awaitable) => {
+                self.pending = Some(PendingAction::DependencyGraph(Box::new(graph)));
+                Ok(MachineAction::Await(awaitable))
+            }
+            DependencyGraphAdvance::Ready | DependencyGraphAdvance::Invalid => {
+                self.invoke_route(py)
+            }
+        }
     }
 
     fn override_subdependency_resumed(
@@ -9345,6 +9817,9 @@ impl FastApiCall {
                     cache_key,
                     edge_index,
                 }) => self.dependency_resumed(py, cache_key, edge_index, value),
+                Some(PendingAction::DependencyGraph(graph)) => {
+                    self.dependency_graph_resumed(py, *graph, value)
+                }
                 Some(PendingAction::OverrideSubdependency {
                     parent_plan,
                     cache_key,
@@ -9432,6 +9907,7 @@ impl FastApiCall {
                     | PendingAction::SendBody
                     | PendingAction::BackgroundTasks
                     | PendingAction::Dependency { .. }
+                    | PendingAction::DependencyGraph(_)
                     | PendingAction::OverrideSubdependency { .. },
                 ) => self.route_exception(py, error),
                 Some(PendingAction::FrontendResponse) => self.frontend_response_failed(py, error),

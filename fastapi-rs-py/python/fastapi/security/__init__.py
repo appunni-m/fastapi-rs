@@ -1,3 +1,15 @@
-from fastapi_rs._core import HTTPAuthorizationCredentials, HTTPBearer
+from fastapi_rs._core import (
+    HTTPAuthorizationCredentials,
+    HTTPBasic,
+    HTTPBasicCredentials,
+    HTTPBearer,
+    OAuth2PasswordBearer,
+)
 
-__all__ = ["HTTPAuthorizationCredentials", "HTTPBearer"]
+__all__ = [
+    "HTTPAuthorizationCredentials",
+    "HTTPBasic",
+    "HTTPBasicCredentials",
+    "HTTPBearer",
+    "OAuth2PasswordBearer",
+]

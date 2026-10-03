@@ -34,6 +34,7 @@ pub fn register_python_api(module: &Bound<'_, PyModule>) -> PyResult<()> {
     parameters::register(module)?;
     datastructures::register(module)?;
     deprecated_api::register(module)?;
+    docs::register(module)?;
     security::register(module)?;
     sse::register(module)?;
     application_runtime::register(module)

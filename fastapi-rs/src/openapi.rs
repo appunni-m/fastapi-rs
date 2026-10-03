@@ -93,25 +93,25 @@ pub(crate) fn openapi_document(
         }
         if let Some(schema) = operation.response_schema.as_ref() {
             if let Some(name) = operation.response_model_name.as_deref() {
-                collect_model_schema(py, &mut schemas, name, schema, false)?;
+                collect_model_schema(py, &mut schemas, name, schema, true)?;
             } else {
-                collect_schema_definitions(py, &mut schemas, schema, false)?;
+                collect_schema_definitions(py, &mut schemas, schema, true)?;
             }
         }
         for response in &operation.additional_responses {
             if let Some(schema) = response.response_schema.as_ref() {
                 if let Some(name) = response.response_model_name.as_deref() {
-                    collect_model_schema(py, &mut schemas, name, schema, false)?;
+                    collect_model_schema(py, &mut schemas, name, schema, true)?;
                 } else {
-                    collect_schema_definitions(py, &mut schemas, schema, false)?;
+                    collect_schema_definitions(py, &mut schemas, schema, true)?;
                 }
             }
         }
         if let Some(schema) = operation.stream_item_schema.as_ref() {
             if let Some(name) = operation.stream_item_model_name.as_deref() {
-                collect_model_schema(py, &mut schemas, name, schema, false)?;
+                collect_model_schema(py, &mut schemas, name, schema, true)?;
             } else {
-                collect_schema_definitions(py, &mut schemas, schema, false)?;
+                collect_schema_definitions(py, &mut schemas, schema, true)?;
             }
         }
     }
@@ -211,7 +211,7 @@ pub(crate) fn openapi_document(
                     operation.stream_item_schema.as_ref(),
                 ) {
                     (Some(model_name), Some(_)) => reference_schema(py, model_name)?.into_any(),
-                    (None, Some(schema)) => normalize_schema(py, schema.bind(py), false, false)?,
+                    (None, Some(schema)) => normalize_schema(py, schema.bind(py), false, true)?,
                     _ => PyDict::new(py).into_any(),
                 };
                 let media_type = PyDict::new(py);
@@ -245,7 +245,7 @@ pub(crate) fn openapi_document(
                     } else {
                         data_schema.set_item(
                             "contentSchema",
-                            normalize_schema(py, schema.bind(py), false, false)?,
+                            normalize_schema(py, schema.bind(py), false, true)?,
                         )?;
                     }
                     let required = PyList::empty(py);
@@ -268,7 +268,7 @@ pub(crate) fn openapi_document(
                                 reference_schema(py, model_name)?.into_any()
                             }
                             (None, Some(schema)) => {
-                                let schema = normalize_schema(py, schema.bind(py), false, false)?;
+                                let schema = normalize_schema(py, schema.bind(py), false, true)?;
                                 if let Ok(schema_dict) = schema.cast::<PyDict>() {
                                     if schema_dict.get_item("$ref")?.is_none() {
                                         schema_dict
@@ -355,7 +355,7 @@ pub(crate) fn openapi_document(
                 };
                 let schema = match additional_response.response_model_name.as_deref() {
                     Some(model_name) => reference_schema(py, model_name)?.into_any(),
-                    None => normalize_schema(py, schema.bind(py), false, false)?,
+                    None => normalize_schema(py, schema.bind(py), false, true)?,
                 };
                 if additional_response.response_model_name.is_none() {
                     if let Ok(schema_dict) = schema.cast::<PyDict>() {
