@@ -1172,6 +1172,19 @@
       ]
     },
     {
+      "id": "dependency-context-manager-endpoint-modes",
+      "input_path": "tests/fixtures/inputs/parity/dependency-context-manager-endpoint-modes.json",
+      "input_sha256": "e4bf7738ff6738a6d3a43a48065755c7d72455e9609b98f5301a0ef255ca77ec",
+      "recipe_path": "tests/fixtures/input-recipes/parity/dependency-context-manager-endpoint-modes.yaml",
+      "recipe_sha256": "cdd5d59de8d6f6792cfbfe1f2afe005de0f7cda9af6b631129ba7bcdbabb1256",
+      "workload_path": "tests/fixtures/workloads/dependency_context_manager_endpoint_modes.py",
+      "workload_sha256": "b21b95040bc0c362642f56562ad6eca5151de63bf1c19fd45d330a056a036354",
+      "case_ids": [
+        "fastapi.dependencies.context-manager.sync-endpoint-async-yield",
+        "fastapi.dependencies.context-manager.sync-endpoint-sync-yield"
+      ]
+    },
+    {
       "id": "dependency-lifecycle",
       "input_path": "tests/fixtures/inputs/parity/dependency-lifecycle.json",
       "input_sha256": "c739d2072875b6df889a288b94bcdb5ee0ea77110403cc6b76c0fec296cf192c",
@@ -11797,6 +11810,21 @@
       "case_ids": [
         "fastapi.dependencies.cache-bypass-subdependency-source-wave",
         "fastapi.dependencies.cache-shared-subdependency-source-wave"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_dependency_contextmanager.py",
+      "fixture_id": "fastapi.test.test-dependency-contextmanager",
+      "workflow_id": "dependency-context-manager-endpoint-modes",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.dependencies.context-manager.sync-endpoint-async-yield",
+        "fastapi.dependencies.context-manager.sync-endpoint-sync-yield"
       ],
       "observation_selectors": [
         "http.body.bytes",

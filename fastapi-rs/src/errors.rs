@@ -44,6 +44,12 @@ create_exception!(
 );
 create_exception!(
     fastapi.exceptions,
+    WebSocketRequestValidationError,
+    ValidationException,
+    "The WebSocket request data failed validation."
+);
+create_exception!(
+    fastapi.exceptions,
     ResponseValidationError,
     ValidationException,
     "The response data failed validation."
@@ -425,6 +431,10 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     module.add("HTTPException", http_exception_type)?;
     module.add("ValidationException", validation_exception_type)?;
     module.add("RequestValidationError", request_exception_type)?;
+    module.add(
+        "WebSocketRequestValidationError",
+        py.get_type::<WebSocketRequestValidationError>(),
+    )?;
     module.add("ResponseValidationError", exception_type)?;
     module.add("_FastAPIError", py.get_type::<FastAPIError>())?;
     module.add(
@@ -452,6 +462,23 @@ pub(crate) fn dependency_scope_error(message: &str) -> PyErr {
 
 pub(crate) fn request_validation_error_type<'py>(py: Python<'py>) -> Bound<'py, PyAny> {
     py.get_type::<RequestValidationError>().into_any()
+}
+
+pub(crate) fn websocket_request_validation_error(
+    py: Python<'_>,
+    errors: &Bound<'_, PyAny>,
+    endpoint_ctx: Option<&Bound<'_, PyAny>>,
+) -> PyResult<PyErr> {
+    let kwargs = PyDict::new(py);
+    if let Some(endpoint_ctx) = endpoint_ctx {
+        kwargs.set_item("endpoint_ctx", endpoint_ctx)?;
+    } else {
+        kwargs.set_item("endpoint_ctx", py.None())?;
+    }
+    let exception = py
+        .get_type::<WebSocketRequestValidationError>()
+        .call((errors,), Some(&kwargs))?;
+    Ok(PyErr::from_value(exception))
 }
 
 pub(crate) fn request_validation_error(

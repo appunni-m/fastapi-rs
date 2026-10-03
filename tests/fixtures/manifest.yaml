@@ -411,7 +411,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@5
-    sha256: 3098e39c21b4178b5fb53b1c40cc8e6eff4aa18d76b089c84d5a14d07fb7c63a
+    sha256: 2a72fb526183d3d181f8d2e308e5a938469d8328e3c2e0f7fc26443e8567cebc
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -447,7 +447,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 7065c70d4ac65d13c97d87540ab6cd1d55cc091e34a26048c6acbd2022dc9126
+    sha256: 227327a22c655ca1860b1ce82b588e0a6920187aa20e3bd351b0614af09fc683
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -484,14 +484,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@2
-    sha256: b6ced7fdabcf0710c31f09004bb423576d897871504a5906ced1703da8f5baf2
+    sha256: 11b328f2058479bfd04969ca640f2cafce33dbf68e0a1c7f6cf1d3c0b067aa7c
     schema_path: tests/fixtures/schemas/materialized-input-index.schema.json
     schema_sha256: 56ac1cdfaa6f28b4277ef44b5ef78efebb3122111c5691e1b9c1bce869156aaf
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 521
-      cases: 2056
-      partial_source_mappings: 1480
+      workflows: 522
+      cases: 2058
+      partial_source_mappings: 1481
 
 contract_metadata:
   aliases:
@@ -800,8 +800,8 @@ api_surface_contract:
     symbols_with_constructor_definition_refs: 37
     unique_source_constructor_definitions: 20
     operation_scope_statuses:
-      scope-review-pending: 357
-      slice-described: 104
+      scope-review-pending: 355
+      slice-described: 106
     implementation_owner_plans:
       fastapi-rs: 430
       starlette-rs: 31
@@ -813,8 +813,8 @@ api_surface_contract:
     symbols_with_deprecation_refs: 15
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 34
-    symbols_with_operation_fixture_refs: 63
-    operation_fixture_refs: 316
+    symbols_with_operation_fixture_refs: 65
+    operation_fixture_refs: 318
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -1899,6 +1899,17 @@ api_surface_contract:
       probe_kind: callable
       observation_selectors:
       - python.signature
+    operation_fixture_refs:
+    - workflow_id: direct-api-reference-wave
+      input_path: tests/fixtures/inputs/parity/direct-api-reference-wave.json
+      input_sha256: bd083e1fba8e327d285ef61860e73f3590c02790a6545d9dcbc21e5f0a6e9e98
+      recipe_path: tests/fixtures/input-recipes/parity/direct-api-reference-wave.yaml
+      recipe_sha256: 12537e7b8c8fbe187bca561253b43e5c0c87eb9afaa6a326891206d9562437e0
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.direct-api-reference-wave.http-exception-signature
+      observation_selectors:
+      - python.signature
     identity_workflow_refs:
     - workflow_id: root-alias-identity
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
@@ -1933,8 +1944,9 @@ api_surface_contract:
     - python.signature
     - websocket.close_code
     operation_scope:
-      status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+      status: slice-described
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.HTTPException/supported_slice
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.HTTPException
@@ -1945,7 +1957,7 @@ api_surface_contract:
         - /api_candidates/8
         - /api_candidates/530
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/errors.rs::register
   - id: fastapi.Header
     kind: import_binding
     source_candidate_ref: /api_candidates/9
@@ -2967,6 +2979,17 @@ api_surface_contract:
       probe_kind: callable
       observation_selectors:
       - python.signature
+    operation_fixture_refs:
+    - workflow_id: direct-api-reference-wave
+      input_path: tests/fixtures/inputs/parity/direct-api-reference-wave.json
+      input_sha256: bd083e1fba8e327d285ef61860e73f3590c02790a6545d9dcbc21e5f0a6e9e98
+      recipe_path: tests/fixtures/input-recipes/parity/direct-api-reference-wave.yaml
+      recipe_sha256: 12537e7b8c8fbe187bca561253b43e5c0c87eb9afaa6a326891206d9562437e0
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.direct-api-reference-wave.websocket-exception-signature
+      observation_selectors:
+      - python.signature
     identity_workflow_refs:
     - workflow_id: root-alias-identity
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
@@ -3003,7 +3026,8 @@ api_surface_contract:
     - websocket.close_code
     - websocket.close_reason
     operation_scope:
-      status: scope-review-pending
+      status: slice-described
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.WebSocketException/supported_slice
     behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
@@ -4953,10 +4977,9 @@ api_surface_contract:
       status: partial-contract
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::websocket
       known_gaps:
-      - The Python facade does not export fastapi.exceptions.WebSocketRequestValidationError, so its public
-        import and the linked custom-handler workflow fail before target execution.
-      - WebSocket request validation uses a direct close path and does not dispatch through FastAPI's
-        default or custom validation handlers.
+      - FastAPI-RS does not install FastAPI's default WebSocketRequestValidationError handler in FastAPI.exception_handlers;
+        the default validation path closes directly, so handler-map inspection and override of the default
+        mapping are not covered.
   - id: fastapi.background.BackgroundTasks
     kind: class
     source_candidate_ref: /api_candidates/243
@@ -7636,13 +7659,10 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/551
-      status: unimplemented
+      status: partial-contract
       rust_binding: null
       known_gaps:
-      - The Python facade does not export fastapi.exceptions.WebSocketRequestValidationError, so public
-        imports fail.
-      - WebSocket request validation uses a direct close path and does not construct this error or dispatch
-        its FastAPI handler.
+      - FastAPI-RS does not install the default WebSocketRequestValidationError handler in FastAPI.exception_handlers.
   - id: fastapi.middleware.cors.CORSMiddleware
     kind: import_binding
     source_candidate_ref: /api_candidates/565
@@ -34552,8 +34572,8 @@ api_surface_contract:
         canonical_operation_ref: *id031
       status: partial-contract
       known_gaps:
-      - Custom RequestValidationError and WebSocketRequestValidationError handlers are not dispatched;
-        validation keeps FastAPI-RS's direct 422 and 1008 response paths.
+      - Custom RequestValidationError handlers are not dispatched; HTTP validation keeps FastAPI-RS's
+        direct 422 response path.
       - Custom WebSocket exception handlers do not yet preserve the same WebSocket object identity and
         state when Starlette-RS invokes the handler.
       - FastAPI's default RequestValidationError and WebSocketRequestValidationError handlers are not

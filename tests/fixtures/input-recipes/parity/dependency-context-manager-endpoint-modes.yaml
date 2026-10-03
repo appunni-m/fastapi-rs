@@ -1,0 +1,100 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/dependency_context_manager_endpoint_modes.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.dependencies.context-manager.sync-endpoint-async-yield
+  actions:
+  - action_id: consume-async-resource-from-sync-route
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /leases/async
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      client: [127.0.0.1, 321]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: inspect-async-resource-cleanup
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /lease-events
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      client: [127.0.0.1, 321]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  source_evidence:
+  - path: tests/test_dependency_contextmanager.py
+    kind: upstream_test
+- case_id: fastapi.dependencies.context-manager.sync-endpoint-sync-yield
+  actions:
+  - action_id: consume-sync-resource-from-sync-route
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /leases/sync
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      client: [127.0.0.1, 321]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  - action_id: inspect-sync-resource-cleanup
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /lease-events
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      client: [127.0.0.1, 321]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - kind: http_response
+      selectors: [status, body]
+      comparison: exact
+  source_evidence:
+  - path: tests/test_dependency_contextmanager.py
+    kind: upstream_test

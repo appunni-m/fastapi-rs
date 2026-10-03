@@ -4,6 +4,7 @@ from fastapi_rs._core import (
     ResponseValidationError,
     ValidationException,
     WebSocketException,
+    WebSocketRequestValidationError,
 )
 
 __all__ = [
@@ -12,4 +13,5 @@ __all__ = [
     "ResponseValidationError",
     "ValidationException",
     "WebSocketException",
+    "WebSocketRequestValidationError",
 ]

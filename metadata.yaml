@@ -832,12 +832,12 @@ reviewed_api_contract_overlay:
         path operation. Built-in Starlette HTTPException JSON handling is also
         included.
         Handler registration after the middleware stack has been cached,
-        custom request-validation handlers, custom WebSocket exception object
-        identity, and default FastAPI validation-handler entries remain outside
-        this slice. One independent invalid-path WebSocket workflow registers a
-        custom WebSocketRequestValidationError handler and samples close/event
-        observations; its target parity remains subject to the known dispatch
-        gap recorded on add_exception_handler.
+        custom RequestValidationError handlers, constructor-argument
+        registration of WebSocket validation handlers, custom WebSocket
+        exception object identity, and default FastAPI validation-handler
+        entries remain outside this slice. One independent invalid-path
+        WebSocket workflow registers a custom WebSocketRequestValidationError
+        handler and samples its close/event behavior.
     fastapi.applications.FastAPI.frontend:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::frontend
       source_evidence:
@@ -1309,6 +1309,32 @@ reviewed_api_contract_overlay:
       error_contract_ids:
         - fastapi.exceptions.HTTPException
         - fastapi.exceptions.StarletteHTTPException
+    fastapi.HTTPException:
+      rust_binding: fastapi-rs/src/errors.rs::register
+      source_evidence:
+        - path: fastapi/__init__.py
+          symbol: HTTPException
+          kind: import-binding
+          line: 10
+          imported_module: exceptions
+          relative_level: 1
+          imported_name: HTTPException
+          alias_spelling: HTTPException
+          local_name: HTTPException
+          target_path: fastapi.exceptions.HTTPException
+        - {path: fastapi/exceptions.py, symbol: HTTPException}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/direct-api-reference-wave.yaml
+          case_id: fastapi.direct-api-reference-wave.http-exception-signature
+      feature_ids: [public-api-errors]
+      observation_selectors: [python.import_path, python.object_identity, python.signature]
+      supported_slice: >-
+        FastAPI 0.141.1 documents `HTTPException` as a top-level `fastapi` import.
+        The linked direct API case captures its class signature, while the
+        identity workflow records the root-to-public-module relation. This
+        source and fixture scope covers only the documented import, signature,
+        and identity relation; it does not establish constructor-call,
+        Starlette-subclass, exception-dispatch, or HTTP response parity.
     fastapi.exception_handlers.request_validation_exception_handler:
       source_evidence:
         - {path: fastapi/exception_handlers.py, symbol: request_validation_exception_handler}
@@ -1391,13 +1417,15 @@ reviewed_api_contract_overlay:
         establish TestClient-only behavior, all custom validation-handler
         dispatch variants, all endpoint signatures, or every path and lifecycle
         edge. A separate workflow maps one default close and one independently
-        authored custom invalid-path close case.
+        authored custom invalid-path close case. FastAPI-RS now constructs the
+        public WebSocketRequestValidationError with endpoint context and sends
+        it through registered custom handlers; the linked invalid-path target
+        comparison is the evidence boundary for that behavior.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - The Python facade does not export fastapi.exceptions.WebSocketRequestValidationError, so its public import and the linked custom-handler workflow fail before target execution.
-          - WebSocket request validation uses a direct close path and does not dispatch through FastAPI's default or custom validation handlers.
+          - FastAPI-RS does not install FastAPI's default WebSocketRequestValidationError handler in FastAPI.exception_handlers; the default validation path closes directly, so handler-map inspection and override of the default mapping are not covered.
     fastapi.routing.APIRouter.websocket:
       source_evidence:
         - path: fastapi/routing.py
@@ -3395,22 +3423,32 @@ reviewed_api_contract_overlay:
       supported_slice: >-
         FastAPI defines the error class, installs its default WebSocket
         validation handler, and permits an application handler to override it.
-        The custom-handler-close input exercises the public exception import
-        and handler registration from an independently authored WebSocket
-        workload. FastAPI-RS currently has no `fastapi.exceptions` re-export
-        for this class, so the target worker cannot import this case; this
-        source scope does not claim target parity.
+        FastAPI-RS exposes a Rust-owned class inheriting ValidationException;
+        the linked custom-handler-close workflow checks public import,
+        validation construction, and custom WebSocket handler dispatch. The
+        default handler entry in FastAPI.exception_handlers remains uncovered.
       target_binding:
         implementation_owner: fastapi-rs
-        status: unimplemented
+        status: partial-contract
         known_gaps:
-          - The Python facade does not export fastapi.exceptions.WebSocketRequestValidationError, so public imports fail.
-          - WebSocket request validation uses a direct close path and does not construct this error or dispatch its FastAPI handler.
+          - FastAPI-RS does not install the default WebSocketRequestValidationError handler in FastAPI.exception_handlers.
     fastapi.WebSocketException:
       rust_binding: fastapi-rs/src/errors.rs::register
       source_evidence:
-        - {path: fastapi/__init__.py}
+        - path: fastapi/__init__.py
+          symbol: WebSocketException
+          kind: import-binding
+          line: 11
+          imported_module: exceptions
+          relative_level: 1
+          imported_name: WebSocketException
+          alias_spelling: WebSocketException
+          local_name: WebSocketException
+          target_path: fastapi.exceptions.WebSocketException
         - {path: fastapi/exceptions.py, symbol: WebSocketException}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/direct-api-reference-wave.yaml
+          case_id: fastapi.direct-api-reference-wave.websocket-exception-signature
       feature_ids: [public-api-errors, websocket-lifecycle]
       observation_selectors:
         - error.args
@@ -3418,8 +3456,16 @@ reviewed_api_contract_overlay:
         - error.public_attributes
         - python.import_path
         - python.object_identity
+        - python.signature
         - websocket.close_code
         - websocket.close_reason
+      supported_slice: >-
+        FastAPI 0.141.1 documents `WebSocketException` as a top-level `fastapi`
+        import. The linked direct API case captures its class signature, while
+        the identity workflow records the root-to-public-module relation. This
+        source and fixture scope covers only the documented import, signature,
+        and identity relation; it does not establish constructor-call,
+        Starlette-subclass, WebSocket close, or ASGI dispatch parity.
     fastapi.exceptions.WebSocketException:
       rust_binding: fastapi-rs/src/errors.rs::register
       source_evidence:
@@ -4355,7 +4401,7 @@ reviewed_api_contract_overlay:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Custom RequestValidationError and WebSocketRequestValidationError handlers are not dispatched; validation keeps FastAPI-RS's direct 422 and 1008 response paths.
+          - Custom RequestValidationError handlers are not dispatched; HTTP validation keeps FastAPI-RS's direct 422 response path.
           - Custom WebSocket exception handlers do not yet preserve the same WebSocket object identity and state when Starlette-RS invokes the handler.
           - FastAPI's default RequestValidationError and WebSocketRequestValidationError handlers are not present in the exception_handlers mapping.
           - Registering handlers after the middleware stack has been cached does not rebuild the stack.

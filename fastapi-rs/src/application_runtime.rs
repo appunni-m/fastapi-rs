@@ -8783,6 +8783,24 @@ impl FastApiCall {
         response_endpoint_context(py, endpoint.bind(py), &method, &path, &root_path)
     }
 
+    fn websocket_validation_endpoint_context<'py>(
+        &self,
+        py: Python<'py>,
+    ) -> PyResult<Bound<'py, PyDict>> {
+        let route_index = self
+            .websocket_route_index
+            .ok_or_else(|| PyRuntimeError::new_err("WebSocket validation has no selected route"))?;
+        let (endpoint, path) = {
+            let app = self.app.bind(py).borrow();
+            let route = app.websocket_routes.get(route_index).ok_or_else(|| {
+                PyRuntimeError::new_err("selected FastAPI WebSocket route was lost")
+            })?;
+            (route.endpoint.clone_ref(py), route.path.clone())
+        };
+        let root_path = parse_scope_string(self.scope.bind(py), "root_path", "")?;
+        response_endpoint_context(py, endpoint.bind(py), "WS", &path, &root_path)
+    }
+
     fn start_returned_response(
         &mut self,
         py: Python<'_>,
@@ -10054,7 +10072,18 @@ impl FastApiCall {
                 };
                 if has_failures {
                     if self.websocket_route_index.is_some() {
-                        let reason = jsonable_encoder_default(py, &failures)?;
+                        let endpoint_ctx = self.websocket_validation_endpoint_context(py)?;
+                        let error = crate::errors::websocket_request_validation_error(
+                            py,
+                            &failures,
+                            Some(&endpoint_ctx),
+                        )?;
+                        if self.has_registered_exception_handler(py, &error)? {
+                            return self.route_exception(py, error);
+                        }
+                        let error_value = error.value(py);
+                        let errors = error_value.call_method0("errors")?;
+                        let reason = jsonable_encoder_default(py, &errors)?;
                         let websocket = self.websocket.as_ref().ok_or_else(|| {
                             PyRuntimeError::new_err("FastAPI WebSocket was not initialized")
                         })?;

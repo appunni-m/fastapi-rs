@@ -214,6 +214,19 @@ do not subtract them from FastAPI timings as a claimed FastAPI-only cost. Only
 compare FastAPI to FastAPI-RS for workloads whose behavioral parity gate
 passes.
 
+The implemented suite currently measures six direct-ASGI workloads through
+the isolated FastAPI Python consumers. Each run gates the full selected
+workflow, performs an untimed response check, then records 50 warmups and five
+rounds of 200 sequential samples per subject. Per-request latency starts at
+`await app(scope, receive, send)`: app construction, interpreter startup, and
+per-call ASGI scope/callback setup are outside that timer. The target timing
+includes its public `fastapi` facade, PyO3 conversion, native FastAPI-RS code,
+Pydantic work, and Starlette-RS dispatch as one combined path. The current
+results do not separate those components and do not measure a loopback HTTP
+server or a native-only Rust boundary. Those measurements remain separate
+future workloads; do not infer them by subtracting the Starlette control or
+from the end-to-end target time.
+
 | Tier | Workload | Timing boundary and purpose |
 | --- | --- | --- |
 | 1. Request path | Preserve sync/async input-model validation; small dict/model output with and without `response_model`; nested dependencies; large request payload; and large dict/model response with and without `response_model`. The upstream large response contains 300 items with 25 integers each plus metadata. Add a plain-route control implemented with Starlette 1.6.0's public `Route` and response APIs. | Match upstream's in-process `TestClient` path. Construct the app and client outside the timed request; exclude the one warmup request. Keep the raw Starlette control to the same simple request/response work; it is not a feature-equivalent FastAPI comparison. This is an integrated Python/ASGI/client measurement, not network-server latency. |
