@@ -186,8 +186,9 @@ struct CallableParameter {
     annotation: Py<PyAny>,
     default: Option<Py<PyAny>>,
     is_sequence: bool,
-    query_model_fields: Option<Vec<QueryModelField>>,
-    query_model_config: Option<Py<PyAny>>,
+    parameter_model_fields: Option<Vec<ParameterModelField>>,
+    parameter_model_config: Option<Py<PyAny>>,
+    model_convert_underscores: Option<bool>,
     media_type: Option<String>,
     title: Option<String>,
     description: Option<String>,
@@ -197,11 +198,13 @@ struct CallableParameter {
     source: ParameterSource,
 }
 
-struct QueryModelField {
+struct ParameterModelField {
+    name: String,
     alias: String,
     field_info: Py<PyAny>,
     is_sequence: bool,
     is_json: bool,
+    convert_underscores: Option<bool>,
 }
 
 struct CallablePlan {
@@ -255,21 +258,24 @@ impl CallableParameter {
             annotation: self.annotation.clone_ref(py),
             default: self.default.as_ref().map(|value| value.clone_ref(py)),
             is_sequence: self.is_sequence,
-            query_model_fields: self.query_model_fields.as_ref().map(|fields| {
+            parameter_model_fields: self.parameter_model_fields.as_ref().map(|fields| {
                 fields
                     .iter()
-                    .map(|field| QueryModelField {
+                    .map(|field| ParameterModelField {
+                        name: field.name.clone(),
                         alias: field.alias.clone(),
                         field_info: field.field_info.clone_ref(py),
                         is_sequence: field.is_sequence,
                         is_json: field.is_json,
+                        convert_underscores: field.convert_underscores,
                     })
                     .collect()
             }),
-            query_model_config: self
-                .query_model_config
+            parameter_model_config: self
+                .parameter_model_config
                 .as_ref()
                 .map(|value| value.clone_ref(py)),
+            model_convert_underscores: self.model_convert_underscores,
             media_type: self.media_type.clone(),
             title: self.title.clone(),
             description: self.description.clone(),
@@ -4184,24 +4190,35 @@ impl CallablePlan {
                 let is_sequence = field_annotation_is_sequence(py, validated_annotation.bind(py))?;
                 let source =
                     parameter_source(py, &name, annotation.bind(py), &metadata, path_parameters)?;
-                let (query_model_fields, query_model_config) = match &source {
-                    ParameterSource::Input {
-                        source: InputSource::Query,
-                        ..
-                    } if is_pydantic_model(py, annotation.bind(py))? => {
-                        let model_fields = query_model_fields(py, annotation.bind(py))?;
-                        let model_config = annotation.bind(py).getattr("model_config")?.unbind();
-                        (Some(model_fields), Some(model_config))
-                    }
-                    _ => (None, None),
-                };
+                let (parameter_model_fields, parameter_model_config, model_convert_underscores) =
+                    match &source {
+                        ParameterSource::Input {
+                            source:
+                                model_source @ (InputSource::Query
+                                | InputSource::Header
+                                | InputSource::Cookie),
+                            ..
+                        } if is_pydantic_model(py, annotation.bind(py))? => {
+                            let model_fields = parameter_model_fields(py, annotation.bind(py))?;
+                            let model_config =
+                                annotation.bind(py).getattr("model_config")?.unbind();
+                            let convert_underscores = if *model_source == InputSource::Header {
+                                Some(header_model_convert_underscores(py, &metadata)?)
+                            } else {
+                                None
+                            };
+                            (Some(model_fields), Some(model_config), convert_underscores)
+                        }
+                        _ => (None, None, None),
+                    };
                 Ok(CallableParameter {
                     name,
                     annotation: validated_annotation,
                     default,
                     is_sequence,
-                    query_model_fields,
-                    query_model_config,
+                    parameter_model_fields,
+                    parameter_model_config,
+                    model_convert_underscores,
                     media_type: parameter_media_type(py, &source, &metadata)?,
                     title: parameter_title(py, &source, &metadata)?,
                     description: parameter_description(py, &source, &metadata)?,
@@ -4274,8 +4291,9 @@ impl CallablePlan {
                 annotation,
                 default: None,
                 is_sequence: false,
-                query_model_fields: None,
-                query_model_config: None,
+                parameter_model_fields: None,
+                parameter_model_config: None,
+                model_convert_underscores: None,
                 media_type: None,
                 title: None,
                 description: None,
@@ -4303,30 +4321,35 @@ impl CallablePlan {
             .collect()
     }
 
-    fn single_query_model_parameter_index(&self) -> Option<usize> {
-        let mut query_parameter_index = None;
+    fn single_model_parameter_index(&self, source: InputSource) -> Option<usize> {
+        let mut model_parameter_index = None;
         for (index, parameter) in self.parameters.iter().enumerate() {
             if !matches!(
                 &parameter.source,
                 ParameterSource::Input {
-                    source: InputSource::Query,
+                    source: parameter_source,
                     ..
-                }
+                } if *parameter_source == source
             ) {
                 continue;
             }
-            if query_parameter_index.replace(index).is_some() {
+            if model_parameter_index.replace(index).is_some() {
                 return None;
             }
         }
-        query_parameter_index.filter(|index| self.parameters[*index].query_model_fields.is_some())
+        model_parameter_index
+            .filter(|index| self.parameters[*index].parameter_model_fields.is_some())
     }
 
-    fn query_parameter_count(&self) -> usize {
-        self.query_parameter_count_with_visited(&mut Vec::new())
+    fn parameter_count(&self, source: InputSource) -> usize {
+        self.parameter_count_with_visited(source, &mut Vec::new())
     }
 
-    fn query_parameter_count_with_visited(&self, visited: &mut Vec<DependencyCacheKey>) -> usize {
+    fn parameter_count_with_visited(
+        &self,
+        source: InputSource,
+        visited: &mut Vec<DependencyCacheKey>,
+    ) -> usize {
         let mut count = self
             .parameters
             .iter()
@@ -4334,9 +4357,9 @@ impl CallablePlan {
                 matches!(
                     &parameter.source,
                     ParameterSource::Input {
-                        source: InputSource::Query,
+                        source: parameter_source,
                         ..
-                    }
+                    } if *parameter_source == source
                 )
             })
             .count();
@@ -4349,7 +4372,7 @@ impl CallablePlan {
                 continue;
             }
             visited.push(key);
-            count += plan.query_parameter_count_with_visited(visited);
+            count += plan.parameter_count_with_visited(source, visited);
         }
         count
     }
@@ -4524,13 +4547,17 @@ impl CallablePlan {
     }
 
     fn openapi_parameters(&self, py: Python<'_>) -> PyResult<Vec<ParameterOpenApiPlan>> {
-        self.openapi_parameters_with_query_model(py, self.query_parameter_count() == 1)
+        let flatten_model_sources = [InputSource::Query, InputSource::Header, InputSource::Cookie]
+            .into_iter()
+            .filter(|source| self.parameter_count(*source) == 1)
+            .collect::<Vec<_>>();
+        self.openapi_parameters_with_model_fields(py, &flatten_model_sources)
     }
 
-    fn openapi_parameters_with_query_model(
+    fn openapi_parameters_with_model_fields(
         &self,
         py: Python<'_>,
-        flatten_query_model: bool,
+        flatten_model_sources: &[InputSource],
     ) -> PyResult<Vec<ParameterOpenApiPlan>> {
         let mut parameters = Vec::new();
         for parameter in &self.parameters {
@@ -4541,13 +4568,17 @@ impl CallablePlan {
                         InputSource::Body | InputSource::Form | InputSource::File
                     ) =>
                 {
-                    if flatten_query_model && parameter.query_model_fields.is_some() {
-                        if let Some(fields) = parameter.query_model_fields.as_ref() {
+                    if flatten_model_sources.contains(source)
+                        && parameter.parameter_model_fields.is_some()
+                    {
+                        if let Some(fields) = parameter.parameter_model_fields.as_ref() {
                             for field in fields {
-                                if let Some(field_plan) = query_model_field_openapi_plan(
+                                if let Some(field_plan) = parameter_model_field_openapi_plan(
                                     py,
                                     field,
-                                    parameter.query_model_config.as_ref(),
+                                    *source,
+                                    parameter.parameter_model_config.as_ref(),
+                                    parameter.model_convert_underscores,
                                 )? {
                                     parameters.push(field_plan);
                                 }
@@ -4574,8 +4605,9 @@ impl CallablePlan {
                     }
                 }
                 ParameterSource::Dependency { plan, .. } => {
-                    parameters
-                        .extend(plan.openapi_parameters_with_query_model(py, flatten_query_model)?);
+                    parameters.extend(
+                        plan.openapi_parameters_with_model_fields(py, flatten_model_sources)?,
+                    );
                 }
                 ParameterSource::Input { .. }
                 | ParameterSource::WebSocket
@@ -5105,7 +5137,6 @@ impl CallablePlan {
                 }
             }
         }
-        let query_model_parameter_index = self.single_query_model_parameter_index();
         let mut ordered_input_parameters = Vec::with_capacity(self.parameters.len());
         for source in [
             InputSource::Path,
@@ -5113,6 +5144,7 @@ impl CallablePlan {
             InputSource::Header,
             InputSource::Cookie,
         ] {
+            let model_parameter_index = self.single_model_parameter_index(source);
             for (index, parameter) in self.parameters.iter().enumerate() {
                 if matches!(
                     &parameter.source,
@@ -5124,7 +5156,7 @@ impl CallablePlan {
                     ordered_input_parameters.push((
                         parameter,
                         source,
-                        query_model_parameter_index == Some(index),
+                        model_parameter_index == Some(index),
                     ));
                 }
             }
@@ -5138,7 +5170,7 @@ impl CallablePlan {
                 ordered_input_parameters.push((parameter, *source, false));
             }
         }
-        for (parameter, source, is_query_model) in ordered_input_parameters {
+        for (parameter, source, is_model_parameter) in ordered_input_parameters {
             let ParameterSource::Input { alias, .. } = &parameter.source else {
                 continue;
             };
@@ -5151,13 +5183,38 @@ impl CallablePlan {
                 )?,
                 _ => false,
             };
-            let value = if source == InputSource::Query {
-                if is_query_model {
-                    let fields = parameter.query_model_fields.as_ref().ok_or_else(|| {
-                        PyRuntimeError::new_err("query model field plan was not retained")
+            let value = if is_model_parameter {
+                let fields = parameter.parameter_model_fields.as_ref().ok_or_else(|| {
+                    PyRuntimeError::new_err("parameter model field plan was not retained")
+                })?;
+                let values = if source == InputSource::Query {
+                    query_model_values(context.py, fields, context.query_params)?
+                } else {
+                    let connection = context.request.or(context.websocket).ok_or_else(|| {
+                        PyRuntimeError::new_err(
+                            "request parameter model requires an HTTP or WebSocket connection",
+                        )
                     })?;
-                    Some(query_model_values(context.py, fields, context.query_params)?.into_any())
-                } else if parameter.is_sequence {
+                    let received_params = connection.getattr(match source {
+                        InputSource::Header => "headers",
+                        InputSource::Cookie => "cookies",
+                        _ => {
+                            return Err(PyRuntimeError::new_err(
+                                "unsupported parameter model source",
+                            ));
+                        }
+                    })?;
+                    parameter_model_values(
+                        context.py,
+                        fields,
+                        &received_params,
+                        source,
+                        parameter.model_convert_underscores.unwrap_or(true),
+                    )?
+                };
+                Some(values.into_any())
+            } else if source == InputSource::Query {
+                if parameter.is_sequence {
                     let query_values = context.query_params.get_list(alias);
                     if query_values.is_empty() {
                         None
@@ -5224,7 +5281,7 @@ impl CallablePlan {
                                         error,
                                         location: source.as_str().to_owned(),
                                         alias: alias.clone(),
-                                        include_parameter_alias: !is_query_model,
+                                        include_parameter_alias: !is_model_parameter,
                                         body_field,
                                     },
                                 )));
@@ -5249,7 +5306,7 @@ impl CallablePlan {
                             error,
                             location: source.as_str().to_owned(),
                             alias: alias.clone(),
-                            include_parameter_alias: !is_query_model,
+                            include_parameter_alias: !is_model_parameter,
                             body_field,
                         },
                     )));
@@ -6921,14 +6978,25 @@ fn copied_pydantic_field_default<'py>(
         .map(Some)
 }
 
-fn query_model_fields(
+fn header_model_convert_underscores(py: Python<'_>, metadata: &[Py<PyAny>]) -> PyResult<bool> {
+    for item in metadata {
+        let marker = item.bind(py);
+        if marker.hasattr("kind")? && marker.getattr("kind")?.extract::<String>()? == "header" {
+            return marker.getattr("convert_underscores")?.extract::<bool>();
+        }
+    }
+    Ok(true)
+}
+
+fn parameter_model_fields(
     py: Python<'_>,
     annotation: &Bound<'_, PyAny>,
-) -> PyResult<Vec<QueryModelField>> {
+) -> PyResult<Vec<ParameterModelField>> {
     let model_fields = annotation.getattr("model_fields")?.cast_into::<PyDict>()?;
     let json_type = py.import("pydantic.types")?.getattr("Json")?;
     let mut fields = Vec::with_capacity(model_fields.len());
     for (field_name, field_info) in model_fields.iter() {
+        let name = field_name.extract::<String>()?;
         let alias = pydantic_field_validation_alias(&field_name, &field_info)?;
         let alias = alias.extract::<String>(py)?;
         let field_annotation = field_info.getattr("annotation")?;
@@ -6941,11 +7009,22 @@ fn query_model_fields(
                 break;
             }
         }
-        fields.push(QueryModelField {
+        let convert_underscores = if field_info.hasattr("convert_underscores")? {
+            Some(
+                field_info
+                    .getattr("convert_underscores")?
+                    .extract::<bool>()?,
+            )
+        } else {
+            None
+        };
+        fields.push(ParameterModelField {
+            name,
             alias,
             field_info: field_info.unbind(),
             is_sequence,
             is_json,
+            convert_underscores,
         });
     }
     Ok(fields)
@@ -6986,10 +7065,12 @@ fn pydantic_field_schema_annotation(
         .map(Bound::unbind)
 }
 
-fn query_model_field_openapi_plan(
+fn parameter_model_field_openapi_plan(
     py: Python<'_>,
-    field: &QueryModelField,
+    field: &ParameterModelField,
+    source: InputSource,
     model_config: Option<&Py<PyAny>>,
+    model_convert_underscores: Option<bool>,
 ) -> PyResult<Option<ParameterOpenApiPlan>> {
     let field_info = field.field_info.bind(py);
     if field_info.hasattr("include_in_schema")?
@@ -7006,9 +7087,19 @@ fn query_model_field_openapi_plan(
     let deprecated = field_info.getattr("deprecated")?.is_truthy()?;
     let default = query_model_field_openapi_default(py, field_info)?;
     let annotation = pydantic_field_schema_annotation(py, field_info)?;
+    let name = if source == InputSource::Header
+        && field
+            .convert_underscores
+            .unwrap_or(model_convert_underscores.unwrap_or(true))
+        && field.alias == field.name
+    {
+        field.name.replace('_', "-")
+    } else {
+        field.alias.clone()
+    };
     Ok(Some(ParameterOpenApiPlan {
-        name: field.alias.clone(),
-        location: "query".to_owned(),
+        name,
+        location: source.as_str().to_owned(),
         required,
         annotation,
         schema_config: model_config.map(|value| value.clone_ref(py)),
@@ -7103,7 +7194,7 @@ fn form_model_values<'py>(
 
 fn query_model_values<'py>(
     py: Python<'py>,
-    fields: &[QueryModelField],
+    fields: &[ParameterModelField],
     query_params: &QueryParams,
 ) -> PyResult<Bound<'py, PyDict>> {
     let values = PyDict::new(py);
@@ -7149,6 +7240,76 @@ fn query_model_values<'py>(
             values.into_any()
         };
         values.set_item(key, value)?;
+    }
+    Ok(values)
+}
+
+fn parameter_model_values<'py>(
+    py: Python<'py>,
+    fields: &[ParameterModelField],
+    received_params: &Bound<'py, PyAny>,
+    source: InputSource,
+    model_convert_underscores: bool,
+) -> PyResult<Bound<'py, PyDict>> {
+    let values = PyDict::new(py);
+    let mut processed_aliases = Vec::with_capacity(fields.len() * 2);
+    for field in fields {
+        let request_alias = if source == InputSource::Header
+            && field
+                .convert_underscores
+                .unwrap_or(model_convert_underscores)
+            && field.alias == field.name
+        {
+            field.name.replace('_', "-")
+        } else {
+            field.alias.clone()
+        };
+        processed_aliases.push(request_alias.clone());
+        processed_aliases.push(field.alias.clone());
+        let mut value = if source == InputSource::Header && field.is_sequence && !field.is_json {
+            let field_values = received_params.call_method1("getlist", (&request_alias,))?;
+            if field_values.len()? == 0 {
+                None
+            } else {
+                Some(field_values)
+            }
+        } else {
+            let field_value = received_params.call_method1("get", (&request_alias,))?;
+            if field_value.is_none() {
+                None
+            } else {
+                Some(field_value)
+            }
+        };
+        if value.is_none() {
+            value = copied_pydantic_field_default(py, field.field_info.bind(py))?;
+        }
+        if let Some(value) = value.filter(|value| !value.is_none()) {
+            values.set_item(&field.alias, value)?;
+        }
+    }
+
+    for key in received_params.call_method0("keys")?.try_iter()? {
+        let key = key?;
+        let key_name = key.extract::<String>().ok();
+        if key_name.as_deref().is_some_and(|name| {
+            processed_aliases
+                .iter()
+                .any(|processed_alias| processed_alias == name)
+        }) {
+            continue;
+        }
+        let value = if source == InputSource::Header {
+            let field_values = received_params.call_method1("getlist", (&key,))?;
+            if field_values.len()? == 1 {
+                field_values.get_item(0)?
+            } else {
+                field_values
+            }
+        } else {
+            received_params.call_method1("get", (&key,))?
+        };
+        values.set_item(&key, value)?;
     }
     Ok(values)
 }
