@@ -80,14 +80,14 @@ api_inventory:
 import_binding_classification_review:
   artifact: tests/fixtures/api-import-binding-classification-review.json
   schema: fastapi-starlette-import-binding-review/v1
-  sha256: 37af75af47e28dca30f473ed4abbe9ede01261a2e894dd1e2a86424f20b46cba
+  sha256: 302e4a0df4396433627f912ee8ecbee5db1e139cc773c20fb53b21c3cb70d7ce
   source_identity:
     package: FastAPI
     version: 0.141.1
     source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
     selected_starlette_profile: 1.6.0
     starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
-    starlette_rs_contract_commit: 37c6615e5b54d820d70b9d910d2e06fda8ae4cfe
+    starlette_rs_contract_commit: 2471c669bcca1fae45e670c708d371886eb39bc4
   starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
   counts:
     candidates: 97
@@ -98,8 +98,8 @@ import_binding_classification_review:
     starlette_rs_unreviewed_unique_targets: 4
   candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
   pinned_starlette_rs_sources:
-    metadata_sha256: eb41fcf36d594268e7faa82bcf71416123caa1da37050d7edf666870c93dbee3
-    manifest_sha256: f333910f754f6c8ea76cda781cd178d59654bf21c184e747095c84366fbf5ee4
+    metadata_sha256: 2d7affbb42f9794ac7cd2a7a84897bd0b64c2c1cc43e1cadc0c61241d9ac687a
+    manifest_sha256: 859e01d947133b5e57a7b68da961c4f1a59913c9683144109d4810d6ffab565e
     api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
     api_review_sha256: 8b25f2e3a46753316446077bfde97b6ac8a342233e2f4e50b12d3d01eafbe099
 
@@ -435,7 +435,7 @@ classification_atlas:
 starlette_rs:
   owner: ../starlette-rs
   repository: https://github.com/appunni-m/starlette-rs
-  commit: 37c6615e5b54d820d70b9d910d2e06fda8ae4cfe
+  commit: 2471c669bcca1fae45e670c708d371886eb39bc4
   distribution_version: 0.1.0
   contract_id: starlette-1.6.0-asgi-http-config-session-slice
   metadata: ../starlette-rs/metadata.yaml
@@ -1321,6 +1321,42 @@ reviewed_api_contract_overlay:
         - websocket.event_order
         - websocket.messages
       error_contract_ids: [fastapi.exceptions.WebSocketRequestValidationError]
+    fastapi.routing.APIRouter.websocket_route:
+      source_evidence:
+        - path: fastapi/routing.py
+          symbol: websocket_route
+          kind: source-definition
+          start_line: 3124
+          end_line: 3131
+        - path: fastapi/routing.py
+          symbol: add_websocket_route
+          kind: source-definition
+          start_line: 2621
+          end_line: 2628
+        - {path: tests/test_ws_router.py, symbol: test_router}
+        - {path: tests/test_ws_router.py, symbol: test_prefix_router}
+      rust_binding: >-
+        fastapi-rs/src/application_runtime.rs::PyFastApi::websocket_route,
+        PyRawWebSocketDecorator, PyApiRouter::__getattr__, FastApiCall::begin_websocket
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/websocket-router-routes-errors-upstream.yaml
+          case_id: fastapi.test.test-ws-router.test-router
+        - recipe_path: tests/fixtures/input-recipes/parity/websocket-router-routes-errors-upstream.yaml
+          case_id: fastapi.test.test-ws-router.test-prefix-router
+      feature_ids: [app-routing, websocket-lifecycle]
+      observation_selectors:
+        - websocket.close_code
+        - websocket.close_reason
+        - websocket.event_order
+        - websocket.messages
+      supported_slice: >-
+        The selected upstream workflows register raw APIRouter WebSocket routes,
+        exercise direct dispatch and one included router prefix, and compare
+        construction plus close code, close reason, event order, and messages.
+        The raw route delegates generic WebSocketRoute behavior to pinned
+        Starlette-RS. These cases do not establish the `name` argument,
+        dependency injection, validation, error handling, or all path-converter
+        behavior for websocket_route.
     fastapi.routing.APIRoute:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRoute
       source_evidence:

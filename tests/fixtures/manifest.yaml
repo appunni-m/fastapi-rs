@@ -91,7 +91,7 @@ target:
     name: starlette-rs-py
     version: 0.1.0
     starlette_contract: 1.6.0
-    commit: 37c6615e5b54d820d70b9d910d2e06fda8ae4cfe
+    commit: 2471c669bcca1fae45e670c708d371886eb39bc4
   external_python_runtime_lock:
     path: requirements/target-runtime-cpython-3.12.13.lock
     sha256: efb7ca633fc9a9c8587a6f59f8ee9b509151f6f77ceb75a56dd3cdeff2be99f7
@@ -128,13 +128,13 @@ source_artifacts:
   api_import_binding_classification_review:
     path: tests/fixtures/api-import-binding-classification-review.json
     schema: fastapi-starlette-import-binding-review/v1
-    sha256: 37af75af47e28dca30f473ed4abbe9ede01261a2e894dd1e2a86424f20b46cba
+    sha256: 302e4a0df4396433627f912ee8ecbee5db1e139cc773c20fb53b21c3cb70d7ce
     purpose: Reviewed source-backed disposition of uncertain FastAPI import bindings from the selected Starlette profile
     source_identity:
       package: FastAPI
       selected_starlette_profile: 1.6.0
       source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
-      starlette_rs_contract_commit: 37c6615e5b54d820d70b9d910d2e06fda8ae4cfe
+      starlette_rs_contract_commit: 2471c669bcca1fae45e670c708d371886eb39bc4
       starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
       version: 0.141.1
     starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
@@ -147,8 +147,8 @@ source_artifacts:
       starlette_rs_unreviewed_unique_targets: 4
     candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
     pinned_starlette_rs_sources:
-      metadata_sha256: eb41fcf36d594268e7faa82bcf71416123caa1da37050d7edf666870c93dbee3
-      manifest_sha256: f333910f754f6c8ea76cda781cd178d59654bf21c184e747095c84366fbf5ee4
+      metadata_sha256: 2d7affbb42f9794ac7cd2a7a84897bd0b64c2c1cc43e1cadc0c61241d9ac687a
+      manifest_sha256: 859e01d947133b5e57a7b68da961c4f1a59913c9683144109d4810d6ffab565e
       api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
       api_review_sha256: 8b25f2e3a46753316446077bfde97b6ac8a342233e2f4e50b12d3d01eafbe099
   api_source_classification_review:
@@ -411,7 +411,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@5
-    sha256: f15650d3c646a336fb5f4329006b0d48329e621d55bd2a31dc6871962a6d9c65
+    sha256: 50d62dd197f591b47f049261855e272072ca819d7a317bebb275f29da88a64e1
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -447,7 +447,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 25d6320b9606cb24bf1828495f7ad08fa451dcb115b1dd3f55f31df46e5a85e7
+    sha256: 1c690edf50b4e0bf2644fa331e66cc2421f1ec70d6f418242feeeeb112856fbd
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -484,14 +484,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@2
-    sha256: e9c158fcc64be401dc6a38336bbf1f796ae4ffc6d246a061e86f0aba7d970aa2
+    sha256: a004396e1493b1fad876ce6a24631a7bed386f69a5ab29d015805efa339b9dcc
     schema_path: tests/fixtures/schemas/materialized-input-index.schema.json
     schema_sha256: 56ac1cdfaa6f28b4277ef44b5ef78efebb3122111c5691e1b9c1bce869156aaf
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 517
-      cases: 2043
-      partial_source_mappings: 1474
+      workflows: 518
+      cases: 2047
+      partial_source_mappings: 1475
 
 contract_metadata:
   aliases:
@@ -800,8 +800,8 @@ api_surface_contract:
     symbols_with_constructor_definition_refs: 37
     unique_source_constructor_definitions: 20
     operation_scope_statuses:
-      scope-review-pending: 361
-      slice-described: 100
+      scope-review-pending: 360
+      slice-described: 101
     implementation_owner_plans:
       fastapi-rs: 430
       starlette-rs: 31
@@ -813,8 +813,8 @@ api_surface_contract:
     symbols_with_deprecation_refs: 15
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 34
-    symbols_with_operation_fixture_refs: 55
-    operation_fixture_refs: 290
+    symbols_with_operation_fixture_refs: 56
+    operation_fixture_refs: 292
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -26223,12 +26223,52 @@ api_surface_contract:
       fixture_design_ref: null
       observation_selectors: *id002
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: websocket-router-routes-errors-upstream
+      input_path: tests/fixtures/inputs/parity/websocket-router-routes-errors-upstream.json
+      input_sha256: 07e9c9e6adc507203cfd2d52d370c0e1b094ce0fcf502b48a94d7f20856c9535
+      recipe_path: tests/fixtures/input-recipes/parity/websocket-router-routes-errors-upstream.yaml
+      recipe_sha256: 47d89a2cea4e49c58178142a2f428ef68d2e38ca06ed4fc646ce0ce7e26e1fbd
+      workload_path: tests/fixtures/workloads/websocket_router_dependencies_upstream.py
+      workload_sha256: 1510421c8908b354f0fb8a5fed995e3050827692b94c564dff1e0108c61995a3
+      case_id: fastapi.test.test-ws-router.test-router
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - websocket.close_code
+      - websocket.close_reason
+      - websocket.event_order
+      - websocket.messages
+    - workflow_id: websocket-router-routes-errors-upstream
+      input_path: tests/fixtures/inputs/parity/websocket-router-routes-errors-upstream.json
+      input_sha256: 07e9c9e6adc507203cfd2d52d370c0e1b094ce0fcf502b48a94d7f20856c9535
+      recipe_path: tests/fixtures/input-recipes/parity/websocket-router-routes-errors-upstream.yaml
+      recipe_sha256: 47d89a2cea4e49c58178142a2f428ef68d2e38ca06ed4fc646ce0ce7e26e1fbd
+      workload_path: tests/fixtures/workloads/websocket_router_dependencies_upstream.py
+      workload_sha256: 1510421c8908b354f0fb8a5fed995e3050827692b94c564dff1e0108c61995a3
+      case_id: fastapi.test.test-ws-router.test-prefix-router
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - websocket.close_code
+      - websocket.close_reason
+      - websocket.event_order
+      - websocket.messages
     identity_workflow_refs: []
-    feature_ids: []
-    observation_selectors: []
+    feature_ids:
+    - app-routing
+    - websocket-lifecycle
+    observation_selectors:
+    - websocket.close_code
+    - websocket.close_reason
+    - websocket.event_order
+    - websocket.messages
     operation_scope:
-      status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+      status: slice-described
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.routing.APIRouter.websocket_route/supported_slice
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.routing.APIRouter.websocket_route
@@ -26238,7 +26278,8 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1090
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::websocket_route, PyRawWebSocketDecorator,
+        PyApiRouter::__getattr__, FastApiCall::begin_websocket
   - id: fastapi.routing.iter_route_contexts
     kind: function
     source_candidate_ref: /api_candidates/1390

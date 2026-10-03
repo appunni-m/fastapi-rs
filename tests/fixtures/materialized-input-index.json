@@ -4179,6 +4179,21 @@
       ]
     },
     {
+      "id": "optional-list-openapi-schema-source-review",
+      "input_path": "tests/fixtures/inputs/parity/optional-list-openapi-schema-source-review.json",
+      "input_sha256": "f6b3728e9e1627c9e4aac09fa5767e5b1d51bdc8e2ab6806972d608bad10b83c",
+      "recipe_path": "tests/fixtures/input-recipes/parity/optional-list-openapi-schema-source-review.yaml",
+      "recipe_sha256": "8f6efe876fb86a2ca643cea7c0e79587dc428b21392a6ca648c3922e2ed73f32",
+      "workload_path": "tests/fixtures/workloads/optional_list_openapi_schema_source_review.py",
+      "workload_sha256": "7e3903d8e16baa005a8bc028eeac65820decf5da4a8b9aa5439170b0f739561c",
+      "case_ids": [
+        "fastapi.request-body.optional-list-openapi.no-alias",
+        "fastapi.request-body.optional-list-openapi.alias",
+        "fastapi.request-body.optional-list-openapi.validation-alias",
+        "fastapi.request-body.optional-list-openapi.both-aliases"
+      ]
+    },
+    {
       "id": "options-trace-methods",
       "input_path": "tests/fixtures/inputs/parity/options-trace-methods.json",
       "input_sha256": "a97ac12c7599e80141110f522fcbaf2e69616bbfd54f96f6d56cdf30d1e76216",
@@ -6763,7 +6778,7 @@
       "input_path": "tests/fixtures/inputs/parity/response-model-data-filter-exclude-unset-none-review.json",
       "input_sha256": "e8df817a4df31b3f2f646068c8a9286416ff13577822d1fc572bbc5d8eb34a17",
       "recipe_path": "tests/fixtures/input-recipes/parity/response-model-data-filter-exclude-unset-none-review.yaml",
-      "recipe_sha256": "963649aec18d19efc9d53bc44cec07074d8e9cd4e6d84f9eca0f6cdf917e23cf",
+      "recipe_sha256": "f0178158b4bbd32388fc1be5826a8949247c827716dd6f810421847c9d40ac5e",
       "workload_path": "tests/fixtures/workloads/response_model_data_filter_exclude_unset_none_review.py",
       "workload_sha256": "24b60f06b2472a0254c9ae15d0b208e0edd99d3cb8a3833696d343bacd0c13cd",
       "case_ids": [
@@ -19217,6 +19232,23 @@
       ],
       "observation_selectors": [
         "python.signature"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_request_params/test_body/test_optional_list.py",
+      "fixture_id": "fastapi.test.test-request-params-test-body-test-optional-list",
+      "workflow_id": "optional-list-openapi-schema-source-review",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 4 case(s); observes openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.request-body.optional-list-openapi.alias",
+        "fastapi.request-body.optional-list-openapi.both-aliases",
+        "fastapi.request-body.optional-list-openapi.no-alias",
+        "fastapi.request-body.optional-list-openapi.validation-alias"
+      ],
+      "observation_selectors": [
+        "openapi.document",
+        "openapi.paths"
       ]
     },
     {

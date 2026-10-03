@@ -111,4 +111,4 @@ At `dd2c1ac66982218f749f0510758f64f5e61c735b`, the sibling adds `tests/fixtures/
 No tests, parity comparisons, metadata checks, or benchmarks were run for this draft. The identity and operation recipes described here have not been executed in this review.
 
 
-Latest-pin check: Starlette-RS `37c6615` changes only its benchmark and compatibility-inventory documentation from the preceding `5c80d4e` revision. Its manifest, API catalog/review, runtime sources, and dependencies are unchanged, so the reviewed sibling dispositions remain current.
+Historical pin check: Starlette-RS `37c6615` changed only benchmark and compatibility-inventory documentation from `5c80d4e`. Later `7217f03` adds input-only SchemaGenerator parity coverage and adapter/contract support, plus coverage/backlog updates, without changing the manifest, API catalog/review, runtime sources, or dependencies. These changes do not alter the reviewed sibling dispositions.

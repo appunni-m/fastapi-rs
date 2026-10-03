@@ -1047,11 +1047,13 @@ enum FastApiDocsRoute {
 
 struct FastApiWebSocketRoute {
     path: String,
+    name: String,
     route_scope: Py<PyAny>,
     param_convertors: Py<PyDict>,
     route_dependencies: Vec<Py<PyAny>>,
     endpoint: Py<PyAny>,
-    plan: CallablePlan,
+    plan: Option<CallablePlan>,
+    raw: bool,
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -1236,7 +1238,15 @@ impl PyMiddlewareDecorator {
 struct PyWebSocketDecorator {
     app: Py<PyFastApi>,
     path: String,
+    name: Option<String>,
     dependencies: Vec<Py<PyAny>>,
+}
+
+#[pyclass(name = "_RawWebSocketDecorator", module = "fastapi_rs._core")]
+struct PyRawWebSocketDecorator {
+    app: Py<PyFastApi>,
+    path: String,
+    name: Option<String>,
 }
 
 #[pyclass(name = "APIRouter", module = "fastapi_rs._core", unsendable)]
@@ -2145,15 +2155,43 @@ impl PyFastApi {
         name: Option<String>,
         dependencies: Option<Vec<Py<PyAny>>>,
     ) -> PyResult<Py<PyWebSocketDecorator>> {
-        let _ = name;
         Py::new(
             py,
             PyWebSocketDecorator {
                 app: slf,
                 path: path.to_owned(),
+                name,
                 dependencies: dependencies.unwrap_or_default(),
             },
         )
+    }
+
+    #[pyo3(signature = (path, name = None))]
+    fn websocket_route(
+        slf: Py<Self>,
+        py: Python<'_>,
+        path: &str,
+        name: Option<String>,
+    ) -> PyResult<Py<PyRawWebSocketDecorator>> {
+        Py::new(
+            py,
+            PyRawWebSocketDecorator {
+                app: slf,
+                path: path.to_owned(),
+                name,
+            },
+        )
+    }
+
+    #[pyo3(signature = (path, endpoint, name = None))]
+    fn add_websocket_route(
+        &mut self,
+        py: Python<'_>,
+        path: &str,
+        endpoint: Py<PyAny>,
+        name: Option<String>,
+    ) -> PyResult<()> {
+        add_raw_websocket_route(self, py, path, endpoint.bind(py), name.as_deref())
     }
 
     #[pyo3(signature = (path, endpoint, name = None, *, dependencies = None))]
@@ -2300,6 +2338,41 @@ impl PyFastApi {
                     break;
                 }
             }
+        }
+
+        for route in &self.websocket_routes {
+            if route.name != name {
+                continue;
+            }
+            let url_path =
+                route
+                    .route_scope
+                    .bind(py)
+                    .call_method("url_path_for", (name,), Some(path_params));
+            let url_path = match url_path {
+                Ok(url_path) => url_path,
+                Err(error) if error.is_instance(py, &no_match_type) => continue,
+                Err(error) => return Err(error),
+            };
+            if self.route_scope_prefix.is_empty() {
+                return Ok(url_path.unbind());
+            }
+            let url_path_string = url_path.str()?;
+            let path = url_path_string
+                .to_str()?
+                .strip_prefix(&self.route_scope_prefix);
+            let Some(path) = path else {
+                return Ok(url_path.unbind());
+            };
+            return py
+                .import("starlette.datastructures")?
+                .getattr("URLPath")?
+                .call1((
+                    path,
+                    url_path.getattr("protocol")?,
+                    url_path.getattr("host")?,
+                ))
+                .map(Bound::unbind);
         }
 
         let Some(route) = matching_route else {
@@ -3507,6 +3580,8 @@ impl PyApiRouter {
                 | "api_route"
                 | "add_api_route"
                 | "websocket"
+                | "websocket_route"
+                | "add_websocket_route"
                 | "add_api_websocket_route"
         ) {
             return Err(PyAttributeError::new_err(format!(
@@ -4035,6 +4110,34 @@ fn merge_router_routes(
     }
     for source_route in &source.websocket_routes {
         let path = format!("{prefix}{}", source_route.path);
+        if source_route.raw {
+            let route_scope = websocket_route_scope(
+                py,
+                &path,
+                source_route.endpoint.bind(py),
+                Some(&source_route.name),
+            )?;
+            let param_convertors = route_param_convertors(py, &path)?;
+            let index = app
+                .websocket_router
+                .add_operation(&path, "GET", Some(200))
+                .map_err(|error| PyValueError::new_err(error.to_string()))?;
+            app.websocket_router
+                .set_parameters(index, Vec::new())
+                .ok_or_else(|| PyRuntimeError::new_err("included raw WebSocket route was lost"))?;
+            app.websocket_routes.push(FastApiWebSocketRoute {
+                path,
+                name: source_route.name.clone(),
+                route_scope,
+                param_convertors,
+                route_dependencies: Vec::new(),
+                endpoint: source_route.endpoint.clone_ref(py),
+                plan: None,
+                raw: true,
+            });
+            app.bump_routes_version();
+            continue;
+        }
         let mut route_dependencies = inherited_dependencies
             .iter()
             .map(|dependency| dependency.clone_ref(py))
@@ -4063,11 +4166,13 @@ fn merge_router_routes(
             .ok_or_else(|| PyRuntimeError::new_err("included FastAPI WebSocket route was lost"))?;
         app.websocket_routes.push(FastApiWebSocketRoute {
             path,
+            name: source_route.name.clone(),
             route_scope,
             param_convertors,
             route_dependencies,
             endpoint: source_route.endpoint.clone_ref(py),
-            plan,
+            plan: Some(plan),
+            raw: false,
         });
         app.bump_routes_version();
     }
@@ -4517,7 +4622,9 @@ impl PyWebSocketDecorator {
             let app = self.app.bind(py).borrow();
             format!("{}{}", app.route_scope_prefix, self.path)
         };
-        let route_scope = websocket_route_scope(py, &scope_path, endpoint.bind(py))?;
+        let route_scope =
+            websocket_route_scope(py, &scope_path, endpoint.bind(py), self.name.as_deref())?;
+        let name = route_scope.bind(py).getattr("name")?.extract::<String>()?;
         let mut app = self.app.bind(py).borrow_mut();
         let index = app
             .websocket_router
@@ -4530,13 +4637,30 @@ impl PyWebSocketDecorator {
             })?;
         app.websocket_routes.push(FastApiWebSocketRoute {
             path: self.path.clone(),
+            name,
             route_scope,
             param_convertors,
             route_dependencies,
             endpoint: endpoint.clone_ref(py),
-            plan,
+            plan: Some(plan),
+            raw: false,
         });
         app.bump_routes_version();
+        Ok(endpoint)
+    }
+}
+
+#[pymethods]
+impl PyRawWebSocketDecorator {
+    fn __call__(&self, py: Python<'_>, endpoint: Py<PyAny>) -> PyResult<Py<PyAny>> {
+        let mut app = self.app.bind(py).borrow_mut();
+        add_raw_websocket_route(
+            &mut app,
+            py,
+            &self.path,
+            endpoint.bind(py),
+            self.name.as_deref(),
+        )?;
         Ok(endpoint)
     }
 }
@@ -6885,11 +7009,48 @@ fn websocket_route_scope(
     py: Python<'_>,
     path: &str,
     endpoint: &Bound<'_, PyAny>,
+    name: Option<&str>,
 ) -> PyResult<Py<PyAny>> {
+    let kwargs = PyDict::new(py);
+    if let Some(name) = name {
+        kwargs.set_item("name", name)?;
+    }
     py.import("starlette.routing")?
         .getattr("WebSocketRoute")?
-        .call1((path, endpoint))
+        .call((path, endpoint), Some(&kwargs))
         .map(Bound::unbind)
+}
+
+fn add_raw_websocket_route(
+    app: &mut PyFastApi,
+    py: Python<'_>,
+    path: &str,
+    endpoint: &Bound<'_, PyAny>,
+    name: Option<&str>,
+) -> PyResult<()> {
+    let scope_path = format!("{}{}", app.route_scope_prefix, path);
+    let route_scope = websocket_route_scope(py, &scope_path, endpoint, name)?;
+    let route_name = route_scope.bind(py).getattr("name")?.extract::<String>()?;
+    let param_convertors = route_param_convertors(py, path)?;
+    let index = app
+        .websocket_router
+        .add_operation(path, "GET", Some(200))
+        .map_err(|error| PyValueError::new_err(error.to_string()))?;
+    app.websocket_router
+        .set_parameters(index, Vec::new())
+        .ok_or_else(|| PyRuntimeError::new_err("registered raw WebSocket route was lost"))?;
+    app.websocket_routes.push(FastApiWebSocketRoute {
+        path: path.to_owned(),
+        name: route_name,
+        route_scope,
+        param_convertors,
+        route_dependencies: Vec::new(),
+        endpoint: endpoint.clone().unbind(),
+        plan: None,
+        raw: true,
+    });
+    app.bump_routes_version();
+    Ok(())
 }
 
 fn route_param_convertors(py: Python<'_>, path: &str) -> PyResult<Py<PyDict>> {
@@ -9321,6 +9482,29 @@ impl FastApiCall {
         else {
             return self.close_unmatched_websocket(py);
         };
+        let (raw_route, route_scope) = {
+            let app = self.app.bind(py).borrow();
+            let route = app.websocket_routes.get(operation_index).ok_or_else(|| {
+                PyRuntimeError::new_err("selected FastAPI WebSocket route was lost")
+            })?;
+            (route.raw, route.route_scope.clone_ref(py))
+        };
+        if raw_route {
+            let full_match = py
+                .import("starlette.routing")?
+                .getattr("Match")?
+                .getattr("FULL")?;
+            let match_result = route_scope.bind(py).call_method1("matches", (scope,))?;
+            if !match_result.get_item(0)?.is(&full_match) {
+                return self.close_unmatched_websocket(py);
+            }
+            scope.call_method1("update", (match_result.get_item(1)?,))?;
+            let awaitable = route_scope
+                .bind(py)
+                .call_method1("handle", (scope, self.receive.bind(py), self.send.bind(py)))?;
+            self.pending = Some(PendingAction::MountedApp);
+            return Ok(MachineAction::Await(awaitable.unbind()));
+        }
         self.websocket_route_index = Some(operation_index);
         self.injected_response = Some(fastapi_response_state(py)?);
         self.path_params = path_params.clone();
@@ -9693,12 +9877,14 @@ impl FastApiCall {
                 .ok_or_else(|| PyRuntimeError::new_err("selected FastAPI frontend was lost"))?
                 .dependency_plan
         } else if let Some(route_index) = self.websocket_route_index {
-            &app.websocket_routes
+            app.websocket_routes
                 .get(route_index)
                 .ok_or_else(|| {
                     PyRuntimeError::new_err("selected FastAPI WebSocket route was lost")
                 })?
                 .plan
+                .as_ref()
+                .ok_or_else(|| PyRuntimeError::new_err("raw WebSocket route entered FastAPI"))?
         } else {
             let route_index = self
                 .route_index
@@ -9740,12 +9926,14 @@ impl FastApiCall {
                     .ok_or_else(|| PyRuntimeError::new_err("selected FastAPI frontend was lost"))?
                     .dependency_plan
             } else if let Some(route_index) = self.websocket_route_index {
-                &app.websocket_routes
+                app.websocket_routes
                     .get(route_index)
                     .ok_or_else(|| {
                         PyRuntimeError::new_err("selected FastAPI WebSocket route was lost")
                     })?
                     .plan
+                    .as_ref()
+                    .ok_or_else(|| PyRuntimeError::new_err("raw WebSocket route entered FastAPI"))?
             } else {
                 let route_index = self.route_index.ok_or_else(|| {
                     PyRuntimeError::new_err("ASGI dispatch has no selected HTTP route")
@@ -10721,6 +10909,7 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     module.add_class::<PyRouteContextIterator>()?;
     module.add_class::<PyOperationDecorator>()?;
     module.add_class::<PyWebSocketDecorator>()?;
+    module.add_class::<PyRawWebSocketDecorator>()?;
     module.add_class::<PyFastApiAsyncStream>()?;
     module.add_function(wrap_pyfunction!(py_iter_route_contexts, module)?)?;
     let response = module

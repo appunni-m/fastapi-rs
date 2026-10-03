@@ -536,6 +536,18 @@ _OPTIONAL_UPLOAD_RECIPE = (
 _OPTIONAL_UPLOAD_WORKLOAD = (
     "tests/fixtures/workloads/optional_upload_alias_validation_alias_review.py"
 )
+_OPTIONAL_LIST_SCHEMA_RECIPE = (
+    "tests/fixtures/input-recipes/parity/optional-list-openapi-schema-source-review.yaml"
+)
+_OPTIONAL_LIST_SCHEMA_WORKLOAD = (
+    "tests/fixtures/workloads/optional_list_openapi_schema_source_review.py"
+)
+_OPTIONAL_LIST_SCHEMA_CASES = {
+    "fastapi.request-body.optional-list-openapi.no-alias",
+    "fastapi.request-body.optional-list-openapi.alias",
+    "fastapi.request-body.optional-list-openapi.validation-alias",
+    "fastapi.request-body.optional-list-openapi.both-aliases",
+}
 
 
 def _tail_function_mapping(
@@ -609,6 +621,44 @@ def _optional_upload_function_mapping(
             "The alias cases distinguish the Python field name, File alias, and validation_alias, and the schema case "
             "observes the independent workload's request-body projection. Multipart framing and UploadFile parsing "
             "remain Starlette 1.6.0 / Starlette-RS-owned; the workflow does not establish full test-module behavior."
+        ),
+    }
+
+
+def _optional_list_schema_function_mapping(
+    test_path: str,
+    function_name: str,
+    case_id: str,
+    behavior: str,
+) -> dict[str, Any]:
+    tree = ast.parse((FASTAPI_ROOT / test_path).read_text(encoding="utf-8"))
+    matches = [
+        node
+        for node in tree.body
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == function_name
+    ]
+    if len(matches) != 1:
+        raise ValueError(f"expected exact source function {function_name} in {test_path}")
+    function = matches[0]
+    return {
+        "source_span": _source(
+            test_path,
+            function.lineno,
+            function.end_lineno or function.lineno,
+            f"upstream FastAPI 0.141.1 test function {function_name}",
+        ),
+        "workflow_case": {
+            "recipe_path": _OPTIONAL_LIST_SCHEMA_RECIPE,
+            "case_id": case_id,
+            "action_ids": ["inspect-openapi"],
+            "observation_selectors": ["openapi.document"],
+        },
+        "rationale": behavior,
+        "contract_gate": (
+            "This maps the pinned schema function's direct Body and Pydantic-model variants to "
+            "exact requestBody schema-reference and component properties JSON Pointer projections. "
+            "It does not claim request validation, complete OpenAPI output, or the remainder of "
+            "the parameterized test's behavior."
         ),
     }
 
@@ -696,6 +746,32 @@ REQUEST_PARAMETER_FUNCTION_MAPPINGS = {
             ["optional-upload-validation-alias"],
             ["http.body.bytes", "http.status"],
             "The pinned parametrized test sends File.validation_alias; this link observes accepted extraction for the optional UploadFile path.",
+        ),
+    },
+    "tests/test_request_params/test_body/test_optional_list.py": {
+        "test_optional_list_str_schema": _optional_list_schema_function_mapping(
+            "tests/test_request_params/test_body/test_optional_list.py",
+            "test_optional_list_str_schema",
+            "fastapi.request-body.optional-list-openapi.no-alias",
+            "The pinned schema assertion covers direct Body and BaseModel routes without aliases; this case projects both request-body schema references and each component's properties object.",
+        ),
+        "test_optional_list_str_alias_schema": _optional_list_schema_function_mapping(
+            "tests/test_request_params/test_body/test_optional_list.py",
+            "test_optional_list_str_alias_schema",
+            "fastapi.request-body.optional-list-openapi.alias",
+            "The pinned schema assertion covers direct Body and BaseModel routes with a declared alias; this case projects the resulting alias property for each route form.",
+        ),
+        "test_optional_list_validation_alias_schema": _optional_list_schema_function_mapping(
+            "tests/test_request_params/test_body/test_optional_list.py",
+            "test_optional_list_validation_alias_schema",
+            "fastapi.request-body.optional-list-openapi.validation-alias",
+            "The pinned schema assertion covers direct Body and BaseModel routes with a validation alias; this case projects that property for each route form.",
+        ),
+        "test_optional_list_alias_and_validation_alias_schema": _optional_list_schema_function_mapping(
+            "tests/test_request_params/test_body/test_optional_list.py",
+            "test_optional_list_alias_and_validation_alias_schema",
+            "fastapi.request-body.optional-list-openapi.both-aliases",
+            "The pinned schema assertion covers direct Body and BaseModel routes with both aliases; this case projects the validation-alias property selected for each route form.",
         ),
     },
 }
@@ -851,6 +927,13 @@ def validate_request_parameter_mappings() -> list[str]:
         _OPTIONAL_UPLOAD_MISSING_CASE_ID,
     }:
         errors.append("optional UploadFile alias recipe does not contain its two reviewed cases")
+    optional_list_schema_path = PROJECT_ROOT / _OPTIONAL_LIST_SCHEMA_RECIPE
+    optional_list_schema = yaml.safe_load(optional_list_schema_path.read_text(encoding="utf-8"))
+    optional_list_schema_cases = {
+        case.get("case_id"): case for case in optional_list_schema.get("cases", [])
+    }
+    if set(optional_list_schema_cases) != _OPTIONAL_LIST_SCHEMA_CASES:
+        errors.append("optional-list OpenAPI recipe does not contain its four reviewed cases")
     forbidden = {
         "expected",
         "expected_output",
@@ -872,6 +955,10 @@ def validate_request_parameter_mappings() -> list[str]:
 
     scan_input_only(tail, str(tail_path.relative_to(PROJECT_ROOT)))
     scan_input_only(optional_upload, str(optional_upload_path.relative_to(PROJECT_ROOT)))
+    scan_input_only(
+        optional_list_schema,
+        str(optional_list_schema_path.relative_to(PROJECT_ROOT)),
+    )
     if not (PROJECT_ROOT / _TAIL_WAVE_WORKLOAD).is_file():
         errors.append("tail recipe workload file is missing")
     if tail.get("workload", {}).get("file") != _TAIL_WAVE_WORKLOAD:
@@ -882,6 +969,10 @@ def validate_request_parameter_mappings() -> list[str]:
         errors.append(
             "optional UploadFile alias recipe references a different workload than the reviewed one"
         )
+    if not (PROJECT_ROOT / _OPTIONAL_LIST_SCHEMA_WORKLOAD).is_file():
+        errors.append("optional-list OpenAPI workload file is missing")
+    if optional_list_schema.get("workload", {}).get("file") != _OPTIONAL_LIST_SCHEMA_WORKLOAD:
+        errors.append("optional-list OpenAPI recipe references a different reviewed workload")
     tail_actions = {
         action.get("action_id") for case in tail_cases for action in case.get("actions", [])
     }
@@ -910,6 +1001,20 @@ def validate_request_parameter_mappings() -> list[str]:
                 f"optional UploadFile mapping references unknown actions for {case_id}: "
                 f"{sorted(referenced_actions - declared_actions)}"
             )
+    for case_id, case in optional_list_schema_cases.items():
+        declared_actions = {action.get("action_id") for action in case.get("actions", [])}
+        referenced_actions = {
+            action_id
+            for rows in REQUEST_PARAMETER_FUNCTION_MAPPINGS.values()
+            for row in rows.values()
+            if row["workflow_case"]["case_id"] == case_id
+            for action_id in row["workflow_case"]["action_ids"]
+        }
+        if not referenced_actions <= declared_actions:
+            errors.append(
+                f"optional-list OpenAPI mapping references unknown actions for {case_id}: "
+                f"{sorted(referenced_actions - declared_actions)}"
+            )
 
     tail_spans = {
         (
@@ -929,16 +1034,20 @@ def validate_request_parameter_mappings() -> list[str]:
                     f"invalid request-parameter function source span: {test_path}:{function_name}"
                 )
             workflow = row["workflow_case"]
-            expected_recipe = (
-                _TAIL_WAVE_RECIPE
-                if workflow["case_id"] == _TAIL_WAVE_CASE_ID
-                else _OPTIONAL_UPLOAD_RECIPE
-            )
+            if workflow["case_id"] == _TAIL_WAVE_CASE_ID:
+                expected_recipe = _TAIL_WAVE_RECIPE
+            elif workflow["case_id"] in {
+                _OPTIONAL_UPLOAD_ALIAS_CASE_ID,
+                _OPTIONAL_UPLOAD_MISSING_CASE_ID,
+            }:
+                expected_recipe = _OPTIONAL_UPLOAD_RECIPE
+            else:
+                expected_recipe = _OPTIONAL_LIST_SCHEMA_RECIPE
             valid_case_ids = {
                 _TAIL_WAVE_CASE_ID,
                 _OPTIONAL_UPLOAD_ALIAS_CASE_ID,
                 _OPTIONAL_UPLOAD_MISSING_CASE_ID,
-            }
+            } | _OPTIONAL_LIST_SCHEMA_CASES
             if workflow["case_id"] not in valid_case_ids:
                 errors.append(
                     f"request-parameter function case ID mismatch: {test_path}:{function_name}"
@@ -947,7 +1056,11 @@ def validate_request_parameter_mappings() -> list[str]:
                 errors.append(
                     f"request-parameter function recipe path mismatch: {test_path}:{function_name}"
                 )
-            case_map = {case["case_id"]: case for case in tail_cases} | optional_upload_cases
+            case_map = (
+                {case["case_id"]: case for case in tail_cases}
+                | optional_upload_cases
+                | optional_list_schema_cases
+            )
             case = case_map.get(workflow["case_id"])
             if case is None:
                 errors.append(
@@ -965,7 +1078,7 @@ def validate_request_parameter_mappings() -> list[str]:
                     f"request-parameter function selectors mismatch: {test_path}:{function_name}"
                 )
     if len(tail_spans) != sum(len(rows) for rows in REQUEST_PARAMETER_FUNCTION_MAPPINGS.values()):
-        errors.append("tail function mappings reuse an ambiguous source span")
+        errors.append("request-parameter function mappings reuse an ambiguous source span")
     return errors
 
 
