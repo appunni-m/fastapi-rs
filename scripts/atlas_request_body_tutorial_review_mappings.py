@@ -33,7 +33,7 @@ SOURCE_IDENTITIES = {
     },
     "starlette-rs": {
         "version": "0.1.0",
-        "commit": "cda0104548712ce84596485417b3ebb0b363f3cc",
+        "commit": "d2e6f3caed67f9d622f74f5fba7ce85927ddd4a1",
         "role": "implements the separate Starlette 1.6.0 contract",
     },
     "python": {
