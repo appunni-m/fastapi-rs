@@ -1438,7 +1438,12 @@ DOC_PAGE_REVIEW_MAPPINGS = {
         "heading": "Request Files { #request-files }",
         "replace_features": True,
         "feature_ids": ["openapi-docs", "request-validation"],
-        "observation_selectors": ["http.status", "http.body.bytes", "openapi.document"],
+        "observation_selectors": [
+            "http.status",
+            "http.body.bytes",
+            "openapi.document",
+            "openapi.request_schema",
+        ],
         "rationale": (
             "The page specifies File/UploadFile request extraction, required and optional file "
             "parameters, byte and UploadFile values, and repeated file fields. FastAPI infers "
@@ -1459,18 +1464,30 @@ DOC_PAGE_REVIEW_MAPPINGS = {
             "single and multiple UploadFile examples with independent names and values. These "
             "workflows observe HTTP status and exact response bytes. The same request-uploads "
             "recipe's fastapi.request-uploads.request-files.openapi-schema case observes the "
-            "complete OpenAPI document for the independent upload routes."
+            "complete OpenAPI document for independent upload routes. The focused "
+            "fastapi.request-files.openapi-documented-shapes case observes exact requestBody "
+            "and component-schema projections for the documented /files/ bytes and /uploadfile/ "
+            "UploadFile route declarations."
         ),
         "contract_gate": (
             "The page also documents generated multipart OpenAPI schemas, UploadFile's raw "
             "SpooledTemporaryFile interface, spool-to-disk behavior, seek/write/close, async "
-            "thread-pool execution, and Pydantic compatibility. The linked request workflows "
-            "observe a complete OpenAPI document for independent routes, not the exact documented "
-            "example schemas; they also do not observe Python import/object identity, upload-file "
-            "lifetime, or spooling behavior. Multipart execution requires the optional "
-            "python-multipart profile; the input cases do not test missing-parser behavior. Do "
-            "not infer these unobserved behaviors from successful body extraction."
+            "thread-pool execution, and Pydantic compatibility. The focused OpenAPI workflow "
+            "observes only exact requestBody and component-schema JSON Pointer projections for "
+            "the documented bytes and UploadFile routes; it does not establish whole-document "
+            "equivalence. The workflows also do not observe Python import/object identity, "
+            "upload-file lifetime, or spooling behavior. Multipart execution requires the "
+            "optional python-multipart profile; the input cases do not test missing-parser "
+            "behavior. Do not infer these unobserved behaviors from successful body extraction."
         ),
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/request-files-openapi-documented-shapes.yaml",
+                "case_id": "fastapi.request-files.openapi-documented-shapes",
+                "action_ids": ["inspect-documented-request-schemas"],
+                "observation_selectors": ["openapi.request_schema"],
+            }
+        ],
         "supporting_sources": [
             {
                 "path": "docs/en/docs/tutorial/request-files.md",

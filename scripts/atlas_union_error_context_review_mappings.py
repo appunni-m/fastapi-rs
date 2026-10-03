@@ -366,6 +366,9 @@ _INHERITED_RECIPE = "tests/fixtures/input-recipes/parity/union-inherited-body-tu
 _ERROR_CONTEXT_RECIPE = (
     "tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml"
 )
+_WEBSOCKET_VALIDATION_HANDLER_RECIPE = (
+    "tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml"
+)
 
 _UNION_SOURCE_EVIDENCE = (*_FASTAPI_UNION_SOURCES, *_STARLETTE_TRANSPORT_SOURCES)
 _ERROR_CONTEXT_SOURCE_EVIDENCE = (
@@ -679,7 +682,7 @@ UNION_ERROR_CONTEXT_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                 "tests/test_validation_error_context.py",
                 "test_websocket_validation_error_includes_endpoint_context",
                 ("request-validation", "public-api-errors"),
-                "The exact invalid integer WebSocket path selects the propagated WebSocketRequestValidationError class/message and endpoint context.",
+                "The exact invalid integer WebSocket path selects the propagated WebSocketRequestValidationError class/message and endpoint context. A second independent case registers a handler for that exception and observes only close/event behavior; it is a handler-dispatch variation grounded in the source test's exception type and the upstream custom WebSocket close-handler pattern, not a copy of either test's outputs.",
                 (
                     _link(
                         _ERROR_CONTEXT_RECIPE,
@@ -687,8 +690,39 @@ UNION_ERROR_CONTEXT_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                         ("invalid-websocket-path",),
                         _VALIDATION_EXCEPTION_SELECTORS,
                     ),
+                    _link(
+                        _WEBSOCKET_VALIDATION_HANDLER_RECIPE,
+                        "fastapi.websocket-validation.custom-handler-close",
+                        ("invalid-path-custom-close",),
+                        (
+                            "websocket.close_code",
+                            "websocket.close_reason",
+                            "websocket.event_order",
+                            "websocket.messages",
+                        ),
+                    ),
                 ),
-                _ERROR_CONTEXT_SOURCE_EVIDENCE,
+                (
+                    *_ERROR_CONTEXT_SOURCE_EVIDENCE,
+                    _source(
+                        "fastapi/applications.py",
+                        1000,
+                        1012,
+                        "FastAPI preserves a user-supplied WebSocketRequestValidationError handler while installing the default with setdefault",
+                    ),
+                    _source(
+                        "fastapi/exception_handlers.py",
+                        29,
+                        34,
+                        "FastAPI's default WebSocket validation handler closes with policy-violation code and encoded errors",
+                    ),
+                    _source(
+                        "tests/test_ws_router.py",
+                        257,
+                        271,
+                        "The pinned upstream test demonstrates a custom WebSocket exception handler closing with a selected code and reason",
+                    ),
+                ),
             ),
             "test_subapp_request_validation_error_includes_endpoint_context": _function(
                 "tests/test_validation_error_context.py",

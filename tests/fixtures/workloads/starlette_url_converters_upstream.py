@@ -33,6 +33,14 @@ def create_app() -> FastAPI:
     def generated_path():
         return PlainTextResponse(str(app.url_path_for("path_convertor", param="some/example")))
 
+    @app.get("/generated-int-path")
+    def generated_int_path():
+        return PlainTextResponse(str(app.url_path_for("int_convertor", param=5)))
+
+    @app.get("/generated-float-path")
+    def generated_float_path():
+        return PlainTextResponse(str(app.url_path_for("float_convertor", param=25.5)))
+
     @app.get("/generated-custom-path")
     def generated_custom_path():
         return PlainTextResponse(str(app.url_path_for("custom_path", param="some/example")))

@@ -80,14 +80,14 @@ api_inventory:
 import_binding_classification_review:
   artifact: tests/fixtures/api-import-binding-classification-review.json
   schema: fastapi-starlette-import-binding-review/v1
-  sha256: 302e4a0df4396433627f912ee8ecbee5db1e139cc773c20fb53b21c3cb70d7ce
+  sha256: 77de1409953559dc0791272b5dbdc9bc88ee775ae4c6c282224aee84b503dbaf
   source_identity:
     package: FastAPI
     version: 0.141.1
     source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
     selected_starlette_profile: 1.6.0
     starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
-    starlette_rs_contract_commit: 2471c669bcca1fae45e670c708d371886eb39bc4
+    starlette_rs_contract_commit: fabb14a074303790d7ed39065617cd4872f409ac
   starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
   counts:
     candidates: 97
@@ -435,7 +435,7 @@ classification_atlas:
 starlette_rs:
   owner: ../starlette-rs
   repository: https://github.com/appunni-m/starlette-rs
-  commit: 2471c669bcca1fae45e670c708d371886eb39bc4
+  commit: fabb14a074303790d7ed39065617cd4872f409ac
   distribution_version: 0.1.0
   contract_id: starlette-1.6.0-asgi-http-config-session-slice
   metadata: ../starlette-rs/metadata.yaml
@@ -687,6 +687,7 @@ reviewed_api_contract_overlay:
         - {path: tests/test_ws_dependencies.py, symbol: test_index}
         - {path: tests/test_ws_dependencies.py, symbol: test_routerindex}
         - {path: tests/test_ws_dependencies.py, symbol: test_routerprefixindex}
+        - {path: tests/test_ws_router.py, symbol: test_depend_validation}
         - {path: tests/test_ws_router.py, symbol: test_depend_err_middleware}
         - {path: docs/en/docs/advanced/middleware.md}
         - {path: tests/test_dependency_overrides.py, symbol: test_override_simple}
@@ -722,12 +723,14 @@ reviewed_api_contract_overlay:
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/constructor-middleware-order.yaml
           case_id: fastapi.applications.constructor-middleware-order
+        - recipe_path: tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml
+          case_id: fastapi.websocket-validation.default-handler-close
         - recipe_path: tests/fixtures/input-recipes/parity/redirect-slashes-forwarding.yaml
           case_id: fastapi.applications.constructor.redirect-slashes-enabled
         - recipe_path: tests/fixtures/input-recipes/parity/redirect-slashes-forwarding.yaml
           case_id: fastapi.applications.constructor.redirect-slashes-disabled
       feature_ids: [public-api-errors, app-routing, dependency-security, request-validation, websocket-lifecycle, openapi-docs]
-      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, websocket.event_order, websocket.messages, openapi.document, asgi.lifespan.event_order, asgi.lifespan.startup, asgi.lifespan.shutdown, asgi.lifespan.application_errors, asgi.lifespan.workload_trace, warnings.category_message]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, websocket.close_code, websocket.close_reason, websocket.event_order, websocket.messages, construction.outcome, construction.exception_class, construction.exception_message, openapi.document, asgi.lifespan.event_order, asgi.lifespan.startup, asgi.lifespan.shutdown, asgi.lifespan.application_errors, asgi.lifespan.workload_trace, warnings.category_message]
       supported_slice: >-
         Partial native constructor slice: the exception_handlers argument
         accepts a mapping keyed by exception class or HTTP status code, and
@@ -793,6 +796,7 @@ reviewed_api_contract_overlay:
           start_line: 4729
           end_line: 4774
         - {path: tests/test_exception_handlers.py, symbol: http_exception_handler}
+        - {path: tests/test_ws_router.py, symbol: test_depend_err_handler}
         - path: docs/en/docs/tutorial/handling-errors.md
           kind: documentation-text
           start_line: 82
@@ -804,8 +808,21 @@ reviewed_api_contract_overlay:
           case_id: fastapi.applications.exception-handler.decorator
         - recipe_path: tests/fixtures/input-recipes/parity/exception-handler-after-stack-cache.yaml
           case_id: fastapi.applications.exception-handler.after-stack-cache
+        - recipe_path: tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml
+          case_id: fastapi.websocket-validation.custom-handler-close
       feature_ids: [public-api-errors]
-      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.lifespan.workload_trace]
+      observation_selectors:
+        - http.status
+        - http.headers.ordered
+        - http.body.bytes
+        - asgi.lifespan.workload_trace
+        - construction.outcome
+        - construction.exception_class
+        - construction.exception_message
+        - websocket.close_code
+        - websocket.close_reason
+        - websocket.event_order
+        - websocket.messages
       supported_slice: >-
         Partial native slice: registers custom HTTP exception handlers through
         the decorator and returns the original handler object. A custom class
@@ -815,9 +832,12 @@ reviewed_api_contract_overlay:
         path operation. Built-in Starlette HTTPException JSON handling is also
         included.
         Handler registration after the middleware stack has been cached,
-        custom request/WebSocket validation handlers, custom WebSocket
-        exception object identity, and default FastAPI validation-handler
-        entries remain outside this slice.
+        custom request-validation handlers, custom WebSocket exception object
+        identity, and default FastAPI validation-handler entries remain outside
+        this slice. One independent invalid-path WebSocket workflow registers a
+        custom WebSocketRequestValidationError handler and samples close/event
+        observations; its target parity remains subject to the known dispatch
+        gap recorded on add_exception_handler.
     fastapi.applications.FastAPI.frontend:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::frontend
       source_evidence:
@@ -826,7 +846,20 @@ reviewed_api_contract_overlay:
         - {path: fastapi/routing.py, symbol: _FrontendRoute}
         - {path: fastapi/routing.py, symbol: _FrontendRouteGroup}
         - {path: tests/test_frontend.py}
+        - {path: tests/test_frontend.py, symbol: test_include_router_frontend_dependencies_apply_in_nested_order}
+        - {path: tests/test_frontend.py, symbol: test_frontend_dependency_overrides_apply}
+        - {path: tests/test_frontend.py, symbol: test_frontend_dependencies_do_not_run_when_api_route_wins}
+        - {path: tests/test_frontend.py, symbol: test_frontend_dependency_validation_errors_return_422}
         - {path: docs/en/docs/tutorial/frontend.md}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/frontend-dependency-source-wave.yaml
+          case_id: fastapi.frontend.dependencies-nested-inclusion-order
+        - recipe_path: tests/fixtures/input-recipes/parity/frontend-dependency-source-wave.yaml
+          case_id: fastapi.frontend.dependencies-override
+        - recipe_path: tests/fixtures/input-recipes/parity/frontend-dependency-source-wave.yaml
+          case_id: fastapi.frontend.dependencies-validation-422
+        - recipe_path: tests/fixtures/input-recipes/parity/frontend-dependency-source-wave.yaml
+          case_id: fastapi.frontend.api-route-wins
       feature_ids: [app-routing, dependency-security, public-api-errors]
       observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, dependency.call_order, http.status, http.headers.ordered, http.body.bytes, asgi.application_error.exception, route.match]
       supported_slice: >-
@@ -834,10 +867,16 @@ reviewed_api_contract_overlay:
         frontend-fallback-routing-source-review workflow maps API-route
         precedence, low-priority static fallback routing, root-path behavior,
         router dependencies, GET/HEAD responses, and directory/fallback
-        configuration outcomes. Only behavior observed by identity-checked
-        comparisons may be claimed; development warnings, broader Accept
-        parsing, unusual path-like values, and unrepresented static-file edge
-        cases remain outside this reviewed slice.
+        configuration outcomes. The separate
+        frontend-dependency-source-wave inputs exercise nested app/include/
+        router dependency order, dependency overrides, required-query
+        validation, and API-route precedence using response status, ordered
+        headers, and body observations. These are sampled FastAPI dependency
+        and route-selection contracts, not a claim of complete frontend
+        behavior. Only behavior observed by identity-checked comparisons may
+        be claimed; development warnings, broader Accept parsing, unusual
+        path-like values, and unrepresented static-file edge cases remain
+        outside this reviewed slice.
     fastapi.Path:
       rust_binding: fastapi-rs/src/parameters.rs::path
       source_evidence:
@@ -1092,10 +1131,14 @@ reviewed_api_contract_overlay:
         - {path: fastapi/params.py, symbol: File}
         - {path: fastapi/dependencies/utils.py, symbol: get_validation_alias}
         - {path: fastapi/dependencies/utils.py, symbol: request_body_to_args}
+        - {path: tests/test_tutorial/test_request_files/test_tutorial001.py, symbol: test_openapi_schema}
         - {path: tests/test_request_params/test_file/test_required.py, symbol: test_required_alias_and_validation_alias_by_validation_alias}
         - {path: tests/test_request_params/test_file/test_required.py, symbol: test_required_alias_and_validation_alias_schema}
         - {path: tests/test_request_params/test_file/test_list.py, symbol: test_list_alias_and_validation_alias_by_validation_alias}
         - {path: docs/en/docs/tutorial/request-files.md}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/request-files-openapi-documented-shapes.yaml
+          case_id: fastapi.request-files.openapi-documented-shapes
       feature_ids: [request-validation, openapi-docs]
       observation_selectors: [http.status, http.body.bytes, openapi.request_schema]
       supported_slice: >-
@@ -1104,7 +1147,10 @@ reviewed_api_contract_overlay:
         locations, and the OpenAPI request schema. Identity-checked inputs cover
         byte and UploadFile values plus repeated uploads. Non-string
         AliasPath/AliasChoices, serialization_alias, default_factory, and other
-        FieldInfo options remain outside this slice.
+        FieldInfo options remain outside this slice. The request-files
+        documentation workflow also projects the exact requestBody and
+        referenced component schemas for its documented bytes and UploadFile
+        routes; it does not establish whole-document OpenAPI equivalence.
     fastapi.Query:
       rust_binding: fastapi-rs/src/parameters.rs::query
       source_evidence:
@@ -1287,15 +1333,41 @@ reviewed_api_contract_overlay:
       error_contract_ids: [fastapi.exceptions.RequestValidationError]
     fastapi.applications.FastAPI.websocket:
       source_evidence:
-        - {path: fastapi/applications.py, symbol: websocket}
+        - path: fastapi/applications.py
+          symbol: websocket
+          kind: source-definition
+          start_line: 1376
+          end_line: 1439
         - {path: fastapi/routing.py, symbol: get_websocket_app}
         - {path: tests/test_ws_dependencies.py, symbol: test_index}
+        - {path: tests/test_tutorial/test_websockets/test_tutorial001.py, symbol: test_websocket}
         - {path: tests/test_tutorial/test_websockets/test_tutorial002.py, symbol: test_websocket_with_cookie}
         - {path: tests/test_tutorial/test_websockets/test_tutorial002.py, symbol: test_websocket_with_header}
         - {path: tests/test_tutorial/test_websockets/test_tutorial002.py, symbol: test_websocket_with_header_and_query}
         - {path: tests/test_tutorial/test_websockets/test_tutorial002.py, symbol: test_websocket_no_credentials}
         - {path: tests/test_tutorial/test_websockets/test_tutorial002.py, symbol: test_websocket_invalid_data}
+        - {path: tests/test_ws_router.py, symbol: test_depend_validation}
+        - {path: tests/test_validation_error_context.py, symbol: test_websocket_validation_error_includes_endpoint_context}
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::websocket
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/websockets-upstream.yaml
+          case_id: fastapi.test.test-ws-dependencies.test-index
+        - recipe_path: tests/fixtures/input-recipes/parity/websockets-upstream.yaml
+          case_id: fastapi.test.test-tutorial-test-websockets-test-tutorial001.test-websocket
+        - recipe_path: tests/fixtures/input-recipes/parity/websockets-upstream.yaml
+          case_id: fastapi.test.test-tutorial-test-websockets-test-tutorial002.test-websocket-with-cookie
+        - recipe_path: tests/fixtures/input-recipes/parity/websockets-upstream.yaml
+          case_id: fastapi.test.test-tutorial-test-websockets-test-tutorial002.test-websocket-with-header
+        - recipe_path: tests/fixtures/input-recipes/parity/websockets-upstream.yaml
+          case_id: fastapi.test.test-tutorial-test-websockets-test-tutorial002.test-websocket-with-header-and-query
+        - recipe_path: tests/fixtures/input-recipes/parity/websockets-upstream.yaml
+          case_id: fastapi.test.test-tutorial-test-websockets-test-tutorial002.test-websocket-no-credentials
+        - recipe_path: tests/fixtures/input-recipes/parity/websockets-upstream.yaml
+          case_id: fastapi.test.test-tutorial-test-websockets-test-tutorial002.test-websocket-invalid-data
+        - recipe_path: tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml
+          case_id: fastapi.websocket-validation.default-handler-close
+        - recipe_path: tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml
+          case_id: fastapi.websocket-validation.custom-handler-close
       feature_ids: [request-validation, websocket-lifecycle]
       observation_selectors:
         - validation.error_class
@@ -1304,14 +1376,50 @@ reviewed_api_contract_overlay:
         - websocket.close_reason
         - websocket.event_order
         - websocket.messages
+        - construction.outcome
+        - construction.exception_class
+        - construction.exception_message
       error_contract_ids: [fastapi.exceptions.WebSocketRequestValidationError]
+      supported_slice: >-
+        The pinned websockets-upstream workflow exercises the app-level
+        decorator with application dependencies, an echo endpoint, cookie and
+        query credentials, and missing or invalid query input. It compares
+        ordered WebSocket messages and event order, plus close code and reason
+        on rejected inputs. FastAPI owns decorator registration, dependency
+        resolution, and parameter validation; handshake and message transport
+        are Starlette 1.6.0 / Starlette-RS responsibilities. These cases do not
+        establish TestClient-only behavior, all custom validation-handler
+        dispatch variants, all endpoint signatures, or every path and lifecycle
+        edge. A separate workflow maps one default close and one independently
+        authored custom invalid-path close case.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - The Python facade does not export fastapi.exceptions.WebSocketRequestValidationError, so its public import and the linked custom-handler workflow fail before target execution.
+          - WebSocket request validation uses a direct close path and does not dispatch through FastAPI's default or custom validation handlers.
     fastapi.routing.APIRouter.websocket:
       source_evidence:
-        - {path: fastapi/routing.py, symbol: websocket}
+        - path: fastapi/routing.py
+          symbol: websocket
+          kind: source-definition
+          start_line: 3057
+          end_line: 3122
         - {path: fastapi/routing.py, symbol: get_websocket_app}
         - {path: tests/test_ws_dependencies.py, symbol: test_routerindex}
         - {path: tests/test_ws_dependencies.py, symbol: test_routerprefixindex}
+        - {path: tests/test_ws_router.py, symbol: test_router_ws_depends}
+        - {path: tests/test_ws_router.py, symbol: test_router_ws_depends_with_override}
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::__getattr__ and PyFastApi::websocket
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/websockets-upstream.yaml
+          case_id: fastapi.test.test-ws-dependencies.test-routerindex
+        - recipe_path: tests/fixtures/input-recipes/parity/websockets-upstream.yaml
+          case_id: fastapi.test.test-ws-dependencies.test-routerprefixindex
+        - recipe_path: tests/fixtures/input-recipes/parity/websocket-router-dependencies-upstream.yaml
+          case_id: fastapi.test.test-ws-router.test-router-ws-depends
+        - recipe_path: tests/fixtures/input-recipes/parity/websocket-router-dependencies-upstream.yaml
+          case_id: fastapi.test.test-ws-router.test-router-ws-depends-with-override
       feature_ids: [request-validation, websocket-lifecycle]
       observation_selectors:
         - validation.error_class
@@ -1321,6 +1429,17 @@ reviewed_api_contract_overlay:
         - websocket.event_order
         - websocket.messages
       error_contract_ids: [fastapi.exceptions.WebSocketRequestValidationError]
+      supported_slice: >-
+        The pinned websockets-upstream cases exercise APIRouter.websocket at a
+        direct route and after a router prefix is included. The separate
+        websocket-router-dependencies-upstream cases exercise router-level
+        dependency ordering and an override through an included router. The
+        cases observe WebSocket messages and event order. FastAPI owns
+        decorator registration and dependency resolution; generic WebSocket
+        routing and protocol transport remain Starlette 1.6.0 /
+        Starlette-RS responsibilities. Custom validation and exception-handler
+        dispatch, all path-converter combinations, and TestClient-only behavior
+        remain outside this sampled scope.
     fastapi.routing.APIRouter.websocket_route:
       source_evidence:
         - path: fastapi/routing.py
@@ -1724,10 +1843,15 @@ reviewed_api_contract_overlay:
           symbol: test_openapi_cache_updates_after_live_route_addition
         - path: tests/test_extra_routes.py
           symbol: test_openapi_schema
+        - path: tests/test_tutorial/test_request_files/test_tutorial001.py
+          symbol: test_openapi_schema
         - path: tests/test_openapi_cache_root_path.py
         - path: docs/en/docs/how-to/extending-openapi.md
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/request-files-openapi-documented-shapes.yaml
+          case_id: fastapi.request-files.openapi-documented-shapes
       feature_ids: [openapi-docs]
-      observation_selectors: [http.status, http.body.json, openapi.document, openapi.paths]
+      observation_selectors: [http.status, http.body.json, openapi.document, openapi.paths, openapi.request_schema]
       supported_slice: >-
         Reuses the same cached schema object while the app route version is
         unchanged. Direct app.add_api_route registration invalidates that cache;
@@ -1780,15 +1904,24 @@ reviewed_api_contract_overlay:
         - {path: fastapi/routing.py, symbol: frontend}
         - {path: fastapi/routing.py, symbol: _FrontendRouteGroup}
         - {path: tests/test_frontend.py}
+        - {path: tests/test_frontend.py, symbol: test_include_router_frontend_dependencies_apply_in_nested_order}
+        - {path: tests/test_frontend.py, symbol: test_frontend_dependencies_do_not_run_when_api_route_wins}
         - {path: tests/test_router_include_context.py}
         - {path: docs/en/docs/tutorial/frontend.md}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/frontend-dependency-source-wave.yaml
+          case_id: fastapi.frontend.dependencies-nested-inclusion-order
+        - recipe_path: tests/fixtures/input-recipes/parity/frontend-dependency-source-wave.yaml
+          case_id: fastapi.frontend.api-route-wins
       feature_ids: [app-routing, dependency-security, public-api-errors]
       observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, dependency.call_order, http.status, http.headers.ordered, http.body.bytes, asgi.application_error.exception, route.match]
       supported_slice: >-
         Source-backed operation scope for APIRouter.frontend. The pinned
         frontend-fallback-routing-source-review workflow observes included
         frontend prefixes, router dependency behavior, and static fallback
-        dispatch. Prefix composition, priority, and dependency claims remain
+        dispatch. The frontend-dependency-source-wave cases add nested
+        dependency composition and API-route precedence for an included
+        frontend. Prefix composition, priority, and dependency claims remain
         limited to the exact identity-checked inputs; other router inclusion
         combinations remain outside this reviewed slice.
     fastapi.routing.APIRouter.__init__:
@@ -3224,6 +3357,55 @@ reviewed_api_contract_overlay:
         FastAPI string representation. Request validation generated by ASGI
         dispatch, custom exception handlers, WebSocket validation, overrides,
         and other ValidationException subclasses remain outside this slice.
+    fastapi.exceptions.WebSocketRequestValidationError:
+      source_evidence:
+        - path: fastapi/exceptions.py
+          symbol: WebSocketRequestValidationError
+          kind: source-definition
+          start_line: 224
+          end_line: 231
+        - path: fastapi/applications.py
+          symbol: __init__
+          owner: FastAPI
+          kind: source-definition
+          start_line: 58
+          end_line: 1018
+        - path: fastapi/exception_handlers.py
+          symbol: websocket_request_validation_exception_handler
+          kind: source-definition
+          start_line: 29
+          end_line: 34
+        - path: docs/en/docs/release-notes.md
+          kind: release-note
+          line: 4331
+          section: 0.97.0 (2023-06-11)
+          statement: Add exception handler for WebSocketRequestValidationError (which also allows to override it).
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml
+          case_id: fastapi.websocket-validation.custom-handler-close
+      feature_ids: [public-api-errors, request-validation, websocket-lifecycle]
+      observation_selectors:
+        - construction.outcome
+        - construction.exception_class
+        - construction.exception_message
+        - websocket.close_code
+        - websocket.close_reason
+        - websocket.event_order
+        - websocket.messages
+      supported_slice: >-
+        FastAPI defines the error class, installs its default WebSocket
+        validation handler, and permits an application handler to override it.
+        The custom-handler-close input exercises the public exception import
+        and handler registration from an independently authored WebSocket
+        workload. FastAPI-RS currently has no `fastapi.exceptions` re-export
+        for this class, so the target worker cannot import this case; this
+        source scope does not claim target parity.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: unimplemented
+        known_gaps:
+          - The Python facade does not export fastapi.exceptions.WebSocketRequestValidationError, so public imports fail.
+          - WebSocket request validation uses a direct close path and does not construct this error or dispatch its FastAPI handler.
     fastapi.WebSocketException:
       rust_binding: fastapi-rs/src/errors.rs::register
       source_evidence:
@@ -3985,6 +4167,8 @@ reviewed_api_contract_overlay:
           required_text:
             - '`FastAPI` is a class that inherits directly from `Starlette`.'
             - 'You can use all the [Starlette](https://starlette.dev/) functionality with `FastAPI` too.'
+        - {path: tests/test_starlette_urlconvertors.py, symbol: test_route_converters_int}
+        - {path: tests/test_starlette_urlconvertors.py, symbol: test_route_converters_float}
       documentation_contract_refs:
         - source_path: docs/en/docs/tutorial/first-steps.md
           fixture_id: fastapi.docs.tutorial-first-steps
@@ -3994,6 +4178,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.test.test-starlette-urlconvertors.test-url-path-for-path-convertor
         - recipe_path: tests/fixtures/input-recipes/parity/starlette-url-converters-upstream.yaml
           case_id: fastapi.applications.url-path-for.explicit-route-name
+        - recipe_path: tests/fixtures/input-recipes/parity/starlette-url-converters-upstream.yaml
+          case_id: fastapi.test.test-starlette-urlconvertors.test-route-converters-int-url-path-for
+        - recipe_path: tests/fixtures/input-recipes/parity/starlette-url-converters-upstream.yaml
+          case_id: fastapi.test.test-starlette-urlconvertors.test-route-converters-float-url-path-for
         - recipe_path: tests/fixtures/input-recipes/parity/inherited-app-url-path-for.yaml
           case_id: fastapi.applications.url-path-for.included-router-context
       feature_ids: [app-routing]
@@ -4003,7 +4191,7 @@ reviewed_api_contract_overlay:
         status: partial-contract
         rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::url_path_for
         known_gaps:
-          - Direct URLPath metadata and non-path converter values are not fully established.
+          - Direct URLPath metadata, UUID/datetime/custom converter formatting, converter errors, and missing or mismatched route parameters are not established.
           - Dynamic router mutation after inclusion and Mount or Host route-context lookup are not covered by the current inputs.
     fastapi.routing.APIRouter.url_path_for:
       fastapi_exposure_candidate_id: fastapi.routing.APIRouter

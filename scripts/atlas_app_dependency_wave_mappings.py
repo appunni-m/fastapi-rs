@@ -147,6 +147,12 @@ _WEBSOCKET_RESOLUTION = _source(
     797,
     "FastAPI resolves WebSocket dependencies and applies its WebSocket validation handler",
 )
+_WEBSOCKET_VALIDATION_CLOSE = _source(
+    "fastapi/exception_handlers.py",
+    29,
+    34,
+    "FastAPI's default WebSocket request-validation handler closes with policy-violation code and encoded errors",
+)
 _HTTP_EXCEPTION = _source(
     "fastapi/exception_handlers.py",
     11,
@@ -1242,7 +1248,7 @@ APP_DEPENDENCY_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
         },
     ),
     "tests/test_ws_router.py": _module(
-        "Existing cases cover root/router/prefix WebSocket dispatch, router dependency overrides, and a custom WebSocket exception handler. Parameter extraction, unmatched-route behavior, and user middleware are assigned to request/Starlette-RS contracts.",
+        "Existing cases cover root/router/prefix WebSocket dispatch, router dependency overrides, default validation close behavior, and a custom WebSocket exception handler. Parameter extraction, unmatched-route behavior, and user middleware are assigned to request/Starlette-RS contracts.",
         {
             name: _review(
                 "tests/test_ws_router.py",
@@ -1319,6 +1325,27 @@ APP_DEPENDENCY_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
             ]
         }
         | {
+            "test_depend_validation": _review(
+                "tests/test_ws_router.py",
+                "test_depend_validation",
+                ["request-validation", "public-api-errors", "websocket-lifecycle"],
+                _WS_FULL,
+                "A missing required Header in a FastAPI WebSocket dependency raises WebSocketRequestValidationError; the default FastAPI handler closes with the policy-violation code.",
+                [
+                    _case_link(
+                        "tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml",
+                        "fastapi.websocket-validation.default-handler-close",
+                        _WS_FULL,
+                    )
+                ],
+                "Partial: the independent input omits the required Header and observes the WebSocket close/event selectors. Generic WebSocket session behavior remains Starlette-RS-owned.",
+                (
+                    _WEBSOCKET_ROUTE,
+                    _WEBSOCKET_RESOLUTION,
+                    _APP_HANDLER_REGISTRATION,
+                    _WEBSOCKET_VALIDATION_CLOSE,
+                ),
+            ),
             "test_depend_err_handler": _review(
                 "tests/test_ws_router.py",
                 "test_depend_err_handler",
@@ -1339,7 +1366,7 @@ APP_DEPENDENCY_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                 ],
                 "Partial: the input uses an independently defined exception and direct ASGI WebSocket session; FastAPI handler registration is paired with Starlette 1.6.0 exception dispatch.",
                 (_APP_HANDLER_REGISTRATION, _STARLETTE_EXCEPTION_DISPATCH),
-            )
+            ),
         },
     ),
     "tests/test_ws_dependencies.py": _module(
@@ -1590,12 +1617,6 @@ APP_DEPENDENCY_TEST_FUNCTION_EXCLUSIONS: dict[str, dict[str, dict[str, object]]]
                     "Starlette Router.not_found emits the unmatched-WebSocket close",
                 ),
             ),
-        ),
-        "test_depend_validation": _function_exclusion(
-            "tests/test_ws_router.py",
-            "test_depend_validation",
-            "The behavior is missing Header dependency validation and its WebSocket close mapping; request-parameter validation is assigned to another wave.",
-            (_WEBSOCKET_RESOLUTION, _HTTP_EXCEPTION),
         ),
         "test_depend_err_middleware": _function_exclusion(
             "tests/test_ws_router.py",

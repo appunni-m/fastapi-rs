@@ -80,6 +80,86 @@ cases:
   source_evidence:
   - path: tests/test_starlette_urlconvertors.py
     kind: upstream_test
+- case_id: fastapi.test.test-starlette-urlconvertors.test-route-converters-int-url-path-for
+  actions:
+  - action_id: url-path-for-int-converter
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /generated-int-path
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_starlette_urlconvertors.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/first-steps.md
+    kind: upstream_documentation
+- case_id: fastapi.test.test-starlette-urlconvertors.test-route-converters-float-url-path-for
+  actions:
+  - action_id: url-path-for-float-converter
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /generated-float-path
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_starlette_urlconvertors.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/first-steps.md
+    kind: upstream_documentation
 - case_id: fastapi.test.test-starlette-urlconvertors.test-route-converters-path
   actions:
   - action_id: path-converter

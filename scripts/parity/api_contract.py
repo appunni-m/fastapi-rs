@@ -1666,6 +1666,39 @@ def build_api_surface_contract(
             values = operation.get(field, [])
             if not isinstance(values, list) or any(not isinstance(value, str) for value in values):
                 raise ContractError(f"reviewed API {field} must be a string list: {operation_id}")
+        target_binding = operation.get("target_binding")
+        if target_binding is not None:
+            known_gaps = (
+                target_binding.get("known_gaps") if isinstance(target_binding, dict) else None
+            )
+            rust_binding = (
+                target_binding.get("rust_binding") if isinstance(target_binding, dict) else None
+            )
+            if (
+                not isinstance(target_binding, dict)
+                or set(target_binding)
+                - {
+                    "implementation_owner",
+                    "status",
+                    "known_gaps",
+                    "rust_binding",
+                }
+                or target_binding.get("implementation_owner") != "fastapi-rs"
+                or target_binding.get("status") not in {"partial-contract", "unimplemented"}
+                or not isinstance(known_gaps, list)
+                or not known_gaps
+                or any(not isinstance(value, str) or not value.strip() for value in known_gaps)
+                or len(known_gaps) != len(set(known_gaps))
+                or (
+                    rust_binding is not None
+                    and (not isinstance(rust_binding, str) or not rust_binding.strip())
+                )
+            ):
+                raise ContractError(
+                    "reviewed API target binding must declare FastAPI-RS ownership, "
+                    "partial-contract or unimplemented status, and unique known gaps: "
+                    f"{operation_id}"
+                )
         for documentation_ref in docs:
             doc_selectors = documentation_ref.get("observation_selectors", [])
             if not isinstance(doc_selectors, list) or any(
@@ -2934,17 +2967,26 @@ def build_api_surface_contract(
             contract_signature_state = "signature-not-captured"
         signature_statuses[contract_signature_state] += 1
 
+        reviewed_operation = overlay_operations.get(symbol_id, {})
         implementation_owner, owner_reason, owner_source_refs = _implementation_owner_plan(
             candidate,
             candidates_by_id=candidates_by_id,
             candidate_indexes=candidate_indexes,
         )
+        reviewed_target_binding = reviewed_operation.get("target_binding")
+        if (
+            reviewed_target_binding is not None
+            and reviewed_target_binding["implementation_owner"] != implementation_owner
+        ):
+            raise ContractError(
+                f"reviewed API target binding owner differs from the source ownership plan: "
+                f"{symbol_id}"
+            )
         owner_counts[implementation_owner] += 1
 
         documentation_refs: list[dict[str, Any]] = []
         selectors: set[str] = set()
         feature_ids: set[str] = set()
-        reviewed_operation = overlay_operations.get(symbol_id, {})
         input_workflow_refs = api_input_refs_by_symbol.get(symbol_id, [])
         identity_workflow_refs = identity_workflow_refs_by_symbol.get(symbol_id, [])
         for source_path in sorted(_source_doc_paths(candidate.get("public_evidence", []))):
@@ -3004,6 +3046,27 @@ def build_api_surface_contract(
             )
             selectors.update(documentation_ref["observation_selectors"])
 
+        target_binding = {
+            "target_profile": TARGET_PROFILE,
+            "public_python_path": symbol_id,
+            "implementation_owner": implementation_owner,
+            "implementation_owner_evidence": {
+                "kind": owner_reason,
+                "source_candidate_refs": owner_source_refs,
+            },
+            "status": (
+                reviewed_target_binding["status"]
+                if reviewed_target_binding is not None
+                else "full-contract-not-established"
+            ),
+            "rust_binding": rust_binding,
+        }
+        if reviewed_target_binding is not None:
+            if "known_gaps" in reviewed_target_binding:
+                target_binding["known_gaps"] = reviewed_target_binding["known_gaps"]
+            if "rust_binding" in reviewed_target_binding:
+                target_binding["rust_binding"] = reviewed_target_binding["rust_binding"]
+
         error_refs = list(errors.get(symbol_id, []))
         for error_id in reviewed_operation.get("error_contract_ids", []):
             error_refs.extend(errors[error_id])
@@ -3059,15 +3122,7 @@ def build_api_surface_contract(
                     else "source-evidence-only; fixture link pending"
                 ),
                 "target_binding": {
-                    "target_profile": TARGET_PROFILE,
-                    "public_python_path": symbol_id,
-                    "implementation_owner": implementation_owner,
-                    "implementation_owner_evidence": {
-                        "kind": owner_reason,
-                        "source_candidate_refs": owner_source_refs,
-                    },
-                    "status": "full-contract-not-established",
-                    "rust_binding": rust_binding,
+                    **target_binding,
                 },
             }
         )

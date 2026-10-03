@@ -16,6 +16,13 @@ FASTAPI_ROOT = PROJECT_ROOT.parent / "fastapi"
 RECIPE_PATH = "tests/fixtures/input-recipes/parity/request-form-upload-source-review-2026.yaml"
 WORKLOAD_PATH = "tests/fixtures/workloads/request_form_upload_source_review_independent.py"
 OPENAPI_CASE = "fastapi.request-form-upload.source-review.openapi-all-routes"
+REQUEST_FILES_OPENAPI_RECIPE_PATH = (
+    "tests/fixtures/input-recipes/parity/request-files-openapi-documented-shapes.yaml"
+)
+REQUEST_FILES_OPENAPI_WORKLOAD_PATH = (
+    "tests/fixtures/workloads/request_files_openapi_documented_shapes.py"
+)
+REQUEST_FILES_OPENAPI_CASE = "fastapi.request-files.openapi-documented-shapes"
 UPLOADFILE_READ_SEEK_CASE = "fastapi.request-form-upload.uploadfile.read-seek-replay"
 
 SOURCE_IDENTITIES = {
@@ -31,7 +38,7 @@ SOURCE_IDENTITIES = {
     },
     "starlette-rs": {
         "distribution_version": "0.1.0",
-        "commit": "2471c669bcca1fae45e670c708d371886eb39bc4",
+        "commit": "fabb14a074303790d7ed39065617cd4872f409ac",
         "python_distribution": "starlette-rs-py",
         "role": "implements the pinned Starlette 1.6.0 generic contract",
     },
@@ -192,7 +199,7 @@ _TEST_MODULES = {
             "test_post_file": "fastapi.request-form-upload.required-file.bytes-present",
             "test_post_large_file": "fastapi.request-form-upload.required-file.large-bytes-present",
             "test_post_upload_file": "fastapi.request-form-upload.required-file.upload-present",
-            "test_openapi_schema": OPENAPI_CASE,
+            "test_openapi_schema": [OPENAPI_CASE, REQUEST_FILES_OPENAPI_CASE],
         },
         "helpers": ["get_client"],
     },
@@ -429,10 +436,18 @@ _CASE_ACTIONS: dict[str, tuple[str, ...]] = {
         "strict-annotated-request",
     ),
     OPENAPI_CASE: ("get-openapi",),
+    REQUEST_FILES_OPENAPI_CASE: ("inspect-documented-request-schemas",),
 }
 
 _HTTP_SELECTORS = ["http.status", "http.body.bytes"]
 _OPENAPI_SELECTORS = ["http.status", "http.body.bytes", "openapi.document"]
+_REQUEST_FILES_OPENAPI_SELECTORS = ["openapi.request_schema"]
+_REQUEST_FILES_OPENAPI_POINTERS = (
+    "/paths/~1files~1/post/requestBody",
+    "/components/schemas/Body_create_file_files__post",
+    "/paths/~1uploadfile~1/post/requestBody",
+    "/components/schemas/Body_create_upload_file_uploadfile__post",
+)
 
 
 def _source(path: str, start: int, end: int, role: str) -> dict[str, Any]:
@@ -461,9 +476,14 @@ def _test_span(test_path: str, function_name: str) -> dict[str, Any]:
 def _link(case_id: str) -> dict[str, Any]:
     if case_id not in _CASE_ACTIONS:
         raise KeyError(f"unknown review workflow case: {case_id}")
-    selectors = _OPENAPI_SELECTORS if case_id == OPENAPI_CASE else _HTTP_SELECTORS
+    if case_id == REQUEST_FILES_OPENAPI_CASE:
+        recipe_path = REQUEST_FILES_OPENAPI_RECIPE_PATH
+        selectors = _REQUEST_FILES_OPENAPI_SELECTORS
+    else:
+        recipe_path = RECIPE_PATH
+        selectors = _OPENAPI_SELECTORS if case_id == OPENAPI_CASE else _HTTP_SELECTORS
     return {
-        "recipe_path": RECIPE_PATH,
+        "recipe_path": recipe_path,
         "case_id": case_id,
         "action_ids": list(_CASE_ACTIONS[case_id]),
         "observation_selectors": list(selectors),
@@ -624,6 +644,14 @@ def _function_review(
             "cases preserve both plain default and Annotated route declarations. "
             "The fixture itself has no standalone HTTP observation."
         )
+    elif function_name == "test_openapi_schema" and REQUEST_FILES_OPENAPI_CASE in case_ids:
+        rationale = (
+            "The source performs GET /openapi.json and snapshots the full tutorial app schema. "
+            "The existing source-review case observes a full document for independent routes; "
+            "the additional focused case projects only requestBody objects and their component "
+            "schemas for the documented File-bytes and UploadFile route shapes. The focused "
+            "recipe stores no OpenAPI or HTTP response output."
+        )
     elif function_name == "test_openapi_schema":
         rationale = (
             "The source performs GET /openapi.json and snapshots the full tutorial "
@@ -731,7 +759,7 @@ def _build_review_mappings() -> dict[str, dict[str, Any]]:
                 *_common_sources(spec["docs"]),
             ],
             "stimulus_notes": (
-                f"Input-only recipe {RECIPE_PATH}; independent workload {WORKLOAD_PATH}. "
+                "Input-only recipes and independent workloads are declared by each workflow link. "
                 "Every test function maps to a case and selectors. Fixture functions "
                 "map to the module's full set of reviewed test cases as setup provenance."
             ),
@@ -746,6 +774,9 @@ __all__ = [
     "FORM_UPLOAD_SOURCE_REVIEW_MAPPINGS",
     "OWNER_BOUNDARY",
     "RECIPE_PATH",
+    "REQUEST_FILES_OPENAPI_CASE",
+    "REQUEST_FILES_OPENAPI_RECIPE_PATH",
+    "REQUEST_FILES_OPENAPI_WORKLOAD_PATH",
     "SOURCE_IDENTITIES",
     "UPLOADFILE_READ_SEEK_CASE",
     "UPLOADFILE_READ_SEEK_REVIEW",
@@ -761,32 +792,44 @@ def validate_static_review() -> dict[str, int]:
 
     from scripts.parity.contract import WORKFLOW_SCHEMAS, read_json
 
-    recipe_file = PROJECT_ROOT / RECIPE_PATH
-    try:
-        recipe = yaml.safe_load(recipe_file.read_text(encoding="utf-8"))
-    except (OSError, UnicodeError, yaml.YAMLError) as exc:
-        raise ValueError(f"cannot read {RECIPE_PATH}: {exc}") from exc
-    schema_path = WORKFLOW_SCHEMAS.get(recipe.get("schema"))
-    if schema_path is None:
-        raise ValueError(f"unsupported recipe schema in {RECIPE_PATH}")
-    errors = sorted(
-        Draft202012Validator(read_json(schema_path)).iter_errors(recipe),
-        key=lambda error: (tuple(str(part) for part in error.absolute_path), error.message),
-    )
-    if errors:
-        details = "; ".join(
-            f"/{'/'.join(str(part) for part in error.absolute_path)}: {error.message}"
-            for error in errors
+    reviewed_recipe_workloads = {
+        RECIPE_PATH: WORKLOAD_PATH,
+        REQUEST_FILES_OPENAPI_RECIPE_PATH: REQUEST_FILES_OPENAPI_WORKLOAD_PATH,
+    }
+    recipe_by_path: dict[str, dict[str, Any]] = {}
+    case_by_id: dict[str, dict[str, Any]] = {}
+    case_recipe_by_id: dict[str, str] = {}
+    for recipe_path, workload_path in reviewed_recipe_workloads.items():
+        recipe_file = PROJECT_ROOT / recipe_path
+        try:
+            recipe = yaml.safe_load(recipe_file.read_text(encoding="utf-8"))
+        except (OSError, UnicodeError, yaml.YAMLError) as exc:
+            raise ValueError(f"cannot read {recipe_path}: {exc}") from exc
+        schema_path = WORKFLOW_SCHEMAS.get(recipe.get("schema"))
+        if schema_path is None:
+            raise ValueError(f"unsupported recipe schema in {recipe_path}")
+        errors = sorted(
+            Draft202012Validator(read_json(schema_path)).iter_errors(recipe),
+            key=lambda error: (tuple(str(part) for part in error.absolute_path), error.message),
         )
-        raise ValueError(f"recipe schema errors: {details}")
-
-    case_by_id = {case["case_id"]: case for case in recipe["cases"]}
-    if len(case_by_id) != len(recipe["cases"]):
-        raise ValueError("recipe contains duplicate case IDs")
-    if recipe["workload"].get("file") != WORKLOAD_PATH:
-        raise ValueError("recipe does not point to the reviewed independent workload")
-    if recipe["workload"].get("factory") != "create_app":
-        raise ValueError("recipe does not select the reviewed workload factory")
+        if errors:
+            details = "; ".join(
+                f"/{'/'.join(str(part) for part in error.absolute_path)}: {error.message}"
+                for error in errors
+            )
+            raise ValueError(f"recipe schema errors in {recipe_path}: {details}")
+        if recipe["workload"].get("file") != workload_path:
+            raise ValueError(f"recipe does not point to the reviewed workload: {recipe_path}")
+        if recipe["workload"].get("factory") != "create_app":
+            raise ValueError(f"recipe does not select create_app: {recipe_path}")
+        local_cases = {case["case_id"]: case for case in recipe["cases"]}
+        if len(local_cases) != len(recipe["cases"]):
+            raise ValueError(f"recipe contains duplicate case IDs: {recipe_path}")
+        if case_by_id.keys() & local_cases.keys():
+            raise ValueError(f"duplicate case IDs across reviewed recipes: {recipe_path}")
+        recipe_by_path[recipe_path] = recipe
+        case_by_id.update(local_cases)
+        case_recipe_by_id.update({case_id: recipe_path for case_id in local_cases})
     action_ids_by_case = {
         case_id: {action["action_id"] for action in case["actions"]}
         for case_id, case in case_by_id.items()
@@ -826,11 +869,13 @@ def validate_static_review() -> dict[str, int]:
             if not mapping.get("workflow_cases"):
                 raise ValueError(f"missing function workflow link: {test_path}:{function_name}")
             for link in mapping["workflow_cases"]:
-                if link["recipe_path"] != RECIPE_PATH:
+                if link["recipe_path"] not in recipe_by_path:
                     raise ValueError(f"wrong recipe link for {test_path}:{function_name}")
                 case_id = link["case_id"]
                 if case_id not in case_by_id:
                     raise ValueError(f"unknown case {case_id} for {test_path}:{function_name}")
+                if case_recipe_by_id[case_id] != link["recipe_path"]:
+                    raise ValueError(f"case {case_id} is linked through the wrong recipe")
                 if not set(link["action_ids"]).issubset(action_ids_by_case[case_id]):
                     raise ValueError(f"unknown action link for {test_path}:{function_name}")
                 available_selectors = set().union(
@@ -902,19 +947,38 @@ def validate_static_review() -> dict[str, int]:
         if not (1 <= source["start_line"] <= source["end_line"] <= len(source_lines)):
             raise ValueError(f"source line span is outside {source['path']}")
 
-    workload_file = PROJECT_ROOT / WORKLOAD_PATH
-    workload_tree = ast.parse(workload_file.read_text(encoding="utf-8"))
-    workload_factories = {
-        node.name
-        for node in workload_tree.body
-        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
-    }
-    if "create_app" not in workload_factories:
-        raise ValueError(f"missing independent workload factory in {WORKLOAD_PATH}")
+    for workload_path in reviewed_recipe_workloads.values():
+        workload_file = PROJECT_ROOT / workload_path
+        workload_tree = ast.parse(workload_file.read_text(encoding="utf-8"))
+        workload_factories = {
+            node.name
+            for node in workload_tree.body
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+        }
+        if "create_app" not in workload_factories:
+            raise ValueError(f"missing independent workload factory in {workload_path}")
     if set(case_by_id) != set(_CASE_ACTIONS):
         raise ValueError("recipe case IDs and reviewed action registry differ")
     if linked_case_ids != set(case_by_id):
         raise ValueError("recipe contains an unlinked case")
+
+    documented_shapes_case = case_by_id.get(REQUEST_FILES_OPENAPI_CASE)
+    if documented_shapes_case is None:
+        raise ValueError("missing documented request-files OpenAPI case")
+    documented_actions = documented_shapes_case["actions"]
+    if len(documented_actions) != 1 or documented_actions[0]["action_id"] != (
+        "inspect-documented-request-schemas"
+    ):
+        raise ValueError("documented request-files OpenAPI action mapping is stale")
+    documented_observations = documented_actions[0]["observations"]
+    if (
+        len(documented_observations) != 1
+        or documented_observations[0]["kind"] != "openapi"
+        or tuple(documented_observations[0]["json_pointers"]) != _REQUEST_FILES_OPENAPI_POINTERS
+    ):
+        raise ValueError(
+            "documented request-files case must use its exact OpenAPI projections only"
+        )
 
     large_case = case_by_id["fastapi.request-form-upload.required-file.large-bytes-present"]
     for action in large_case["actions"]:
@@ -930,8 +994,8 @@ def validate_static_review() -> dict[str, int]:
         "functions": function_count,
         "test_functions": test_function_count,
         "fixture_functions": fixture_function_count,
-        "recipes": 1,
+        "recipes": len(reviewed_recipe_workloads),
         "cases": len(case_by_id),
-        "workloads": 1,
+        "workloads": len(reviewed_recipe_workloads),
         "read_seek_source_spans": len(UPLOADFILE_READ_SEEK_REVIEW["source_evidence"]),
     }

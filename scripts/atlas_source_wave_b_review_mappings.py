@@ -709,26 +709,35 @@ _EXCEPTION_MAPPINGS = _module(
 _CONVERTOR_TEST = "tests/test_starlette_urlconvertors.py"
 _CONVERTOR_MAPPINGS = _module(
     _CONVERTOR_TEST,
-    "HTTP converter cases combine Starlette's route matching and conversion with FastAPI's path/query parameter extraction. The direct app.url_path_for test is generic Starlette behavior.",
+    "Integer and float converter source functions are mapped to both their HTTP request observations and independently authored app.url_path_for projections; path and query conversion remain separate cases. URL formatting and generic route lookup semantics are owned by Starlette.",
     {
         "test_route_converters_int": _mapped(
             _CONVERTOR_TEST,
             "test_route_converters_int",
             ["app-routing", "request-validation", "response-serialization"],
-            "An integer path-converter request is selected through the FastAPI endpoint and typed path parameter.",
-            "The source also calls app.url_path_for; the ASGI workflow cannot observe that direct Python API assertion, which is covered as Starlette-owned behavior in the dedicated exclusion below.",
+            "The source's integer path-converter request is selected through the FastAPI endpoint and typed path parameter, and the app.url_path_for assertion is projected through an independent HTTP endpoint.",
+            "Both HTTP handling and integer URL formatting are selected as response bytes. The projection does not call the direct Python API from the workflow or claim URLPath type behavior, missing-name/parameter errors, or broader Starlette lookup semantics.",
             [
                 _link(
                     ROUTER_RECIPE,
                     "fastapi.source-wave-b.router-config.convertors.integer",
                     ["request-integer-convertor"],
                     _HTTP,
-                )
+                ),
+                _link(
+                    URL_PATH_FOR_RECIPE,
+                    "fastapi.test.test-starlette-urlconvertors.test-route-converters-int-url-path-for",
+                    ["url-path-for-int-converter"],
+                    _HTTP_HEADERS,
+                ),
             ],
             (
                 _STARLETTE_ROUTE_MATCH,
                 _STARLETTE_CONVERTOR_MATCH,
                 _STARLETTE_INTEGER_FLOAT,
+                _STARLETTE_URL_PATH,
+                _STARLETTE_ROUTER_URL_PATH,
+                _STARLETTE_ROUTE_URL_PATH,
                 _DEPENDANT_SIGNATURES,
             ),
         ),
@@ -736,20 +745,29 @@ _CONVERTOR_MAPPINGS = _module(
             _CONVERTOR_TEST,
             "test_route_converters_float",
             ["app-routing", "request-validation", "response-serialization"],
-            "A floating-point path-converter request is selected through the FastAPI endpoint and typed path parameter.",
-            "The source also calls app.url_path_for; this Python API operation is not an ASGI observation. Generic float conversion remains a Starlette 1.6.0 contract.",
+            "The source's floating-point path-converter request is selected through the FastAPI endpoint and typed path parameter, and the app.url_path_for assertion is projected through an independent HTTP endpoint.",
+            "Both HTTP handling and float URL formatting are selected as response bytes. The projection does not call the direct Python API from the workflow or claim URLPath type behavior, missing-name/parameter errors, or broader Starlette lookup semantics.",
             [
                 _link(
                     ROUTER_RECIPE,
                     "fastapi.source-wave-b.router-config.convertors.float",
                     ["request-float-convertor"],
                     _HTTP,
-                )
+                ),
+                _link(
+                    URL_PATH_FOR_RECIPE,
+                    "fastapi.test.test-starlette-urlconvertors.test-route-converters-float-url-path-for",
+                    ["url-path-for-float-converter"],
+                    _HTTP_HEADERS,
+                ),
             ],
             (
                 _STARLETTE_ROUTE_MATCH,
                 _STARLETTE_CONVERTOR_MATCH,
                 _STARLETTE_INTEGER_FLOAT,
+                _STARLETTE_URL_PATH,
+                _STARLETTE_ROUTER_URL_PATH,
+                _STARLETTE_ROUTE_URL_PATH,
                 _DEPENDANT_SIGNATURES,
             ),
         ),

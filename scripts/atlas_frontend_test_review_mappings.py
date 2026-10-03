@@ -14,12 +14,17 @@ from typing import Any
 _TEST = "tests/test_frontend.py"
 _DOC = "docs/en/docs/tutorial/frontend.md"
 _RECIPE = "tests/fixtures/input-recipes/parity/frontend-fallback-routing-source-review.yaml"
+_DEPENDENCY_RECIPE = "tests/fixtures/input-recipes/parity/frontend-dependency-source-wave.yaml"
 _SURFACE_CASE = "fastapi.frontend.fallback-routing-surface"
 _CONFIG_AUTO_CASE = "fastapi.frontend.configuration.auto-check-directory-production"
 _CONFIG_FALLBACK_CASE = "fastapi.frontend.configuration.explicit-fallback-file-required"
 _CONFIG_INVALID_CASE = "fastapi.frontend.configuration.invalid-fallback-value"
 _CONFIG_DEFERRED_CASE = "fastapi.frontend.configuration.check-dir-false-defers-check"
 _ROOT_PATH_CASE = "fastapi.test.test-frontend.test-frontend-respects-root-path"
+_DEPENDENCY_ORDER_CASE = "fastapi.frontend.dependencies-nested-inclusion-order"
+_DEPENDENCY_OVERRIDE_CASE = "fastapi.frontend.dependencies-override"
+_DEPENDENCY_VALIDATION_CASE = "fastapi.frontend.dependencies-validation-422"
+_API_ROUTE_WINS_CASE = "fastapi.frontend.api-route-wins"
 
 
 def _source(path: str, start: int, end: int, role: str) -> dict[str, Any]:
@@ -37,10 +42,11 @@ def _candidate(
     sources: list[dict[str, Any]],
     feature_ids: list[str] | None = None,
     gate: str | None = None,
+    recipe_path: str = _RECIPE,
 ) -> dict[str, Any]:
     test_source = _source(_TEST, start, end, "exact upstream FastAPI 0.141.1 test function span")
     workflow_link = {
-        "recipe_path": _RECIPE,
+        "recipe_path": recipe_path,
         "case_id": case_id,
         "action_ids": action_ids,
         "observation_selectors": selectors,
@@ -52,7 +58,7 @@ def _candidate(
         "replace_features": True,
         "supporting_sources": [test_source, *sources],
         "stimulus_notes": (
-            f"Use {_RECIPE}, case {case_id}, actions {', '.join(action_ids) or '(construction only)'}. "
+            f"Use {recipe_path}, case {case_id}, actions {', '.join(action_ids) or '(construction only)'}. "
             "The recipe supplies only independently authored inputs and observation selectors."
         ),
         "workflow_cases": [workflow_link],
@@ -140,6 +146,12 @@ _DOC_DIRECTORY = _source(
     131,
     "documented check_dir behavior and APIRouter prefix integration",
 )
+_DOC_DEPENDENCIES = _source(
+    _DOC,
+    133,
+    139,
+    "documented FastAPI app, router, and include_router dependencies on frontend responses",
+)
 
 _ASGI_GATE = (
     "Input mapping only. It samples the listed FastAPI-owned fallback, route-priority, and "
@@ -148,6 +160,12 @@ _ASGI_GATE = (
     "Starlette 1.6.0 behavior under the sibling Starlette-RS contract. The recipe uses direct "
     "ASGI observations, not TestClient parity."
 )
+_DEPENDENCY_GATE = (
+    "Input mapping only. It samples FastAPI frontend dependency resolution, response-state "
+    "injection, validation, and low-priority route selection through direct ASGI inputs. "
+    "Static-file lookup, file headers, MIME types, validators, and static response emission "
+    "remain assigned to the Starlette 1.6.0 / Starlette-RS contract."
+)
 
 
 FRONTEND_TEST_REVIEW_MAPPINGS = {
@@ -155,6 +173,7 @@ FRONTEND_TEST_REVIEW_MAPPINGS = {
         "feature_ids": ["app-routing", "public-api-errors"],
         "module_observation_selectors": [
             "http.status",
+            "http.headers.ordered",
             "http.body.bytes",
             "construction.outcome",
             "construction.exception_class",
@@ -215,23 +234,43 @@ FRONTEND_TEST_REVIEW_MAPPINGS = {
                 "case_ids": [_ROOT_PATH_CASE],
                 "observation_selectors": ["http.status", "http.body.bytes"],
             },
+            {
+                "recipe_path": _DEPENDENCY_RECIPE,
+                "case_ids": [
+                    _DEPENDENCY_ORDER_CASE,
+                    _DEPENDENCY_OVERRIDE_CASE,
+                    _DEPENDENCY_VALIDATION_CASE,
+                    _API_ROUTE_WINS_CASE,
+                ],
+                "observation_selectors": [
+                    "http.status",
+                    "http.headers.ordered",
+                    "http.body.bytes",
+                ],
+            },
         ],
         "rationale": (
             "FastAPI 0.141.1 adds fallback policy and low-priority frontend routing on top of "
-            "Starlette static files. This independent wave samples fallback policy, API and "
-            "included-router precedence, and construction/deferred directory configuration."
+            "Starlette static files. The independent waves sample fallback policy, API and "
+            "included-router precedence, frontend dependency resolution, and "
+            "construction/deferred directory configuration."
         ),
         "supporting_sources": [
             _FALLBACK_IMPL,
             _FRONTEND_REGISTRATION,
             _APP_FRONTEND,
+            _FRONTEND_DEPENDENCIES,
+            _FRONTEND_DEPENDENCY_DISPATCH,
             _DOC_FALLBACK,
             _DOC_DIRECTORY,
+            _DOC_DEPENDENCIES,
         ],
         "stimulus_notes": (
-            "The source-reviewed recipe uses fresh per-case apps, deterministic temporary static "
-            "directories, and direct ASGI requests. The fixed missing-directory input is used "
-            "only for deferred check_dir error capture."
+            "The source-reviewed recipes use fresh per-case apps, deterministic temporary static "
+            "directories, and direct ASGI requests. The dependency wave exposes nested dependency "
+            "order through an injected response header, without using the planned dependency-order "
+            "selector. The fixed missing-directory input is used only for deferred check_dir "
+            "error capture."
         ),
         "functions": {
             "test_404_fallback_handles_missing_assets": _candidate(
@@ -461,6 +500,109 @@ FRONTEND_TEST_REVIEW_MAPPINGS = {
                     _ASGI_GATE
                     + " The two cookie requests sample FastAPI dependency enforcement; file lookup and response emission remain Starlette-owned."
                 ),
+            ),
+            "test_include_router_frontend_dependencies_apply_in_nested_order": _candidate(
+                start=374,
+                end=399,
+                case_id=_DEPENDENCY_ORDER_CASE,
+                action_ids=["nested-frontend-dependency-order"],
+                selectors=["http.status", "http.headers.ordered", "http.body.bytes"],
+                rationale=(
+                    "App, app-include, parent-router, parent-include, and child-router dependencies "
+                    "resolve in order for a nested APIRouter frontend; the final injected response "
+                    "header exposes that order."
+                ),
+                sources=[
+                    _FRONTEND_DEPENDENCIES,
+                    _FRONTEND_DEPENDENCY_DISPATCH,
+                    _DOC_DEPENDENCIES,
+                ],
+                feature_ids=["app-routing", "dependency-security"],
+                gate=(
+                    _DEPENDENCY_GATE
+                    + " This case observes FastAPI dependency resolution and response-state injection; "
+                    "static-file lookup and emission remain Starlette-owned."
+                ),
+                recipe_path=_DEPENDENCY_RECIPE,
+            ),
+            "test_frontend_dependency_overrides_apply": _candidate(
+                start=401,
+                end=420,
+                case_id=_DEPENDENCY_OVERRIDE_CASE,
+                action_ids=["overridden-frontend-dependency"],
+                selectors=["http.status", "http.headers.ordered", "http.body.bytes"],
+                rationale=(
+                    "FastAPI dependency overrides are applied before a frontend response is served; "
+                    "the replacement dependency adds an injected response header."
+                ),
+                sources=[
+                    _FRONTEND_DEPENDENCIES,
+                    _FRONTEND_DEPENDENCY_DISPATCH,
+                    _DOC_DEPENDENCIES,
+                ],
+                feature_ids=[
+                    "app-routing",
+                    "dependency-overrides",
+                    "dependency-security",
+                ],
+                gate=(
+                    _DEPENDENCY_GATE
+                    + " This case samples the frontend dependency override path; generic dependency "
+                    "execution behavior remains assigned to the FastAPI dependency contract."
+                ),
+                recipe_path=_DEPENDENCY_RECIPE,
+            ),
+            "test_frontend_dependency_validation_errors_return_422": _candidate(
+                start=526,
+                end=544,
+                case_id=_DEPENDENCY_VALIDATION_CASE,
+                action_ids=["missing-required-token"],
+                selectors=["http.status", "http.body.bytes"],
+                rationale=(
+                    "A required query parameter declared by an app-level dependency on a frontend "
+                    "route produces FastAPI's request-validation response."
+                ),
+                sources=[
+                    _FRONTEND_DEPENDENCIES,
+                    _FRONTEND_DEPENDENCY_DISPATCH,
+                    _DOC_DEPENDENCIES,
+                ],
+                feature_ids=[
+                    "app-routing",
+                    "dependency-security",
+                    "request-validation",
+                    "status-codes",
+                ],
+                gate=(
+                    _DEPENDENCY_GATE
+                    + " The body bytes and status are compared at the ASGI boundary; the workflow "
+                    "does not claim support for the partial validation.error_details selector."
+                ),
+                recipe_path=_DEPENDENCY_RECIPE,
+            ),
+            "test_frontend_dependencies_do_not_run_when_api_route_wins": _candidate(
+                start=423,
+                end=445,
+                case_id=_API_ROUTE_WINS_CASE,
+                action_ids=["colliding-api-route-precedes-frontend"],
+                selectors=["http.status", "http.body.bytes"],
+                rationale=(
+                    "A regular FastAPI API route wins over a colliding APIRouter frontend, so that "
+                    "frontend's dependency is not resolved. The input makes that dependency fail "
+                    "if the frontend branch is selected."
+                ),
+                sources=[
+                    _LOW_PRIORITY_DISPATCH,
+                    _FRONTEND_DEPENDENCIES,
+                    _DOC_DEPENDENCIES,
+                ],
+                feature_ids=["app-routing", "dependency-security"],
+                gate=(
+                    _DEPENDENCY_GATE
+                    + " The response comparison checks FastAPI route selection and the resulting "
+                    "frontend-dependency branch; generic Starlette route matching is not claimed."
+                ),
+                recipe_path=_DEPENDENCY_RECIPE,
             ),
             "test_check_dir_auto_fails_outside_development": _candidate(
                 start=1247,
