@@ -6735,6 +6735,56 @@ def load_callable_classification_review(
     return review
 
 
+def _source_api_import_binding_local_name(
+    source_tree: ast.Module,
+    *,
+    source_path: str,
+    source_line: int,
+    binding: dict[str, Any],
+) -> str:
+    """Match a reviewed import binding to its exact pinned AST alias."""
+    line_nodes = [
+        node
+        for node in ast.walk(source_tree)
+        if isinstance(node, (ast.Import, ast.ImportFrom)) and node.lineno == source_line
+    ]
+    if binding.get("form") == "import":
+        for node in line_nodes:
+            if not isinstance(node, ast.Import):
+                continue
+            for alias in node.names:
+                if alias.name != binding.get("module") or alias.asname != binding.get("as_name"):
+                    continue
+                local_name = alias.asname or alias.name.split(".", 1)[0]
+                if binding.get("level") != 0 or binding.get("local_name") != local_name:
+                    break
+                return local_name
+        raise AtlasError(
+            "source API plain-import binding differs from its pinned AST: " + source_path
+        )
+
+    for node in line_nodes:
+        if not isinstance(node, ast.ImportFrom):
+            continue
+        if node.level == 0:
+            absolute_module = node.module or ""
+        else:
+            package_parts = list(Path(source_path).parent.parts)
+            base_length = len(package_parts) - node.level + 1
+            if base_length < 0:
+                continue
+            module_parts = package_parts[:base_length]
+            if node.module:
+                module_parts.extend(node.module.split("."))
+            absolute_module = ".".join(module_parts)
+        if absolute_module != binding.get("module"):
+            continue
+        for alias in node.names:
+            if alias.name == binding.get("name"):
+                return alias.asname or alias.name
+    raise AtlasError("source API from-import binding differs from its pinned AST: " + source_path)
+
+
 def load_source_api_classification_review(
     path: Path,
     *,
@@ -6773,6 +6823,9 @@ def load_source_api_classification_review(
 
     counts: Counter[str] = Counter()
     root = fastapi_root.resolve()
+    source_text_cache: dict[str, str] = {}
+    source_tree_cache: dict[str, ast.Module] = {}
+    source_import_use_lines_cache: dict[tuple[str, str], set[int]] = {}
     for row in rows:
         identifier = row.get("id")
         recommendation = row.get("recommendation")
@@ -6802,9 +6855,7 @@ def load_source_api_classification_review(
                 "source API classification review row is malformed: " + str(identifier)
             )
         if candidate_kind == "import_binding":
-            if not isinstance(binding, dict) or not all(
-                isinstance(binding.get(key), str) for key in ("module", "name", "target")
-            ):
+            if not isinstance(binding, dict):
                 raise AtlasError("source API import review lacks binding identity: " + identifier)
         elif binding is not None:
             raise AtlasError("non-import source API review row has binding identity: " + identifier)
@@ -6816,12 +6867,47 @@ def load_source_api_classification_review(
             raise AtlasError("source API review source escapes FastAPI: " + identifier) from exc
         if not source_path.is_file():
             raise AtlasError("source API review source is missing: " + source["path"])
-        source_lines = source_path.read_text(encoding="utf-8", errors="replace").splitlines()
+        source_text = source_text_cache.get(source["path"])
+        if source_text is None:
+            source_text = source_path.read_text(encoding="utf-8", errors="replace")
+            source_text_cache[source["path"]] = source_text
+        source_lines = source_text.splitlines()
         if not 1 <= source["line"] <= len(source_lines):
             raise AtlasError("source API review source line is out of range: " + identifier)
 
+        source_tree = source_tree_cache.get(source["path"])
+        if source_tree is None:
+            try:
+                source_tree = ast.parse(source_text, filename=source["path"])
+            except SyntaxError as exc:
+                raise AtlasError(
+                    "source API review source does not parse: " + source["path"]
+                ) from exc
+            source_tree_cache[source["path"]] = source_tree
+        import_local_name: str | None = None
+        import_use_lines: set[int] = set()
+        if candidate_kind == "import_binding":
+            import_local_name = _source_api_import_binding_local_name(
+                source_tree,
+                source_path=source["path"],
+                source_line=source["line"],
+                binding=binding,
+            )
+            use_cache_key = (source["path"], import_local_name)
+            import_use_lines = source_import_use_lines_cache.get(use_cache_key, set())
+            if not import_use_lines:
+                import_use_lines = {
+                    node.lineno
+                    for node in ast.walk(source_tree)
+                    if isinstance(node, ast.Name)
+                    and node.id == import_local_name
+                    and isinstance(node.ctx, ast.Load)
+                }
+                source_import_use_lines_cache[use_cache_key] = import_use_lines
+
         evidence_roles: set[str] = set()
         has_public_docs = False
+        implementation_use_lines: set[int] = set()
         for reference in evidence:
             if (
                 not isinstance(reference, dict)
@@ -6849,6 +6935,25 @@ def load_source_api_classification_review(
             ).splitlines()
             if not 1 <= reference["line"] <= end_line <= len(evidence_lines):
                 raise AtlasError("source API review evidence line is out of range: " + identifier)
+            if (
+                reference["role"] == "fastapi-implementation-use"
+                and candidate_kind == "import_binding"
+            ):
+                if reference["path"] != source["path"]:
+                    raise AtlasError(
+                        "source API import implementation-use evidence must be in its binding module: "
+                        + identifier
+                    )
+                if reference["line"] not in import_use_lines:
+                    raise AtlasError(
+                        "source API import implementation-use line is not a load of its binding: "
+                        + identifier
+                    )
+                if reference["line"] in implementation_use_lines:
+                    raise AtlasError(
+                        "source API import implementation-use line is duplicated: " + identifier
+                    )
+                implementation_use_lines.add(reference["line"])
             evidence_roles.add(reference["role"])
             has_public_docs |= reference["path"].startswith("docs/en/docs/")
 
@@ -7475,10 +7580,28 @@ def apply_source_api_classification_review(
     review: dict[str, Any],
     *,
     selection: dict[str, list[str]],
+    fastapi_root: Path,
 ) -> None:
     """Apply reviewed source-only dispositions to the exact selected candidate slice."""
     imported_modules = set(selection["uncertain_imported_modules"])
     candidate_prefixes = tuple(selection["uncertain_candidate_id_prefixes"])
+    candidate_ids = set(selection["uncertain_candidate_ids"])
+    unknown_ids = candidate_ids - set(candidates)
+    if unknown_ids:
+        raise AtlasError(
+            "source API selection contains unknown candidate IDs: "
+            + ", ".join(sorted(unknown_ids)[:5])
+        )
+    non_uncertain_ids = {
+        identifier
+        for identifier in candidate_ids
+        if candidates[identifier].get("classification") != "uncertain"
+    }
+    if non_uncertain_ids:
+        raise AtlasError(
+            "source API selection contains candidates that are not uncertain: "
+            + ", ".join(sorted(non_uncertain_ids)[:5])
+        )
     expected = {
         identifier
         for identifier, candidate in candidates.items()
@@ -7489,6 +7612,7 @@ def apply_source_api_classification_review(
                 and candidate.get("imported_module") in imported_modules
             )
             or identifier.startswith(candidate_prefixes)
+            or identifier in candidate_ids
         )
     }
     rows = {row["id"]: row for row in review["rows"]}
@@ -7499,6 +7623,7 @@ def apply_source_api_classification_review(
             "source API classification review does not match its uncertain candidate denominator; "
             f"missing={missing[:5]}, extra={extra[:5]}"
         )
+    source_tree_cache: dict[str, ast.Module] = {}
     for identifier, row in rows.items():
         candidate = candidates[identifier]
         source = row["source"]
@@ -7517,13 +7642,42 @@ def apply_source_api_classification_review(
                 "source API review source location differs from inventory: " + identifier
             )
         binding = row.get("binding")
-        if binding is not None and (
-            candidate.get("kind") != "import_binding"
-            or binding.get("module") != candidate.get("imported_module")
-            or binding.get("name") != candidate.get("imported_name")
-            or binding.get("target") != candidate.get("target_path")
-        ):
-            raise AtlasError("source API review binding differs from inventory: " + identifier)
+        if binding is not None:
+            if candidate.get("kind") != "import_binding":
+                raise AtlasError("source API review binding differs from inventory: " + identifier)
+            if binding.get("form") == "import":
+                if (
+                    candidate.get("imported_module") is not None
+                    or binding.get("module") != candidate.get("imported_name")
+                    or binding.get("local_name") != candidate.get("local_name")
+                    or binding.get("target") != candidate.get("target_path")
+                ):
+                    raise AtlasError(
+                        "source API plain-import binding differs from inventory: " + identifier
+                    )
+            elif (
+                binding.get("module") != candidate.get("imported_module")
+                or binding.get("name") != candidate.get("imported_name")
+                or binding.get("target") != candidate.get("target_path")
+            ):
+                raise AtlasError("source API review binding differs from inventory: " + identifier)
+            source_tree = source_tree_cache.get(source["path"])
+            if source_tree is None:
+                source_path = (fastapi_root / source["path"]).resolve()
+                source_tree = ast.parse(
+                    source_path.read_text(encoding="utf-8"), filename=source["path"]
+                )
+                source_tree_cache[source["path"]] = source_tree
+            local_name = _source_api_import_binding_local_name(
+                source_tree,
+                source_path=source["path"],
+                source_line=source["line"],
+                binding=binding,
+            )
+            if local_name != candidate.get("local_name"):
+                raise AtlasError(
+                    "source API import binding local name differs from inventory: " + identifier
+                )
 
         candidate["classification"] = row["recommendation"]
         candidate["classification_evidence_rule"] = (
@@ -7919,7 +8073,10 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
     apply_callable_classification_review(candidates, callable_review)
     apply_import_binding_classification_review(candidates, import_binding_review)
     apply_source_api_classification_review(
-        candidates, source_api_review, selection=source_api_selection
+        candidates,
+        source_api_review,
+        selection=source_api_selection,
+        fastapi_root=fastapi_root,
     )
     apply_public_candidate_classification_review(candidates, public_candidate_review)
     for record in candidates.values():

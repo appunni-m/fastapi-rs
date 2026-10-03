@@ -16,6 +16,40 @@ else:
     )
 
 DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
+    "docs_src/advanced_middleware/tutorial001_py310.py": {
+        "rationale": (
+            "The pinned example installs HTTPSRedirectMiddleware around a GET route. The "
+            "independent workflow sends an HTTP request to a separately named /status route "
+            "and observes the redirect response status, ordered headers, and body. This "
+            "supports only the redirect behavior; it does not claim the source route or body, "
+            "HTTPS dispatch, or middleware composition."
+        ),
+        "supporting_sources": [
+            {
+                "path": "docs_src/advanced_middleware/tutorial001_py310.py",
+                "start_line": 2,
+                "end_line": 2,
+                "role": "documented import of HTTPSRedirectMiddleware",
+            },
+            {
+                "path": "docs_src/advanced_middleware/tutorial001_py310.py",
+                "start_line": 6,
+                "end_line": 6,
+                "role": "documented HTTPSRedirectMiddleware installation",
+            },
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/middleware.yaml",
+                "case_ids": ["fastapi.middleware.https-redirect-http"],
+                "observation_selectors": [
+                    "http.body.bytes",
+                    "http.headers.ordered",
+                    "http.status",
+                ],
+            }
+        ],
+    },
     "docs_src/authentication_error_status_code/tutorial001_an_py310.py": {
         "rationale": (
             "The FastAPI 0.141.1 example overrides HTTPBearer's missing-credentials error to "
@@ -2806,6 +2840,601 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
     }
 )
 
+DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
+    {
+        "docs_src/cookie_param_models/tutorial001_py310.py": {
+            "rationale": (
+                "The FastAPI 0.141.1 example binds a Pydantic cookie model at an item route. "
+                "The independent cookie-model case observes response status, headers, body, and "
+                "the route parameter schema on a separate session route. This is a partial "
+                "binding/schema sample: it does not establish the source field names and literals, "
+                "missing required-cookie behavior, duplicate-cookie parsing, or every optional-cookie branch."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/cookie_param_models/tutorial001_py310.py",
+                    "start_line": 7,
+                    "end_line": 15,
+                    "role": "documented cookie model fields and Cookie-bound endpoint",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/docs-request-schema.yaml",
+                    "case_ids": [
+                        "fastapi.docs.request-schema.tutorial-cookie-param-models.cookie-model"
+                    ],
+                    "observation_selectors": [
+                        "http.body.bytes",
+                        "http.headers.ordered",
+                        "http.status",
+                        "openapi.paths",
+                    ],
+                }
+            ],
+        },
+        "docs_src/custom_docs_ui/tutorial001_py310.py": {
+            "rationale": (
+                "The FastAPI 0.141.1 example disables built-in documentation routes and defines "
+                "a custom Swagger UI HTML route. The independent case observes a separately named "
+                "custom-docs response and an OpenAPI info projection. It does not establish the "
+                "source route path or HTML/assets, OAuth redirect route, ReDoc route, or disabled-route misses."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/custom_docs_ui/tutorial001_py310.py",
+                    "start_line": 8,
+                    "end_line": 19,
+                    "role": "disabled built-in docs and documented custom Swagger UI route",
+                },
+                {
+                    "path": "docs_src/custom_docs_ui/tutorial001_py310.py",
+                    "start_line": 22,
+                    "end_line": 33,
+                    "role": "additional OAuth redirect and ReDoc routes outside the selected case",
+                },
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/docs-openapi-interface.yaml",
+                    "case_ids": [
+                        "fastapi.docs.openapi-interface.how-to-custom-docs-ui-assets.custom-docs-assets"
+                    ],
+                    "observation_selectors": [
+                        "docs.response.status",
+                        "http.body.bytes",
+                        "http.headers.ordered",
+                        "http.status",
+                        "openapi.document",
+                    ],
+                }
+            ],
+        },
+        "docs_src/custom_response/tutorial006c_py310.py": {
+            "rationale": (
+                "The FastAPI 0.141.1 example declares a RedirectResponse with status 302. "
+                "The selected case retrieves OpenAPI and observes the response-status slot for "
+                "the source path plus the retrieval status. It does not send a request to the "
+                "redirect route or establish Location, response-body, or redirect-follow behavior."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/custom_response/tutorial006c_py310.py",
+                    "start_line": 7,
+                    "end_line": 9,
+                    "role": "documented redirect response class, status, and endpoint",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/custom-response-tutorial006c-openapi-review.yaml",
+                    "case_ids": ["fastapi.custom-response.tutorial006c.openapi-response-status"],
+                    "observation_selectors": ["http.status", "openapi.document"],
+                }
+            ],
+        },
+        "docs_src/dataclasses_/tutorial003_py310.py": {
+            "rationale": (
+                "The FastAPI 0.141.1 example nests dataclass items inside an author dataclass, "
+                "uses a default factory, accepts nested request items, and declares response models. "
+                "The independent case samples nested request/response projection and the related "
+                "OpenAPI schemas. It does not establish all source records, omission/default "
+                "combinations, coercion edges, or validation failures."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/dataclasses_/tutorial003_py310.py",
+                    "start_line": 7,
+                    "end_line": 24,
+                    "role": "nested dataclass definitions, default factory, and request endpoint",
+                },
+                {
+                    "path": "docs_src/dataclasses_/tutorial003_py310.py",
+                    "start_line": 27,
+                    "end_line": 54,
+                    "role": "documented response-model endpoint and returned author records",
+                },
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/pydantic-dataclasses-tutorial003-upstream-wave.yaml",
+                    "case_ids": [
+                        "fastapi.pydantic-dataclasses.tutorial003-nested-request-and-defaults"
+                    ],
+                    "observation_selectors": [
+                        "http.body.bytes",
+                        "http.status",
+                        "openapi.document",
+                    ],
+                }
+            ],
+        },
+        "docs_src/dependencies/tutorial008b_an_py310.py": {
+            "rationale": (
+                "The FastAPI 0.141.1 example catches a yielded-resource OwnerError and translates "
+                "it to an HTTP exception in an Annotated dependency route. The independent case "
+                "samples this exception-translation behavior through response body and status. "
+                "It does not claim cleanup ordering, suppression/re-raise variants, exact source "
+                "values, or the unrelated not-found branch."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/dependencies/tutorial008b_an_py310.py",
+                    "start_line": 18,
+                    "end_line": 22,
+                    "role": "documented yielded dependency and OwnerError translation",
+                },
+                {
+                    "path": "docs_src/dependencies/tutorial008b_an_py310.py",
+                    "start_line": 25,
+                    "end_line": 32,
+                    "role": "route dependency use and ownership-error branch",
+                },
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/dependency-yield-errors-tutorials-upstream.yaml",
+                    "case_ids": [
+                        "fastapi.dependencies.tutorial008b.annotated-parameter-exception-translation"
+                    ],
+                    "observation_selectors": ["http.body.bytes", "http.status"],
+                }
+            ],
+        },
+        "docs_src/dependencies/tutorial011_an_py310.py": {
+            "rationale": (
+                "The FastAPI 0.141.1 example uses a callable FixedContentQueryChecker dependency "
+                "whose predicate checks whether configured text occurs in a non-empty query value. "
+                "The independent matching and nonmatching cases observe response body, ordered "
+                "headers, and status for two query samples. They do not cover an absent/empty query, "
+                "other configured text, or other advanced-dependency forms."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/dependencies/tutorial011_an_py310.py",
+                    "start_line": 8,
+                    "end_line": 23,
+                    "role": "documented callable checker, predicate, and route dependency",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/advanced_dependencies.yaml",
+                    "case_ids": [
+                        "fastapi.docs.advanced-dependencies.matching-query",
+                        "fastapi.docs.advanced-dependencies.nonmatching-query",
+                    ],
+                    "observation_selectors": [
+                        "http.body.bytes",
+                        "http.headers.ordered",
+                        "http.status",
+                    ],
+                }
+            ],
+        },
+        "docs_src/dependencies/tutorial012_py310.py": {
+            "rationale": (
+                "The FastAPI 0.141.1 example installs two required header dependencies globally "
+                "for its item and user routes. The independent case exercises the global-dependency "
+                "wiring on those route shapes and observes response status/body plus selected path "
+                "schema. It does not claim the source header literals, every missing/invalid-header "
+                "combination, or exact error details."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/dependencies/tutorial012_py310.py",
+                    "start_line": 4,
+                    "end_line": 25,
+                    "role": "documented required header dependencies, global registration, and routes",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/dependency-tutorial012-default-upstream.yaml",
+                    "case_ids": ["fastapi.dependencies.tutorial012.global-headers-default"],
+                    "observation_selectors": [
+                        "http.body.bytes",
+                        "http.status",
+                        "openapi.paths",
+                    ],
+                }
+            ],
+        },
+        "docs_src/dependency_testing/tutorial001_an_py310.py": {
+            "rationale": (
+                "The FastAPI 0.141.1 example replaces a common query-parameter dependency through "
+                "dependency_overrides. The independent ASGI case samples override effects on item "
+                "and user routes, including plain and Annotated dependency declarations, and "
+                "observes response body/status. It does not execute the source TestClient assertions "
+                "or claim all source parameter values, dependency call ordering, or override lifecycle."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/dependency_testing/tutorial001_an_py310.py",
+                    "start_line": 9,
+                    "end_line": 20,
+                    "role": "documented dependency signature and item/user route use",
+                },
+                {
+                    "path": "docs_src/dependency_testing/tutorial001_an_py310.py",
+                    "start_line": 23,
+                    "end_line": 30,
+                    "role": "source TestClient declaration and dependency override registration",
+                },
+                {
+                    "path": "docs_src/dependency_testing/tutorial001_an_py310.py",
+                    "start_line": 33,
+                    "end_line": 57,
+                    "role": "source TestClient assertions outside the ASGI workflow boundary",
+                },
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/atlas-testing-websocket-dependency-overrides.yaml",
+                    "case_ids": ["fastapi.atlas-testing-dependency.overrides"],
+                    "observation_selectors": ["http.body.bytes", "http.status"],
+                }
+            ],
+        },
+        "docs_src/generate_clients/tutorial001_py310.py": {
+            "rationale": (
+                "The FastAPI 0.141.1 example defines request/response models and item routes used "
+                "as an API input for client generation. The independent case samples POST/GET "
+                "responses and the related OpenAPI paths/schemas. It does not perform code "
+                "generation, compile generated clients, or exercise a client-language runtime."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/generate_clients/tutorial001_py310.py",
+                    "start_line": 7,
+                    "end_line": 26,
+                    "role": "documented item models and API routes used for client generation",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/generate-clients-tutorial001-upstream.yaml",
+                    "case_ids": [
+                        "fastapi.test.test-tutorial-test-generate-clients-test-tutorial001.client-requests-and-openapi"
+                    ],
+                    "observation_selectors": [
+                        "docs.response.status",
+                        "http.body.bytes",
+                        "http.status",
+                        "openapi.document",
+                        "openapi.paths",
+                    ],
+                }
+            ],
+        },
+        "docs_src/path_operation_advanced_configuration/tutorial002_py310.py": {
+            "rationale": (
+                "The FastAPI 0.141.1 example supplies a custom unique-operation-ID function "
+                "that derives the identifier from a route name. The independent case samples "
+                "one route response and its OpenAPI operation identifier. It does not establish "
+                "collision handling across arbitrary route names, routers, or tags."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/path_operation_advanced_configuration/tutorial002_py310.py",
+                    "start_line": 5,
+                    "end_line": 14,
+                    "role": "documented unique-operation-ID function, app configuration, and route",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-advanced-configurations-tutorial002-upstream.yaml",
+                    "case_ids": ["fastapi.path-operation-advanced-configurations.tutorial002"],
+                    "observation_selectors": [
+                        "http.body.bytes",
+                        "http.status",
+                        "openapi.document",
+                        "openapi.paths",
+                    ],
+                }
+            ],
+        },
+        "docs_src/path_operation_advanced_configuration/tutorial006_py310.py": {
+            "rationale": (
+                "The FastAPI 0.141.1 example reads the raw request body and supplies a manual "
+                "OpenAPI requestBody schema for a route that returns parsed data. The independent "
+                "case observes one request/response and that requestBody projection. It does not "
+                "establish arbitrary extension merging, malformed-body behavior, or every source "
+                "field and validation/error path."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/path_operation_advanced_configuration/tutorial006_py310.py",
+                    "start_line": 6,
+                    "end_line": 14,
+                    "role": "documented raw-body reader and parsed response shape",
+                },
+                {
+                    "path": "docs_src/path_operation_advanced_configuration/tutorial006_py310.py",
+                    "start_line": 17,
+                    "end_line": 40,
+                    "role": "manual OpenAPI requestBody extension and request handling",
+                },
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-advanced-configurations-tutorial006-upstream.yaml",
+                    "case_ids": ["fastapi.path-operation-advanced-configurations.tutorial006"],
+                    "observation_selectors": [
+                        "http.body.bytes",
+                        "http.status",
+                        "openapi.document",
+                        "openapi.paths",
+                    ],
+                }
+            ],
+        },
+        "docs_src/path_params/tutorial004_py310.py": {
+            "rationale": (
+                "The FastAPI 0.141.1 example declares a path converter and returns the captured "
+                "suffix as data. The independent file-path and root-file-path cases observe route "
+                "status/body, while a separate OpenAPI case observes the path parameter projection. "
+                "This does not claim general path normalization, filesystem access/security, or "
+                "unbounded URL-form behavior beyond the selected requests."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/path_params/tutorial004_py310.py",
+                    "start_line": 6,
+                    "end_line": 8,
+                    "role": "documented path converter and captured path value response",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-parameter-tutorials-test_path_params_test_tutorial004_test_file_path.yaml",
+                    "case_ids": [
+                        "fastapi.path-operation-parameter-tutorials.test-path-params-test-tutorial004-test-file-path"
+                    ],
+                    "observation_selectors": ["http.body.bytes", "http.status"],
+                },
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-parameter-tutorials-test_path_params_test_tutorial004_test_root_file_path.yaml",
+                    "case_ids": [
+                        "fastapi.path-operation-parameter-tutorials.test-path-params-test-tutorial004-test-root-file-path"
+                    ],
+                    "observation_selectors": ["http.body.bytes", "http.status"],
+                },
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-parameter-tutorials-test_path_params_test_tutorial004_test_openapi_schema.yaml",
+                    "case_ids": [
+                        "fastapi.path-operation-parameter-tutorials.test-path-params-test-tutorial004-test-openapi-schema"
+                    ],
+                    "observation_selectors": ["http.status", "openapi.paths"],
+                },
+            ],
+        },
+        "docs_src/schema_extra_example/tutorial002_py310.py": {
+            "rationale": (
+                "The FastAPI 0.141.1 example attaches example metadata to Pydantic fields. The "
+                "independent case observes the corresponding OpenAPI schema projection and an "
+                "HTTP status sample. The schema observation does not establish acceptance or "
+                "rejection for each illustrated value, response bodies, or Swagger rendering."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/schema_extra_example/tutorial002_py310.py",
+                    "start_line": 7,
+                    "end_line": 16,
+                    "role": "documented field-level examples and request route",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/schema-extra-examples-upstream.yaml",
+                    "case_ids": ["fastapi.schema-extra-example.field-examples"],
+                    "observation_selectors": ["docs.response.status", "openapi.document"],
+                }
+            ],
+        },
+        "docs_src/schema_extra_example/tutorial004_an_py310.py": {
+            "rationale": (
+                "The FastAPI 0.141.1 example declares multiple examples on an Annotated Body "
+                "parameter. The independent case observes the requestBody schema projection and "
+                "HTTP status for selected requests; it does not submit every documented example "
+                "or claim their validation outcomes, response bodies, or Swagger rendering."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/schema_extra_example/tutorial004_an_py310.py",
+                    "start_line": 16,
+                    "end_line": 43,
+                    "role": "documented Annotated Body examples and request handler",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/schema-extra-examples-upstream.yaml",
+                    "case_ids": ["fastapi.schema-extra-example.body-examples-several"],
+                    "observation_selectors": ["docs.response.status", "openapi.document"],
+                }
+            ],
+        },
+        "docs_src/schema_extra_example/tutorial005_py310.py": {
+            "rationale": (
+                "The FastAPI 0.141.1 example declares named OpenAPI example objects for a body "
+                "parameter. The independent case observes the examples projection and HTTP status "
+                "for selected requests. It does not establish request acceptance/rejection for "
+                "each named value, response bodies, or Swagger rendering."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/schema_extra_example/tutorial005_py310.py",
+                    "start_line": 14,
+                    "end_line": 49,
+                    "role": "documented named OpenAPI body examples and route",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/schema-extra-examples-upstream.yaml",
+                    "case_ids": ["fastapi.schema-extra-example.openapi-example-objects"],
+                    "observation_selectors": ["docs.response.status", "openapi.document"],
+                }
+            ],
+        },
+        "docs_src/server_sent_events/tutorial001_py310.py": {
+            "rationale": (
+                "The FastAPI 0.141.1 example exposes four sync/async and annotated/unannotated "
+                "generator routes returning event-stream responses. The independent stream-routes "
+                "case observes aggregate response body bytes, ordered headers, and status for its "
+                "selected routes. It does not establish send-chunk boundaries, timing, backpressure, "
+                "disconnect/cancellation, or reconnect behavior; the OpenAPI-only case has no "
+                "non-empty selector intersection with this source row and is not linked here."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/server_sent_events/tutorial001_py310.py",
+                    "start_line": 10,
+                    "end_line": 19,
+                    "role": "documented stream item model and source records",
+                },
+                {
+                    "path": "docs_src/server_sent_events/tutorial001_py310.py",
+                    "start_line": 22,
+                    "end_line": 43,
+                    "role": "four documented event-stream route declaration forms",
+                },
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/server-sent-events-tutorial001-upstream.yaml",
+                    "case_ids": ["fastapi.tutorial.server-sent-events.tutorial001.stream-routes"],
+                    "observation_selectors": [
+                        "http.body.bytes",
+                        "http.headers.ordered",
+                        "http.status",
+                    ],
+                }
+            ],
+        },
+        "docs_src/server_sent_events/tutorial005_py310.py": {
+            "rationale": (
+                "The FastAPI 0.141.1 example maps prompt words to token events and then emits a "
+                "terminal event. The independent case observes aggregate response bytes, ordered "
+                "headers, and status for a stream request. It does not establish chunk boundaries, "
+                "timing, backpressure, disconnect/cancellation, reconnect behavior, or other prompt "
+                "and event-field combinations; the OpenAPI-only case has no non-empty selector "
+                "intersection and is not linked here."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/server_sent_events/tutorial005_py310.py",
+                    "start_line": 10,
+                    "end_line": 19,
+                    "role": "documented prompt model and token/done event generation",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/server-sent-events-tutorial005-upstream.yaml",
+                    "case_ids": [
+                        "fastapi.tutorial.server-sent-events.tutorial005.post-chat-stream"
+                    ],
+                    "observation_selectors": [
+                        "http.body.bytes",
+                        "http.headers.ordered",
+                        "http.status",
+                    ],
+                }
+            ],
+        },
+        "docs_src/using_request_directly/tutorial001_py310.py": {
+            "rationale": (
+                "The FastAPI 0.141.1 example reads the client host from a Request and returns it "
+                "with a path parameter. The independent case observes its route response/status and "
+                "a selected OpenAPI path projection. It does not establish absent-client behavior "
+                "or other Request attributes and scope values."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/using_request_directly/tutorial001_py310.py",
+                    "start_line": 6,
+                    "end_line": 9,
+                    "role": "documented Request client-host access and route response",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/using_request_directly.yaml",
+                    "case_ids": ["fastapi.docs.using-request-directly.client-host"],
+                    "observation_selectors": [
+                        "docs.response.headers",
+                        "docs.response.status",
+                        "http.body.bytes",
+                        "http.headers.ordered",
+                        "http.status",
+                        "openapi.document",
+                    ],
+                }
+            ],
+        },
+        "docs_src/websockets_/tutorial002_py310.py": {
+            "rationale": (
+                "The FastAPI 0.141.1 example serves an HTTP page and a WebSocket route with "
+                "cookie-or-query authentication, an optional integer query value, path data, and "
+                "a message loop. The independent case observes the page response and selected "
+                "WebSocket message/order/close behavior across representative sessions. It does "
+                "not run the page's JavaScript in a browser or establish browser networking, live "
+                "timing, or every cookie/query combination."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "docs_src/websockets_/tutorial002_py310.py",
+                    "start_line": 14,
+                    "end_line": 61,
+                    "role": "documented HTML page and root HTTP route",
+                },
+                {
+                    "path": "docs_src/websockets_/tutorial002_py310.py",
+                    "start_line": 64,
+                    "end_line": 89,
+                    "role": "documented WebSocket authentication dependency and message route",
+                },
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/atlas-testing-websocket-websockets-tutorial002.yaml",
+                    "case_ids": ["fastapi.atlas-testing.websocket-tutorial002"],
+                    "observation_selectors": [
+                        "http.body.bytes",
+                        "http.status",
+                        "websocket.close_code",
+                        "websocket.event_order",
+                        "websocket.messages",
+                    ],
+                }
+            ],
+        },
+    }
+)
+
 # Direct-response and base64-byte examples use independent ASGI workloads with
 # distinct route values. These mappings cover only the listed observations.
 DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
@@ -3979,6 +4608,603 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
                     "case_ids": ["fastapi.dependencies.yield-scope-cleanup"],
                     "observation_selectors": ["http.body.bytes", "http.status"],
                 },
+            ],
+        },
+    }
+)
+
+# Shard A: exact, source-backed workflow links for pending examples.
+DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
+    {
+        "docs_src/app_testing/tutorial002_py310.py": {
+            "rationale": "The pinned example defines an HTTP route and a WebSocket endpoint tested through TestClient. This independent TestClient case observes only WebSocket messages; it does not establish the source HTTP route response, the TestClient harness/import behavior, or close/event-order semantics for this source.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/app_testing/tutorial002_py310.py",
+                    "start_line": 8,
+                    "end_line": 31,
+                    "role": "documented HTTP and WebSocket routes with TestClient exercises",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/testing_websockets.yaml",
+                    "case_ids": ["fastapi.docs.testing-websockets.testclient-example"],
+                    "observation_selectors": ["websocket.messages"],
+                }
+            ],
+        },
+        "docs_src/background_tasks/tutorial001_py310.py": {
+            "rationale": "The pinned example schedules a post-response notification effect. The independent workflow observes a separate in-memory effect through a follow-up response, limited to body bytes, ordered headers, and status; it does not establish the source filesystem write or notification formatting.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/background_tasks/tutorial001_py310.py",
+                    "start_line": 6,
+                    "end_line": 15,
+                    "role": "documented background task scheduling and notification effect",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/docs-http-behaviors.yaml",
+                    "case_ids": [
+                        "fastapi.docs.documentation-wave.http-behaviors.background-task-effect"
+                    ],
+                    "observation_selectors": [
+                        "http.body.bytes",
+                        "http.headers.ordered",
+                        "http.status",
+                    ],
+                }
+            ],
+        },
+        "docs_src/conditional_openapi/tutorial001_py310.py": {
+            "rationale": "The pinned example configures the OpenAPI URL conditionally and exposes a normal route. The cited independent case observes the disabled OpenAPI endpoint and its response/document surface, not the Settings or environment decision that selects the URL and not the normal route response.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/conditional_openapi/tutorial001_py310.py",
+                    "start_line": 5,
+                    "end_line": 16,
+                    "role": "documented conditional OpenAPI URL configuration and ordinary route",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/docs-openapi-interface.yaml",
+                    "case_ids": [
+                        "fastapi.docs.openapi-interface.how-to-conditional-openapi.disabled-schema-endpoint"
+                    ],
+                    "observation_selectors": [
+                        "docs.response.status",
+                        "http.body.bytes",
+                        "http.headers.ordered",
+                        "http.status",
+                        "openapi.document",
+                    ],
+                }
+            ],
+        },
+        "docs_src/custom_response/tutorial001_py310.py": {
+            "rationale": "The pinned example selects UJSONResponse for its route. The two cited cases observe the route response envelope and OpenAPI projection only; they do not establish UJSON encoding internals, optional dependency behavior, or response behavior beyond those selected observations.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/custom_response/tutorial001_py310.py",
+                    "start_line": 7,
+                    "end_line": 9,
+                    "role": "documented UJSONResponse selection and item route",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/custom-response-tutorial001-upstream.yaml",
+                    "case_ids": [
+                        "fastapi.custom-response.tutorial001.items-response",
+                        "fastapi.custom-response.tutorial001.openapi",
+                    ],
+                    "observation_selectors": ["http.body.bytes", "http.status", "openapi.document"],
+                }
+            ],
+        },
+        "docs_src/dependencies/tutorial002_an_py310.py": {
+            "rationale": "The pinned example uses a callable class as a dependency. The independent case samples class-based dependency resolution, response fields, and the route schema using different class/parameter names; it does not establish the source CommonQueryParams values or constructor customization.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/dependencies/tutorial002_an_py310.py",
+                    "start_line": 11,
+                    "end_line": 25,
+                    "role": "documented callable dependency class and injection into a route",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/docs-dependencies-security.yaml",
+                    "case_ids": [
+                        "fastapi.docs.documentation-wave.dependencies-security.classes-as-dependencies"
+                    ],
+                    "observation_selectors": [
+                        "http.body.bytes",
+                        "http.headers.ordered",
+                        "http.status",
+                        "openapi.paths",
+                    ],
+                }
+            ],
+        },
+        "docs_src/dependencies/tutorial008b_py310.py": {
+            "rationale": "The pinned example catches a yielded-dependency error and translates it through the HTTP response path. The selected case observes one exception-translation response by body and status; it does not cover every not-found or owner-mismatch branch in the source.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/dependencies/tutorial008b_py310.py",
+                    "start_line": 16,
+                    "end_line": 30,
+                    "role": "documented yielded-dependency error handling and route branches",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/dependency-yield-errors-tutorials-upstream.yaml",
+                    "case_ids": [
+                        "fastapi.dependencies.tutorial008b.default-parameter-exception-translation"
+                    ],
+                    "observation_selectors": ["http.body.bytes", "http.status"],
+                }
+            ],
+        },
+        "docs_src/dependencies/tutorial011_py310.py": {
+            "rationale": "The pinned example builds a callable query checker used by a route. The selected case observes one default/search request response by body and status; alternative checker configuration and other callable behavior are not claimed.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/dependencies/tutorial011_py310.py",
+                    "start_line": 6,
+                    "end_line": 21,
+                    "role": "documented callable query checker and dependent route",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/dependency-tutorial-review-upstream.yaml",
+                    "case_ids": ["fastapi.dependencies.tutorial-review.search-default"],
+                    "observation_selectors": ["http.body.bytes", "http.status"],
+                }
+            ],
+        },
+        "docs_src/dependency_testing/tutorial001_py310.py": {
+            "rationale": "The pinned example overrides an async dependency used by item and user routes. The selected independent case observes response body and status for the override workload; it does not claim execution of the source TestClient assertions or Python object identity.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/dependency_testing/tutorial001_py310.py",
+                    "start_line": 7,
+                    "end_line": 55,
+                    "role": "documented async dependency, override, and affected routes",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/atlas-testing-websocket-dependency-overrides.yaml",
+                    "case_ids": ["fastapi.atlas-testing-dependency.overrides"],
+                    "observation_selectors": ["http.body.bytes", "http.status"],
+                }
+            ],
+        },
+        "docs_src/extra_data_types/tutorial001_an_py310.py": {
+            "rationale": "The pinned example declares extra data types in request parameters and projects them into the API schema. The cited case observes the route and OpenAPI surface; runtime parsing of all UUID/date/time values and the derived time calculation are not separately established by this schema-focused case.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/extra_data_types/tutorial001_an_py310.py",
+                    "start_line": 10,
+                    "end_line": 28,
+                    "role": "documented extra-type route parameters and schema-relevant declarations",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/docs-openapi-schema.yaml",
+                    "case_ids": ["fastapi.docs.documentation-wave.openapi-schema.extra-data-types"],
+                    "observation_selectors": [
+                        "http.body.bytes",
+                        "http.headers.ordered",
+                        "http.status",
+                        "openapi.document",
+                        "openapi.paths",
+                    ],
+                }
+            ],
+        },
+        "docs_src/frontend/tutorial002_py310.py": {
+            "rationale": "The pinned example configures a directory-backed frontend with index fallback. The selected case samples the HTTP fallback response headers, status, and body; browser execution, client-side navigation, and route transitions are not covered.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/frontend/tutorial002_py310.py",
+                    "start_line": 1,
+                    "end_line": 5,
+                    "role": "documented static frontend mount and index fallback configuration",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/docs-types-frontend.yaml",
+                    "case_ids": ["fastapi.docs.reference-wave.frontend.html-client-route-fallback"],
+                    "observation_selectors": [
+                        "http.body.bytes",
+                        "http.headers.ordered",
+                        "http.status",
+                    ],
+                }
+            ],
+        },
+        "docs_src/generate_clients/tutorial002_py310.py": {
+            "rationale": "The pinned example exposes tagged API routes and an OpenAPI document for client generation. The independent workflow observes tagged route responses and OpenAPI only; generated client source, compilation, and client runtime behavior are not exercised.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/generate_clients/tutorial002_py310.py",
+                    "start_line": 7,
+                    "end_line": 36,
+                    "role": "documented tagged routes and generated-client API schema",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/generate-clients-tutorial002-upstream.yaml",
+                    "case_ids": [
+                        "fastapi.test.test-tutorial-test-generate-clients-test-tutorial002.tagged-client-requests-and-openapi"
+                    ],
+                    "observation_selectors": [
+                        "docs.response.status",
+                        "http.body.bytes",
+                        "http.status",
+                        "openapi.document",
+                        "openapi.paths",
+                    ],
+                }
+            ],
+        },
+        "docs_src/metadata/tutorial001_1_py310.py": {
+            "rationale": "The pinned example adds license metadata to the FastAPI application. The selected case observes the OpenAPI response status and document projection; other metadata fields, endpoint behavior, and downstream license consumers are outside this mapping.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/metadata/tutorial001_1_py310.py",
+                    "start_line": 18,
+                    "end_line": 38,
+                    "role": "documented application metadata including its license field",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/metadata-tutorial001-1-upstream.yaml",
+                    "case_ids": [
+                        "fastapi.test.test-tutorial-test-metadata-test-tutorial001-1.test-openapi-schema"
+                    ],
+                    "observation_selectors": ["docs.response.status", "openapi.document"],
+                }
+            ],
+        },
+        "docs_src/metadata/tutorial004_py310.py": {
+            "rationale": "The pinned example associates tags and external documentation with operations. The selected case observes the OpenAPI response status and document projection for tags; external documentation navigation and downstream consumers are not covered.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/metadata/tutorial004_py310.py",
+                    "start_line": 3,
+                    "end_line": 28,
+                    "role": "documented tags, externalDocs metadata, and tagged routes",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/metadata-tutorial004-upstream.yaml",
+                    "case_ids": [
+                        "fastapi.test.test-tutorial-test-metadata-test-tutorial004.test-openapi-schema"
+                    ],
+                    "observation_selectors": ["docs.response.status", "openapi.document"],
+                }
+            ],
+        },
+        "docs_src/path_operation_advanced_configuration/tutorial004_py310.py": {
+            "rationale": "The pinned example declares operation summary and description metadata on a POST route. The selected workflow observes its request response and OpenAPI path/document projection; other path-operation options are not implied.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/path_operation_advanced_configuration/tutorial004_py310.py",
+                    "start_line": 7,
+                    "end_line": 28,
+                    "role": "documented POST route summary, description, and request behavior",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-advanced-configurations-tutorial004-upstream.yaml",
+                    "case_ids": ["fastapi.path-operation-advanced-configurations.tutorial004"],
+                    "observation_selectors": [
+                        "http.body.bytes",
+                        "http.status",
+                        "openapi.document",
+                        "openapi.paths",
+                    ],
+                }
+            ],
+        },
+        "docs_src/path_operation_advanced_configuration/tutorial007_py310.py": {
+            "rationale": "The pinned example parses a YAML request body and declares the request schema. The independent cases observe the route body/status and selected OpenAPI path/document projections, including malformed and invalid inputs; other response/error detail semantics are not claimed.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/path_operation_advanced_configuration/tutorial007_py310.py",
+                    "start_line": 13,
+                    "end_line": 32,
+                    "role": "documented YAML body parameter, parsing, and route declaration",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-advanced-configurations-tutorial007-upstream.yaml",
+                    "case_ids": ["fastapi.path-operation-advanced-configurations.tutorial007"],
+                    "observation_selectors": [
+                        "http.body.bytes",
+                        "http.status",
+                        "openapi.document",
+                        "openapi.paths",
+                    ],
+                },
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-parameter-tutorials-test_path_operation_advanced_configurations_test_tutorial007_test_openapi_schema.yaml",
+                    "case_ids": [
+                        "fastapi.path-operation-parameter-tutorials.test-path-operation-advanced-configurations-test-tutorial007-test-openapi-schema"
+                    ],
+                    "observation_selectors": [
+                        "docs.response.status",
+                        "http.status",
+                        "openapi.document",
+                        "openapi.paths",
+                    ],
+                },
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-parameter-tutorials-test_path_operation_advanced_configurations_test_tutorial007_test_post.yaml",
+                    "case_ids": [
+                        "fastapi.path-operation-parameter-tutorials.test-path-operation-advanced-configurations-test-tutorial007-test-post"
+                    ],
+                    "observation_selectors": ["http.body.bytes", "http.status"],
+                },
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-parameter-tutorials-test_path_operation_advanced_configurations_test_tutorial007_test_post_broken_yaml.yaml",
+                    "case_ids": [
+                        "fastapi.path-operation-parameter-tutorials.test-path-operation-advanced-configurations-test-tutorial007-test-post-broken-yaml"
+                    ],
+                    "observation_selectors": ["http.body.bytes", "http.status"],
+                },
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-parameter-tutorials-test_path_operation_advanced_configurations_test_tutorial007_test_post_invalid.yaml",
+                    "case_ids": [
+                        "fastapi.path-operation-parameter-tutorials.test-path-operation-advanced-configurations-test-tutorial007-test-post-invalid"
+                    ],
+                    "observation_selectors": ["http.body.bytes", "http.status"],
+                },
+            ],
+        },
+        "docs_src/path_params/tutorial005_py310.py": {
+            "rationale": "The pinned example declares an enum path parameter. The two cited cases observe one valid member route response and the invalid-enum response by body and status; other valid members and the OpenAPI enum schema are not mapped here.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/path_params/tutorial005_py310.py",
+                    "start_line": 6,
+                    "end_line": 23,
+                    "role": "documented enum path parameter, selected route, and response",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-parameter-tutorials-test_path_params_test_tutorial005_test_get_enums_alexnet.yaml",
+                    "case_ids": [
+                        "fastapi.path-operation-parameter-tutorials.test-path-params-test-tutorial005-test-get-enums-alexnet"
+                    ],
+                    "observation_selectors": ["http.body.bytes", "http.status"],
+                },
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/path-operation-parameter-tutorials-test_path_params_test_tutorial005_test_get_enums_invalid.yaml",
+                    "case_ids": [
+                        "fastapi.path-operation-parameter-tutorials.test-path-params-test-tutorial005-test-get-enums-invalid"
+                    ],
+                    "observation_selectors": ["http.body.bytes", "http.status"],
+                },
+            ],
+        },
+        "docs_src/request_form_models/tutorial001_py310.py": {
+            "rationale": "The pinned example accepts a Pydantic model through form fields. The selected case observes the valid request/response and OpenAPI route surface; it does not cover every invalid form/model branch or all field coercions.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/request_form_models/tutorial001_py310.py",
+                    "start_line": 7,
+                    "end_line": 14,
+                    "role": "documented Pydantic model and form-model route declaration",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/docs-request-schema.yaml",
+                    "case_ids": [
+                        "fastapi.docs.request-schema.tutorial-request-form-models.form-model"
+                    ],
+                    "observation_selectors": [
+                        "http.body.bytes",
+                        "http.headers.ordered",
+                        "http.status",
+                        "openapi.document",
+                        "openapi.paths",
+                    ],
+                }
+            ],
+        },
+        "docs_src/schema_extra_example/tutorial003_an_py310.py": {
+            "rationale": "The pinned example declares a list of request-body examples in OpenAPI. The selected case observes the OpenAPI response status and document only; it does not submit those example bodies for runtime validation.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/schema_extra_example/tutorial003_an_py310.py",
+                    "start_line": 16,
+                    "end_line": 34,
+                    "role": "documented list of request-body examples",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/schema-extra-examples-upstream.yaml",
+                    "case_ids": ["fastapi.schema-extra-example.body-examples-list"],
+                    "observation_selectors": ["docs.response.status", "openapi.document"],
+                }
+            ],
+        },
+        "docs_src/schema_extra_example/tutorial004_py310.py": {
+            "rationale": "The pinned example declares multiple request-body examples. The selected case observes the OpenAPI response status and document only; it does not execute the example payloads as valid or invalid requests.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/schema_extra_example/tutorial004_py310.py",
+                    "start_line": 14,
+                    "end_line": 38,
+                    "role": "documented multiple request-body examples",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/schema-extra-examples-upstream.yaml",
+                    "case_ids": ["fastapi.schema-extra-example.body-examples-several"],
+                    "observation_selectors": ["docs.response.status", "openapi.document"],
+                }
+            ],
+        },
+        "docs_src/security/tutorial001_an_py310.py": {
+            "rationale": "The pinned example defines a bearer token dependency and a current-user route. The selected case observes current-user response fields, status, headers, and the OpenAPI security projection; the source token-issuing `/token` response is not exercised.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/security/tutorial001_an_py310.py",
+                    "start_line": 8,
+                    "end_line": 13,
+                    "role": "documented OAuth2 bearer dependency and current-user route setup",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/docs-dependencies-security.yaml",
+                    "case_ids": [
+                        "fastapi.docs.documentation-wave.dependencies-security.current-user"
+                    ],
+                    "observation_selectors": [
+                        "http.body.bytes",
+                        "http.headers.ordered",
+                        "http.status",
+                        "openapi.security",
+                    ],
+                }
+            ],
+        },
+        "docs_src/separate_openapi_schemas/tutorial001_py310.py": {
+            "rationale": "The pinned example uses separate input and output models for a route. The selected case observes the route response and OpenAPI schema/path projection; other validation branches are not covered.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/separate_openapi_schemas/tutorial001_py310.py",
+                    "start_line": 5,
+                    "end_line": 20,
+                    "role": "documented distinct input/output models and route",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/docs-openapi-interface.yaml",
+                    "case_ids": [
+                        "fastapi.docs.openapi-interface.how-to-separate-openapi-schemas.input-output-models"
+                    ],
+                    "observation_selectors": [
+                        "docs.response.status",
+                        "http.body.bytes",
+                        "http.headers.ordered",
+                        "http.status",
+                        "openapi.document",
+                        "openapi.paths",
+                    ],
+                }
+            ],
+        },
+        "docs_src/server_sent_events/tutorial002_py310.py": {
+            "rationale": "The pinned example emits server-sent events with structured fields. The selected case observes streamed body bytes, response headers, and status; reconnection/retry policy and long-lived client lifecycle are not covered. The adjacent OpenAPI-only case has no selector intersection for this source row and is intentionally omitted.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/server_sent_events/tutorial002_py310.py",
+                    "start_line": 10,
+                    "end_line": 26,
+                    "role": "documented event source and event-field response construction",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/server-sent-events-tutorial002-upstream.yaml",
+                    "case_ids": ["fastapi.tutorial.server-sent-events.tutorial002.event-fields"],
+                    "observation_selectors": [
+                        "http.body.bytes",
+                        "http.headers.ordered",
+                        "http.status",
+                    ],
+                }
+            ],
+        },
+        "docs_src/static_files/tutorial001_py310.py": {
+            "rationale": "The pinned example mounts StaticFiles at a path. The independent case observes the fixture asset/missing-file HTTP responses and OpenAPI mount boundary; arbitrary filesystem contents and filesystem error behavior are outside this recipe.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/static_files/tutorial001_py310.py",
+                    "start_line": 6,
+                    "end_line": 6,
+                    "role": "documented StaticFiles mount",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/middleware-proxy-static-settings-source-review.yaml",
+                    "case_ids": ["fastapi.middleware-proxy.static-files"],
+                    "observation_selectors": ["http.body.bytes", "http.status", "openapi.document"],
+                }
+            ],
+        },
+        "docs_src/stream_json_lines/tutorial001_py310.py": {
+            "rationale": "The pinned example defines annotated and unannotated sync/async JSON-lines generators. The selected case covers one async typed stream response by body, headers, and status; the other three variants, chunk timing, cancellation, and generator failure are not covered.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/stream_json_lines/tutorial001_py310.py",
+                    "start_line": 9,
+                    "end_line": 42,
+                    "role": "documented JSON-lines generator variants and route declarations",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/docs-http-behaviors.yaml",
+                    "case_ids": [
+                        "fastapi.docs.documentation-wave.http-behaviors.stream-json-lines"
+                    ],
+                    "observation_selectors": [
+                        "http.body.bytes",
+                        "http.headers.ordered",
+                        "http.status",
+                    ],
+                }
+            ],
+        },
+        "docs_src/websockets_/tutorial003_py310.py": {
+            "rationale": "The pinned example serves a home page and uses a connection manager for client IDs, personal messages, broadcast, and disconnect cleanup. The selected cases observe the home response and one-client message/order behavior only; multi-client broadcast fan-out and disconnect membership changes remain untested.",
+            "supporting_sources": [
+                {
+                    "path": "docs_src/websockets_/tutorial003_py310.py",
+                    "start_line": 44,
+                    "end_line": 81,
+                    "role": "documented connection manager, personal/broadcast messages, and disconnect cleanup",
+                }
+            ],
+            "workflow_cases": [
+                {
+                    "recipe_path": "tests/fixtures/input-recipes/parity/websockets-tutorial003-upstream-subset.yaml",
+                    "case_ids": [
+                        "fastapi.websockets.tutorial003.home",
+                        "fastapi.websockets.tutorial003.single-client-session",
+                    ],
+                    "observation_selectors": [
+                        "http.body.bytes",
+                        "websocket.event_order",
+                        "websocket.messages",
+                    ],
+                }
             ],
         },
     }

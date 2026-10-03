@@ -762,6 +762,16 @@ def validate() -> None:
             },
         )
         if row.get("binding") is not None:
+            binding = row["binding"]
+            expected_binding_identity = (
+                {
+                    "module": None,
+                    "name": binding["module"],
+                    "target": binding["target"],
+                }
+                if binding.get("form") == "import"
+                else binding
+            )
             require_equal(
                 f"atlas source API binding identity {identifier}",
                 {
@@ -769,7 +779,7 @@ def validate() -> None:
                     "name": candidate.get("imported_name"),
                     "target": candidate.get("target_path"),
                 },
-                row["binding"],
+                expected_binding_identity,
             )
     source_selection = source_api_scope.get("selection", {})
     selected_modules = set(source_selection.get("uncertain_imported_modules", []))

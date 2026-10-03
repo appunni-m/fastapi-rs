@@ -80,14 +80,14 @@ api_inventory:
 import_binding_classification_review:
   artifact: tests/fixtures/api-import-binding-classification-review.json
   schema: fastapi-starlette-import-binding-review/v1
-  sha256: 14266636678a658708d234c4fd0453fedaf5d9280e5e21464f97d49d4dc0c6af
+  sha256: 172507536f1a6edad5b7466b0713fa6923b84166cf3ac0311e4c11b73d3f56ab
   source_identity:
     package: FastAPI
     version: 0.141.1
     source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
     selected_starlette_profile: 1.6.0
     starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
-    starlette_rs_contract_commit: 0ca02a3b9dc5ae8984b5bd4d0a650a8df0cf9f76
+    starlette_rs_contract_commit: 222c2228e1c57d9e38a9861b231ac970d843f236
   starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
   counts:
     candidates: 97
@@ -99,25 +99,231 @@ import_binding_classification_review:
   candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
   pinned_starlette_rs_sources:
     metadata_sha256: 90f805ed7d2497833422db870f88d53319dbaaf31a675f89b1ad21fdd4a123d5
-    manifest_sha256: 05bffdf5b46d5a1a33e1d3979d1cd6400edb222ca6e985dee916def7a3f2f4d3
+    manifest_sha256: cebcac7c69380279c581c7e2a42b679dd1d0448600bc98efe04f65a6b5eb5a21
     api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
     api_review_sha256: 8b25f2e3a46753316446077bfde97b6ac8a342233e2f4e50b12d3d01eafbe099
 
 source_api_classification_review:
   artifact: tests/fixtures/api-source-classification-review.json
-  schema: fastapi-rs/source-api-classification-review@1
-  sha256: fd021ef589e363b1b955723a13c93c5c9b0cae2e0bc3f844d55fe1b08704da57
+  schema: fastapi-rs/source-api-classification-review@2
+  sha256: 52a6ae794ff47fa8039864a8876af4b48368eab8a118e8f7c311d93279440ca4
   source_identity:
     package: FastAPI
     version: 0.141.1
     source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
   counts:
-    candidates: 187
+    candidates: 392
     supported: 6
-    private_or_internal: 179
+    private_or_internal: 384
     uncertain: 2
-  candidate_ids_sha256: 3c298560d9468ed3c96fdf13073ae5d6892da240fd792c415c7fc5ba72b05658
+  candidate_ids_sha256: ff9adf50efc658e26c79f0b014bf2094c487355f53b724f9785b2076a040f1eb
   selection:
+    uncertain_candidate_ids:
+      - fastapi.__main__.main
+      - fastapi.applications.AsyncExitStackMiddleware
+      - fastapi.applications.DecoratedCallable
+      - fastapi.applications.Default
+      - fastapi.applications.DefaultPlaceholder
+      - fastapi.applications.Depends
+      - fastapi.applications.Doc
+      - fastapi.applications.Enum
+      - fastapi.applications.IncEx
+      - fastapi.applications.RequestValidationError
+      - fastapi.applications.WebSocketRequestValidationError
+      - fastapi.applications.deprecated
+      - fastapi.applications.generate_unique_id
+      - fastapi.applications.get_openapi
+      - fastapi.applications.get_redoc_html
+      - fastapi.applications.get_swagger_ui_html
+      - fastapi.applications.get_swagger_ui_oauth2_redirect_html
+      - fastapi.applications.http_exception_handler
+      - fastapi.applications.logger
+      - fastapi.applications.os
+      - fastapi.applications.request_validation_exception_handler
+      - fastapi.applications.routing
+      - fastapi.applications.websocket_request_validation_exception_handler
+      - fastapi.background.Doc
+      - fastapi.background.ParamSpec
+      - fastapi.concurrency.AbstractContextManager
+      - fastapi.concurrency.CapacityLimiter
+      - fastapi.concurrency.anyio
+      - fastapi.datastructures.Doc
+      - fastapi.datastructures.GetJsonSchemaHandler
+      - fastapi.dependencies.models.inspect
+      - fastapi.dependencies.models.sys
+      - fastapi.dependencies.utils.dataclass
+      - fastapi.dependencies.utils.dataclasses
+      - fastapi.dependencies.utils.inspect
+      - fastapi.dependencies.utils.sys
+      - fastapi.encoders.AnyUrl
+      - fastapi.encoders.BaseModel
+      - fastapi.encoders.Decimal
+      - fastapi.encoders.Doc
+      - fastapi.encoders.Enum
+      - fastapi.encoders.GeneratorType
+      - fastapi.encoders.IPv4Address
+      - fastapi.encoders.IPv4Interface
+      - fastapi.encoders.IPv4Network
+      - fastapi.encoders.IPv6Address
+      - fastapi.encoders.IPv6Interface
+      - fastapi.encoders.IPv6Network
+      - fastapi.encoders.IncEx
+      - fastapi.encoders.NameEmail
+      - fastapi.encoders.Path
+      - fastapi.encoders.Pattern
+      - fastapi.encoders.PurePath
+      - fastapi.encoders.PydanticUndefinedType
+      - fastapi.encoders.PydanticV1NotSupportedError
+      - fastapi.encoders.SecretBytes
+      - fastapi.encoders.SecretStr
+      - fastapi.encoders.UUID
+      - fastapi.encoders.dataclasses
+      - fastapi.encoders.datetime
+      - fastapi.encoders.defaultdict
+      - fastapi.encoders.deque
+      - fastapi.exceptions.BaseModel
+      - fastapi.exceptions.Doc
+      - fastapi.exceptions.create_model
+      - fastapi.logger.logging
+      - fastapi.middleware.asyncexitstack.AsyncExitStack
+      - fastapi.openapi.docs.Doc
+      - fastapi.openapi.docs.json
+      - fastapi.openapi.docs.jsonable_encoder
+      - fastapi.openapi.models.AnyUrl
+      - fastapi.openapi.models.BaseModel
+      - fastapi.openapi.models.Enum
+      - fastapi.openapi.models.Field
+      - fastapi.openapi.models.GetJsonSchemaHandler
+      - fastapi.openapi.models.TypedDict
+      - fastapi.openapi.models.logger
+      - fastapi.openapi.models.typing_deprecated
+      - fastapi.openapi.utils.BaseModel
+      - fastapi.openapi.utils.Body
+      - fastapi.openapi.utils.DefaultPlaceholder
+      - fastapi.openapi.utils.Dependant
+      - fastapi.openapi.utils.DependencyCacheKey
+      - fastapi.openapi.utils.FastAPIDeprecationWarning
+      - fastapi.openapi.utils.METHODS_WITH_BODY
+      - fastapi.openapi.utils.ModelNameMap
+      - fastapi.openapi.utils.OpenAPI
+      - fastapi.openapi.utils.ParamTypes
+      - fastapi.openapi.utils.REF_PREFIX
+      - fastapi.openapi.utils.Response
+      - fastapi.openapi.utils.copy
+      - fastapi.openapi.utils.dataclass
+      - fastapi.openapi.utils.deep_dict_update
+      - fastapi.openapi.utils.field
+      - fastapi.openapi.utils.generate_operation_id_for_path
+      - fastapi.openapi.utils.get_flat_params
+      - fastapi.openapi.utils.get_validation_alias
+      - fastapi.openapi.utils.http
+      - fastapi.openapi.utils.inspect
+      - fastapi.openapi.utils.is_body_allowed_for_status_code
+      - fastapi.openapi.utils.jsonable_encoder
+      - fastapi.openapi.utils.routing
+      - fastapi.openapi.utils.warnings
+      - fastapi.param_functions.AliasChoices
+      - fastapi.param_functions.AliasPath
+      - fastapi.param_functions.Doc
+      - fastapi.param_functions.Example
+      - fastapi.param_functions.deprecated
+      - fastapi.param_functions.params
+      - fastapi.params.AliasChoices
+      - fastapi.params.AliasPath
+      - fastapi.params.Enum
+      - fastapi.params.Example
+      - fastapi.params.FastAPIDeprecationWarning
+      - fastapi.params.FieldInfo
+      - fastapi.params.dataclass
+      - fastapi.params.deprecated
+      - fastapi.params.warnings
+      - fastapi.responses.importlib
+      - fastapi.routing.AbstractAsyncContextManager
+      - fastapi.routing.AbstractContextManager
+      - fastapi.routing.AsyncExitStack
+      - fastapi.routing.ContextVar
+      - fastapi.routing.DecoratedCallable
+      - fastapi.routing.Default
+      - fastapi.routing.DefaultPlaceholder
+      - fastapi.routing.Dependant
+      - fastapi.routing.Doc
+      - fastapi.routing.EndpointContext
+      - fastapi.routing.Enum
+      - fastapi.routing.EventSourceResponse
+      - fastapi.routing.FastAPIError
+      - fastapi.routing.IncEx
+      - fastapi.routing.IntEnum
+      - fastapi.routing.KEEPALIVE_COMMENT
+      - fastapi.routing.ObjectReceiveStream
+      - fastapi.routing.RequestValidationError
+      - fastapi.routing.ResponseValidationError
+      - fastapi.routing.ServerSentEvent
+      - fastapi.routing.SolvedDependency
+      - fastapi.routing.WebSocketRequestValidationError
+      - fastapi.routing.anyio
+      - fastapi.routing.asynccontextmanager
+      - fastapi.routing.contextlib
+      - fastapi.routing.copy
+      - fastapi.routing.create_model_field
+      - fastapi.routing.dataclass
+      - fastapi.routing.deprecated
+      - fastapi.routing.email
+      - fastapi.routing.errno
+      - fastapi.routing.field
+      - fastapi.routing.format_sse_event
+      - fastapi.routing.functools
+      - fastapi.routing.generate_unique_id
+      - fastapi.routing.get_dependant
+      - fastapi.routing.get_parameterless_sub_dependant
+      - fastapi.routing.get_stream_item_type
+      - fastapi.routing.get_typed_return_annotation
+      - fastapi.routing.get_value_or_default
+      - fastapi.routing.inspect
+      - fastapi.routing.is_body_allowed_for_status_code
+      - fastapi.routing.json
+      - fastapi.routing.jsonable_encoder
+      - fastapi.routing.os
+      - fastapi.routing.params
+      - fastapi.routing.solve_dependencies
+      - fastapi.routing.stat
+      - fastapi.routing.threading
+      - fastapi.routing.types
+      - fastapi.routing.warnings
+      - fastapi.security.api_key.APIKey
+      - fastapi.security.api_key.APIKeyIn
+      - fastapi.security.api_key.Doc
+      - fastapi.security.api_key.SecurityBase
+      - fastapi.security.base.SecurityBaseModel
+      - fastapi.security.http.BaseModel
+      - fastapi.security.http.Doc
+      - fastapi.security.http.HTTPBaseModel
+      - fastapi.security.http.HTTPBearerModel
+      - fastapi.security.http.HTTPException
+      - fastapi.security.http.SecurityBase
+      - fastapi.security.http.b64decode
+      - fastapi.security.http.binascii
+      - fastapi.security.http.get_authorization_scheme_param
+      - fastapi.security.oauth2.Doc
+      - fastapi.security.oauth2.Form
+      - fastapi.security.oauth2.HTTPException
+      - fastapi.security.oauth2.OAuth2Model
+      - fastapi.security.oauth2.OAuthFlowsModel
+      - fastapi.security.oauth2.SecurityBase
+      - fastapi.security.oauth2.get_authorization_scheme_param
+      - fastapi.security.open_id_connect_url.Doc
+      - fastapi.security.open_id_connect_url.OpenIdConnectModel
+      - fastapi.security.open_id_connect_url.SecurityBase
+      - fastapi.types.BaseModel
+      - fastapi.types.Enum
+      - fastapi.types.types
+      - fastapi.utils.DefaultPlaceholder
+      - fastapi.utils.DefaultType
+      - fastapi.utils.FastAPIDeprecationWarning
+      - fastapi.utils.FieldInfo
+      - fastapi.utils.PydanticV1NotSupportedError
+      - fastapi.utils.fastapi
+      - fastapi.utils.re
+      - fastapi.utils.warnings
     uncertain_imported_modules: [collections.abc, fastapi._compat, typing]
     # Six dependency import bindings remain uncertain. Five bare imports have null imported_module.
     # The utils.dataclass selector also matches the unrepresentable utils.dataclasses ID.
@@ -220,7 +426,7 @@ classification_atlas:
 starlette_rs:
   owner: ../starlette-rs
   repository: https://github.com/appunni-m/starlette-rs
-  commit: 0ca02a3b9dc5ae8984b5bd4d0a650a8df0cf9f76
+  commit: 222c2228e1c57d9e38a9861b231ac970d843f236
   distribution_version: 0.1.0
   contract_id: starlette-1.6.0-asgi-http-config-session-slice
   metadata: ../starlette-rs/metadata.yaml

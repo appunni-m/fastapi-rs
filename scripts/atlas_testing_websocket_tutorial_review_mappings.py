@@ -36,7 +36,7 @@ SOURCE_IDENTITIES = {
     },
     "starlette_rs": {
         "version": "0.1.0",
-        "commit": "0ca02a3b9dc5ae8984b5bd4d0a650a8df0cf9f76",
+        "commit": "222c2228e1c57d9e38a9861b231ac970d843f236",
         "contract_id": "starlette-1.6.0-asgi-http-config-session-slice",
         "role": "generic Starlette contract implementation",
     },

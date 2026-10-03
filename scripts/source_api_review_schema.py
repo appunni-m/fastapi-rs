@@ -8,7 +8,7 @@ from collections import Counter
 from pathlib import PurePosixPath
 from typing import Any
 
-SOURCE_API_REVIEW_SCHEMA = "fastapi-rs/source-api-classification-review@1"
+SOURCE_API_REVIEW_SCHEMA = "fastapi-rs/source-api-classification-review@2"
 SOURCE_API_RECOMMENDATIONS = {"supported", "private/internal", "uncertain"}
 SOURCE_API_CANDIDATE_KINDS = {"field", "import_binding", "value"}
 SOURCE_API_EVIDENCE_BASIS = {
@@ -27,6 +27,7 @@ SOURCE_API_EVIDENCE_ROLES = {
     "fastapi-source-member",
 }
 SOURCE_API_SELECTION_KEYS = {
+    "uncertain_candidate_ids",
     "uncertain_candidate_id_prefixes",
     "uncertain_imported_modules",
 }
@@ -88,6 +89,10 @@ def validate_source_api_selection(selection: Any) -> dict[str, list[str]]:
     """Validate the selection policy stored in metadata.yaml."""
     selected = _require_exact_keys(selection, SOURCE_API_SELECTION_KEYS, "source API selection")
     return {
+        "uncertain_candidate_ids": _require_strings(
+            selected["uncertain_candidate_ids"],
+            "source API selected candidate IDs",
+        ),
         "uncertain_imported_modules": _require_strings(
             selected["uncertain_imported_modules"],
             "source API selected imported modules",
@@ -177,18 +182,56 @@ def validate_source_api_review_schema(
         _require_line(source["line"], f"{label} source line")
 
         if candidate_kind == "import_binding":
-            binding = _require_exact_keys(
-                row["binding"],
-                {"module", "name", "target"},
-                f"{label} binding",
-            )
-            if any(
-                not isinstance(binding[key], str) or not binding[key].strip()
-                for key in ("module", "name", "target")
-            ):
-                raise SourceApiReviewSchemaError(
-                    f"{label} binding values must be non-empty strings"
+            raw_binding = row["binding"]
+            if not isinstance(raw_binding, dict):
+                raise SourceApiReviewSchemaError(f"{label} binding must be an object")
+            if "form" not in raw_binding:
+                # Keep the original compact representation for ImportFrom aliases.
+                binding = _require_exact_keys(
+                    raw_binding,
+                    {"module", "name", "target"},
+                    f"{label} from-import binding",
                 )
+                if any(
+                    not isinstance(binding[key], str) or not binding[key].strip()
+                    for key in ("module", "name", "target")
+                ):
+                    raise SourceApiReviewSchemaError(
+                        f"{label} from-import binding values must be non-empty strings"
+                    )
+            else:
+                binding = _require_exact_keys(
+                    raw_binding,
+                    {"as_name", "form", "level", "local_name", "module", "name", "target"},
+                    f"{label} import binding",
+                )
+                if binding["form"] != "import":
+                    raise SourceApiReviewSchemaError(
+                        f"{label} binding has an unsupported import form"
+                    )
+                if not isinstance(binding["module"], str) or not binding["module"].strip():
+                    raise SourceApiReviewSchemaError(
+                        f"{label} import module must be a non-empty string"
+                    )
+                if binding["name"] is not None:
+                    raise SourceApiReviewSchemaError(f"{label} plain import name must be null")
+                if binding["as_name"] is not None and (
+                    not isinstance(binding["as_name"], str) or not binding["as_name"].strip()
+                ):
+                    raise SourceApiReviewSchemaError(
+                        f"{label} plain import alias must be a non-empty string or null"
+                    )
+                if (
+                    not isinstance(binding["level"], int)
+                    or isinstance(binding["level"], bool)
+                    or binding["level"] != 0
+                ):
+                    raise SourceApiReviewSchemaError(f"{label} plain import level must be zero")
+                for key in ("local_name", "target"):
+                    if not isinstance(binding[key], str) or not binding[key].strip():
+                        raise SourceApiReviewSchemaError(
+                            f"{label} import binding {key} must be a non-empty string"
+                        )
 
         basis = _require_strings(row["evidence_basis"], f"{label} evidence basis")
         if set(basis) - SOURCE_API_EVIDENCE_BASIS:

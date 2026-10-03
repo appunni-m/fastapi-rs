@@ -1,6 +1,6 @@
 # Draft review: non-callable `APIRoute` and `Dependant` fields
 
-**State:** proposal for human review only. This file is outside active atlas inputs; it does not change the compatibility atlas, metadata, or support claims.
+**State:** superseded draft; do not use its proposed classifications. The active pinned review now classifies all 56 `APIRoute`/`Dependant` candidates: 3 supported, 50 private/internal, and 3 uncertain. See `tests/fixtures/api-public-candidate-classification-review.json` and generated `tests/fixtures/compatibility-atlas.json`. This file remains outside active atlas inputs.
 
 ## Pinned evidence
 
