@@ -675,6 +675,7 @@ def validate_compatibility_artifacts(
                         "canonical_operation_id",
                         "sibling_contract_gap",
                         "signature_source",
+                        "attribute_source",
                         "target_binding",
                         "documentation_contract_refs",
                         "fixture_refs",
@@ -777,59 +778,145 @@ def validate_compatibility_artifacts(
                 f"{identifier} has an incomplete sibling contract gap",
             )
             signature_source = row.get("signature_source")
+            attribute_source = row.get("attribute_source")
+            has_signature_source = isinstance(signature_source, dict)
+            has_attribute_source = isinstance(attribute_source, dict)
             _require(
-                isinstance(signature_source, dict)
-                and signature_source.get("repository") == "starlette"
-                and isinstance(signature_source.get("path"), str)
-                and signature_source.get("owner")
-                and signature_source.get("symbol")
-                and isinstance(signature_source.get("start_line"), int)
-                and isinstance(signature_source.get("end_line"), int),
-                f"{identifier} has no pinned Starlette source signature reference",
+                has_signature_source != has_attribute_source
+                and ("signature_source" not in row or has_signature_source)
+                and ("attribute_source" not in row or has_attribute_source),
+                f"{identifier} must identify exactly one sibling method or instance attribute",
             )
-            source_path = signature_source["path"]
-            start_line = signature_source["start_line"]
-            end_line = signature_source["end_line"]
-            _verify_source_ref(
-                starlette_source,
-                {"path": source_path, "line": start_line, "end_line": end_line},
-                f"{identifier} Starlette signature source",
-            )
-            try:
-                source_tree = ast.parse(
-                    _source_path(
-                        starlette_source, source_path, f"{identifier} signature source"
-                    ).read_text(encoding="utf-8"),
-                    filename=source_path,
+            if has_signature_source:
+                _require(
+                    signature_source.get("repository") == "starlette"
+                    and isinstance(signature_source.get("path"), str)
+                    and signature_source.get("owner")
+                    and signature_source.get("symbol")
+                    and isinstance(signature_source.get("start_line"), int)
+                    and isinstance(signature_source.get("end_line"), int),
+                    f"{identifier} has no pinned Starlette source signature reference",
                 )
-            except SyntaxError as exc:
-                raise ContractError(
-                    f"compatibility atlas: {identifier} Starlette signature source is invalid"
-                ) from exc
-            owners = [
-                node
-                for node in source_tree.body
-                if isinstance(node, ast.ClassDef) and node.name == signature_source["owner"]
-            ]
-            methods = [
-                node
-                for owner in owners
-                for node in owner.body
-                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
-                and node.name == signature_source["symbol"]
-                and node.lineno == start_line
-                and getattr(node, "end_lineno", None) == end_line
-            ]
-            module_id = Path(source_path).with_suffix("").as_posix().replace("/", ".")
-            expected_operation_id = (
-                f"{module_id}.{signature_source['owner']}.{signature_source['symbol']}"
-            )
-            _require(
-                len(owners) == 1
-                and len(methods) == 1
-                and sibling_gap["expected_operation_id"] == expected_operation_id,
-                f"{identifier} signature source does not resolve to the reviewed sibling method",
-            )
+                source_path = signature_source["path"]
+                start_line = signature_source["start_line"]
+                end_line = signature_source["end_line"]
+                _verify_source_ref(
+                    starlette_source,
+                    {"path": source_path, "line": start_line, "end_line": end_line},
+                    f"{identifier} Starlette signature source",
+                )
+                try:
+                    source_tree = ast.parse(
+                        _source_path(
+                            starlette_source, source_path, f"{identifier} signature source"
+                        ).read_text(encoding="utf-8"),
+                        filename=source_path,
+                    )
+                except SyntaxError as exc:
+                    raise ContractError(
+                        f"compatibility atlas: {identifier} Starlette signature source is invalid"
+                    ) from exc
+                owners = [
+                    node
+                    for node in source_tree.body
+                    if isinstance(node, ast.ClassDef) and node.name == signature_source["owner"]
+                ]
+                methods = [
+                    node
+                    for owner in owners
+                    for node in owner.body
+                    if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+                    and node.name == signature_source["symbol"]
+                    and node.lineno == start_line
+                    and getattr(node, "end_lineno", None) == end_line
+                ]
+                module_id = Path(source_path).with_suffix("").as_posix().replace("/", ".")
+                expected_operation_id = (
+                    f"{module_id}.{signature_source['owner']}.{signature_source['symbol']}"
+                )
+                _require(
+                    len(owners) == 1
+                    and len(methods) == 1
+                    and sibling_gap["expected_operation_id"] == expected_operation_id,
+                    f"{identifier} signature source does not resolve to the "
+                    "reviewed sibling method",
+                )
+            else:
+                _require(
+                    set(attribute_source)
+                    == {
+                        "repository",
+                        "path",
+                        "owner",
+                        "initializer",
+                        "attribute",
+                        "start_line",
+                        "end_line",
+                    }
+                    and attribute_source.get("repository") == "starlette"
+                    and isinstance(attribute_source.get("path"), str)
+                    and isinstance(attribute_source.get("owner"), str)
+                    and isinstance(attribute_source.get("initializer"), str)
+                    and isinstance(attribute_source.get("attribute"), str)
+                    and isinstance(attribute_source.get("start_line"), int)
+                    and not isinstance(attribute_source.get("start_line"), bool)
+                    and isinstance(attribute_source.get("end_line"), int)
+                    and not isinstance(attribute_source.get("end_line"), bool)
+                    and sibling_gap.get("candidate_state") == "no_exact_row",
+                    f"{identifier} has an incomplete instance-attribute source reference",
+                )
+                source_path = attribute_source["path"]
+                start_line = attribute_source["start_line"]
+                end_line = attribute_source["end_line"]
+                _verify_source_ref(
+                    starlette_source,
+                    {"path": source_path, "line": start_line, "end_line": end_line},
+                    f"{identifier} Starlette attribute source",
+                )
+                try:
+                    source_tree = ast.parse(
+                        _source_path(
+                            starlette_source, source_path, f"{identifier} attribute source"
+                        ).read_text(encoding="utf-8"),
+                        filename=source_path,
+                    )
+                except SyntaxError as exc:
+                    raise ContractError(
+                        f"compatibility atlas: {identifier} Starlette attribute source is invalid"
+                    ) from exc
+                owners = [
+                    node
+                    for node in source_tree.body
+                    if isinstance(node, ast.ClassDef) and node.name == attribute_source["owner"]
+                ]
+                matching_assignments = [
+                    node
+                    for owner in owners
+                    for method in owner.body
+                    if isinstance(method, (ast.FunctionDef, ast.AsyncFunctionDef))
+                    and method.name == attribute_source["initializer"]
+                    for node in ast.walk(method)
+                    if isinstance(node, ast.Assign)
+                    and node.lineno == start_line
+                    and getattr(node, "end_lineno", None) == end_line
+                    and any(
+                        isinstance(target, ast.Attribute)
+                        and isinstance(target.value, ast.Name)
+                        and target.value.id == "self"
+                        and target.attr == attribute_source["attribute"]
+                        for target in node.targets
+                    )
+                ]
+                module_id = Path(source_path).with_suffix("").as_posix().replace("/", ".")
+                expected_operation_id = (
+                    f"{module_id}.{attribute_source['owner']}.{attribute_source['attribute']}"
+                )
+                _require(
+                    len(owners) == 1
+                    and len(matching_assignments) == 1
+                    and sibling_gap.get("expected_operation_id") == expected_operation_id,
+                    f"{identifier} attribute source does not resolve to the pinned assignment",
+                )
             target_binding = row.get("target_binding")
             _require(
                 isinstance(target_binding, dict)

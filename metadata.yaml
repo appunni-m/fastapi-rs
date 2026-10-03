@@ -80,14 +80,14 @@ api_inventory:
 import_binding_classification_review:
   artifact: tests/fixtures/api-import-binding-classification-review.json
   schema: fastapi-starlette-import-binding-review/v1
-  sha256: 5d8257a4e5a6d506a130c35537ff0c7a8701106d55d83f3bc719ecfd91c93fcd
+  sha256: 066b793494237ec8a2d43a13d160a425d9f4a911f8d9c5839815aebb5b54aee7
   source_identity:
     package: FastAPI
     version: 0.141.1
     source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
     selected_starlette_profile: 1.6.0
     starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
-    starlette_rs_contract_commit: d6f4f5590258f3dfe2f387f325d735e796d8c120
+    starlette_rs_contract_commit: 7209b7fec77b50836351bb4b5e07523c959322cd
   starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
   counts:
     candidates: 97
@@ -98,8 +98,8 @@ import_binding_classification_review:
     starlette_rs_unreviewed_unique_targets: 4
   candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
   pinned_starlette_rs_sources:
-    metadata_sha256: b8a3122ca02357e1fa43f26bb13a40780ffebda1983fdccb5e9dd8b36f749cc1
-    manifest_sha256: 4827e0fef97e38311db27ff74e39f703aa22f2cba07182e2d91656802ca69e6f
+    metadata_sha256: 2b28244648b22eb1f777e30b0d7ecd8161cad7532c5d8bbfc2b4c4f3a05476b0
+    manifest_sha256: cf25c8a15c17f3f5b6e5f24a334ee19518f0c7fa690b599fe6f73b213f58d410
     api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
     api_review_sha256: 8b25f2e3a46753316446077bfde97b6ac8a342233e2f4e50b12d3d01eafbe099
 
@@ -435,7 +435,7 @@ classification_atlas:
 starlette_rs:
   owner: ../starlette-rs
   repository: https://github.com/appunni-m/starlette-rs
-  commit: d6f4f5590258f3dfe2f387f325d735e796d8c120
+  commit: 7209b7fec77b50836351bb4b5e07523c959322cd
   distribution_version: 0.1.0
   contract_id: starlette-1.6.0-asgi-http-config-session-slice
   metadata: ../starlette-rs/metadata.yaml
@@ -474,7 +474,7 @@ cargo_dependency_inventory:
       source_description: Python-API bindings for the PyO3 ecosystem
 
 reviewed_api_contract_overlay:
-  schema: fastapi-rs/reviewed-api-contract-overlay@6
+  schema: fastapi-rs/reviewed-api-contract-overlay@7
   purpose: >-
     Source-backed overlays link selected supported operations to documented
     features, observable selectors, and candidate error records. Inherited
@@ -1322,7 +1322,7 @@ reviewed_api_contract_overlay:
         - websocket.messages
       error_contract_ids: [fastapi.exceptions.WebSocketRequestValidationError]
     fastapi.routing.APIRoute:
-      rust_binding: null
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRoute
       source_evidence:
         - path: fastapi/routing.py
           symbol: APIRoute
@@ -1341,12 +1341,14 @@ reviewed_api_contract_overlay:
         The input inspects FastAPI-registered APIRoute instances for one direct
         GET path operation and one GET operation included through nested
         APIRouter instances. It compares only path, path_format, name, methods,
-        tags, and endpoint name. This does not establish direct APIRoute
+        tags, endpoint name, and whether the effective route-context scope key
+        is absent on the direct route or present on the included route. This
+        does not establish direct APIRoute
         construction, custom route-class subclassing, or other constructor
         arguments or APIRoute state such as response models, dependencies,
         response fields, callbacks, or handler customization.
     fastapi.routing.iter_route_contexts:
-      rust_binding: null
+      rust_binding: fastapi-rs/src/application_runtime.rs::py_iter_route_contexts
       source_evidence:
         - path: fastapi/routing.py
           symbol: iter_route_contexts
@@ -1369,8 +1371,9 @@ reviewed_api_contract_overlay:
         operation context and the flattened context for one GET operation
         included through nested APIRouter instances. The observed projection is
         limited to original-route identity, path, path_format, name, methods,
-        tags, endpoint name, and the nested request scope's effective context
-        path. Other route types, WebSocket and webhook contexts, dynamic route
+        tags, endpoint name, the direct route's absent request-scope context,
+        and the nested request scope's effective context path. Other route
+        types, WebSocket and webhook contexts, dynamic route
         mutation, custom route classes, RouteContext construction or general
         forwarding behavior, and unobserved context fields remain outside this
         slice.
@@ -4003,6 +4006,58 @@ reviewed_api_contract_overlay:
         rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApiRouter::url_path_for
         known_gaps:
           - The FastAPI input covers one repeated-inclusion context; sibling generic double-mount coverage does not prove FastAPI route-graph behavior. Broader FastAPI nested inclusion, route-parameter errors, and URLPath metadata behavior remain unestablished.
+    fastapi.routing.APIRouter.routes:
+      kind: inherited_property
+      fastapi_exposure_candidate_id: fastapi.routing.APIRouter
+      source_evidence:
+        - path: fastapi/routing.py
+          kind: class-inheritance
+          symbol: APIRouter
+          base_class: Router
+          base_expression: routing.Router
+          base_import_module: starlette
+          base_import_name: routing
+          base_import_alias: routing
+          base_import_line: 91
+          line: 2255
+        - path: docs/en/docs/tutorial/bigger-applications.md
+          kind: documentation-text
+          start_line: 541
+          end_line: 545
+          required_text:
+            - Avoid directly mutating `router.routes` after including a router.
+            - Treat `router.routes` as a lower-level route tree that can contain route definitions and included routers, and avoid relying on it as a flat list of final path operations.
+      attribute_source:
+        repository: starlette
+        path: starlette/routing.py
+        owner: Router
+        initializer: __init__
+        attribute: routes
+        start_line: 586
+        end_line: 586
+      sibling_contract_gap:
+        candidate_state: no_exact_row
+        expected_operation_id: starlette.routing.Router.routes
+        reason: >-
+          The pinned Starlette-RS Router class and constructor are represented, but its reviewed
+          API sources, manifest, catalog, and review have no exact Router.routes member candidate.
+          Router route-dispatch and the Router class or constructor rows do not define this
+          instance-attribute accessor as a separate public operation.
+      documentation_contract_refs:
+        - source_path: docs/en/docs/tutorial/bigger-applications.md
+          fixture_id: fastapi.docs.tutorial-bigger-applications
+          observation_selectors: [http.status, http.body.bytes]
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
+          case_id: fastapi.routing.iter-route-contexts.nested-included
+      feature_ids: [app-routing]
+      observation_selectors: [http.status, http.body.bytes]
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::routes
+        known_gaps:
+          - The nested workflow reads only leaf_router.routes[0] for one GET APIRoute; empty or multi-route list behavior, ordering, list identity or mutation, generic BaseRoute types, and other APIRouter route configurations remain outside this partial contract.
     fastapi.applications.FastAPI.add_middleware:
       fastapi_exposure_candidate_id: fastapi.applications.FastAPI
       canonical_operation_id: starlette.applications.Starlette.add_middleware
@@ -4168,9 +4223,10 @@ reviewed_api_contract_overlay:
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
+        rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::routes
         known_gaps:
-          - FastAPI-RS does not expose the inherited routes property, so callers cannot inspect the ordered route collection or pass app.routes to get_openapi.
-          - The FastAPI input projects route type, path, and name after one mount; route identity, methods, endpoint shape, child-route details, and other route configurations remain uncovered under the canonical Starlette contract.
+          - The projection does not establish route-tree or mount structure, generic or non-HTTP routes, custom route classes, other route options or fields, or built-in and docs routes; passing the projection to get_openapi also remains unestablished.
+          - The direct and nested route-context cases cover APIRoute identity, path, path_format, name, methods, tags, and endpoint name for one GET route each; broader collection contents and configurations remain outside this partial contract.
   warning_classification_reviews:
     fastapi.exceptions.FastAPIDeprecationWarning:
       classification: uncertain

@@ -241,12 +241,14 @@ ROUTE_APPLICATION_TEST_SOURCE_REVIEW = {
                     "tests/test_custom_route_class.py",
                     "test_route_classes",
                     (
-                        "The function asserts isinstance on APIRouter.routes Python objects. "
-                        "The current workflow contract observes ASGI requests and cannot compare "
-                        "Python route-object class identity; this remains outside this runtime wave."
+                        "The route-context workflow records the built-in APIRoute projection and "
+                        "original-route identity, but this function exercises three user-defined "
+                        "APIRoute subclasses selected through APIRouter.route_class. Custom-class "
+                        "registration, subclass state, and nested subclass preservation remain "
+                        "outside the reviewed slice."
                     ),
                     supporting_sources=(_CUSTOM_ROUTE_SETUP,),
-                    owner="Python object/API identity manifest and runner",
+                    owner="APIRoute subclass and custom route-class support",
                 ),
             },
         },

@@ -91,7 +91,7 @@ target:
     name: starlette-rs-py
     version: 0.1.0
     starlette_contract: 1.6.0
-    commit: d6f4f5590258f3dfe2f387f325d735e796d8c120
+    commit: 7209b7fec77b50836351bb4b5e07523c959322cd
   external_python_runtime_lock:
     path: requirements/target-runtime-cpython-3.12.13.lock
     sha256: efb7ca633fc9a9c8587a6f59f8ee9b509151f6f77ceb75a56dd3cdeff2be99f7
@@ -128,13 +128,13 @@ source_artifacts:
   api_import_binding_classification_review:
     path: tests/fixtures/api-import-binding-classification-review.json
     schema: fastapi-starlette-import-binding-review/v1
-    sha256: 74a12f62f4f73bd008add914232fd748db6eeb7ed3b9696360ce39bfae4601ef
+    sha256: 066b793494237ec8a2d43a13d160a425d9f4a911f8d9c5839815aebb5b54aee7
     purpose: Reviewed source-backed disposition of uncertain FastAPI import bindings from the selected Starlette profile
     source_identity:
       package: FastAPI
       selected_starlette_profile: 1.6.0
       source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
-      starlette_rs_contract_commit: d6f4f5590258f3dfe2f387f325d735e796d8c120
+      starlette_rs_contract_commit: 7209b7fec77b50836351bb4b5e07523c959322cd
       starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
       version: 0.141.1
     starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
@@ -147,8 +147,8 @@ source_artifacts:
       starlette_rs_unreviewed_unique_targets: 4
     candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
     pinned_starlette_rs_sources:
-      metadata_sha256: b8a3122ca02357e1fa43f26bb13a40780ffebda1983fdccb5e9dd8b36f749cc1
-      manifest_sha256: 4827e0fef97e38311db27ff74e39f703aa22f2cba07182e2d91656802ca69e6f
+      metadata_sha256: 2b28244648b22eb1f777e30b0d7ecd8161cad7532c5d8bbfc2b4c4f3a05476b0
+      manifest_sha256: cf25c8a15c17f3f5b6e5f24a334ee19518f0c7fa690b599fe6f73b213f58d410
       api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
       api_review_sha256: 8b25f2e3a46753316446077bfde97b6ac8a342233e2f4e50b12d3d01eafbe099
   api_source_classification_review:
@@ -411,12 +411,12 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@5
-    sha256: 88152cd3c9f4060bd2b6c97924db6ffc350b5f2b7c492b303e286016772fe69e
+    sha256: 6aaa1c3cb26de505b3e893620ccc9dc93b7410ed38426a72a06e06f9b07cf274
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
-      reviewed_inherited_api_candidates: 12
-      inherited_supported: 8
+      reviewed_inherited_api_candidates: 13
+      inherited_supported: 9
       inherited_private_or_internal: 1
       inherited_uncertain: 3
       reviewed_import_binding_candidates: 97
@@ -447,7 +447,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 46142397ca91065a9621d80dee566bd454fb6f9da1da1159d859a2bdeaf70d1c
+    sha256: 25d6320b9606cb24bf1828495f7ad08fa451dcb115b1dd3f55f31df46e5a85e7
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -484,14 +484,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@2
-    sha256: ad24ea2230ecb2d1cc8d48731bdc2d85d10bd0b210d86b419d45f13f6b3b5367
+    sha256: 51b847a87a28b6831e93d6d97a828bb8e223ad63c44e24ce26efedcb2945d7b1
     schema_path: tests/fixtures/schemas/materialized-input-index.schema.json
     schema_sha256: 56ac1cdfaa6f28b4277ef44b5ef78efebb3122111c5691e1b9c1bce869156aaf
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
       workflows: 517
       cases: 2043
-      partial_source_mappings: 1473
+      partial_source_mappings: 1474
 
 contract_metadata:
   aliases:
@@ -756,7 +756,7 @@ evidence_policy:
 
 # BEGIN GENERATED PER-SYMBOL API CONTRACT
 api_surface_contract:
-  schema: fastapi-rs/public-api-contract@8
+  schema: fastapi-rs/public-api-contract@9
   status: source-api-linked; behavior-and-target-contract-incomplete
   authority:
     fastapi:
@@ -790,8 +790,8 @@ api_surface_contract:
   - source_artifacts.materialized_input_index.mappings
   counts:
     required_public_symbols: 461
-    required_inherited_operations: 8
-    required_public_api_candidates: 469
+    required_inherited_operations: 9
+    required_public_api_candidates: 470
     signature_contract_states:
       module-object-no-call-signature: 1
       non-callable-surface: 235
@@ -806,7 +806,7 @@ api_surface_contract:
       fastapi-rs: 430
       starlette-rs: 31
     inherited_implementation_owner_plans:
-      fastapi-rs: 7
+      fastapi-rs: 8
       starlette-rs: 1
     symbols_with_documented_feature_refs: 455
     symbols_with_alias_refs: 46
@@ -24823,11 +24823,11 @@ api_surface_contract:
     operation_fixture_refs:
     - workflow_id: router-apiroute-context-upstream
       input_path: tests/fixtures/inputs/parity/router-apiroute-context-upstream.json
-      input_sha256: 4d49d17a776cf843f9f77f3d1dda0e22ee5d7a10353e8d04801431ae3aaffd28
+      input_sha256: becfc4871af563d36c209553f100a1b43f9e696e667ed56a744bf4255c64cae8
       recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
-      recipe_sha256: 34050996675335b9285a592126315c612aa2665173b94d8cd1a5f85052041078
+      recipe_sha256: e49e2741ffeaca984ed842f98fee6415891085d3a925ce83e873edeb0e5111a1
       workload_path: tests/fixtures/workloads/router_apiroute_context_upstream.py
-      workload_sha256: d153acebfbbab2cc4cb25424fb4f29019ed4d9f7ed446c783bd2762ac81eba64
+      workload_sha256: c77c0affb8f4168c315b24c4ea4db81393b4de8802504ce28884cfb0011439e0
       case_id: fastapi.routing.apiroute-state.direct
       observation_selectors:
       - asgi.application_error.exception
@@ -24838,11 +24838,11 @@ api_surface_contract:
       - http.status
     - workflow_id: router-apiroute-context-upstream
       input_path: tests/fixtures/inputs/parity/router-apiroute-context-upstream.json
-      input_sha256: 4d49d17a776cf843f9f77f3d1dda0e22ee5d7a10353e8d04801431ae3aaffd28
+      input_sha256: becfc4871af563d36c209553f100a1b43f9e696e667ed56a744bf4255c64cae8
       recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
-      recipe_sha256: 34050996675335b9285a592126315c612aa2665173b94d8cd1a5f85052041078
+      recipe_sha256: e49e2741ffeaca984ed842f98fee6415891085d3a925ce83e873edeb0e5111a1
       workload_path: tests/fixtures/workloads/router_apiroute_context_upstream.py
-      workload_sha256: d153acebfbbab2cc4cb25424fb4f29019ed4d9f7ed446c783bd2762ac81eba64
+      workload_sha256: c77c0affb8f4168c315b24c4ea4db81393b4de8802504ce28884cfb0011439e0
       case_id: fastapi.routing.iter-route-contexts.nested-included
       observation_selectors:
       - asgi.application_error.exception
@@ -24871,7 +24871,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1020
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRoute
   - id: fastapi.routing.APIRoute.get_route_handler
     kind: method
     source_candidate_ref: /api_candidates/1031
@@ -26274,11 +26274,11 @@ api_surface_contract:
     operation_fixture_refs:
     - workflow_id: router-apiroute-context-upstream
       input_path: tests/fixtures/inputs/parity/router-apiroute-context-upstream.json
-      input_sha256: 4d49d17a776cf843f9f77f3d1dda0e22ee5d7a10353e8d04801431ae3aaffd28
+      input_sha256: becfc4871af563d36c209553f100a1b43f9e696e667ed56a744bf4255c64cae8
       recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
-      recipe_sha256: 34050996675335b9285a592126315c612aa2665173b94d8cd1a5f85052041078
+      recipe_sha256: e49e2741ffeaca984ed842f98fee6415891085d3a925ce83e873edeb0e5111a1
       workload_path: tests/fixtures/workloads/router_apiroute_context_upstream.py
-      workload_sha256: d153acebfbbab2cc4cb25424fb4f29019ed4d9f7ed446c783bd2762ac81eba64
+      workload_sha256: c77c0affb8f4168c315b24c4ea4db81393b4de8802504ce28884cfb0011439e0
       case_id: fastapi.routing.apiroute-state.direct
       observation_selectors:
       - asgi.application_error.exception
@@ -26289,11 +26289,11 @@ api_surface_contract:
       - http.status
     - workflow_id: router-apiroute-context-upstream
       input_path: tests/fixtures/inputs/parity/router-apiroute-context-upstream.json
-      input_sha256: 4d49d17a776cf843f9f77f3d1dda0e22ee5d7a10353e8d04801431ae3aaffd28
+      input_sha256: becfc4871af563d36c209553f100a1b43f9e696e667ed56a744bf4255c64cae8
       recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
-      recipe_sha256: 34050996675335b9285a592126315c612aa2665173b94d8cd1a5f85052041078
+      recipe_sha256: e49e2741ffeaca984ed842f98fee6415891085d3a925ce83e873edeb0e5111a1
       workload_path: tests/fixtures/workloads/router_apiroute_context_upstream.py
-      workload_sha256: d153acebfbbab2cc4cb25424fb4f29019ed4d9f7ed446c783bd2762ac81eba64
+      workload_sha256: c77c0affb8f4168c315b24c4ea4db81393b4de8802504ce28884cfb0011439e0
       case_id: fastapi.routing.iter-route-contexts.nested-included
       observation_selectors:
       - asgi.application_error.exception
@@ -26322,7 +26322,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1390
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/application_runtime.rs::py_iter_route_contexts
   - id: fastapi.security.APIKeyCookie
     kind: import_binding
     source_candidate_ref: /api_candidates/1409
@@ -33734,7 +33734,7 @@ api_surface_contract:
   - id: fastapi.routing.APIRouter.url_path_for
     kind: inherited_method
     exposure: inherited-from-starlette
-    reviewed_candidate_ref: /reviewed_inherited_api_candidates/11
+    reviewed_candidate_ref: /reviewed_inherited_api_candidates/12
     fastapi_exposure_candidate_ref: /api_candidates/1058
     exposure_evidence:
     - path: fastapi/routing.py
@@ -33823,6 +33823,110 @@ api_surface_contract:
         does not prove FastAPI route-graph behavior. Broader FastAPI nested inclusion, route-parameter
         errors, and URLPath metadata behavior remain unestablished.
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApiRouter::url_path_for
+  - id: fastapi.routing.APIRouter.routes
+    kind: inherited_property
+    exposure: inherited-from-starlette
+    reviewed_candidate_ref: /reviewed_inherited_api_candidates/11
+    fastapi_exposure_candidate_ref: /api_candidates/1058
+    exposure_evidence:
+    - path: fastapi/routing.py
+      kind: class-inheritance
+      symbol: APIRouter
+      base_class: Router
+      base_expression: routing.Router
+      base_import_module: starlette
+      base_import_name: routing
+      base_import_alias: routing
+      base_import_line: 91
+      line: 2255
+    - path: docs/en/docs/tutorial/bigger-applications.md
+      kind: documentation-text
+      start_line: 541
+      end_line: 545
+      required_text:
+      - Avoid directly mutating `router.routes` after including a router.
+      - Treat `router.routes` as a lower-level route tree that can contain route definitions and included
+        routers, and avoid relying on it as a flat list of final path operations.
+    documentation_contract_refs:
+    - coverage_matrix_ref: /coverage_matrix/565
+      source_path: docs/en/docs/tutorial/bigger-applications.md
+      mapping_status: candidate
+      fixture_id: fastapi.docs.tutorial-bigger-applications
+      fixture_design_ref: /fixture_designs/390
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    fixture_refs:
+    - recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
+      case_id: fastapi.routing.iter-route-contexts.nested-included
+      workload_path: tests/fixtures/workloads/router_apiroute_context_upstream.py
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    feature_ids:
+    - app-routing
+    - dependency-security
+    - openapi-docs
+    observation_selectors:
+    - http.body.bytes
+    - http.status
+    attribute_source_ref: &id028
+      repository: starlette
+      version: 1.6.0
+      commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
+      source_path: starlette/routing.py
+      source_attribute_id: starlette.routing.Router.routes
+      owner: Router
+      initializer: __init__
+      attribute: routes
+      start_line: 586
+      end_line: 586
+      assignment: self.routes = [] if routes is None else list(routes)
+    attribute_contract_state: source-assignment-linked; sibling-accessor-missing
+    sibling_contract_gap: &id029
+      contract_id: starlette-1.6.0-asgi-http-config-session-slice
+      expected_operation_id: starlette.routing.Router.routes
+      candidate_state: no_exact_row
+      reason: The pinned Starlette-RS Router class and constructor are represented, but its reviewed API
+        sources, manifest, catalog, and review have no exact Router.routes member candidate. Router route-dispatch
+        and the Router class or constructor rows do not define this instance-attribute accessor as a separate
+        public operation.
+      operation_absent_from_api_sources: true
+      operation_absent_from_manifest: true
+      operation_absent_from_api_catalog: true
+      operation_absent_from_api_review: true
+      api_source_surface_ref:
+        path: ../starlette-rs/metadata.yaml
+        json_pointer: /api_sources/40
+      manifest_surface_ref:
+        path: ../starlette-rs/tests/fixtures/manifest.yaml
+        json_pointer: /surfaces/39
+      api_catalog_surface_ref:
+        path: ../starlette-rs/docs/api-surface.csv
+        line: 725
+        qualified_name: starlette.routing.Router
+        record_type: class
+        audit_status: documented symbol; review defaults and behavior
+      api_review_surface_ref:
+        path: ../starlette-rs/docs/atlas/api-review.csv
+        line: 725
+        qualified_name: starlette.routing.Router
+        record_type: class
+        api_disposition: supported
+    target_binding:
+      target_profile: fastapi-rs-python-consumer
+      public_python_path: fastapi.routing.APIRouter.routes
+      implementation_owner: fastapi-rs
+      implementation_owner_evidence:
+        kind: pinned-source-attribute-assignment-with-sibling-accessor-gap
+        attribute_source_ref: *id028
+        sibling_contract_gap_ref: *id029
+      status: partial-contract
+      known_gaps:
+      - The nested workflow reads only leaf_router.routes[0] for one GET APIRoute; empty or multi-route
+        list behavior, ordering, list identity or mutation, generic BaseRoute types, and other APIRouter
+        route configurations remain outside this partial contract.
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::routes
   - id: fastapi.applications.FastAPI.add_middleware
     kind: inherited_method
     exposure: inherited-from-starlette
@@ -33885,7 +33989,7 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
-    canonical_operation_ref: &id028
+    canonical_operation_ref: &id030
       contract_id: starlette-1.6.0-asgi-http-config-session-slice
       manifest_path: ../starlette-rs/tests/fixtures/manifest.yaml
       manifest_contract_pointer: /scope/id
@@ -33921,7 +34025,7 @@ api_surface_contract:
       implementation_owner: starlette-rs
       implementation_owner_evidence:
         kind: canonical-sibling-operation-reference
-        canonical_operation_ref: *id028
+        canonical_operation_ref: *id030
       status: full-contract-not-established
   - id: fastapi.applications.FastAPI.add_exception_handler
     kind: inherited_method
@@ -33988,7 +34092,7 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
-    canonical_operation_ref: &id029
+    canonical_operation_ref: &id031
       contract_id: starlette-1.6.0-asgi-http-config-session-slice
       manifest_path: ../starlette-rs/tests/fixtures/manifest.yaml
       manifest_contract_pointer: /scope/id
@@ -34024,7 +34128,7 @@ api_surface_contract:
       implementation_owner: fastapi-rs
       implementation_owner_evidence:
         kind: canonical-sibling-operation-reference
-        canonical_operation_ref: *id029
+        canonical_operation_ref: *id031
       status: partial-contract
       known_gaps:
       - Custom RequestValidationError and WebSocketRequestValidationError handlers are not dispatched;
@@ -34092,7 +34196,7 @@ api_surface_contract:
     - http.headers.ordered
     - http.status
     signature: 'def mount(self, path: str, app: ASGIApp, name: str | None=None) -> None'
-    signature_source_ref: &id030
+    signature_source_ref: &id032
       repository: starlette
       version: 1.6.0
       commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
@@ -34104,7 +34208,7 @@ api_surface_contract:
       end_line: 99
       signature: 'def mount(self, path: str, app: ASGIApp, name: str | None=None) -> None'
     signature_contract_state: source-signature-linked; sibling-operation-missing
-    sibling_contract_gap: &id031
+    sibling_contract_gap: &id033
       contract_id: starlette-1.6.0-asgi-http-config-session-slice
       expected_operation_id: starlette.applications.Starlette.mount
       reason: The pinned Starlette-RS API catalog records only an unreviewed method candidate while api-review.csv
@@ -34133,8 +34237,8 @@ api_surface_contract:
       implementation_owner: fastapi-rs
       implementation_owner_evidence:
         kind: pinned-source-signature-with-sibling-operation-gap
-        signature_source_ref: *id030
-        sibling_contract_gap_ref: *id031
+        signature_source_ref: *id032
+        sibling_contract_gap_ref: *id033
       status: partial-contract
       known_gaps:
       - Mount dispatch is attempted after native FastAPI routes, so registration ordering is incomplete.
@@ -34183,7 +34287,7 @@ api_surface_contract:
     - openapi-docs
     observation_selectors:
     - http.body.bytes
-    canonical_operation_ref: &id032
+    canonical_operation_ref: &id034
       contract_id: starlette-1.6.0-asgi-http-config-session-slice
       manifest_path: ../starlette-rs/tests/fixtures/manifest.yaml
       manifest_contract_pointer: /scope/id
@@ -34219,12 +34323,14 @@ api_surface_contract:
       implementation_owner: fastapi-rs
       implementation_owner_evidence:
         kind: canonical-sibling-operation-reference
-        canonical_operation_ref: *id032
+        canonical_operation_ref: *id034
       status: partial-contract
       known_gaps:
-      - FastAPI-RS does not expose the inherited routes property, so callers cannot inspect the ordered
-        route collection or pass app.routes to get_openapi.
-      - The FastAPI input projects route type, path, and name after one mount; route identity, methods,
-        endpoint shape, child-route details, and other route configurations remain uncovered under the
-        canonical Starlette contract.
+      - The projection does not establish route-tree or mount structure, generic or non-HTTP routes, custom
+        route classes, other route options or fields, or built-in and docs routes; passing the projection
+        to get_openapi also remains unestablished.
+      - The direct and nested route-context cases cover APIRoute identity, path, path_format, name, methods,
+        tags, and endpoint name for one GET route each; broader collection contents and configurations
+        remain outside this partial contract.
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::routes
 # END GENERATED PER-SYMBOL API CONTRACT

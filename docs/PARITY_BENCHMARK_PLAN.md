@@ -175,6 +175,26 @@ multi-query case, including invalid-value aggregation and OpenAPI parity. It
 compares FastAPI with FastAPI-RS directly; Starlette is omitted because it does
 not own FastAPI's repeated-query list validation behavior.
 
+### Required direct-ASGI workload suite
+
+`make benchmark-suite STARLETTE_RS_SOURCE=/path/to/clean/starlette-rs` runs the
+reviewed six-workload set in a fixed order. The contract check rejects missing,
+renamed, or additional declarations until the suite denominator is reviewed.
+Before building, the runner verifies the FastAPI, Starlette, and Starlette-RS
+source revisions against their current manifest pins. FastAPI-RS must have a
+clean working tree; its current HEAD is recorded per run because the manifest
+does not pin a FastAPI-RS commit. Each workload then runs its own fresh
+full-workflow parity gate and release measurement. A completed suite summary is
+emitted only if every declaration has a new valid result and all results share
+source revisions, native target binary, Python, host, and build identities. A
+versioned suite record references each per-workload artifact by path and
+SHA-256. `make benchmark-contract-check` validates the suite schema and every
+saved suite-to-result reference. If preflight, a workload, or identity
+aggregation fails, an incomplete suite record captures completed, failed, and
+not-run workload outcomes along with any available identities. Use
+`STARLETTE_RS_SOURCE` for a clean detached worktree at its pinned revision if
+the sibling development checkout is dirty.
+
 Start with FastAPI's own workloads in `tests/benchmarks/` and
 `tests/memory_benchmarks/` at the pinned tag. This preserves comparisons to
 FastAPI's established work while the additional workloads isolate costs that

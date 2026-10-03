@@ -110,6 +110,17 @@ Choose the neighboring validation-error or chunked-body profile by setting
 `BENCHMARK_WORKLOAD=benchmarks/workloads/first-slice-invalid-asgi.yaml` or
 `BENCHMARK_WORKLOAD=benchmarks/workloads/first-slice-chunked-asgi.yaml`.
 
+`make benchmark-suite STARLETTE_RS_SOURCE=/path/to/clean/starlette-rs` runs all
+six reviewed workloads sequentially. The selected Starlette-RS checkout must be
+clean and match the commit pinned in `metadata.yaml`, so a detached clean
+worktree can be used while the sibling development checkout has changes. The
+FastAPI-RS checkout must have a clean working tree; its current HEAD is recorded
+in each result because its revision is not pinned by the manifest. The suite
+summary is written only after every workload has a fresh passing parity gate
+and all six results share source, native binary, Python, host, and build
+identities. Completed and incomplete suite records, plus per-workload results,
+are stored under ignored `benchmark-results/`.
+
 ## Workspace layout
 
 - `fastapi-rs/` owns Rust implementation behavior and integrates the separate

@@ -1424,7 +1424,7 @@ APP_DEPENDENCY_TEST_FUNCTION_EXCLUSIONS: dict[str, dict[str, dict[str, object]]]
         "test_route_classes": _function_exclusion(
             "tests/test_custom_route_class.py",
             "test_route_classes",
-            "The function directly inspects APIRouter.routes Python objects with isinstance; the current Python-ASGI workflow schema does not observe Python object class identity.",
+            "The route-context workflow records the built-in APIRoute projection and original-route identity, but this function exercises three user-defined APIRoute subclasses selected through APIRouter.route_class. Custom-class registration, subclass state, and nested subclass preservation remain outside the reviewed slice.",
             (
                 _source(
                     "fastapi/routing.py",

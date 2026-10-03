@@ -36,7 +36,7 @@ def create_app(factory_input: dict[str, Any], event_trace: list[str]) -> FastAPI
     app = FastAPI()
 
     @app.get("/direct/{item_id}", name="read_direct", tags=["direct"])
-    def read_direct(item_id: str) -> dict[str, object]:
+    def read_direct(item_id: str, request: Request) -> dict[str, object]:
         from fastapi.routing import APIRoute, iter_route_contexts
 
         route = next(
@@ -50,6 +50,10 @@ def create_app(factory_input: dict[str, Any], event_trace: list[str]) -> FastAPI
             if context.original_route is route
         )
         snapshot = _snapshot_route(route, context)
+        fastapi_scope = request.scope.get("fastapi", {})
+        effective_route_context = fastapi_scope.get("effective_route_context")
+        snapshot["scope_context_present"] = "effective_route_context" in fastapi_scope
+        snapshot["scope_context_path"] = getattr(effective_route_context, "path", None)
         snapshot["item_id"] = item_id
         return snapshot
 
@@ -66,7 +70,9 @@ def create_app(factory_input: dict[str, Any], event_trace: list[str]) -> FastAPI
             if context.original_route is original_route
         )
         snapshot = _snapshot_route(original_route, context)
-        snapshot["scope_context_path"] = request.scope["fastapi"]["effective_route_context"].path
+        fastapi_scope = request.scope["fastapi"]
+        snapshot["scope_context_present"] = "effective_route_context" in fastapi_scope
+        snapshot["scope_context_path"] = fastapi_scope["effective_route_context"].path
         snapshot["item_id"] = item_id
         return snapshot
 

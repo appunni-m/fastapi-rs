@@ -9780,7 +9780,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         row["id"]: index for index, row in enumerate(source_api_candidates)
     }
     reviewed_api_overlay = project_metadata.get("reviewed_api_contract_overlay", {})
-    if reviewed_api_overlay.get("schema") != "fastapi-rs/reviewed-api-contract-overlay@6":
+    if reviewed_api_overlay.get("schema") != "fastapi-rs/reviewed-api-contract-overlay@7":
         raise AtlasError("metadata.yaml reviewed API contract overlay schema is unsupported")
     inherited_api_overlay = reviewed_api_overlay.get("inherited_operations", {})
     if not isinstance(inherited_api_overlay, dict):
@@ -9878,23 +9878,116 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         }
         sibling_gap = operation.get("sibling_contract_gap")
         if sibling_gap is not None:
+            signature_source = operation.get("signature_source")
+            attribute_source = operation.get("attribute_source")
+            has_signature_source = isinstance(signature_source, dict)
+            has_attribute_source = isinstance(attribute_source, dict)
             if (
                 not isinstance(sibling_gap, dict)
                 or "canonical_operation_id" in operation
-                or not isinstance(operation.get("signature_source"), dict)
+                or has_signature_source == has_attribute_source
+                or ("signature_source" in operation and not has_signature_source)
+                or ("attribute_source" in operation and not has_attribute_source)
                 or not isinstance(operation.get("target_binding"), dict)
             ):
                 raise AtlasError(
-                    "inherited sibling-gap candidates require signature source and target "
+                    "inherited sibling-gap candidates require exactly one source reference and target "
                     "binding and must omit a canonical operation: " + operation_id
+                )
+            if has_attribute_source:
+                if set(attribute_source) != {
+                    "repository",
+                    "path",
+                    "owner",
+                    "initializer",
+                    "attribute",
+                    "start_line",
+                    "end_line",
+                }:
+                    raise AtlasError(
+                        "inherited attribute source has unsupported fields: " + operation_id
+                    )
+                relative_path = attribute_source.get("path")
+                owner = attribute_source.get("owner")
+                initializer = attribute_source.get("initializer")
+                attribute = attribute_source.get("attribute")
+                start_line = attribute_source.get("start_line")
+                end_line = attribute_source.get("end_line")
+                source_path = (starlette_root / str(relative_path)).resolve()
+                if (
+                    attribute_source.get("repository") != "starlette"
+                    or not isinstance(relative_path, str)
+                    or Path(relative_path).is_absolute()
+                    or ".." in Path(relative_path).parts
+                    or not isinstance(owner, str)
+                    or not isinstance(initializer, str)
+                    or not isinstance(attribute, str)
+                    or not isinstance(start_line, int)
+                    or isinstance(start_line, bool)
+                    or not isinstance(end_line, int)
+                    or isinstance(end_line, bool)
+                    or end_line < start_line
+                    or not source_path.is_file()
+                    or starlette_root not in source_path.parents
+                ):
+                    raise AtlasError("inherited attribute source is malformed: " + operation_id)
+                try:
+                    source_tree = ast.parse(
+                        source_path.read_text(encoding="utf-8"), filename=relative_path
+                    )
+                except SyntaxError as exc:
+                    raise AtlasError(
+                        "inherited attribute source is not valid Python: " + operation_id
+                    ) from exc
+                owners = [
+                    node
+                    for node in source_tree.body
+                    if isinstance(node, ast.ClassDef) and node.name == owner
+                ]
+                matching_assignments = [
+                    node
+                    for owner_node in owners
+                    for method in owner_node.body
+                    if isinstance(method, (ast.FunctionDef, ast.AsyncFunctionDef))
+                    and method.name == initializer
+                    for node in ast.walk(method)
+                    if isinstance(node, ast.Assign)
+                    and node.lineno == start_line
+                    and getattr(node, "end_lineno", None) == end_line
+                    and any(
+                        isinstance(target, ast.Attribute)
+                        and isinstance(target.value, ast.Name)
+                        and target.value.id == "self"
+                        and target.attr == attribute
+                        for target in node.targets
+                    )
+                ]
+                module_id = Path(relative_path).with_suffix("").as_posix().replace("/", ".")
+                expected_attribute_id = f"{module_id}.{owner}.{attribute}"
+                if (
+                    len(owners) != 1
+                    or len(matching_assignments) != 1
+                    or sibling_gap.get("expected_operation_id") != expected_attribute_id
+                    or sibling_gap.get("candidate_state") != "no_exact_row"
+                ):
+                    raise AtlasError(
+                        "inherited attribute source does not resolve to its no-row sibling gap: "
+                        + operation_id
+                    )
+                inherited_candidate["attribute_source"] = attribute_source
+            elif sibling_gap.get("candidate_state") == "no_exact_row":
+                raise AtlasError(
+                    "no-exact-row sibling gaps require an instance-attribute source: "
+                    + operation_id
                 )
             inherited_candidate.update(
                 {
-                    "signature_source": operation["signature_source"],
                     "sibling_contract_gap": sibling_gap,
                     "target_binding": operation["target_binding"],
                 }
             )
+            if has_signature_source:
+                inherited_candidate["signature_source"] = signature_source
         else:
             canonical_operation_id = operation.get("canonical_operation_id")
             if not isinstance(canonical_operation_id, str) or not canonical_operation_id:
@@ -9941,6 +10034,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             "canonical_operation_id",
             "sibling_contract_gap",
             "signature_source",
+            "attribute_source",
             "target_binding",
             "documentation_contract_refs",
             "fixture_refs",
@@ -10373,6 +10467,7 @@ def render_markdown(atlas: dict[str, Any]) -> str:
         "fastapi-rs/public-api-contract@6",
         "fastapi-rs/public-api-contract@7",
         "fastapi-rs/public-api-contract@8",
+        "fastapi-rs/public-api-contract@9",
     }:
         raise AtlasError("manifest has no generated per-symbol source API contract")
     required_public_symbols = api_contract_counts.get("required_public_symbols", 0)

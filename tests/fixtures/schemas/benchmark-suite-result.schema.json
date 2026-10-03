@@ -1,0 +1,320 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastapi-rs/benchmark-suite-result@1",
+  "title": "FastAPI-RS aggregate direct-ASGI benchmark result",
+  "type": "object",
+  "required": [
+    "schema",
+    "run_id",
+    "created_at",
+    "status",
+    "required_workloads",
+    "source_revisions",
+    "identity",
+    "failure",
+    "workloads"
+  ],
+  "properties": {
+    "schema": {"const": "fastapi-rs/benchmark-suite-result@1"},
+    "run_id": {"type": "string", "format": "uuid"},
+    "created_at": {"type": "string", "format": "date-time"},
+    "status": {"enum": ["completed", "incomplete"]},
+    "required_workloads": {
+      "const": [
+        "fastapi.async-nested-distinct-query-aliases.asgi",
+        "fastapi.async-nested-two-query.asgi",
+        "fastapi.first-slice.chunked-body-asgi",
+        "fastapi.first-slice.invalid-asgi",
+        "fastapi.first-slice.valid-asgi",
+        "fastapi.request.repeated-sequence-query.asgi"
+      ]
+    },
+    "source_revisions": {
+      "type": "object",
+      "required": ["fastapi_source", "starlette_source", "fastapi_rs_source", "starlette_rs_source"],
+      "properties": {
+        "fastapi_source": {"$ref": "#/$defs/gitRevision"},
+        "starlette_source": {"$ref": "#/$defs/gitRevision"},
+        "fastapi_rs_source": {"$ref": "#/$defs/gitRevision"},
+        "starlette_rs_source": {"$ref": "#/$defs/gitRevision"}
+      },
+      "additionalProperties": false
+    },
+    "identity": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/commonIdentity"}
+      ]
+    },
+    "failure": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/failure"}
+      ]
+    },
+    "workloads": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "prefixItems": [
+        {"allOf": [{"$ref": "#/$defs/workloadOutcome"}, {"properties": {"id": {"const": "fastapi.async-nested-distinct-query-aliases.asgi"}}}]},
+        {"allOf": [{"$ref": "#/$defs/workloadOutcome"}, {"properties": {"id": {"const": "fastapi.async-nested-two-query.asgi"}}}]},
+        {"allOf": [{"$ref": "#/$defs/workloadOutcome"}, {"properties": {"id": {"const": "fastapi.first-slice.chunked-body-asgi"}}}]},
+        {"allOf": [{"$ref": "#/$defs/workloadOutcome"}, {"properties": {"id": {"const": "fastapi.first-slice.invalid-asgi"}}}]},
+        {"allOf": [{"$ref": "#/$defs/workloadOutcome"}, {"properties": {"id": {"const": "fastapi.first-slice.valid-asgi"}}}]},
+        {"allOf": [{"$ref": "#/$defs/workloadOutcome"}, {"properties": {"id": {"const": "fastapi.request.repeated-sequence-query.asgi"}}}]}
+      ],
+      "items": false
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "completed"}}},
+      "then": {
+        "properties": {
+          "identity": {"$ref": "#/$defs/commonIdentity"},
+          "failure": {"type": "null"}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"status": {"const": "incomplete"}}},
+      "then": {
+        "properties": {
+          "identity": {"type": "null"},
+          "failure": {"$ref": "#/$defs/failure"}
+        }
+      }
+    }
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "gitRevision": {"type": "string", "pattern": "^[a-f0-9]{40}$"},
+    "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "python": {
+      "type": "object",
+      "required": ["implementation", "version"],
+      "properties": {
+        "implementation": {"type": "string", "minLength": 1},
+        "version": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "sharedPackages": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {"type": "string", "minLength": 1}
+    },
+    "host": {
+      "type": "object",
+      "required": ["platform", "machine", "processor", "cpu_count"],
+      "properties": {
+        "platform": {"type": "string", "minLength": 1},
+        "machine": {"type": "string", "minLength": 1},
+        "processor": {"type": "string"},
+        "cpu_count": {"type": ["integer", "null"], "minimum": 1}
+      },
+      "additionalProperties": false
+    },
+    "fastapiIdentity": {
+      "type": "object",
+      "required": ["fastapi", "fastapi_source", "starlette", "starlette_source", "shared_packages"],
+      "properties": {
+        "fastapi": {"type": "string", "minLength": 1},
+        "fastapi_source": {"$ref": "#/$defs/gitRevision"},
+        "starlette": {"type": "string", "minLength": 1},
+        "starlette_source": {"$ref": "#/$defs/gitRevision"},
+        "shared_packages": {"$ref": "#/$defs/sharedPackages"}
+      },
+      "additionalProperties": false
+    },
+    "starletteIdentity": {
+      "type": "object",
+      "required": ["starlette", "starlette_source", "shared_packages"],
+      "properties": {
+        "starlette": {"type": "string", "minLength": 1},
+        "starlette_source": {"$ref": "#/$defs/gitRevision"},
+        "shared_packages": {"$ref": "#/$defs/sharedPackages"}
+      },
+      "additionalProperties": false
+    },
+    "fastapiRsIdentity": {
+      "type": "object",
+      "required": ["fastapi_rs_source", "fastapi_rs", "fastapi_rs_native_extension_sha256", "target_binary_sha256", "starlette_rs", "starlette_rs_source", "shared_packages"],
+      "properties": {
+        "fastapi_rs_source": {"$ref": "#/$defs/gitRevision"},
+        "fastapi_rs": {"type": "string", "minLength": 1},
+        "fastapi_rs_native_extension_sha256": {"$ref": "#/$defs/sha256"},
+        "target_binary_sha256": {"$ref": "#/$defs/sha256"},
+        "starlette_rs": {"type": "string", "minLength": 1},
+        "starlette_rs_source": {"$ref": "#/$defs/gitRevision"},
+        "shared_packages": {"$ref": "#/$defs/sharedPackages"}
+      },
+      "additionalProperties": false
+    },
+    "targetBuild": {
+      "type": "object",
+      "required": ["cargo_profile", "cargo_features", "rustc", "cargo"],
+      "properties": {
+        "cargo_profile": {"const": "release"},
+        "cargo_features": {"const": ["pyo3/extension-module"]},
+        "rustc": {"type": "string", "minLength": 1},
+        "cargo": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "commonIdentity": {
+      "type": "object",
+      "required": ["python", "fastapi", "fastapi_rs", "subject_hosts"],
+      "properties": {
+        "python": {"$ref": "#/$defs/python"},
+        "fastapi": {"$ref": "#/$defs/fastapiIdentity"},
+        "fastapi_rs": {"$ref": "#/$defs/fastapiRsIdentity"},
+        "starlette_control": {
+          "oneOf": [
+            {"$ref": "#/$defs/starletteIdentity"},
+            {"$ref": "#/$defs/fastapiIdentity"}
+          ]
+        },
+        "subject_hosts": {
+          "type": "object",
+          "required": ["fastapi", "fastapi_rs"],
+          "properties": {
+            "fastapi": {"$ref": "#/$defs/host"},
+            "fastapi_rs": {"$ref": "#/$defs/host"},
+            "starlette_control": {"$ref": "#/$defs/host"}
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "subjectIdentity": {
+      "type": "object",
+      "required": ["identity", "python", "host"],
+      "properties": {
+        "identity": {
+          "oneOf": [
+            {"$ref": "#/$defs/fastapiIdentity"},
+            {"$ref": "#/$defs/starletteIdentity"},
+            {"$ref": "#/$defs/fastapiRsIdentity"}
+          ]
+        },
+        "python": {"$ref": "#/$defs/python"},
+        "host": {"$ref": "#/$defs/host"}
+      },
+      "additionalProperties": false
+    },
+    "workloadIdentity": {
+      "type": "object",
+      "required": ["code", "host", "target_build", "python", "subjects"],
+      "properties": {
+        "code": {
+          "type": "object",
+          "required": ["fastapi_source", "starlette_source", "fastapi_rs_source", "starlette_rs_source"],
+          "properties": {
+            "fastapi_source": {"$ref": "#/$defs/gitRevision"},
+            "starlette_source": {"$ref": "#/$defs/gitRevision"},
+            "fastapi_rs_source": {"$ref": "#/$defs/gitRevision"},
+            "starlette_rs_source": {"$ref": "#/$defs/gitRevision"}
+          },
+          "additionalProperties": false
+        },
+        "host": {
+          "type": "object",
+          "required": ["platform", "machine"],
+          "properties": {
+            "platform": {"type": "string", "minLength": 1},
+            "machine": {"type": "string", "minLength": 1}
+          },
+          "additionalProperties": false
+        },
+        "target_build": {"$ref": "#/$defs/targetBuild"},
+        "python": {"$ref": "#/$defs/python"},
+        "subjects": {
+          "type": "object",
+          "required": ["fastapi", "fastapi-rs"],
+          "properties": {
+            "fastapi": {"$ref": "#/$defs/subjectIdentity"},
+            "fastapi-rs": {"$ref": "#/$defs/subjectIdentity"},
+            "starlette-control": {"$ref": "#/$defs/subjectIdentity"}
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "paritySummary": {
+      "type": "object",
+      "required": ["selected", "passed", "failed", "not_run"],
+      "properties": {
+        "selected": {"type": "integer", "minimum": 1},
+        "passed": {"type": "integer", "minimum": 1},
+        "failed": {"const": 0},
+        "not_run": {"const": 0}
+      },
+      "additionalProperties": false
+    },
+    "failure": {
+      "type": "object",
+      "required": ["stage", "workload_id", "message"],
+      "properties": {
+        "stage": {"enum": ["preflight", "workload", "aggregation"]},
+        "workload_id": {
+          "type": ["string", "null"],
+          "enum": [
+            null,
+            "fastapi.async-nested-distinct-query-aliases.asgi",
+            "fastapi.async-nested-two-query.asgi",
+            "fastapi.first-slice.chunked-body-asgi",
+            "fastapi.first-slice.invalid-asgi",
+            "fastapi.first-slice.valid-asgi",
+            "fastapi.request.repeated-sequence-query.asgi"
+          ]
+        },
+        "message": {"type": "string", "minLength": 1, "maxLength": 2000}
+      },
+      "additionalProperties": false
+    },
+    "workloadOutcome": {
+      "oneOf": [
+        {"$ref": "#/$defs/completedOutcome"},
+        {"$ref": "#/$defs/failedOutcome"},
+        {"$ref": "#/$defs/notRunOutcome"}
+      ]
+    },
+    "workloadOutcomeBase": {
+      "type": "object",
+      "required": ["id", "status", "artifact", "artifact_sha256", "run_id", "parity_gate", "identity", "error"],
+      "properties": {
+        "id": {"type": "string"},
+        "status": {"enum": ["completed", "failed", "not_run"]},
+        "artifact": {"type": ["string", "null"], "pattern": "^benchmark-results/.+\\.json$"},
+        "artifact_sha256": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/sha256"}]},
+        "run_id": {"oneOf": [{"type": "null"}, {"type": "string", "format": "uuid"}]},
+        "parity_gate": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/paritySummary"}]},
+        "identity": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/workloadIdentity"}]},
+        "error": {"type": ["string", "null"], "maxLength": 2000}
+      },
+      "additionalProperties": false
+    },
+    "completedOutcome": {
+      "allOf": [
+        {"$ref": "#/$defs/workloadOutcomeBase"},
+        {"properties": {"status": {"const": "completed"}, "artifact": {"type": "string"}, "artifact_sha256": {"$ref": "#/$defs/sha256"}, "run_id": {"type": "string", "format": "uuid"}, "parity_gate": {"$ref": "#/$defs/paritySummary"}, "identity": {"$ref": "#/$defs/workloadIdentity"}, "error": {"type": "null"}}}
+      ]
+    },
+    "failedOutcome": {
+      "allOf": [
+        {"$ref": "#/$defs/workloadOutcomeBase"},
+        {"properties": {"status": {"const": "failed"}, "artifact": {"type": "null"}, "artifact_sha256": {"type": "null"}, "run_id": {"type": "null"}, "parity_gate": {"type": "null"}, "error": {"type": "string", "minLength": 1}}}
+      ]
+    },
+    "notRunOutcome": {
+      "allOf": [
+        {"$ref": "#/$defs/workloadOutcomeBase"},
+        {"properties": {"status": {"const": "not_run"}, "artifact": {"type": "null"}, "artifact_sha256": {"type": "null"}, "run_id": {"type": "null"}, "parity_gate": {"type": "null"}, "identity": {"type": "null"}, "error": {"type": "null"}}}
+      ]
+    }
+  }
+}
