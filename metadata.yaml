@@ -87,7 +87,7 @@ import_binding_classification_review:
     source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
     selected_starlette_profile: 1.6.0
     starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
-    starlette_rs_contract_commit: c30070dd3c02753d18eb98bced74a866fbf8d413
+    starlette_rs_contract_commit: d6f4f5590258f3dfe2f387f325d735e796d8c120
   starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
   counts:
     candidates: 97
@@ -98,8 +98,8 @@ import_binding_classification_review:
     starlette_rs_unreviewed_unique_targets: 4
   candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
   pinned_starlette_rs_sources:
-    metadata_sha256: 90f805ed7d2497833422db870f88d53319dbaaf31a675f89b1ad21fdd4a123d5
-    manifest_sha256: 55daf9d475531bdc6444c0165f8ddf3b26771b0429973029018cc2fc0c3fac07
+    metadata_sha256: b8a3122ca02357e1fa43f26bb13a40780ffebda1983fdccb5e9dd8b36f749cc1
+    manifest_sha256: 4827e0fef97e38311db27ff74e39f703aa22f2cba07182e2d91656802ca69e6f
     api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
     api_review_sha256: 8b25f2e3a46753316446077bfde97b6ac8a342233e2f4e50b12d3d01eafbe099
 
@@ -435,7 +435,7 @@ classification_atlas:
 starlette_rs:
   owner: ../starlette-rs
   repository: https://github.com/appunni-m/starlette-rs
-  commit: c30070dd3c02753d18eb98bced74a866fbf8d413
+  commit: d6f4f5590258f3dfe2f387f325d735e796d8c120
   distribution_version: 0.1.0
   contract_id: starlette-1.6.0-asgi-http-config-session-slice
   metadata: ../starlette-rs/metadata.yaml
@@ -1321,6 +1321,59 @@ reviewed_api_contract_overlay:
         - websocket.event_order
         - websocket.messages
       error_contract_ids: [fastapi.exceptions.WebSocketRequestValidationError]
+    fastapi.routing.APIRoute:
+      rust_binding: null
+      source_evidence:
+        - path: fastapi/routing.py
+          symbol: APIRoute
+          kind: source-definition
+          start_line: 1126
+          end_line: 1281
+        - {path: tests/test_router_include_context.py, symbol: test_iter_route_contexts_returns_direct_route_context}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
+          case_id: fastapi.routing.apiroute-state.direct
+        - recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
+          case_id: fastapi.routing.iter-route-contexts.nested-included
+      feature_ids: [app-routing]
+      observation_selectors: [http.status, http.body.bytes, asgi.application_error.exception]
+      supported_slice: >-
+        The input inspects FastAPI-registered APIRoute instances for one direct
+        GET path operation and one GET operation included through nested
+        APIRouter instances. It compares only path, path_format, name, methods,
+        tags, and endpoint name. This does not establish direct APIRoute
+        construction, custom route-class subclassing, or other constructor
+        arguments or APIRoute state such as response models, dependencies,
+        response fields, callbacks, or handler customization.
+    fastapi.routing.iter_route_contexts:
+      rust_binding: null
+      source_evidence:
+        - path: fastapi/routing.py
+          symbol: iter_route_contexts
+          kind: source-definition
+          start_line: 1828
+          end_line: 1839
+        - {path: tests/test_router_include_context.py, symbol: test_iter_route_contexts_returns_direct_route_context}
+        - {path: tests/test_router_include_context.py, symbol: test_iter_route_contexts_supports_nested_conflict_detection}
+        - {path: tests/test_router_include_context.py, symbol: test_effective_route_context_is_available_in_scope_during_request}
+        - {path: tests/test_router_include_context.py, symbol: test_router_include_context_matches_flattened_include_metadata}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
+          case_id: fastapi.routing.apiroute-state.direct
+        - recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
+          case_id: fastapi.routing.iter-route-contexts.nested-included
+      feature_ids: [app-routing]
+      observation_selectors: [http.status, http.body.bytes, asgi.application_error.exception]
+      supported_slice: >-
+        `iter_route_contexts(app.routes)` yields the selected direct path
+        operation context and the flattened context for one GET operation
+        included through nested APIRouter instances. The observed projection is
+        limited to original-route identity, path, path_format, name, methods,
+        tags, endpoint name, and the nested request scope's effective context
+        path. Other route types, WebSocket and webhook contexts, dynamic route
+        mutation, custom route classes, RouteContext construction or general
+        forwarding behavior, and unobserved context fields remain outside this
+        slice.
     fastapi.routing.APIRoute.get_route_handler:
       source_evidence:
         - {path: fastapi/routing.py, symbol: get_route_handler}
