@@ -1,0 +1,19 @@
+# FastAPI 0.141.1's test_invalid_response_model_field checks that a return
+# annotation combining Response with None fails while registering the route.
+# This independent input changes the endpoint path, name, and response content.
+schema: fastapi-rs/python-asgi-workflow@3
+workload:
+  file: tests/fixtures/workloads/response_model_invalid_return_field.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.response-model.return-annotation.invalid-response-field
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions: []
+  source_evidence:
+  - path: tests/test_response_model_as_return_annotation.py
+    kind: upstream_test

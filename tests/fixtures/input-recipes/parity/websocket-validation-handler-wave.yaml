@@ -35,8 +35,10 @@ cases:
     - {kind: websocket, selector: close_reason, comparison: exact}
     - {kind: websocket, selector: event_order, comparison: ordered}
     - {kind: websocket, selector: messages, comparison: ordered}
+    - {kind: websocket, selector: workload_trace, comparison: ordered}
   source_evidence:
   - {path: tests/test_ws_router.py, kind: upstream_test}
+  - {path: tests/test_dependency_after_yield_websockets.py, kind: upstream_test}
 - case_id: fastapi.websocket-validation.custom-handler-close
   factory_input: {custom_validation_handler: true}
   construction_observation:

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import AsyncIterator, Mapping
 from typing import Annotated, Any
 
 from fastapi import Depends, FastAPI, Header, WebSocket
@@ -14,8 +14,14 @@ async def required_header_dependency(x_missing: Annotated[str, Header()]) -> Non
 
 
 def create_app(factory_input: Mapping[str, Any], event_trace: list[str]) -> FastAPI:
-    del event_trace
     app = FastAPI()
+
+    async def websocket_validation_lease() -> AsyncIterator[None]:
+        event_trace.append("validation-lease-enter")
+        try:
+            yield None
+        finally:
+            event_trace.append("validation-lease-exit")
 
     if factory_input.get("custom_validation_handler", False):
 
@@ -30,8 +36,9 @@ def create_app(factory_input: Mapping[str, Any], event_trace: list[str]) -> Fast
     async def dependency_validation_endpoint(
         websocket: WebSocket,
         _dependency: None = Depends(required_header_dependency),
+        _lease: None = Depends(websocket_validation_lease),
     ) -> None:
-        del websocket, _dependency
+        del websocket, _dependency, _lease
 
     @app.websocket("/ws/{item_id}")
     async def path_validation_endpoint(websocket: WebSocket, item_id: int) -> None:

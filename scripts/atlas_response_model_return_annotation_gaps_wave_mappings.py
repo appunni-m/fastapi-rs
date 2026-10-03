@@ -21,17 +21,22 @@ _RECIPE = "tests/fixtures/input-recipes/parity/response-model-return-annotation-
 _WORKLOAD = "tests/fixtures/workloads/response_model_return_annotation_gaps_wave.py"
 _HTTP = ["http.status", "http.body.bytes"]
 _VALIDATION = ["validation.error_class"]
+_CONSTRUCTION = [
+    "construction.outcome",
+    "construction.exception_class",
+    "construction.exception_message",
+]
 
 
 def _source(path, start, end, role):
     return {"path": path, "start_line": start, "end_line": end, "role": role}
 
 
-def _workflow(case_id, action_id, selectors):
+def _workflow(case_id, action_id, selectors, recipe_path):
     return {
-        "recipe_path": _RECIPE,
+        "recipe_path": recipe_path,
         "case_id": case_id,
-        "action_ids": [action_id],
+        "action_ids": [action_id] if action_id else [],
         "observation_selectors": list(selectors),
     }
 
@@ -47,16 +52,21 @@ def _function(
     selectors,
     rationale,
     gate,
+    *,
+    recipe_path=_RECIPE,
+    workload_path=_WORKLOAD,
+    feature_ids=None,
 ):
     return {
-        "feature_ids": ["response-serialization"],
+        "feature_ids": feature_ids or ["response-serialization"],
         "observation_selectors": list(selectors),
         "rationale": rationale,
         "replace_features": True,
         "contract_gate": "Partial: " + gate,
-        "workflow_cases": [_workflow(case_id, action_id, selectors)],
+        "workflow_cases": [_workflow(case_id, action_id, selectors, recipe_path)],
         "stimulus_notes": (
-            f"Use {_RECIPE} case {case_id}, action {action_id}; the workload at {_WORKLOAD} "
+            f"Use {recipe_path} case {case_id}, action {action_id or '(construction only)'}; "
+            f"the workload at {workload_path} "
             "uses new paths and values and stores no expected response."
         ),
         "supporting_sources": [
@@ -97,18 +107,19 @@ _RESPONSE_DISPATCH = _source(
 
 RESPONSE_MODEL_RETURN_ANNOTATION_GAP_WAVE_MAPPINGS = {
     _TEST: {
-        "feature_ids": ["response-serialization"],
-        "module_observation_selectors": sorted(set(_HTTP + _VALIDATION)),
+        "feature_ids": ["response-serialization", "public-api-errors"],
+        "module_observation_selectors": sorted(set(_HTTP + _VALIDATION + _CONSTRUCTION)),
         "rationale": (
             "This supplemental wave reviews high-value return-annotation gaps: quoted forward references, "
             "submodel and extra-field filtering, explicit response-model precedence, JSONResponse annotation "
-            "passthrough, and invalid response-model output. It claims only the selected runtime behavior."
+            "passthrough, invalid response-model output, and invalid inferred response-field construction. "
+            "It claims only the selected behavior."
         ),
         "stimulus_notes": (
-            "Use the seven independently authored cases in "
+            "Use the independently authored cases in "
             f"{_RECIPE}. They intentionally omit the upstream OpenAPI snapshot, basic pass-through controls, "
-            "response_model=None matrix, plain Response case, list/union matrix, and construction-time invalid "
-            "response-model error; some are already sampled by the existing focused recipe."
+            "response_model=None matrix, plain Response case, and list/union matrix; some are already sampled "
+            "by the existing focused recipe. The construction-only error uses a separate recipe and workload."
         ),
         "supporting_sources": [_MODEL_SELECTION, _RESPONSE_SERIALIZATION, _RESPONSE_DISPATCH],
         "source_review_scope_exclusions": [
@@ -168,10 +179,9 @@ RESPONSE_MODEL_RETURN_ANNOTATION_GAP_WAVE_MAPPINGS = {
             {
                 "test_functions": {
                     "test_no_response_model_annotation_return_class": [487, 490],
-                    "test_invalid_response_model_field": [499, 508],
                     "test_openapi_schema": [511, 1121],
                 },
-                "reason": "Plain Response behavior and selected OpenAPI pointers are handled by the existing focused recipe. The invalid response-model field test is a construction-time FastAPIError, not runtime ResponseValidationError, and the full OpenAPI snapshot is intentionally not copied into this runtime wave.",
+                "reason": "Plain Response behavior and selected OpenAPI pointers are handled by the existing focused recipe; the full OpenAPI snapshot is intentionally not copied into this runtime wave.",
             },
         ],
         "functions": {
@@ -258,6 +268,21 @@ RESPONSE_MODEL_RETURN_ANNOTATION_GAP_WAVE_MAPPINGS = {
                 _VALIDATION,
                 "FastAPI infers User from the endpoint return annotation, validates the returned Item value against that response field, and raises ResponseValidationError for its missing required field.",
                 "The source uses pytest.raises(ResponseValidationError) and checks that the message contains 'missing'. The declared workflow selector records the exact fully qualified exception class, so subclass acceptance and the message-substring predicate remain gated; Starlette TestClient exception propagation is not claimed.",
+            ),
+            "test_invalid_response_model_field": _function(
+                "test_invalid_response_model_field",
+                499,
+                508,
+                503,
+                505,
+                "fastapi.response-model.return-annotation.invalid-response-field",
+                None,
+                _CONSTRUCTION,
+                "FastAPI rejects an inferred Response | None return annotation while registering the route because it cannot build a valid Pydantic response field. The failure prevents application construction and includes guidance to set response_model=None.",
+                "The target currently accepts this annotation at route registration, so this behavior remains unsupported pending implementation. The upstream test uses pytest.raises(FastAPIError), which accepts subclasses, and checks that the message contains 'valid Pydantic field type' and 'parameter response_model=None'. The workflow compares the exact exception class and complete message, which are stronger input observations than those source predicates; they remain gated and are not a parity result.",
+                recipe_path="tests/fixtures/input-recipes/parity/response-model-invalid-return-field.yaml",
+                workload_path="tests/fixtures/workloads/response_model_invalid_return_field.py",
+                feature_ids=["response-serialization", "public-api-errors"],
             ),
         },
     }

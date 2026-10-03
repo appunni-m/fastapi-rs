@@ -481,6 +481,10 @@ pub(crate) fn websocket_request_validation_error(
     Ok(PyErr::from_value(exception))
 }
 
+pub(crate) fn websocket_request_validation_error_type<'py>(py: Python<'py>) -> Bound<'py, PyAny> {
+    py.get_type::<WebSocketRequestValidationError>().into_any()
+}
+
 pub(crate) fn request_validation_error(
     py: Python<'_>,
     errors: &Bound<'_, PyAny>,

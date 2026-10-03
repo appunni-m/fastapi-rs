@@ -9617,15 +9617,27 @@ impl FastApiCall {
             .import("starlette.exceptions")?
             .getattr("WebSocketException")?;
         if !value.is_instance(&exception_type)? {
-            return Err(error);
+            let validation_exception_type =
+                crate::errors::websocket_request_validation_error_type(py);
+            if !value.is_instance(&validation_exception_type)? {
+                return Err(error);
+            }
         }
         let websocket = self
             .websocket
             .as_ref()
             .ok_or_else(|| PyRuntimeError::new_err("FastAPI WebSocket was not initialized"))?;
-        let awaitable = websocket
-            .bind(py)
-            .call_method1("close", (value.getattr("code")?, value.getattr("reason")?))?;
+        let awaitable = if value.is_instance(&exception_type)? {
+            websocket
+                .bind(py)
+                .call_method1("close", (value.getattr("code")?, value.getattr("reason")?))?
+        } else {
+            let errors = value.call_method0("errors")?;
+            let reason = jsonable_encoder_default(py, &errors)?;
+            websocket
+                .bind(py)
+                .call_method1("close", (1008_u16, reason))?
+        };
         if !is_awaitable(py, &awaitable)? {
             return Err(PyTypeError::new_err(
                 "Starlette WebSocket.close must return an awaitable",
@@ -10078,26 +10090,7 @@ impl FastApiCall {
                             &failures,
                             Some(&endpoint_ctx),
                         )?;
-                        if self.has_registered_exception_handler(py, &error)? {
-                            return self.route_exception(py, error);
-                        }
-                        let error_value = error.value(py);
-                        let errors = error_value.call_method0("errors")?;
-                        let reason = jsonable_encoder_default(py, &errors)?;
-                        let websocket = self.websocket.as_ref().ok_or_else(|| {
-                            PyRuntimeError::new_err("FastAPI WebSocket was not initialized")
-                        })?;
-                        let kwargs = PyDict::new(py);
-                        kwargs.set_item("code", 1008)?;
-                        kwargs.set_item("reason", reason)?;
-                        let close = websocket.bind(py).call_method("close", (), Some(&kwargs))?;
-                        if !is_awaitable(py, &close)? {
-                            return Err(PyTypeError::new_err(
-                                "Starlette WebSocket.close must return an awaitable",
-                            ));
-                        }
-                        self.pending = Some(PendingAction::WebSocketClose);
-                        return Ok(MachineAction::Await(close.unbind()));
+                        return self.route_exception(py, error);
                     }
 
                     let request_body = self

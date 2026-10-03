@@ -6819,7 +6819,7 @@
       "input_path": "tests/fixtures/inputs/parity/response-model-data-filter-exclude-unset-none-review.json",
       "input_sha256": "e8df817a4df31b3f2f646068c8a9286416ff13577822d1fc572bbc5d8eb34a17",
       "recipe_path": "tests/fixtures/input-recipes/parity/response-model-data-filter-exclude-unset-none-review.yaml",
-      "recipe_sha256": "caf65dcffab0a4876152579336050246f5bb0b6629bf3d75006927d70b1312ce",
+      "recipe_sha256": "7b32e57ec5fecd20a8d30bb3f8097ccd75c2491cf7d3d797b91568fd7e41af7a",
       "workload_path": "tests/fixtures/workloads/response_model_data_filter_exclude_unset_none_review.py",
       "workload_sha256": "24b60f06b2472a0254c9ae15d0b208e0edd99d3cb8a3833696d343bacd0c13cd",
       "case_ids": [
@@ -6893,6 +6893,18 @@
         "fastapi.response-model.inferred-iterable.exclude-unset",
         "fastapi.response-model.inferred-iterable.exclude-defaults",
         "fastapi.response-model.inferred-iterable.exclude-none"
+      ]
+    },
+    {
+      "id": "response-model-invalid-return-field",
+      "input_path": "tests/fixtures/inputs/parity/response-model-invalid-return-field.json",
+      "input_sha256": "de480a621d8bb98389d099294f48d6c3c32babb989f213320c81747c4a4868ff",
+      "recipe_path": "tests/fixtures/input-recipes/parity/response-model-invalid-return-field.yaml",
+      "recipe_sha256": "4b6635c9c309862fce9502df673798980025685e080e05ff7bb4fcc0b96e1a4f",
+      "workload_path": "tests/fixtures/workloads/response_model_invalid_return_field.py",
+      "workload_sha256": "8c7dcdfd721ab92f37f074802506eca68b8f2a68d05c12bf8783d067b2d07178",
+      "case_ids": [
+        "fastapi.response-model.return-annotation.invalid-response-field"
       ]
     },
     {
@@ -8915,11 +8927,11 @@
     {
       "id": "websocket-validation-handler-wave",
       "input_path": "tests/fixtures/inputs/parity/websocket-validation-handler-wave.json",
-      "input_sha256": "82ccaa523d4a789ca31ce5012037ee4ffda0875b5115c654abae21aa8244a26a",
+      "input_sha256": "908cbbe064dba35a3dc364a13cd77aa8b18278a0057cb2aa42536ee93a88d99b",
       "recipe_path": "tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml",
-      "recipe_sha256": "06cb3561984e04213a61bf25a3afb24149e8f6edcd83a9053f742ea6c33bbb00",
+      "recipe_sha256": "80f37cc50c42086d361c1f629d87349b0fc7444f66d6147d08d485d90b5de61b",
       "workload_path": "tests/fixtures/workloads/websocket_validation_handler_wave.py",
-      "workload_sha256": "52ff1e9605a6b1df62c6d2f195d203b9bbce2d28fc83218fb7f04521b4c20014",
+      "workload_sha256": "2742fa4a4e6725887631c2870de0cbcb5d4fa1aa7d027af8e7db551968f54da9",
       "case_ids": [
         "fastapi.websocket-validation.default-handler-close",
         "fastapi.websocket-validation.custom-handler-close"
@@ -26152,6 +26164,21 @@
       ]
     },
     {
+      "source_item_id": "upstream-test:tests/test_response_model_as_return_annotation.py",
+      "fixture_id": "fastapi.test.test-response-model-as-return-annotation",
+      "workflow_id": "response-model-invalid-return-field",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes construction.exception_class, construction.exception_message, construction.outcome. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.response-model.return-annotation.invalid-response-field"
+      ],
+      "observation_selectors": [
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome"
+      ]
+    },
+    {
       "source_item_id": "upstream-test:tests/test_pydanticv2_dataclasses_uuid_stringified_annotations.py",
       "fixture_id": "fastapi.test.test-pydanticv2-dataclasses-uuid-stringified-annotations",
       "workflow_id": "response-model-orm-dataclass-upstream",
@@ -26263,7 +26290,7 @@
       "fixture_id": "fastapi.test.test-response-model-as-return-annotation",
       "workflow_id": "response-model-return-annotation-focused-upstream",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 6 case(s); observes asgi.application_error.exception, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths, validation.error_class, validation.error_details. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 6 case(s); observes asgi.application_error.exception, construction.exception_class, construction.exception_message, construction.outcome, error.public_attributes, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.paths, validation.error_class. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.response-model-return-annotation.decorator-precedence",
         "fastapi.response-model-return-annotation.explicit-none-override",
@@ -26274,13 +26301,16 @@
       ],
       "observation_selectors": [
         "asgi.application_error.exception",
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
+        "error.public_attributes",
         "http.body.bytes",
         "http.headers.ordered",
         "http.status",
         "openapi.document",
         "openapi.paths",
-        "validation.error_class",
-        "validation.error_details"
+        "validation.error_class"
       ]
     },
     {
@@ -27340,14 +27370,17 @@
       "fixture_id": "fastapi.test.test-response-model-as-return-annotation",
       "workflow_id": "response-validation-error-focused",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.application_error.exception, validation.error_class, validation.error_details. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.application_error.exception, construction.exception_class, construction.exception_message, construction.outcome, error.public_attributes, validation.error_class. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.response-validation-error.missing-response-field"
       ],
       "observation_selectors": [
         "asgi.application_error.exception",
-        "validation.error_class",
-        "validation.error_details"
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
+        "error.public_attributes",
+        "validation.error_class"
       ]
     },
     {
@@ -32669,6 +32702,21 @@
       ]
     },
     {
+      "source_item_id": "upstream-test:tests/test_dependency_after_yield_websockets.py",
+      "fixture_id": "fastapi.test.test-dependency-after-yield-websockets",
+      "workflow_id": "websocket-validation-handler-wave",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes websocket.close_code, websocket.event_order, websocket.messages. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.websocket-validation.default-handler-close"
+      ],
+      "observation_selectors": [
+        "websocket.close_code",
+        "websocket.event_order",
+        "websocket.messages"
+      ]
+    },
+    {
       "source_item_id": "upstream-test:tests/test_validation_error_context.py",
       "fixture_id": "fastapi.test.test-validation-error-context",
       "workflow_id": "websocket-validation-handler-wave",
@@ -32692,7 +32740,7 @@
       "fixture_id": "fastapi.test.test-ws-router",
       "workflow_id": "websocket-validation-handler-wave",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 2 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, websocket.close_code, websocket.close_reason, websocket.event_order, websocket.messages. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, websocket.close_code, websocket.close_reason, websocket.event_order, websocket.messages, websocket.workload_trace. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.websocket-validation.custom-handler-close",
         "fastapi.websocket-validation.default-handler-close"
@@ -32704,7 +32752,8 @@
         "websocket.close_code",
         "websocket.close_reason",
         "websocket.event_order",
-        "websocket.messages"
+        "websocket.messages",
+        "websocket.workload_trace"
       ]
     },
     {
