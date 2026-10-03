@@ -1013,9 +1013,10 @@ def _reviewed_identity_workflow_references(
     atlas_aliases: list[dict[str, Any]],
     alias_refs: dict[str, list[str]],
     materialized_input_index: dict[str, Any],
+    runtime_core: dict[str, Any],
     selector_support: dict[str, str],
 ) -> dict[str, list[dict[str, Any]]]:
-    """Link reviewed root import identity checks to current ASGI inputs and source aliases."""
+    """Link reviewed root and module import identity checks to current ASGI inputs."""
     if not isinstance(reviewed_refs, dict):
         raise ContractError("reviewed identity workflow references must be a mapping")
     from scripts.parity.materialized import _selected_selectors
@@ -1037,11 +1038,33 @@ def _reviewed_identity_workflow_references(
                 raise ContractError(f"FastAPI module identity alias is duplicated: {alias['id']}")
             module_aliases[alias["id"]] = alias
 
-    if set(reviewed_refs) != set(root_aliases):
-        missing = sorted(set(root_aliases) - set(reviewed_refs))
-        extra = sorted(set(reviewed_refs) - set(root_aliases))
+    core_module_rows = runtime_core.get("modules", [])
+    if not isinstance(core_module_rows, list):
+        raise ContractError("core runtime modules are invalid for identity references")
+    core_modules = {
+        row["id"]: row
+        for row in core_module_rows
+        if isinstance(row, dict) and isinstance(row.get("id"), str)
+    }
+    optional_unavailable_modules = {
+        module_id
+        for module_id, module in core_modules.items()
+        if module.get("status") == "optional_feature_unavailable"
+    }
+    # Optional imports remain explicit runtime-profile gaps until their own workflow is added.
+    supported_module_aliases = {
+        symbol_id: alias
+        for symbol_id, alias in module_aliases.items()
+        if candidates_by_id.get(symbol_id, {}).get("classification") == "supported"
+        and symbol_id.rpartition(".")[0] not in optional_unavailable_modules
+    }
+    expected_aliases = set(root_aliases) | set(supported_module_aliases)
+    if set(reviewed_refs) != expected_aliases:
+        missing = sorted(expected_aliases - set(reviewed_refs))
+        extra = sorted(set(reviewed_refs) - expected_aliases)
         raise ContractError(
-            "reviewed identity workflow references must cover every root identity alias "
+            "reviewed identity workflow references must cover every supported root and module "
+            "identity alias "
             f"exactly once (missing={missing}, extra={extra})"
         )
 
@@ -1057,91 +1080,110 @@ def _reviewed_identity_workflow_references(
 
     for symbol_id, rows in reviewed_refs.items():
         candidate = candidates_by_id.get(symbol_id)
-        root_alias = root_aliases[symbol_id]
+        is_root_alias = symbol_id in root_aliases
+        root_alias = root_aliases.get(symbol_id)
+        source_alias = root_alias if root_alias is not None else supported_module_aliases[symbol_id]
         if (
             not isinstance(candidate, dict)
             or candidate.get("classification") != "supported"
             or candidate.get("kind") != "import_binding"
-            or candidate.get("root_export") is not True
+            or candidate.get("root_export") is not is_root_alias
             or candidate.get("identity_alias") is not True
-            or candidate.get("target_path") != root_alias.get("target_path")
-            or candidate.get("local_name") != root_alias.get("local_name")
-            or root_alias.get("source_module") != candidate.get("imported_module")
-            or root_alias.get("source_name") != candidate.get("imported_name")
+            or candidate.get("target_path") != source_alias.get("target_path")
+            or candidate.get("local_name") != source_alias.get("local_name")
+            or source_alias.get("source_module") != candidate.get("imported_module")
+            or source_alias.get("source_name") != candidate.get("imported_name")
         ):
             raise ContractError(
-                f"reviewed identity reference lacks a matching supported root source alias: "
-                f"{symbol_id}"
+                f"reviewed identity reference lacks a matching supported source alias: {symbol_id}"
             )
         if not isinstance(rows, list) or not rows:
             raise ContractError(f"reviewed identity workflow references are empty: {symbol_id}")
 
-        target_path = root_alias.get("target_path")
-        module_candidate = (
-            candidates_by_id.get(target_path) if isinstance(target_path, str) else None
-        )
-        module_alias = module_aliases.get(target_path) if isinstance(target_path, str) else None
-        if candidate.get("imported_module") == "starlette":
+        target_path = source_alias.get("target_path")
+        if not is_root_alias:
+            module_alias = source_alias
+            imported_module = candidate.get("imported_module")
+            imported_name = candidate.get("imported_name")
             if (
-                not isinstance(target_path, str)
-                or candidate.get("imported_name") is None
-                or target_path != f"starlette.{candidate['imported_name']}"
+                not isinstance(imported_module, str)
+                or not imported_module.startswith("starlette.")
+                or not isinstance(imported_name, str)
+                or target_path != f"{imported_module}.{imported_name}"
             ):
                 raise ContractError(
-                    f"direct Starlette root alias has an invalid target: {symbol_id}"
+                    f"direct FastAPI module alias has an invalid Starlette target: {symbol_id}"
                 )
-            expected_relations = {"root_to_starlette_module"}
+            expected_relations = {"public_module_to_starlette"}
         else:
-            expected_module_path = (
-                f"fastapi.{candidate['imported_module']}.{candidate['imported_name']}"
+            module_candidate = (
+                candidates_by_id.get(target_path) if isinstance(target_path, str) else None
             )
-            if target_path != expected_module_path or not isinstance(module_candidate, dict):
-                raise ContractError(
-                    f"root alias does not resolve to its public FastAPI module source: {symbol_id}"
-                )
-            if module_candidate.get("classification") != "supported":
-                raise ContractError(
-                    f"root alias module source is not a supported API candidate: {symbol_id}"
-                )
-            module_candidate_target = module_candidate.get("target_path")
-            module_targets_starlette = isinstance(
-                module_candidate_target, str
-            ) and module_candidate_target.startswith("starlette.")
-            if module_targets_starlette and not isinstance(module_alias, dict):
-                raise ContractError(
-                    f"FastAPI module Starlette target has no reviewed identity alias: {symbol_id}"
-                )
-            expected_relations = {"root_to_public_module"}
-            if isinstance(module_alias, dict):
+            module_alias = module_aliases.get(target_path) if isinstance(target_path, str) else None
+            if candidate.get("imported_module") == "starlette":
                 if (
-                    module_candidate.get("kind") != "import_binding"
-                    or module_alias.get("id") != target_path
-                    or module_alias.get("local_name") != module_candidate.get("local_name")
-                    or module_alias.get("source_module") != module_candidate.get("imported_module")
-                    or module_alias.get("source_name") != module_candidate.get("imported_name")
-                    or module_alias.get("target_path") != module_candidate.get("target_path")
+                    not isinstance(target_path, str)
+                    or candidate.get("imported_name") is None
+                    or target_path != f"starlette.{candidate['imported_name']}"
                 ):
                     raise ContractError(
-                        "FastAPI module import candidate differs from its source alias: "
+                        f"direct Starlette root alias has an invalid target: {symbol_id}"
+                    )
+                expected_relations = {"root_to_starlette_module"}
+            else:
+                expected_module_path = (
+                    f"fastapi.{candidate['imported_module']}.{candidate['imported_name']}"
+                )
+                if target_path != expected_module_path or not isinstance(module_candidate, dict):
+                    raise ContractError(
+                        f"root alias does not resolve to its public FastAPI module source: "
                         f"{symbol_id}"
                     )
-            if module_targets_starlette and isinstance(module_alias, dict):
-                imported_module = module_candidate.get("imported_module")
-                imported_name = module_candidate.get("imported_name")
-                if (
-                    not isinstance(imported_module, str)
-                    or not imported_module.startswith("starlette.")
-                    or not isinstance(imported_name, str)
-                    or module_alias.get("target_path") != module_candidate_target
-                    or module_candidate_target != f"{imported_module}.{imported_name}"
-                ):
+                if module_candidate.get("classification") != "supported":
                     raise ContractError(
-                        f"FastAPI module alias has an inconsistent Starlette target: {symbol_id}"
+                        f"root alias module source is not a supported API candidate: {symbol_id}"
                     )
-                expected_relations.update(
-                    {"root_to_starlette_module", "public_module_to_starlette"}
-                )
-
+                module_candidate_target = module_candidate.get("target_path")
+                module_targets_starlette = isinstance(
+                    module_candidate_target, str
+                ) and module_candidate_target.startswith("starlette.")
+                if module_targets_starlette and not isinstance(module_alias, dict):
+                    raise ContractError(
+                        f"FastAPI module Starlette target has no reviewed identity alias: "
+                        f"{symbol_id}"
+                    )
+                expected_relations = {"root_to_public_module"}
+                if isinstance(module_alias, dict):
+                    if (
+                        module_candidate.get("kind") != "import_binding"
+                        or module_alias.get("id") != target_path
+                        or module_alias.get("local_name") != module_candidate.get("local_name")
+                        or module_alias.get("source_module")
+                        != module_candidate.get("imported_module")
+                        or module_alias.get("source_name") != module_candidate.get("imported_name")
+                        or module_alias.get("target_path") != module_candidate.get("target_path")
+                    ):
+                        raise ContractError(
+                            "FastAPI module import candidate differs from its source alias: "
+                            f"{symbol_id}"
+                        )
+                if module_targets_starlette and isinstance(module_alias, dict):
+                    imported_module = module_candidate.get("imported_module")
+                    imported_name = module_candidate.get("imported_name")
+                    if (
+                        not isinstance(imported_module, str)
+                        or not imported_module.startswith("starlette.")
+                        or not isinstance(imported_name, str)
+                        or module_alias.get("target_path") != module_candidate_target
+                        or module_candidate_target != f"{imported_module}.{imported_name}"
+                    ):
+                        raise ContractError(
+                            f"FastAPI module alias has an inconsistent Starlette target: "
+                            f"{symbol_id}"
+                        )
+                    expected_relations.update(
+                        {"root_to_starlette_module", "public_module_to_starlette"}
+                    )
         relation_rows: dict[str, dict[str, Any]] = {}
         for row in rows:
             if not isinstance(row, dict) or set(row) != {
@@ -1165,20 +1207,18 @@ def _reviewed_identity_workflow_references(
                 f"expected={sorted(expected_relations)}, found={sorted(relation_rows)}"
             )
 
+        is_websocket = candidate.get("imported_module") in {
+            "websockets",
+            "starlette.websockets",
+        }
         expected_case = (
             "fastapi.root-alias-identity.websocket-reexports"
-            if candidate.get("imported_module") == "websockets"
+            if is_websocket
             else "fastapi.root-alias-identity.http-reexports"
         )
-        expected_selector = (
-            "websocket.messages"
-            if candidate.get("imported_module") == "websockets"
-            else "http.body.bytes"
-        )
+        expected_selector = "websocket.messages" if is_websocket else "http.body.bytes"
         expected_projection = (
-            "websocket_send_text_json_boolean"
-            if candidate.get("imported_module") == "websockets"
-            else "http_json_body_boolean"
+            "websocket_send_text_json_boolean" if is_websocket else "http_json_body_boolean"
         )
 
         for relation, row in relation_rows.items():
@@ -1251,11 +1291,7 @@ def _reviewed_identity_workflow_references(
                     f"identity workflow case does not observe its declared selector: "
                     f"{expected_case} -> {selector}"
                 )
-            expected_action_kind = (
-                "websocket_session"
-                if candidate.get("imported_module") == "websockets"
-                else "http_request"
-            )
+            expected_action_kind = "websocket_session" if is_websocket else "http_request"
             if not any(
                 action.get("kind") == expected_action_kind for action in case.get("actions", [])
             ):
@@ -1288,7 +1324,11 @@ def _reviewed_identity_workflow_references(
                     f"identity alias has no source-backed output name: {symbol_id}::{relation}"
                 )
             source_alias_ids = [symbol_id]
-            if relation == "public_module_to_starlette" and target_path != symbol_id:
+            if (
+                is_root_alias
+                and relation == "public_module_to_starlette"
+                and target_path != symbol_id
+            ):
                 source_alias_ids = [target_path]
             elif relation == "root_to_starlette_module" and module_alias:
                 source_alias_ids.append(target_path)
@@ -1707,6 +1747,7 @@ def build_api_surface_contract(
         atlas_aliases=atlas["aliases"],
         alias_refs=aliases,
         materialized_input_index=materialized_input_index,
+        runtime_core=runtime_core,
         selector_support=selector_support,
     )
     matched_error_rules: set[str] = set()

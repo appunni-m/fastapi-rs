@@ -80,14 +80,14 @@ api_inventory:
 import_binding_classification_review:
   artifact: tests/fixtures/api-import-binding-classification-review.json
   schema: fastapi-starlette-import-binding-review/v1
-  sha256: af1b4df4701291269871437973727c7f4a078d0c2689aef4687f3c1cd5a49927
+  sha256: 9bde014405cd7ae756a64cce080271126047c807a792c7b2524583e650bdb02b
   source_identity:
     package: FastAPI
     version: 0.141.1
     source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
     selected_starlette_profile: 1.6.0
     starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
-    starlette_rs_contract_commit: bea3d6fa6a08c09e9138f3536ad3088527ddef33
+    starlette_rs_contract_commit: 366b6b93bc0f2769fdb01f17444909966e570b30
   starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
   counts:
     candidates: 97
@@ -99,7 +99,7 @@ import_binding_classification_review:
   candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
   pinned_starlette_rs_sources:
     metadata_sha256: 90f805ed7d2497833422db870f88d53319dbaaf31a675f89b1ad21fdd4a123d5
-    manifest_sha256: e58abf0fa143b61c6bfefaeb55d1b0c918073d365100062bb22c023b82f675b4
+    manifest_sha256: f49efdc08bc40a40e2ae0334928b5c7d30dc965162a87bd27934441894d8dae4
     api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
     api_review_sha256: 8b25f2e3a46753316446077bfde97b6ac8a342233e2f4e50b12d3d01eafbe099
 
@@ -435,7 +435,7 @@ classification_atlas:
 starlette_rs:
   owner: ../starlette-rs
   repository: https://github.com/appunni-m/starlette-rs
-  commit: bea3d6fa6a08c09e9138f3536ad3088527ddef33
+  commit: 366b6b93bc0f2769fdb01f17444909966e570b30
   distribution_version: 0.1.0
   contract_id: starlette-1.6.0-asgi-http-config-session-slice
   metadata: ../starlette-rs/metadata.yaml
@@ -532,6 +532,54 @@ reviewed_api_contract_overlay:
     fastapi.WebSocketDisconnect:
       - {case_id: fastapi.root-alias-identity.websocket-reexports, relation: root_to_public_module, observation_selector: websocket.messages, projection: websocket_send_text_json_boolean}
       - {case_id: fastapi.root-alias-identity.websocket-reexports, relation: root_to_starlette_module, observation_selector: websocket.messages, projection: websocket_send_text_json_boolean}
+      - {case_id: fastapi.root-alias-identity.websocket-reexports, relation: public_module_to_starlette, observation_selector: websocket.messages, projection: websocket_send_text_json_boolean}
+    fastapi.datastructures.URL:
+      - {case_id: fastapi.root-alias-identity.http-reexports, relation: public_module_to_starlette, observation_selector: http.body.bytes, projection: http_json_body_boolean}
+    fastapi.datastructures.Address:
+      - {case_id: fastapi.root-alias-identity.http-reexports, relation: public_module_to_starlette, observation_selector: http.body.bytes, projection: http_json_body_boolean}
+    fastapi.datastructures.FormData:
+      - {case_id: fastapi.root-alias-identity.http-reexports, relation: public_module_to_starlette, observation_selector: http.body.bytes, projection: http_json_body_boolean}
+    fastapi.datastructures.Headers:
+      - {case_id: fastapi.root-alias-identity.http-reexports, relation: public_module_to_starlette, observation_selector: http.body.bytes, projection: http_json_body_boolean}
+    fastapi.datastructures.QueryParams:
+      - {case_id: fastapi.root-alias-identity.http-reexports, relation: public_module_to_starlette, observation_selector: http.body.bytes, projection: http_json_body_boolean}
+    fastapi.datastructures.State:
+      - {case_id: fastapi.root-alias-identity.http-reexports, relation: public_module_to_starlette, observation_selector: http.body.bytes, projection: http_json_body_boolean}
+    fastapi.middleware.cors.CORSMiddleware:
+      - {case_id: fastapi.root-alias-identity.http-reexports, relation: public_module_to_starlette, observation_selector: http.body.bytes, projection: http_json_body_boolean}
+    fastapi.middleware.gzip.GZipMiddleware:
+      - {case_id: fastapi.root-alias-identity.http-reexports, relation: public_module_to_starlette, observation_selector: http.body.bytes, projection: http_json_body_boolean}
+    fastapi.middleware.httpsredirect.HTTPSRedirectMiddleware:
+      - {case_id: fastapi.root-alias-identity.http-reexports, relation: public_module_to_starlette, observation_selector: http.body.bytes, projection: http_json_body_boolean}
+    fastapi.middleware.trustedhost.TrustedHostMiddleware:
+      - {case_id: fastapi.root-alias-identity.http-reexports, relation: public_module_to_starlette, observation_selector: http.body.bytes, projection: http_json_body_boolean}
+    fastapi.middleware.wsgi.WSGIMiddleware:
+      - {case_id: fastapi.root-alias-identity.http-reexports, relation: public_module_to_starlette, observation_selector: http.body.bytes, projection: http_json_body_boolean}
+    fastapi.requests.HTTPConnection:
+      - {case_id: fastapi.root-alias-identity.http-reexports, relation: public_module_to_starlette, observation_selector: http.body.bytes, projection: http_json_body_boolean}
+    fastapi.requests.Request:
+      - {case_id: fastapi.root-alias-identity.http-reexports, relation: public_module_to_starlette, observation_selector: http.body.bytes, projection: http_json_body_boolean}
+    fastapi.responses.FileResponse:
+      - {case_id: fastapi.root-alias-identity.http-reexports, relation: public_module_to_starlette, observation_selector: http.body.bytes, projection: http_json_body_boolean}
+    fastapi.responses.HTMLResponse:
+      - {case_id: fastapi.root-alias-identity.http-reexports, relation: public_module_to_starlette, observation_selector: http.body.bytes, projection: http_json_body_boolean}
+    fastapi.responses.JSONResponse:
+      - {case_id: fastapi.root-alias-identity.http-reexports, relation: public_module_to_starlette, observation_selector: http.body.bytes, projection: http_json_body_boolean}
+    fastapi.responses.PlainTextResponse:
+      - {case_id: fastapi.root-alias-identity.http-reexports, relation: public_module_to_starlette, observation_selector: http.body.bytes, projection: http_json_body_boolean}
+    fastapi.responses.RedirectResponse:
+      - {case_id: fastapi.root-alias-identity.http-reexports, relation: public_module_to_starlette, observation_selector: http.body.bytes, projection: http_json_body_boolean}
+    fastapi.responses.Response:
+      - {case_id: fastapi.root-alias-identity.http-reexports, relation: public_module_to_starlette, observation_selector: http.body.bytes, projection: http_json_body_boolean}
+    fastapi.responses.StreamingResponse:
+      - {case_id: fastapi.root-alias-identity.http-reexports, relation: public_module_to_starlette, observation_selector: http.body.bytes, projection: http_json_body_boolean}
+    fastapi.staticfiles.StaticFiles:
+      - {case_id: fastapi.root-alias-identity.http-reexports, relation: public_module_to_starlette, observation_selector: http.body.bytes, projection: http_json_body_boolean}
+    fastapi.websockets.WebSocket:
+      - {case_id: fastapi.root-alias-identity.websocket-reexports, relation: public_module_to_starlette, observation_selector: websocket.messages, projection: websocket_send_text_json_boolean}
+    fastapi.websockets.WebSocketDisconnect:
+      - {case_id: fastapi.root-alias-identity.websocket-reexports, relation: public_module_to_starlette, observation_selector: websocket.messages, projection: websocket_send_text_json_boolean}
+    fastapi.websockets.WebSocketState:
       - {case_id: fastapi.root-alias-identity.websocket-reexports, relation: public_module_to_starlette, observation_selector: websocket.messages, projection: websocket_send_text_json_boolean}
   error_selector_rules:
     - id: http-exception
