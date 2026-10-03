@@ -20,7 +20,7 @@ from scripts.parity.contract import (
     sha256_file,
 )
 
-CONTRACT_SCHEMA = "fastapi-rs/public-api-contract@7"
+CONTRACT_SCHEMA = "fastapi-rs/public-api-contract@8"
 TARGET_PROFILE = "fastapi-rs-python-consumer"
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 OVERLAY_SCHEMA = "fastapi-rs/reviewed-api-contract-overlay@6"
@@ -2609,6 +2609,16 @@ def build_api_surface_contract(
             for pointer, row in zip(inventory_refs[symbol_id], inventory_rows, strict=True)
             if row.get("signature_source")
         ]
+        source_constructor_definition_refs = sorted(
+            {
+                f"{pointer}/members/{member_index}"
+                for pointer, row in zip(inventory_refs[symbol_id], inventory_rows, strict=True)
+                if row.get("kind") == "class"
+                for member_index, member in enumerate(row.get("members", []))
+                if member.get("id", "").rsplit(".", 1)[-1] in {"__init__", "__new__"}
+                and member.get("signature_source")
+            }
+        )
         source_signature_state = "recorded" if source_signature_refs else "not-recorded"
 
         if symbol_id in core_refs:
@@ -2741,6 +2751,11 @@ def build_api_surface_contract(
                 "source_inventory_refs": inventory_refs[symbol_id],
                 "source_signature_state": source_signature_state,
                 "source_signature_refs": source_signature_refs,
+                **(
+                    {"source_constructor_definition_refs": source_constructor_definition_refs}
+                    if source_constructor_definition_refs
+                    else {}
+                ),
                 "runtime_reflections": {
                     "core": core_runtime_ref,
                     "standard": {
@@ -2831,6 +2846,16 @@ def build_api_surface_contract(
             "required_inherited_operations": len(inherited_operation_contracts),
             "required_public_api_candidates": len(symbols) + len(inherited_operation_contracts),
             "signature_contract_states": dict(sorted(signature_statuses.items())),
+            "symbols_with_constructor_definition_refs": sum(
+                bool(symbol.get("source_constructor_definition_refs")) for symbol in symbols
+            ),
+            "unique_source_constructor_definitions": len(
+                {
+                    reference
+                    for symbol in symbols
+                    for reference in symbol.get("source_constructor_definition_refs", [])
+                }
+            ),
             "operation_scope_statuses": dict(
                 sorted(Counter(symbol["operation_scope"]["status"] for symbol in symbols).items())
             ),
