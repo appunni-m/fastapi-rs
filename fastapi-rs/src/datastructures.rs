@@ -102,7 +102,20 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
             .getattr("type")?
             .call1(("UploadFile", bases, attributes))?;
     module.add("UploadFile", upload_file)?;
-    register_background_tasks(module)
+    register_background_tasks(module)?;
+
+    let starlette_datastructures = py.import("starlette.datastructures")?;
+    for name in [
+        "URL",
+        "Address",
+        "FormData",
+        "Headers",
+        "QueryParams",
+        "State",
+    ] {
+        module.add(name, starlette_datastructures.getattr(name)?)?;
+    }
+    Ok(())
 }
 
 /// Register FastAPI's public subclass over Starlette-RS background task support.
