@@ -1717,6 +1717,164 @@ reviewed_api_contract_overlay:
         object identity in a WebSocket message. This scope covers alias
         exposure and identity; enum behavior remains in the pinned
         Starlette-RS API contract and is not claimed here.
+    fastapi.sse.EventSourceResponse:
+      rust_binding: fastapi-rs/src/sse.rs::register
+      source_evidence:
+        - {path: fastapi/sse.py, symbol: EventSourceResponse}
+        - {path: tests/test_sse.py}
+        - {path: docs/en/docs/reference/sse.md}
+      fixture_refs:
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-sse-events-with-fields}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-async-generator-with-model}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-no-keepalive-when-fast}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-raw-data-sent-without-json-encoding}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-sync-generator-with-model}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-async-generator-no-annotation}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-sync-generator-no-annotation}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-dict-items}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-post-method-sse}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-mixed-plain-and-sse-events}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-string-data-json-encoded}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-sse-on-router-included-in-app}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-sse-router-typed-stream}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-sse-router-typed-openapi-schema}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-default-response-class-on-app-stream}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-default-response-class-on-app-openapi-schema}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-default-response-class-on-parent-router-stream}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-default-response-class-on-parent-router-openapi-schema}
+      feature_ids: [response-serialization, openapi-docs]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document]
+      supported_slice: >-
+        FastAPI's EventSourceResponse marker is used as an explicit response
+        class and as an app or router default. The linked SSE workflow compares
+        selected streamed bodies and headers for async, sync, typed, untyped,
+        mapping, raw-event, POST, and included-router cases, plus selected
+        OpenAPI response schemas. It covers immediately available streams only;
+        delayed keepalive, cancellation, disconnect, and generic response
+        construction remain outside this slice.
+    fastapi.sse.ServerSentEvent:
+      rust_binding: fastapi-rs/src/sse.rs::register
+      source_evidence:
+        - {path: fastapi/sse.py, symbol: ServerSentEvent}
+        - {path: tests/test_sse.py}
+        - {path: docs/en/docs/reference/sse.md}
+      fixture_refs:
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-sse-events-with-fields}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-raw-data-sent-without-json-encoding}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-mixed-plain-and-sse-events}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-string-data-json-encoded}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-server-sent-event-null-id-rejected}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-server-sent-event-single-line-fields-reject-newlines.event-lf}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-server-sent-event-single-line-fields-reject-newlines.event-cr}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-server-sent-event-single-line-fields-reject-newlines.event-crlf}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-server-sent-event-single-line-fields-reject-newlines.id-lf}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-server-sent-event-single-line-fields-reject-newlines.id-cr}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-server-sent-event-single-line-fields-reject-newlines.id-crlf}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-server-sent-event-negative-retry-rejected}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-server-sent-event-float-retry-rejected}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-data-and-raw-data-mutually-exclusive}
+      feature_ids: [response-serialization, request-validation]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, construction.exception_class, construction.exception_message]
+      supported_slice: >-
+        The registered Pydantic event model serializes JSON data and raw data
+        into selected SSE wire fields. The linked cases cover event/comment/id/
+        retry formatting, raw-data exclusivity, and constructor rejection for
+        null or multiline IDs, multiline event names, and invalid retry values.
+        Other Pydantic model behavior and unobserved field combinations remain
+        outside this slice.
+    fastapi.sse.ServerSentEvent.comment:
+      rust_binding: fastapi-rs/src/sse.rs::register
+      source_evidence:
+        - {path: fastapi/sse.py}
+        - {path: tests/test_sse.py}
+      fixture_refs:
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-sse-events-with-fields}
+      feature_ids: [response-serialization]
+      observation_selectors: [http.body.bytes]
+      supported_slice: >-
+        The comment field contributes the observed SSE comment line in the
+        event-fields case; multiline model-field edge cases are not included.
+    fastapi.sse.ServerSentEvent.data:
+      rust_binding: fastapi-rs/src/sse.rs::register
+      source_evidence:
+        - {path: fastapi/sse.py}
+        - {path: tests/test_sse.py}
+      fixture_refs:
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-sse-events-with-fields}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-mixed-plain-and-sse-events}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-string-data-json-encoded}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-data-and-raw-data-mutually-exclusive}
+      feature_ids: [response-serialization, request-validation]
+      observation_selectors: [http.body.bytes, construction.exception_class, construction.exception_message]
+      supported_slice: >-
+        The data field accepts selected JSON-compatible strings and values,
+        serializes strings as JSON, and participates in the data/raw_data
+        exclusivity check. Other JSON values and serializer options remain
+        outside this slice.
+    fastapi.sse.ServerSentEvent.event:
+      rust_binding: fastapi-rs/src/sse.rs::register
+      source_evidence:
+        - {path: fastapi/sse.py}
+        - {path: tests/test_sse.py}
+      fixture_refs:
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-sse-events-with-fields}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-raw-data-sent-without-json-encoding}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-mixed-plain-and-sse-events}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-server-sent-event-single-line-fields-reject-newlines.event-lf}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-server-sent-event-single-line-fields-reject-newlines.event-cr}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-server-sent-event-single-line-fields-reject-newlines.event-crlf}
+      feature_ids: [response-serialization, request-validation]
+      observation_selectors: [http.body.bytes, construction.exception_class, construction.exception_message]
+      supported_slice: >-
+        The event field is emitted for selected valid values and rejects LF,
+        CR, and CRLF inputs as single-line violations. Other event-name inputs
+        remain outside this slice.
+    fastapi.sse.ServerSentEvent.id:
+      rust_binding: fastapi-rs/src/sse.rs::register
+      source_evidence:
+        - {path: fastapi/sse.py}
+        - {path: tests/test_sse.py}
+      fixture_refs:
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-sse-events-with-fields}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-server-sent-event-null-id-rejected}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-server-sent-event-single-line-fields-reject-newlines.id-lf}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-server-sent-event-single-line-fields-reject-newlines.id-cr}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-server-sent-event-single-line-fields-reject-newlines.id-crlf}
+      feature_ids: [response-serialization, request-validation]
+      observation_selectors: [http.body.bytes, construction.exception_class, construction.exception_message]
+      supported_slice: >-
+        The id field is emitted for the selected valid value and rejects a
+        null character plus LF, CR, and CRLF. Other ID values remain outside
+        this slice.
+    fastapi.sse.ServerSentEvent.raw_data:
+      rust_binding: fastapi-rs/src/sse.rs::register
+      source_evidence:
+        - {path: fastapi/sse.py}
+        - {path: tests/test_sse.py}
+      fixture_refs:
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-raw-data-sent-without-json-encoding}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-data-and-raw-data-mutually-exclusive}
+      feature_ids: [response-serialization, request-validation]
+      observation_selectors: [http.body.bytes, construction.exception_class, construction.exception_message]
+      supported_slice: >-
+        Raw strings are emitted without JSON quoting for the selected text,
+        HTML, and CSV samples, and simultaneous non-null data/raw_data is
+        rejected. Other raw payload values remain outside this slice.
+    fastapi.sse.ServerSentEvent.retry:
+      rust_binding: fastapi-rs/src/sse.rs::register
+      source_evidence:
+        - {path: fastapi/sse.py}
+        - {path: tests/test_sse.py}
+      fixture_refs:
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-sse-events-with-fields}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-server-sent-event-negative-retry-rejected}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-server-sent-event-float-retry-rejected}
+      feature_ids: [response-serialization, request-validation]
+      observation_selectors: [http.body.bytes, construction.exception_class, construction.exception_message]
+      supported_slice: >-
+        The retry field emits the selected non-negative integer and rejects
+        negative and fractional retry values. Other numeric coercions remain
+        outside this slice.
     fastapi.Header:
       rust_binding: fastapi-rs/src/parameters.rs::header
       source_evidence:
