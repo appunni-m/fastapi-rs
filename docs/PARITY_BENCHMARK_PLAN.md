@@ -229,42 +229,45 @@ from the end-to-end target time.
 
 #### Recorded six-workload run
 
-The completed run at `2026-10-04T04:58:56Z` has suite ID
-`814ae067-4f70-48f8-aae1-468bf71d84d0`. It used FastAPI-RS commit
-`725b53951e60940b77bf9c466cec31fab7b5c7b4`, FastAPI `0.141.1` at
+The completed run at `2026-10-04T18:02:56Z` has suite ID
+`a7e96ada-5253-46f8-a583-9c1658c84fe3`. It used FastAPI-RS commit
+`31f0d5905fb5fd4ee01c00d7112e355b5c2f2ee4`, FastAPI `0.141.1` at
 `95f8322ee1dcda7ceace7b1c4f6c9915b36d748f`, Starlette `1.6.0` at
 `4f250d6b814587e20c5365f0a5f0c4d42bcb929f`, and Starlette-RS at
-`80c0a269b8b10ed427e3f1ebda36320ae375776c`. It ran on CPython 3.12.13,
-macOS 15.7.7 ARM64, with Cargo's release profile. All six workload parity
-gates passed (41/41 selected cases). The table reports median and p95
-direct-ASGI latency; ratios are FastAPI-RS divided by FastAPI, so values above
-`1.0x` mean FastAPI-RS took longer on this host.
+`8f34aa1df1beb0cc1066252743099536793fcb2d`. It ran on CPython 3.12.13,
+macOS 15.7.7 ARM64 (12 logical CPUs), with Cargo's release profile. All six
+workload parity gates passed (41/41 selected cases). The target binary SHA-256
+was `70de6194651a4010f6da2c29886105d1ddea4143dd4754dc08e3b48e9867958d`.
+The table reports median and p95 direct-ASGI latency; ratios are FastAPI-RS
+divided by FastAPI, so values above `1.0x` mean FastAPI-RS took longer on this
+host.
 
 | Workload | FastAPI median / p95 | FastAPI-RS median / p95 | Median / p95 ratio |
 | --- | ---: | ---: | ---: |
-| Async nested dependencies, distinct query aliases | 504.7 / 541.7 µs | 686.5 / 745.7 µs | 1.360x / 1.377x |
-| Async nested dependencies, two query parameters | 422.3 / 453.8 µs | 580.4 / 612.4 µs | 1.374x / 1.350x |
-| Chunked request body | 135.5 / 155.9 µs | 134.7 / 156.1 µs | 0.994x / 1.001x |
-| Invalid request | 305.3 / 504.8 µs | 804.8 / 1,249.7 µs | 2.636x / 2.476x |
-| Valid request | 136.7 / 156.6 µs | 133.0 / 149.0 µs | 0.973x / 0.952x |
-| Repeated sequence query | 101.5 / 112.5 µs | 79.8 / 93.1 µs | 0.786x / 0.828x |
+| Async nested dependencies, distinct query aliases | 489.2 / 524.8 µs | 800.4 / 852.8 µs | 1.636x / 1.625x |
+| Async nested dependencies, two query parameters | 416.5 / 1,256.1 µs | 694.8 / 755.7 µs | 1.668x / 0.602x |
+| Chunked request body | 138.6 / 860.7 µs | 52.6 / 56.8 µs | 0.379x / 0.066x |
+| Invalid request | 147.8 / 215.3 µs | 228.5 / 248.9 µs | 1.547x / 1.156x |
+| Valid request | 134.1 / 159.7 µs | 50.7 / 63.8 µs | 0.378x / 0.400x |
+| Repeated sequence query | 102.5 / 111.8 µs | 32.8 / 38.1 µs | 0.320x / 0.341x |
 
-The invalid-request lane is the largest measured gap and should be the first
-performance investigation after its error-body parity remains covered. This is
-one machine's result for the declared direct-ASGI boundary. It does not measure
-network/server latency or isolate native Rust time; compare later runs only
-when their source identities and workload contracts match. The generated suite
-and per-workload result artifacts remain in ignored `benchmark-results/`.
+The two nested-dependency workloads and invalid-request workload have the
+largest median FastAPI-RS overhead in this run. This is one machine's result
+for the declared direct-ASGI boundary. It does not measure network/server
+latency or isolate native Rust time; compare later runs only when their source
+identities and workload contracts match. The generated suite and per-workload
+result artifacts remain in ignored `benchmark-results/`.
 
-An exploratory warm-request call profile of this invalid workload counted four
-`TypeAdapter` constructions in FastAPI-RS and none in FastAPI after each app was
-constructed. FastAPI-RS currently calls `TypeAdapter(annotation)` inside
+An earlier exploratory warm-request call profile of the invalid workload
+counted four `TypeAdapter` constructions in FastAPI-RS and none in FastAPI
+after each app was constructed. FastAPI-RS currently calls
+`TypeAdapter(annotation)` inside
 `validate_python_value` for each validated input
 (`fastapi-rs/src/application_runtime.rs`); this identifies repeated adapter
 setup as an optimization candidate, but does not establish how much of the
-2.636x gap it causes. After the public operation contract is complete, measure
-per-parameter adapter reuse on the full boundary, including dependency
-overrides, and retain the invalid error-body parity gate.
+current 1.547x median gap it causes. After the public operation contract is
+complete, measure per-parameter adapter reuse on the full boundary, including
+dependency overrides, and retain the invalid error-body parity gate.
 
 | Tier | Workload | Timing boundary and purpose |
 | --- | --- | --- |
