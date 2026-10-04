@@ -646,8 +646,12 @@ are build-time support for this discovery/fallback path.
 
 ## Python package dependencies
 
-The Python distribution directly pins `pydantic==2.13.4`,
+The Python distribution directly pins `annotated-doc==0.0.4`,
+`pydantic==2.13.4`,
 `pydantic-core==2.46.4`, and `starlette-rs-py==0.1.0` in `pyproject.toml`.
+FastAPI-RS Rust code imports `annotated_doc.Doc` through PyO3 while registering
+public Python signatures, dependency/security parameters, and exceptions; it
+constructs the `Annotated` documentation metadata consumed by introspection.
 Pydantic's Python package builds schemas and exposes model behavior, while the
 separately installed `pydantic-core` wheel supplies its Rust
 validation/serialization engine. `starlette-rs-py` is a separate Rust/Python

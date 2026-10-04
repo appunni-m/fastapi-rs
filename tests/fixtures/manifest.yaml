@@ -96,7 +96,7 @@ target:
     path: requirements/target-runtime-cpython-3.12.13.lock
     sha256: efb7ca633fc9a9c8587a6f59f8ee9b509151f6f77ceb75a56dd3cdeff2be99f7
     profile: CPython 3.12.13
-    scope: Hashed target runtime wheels; annotated-doc preserves shared parity package identity; Starlette-RS installs separately from the selected local commit.
+    scope: Hashed target runtime wheels, including annotated-doc used for native-created Python Doc metadata; Starlette-RS installs separately from the selected local commit.
   implementation_revision_policy: record-both-git-commits-and-combined-source-digest-per-run
   support: partial-first-request-response-slice
   executable_parity: isolated-workers-and-comparator-present; full-parity-pending
@@ -800,8 +800,8 @@ api_surface_contract:
     symbols_with_constructor_definition_refs: 37
     unique_source_constructor_definitions: 20
     operation_scope_statuses:
-      scope-review-pending: 354
-      slice-described: 107
+      scope-review-pending: 353
+      slice-described: 108
     implementation_owner_plans:
       fastapi-rs: 430
       starlette-rs: 31
@@ -813,8 +813,8 @@ api_surface_contract:
     symbols_with_deprecation_refs: 15
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 34
-    symbols_with_operation_fixture_refs: 66
-    operation_fixture_refs: 323
+    symbols_with_operation_fixture_refs: 67
+    operation_fixture_refs: 326
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -7462,6 +7462,40 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/410
       observation_selectors: *id009
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: request-validation-error-object
+      input_path: tests/fixtures/inputs/parity/request-validation-error-object.json
+      input_sha256: 10b9cd2cc10d478573bfe85dd7e3fd82e8ed86b183ad701436964c75f83b09e8
+      recipe_path: tests/fixtures/input-recipes/parity/request-validation-error-object.yaml
+      recipe_sha256: c8f855aaad203595a1fe9052c382ef9ffc6d22265fafcccd662a40b422149d82
+      workload_path: tests/fixtures/workloads/request_validation_error_object.py
+      workload_sha256: d73f8cf7d1b4f3e8fb8b8aaa0f9b9237afc3fd6a48a996d39e12c5e55141fb07
+      case_id: fastapi.validation-error-object.path-context
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: request-validation-error-object
+      input_path: tests/fixtures/inputs/parity/request-validation-error-object.json
+      input_sha256: 10b9cd2cc10d478573bfe85dd7e3fd82e8ed86b183ad701436964c75f83b09e8
+      recipe_path: tests/fixtures/input-recipes/parity/request-validation-error-object.yaml
+      recipe_sha256: c8f855aaad203595a1fe9052c382ef9ffc6d22265fafcccd662a40b422149d82
+      workload_path: tests/fixtures/workloads/request_validation_error_object.py
+      workload_sha256: d73f8cf7d1b4f3e8fb8b8aaa0f9b9237afc3fd6a48a996d39e12c5e55141fb07
+      case_id: fastapi.validation-error-object.empty-context
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: request-validation-error-object
+      input_path: tests/fixtures/inputs/parity/request-validation-error-object.json
+      input_sha256: 10b9cd2cc10d478573bfe85dd7e3fd82e8ed86b183ad701436964c75f83b09e8
+      recipe_path: tests/fixtures/input-recipes/parity/request-validation-error-object.yaml
+      recipe_sha256: c8f855aaad203595a1fe9052c382ef9ffc6d22265fafcccd662a40b422149d82
+      workload_path: tests/fixtures/workloads/request_validation_error_object.py
+      workload_sha256: d73f8cf7d1b4f3e8fb8b8aaa0f9b9237afc3fd6a48a996d39e12c5e55141fb07
+      case_id: fastapi.validation-error-object.omitted-defaults
+      observation_selectors:
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -7485,8 +7519,9 @@ api_surface_contract:
     - validation.error_details
     - websocket.close_code
     operation_scope:
-      status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+      status: slice-described
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.exceptions.ValidationException.errors/supported_slice
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.exceptions.ValidationException.errors
@@ -7496,7 +7531,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/547
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/errors.rs::BoundValidationExceptionErrors::__call__
   - id: fastapi.exceptions.WebSocketException
     kind: class
     source_candidate_ref: /api_candidates/549

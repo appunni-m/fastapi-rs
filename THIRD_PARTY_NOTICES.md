@@ -15,6 +15,10 @@ authorities, not included source trees in this distribution.
 - PyO3 0.29.2 and its Cargo dependency closure declare MIT OR Apache-2.0 or the
   package-specific expressions recorded in
   [`docs/RUST_TARGET_DEPENDENCIES.md`](docs/RUST_TARGET_DEPENDENCIES.md).
+- `annotated-doc==0.0.4` is a direct MIT-licensed Python runtime dependency.
+  Rust calls `annotated_doc.Doc` through PyO3 to construct `Doc` metadata in
+  Python signatures. It is installed as a separate distribution and is not
+  bundled by this package; retain its MIT notice if a release later bundles it.
 - The Python package pins Pydantic `==2.13.4` and directly pins
   `pydantic-core==2.46.4`; both are MIT-licensed separate Python distributions.
   Pydantic's public model API is Python, while the Core wheel provides its Rust
@@ -24,10 +28,8 @@ authorities, not included source trees in this distribution.
   them, preserve their notices and review the Core wheel's native-component
   obligations.
 - `requirements/target-runtime-cpython-3.12.13.lock` hash-locks the external
-  runtime wheel closure for the parity profile. It includes MIT-licensed
-  `annotated-doc==0.0.4` only to preserve the comparator's shared source/target
-  package identity; FastAPI-RS does not import or declare it as a package
-  dependency. The lock excludes the local Starlette-RS checkout, which is
+  runtime wheel closure for CPython 3.12.13, including the direct
+  `annotated-doc==0.0.4` runtime dependency. The lock excludes the local Starlette-RS checkout, which is
   installed separately from the manifest's selected commit. `starlette-rs-py==0.1.0`
   remains a separately licensed BSD-3-Clause package and declares AnyIO as an
   external runtime dependency.

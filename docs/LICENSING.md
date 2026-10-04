@@ -27,6 +27,10 @@ it does not relicense FastAPI, Starlette, Pydantic, or third-party material.
   calls its APIs directly. Their wheel license files remain with those
   separately installed distributions; the target package does not relicense
   or bundle them.
+- `annotated-doc==0.0.4` is a direct target runtime dependency. Rust imports
+  `annotated_doc.Doc` through PyO3 to build Python `Annotated` documentation
+  metadata for signatures, parameters, exceptions, and security APIs. The
+  package is separately installed and is not bundled in the FastAPI-RS wheel.
 - The external target Python runtime closure for CPython 3.12.13 is hash-locked
   in
   [`requirements/target-runtime-cpython-3.12.13.lock`](../requirements/target-runtime-cpython-3.12.13.lock).
@@ -42,15 +46,15 @@ it does not relicense FastAPI, Starlette, Pydantic, or third-party material.
 
 ### Target Python runtime profile
 
-The target package declares Pydantic, Pydantic Core, and Starlette-RS-Py as
+The target package declares annotated-doc, Pydantic, Pydantic Core, and Starlette-RS-Py as
 runtime dependencies in [`pyproject.toml`](../pyproject.toml). The hashed
 requirements lock is a **scoped external-wheel lock** for CPython 3.12.13, not
 an all-in-one lock for building and installing the target: Starlette-RS-Py is
 installed separately from the source revision pinned in
 [`metadata.yaml`](../metadata.yaml), with `--no-deps`; its declared AnyIO
-requirement is resolved in the external-wheel lock. The lock also contains
-`annotated-doc` only to keep the parity environments' package identities
-aligned; the target package does not declare or import it. Lock inputs and exact
+requirement is resolved in the external-wheel lock. The lock includes
+`annotated-doc` as a target runtime import and as part of the shared parity
+profile. Lock inputs and exact
 wheel hashes are in the [profile input](../requirements/target-runtime-cpython-3.12.13.in)
 and [lock](../requirements/target-runtime-cpython-3.12.13.lock).
 
@@ -64,7 +68,7 @@ and [lock](../requirements/target-runtime-cpython-3.12.13.lock).
 | `idna` | `3.18`; AnyIO transitive runtime dependency | Required by AnyIO's declared dependency metadata. Whether the selected FastAPI-RS request path exercises IDNA handling is **unresolved**. | Python wheel; no native component is identified by the locked wheel metadata. | BSD-3-Clause, `License-Expression` in the [3.18 wheel metadata](https://pypi.org/pypi/idna/3.18/json). |
 | `typing-extensions` | `4.16.0`; direct Starlette-RS-Py runtime dependency (`>=4.12.0`), also used by Pydantic, Pydantic Core, and AnyIO | Provides `TypeVar` with a default state type for generic `HTTPConnection`, `Request`, and `WebSocket` annotations in Starlette-RS `starlette/requests.py`; other packages use it for compatible typing APIs. | Python wheel; no native component is identified by the locked wheel metadata. | PSF-2.0, `License-Expression` in the [4.16.0 wheel metadata](https://pypi.org/pypi/typing-extensions/4.16.0/json). |
 | `typing-inspection` | `0.4.2`; Pydantic transitive runtime dependency | Typing-object inspection required by Pydantic's type and field handling. | Python wheel; no native component is identified by the locked wheel metadata. | MIT, `License-Expression` in the [0.4.2 wheel metadata](https://pypi.org/pypi/typing-inspection/0.4.2/json). |
-| `annotated-doc` | `0.0.4`; parity-profile only, not a target package dependency | Preserves the source/target parity environment's shared package identity; FastAPI-RS does not import it. | Python wheel; no native component is identified by the locked wheel metadata. | MIT, `License-Expression` in the [0.0.4 wheel metadata](https://pypi.org/pypi/annotated-doc/0.0.4/json). |
+| `annotated-doc` | `0.0.4`; direct target runtime dependency | Rust imports `annotated_doc.Doc` through PyO3 to construct `Annotated` metadata for public signatures, parameters, exceptions, and security APIs; the lock also keeps the parity profile aligned. | Pure-Python universal wheel; no native component or runtime dependencies are declared in the locked wheel metadata. | MIT, `License-Expression` in the [0.0.4 wheel metadata](https://pypi.org/pypi/annotated-doc/0.0.4/json). |
 
 The target's current `pyproject.toml` declares no optional dependency groups.
 The pinned Starlette-RS package separately declares `schemas` (`pyyaml`),

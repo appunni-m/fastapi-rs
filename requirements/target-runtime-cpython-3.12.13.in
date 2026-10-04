@@ -4,8 +4,9 @@
 # AnyIO and typing-extensions are runtime dependencies declared by
 # starlette-rs-py==0.1.0; typing-extensions supplies generic state TypeVar defaults.
 # pydantic-core is listed directly because fastapi-rs calls its runtime APIs.
-# annotated-doc is included only to preserve the parity comparator's shared
-# source/target package identity set; FastAPI-RS does not import it.
+# Rust API registration imports annotated_doc.Doc to construct Python Annotated
+# metadata for public signatures, parameters, errors, and security APIs.
+# The package also remains installed in the source/target parity profile.
 # The remaining pins preserve the source profile's Pydantic runtime closure.
 annotated-doc==0.0.4
 pydantic==2.13.4
