@@ -205,6 +205,7 @@ type OpenApiSecurityVisitKey = (usize, Option<String>, Vec<String>);
 struct CallableParameter {
     name: String,
     annotation: Py<PyAny>,
+    validation_adapter: Option<Py<PyAny>>,
     default: Option<Py<PyAny>>,
     is_sequence: bool,
     parameter_model_fields: Option<Vec<ParameterModelField>>,
@@ -277,6 +278,10 @@ impl CallableParameter {
         Self {
             name: self.name.clone(),
             annotation: self.annotation.clone_ref(py),
+            validation_adapter: self
+                .validation_adapter
+                .as_ref()
+                .map(|adapter| adapter.clone_ref(py)),
             default: self.default.as_ref().map(|value| value.clone_ref(py)),
             is_sequence: self.is_sequence,
             parameter_model_fields: self.parameter_model_fields.as_ref().map(|fields| {
@@ -4824,9 +4829,18 @@ impl CallablePlan {
                         }
                         _ => (None, None, None),
                     };
+                let validation_adapter = if matches!(&source, ParameterSource::Input { .. }) {
+                    Some(build_python_value_adapter(
+                        py,
+                        validated_annotation.bind(py),
+                    )?)
+                } else {
+                    None
+                };
                 Ok(CallableParameter {
                     name,
                     annotation: validated_annotation,
+                    validation_adapter,
                     default,
                     is_sequence,
                     parameter_model_fields,
@@ -4902,6 +4916,7 @@ impl CallablePlan {
             parameters.push(CallableParameter {
                 name: String::new(),
                 annotation,
+                validation_adapter: None,
                 default: None,
                 is_sequence: false,
                 parameter_model_fields: None,
@@ -5787,6 +5802,10 @@ impl CallablePlan {
             let ParameterSource::Input { alias, .. } = &parameter.source else {
                 continue;
             };
+            let validation_adapter = parameter.validation_adapter.as_ref().ok_or_else(|| {
+                PyRuntimeError::new_err("input validation adapter was not retained")
+            })?;
+            let validation_adapter = validation_adapter.bind(context.py);
             let body_field = match source {
                 InputSource::Body => aggregate_body,
                 InputSource::Form | InputSource::File => !form_parameter_is_unembedded_model(
@@ -5882,11 +5901,7 @@ impl CallablePlan {
                     if default.is_none() || source == InputSource::Body {
                         kwargs.set_item(&parameter.name, default)?;
                     } else {
-                        match validate_python_value(
-                            context.py,
-                            parameter.annotation.bind(context.py),
-                            &default,
-                        ) {
+                        match validate_python_value(context.py, validation_adapter, &default) {
                             Ok(value) => kwargs.set_item(&parameter.name, value)?,
                             Err(error) if is_pydantic_validation_error(context.py, &error) => {
                                 context.failures.push(ValidationIssue::Input(Box::new(
@@ -5911,7 +5926,7 @@ impl CallablePlan {
                 }
                 continue;
             };
-            match validate_python_value(context.py, parameter.annotation.bind(context.py), &value) {
+            match validate_python_value(context.py, validation_adapter, &value) {
                 Ok(value) => kwargs.set_item(&parameter.name, value)?,
                 Err(error) if is_pydantic_validation_error(context.py, &error) => {
                     context.failures.push(ValidationIssue::Input(Box::new(
@@ -7363,15 +7378,21 @@ fn pydantic_schema_with_config(
     Ok(schema.into_any().unbind())
 }
 
-fn validate_python_value(
+fn build_python_value_adapter(
     py: Python<'_>,
     annotation: &Bound<'_, PyAny>,
+) -> PyResult<Py<PyAny>> {
+    py.import("pydantic")?
+        .getattr("TypeAdapter")?
+        .call1((annotation,))
+        .map(Bound::unbind)
+}
+
+fn validate_python_value(
+    py: Python<'_>,
+    adapter: &Bound<'_, PyAny>,
     value: &Bound<'_, PyAny>,
 ) -> PyResult<Py<PyAny>> {
-    let adapter = py
-        .import("pydantic")?
-        .getattr("TypeAdapter")?
-        .call1((annotation,))?;
     let kwargs = PyDict::new(py);
     kwargs.set_item("from_attributes", true)?;
     adapter
