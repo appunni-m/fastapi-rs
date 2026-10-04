@@ -1419,6 +1419,84 @@ reviewed_api_contract_overlay:
         module object. The identity-checked HTTP workflow compares its complete
         __all__ names and integer values against the pinned FastAPI oracle;
         generic Starlette status values remain owned by the sibling contract.
+    fastapi.datastructures.URL:
+      rust_binding: fastapi-rs/src/datastructures.rs::register
+      source_evidence:
+        - {path: fastapi/datastructures.py}
+      observation_selectors: [http.status, http.body.bytes]
+      supported_slice: >-
+        FastAPI directly re-exports Starlette's URL class under
+        fastapi.datastructures. FastAPI-RS registers the canonical
+        starlette.datastructures.URL object from Starlette-RS. The
+        root-alias-identity workflow observes exact public-module-to-Starlette
+        object identity. This FastAPI scope covers alias exposure and identity;
+        generic construction and method behavior remain in the pinned
+        Starlette-RS API contract and are not claimed here.
+    fastapi.datastructures.Address:
+      rust_binding: fastapi-rs/src/datastructures.rs::register
+      source_evidence:
+        - {path: fastapi/datastructures.py}
+      observation_selectors: [http.status, http.body.bytes]
+      supported_slice: >-
+        FastAPI directly re-exports Starlette's Address class under
+        fastapi.datastructures. FastAPI-RS registers the canonical
+        starlette.datastructures.Address object from Starlette-RS. The
+        root-alias-identity workflow observes exact public-module-to-Starlette
+        object identity. This FastAPI scope covers alias exposure and identity;
+        generic construction and method behavior remain in the pinned
+        Starlette-RS API contract and are not claimed here.
+    fastapi.datastructures.FormData:
+      rust_binding: fastapi-rs/src/datastructures.rs::register
+      source_evidence:
+        - {path: fastapi/datastructures.py}
+      observation_selectors: [http.status, http.body.bytes]
+      supported_slice: >-
+        FastAPI directly re-exports Starlette's FormData class under
+        fastapi.datastructures. FastAPI-RS registers the canonical
+        starlette.datastructures.FormData object from Starlette-RS. The
+        root-alias-identity workflow observes exact public-module-to-Starlette
+        object identity. This FastAPI scope covers alias exposure and identity;
+        generic construction and method behavior remain in the pinned
+        Starlette-RS API contract and are not claimed here.
+    fastapi.datastructures.Headers:
+      rust_binding: fastapi-rs/src/datastructures.rs::register
+      source_evidence:
+        - {path: fastapi/datastructures.py}
+      observation_selectors: [http.status, http.body.bytes]
+      supported_slice: >-
+        FastAPI directly re-exports Starlette's Headers class under
+        fastapi.datastructures. FastAPI-RS registers the canonical
+        starlette.datastructures.Headers object from Starlette-RS. The
+        root-alias-identity workflow observes exact public-module-to-Starlette
+        object identity. This FastAPI scope covers alias exposure and identity;
+        generic construction and method behavior remain in the pinned
+        Starlette-RS API contract and are not claimed here.
+    fastapi.datastructures.QueryParams:
+      rust_binding: fastapi-rs/src/datastructures.rs::register
+      source_evidence:
+        - {path: fastapi/datastructures.py}
+      observation_selectors: [http.status, http.body.bytes]
+      supported_slice: >-
+        FastAPI directly re-exports Starlette's QueryParams class under
+        fastapi.datastructures. FastAPI-RS registers the canonical
+        starlette.datastructures.QueryParams object from Starlette-RS. The
+        root-alias-identity workflow observes exact public-module-to-Starlette
+        object identity. This FastAPI scope covers alias exposure and identity;
+        generic construction and method behavior remain in the pinned
+        Starlette-RS API contract and are not claimed here.
+    fastapi.datastructures.State:
+      rust_binding: fastapi-rs/src/datastructures.rs::register
+      source_evidence:
+        - {path: fastapi/datastructures.py}
+      observation_selectors: [http.status, http.body.bytes]
+      supported_slice: >-
+        FastAPI directly re-exports Starlette's State class under
+        fastapi.datastructures. FastAPI-RS registers the canonical
+        starlette.datastructures.State object from Starlette-RS. The
+        root-alias-identity workflow observes exact public-module-to-Starlette
+        object identity. This FastAPI scope covers alias exposure and identity;
+        generic construction and method behavior remain in the pinned
+        Starlette-RS API contract and are not claimed here.
     fastapi.Header:
       rust_binding: fastapi-rs/src/parameters.rs::header
       source_evidence:
