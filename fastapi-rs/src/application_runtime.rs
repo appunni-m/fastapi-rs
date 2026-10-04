@@ -5957,6 +5957,20 @@ impl CallablePlan {
                         .get(alias)
                         .map(|value| PyString::new(context.py, value).into_any())
                 }
+            } else if source == InputSource::Header && parameter.is_sequence {
+                let connection = context.request.or(context.websocket).ok_or_else(|| {
+                    PyRuntimeError::new_err(
+                        "header parameter requires an HTTP or WebSocket connection",
+                    )
+                })?;
+                let header_values = connection
+                    .getattr("headers")?
+                    .call_method1("getlist", (alias,))?;
+                if header_values.len()? == 0 {
+                    None
+                } else {
+                    Some(header_values)
+                }
             } else {
                 context.inputs.get_item(&parameter.name)?
             };
@@ -6445,9 +6459,19 @@ fn parameter_source(
             });
         }
         if kind == "path" {
+            let declared_alias = marker.getattr("alias")?.extract::<Option<String>>()?;
+            let validation_alias = marker.getattr("validation_alias")?;
+            let validation_alias =
+                if validation_alias.is_truthy()? && validation_alias.is_instance_of::<PyString>() {
+                    Some(validation_alias.extract::<String>()?)
+                } else {
+                    None
+                };
             return Ok(ParameterSource::Input {
                 source: InputSource::Path,
-                alias: name.to_owned(),
+                alias: validation_alias
+                    .or(declared_alias)
+                    .unwrap_or_else(|| name.to_owned()),
             });
         }
         if kind == "header" || kind == "query" || kind == "cookie" {
@@ -7006,25 +7030,27 @@ fn constrained_parameter_annotation(
         }
         let kwargs = PyDict::new(py);
         let mut has_field_metadata = false;
-        for name in ["gt", "ge", "lt", "le", "min_length", "max_length"] {
-            if kind != "query" && !matches!(name, "gt" | "ge" | "lt" | "le") {
+        for name in [
+            "gt",
+            "ge",
+            "lt",
+            "le",
+            "min_length",
+            "max_length",
+            "allow_inf_nan",
+            "pattern",
+            "title",
+            "description",
+            "deprecated",
+        ] {
+            let value = marker.getattr(name)?;
+            if value.is_none() || (name == "pattern" && value.extract::<String>()?.is_empty()) {
                 continue;
             }
-            let value = marker.getattr(name)?;
-            if !value.is_none() {
-                kwargs.set_item(name, value)?;
-                has_field_metadata = true;
-            }
+            kwargs.set_item(name, value)?;
+            has_field_metadata = true;
         }
         if kind == "query" {
-            for name in ["title", "description", "pattern", "deprecated"] {
-                let value = marker.getattr(name)?;
-                if value.is_none() || (name == "pattern" && value.extract::<String>()?.is_empty()) {
-                    continue;
-                }
-                kwargs.set_item(name, value)?;
-                has_field_metadata = true;
-            }
             if let Some(default) = default {
                 kwargs.set_item("default", default)?;
                 has_field_metadata = true;

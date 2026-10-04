@@ -44,6 +44,7 @@ pub(crate) struct ParameterMetadata {
     ge: Option<Py<PyAny>>,
     lt: Option<Py<PyAny>>,
     le: Option<Py<PyAny>>,
+    allow_inf_nan: Option<Py<PyAny>>,
     min_length: Option<Py<PyAny>>,
     max_length: Option<Py<PyAny>>,
     convert_underscores: bool,
@@ -163,6 +164,13 @@ impl ParameterMetadata {
     #[getter]
     fn le(&self, py: Python<'_>) -> Option<Py<PyAny>> {
         self.le.as_ref().map(|le| le.clone_ref(py))
+    }
+
+    #[getter]
+    fn allow_inf_nan(&self, py: Python<'_>) -> Option<Py<PyAny>> {
+        self.allow_inf_nan
+            .as_ref()
+            .map(|allow_inf_nan| allow_inf_nan.clone_ref(py))
     }
 
     #[getter]
@@ -293,6 +301,7 @@ fn depends(
             ge: None,
             lt: None,
             le: None,
+            allow_inf_nan: None,
             min_length: None,
             max_length: None,
             convert_underscores: true,
@@ -334,6 +343,7 @@ fn security(
             ge: None,
             lt: None,
             le: None,
+            allow_inf_nan: None,
             min_length: None,
             max_length: None,
             convert_underscores: true,
@@ -400,6 +410,7 @@ fn header(
             ge: None,
             lt: None,
             le: None,
+            allow_inf_nan: None,
             min_length: None,
             max_length: None,
             convert_underscores,
@@ -459,6 +470,7 @@ fn cookie(
             ge: None,
             lt: None,
             le: None,
+            allow_inf_nan: None,
             min_length: None,
             max_length: None,
             convert_underscores: true,
@@ -566,6 +578,7 @@ fn query(
             ge,
             lt,
             le,
+            allow_inf_nan: None,
             min_length,
             max_length,
             convert_underscores: true,
@@ -578,6 +591,7 @@ fn query(
     name = "Path",
     signature = (
         *,
+        alias = None,
         gt = None,
         ge = None,
         lt = None,
@@ -595,6 +609,7 @@ fn query(
 )]
 fn path(
     py: Python<'_>,
+    alias: Option<String>,
     gt: Option<Py<PyAny>>,
     ge: Option<Py<PyAny>>,
     lt: Option<Py<PyAny>>,
@@ -614,7 +629,7 @@ fn path(
         py,
         ParameterMetadata {
             kind: "path".to_owned(),
-            alias: None,
+            alias,
             validation_alias: None,
             embed: None,
             dependency: None,
@@ -633,6 +648,7 @@ fn path(
             ge,
             lt,
             le,
+            allow_inf_nan: None,
             min_length: None,
             max_length: None,
             convert_underscores: true,
@@ -653,6 +669,7 @@ fn path(
         gt = None,
         pattern = None,
         regex = None,
+        allow_inf_nan = None,
         example = example_unset_default(),
         examples = None
     )
@@ -672,6 +689,7 @@ fn body(
     gt: Option<Py<PyAny>>,
     pattern: Option<String>,
     regex: Option<String>,
+    allow_inf_nan: Option<Py<PyAny>>,
     example: Py<PyAny>,
     examples: Option<Py<PyAny>>,
 ) -> PyResult<Py<ParameterMetadata>> {
@@ -704,6 +722,7 @@ fn body(
             ge: None,
             lt: None,
             le: None,
+            allow_inf_nan,
             min_length: None,
             max_length: None,
             convert_underscores: true,
@@ -797,6 +816,7 @@ fn form(
             ge: None,
             lt: None,
             le: None,
+            allow_inf_nan: None,
             min_length: None,
             max_length: None,
             convert_underscores: true,
@@ -868,6 +888,7 @@ fn file(
             ge: None,
             lt: None,
             le: None,
+            allow_inf_nan: None,
             min_length: None,
             max_length: None,
             convert_underscores: true,

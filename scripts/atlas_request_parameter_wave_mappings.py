@@ -566,9 +566,7 @@ _OPTIONAL_LIST_SCHEMA_CASES = {
     "fastapi.request-body.optional-list-openapi.both-aliases",
 }
 _REQUEST_UPLOADS_RECIPE = "tests/fixtures/input-recipes/parity/request-uploads.yaml"
-_FILE_LIST_FORM_ORDER_CASE = (
-    "fastapi.request-uploads.file-form-order.test-file-list-form-order"
-)
+_FILE_LIST_FORM_ORDER_CASE = "fastapi.request-uploads.file-form-order.test-file-list-form-order"
 
 
 def _tail_function_mapping(
@@ -1118,7 +1116,8 @@ def validate_request_parameter_mappings() -> list[str]:
                 len(source_functions) != 1
                 or span["path"] != test_path
                 or span["start_line"] != source_functions[0].lineno
-                or span["end_line"] != (source_functions[0].end_lineno or source_functions[0].lineno)
+                or span["end_line"]
+                != (source_functions[0].end_lineno or source_functions[0].lineno)
             ):
                 errors.append(
                     f"request-parameter source span does not identify {test_path}:{function_name}"
@@ -1154,7 +1153,9 @@ def validate_request_parameter_mappings() -> list[str]:
                 errors.append(
                     f"request-parameter function selectors mismatch: {test_path}:{function_name}"
                 )
-    if len(function_spans) != sum(len(rows) for rows in REQUEST_PARAMETER_FUNCTION_MAPPINGS.values()):
+    if len(function_spans) != sum(
+        len(rows) for rows in REQUEST_PARAMETER_FUNCTION_MAPPINGS.values()
+    ):
         errors.append("request-parameter function mappings reuse an ambiguous source span")
     return errors
 
