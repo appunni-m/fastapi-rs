@@ -22,12 +22,28 @@ HTTP_ROUTE_INVOCATION_FAULT_POINT = "http.route.invoke.before"
 HTTP_ROUTE_INVOCATION_CONTRACT = "http-route-invocation-error-and-recovery"
 HTTP_ROUTE_DEPENDENCY_CLEANUP_FAULT_POINT = "http.route.invoke.after_dependencies.before"
 HTTP_ROUTE_DEPENDENCY_CLEANUP_CONTRACT = "http-route-invocation-error-cleans-dependencies"
+HTTP_ROUTE_SCOPED_DEPENDENCY_CLEANUP_CONTRACT = (
+    "http-route-invocation-error-orders-function-and-request-dependency-cleanup"
+)
+FUNCTION_REQUEST_ERROR_EVENTS = [
+    "function-enter",
+    "request-enter",
+    "function-cleanup",
+    "request-cleanup",
+    "response-start",
+    "response-end",
+]
 
 # metadata.yaml is the policy authority; metadata-check enforces this runtime
 # dispatch table against the reviewed registry.
-FAULT_POINT_CONTRACTS: dict[str, str] = {
-    HTTP_ROUTE_INVOCATION_FAULT_POINT: HTTP_ROUTE_INVOCATION_CONTRACT,
-    HTTP_ROUTE_DEPENDENCY_CLEANUP_FAULT_POINT: HTTP_ROUTE_DEPENDENCY_CLEANUP_CONTRACT,
+FAULT_POINT_CONTRACTS: dict[str, frozenset[str]] = {
+    HTTP_ROUTE_INVOCATION_FAULT_POINT: frozenset({HTTP_ROUTE_INVOCATION_CONTRACT}),
+    HTTP_ROUTE_DEPENDENCY_CLEANUP_FAULT_POINT: frozenset(
+        {
+            HTTP_ROUTE_DEPENDENCY_CLEANUP_CONTRACT,
+            HTTP_ROUTE_SCOPED_DEPENDENCY_CLEANUP_CONTRACT,
+        }
+    ),
 }
 
 
@@ -54,13 +70,11 @@ def verification_mode(case: Mapping[str, Any]) -> str:
     contract = fault.get("contract")
     if not isinstance(point, str) or not isinstance(contract, str):
         raise FaultContractError("fault point and contract must be strings")
-    expected_contract = FAULT_POINT_CONTRACTS.get(point)
-    if expected_contract is None:
+    expected_contracts = FAULT_POINT_CONTRACTS.get(point)
+    if expected_contracts is None:
         raise FaultContractError(f"fault point is not allow-listed: {point!r}")
-    if contract != expected_contract:
-        raise FaultContractError(
-            f"fault point {point!r} is bound to contract {expected_contract!r}, not {contract!r}"
-        )
+    if contract not in expected_contracts:
+        raise FaultContractError(f"fault point {point!r} is not bound to contract {contract!r}")
     return mode
 
 
@@ -193,9 +207,40 @@ def _assert_http_route_invocation_error_cleans_dependencies(
         )
 
 
+def _assert_http_route_invocation_error_orders_scoped_dependency_cleanup(
+    case_result: Mapping[str, Any],
+) -> None:
+    actions, error_action_index, _ = _error_action(case_result)
+    _assert_server_error_response(actions, error_action_index)
+
+    responses = _later_successful_http_responses(actions, error_action_index)
+    if len(responses) != 1:
+        raise FaultContractError(
+            "scoped dependency fault must have one later completed HTTP 200 response"
+        )
+    body = responses[0]["values"].get("body")
+    if not isinstance(body, Mapping) or body.get("encoding") != "base64":
+        raise FaultContractError("scoped dependency recovery body must use the base64 selector")
+    data = body.get("data")
+    if not isinstance(data, str):
+        raise FaultContractError("scoped dependency recovery body must contain base64 data")
+    try:
+        observed = json.loads(base64.b64decode(data, validate=True))
+    except (ValueError, json.JSONDecodeError) as exc:
+        raise FaultContractError("scoped dependency recovery body must be JSON") from exc
+    if observed != {"events": FUNCTION_REQUEST_ERROR_EVENTS}:
+        raise FaultContractError(
+            "function- and request-scope dependencies must clean up before the "
+            "unhandled error response is sent"
+        )
+
+
 CONTRACT_ASSERTIONS: dict[str, Callable[[Mapping[str, Any]], None]] = {
     HTTP_ROUTE_INVOCATION_CONTRACT: _assert_http_route_invocation_error_and_recovery,
     HTTP_ROUTE_DEPENDENCY_CLEANUP_CONTRACT: _assert_http_route_invocation_error_cleans_dependencies,
+    HTTP_ROUTE_SCOPED_DEPENDENCY_CLEANUP_CONTRACT: (
+        _assert_http_route_invocation_error_orders_scoped_dependency_cleanup
+    ),
 }
 
 

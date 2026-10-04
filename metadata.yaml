@@ -65,6 +65,18 @@ fault_contract_policy:
           status: 200
           body: {events: [dependency-enter, dependency-cleanup]}
       excludes: [exception_message, stack_trace, source_line, private_state]
+    - point: http.route.invoke.after_dependencies.before
+      contract: http-route-invocation-error-orders-function-and-request-dependency-cleanup
+      assertion:
+        first_effect: {kind: application_error, selector: exception, exception_class: builtins.RuntimeError}
+        first_send: {kind: asgi_send, selector: message_types, value: [http.response.start, http.response.body]}
+        first_response: {kind: http_response, selector: status, value: 500}
+        later_effect:
+          kind: http_response
+          status: 200
+          body:
+            events: [function-enter, request-enter, function-cleanup, request-cleanup, response-start, response-end]
+      excludes: [exception_message, stack_trace, source_line, private_state]
 
 manifest:
   path: tests/fixtures/manifest.yaml

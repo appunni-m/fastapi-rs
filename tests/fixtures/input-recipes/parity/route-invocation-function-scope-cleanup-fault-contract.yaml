@@ -1,0 +1,106 @@
+schema: fastapi-rs/python-asgi-workflow@8
+workload:
+  file: tests/fixtures/workloads/route_invocation_function_scope_cleanup_fault.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.dependencies.function-request-cleanup-on-unhandled-error
+  verification: parity
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: handler-error
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /scope-error
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: application_error, selector: exception, comparison: exact}
+    - {kind: asgi_send, selector: message_types, comparison: ordered}
+    - {kind: http_response, selectors: [status], comparison: exact}
+  - action_id: error-cleanup-order-observed
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /scope-events
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_dependency_yield_scope.py, kind: upstream_test}
+  - {path: tests/test_exception_handlers.py, kind: upstream_test}
+- case_id: fastapi.fault-contract.route-invocation.function-request-cleanup-order
+  verification: fault-contract
+  fault:
+    point: http.route.invoke.after_dependencies.before
+    contract: http-route-invocation-error-orders-function-and-request-dependency-cleanup
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: injected-route-error
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /scope-fault
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: application_error, selector: exception, comparison: exact}
+    - {kind: asgi_send, selector: message_types, comparison: ordered}
+    - {kind: http_response, selectors: [status], comparison: exact}
+  - action_id: dependency-cleanup-order-observed
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /scope-events
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_dependency_yield_scope.py, kind: upstream_test}

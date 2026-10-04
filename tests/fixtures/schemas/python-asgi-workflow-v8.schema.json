@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://fastapi-rs.dev/schemas/python-asgi-workflow/8",
   "title": "FastAPI-RS Python/ASGI workflow input v8",
-  "description": "Version 8 adds dependency-cleanup fault contracts to the target-only fault-contract lane while retaining v7 verification and v6 deterministic multi-client WebSocket conversations.",
+  "description": "Version 8 adds target-only dependency cleanup fault contracts, including function/request scope ordering, while retaining v7 verification and v6 deterministic multi-client WebSocket conversations.",
   "type": "object",
   "required": [
     "schema",
@@ -537,7 +537,8 @@
             "contract": {
               "enum": [
                 "http-route-invocation-error-and-recovery",
-                "http-route-invocation-error-cleans-dependencies"
+                "http-route-invocation-error-cleans-dependencies",
+                "http-route-invocation-error-orders-function-and-request-dependency-cleanup"
               ]
             }
           },
@@ -560,6 +561,16 @@
                 },
                 "contract": {
                   "const": "http-route-invocation-error-cleans-dependencies"
+                }
+              }
+            },
+            {
+              "properties": {
+                "point": {
+                  "const": "http.route.invoke.after_dependencies.before"
+                },
+                "contract": {
+                  "const": "http-route-invocation-error-orders-function-and-request-dependency-cleanup"
                 }
               }
             }

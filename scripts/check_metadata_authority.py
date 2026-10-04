@@ -298,17 +298,22 @@ def validate_fault_contract_policy(metadata: dict[str, Any], manifest: dict[str,
     contracts = policy.get("contracts")
     if not isinstance(contracts, list) or not contracts:
         raise MetadataError("fault-contract policy must declare at least one contract")
-    points: dict[str, str] = {}
+    point_contracts: dict[str, set[str]] = {}
+    contract_ids: set[str] = set()
     for row in contracts:
         if not isinstance(row, dict):
             raise MetadataError("fault-contract rows must be objects")
         point, contract = row.get("point"), row.get("contract")
         if not isinstance(point, str) or not isinstance(contract, str) or not point or not contract:
             raise MetadataError("fault-contract rows need point and contract identifiers")
-        if point in points or contract in points.values():
-            raise MetadataError("fault point and contract identifiers must be unique")
-        points[point] = contract
-    require_equal("fault-contract runtime registry", runtime_registry, points)
+        if contract in contract_ids:
+            raise MetadataError("fault contract identifiers must be unique")
+        contract_ids.add(contract)
+        point_contracts.setdefault(point, set()).add(contract)
+    expected_runtime_registry = {
+        point: frozenset(contracts) for point, contracts in point_contracts.items()
+    }
+    require_equal("fault-contract runtime registry", runtime_registry, expected_runtime_registry)
     contract_assertions = {row["contract"]: row.get("assertion") for row in contracts}
     require_equal(
         "fault-contract assertion registry",
@@ -351,6 +356,33 @@ def validate_fault_contract_policy(metadata: dict[str, Any], manifest: dict[str,
                     "body": {"events": ["dependency-enter", "dependency-cleanup"]},
                 },
             },
+            "http-route-invocation-error-orders-function-and-request-dependency-cleanup": {
+                "first_effect": {
+                    "kind": "application_error",
+                    "selector": "exception",
+                    "exception_class": "builtins.RuntimeError",
+                },
+                "first_send": {
+                    "kind": "asgi_send",
+                    "selector": "message_types",
+                    "value": ["http.response.start", "http.response.body"],
+                },
+                "first_response": {"kind": "http_response", "selector": "status", "value": 500},
+                "later_effect": {
+                    "kind": "http_response",
+                    "status": 200,
+                    "body": {
+                        "events": [
+                            "function-enter",
+                            "request-enter",
+                            "function-cleanup",
+                            "request-cleanup",
+                            "response-start",
+                            "response-end",
+                        ]
+                    },
+                },
+            },
         },
     )
     excluded_observations = {row["contract"]: row.get("excludes") for row in contracts}
@@ -366,18 +398,19 @@ def validate_fault_contract_policy(metadata: dict[str, Any], manifest: dict[str,
     workflow = manifest["unresolved"]["python_asgi_workflow_v8"]
     schema_path = artifact_path(workflow["schema_path"])
     schema = load_json(schema_path)
-    schema_fault_points = {
-        variant["properties"]["point"]["const"]: variant["properties"]["contract"]["const"]
-        for variant in schema["$defs"]["case"]["properties"]["fault"]["oneOf"]
-    }
+    schema_fault_points: dict[str, set[str]] = {}
+    for variant in schema["$defs"]["case"]["properties"]["fault"]["oneOf"]:
+        point = variant["properties"]["point"]["const"]
+        contract = variant["properties"]["contract"]["const"]
+        schema_fault_points.setdefault(point, set()).add(contract)
     require_equal(
         "workflow fault-point schema",
         schema_fault_points,
-        points,
+        point_contracts,
     )
     rust_fault_source = (ROOT / "fastapi-rs/src/fault_injection.rs").read_text(encoding="utf-8")
     rust_points = set(re.findall(r'const [A-Z0-9_]+: &str\s*=\s*"([^"]+)";', rust_fault_source))
-    require_equal("Rust injection points", rust_points, set(points))
+    require_equal("Rust injection points", rust_points, set(point_contracts))
 
 
 def validate() -> None:
