@@ -8248,7 +8248,9 @@ fn response_start(
     extra_headers: Option<&Bound<'_, PyAny>>,
 ) -> PyResult<Py<PyAny>> {
     let headers = PyList::empty(py);
-    if status != 204 {
+    // FastAPI clears 205's body after response construction, so its original
+    // serialized length remains. Starlette omits this header for 204 and 304.
+    if status >= 200 && !matches!(status, 204 | 304) {
         headers.append((
             PyBytes::new(py, b"content-length"),
             PyBytes::new(py, body.len().to_string().as_bytes()),
@@ -10688,7 +10690,13 @@ impl FastApiCall {
 
     fn send_body(&mut self, py: Python<'_>) -> PyResult<MachineAction> {
         self.pending = Some(PendingAction::SendBody);
-        response_body(py, self.send.bind(py), &self.response_body).map(MachineAction::Await)
+        let body: &[u8] =
+            if self.response_status < 200 || matches!(self.response_status, 204 | 205 | 304) {
+                &[]
+            } else {
+                &self.response_body
+            };
+        response_body(py, self.send.bind(py), body).map(MachineAction::Await)
     }
 
     fn run_background_tasks_after_send(&mut self, py: Python<'_>) -> PyResult<MachineAction> {

@@ -80,14 +80,14 @@ api_inventory:
 import_binding_classification_review:
   artifact: tests/fixtures/api-import-binding-classification-review.json
   schema: fastapi-starlette-import-binding-review/v1
-  sha256: 9b881392b008d2f014ffb441e4bcd8390785a8cdb8e840fdb6426762c126e7a5
+  sha256: c87b4b5fcb3402e9fd8e2b976fd08f1509576ae21b3a52e12e6bd6d5ed4e081b
   source_identity:
     package: FastAPI
     version: 0.141.1
     source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
     selected_starlette_profile: 1.6.0
     starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
-    starlette_rs_contract_commit: 9c3a70e09c54a068c5984572ae332196c08c93d5
+    starlette_rs_contract_commit: b8038efff71fe823272abd053567bf488b355312
   starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
   counts:
     candidates: 97
@@ -99,7 +99,7 @@ import_binding_classification_review:
   candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
   pinned_starlette_rs_sources:
     metadata_sha256: 09384dd30af7bc919c1e653e6a06227bdae94fc2d30246ce5d64825de5f62a47
-    manifest_sha256: 33c5dbd3b82da9b58dbaa757df899919fd545d55ba39e00f1b5c99264971ecc6
+    manifest_sha256: 2b1129eafcc679bff83d9cd736325d0e481a9ec2f86bb8c24d3374a575a0ada8
     api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
     api_review_sha256: 8b25f2e3a46753316446077bfde97b6ac8a342233e2f4e50b12d3d01eafbe099
 
@@ -435,7 +435,7 @@ classification_atlas:
 starlette_rs:
   owner: ../starlette-rs
   repository: https://github.com/appunni-m/starlette-rs
-  commit: 9c3a70e09c54a068c5984572ae332196c08c93d5
+  commit: b8038efff71fe823272abd053567bf488b355312
   distribution_version: 0.1.0
   contract_id: starlette-1.6.0-asgi-http-config-session-slice
   metadata: ../starlette-rs/metadata.yaml
@@ -2444,6 +2444,7 @@ reviewed_api_contract_overlay:
       source_evidence:
         - {path: fastapi/applications.py, symbol: __call__}
         - {path: fastapi/routing.py, symbol: serialize_response}
+        - {path: fastapi/utils.py, symbol: is_body_allowed_for_status_code}
         - path: fastapi/routing.py
           symbol: get_request_handler
           kind: source-definition
@@ -2462,6 +2463,18 @@ reviewed_api_contract_overlay:
           case_id: fastapi.response-model-return-annotation.explicit-response-model-bypass
           workload_path: tests/fixtures/workloads/response_model_return_annotation_focused_upstream.py
           observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types]
+        - recipe_path: tests/fixtures/input-recipes/parity/response-bodyless-status-policy.yaml
+          case_id: fastapi.response.bodyless-status.205
+          workload_path: tests/fixtures/workloads/response_bodyless_status_policy.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types]
+        - recipe_path: tests/fixtures/input-recipes/parity/response-bodyless-status-policy.yaml
+          case_id: fastapi.response.bodyless-status.304
+          workload_path: tests/fixtures/workloads/response_bodyless_status_policy.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types]
+        - recipe_path: tests/fixtures/input-recipes/parity/response-bodyless-status-policy.yaml
+          case_id: fastapi.response.bodyless-status.304-validates-response-model
+          workload_path: tests/fixtures/workloads/response_bodyless_status_policy.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, asgi.application_error.validation_error_class, asgi.application_error.validation_error_details]
       feature_ids: [response-serialization, python-data-encoding]
       observation_selectors:
         - http.status
@@ -2475,8 +2488,13 @@ reviewed_api_contract_overlay:
         filtering, or its response serialization/encoding path. The focused
         JSONResponse case includes fields absent from its declared response
         model and observes the emitted status, headers, body, and ASGI message
-        types. Other response types and response customizations remain outside
-        this reviewed slice.
+        types. On the default JSON response path, valid response-model values
+        with status 205 or 304 are validated and serialized before FastAPI's
+        body policy clears the wire body; status 205 retains the serialized
+        Content-Length while 304 omits it under Starlette 1.6.0. A malformed
+        response model at status 304 still raises response validation before
+        the body policy runs. Custom response classes and other status cases
+        remain outside this reviewed slice.
     fastapi.Response:
       rust_binding: fastapi-rs/src/application_runtime.rs::register
       source_evidence:
@@ -3147,8 +3165,11 @@ reviewed_api_contract_overlay:
         default JSON response and status_code=204 sends an empty body and omits
         Content-Length, as shown by
         response-204-bodyless-isolated-upstream::fastapi.response.bodyless-204-isolated.
-        Custom response classes and the other bodyless status codes remain
-        outside this sample.
+        Independent 205 and 304 default-response inputs observe empty wire
+        bodies and the status-specific header policy; a malformed 304 response
+        confirms response-model validation precedes body suppression. The
+        upstream no-body test directly asserts 204 only. Custom response
+        classes and informational statuses remain outside this sample.
         The GET decorator also accepts an
         explicit non-empty `operation_id`, which is emitted at
         `/paths/~1items~1/get/operationId` by the reviewed

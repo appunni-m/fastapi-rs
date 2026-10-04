@@ -94,8 +94,8 @@ RESPONSE_STATUS_BODY_TEST_REVIEW_MAPPINGS = {
                 45,
                 ["response-serialization"],
                 ["http.status", "http.headers.ordered", "http.body.bytes"],
-                "A configured 204 route uses an explicit JSONResponse subclass; the test checks the status, absence of content-length, and empty body.",
-                "Reuse response-policy-matrix.yaml case fastapi.response.bodyless-204, action empty-response. It sends a direct ASGI GET and observes status, headers, and body; its route uses FastAPI's default JSONResponse rather than the source's custom media-type subclass.",
+                "The upstream test checks a configured 204 route using an explicit JSONResponse subclass. Independent inputs extend FastAPI's source-defined body policy to default-response 205 and 304 routes and verify validation still precedes suppression.",
+                "Keep response-policy-matrix.yaml case fastapi.response.bodyless-204 as the 204 control. Also map response-bodyless-status-policy.yaml cases fastapi.response.bodyless-status.205, fastapi.response.bodyless-status.304, and fastapi.response.bodyless-status.304-validates-response-model. These direct ASGI inputs compare exact status, headers, bytes, and ordered ASGI message types. The pinned upstream test asserts 204 only; 205/304 derive from FastAPI's body-policy implementation and Starlette's response-header rules.",
                 implementation_sources=[
                     _source(
                         "tests/test_response_code_no_body.py",
@@ -111,9 +111,15 @@ RESPONSE_STATUS_BODY_TEST_REVIEW_MAPPINGS = {
                     ),
                     _STATUS_SELECTION,
                     _RESPONSE_BUILD,
+                    _source(
+                        "fastapi/utils.py",
+                        26,
+                        40,
+                        "FastAPI body eligibility excludes informational statuses, 204, 205, and 304",
+                    ),
                 ],
                 contract_sources=[_STARLETTE_RESPONSE_HEADERS, _STARLETTE_RESPONSE_SEND],
-                contract_gate="FastAPI selects the configured route status and response class. The source assertion about content-length absence and empty wire bytes is generic Starlette 1.6.0 response behavior. The linked input checks exact headers and uses a different response-class configuration, so this mapping does not claim the source's custom media type or exact header-list parity.",
+                contract_gate="FastAPI selects route status, validates/serializes the response, and clears bodies for disallowed statuses. The upstream assertion covers 204 only; independent 205/304 inputs extend the source-defined policy. Starlette 1.6.0 owns header construction: 205 retains the pre-clear serialized Content-Length, while 304 omits automatic Content-Length. The source uses a custom response-class media type, so the linked default-response inputs do not claim that custom media type or exact source-header parity.",
             ),
         },
     },

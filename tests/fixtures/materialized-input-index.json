@@ -7353,6 +7353,20 @@
       ]
     },
     {
+      "id": "response-bodyless-status-policy",
+      "input_path": "tests/fixtures/inputs/parity/response-bodyless-status-policy.json",
+      "input_sha256": "f949e6ecbd797c80eb1a9da6fe826776d80ce52ac35e13085f7090a360d45070",
+      "recipe_path": "tests/fixtures/input-recipes/parity/response-bodyless-status-policy.yaml",
+      "recipe_sha256": "128693f4b5d991b0d1ba11a4e8caeeead250bf24e2f769ef4150485ae14a70ca",
+      "workload_path": "tests/fixtures/workloads/response_bodyless_status_policy.py",
+      "workload_sha256": "042a97839ad15bd18573602c384e28067522ed280a744289efd132f60cf5d569",
+      "case_ids": [
+        "fastapi.response.bodyless-status.205",
+        "fastapi.response.bodyless-status.304",
+        "fastapi.response.bodyless-status.304-validates-response-model"
+      ]
+    },
+    {
       "id": "response-change-status-code-exact-upstream",
       "input_path": "tests/fixtures/inputs/parity/response-change-status-code-exact-upstream.json",
       "input_sha256": "761172858f890bfdd23cc79071f32c5f6059ce0043c3503d0c20384c61d5cf96",
@@ -7430,7 +7444,7 @@
       "input_path": "tests/fixtures/inputs/parity/response-model-data-filter-exclude-unset-none-review.json",
       "input_sha256": "e8df817a4df31b3f2f646068c8a9286416ff13577822d1fc572bbc5d8eb34a17",
       "recipe_path": "tests/fixtures/input-recipes/parity/response-model-data-filter-exclude-unset-none-review.yaml",
-      "recipe_sha256": "66836aaf7e3d84f0c468a77c1bacf73894014f1e52c7c6e85208e64e7d5c687e",
+      "recipe_sha256": "5c9a6187070938f526c35541b2be64099e0222ab85e2cbd354cd064ad46cd12a",
       "workload_path": "tests/fixtures/workloads/response_model_data_filter_exclude_unset_none_review.py",
       "workload_sha256": "24b60f06b2472a0254c9ae15d0b208e0edd99d3cb8a3833696d343bacd0c13cd",
       "case_ids": [
@@ -27169,6 +27183,43 @@
         "docs.response.status",
         "http.status",
         "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_response_code_no_body.py",
+      "fixture_id": "fastapi.test.test-response-code-no-body",
+      "workflow_id": "response-bodyless-status-policy",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.response.bodyless-status.205",
+        "fastapi.response.bodyless-status.304"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_response_model_as_return_annotation.py",
+      "fixture_id": "fastapi.test.test-response-model-as-return-annotation",
+      "workflow_id": "response-bodyless-status-policy",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status, validation.error_class. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.response.bodyless-status.304-validates-response-model"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status",
+        "validation.error_class"
       ]
     },
     {
