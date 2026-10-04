@@ -521,7 +521,8 @@ impl GetOpenApiCallable {
         external_docs: Option<Bound<'_, PyAny>>,
     ) -> PyResult<Py<PyAny>> {
         let _ = separate_input_output_schemas;
-        if routes.len()? != 0
+        let route_count = routes.len()?;
+        if route_count > 1
             || webhooks
                 .as_ref()
                 .map(|items| items.len())
@@ -529,9 +530,16 @@ impl GetOpenApiCallable {
                 .is_some_and(|length| length != 0)
         {
             return Err(PyNotImplementedError::new_err(
-                "FastAPI-RS get_openapi currently supports empty routes and webhooks only",
+                "FastAPI-RS get_openapi supports empty routes or one native simple GET APIRoute; webhooks are unsupported",
             ));
         }
+        let operations = if route_count == 1 {
+            vec![crate::application_runtime::direct_route_openapi_operation(
+                &routes.get_item(0)?,
+            )?]
+        } else {
+            Vec::new()
+        };
 
         let contact = contact.map(Bound::unbind);
         let license_info = license_info.map(Bound::unbind);
@@ -550,7 +558,7 @@ impl GetOpenApiCallable {
                 servers: servers.as_ref(),
                 version,
             },
-            &[],
+            &operations,
             None,
         )?;
         {

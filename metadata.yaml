@@ -2434,6 +2434,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.openapi.get-openapi.document-metadata
           workload_path: tests/fixtures/workloads/openapi_get_openapi_public_api.py
           observation_selectors: [python.attribute_value]
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-get-openapi-single-route.yaml
+          case_id: fastapi.openapi.get-openapi.single-route
+          workload_path: tests/fixtures/workloads/openapi_get_openapi_single_route.py
+          observation_selectors: [python.attribute_value]
       feature_ids: [openapi-docs]
       observation_selectors:
         - http.status
@@ -2445,15 +2449,17 @@ reviewed_api_contract_overlay:
         empty routes and webhooks return a JSON-compatible OpenAPI document with
         the requested OpenAPI version and an empty paths object. The metadata
         case covers title, version, summary, description, tags, servers, terms
-        of service, contact, license, and external documentation. Non-empty
-        route traversal is not implemented.
+        of service, contact, license, and external documentation. One native,
+        static GET APIRoute with the default summary, operation ID, response
+        class, and an empty dependency/parameter plan produces its default
+        operation document. Other non-empty route shapes remain unsupported.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Non-empty routes and webhooks are rejected instead of traversed to collect path operations.
-          - Request and response schema generation, security schemes, operation IDs, duplicate-ID warnings, and route-derived tags remain unimplemented for direct calls.
-          - The linked fixtures cover only empty routes and webhooks; invalid arguments, metadata validation errors, and the remaining options are not compared.
+          - Multiple routes, route contexts/included route trees, and non-empty webhooks are rejected; only one supported native APIRoute is traversed.
+          - Request/body/model schemas, security schemes, callbacks, custom route operation IDs, duplicate-ID warnings, route-derived tags, and custom response metadata remain unimplemented for direct calls.
+          - The linked fixtures cover empty routes, metadata options, and one simple static GET; invalid arguments, metadata validation errors, and the remaining route shapes/options are not compared.
           - Native OpenAPI generation for the FastAPI application's /openapi.json route does not establish parity for this separately exported callable.
     fastapi.utils.generate_operation_id_for_path:
       rust_binding: fastapi-rs/src/deprecated_api.rs::generate_operation_id_for_path

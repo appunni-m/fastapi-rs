@@ -484,13 +484,13 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@4
-    sha256: c3970859599604793189044389ec9819ecae12602eacd307d2af2d6a870bf37f
+    sha256: fc9a72671a9ff9fb79f05a493ab8e9bab74904ca6d8c16a8446fb6c94475554e
     schema_path: tests/fixtures/schemas/materialized-input-index-v4.schema.json
     schema_sha256: ee045ad383d444f24b92e872b4ef4a109416196f2f400984e205f1481f78ed4e
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 532
-      cases: 2113
+      workflows: 533
+      cases: 2114
       partial_source_mappings: 1491
 
 contract_metadata:
@@ -858,7 +858,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 101
     symbols_with_operation_fixture_refs: 123
-    operation_fixture_refs: 603
+    operation_fixture_refs: 604
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -25604,6 +25604,18 @@ api_surface_contract:
       observation_selectors:
       - python.attribute_value
       - python.signature
+    - workflow_id: openapi-get-openapi-single-route
+      input_path: tests/fixtures/inputs/parity/openapi-get-openapi-single-route.json
+      input_sha256: 7e9bb7fb80a497674498295b99c0785c0722c979be8c23cb5c7495cb4ecfa29b
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-get-openapi-single-route.yaml
+      recipe_sha256: 633ae66d35a557264afd161f21d7ad8c1bec5256d02b2004df5a0535df78a94c
+      workload_path: tests/fixtures/workloads/openapi_get_openapi_single_route.py
+      workload_sha256: 36023da1dfb0ebb99badc20f11257dc9e04c104069fbce9f1619d7f414cf781c
+      case_id: fastapi.openapi.get-openapi.single-route
+      probe_id: one-static-get-route
+      probe_kind: callable
+      observation_selectors:
+      - python.attribute_value
     operation_fixture_refs:
     - workflow_id: openapi-get-openapi-public-api
       input_path: tests/fixtures/inputs/parity/openapi-get-openapi-public-api.json
@@ -25624,6 +25636,16 @@ api_surface_contract:
       workload_path: tests/fixtures/workloads/openapi_get_openapi_public_api.py
       workload_sha256: c537d9ce6ab385eb186af19d52b38e21d4e93d270c183dda96259047a69a4478
       case_id: fastapi.openapi.get-openapi.document-metadata
+      observation_selectors:
+      - python.attribute_value
+    - workflow_id: openapi-get-openapi-single-route
+      input_path: tests/fixtures/inputs/parity/openapi-get-openapi-single-route.json
+      input_sha256: 7e9bb7fb80a497674498295b99c0785c0722c979be8c23cb5c7495cb4ecfa29b
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-get-openapi-single-route.yaml
+      recipe_sha256: 633ae66d35a557264afd161f21d7ad8c1bec5256d02b2004df5a0535df78a94c
+      workload_path: tests/fixtures/workloads/openapi_get_openapi_single_route.py
+      workload_sha256: 36023da1dfb0ebb99badc20f11257dc9e04c104069fbce9f1619d7f414cf781c
+      case_id: fastapi.openapi.get-openapi.single-route
       observation_selectors:
       - python.attribute_value
     identity_workflow_refs: []
@@ -25649,11 +25671,12 @@ api_surface_contract:
       status: partial-contract
       rust_binding: fastapi-rs/src/openapi.rs::get_openapi
       known_gaps:
-      - Non-empty routes and webhooks are rejected instead of traversed to collect path operations.
-      - Request and response schema generation, security schemes, operation IDs, duplicate-ID warnings,
-        and route-derived tags remain unimplemented for direct calls.
-      - The linked fixtures cover only empty routes and webhooks; invalid arguments, metadata validation
-        errors, and the remaining options are not compared.
+      - Multiple routes, route contexts/included route trees, and non-empty webhooks are rejected; only
+        one supported native APIRoute is traversed.
+      - Request/body/model schemas, security schemes, callbacks, custom route operation IDs, duplicate-ID
+        warnings, route-derived tags, and custom response metadata remain unimplemented for direct calls.
+      - The linked fixtures cover empty routes, metadata options, and one simple static GET; invalid arguments,
+        metadata validation errors, and the remaining route shapes/options are not compared.
       - Native OpenAPI generation for the FastAPI application's /openapi.json route does not establish
         parity for this separately exported callable.
   - id: fastapi.param_functions.Body

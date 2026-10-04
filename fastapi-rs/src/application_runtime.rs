@@ -861,6 +861,7 @@ struct PyApiRoute {
     methods: Vec<String>,
     tags: Vec<String>,
     endpoint: Py<PyAny>,
+    direct_openapi_supported: bool,
 }
 
 #[pyclass(name = "RouteContext", module = "fastapi.routing")]
@@ -978,24 +979,30 @@ impl PyRouteContextIterator {
     }
 }
 
+struct ApiRouteViewConfig<'a> {
+    path: &'a str,
+    path_format: &'a str,
+    method: &'a str,
+    name: &'a str,
+    tags: &'a [String],
+    direct_openapi_supported: bool,
+}
+
 fn new_api_route_view(
     py: Python<'_>,
-    path: &str,
-    path_format: &str,
-    method: &str,
-    name: &str,
-    tags: &[String],
+    config: ApiRouteViewConfig<'_>,
     endpoint: Py<PyAny>,
 ) -> PyResult<Py<PyAny>> {
     Py::new(
         py,
         PyApiRoute {
-            path: path.to_owned(),
-            path_format: path_format.to_owned(),
-            name: name.to_owned(),
-            methods: vec![method.to_owned()],
-            tags: tags.to_vec(),
+            path: config.path.to_owned(),
+            path_format: config.path_format.to_owned(),
+            name: config.name.to_owned(),
+            methods: vec![config.method.to_owned()],
+            tags: config.tags.to_vec(),
             endpoint,
+            direct_openapi_supported: config.direct_openapi_supported,
         },
     )
     .map(Py::into_any)
@@ -1022,6 +1029,53 @@ fn route_views(py: Python<'_>, routes: &[FastApiRoute]) -> PyResult<Py<PyList>> 
         views.append(route.public_route.bind(py))?;
     }
     Ok(views.unbind())
+}
+
+pub(crate) fn direct_route_openapi_operation(
+    route: &Bound<'_, PyAny>,
+) -> PyResult<OpenApiOperation> {
+    let route = route.extract::<PyRef<'_, PyApiRoute>>().map_err(|_| {
+        PyNotImplementedError::new_err(
+            "FastAPI-RS get_openapi supports only a native simple GET APIRoute",
+        )
+    })?;
+    if !route.direct_openapi_supported || route.methods.as_slice() != ["GET"] {
+        return Err(PyNotImplementedError::new_err(
+            "FastAPI-RS get_openapi supports only a native simple GET APIRoute",
+        ));
+    }
+    let method = &route.methods[0];
+    Ok(OpenApiOperation {
+        path: route.path_format.clone(),
+        method: method.to_ascii_lowercase(),
+        summary: title_case(&route.name),
+        response_description: DEFAULT_RESPONSE_DESCRIPTION.to_owned(),
+        operation_id: operation_id(&route.name, &route.path_format, method),
+        deprecated: None,
+        tags: None,
+        status: None,
+        response_status_key: Some("200".to_owned()),
+        parameters: Vec::new(),
+        security_schemes: BTreeMap::new(),
+        security_requirements: Vec::new(),
+        validation_parameters_present: false,
+        request_model_name: None,
+        request_schema: None,
+        request_required: false,
+        request_body_present: false,
+        request_body_content_before_required: false,
+        request_media_type: "application/json".to_owned(),
+        response_model_name: None,
+        response_schema: None,
+        response_schema_title: String::new(),
+        response_media_type: Some("application/json".to_owned()),
+        response_class_is_json: true,
+        jsonl_stream: false,
+        sse_stream: false,
+        stream_item_model_name: None,
+        stream_item_schema: None,
+        additional_responses: Vec::new(),
+    })
 }
 
 #[pyfunction(name = "iter_route_contexts")]
@@ -4064,11 +4118,14 @@ fn merge_router_routes(
         let original_route = source_route.original_route.clone_ref(py);
         let effective_route = new_api_route_view(
             py,
-            &path,
-            &path_format,
-            &source_route.method,
-            &source_route.name,
-            tags.as_deref().unwrap_or_default(),
+            ApiRouteViewConfig {
+                path: &path,
+                path_format: &path_format,
+                method: &source_route.method,
+                name: &source_route.name,
+                tags: tags.as_deref().unwrap_or_default(),
+                direct_openapi_supported: false,
+            },
             source_route.endpoint.clone_ref(py),
         )?;
         let effective_route_context =
@@ -4514,15 +4571,6 @@ impl PyOperationDecorator {
         };
         let (route_scope, path_format) =
             http_route_scope(py, &scope_path, endpoint.bind(py), &self.method, &name)?;
-        let public_route = new_api_route_view(
-            py,
-            &scope_path,
-            &path_format,
-            &self.method,
-            &name,
-            self.tags.as_deref().unwrap_or_default(),
-            endpoint.clone_ref(py),
-        )?;
         let inferred_stream_item_type = match (
             generator_kind.is_generator(),
             plan.return_annotation.as_ref(),
@@ -4573,6 +4621,52 @@ impl PyOperationDecorator {
             Some(response_model) => Some(response_model.clone_ref(py)),
             None => None,
         };
+        let (has_app_dependencies, has_default_response_class) = {
+            let app = self.app.bind(py).borrow();
+            (
+                !app.dependencies.is_empty(),
+                app.default_response_class.is_some(),
+            )
+        };
+        let endpoint_has_docstring = endpoint.bind(py).getattr("__doc__")?.is_truthy()?;
+        let direct_openapi_supported = self.method == "GET"
+            && !scope_path.contains('{')
+            && self.name.is_none()
+            && self.summary.is_none()
+            && self.operation_id.is_none()
+            && self.tags.as_ref().is_none_or(Vec::is_empty)
+            && self.deprecated.is_none()
+            && self.status_code.is_none()
+            && self.include_in_schema
+            && self.response_description == DEFAULT_RESPONSE_DESCRIPTION
+            && self.additional_responses.is_empty()
+            && self.response_class.is_none()
+            && !has_default_response_class
+            && response_model.is_none()
+            && self.response_model_include.is_none()
+            && self.response_model_exclude.is_none()
+            && self.response_model_by_alias
+            && !self.response_model_exclude_unset
+            && !self.response_model_exclude_defaults
+            && !self.response_model_exclude_none
+            && !has_app_dependencies
+            && self.dependencies.is_empty()
+            && plan.parameters.is_empty()
+            && plan.return_annotation.is_none()
+            && !generator_kind.is_generator()
+            && !endpoint_has_docstring;
+        let public_route = new_api_route_view(
+            py,
+            ApiRouteViewConfig {
+                path: &scope_path,
+                path_format: &path_format,
+                method: &self.method,
+                name: &name,
+                tags: self.tags.as_deref().unwrap_or_default(),
+                direct_openapi_supported,
+            },
+            endpoint.clone_ref(py),
+        )?;
         let inputs = plan.input_parameters();
         let mut app = self.app.bind(py).borrow_mut();
         let index = app
