@@ -1023,10 +1023,11 @@ APP_DEPENDENCY_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                 ["dependency-security"],
                 [
                     "asgi.application_error.exception",
+                    "asgi.send.message_types",
                     "http.status",
                     "http.body.bytes",
                 ],
-                "Nested async yield dependencies unwind in reverse order after an endpoint raises, and the application exception propagates.",
+                "Nested async yield dependencies unwind in reverse order after an endpoint raises, and the application exception propagates. A separate target-only fault case samples cleanup when dispatch fails after dependencies are prepared.",
                 [
                     _case_link(
                         "tests/fixtures/input-recipes/parity/dependency-yield-lifo-endpoint-error-upstream.yaml",
@@ -1036,9 +1037,19 @@ APP_DEPENDENCY_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                             "http.status",
                             "http.body.bytes",
                         ],
-                    )
+                    ),
+                    _case_link(
+                        "tests/fixtures/input-recipes/parity/route-invocation-fault-contract.yaml",
+                        "fastapi.fault-contract.route-invocation.dependency-cleanup",
+                        [
+                            "asgi.application_error.exception",
+                            "asgi.send.message_types",
+                            "http.status",
+                            "http.body.bytes",
+                        ],
+                    ),
                 ],
-                "Partial: the independent case observes one async nested dependency failure and its cleanup trace; sync variants, alternate exception classes, middleware state, and background-task ordering remain outside this sample.",
+                "Partial: source parity covers one async nested dependency failure and its cleanup trace. The added fault-contract case executes only on the instrumented target and uses an independent RuntimeError after request dependencies resolve; sync variants, alternate exception classes, middleware state, and background-task ordering remain outside this sample.",
                 (_DEPENDENCY_SOLVER,),
             ),
             "test_async_state": _review(

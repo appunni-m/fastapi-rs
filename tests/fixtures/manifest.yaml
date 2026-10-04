@@ -411,7 +411,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@5
-    sha256: 86c8fcaa4331966ed28e0285fe2309ff39ea471f62fd238937ed6301d17a16b3
+    sha256: f984e343e5126b48a33196142921a346fcc412f866d46f291c0718432bf7f519
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -447,7 +447,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: f83571003b2d7e9164de6d56d57d364cbd25bb249733e12260fc8f9df2579dd9
+    sha256: 277794f4fef56ed055ea6732e8f21a29ce3a29a0c28d870e6ee81c66655a9956
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -483,15 +483,15 @@ source_artifacts:
       pydantic_model_classes: 49
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
-    schema: fastapi-rs/materialized-input-index@3
-    sha256: 34e21796ff724f6e0988b8d568af67a8d88f44d958bf720a8b1a16f69d951730
-    schema_path: tests/fixtures/schemas/materialized-input-index-v3.schema.json
-    schema_sha256: f81f2806e58e2b90a28253f01cee41c9de82281497949ebc34730dfb13f23d7d
+    schema: fastapi-rs/materialized-input-index@4
+    sha256: f58f61a5962dcf45147daa9835a4569277e950a7fe5e83481d82acd72e1e7088
+    schema_path: tests/fixtures/schemas/materialized-input-index-v4.schema.json
+    schema_sha256: ee045ad383d444f24b92e872b4ef4a109416196f2f400984e205f1481f78ed4e
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
       workflows: 532
-      cases: 2106
-      partial_source_mappings: 1490
+      cases: 2107
+      partial_source_mappings: 1491
 
 contract_metadata:
   aliases:
@@ -683,6 +683,20 @@ unresolved:
       Separates source-to-target parity observations from target-only fault contracts;
       oracle fault cases are explicit not-applicable receipts and instrumented target
       identity is recorded for fault-bearing workflows.
+  python_asgi_workflow_v8:
+    state: v8-adds-dependency-cleanup-fault-contracts; v1-v7-remain-supported
+    schema_id: fastapi-rs/python-asgi-workflow@8
+    schema_path: tests/fixtures/schemas/python-asgi-workflow-v8.schema.json
+    schema_sha256: dcd531a009863492618be77b1fb984b743d1dd3c0db6b7fc3bc16aac52b2d833
+    result_schema_id: fastapi-rs/python-asgi-workflow-result@8
+    result_schema_path: tests/fixtures/schemas/python-asgi-workflow-result-v8.schema.json
+    result_schema_sha256: 1e509ec6cd0cacdf56618ceaa9d7f65b584c7456578a974753a4e5c10372d4dd
+    comparison_schema_id: fastapi-rs/python-asgi-comparison@8
+    comparison_schema_path: tests/fixtures/schemas/python-asgi-comparison-v8.schema.json
+    comparison_schema_sha256: a0365c9dc4c4491a3f2802d50eeb95d6f5963837a7695e9406cc9d9992251f75
+    coverage: >-
+      Adds the target-only dependency-cleanup fault contract while retaining existing
+      parity and fault-contract lanes, input receipts, and lane-specific comparison counts.
   python_api_workflow:
     state: isolated-oracle-and-target-workers-and-exact-comparator-present; broader-public-api-parity-pending
     schema_id: fastapi-rs/python-api-workflow@1

@@ -10192,6 +10192,17 @@ impl FastApiCall {
                 },
                 OverridePreparation::Invalid => RouteInvocation::Ready(None),
                 OverridePreparation::Ready => {
+                    #[cfg(feature = "fault-injection")]
+                    if self.route_index.is_some()
+                        && self.websocket_route_index.is_none()
+                        && self.frontend_route_index.is_none()
+                        && crate::fault_injection::take_http_route_invoke_after_dependencies_before(
+                        )
+                    {
+                        return Err(PyRuntimeError::new_err(
+                            "Fault injected at http.route.invoke.after_dependencies.before",
+                        ));
+                    }
                     RouteInvocation::Ready(plan.invoke(&mut context, None, None)?)
                 }
             }

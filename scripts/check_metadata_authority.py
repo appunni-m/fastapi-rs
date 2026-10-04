@@ -281,9 +281,9 @@ def validate_target_runtime_lock(metadata: dict[str, Any], manifest: dict[str, A
 def validate_fault_contract_policy(metadata: dict[str, Any], manifest: dict[str, Any]) -> None:
     if str(ROOT) not in sys.path:
         sys.path.insert(0, str(ROOT))
-    runtime_registry = importlib.import_module(
-        "scripts.parity.fault_contracts"
-    ).FAULT_POINT_CONTRACTS
+    fault_runtime = importlib.import_module("scripts.parity.fault_contracts")
+    runtime_registry = fault_runtime.FAULT_POINT_CONTRACTS
+    assertion_registry = fault_runtime.CONTRACT_ASSERTIONS
     policy = metadata.get("fault_contract_policy")
     if not isinstance(policy, dict):
         raise MetadataError("fault-contract policy is missing")
@@ -309,35 +309,74 @@ def validate_fault_contract_policy(metadata: dict[str, Any], manifest: dict[str,
             raise MetadataError("fault point and contract identifiers must be unique")
         points[point] = contract
     require_equal("fault-contract runtime registry", runtime_registry, points)
+    contract_assertions = {row["contract"]: row.get("assertion") for row in contracts}
     require_equal(
-        "fault-contract public assertion",
-        contracts[0].get("assertion"),
+        "fault-contract assertion registry",
+        set(assertion_registry),
+        set(contract_assertions),
+    )
+    require_equal(
+        "fault-contract public assertions",
+        contract_assertions,
         {
-            "first_effect": {
-                "kind": "application_error",
-                "selector": "exception",
-                "exception_class": "builtins.RuntimeError",
+            "http-route-invocation-error-and-recovery": {
+                "first_effect": {
+                    "kind": "application_error",
+                    "selector": "exception",
+                    "exception_class": "builtins.RuntimeError",
+                },
+                "first_send": {
+                    "kind": "asgi_send",
+                    "selector": "message_types",
+                    "value": ["http.response.start", "http.response.body"],
+                },
+                "first_response": {"kind": "http_response", "selector": "status", "value": 500},
+                "later_effect": {"kind": "http_response", "status": 200},
             },
-            "later_effect": {"kind": "http_response", "status": 200},
+            "http-route-invocation-error-cleans-dependencies": {
+                "first_effect": {
+                    "kind": "application_error",
+                    "selector": "exception",
+                    "exception_class": "builtins.RuntimeError",
+                },
+                "first_send": {
+                    "kind": "asgi_send",
+                    "selector": "message_types",
+                    "value": ["http.response.start", "http.response.body"],
+                },
+                "first_response": {"kind": "http_response", "selector": "status", "value": 500},
+                "later_effect": {
+                    "kind": "http_response",
+                    "status": 200,
+                    "body": {"events": ["dependency-enter", "dependency-cleanup"]},
+                },
+            },
         },
     )
+    excluded_observations = {row["contract"]: row.get("excludes") for row in contracts}
     require_equal(
         "fault-contract excluded observations",
-        contracts[0].get("excludes"),
-        ["exception_message", "stack_trace", "source_line", "private_state"],
+        excluded_observations,
+        {
+            contract: ["exception_message", "stack_trace", "source_line", "private_state"]
+            for contract in contract_assertions
+        },
     )
 
-    workflow = manifest["unresolved"]["python_asgi_workflow_v7"]
+    workflow = manifest["unresolved"]["python_asgi_workflow_v8"]
     schema_path = artifact_path(workflow["schema_path"])
     schema = load_json(schema_path)
-    fault_schema = schema["$defs"]["case"]["properties"]["fault"]["properties"]
+    schema_fault_points = {
+        variant["properties"]["point"]["const"]: variant["properties"]["contract"]["const"]
+        for variant in schema["$defs"]["case"]["properties"]["fault"]["oneOf"]
+    }
     require_equal(
         "workflow fault-point schema",
-        {fault_schema["point"]["const"]: fault_schema["contract"]["const"]},
+        schema_fault_points,
         points,
     )
     rust_fault_source = (ROOT / "fastapi-rs/src/fault_injection.rs").read_text(encoding="utf-8")
-    rust_points = set(re.findall(r'const [A-Z0-9_]+: &str = "([^"]+)";', rust_fault_source))
+    rust_points = set(re.findall(r'const [A-Z0-9_]+: &str\s*=\s*"([^"]+)";', rust_fault_source))
     require_equal("Rust injection points", rust_points, set(points))
 
 

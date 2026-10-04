@@ -1,5 +1,5 @@
 {
-  "schema": "fastapi-rs/materialized-input-index@3",
+  "schema": "fastapi-rs/materialized-input-index@4",
   "authority": {
     "fastapi": "0.141.1",
     "starlette": "1.6.0"
@@ -20473,13 +20473,14 @@
     {
       "id": "route-invocation-fault-contract",
       "input_path": "tests/fixtures/inputs/parity/route-invocation-fault-contract.json",
-      "input_sha256": "6c960390f9bae77b9832e7e6f3572326c2690383cb87024f3aff2823da569ce9",
+      "input_sha256": "cbaf5bfda70046910ecbaec106b55c6d54c9edcd66e2067d57472ad899b1a484",
       "recipe_path": "tests/fixtures/input-recipes/parity/route-invocation-fault-contract.yaml",
-      "recipe_sha256": "8e65b93259fe7a36ed494ebcfa0c2041920c5e880905121e3048ae66cb0f583e",
+      "recipe_sha256": "475137a59cc026dc3317b33990b2649a5095ccced17680aae353119b3b1050b1",
       "workload_path": "tests/fixtures/workloads/route_invocation_fault_contract.py",
-      "workload_sha256": "14aef2581dcc372e608ef5b4776127bb0891ce8699f95acbc62563bfae6a6e2d",
+      "workload_sha256": "ef63e15bd0bb412fd76f54f7501fc4f328f4a63ac4c30767d3b84824390e0994",
       "case_ids": [
-        "fastapi.fault-contract.route-invocation.recovery"
+        "fastapi.fault-contract.route-invocation.recovery",
+        "fastapi.fault-contract.route-invocation.dependency-cleanup"
       ],
       "case_contracts": [
         {
@@ -20491,6 +20492,17 @@
           "fault": {
             "point": "http.route.invoke.before",
             "contract": "http-route-invocation-error-and-recovery"
+          }
+        },
+        {
+          "case_id": "fastapi.fault-contract.route-invocation.dependency-cleanup",
+          "verification": "fault-contract",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_dependency_contextmanager.py"
+          ],
+          "fault": {
+            "point": "http.route.invoke.after_dependencies.before",
+            "contract": "http-route-invocation-error-cleans-dependencies"
           }
         }
       ]
@@ -46041,16 +46053,33 @@
       ]
     },
     {
+      "source_item_id": "upstream-test:tests/test_dependency_contextmanager.py",
+      "fixture_id": "fastapi.test.test-dependency-contextmanager",
+      "workflow_id": "route-invocation-fault-contract",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.application_error.exception, asgi.send.message_types, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.fault-contract.route-invocation.dependency-cleanup"
+      ],
+      "observation_selectors": [
+        "asgi.application_error.exception",
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
       "source_item_id": "upstream-test:tests/test_validation_error_context.py",
       "fixture_id": "fastapi.test.test-validation-error-context",
       "workflow_id": "route-invocation-fault-contract",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.application_error.exception, construction.exception_class, construction.exception_message, construction.outcome, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.application_error.exception, asgi.send.message_types, construction.exception_class, construction.exception_message, construction.outcome, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.fault-contract.route-invocation.recovery"
       ],
       "observation_selectors": [
         "asgi.application_error.exception",
+        "asgi.send.message_types",
         "construction.exception_class",
         "construction.exception_message",
         "construction.outcome",

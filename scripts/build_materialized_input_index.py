@@ -111,7 +111,7 @@ def _manifest_with_current_index(text: str, index: dict[str, Any]) -> str:
         "schema": index["schema"],
         "sha256": hashlib.sha256(index_bytes).hexdigest(),
         "schema_sha256": sha256_file(
-            ROOT / "tests/fixtures/schemas/materialized-input-index-v3.schema.json"
+            ROOT / "tests/fixtures/schemas/materialized-input-index-v4.schema.json"
         ),
         "workflows": len(index["workflows"]),
         "cases": sum(len(row["case_ids"]) for row in index["workflows"]),

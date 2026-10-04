@@ -47,7 +47,7 @@ RESULT_SCHEMA_IDS_BY_WORKFLOW = {
 }
 MANIFEST_PATH = ROOT / "tests/fixtures/manifest.yaml"
 ATLAS_SCHEMA_ID = "fastapi-rs/compatibility-atlas@5"
-INDEX_SCHEMA_ID = "fastapi-rs/materialized-input-index@3"
+INDEX_SCHEMA_ID = "fastapi-rs/materialized-input-index@4"
 _MODULE_PATH = re.compile(r"fastapi(?:\.[A-Za-z_][A-Za-z0-9_]*)*\Z")
 _ATTRIBUTE_PATH = re.compile(r"[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*\Z")
 PINNED_AUTHORITIES = {

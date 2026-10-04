@@ -1,0 +1,356 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fastapi-rs.dev/schemas/materialized-input-index/4",
+  "title": "FastAPI-RS materialized fixture and verification index v4",
+  "description": "Maps independently authored workflows, cases, verification lanes, fault contracts, requirements, and source coverage.",
+  "type": "object",
+  "required": [
+    "schema",
+    "authority",
+    "workflows",
+    "mappings"
+  ],
+  "properties": {
+    "schema": {
+      "const": "fastapi-rs/materialized-input-index@4"
+    },
+    "authority": {
+      "type": "object",
+      "required": [
+        "fastapi",
+        "starlette"
+      ],
+      "properties": {
+        "fastapi": {
+          "const": "0.141.1"
+        },
+        "starlette": {
+          "const": "1.6.0"
+        }
+      },
+      "additionalProperties": false
+    },
+    "workflows": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/workflow"
+      }
+    },
+    "mappings": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/mapping"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "relativePath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.?(?:/|$))[A-Za-z0-9._/-]+$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "workflow": {
+      "type": "object",
+      "required": [
+        "id",
+        "input_path",
+        "input_sha256",
+        "recipe_path",
+        "recipe_sha256",
+        "workload_path",
+        "workload_sha256",
+        "case_ids",
+        "case_contracts"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "input_path": {
+          "$ref": "#/$defs/relativePath"
+        },
+        "input_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "recipe_path": {
+          "$ref": "#/$defs/relativePath"
+        },
+        "recipe_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "workload_path": {
+          "$ref": "#/$defs/relativePath"
+        },
+        "workload_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "oracle_profile_extension": {
+          "enum": [
+            "standard-multipart"
+          ]
+        },
+        "api_definitions": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/apiDefinition"
+          }
+        },
+        "api_probes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/apiProbe"
+          }
+        },
+        "case_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^fastapi(?:\\.[a-z0-9][a-z0-9-]*){2,}$"
+          }
+        },
+        "case_contracts": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "required": [
+              "case_id",
+              "verification",
+              "requirement_refs"
+            ],
+            "properties": {
+              "case_id": {
+                "type": "string",
+                "pattern": "^fastapi(?:\\.[a-z0-9][a-z0-9-]*){2,}$"
+              },
+              "verification": {
+                "enum": [
+                  "parity",
+                  "fault-contract"
+                ]
+              },
+              "requirement_refs": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "fault": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "required": [
+                      "point",
+                      "contract"
+                    ],
+                    "properties": {
+                      "point": {
+                        "const": "http.route.invoke.before"
+                      },
+                      "contract": {
+                        "const": "http-route-invocation-error-and-recovery"
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "required": [
+                      "point",
+                      "contract"
+                    ],
+                    "properties": {
+                      "point": {
+                        "const": "http.route.invoke.after_dependencies.before"
+                      },
+                      "contract": {
+                        "const": "http-route-invocation-error-cleans-dependencies"
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                ]
+              }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "verification": {
+                      "const": "fault-contract"
+                    }
+                  },
+                  "required": [
+                    "verification"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "fault"
+                  ]
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "verification": {
+                      "const": "parity"
+                    }
+                  },
+                  "required": [
+                    "verification"
+                  ]
+                },
+                "then": {
+                  "not": {
+                    "required": [
+                      "fault"
+                    ]
+                  }
+                }
+              }
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "mapping": {
+      "type": "object",
+      "required": [
+        "source_item_id",
+        "fixture_id",
+        "workflow_id",
+        "coverage_status",
+        "coverage_scope",
+        "case_ids",
+        "observation_selectors"
+      ],
+      "properties": {
+        "source_item_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fixture_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "workflow_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "coverage_status": {
+          "const": "partial"
+        },
+        "coverage_scope": {
+          "type": "string",
+          "minLength": 1
+        },
+        "case_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^fastapi(?:\\.[a-z0-9][a-z0-9-]*){2,}$"
+          }
+        },
+        "observation_selectors": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "apiDefinition": {
+      "type": "object",
+      "required": [
+        "case_id",
+        "symbol_id",
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "case_id": {
+          "type": "string",
+          "pattern": "^fastapi(?:\\.[a-z0-9][a-z0-9-]*){2,}$"
+        },
+        "symbol_id": {
+          "type": "string",
+          "pattern": "^fastapi(?:\\.[A-Za-z_][A-Za-z0-9_]*)+$"
+        },
+        "path": {
+          "$ref": "#/$defs/relativePath"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      },
+      "additionalProperties": false
+    },
+    "apiProbe": {
+      "type": "object",
+      "required": [
+        "case_id",
+        "probe_id",
+        "symbol_id",
+        "probe_kind",
+        "observation_selectors"
+      ],
+      "properties": {
+        "case_id": {
+          "type": "string",
+          "pattern": "^fastapi(?:\\.[a-z0-9][a-z0-9-]*){2,}$"
+        },
+        "probe_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "symbol_id": {
+          "type": "string",
+          "pattern": "^fastapi(?:\\.[A-Za-z_][A-Za-z0-9_]*)+$"
+        },
+        "probe_kind": {
+          "enum": [
+            "attribute",
+            "callable"
+          ]
+        },
+        "observation_selectors": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -21,6 +21,7 @@ WORKFLOW_SCHEMA_V4 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-v4.sche
 WORKFLOW_SCHEMA_V5 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-v5.schema.json"
 WORKFLOW_SCHEMA_V6 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-v6.schema.json"
 WORKFLOW_SCHEMA_V7 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-v7.schema.json"
+WORKFLOW_SCHEMA_V8 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-v8.schema.json"
 API_WORKFLOW_SCHEMA = ROOT / "tests/fixtures/schemas/python-api-workflow.schema.json"
 API_WORKFLOW_SCHEMA_V2 = ROOT / "tests/fixtures/schemas/python-api-workflow-v2.schema.json"
 API_WORKFLOW_SCHEMA_V3 = ROOT / "tests/fixtures/schemas/python-api-workflow-v3.schema.json"
@@ -39,23 +40,26 @@ RESULT_SCHEMA_V4 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-result-v4
 RESULT_SCHEMA_V5 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-result-v5.schema.json"
 RESULT_SCHEMA_V6 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-result-v6.schema.json"
 RESULT_SCHEMA_V7 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-result-v7.schema.json"
+RESULT_SCHEMA_V8 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-result-v8.schema.json"
 COMPARISON_SCHEMA = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v2.schema.json"
 COMPARISON_SCHEMA_V3 = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v3.schema.json"
 COMPARISON_SCHEMA_V4 = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v4.schema.json"
 COMPARISON_SCHEMA_V5 = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v5.schema.json"
 COMPARISON_SCHEMA_V6 = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v6.schema.json"
 COMPARISON_SCHEMA_V7 = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v7.schema.json"
+COMPARISON_SCHEMA_V8 = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v8.schema.json"
 WORKFLOW_SCHEMA_ID = "fastapi-rs/python-asgi-workflow@2"
 WORKFLOW_SCHEMA_V3_ID = "fastapi-rs/python-asgi-workflow@3"
 WORKFLOW_SCHEMA_V4_ID = "fastapi-rs/python-asgi-workflow@4"
 WORKFLOW_SCHEMA_V5_ID = "fastapi-rs/python-asgi-workflow@5"
 WORKFLOW_SCHEMA_V6_ID = "fastapi-rs/python-asgi-workflow@6"
 WORKFLOW_SCHEMA_V7_ID = "fastapi-rs/python-asgi-workflow@7"
+WORKFLOW_SCHEMA_V8_ID = "fastapi-rs/python-asgi-workflow@8"
 API_WORKFLOW_SCHEMA_ID = "fastapi-rs/python-api-workflow@1"
 API_WORKFLOW_SCHEMA_V2_ID = "fastapi-rs/python-api-workflow@2"
 API_WORKFLOW_SCHEMA_V3_ID = "fastapi-rs/python-api-workflow@3"
 API_WORKFLOW_SCHEMA_V4_ID = "fastapi-rs/python-api-workflow@4"
-MATERIALIZED_INPUT_INDEX_SCHEMA_ID = "fastapi-rs/materialized-input-index@3"
+MATERIALIZED_INPUT_INDEX_SCHEMA_ID = "fastapi-rs/materialized-input-index@4"
 API_RESULT_SCHEMA_ID = "fastapi-rs/python-api-workflow-result@2"
 API_RESULT_SCHEMA_V3_ID = "fastapi-rs/python-api-workflow-result@3"
 API_RESULT_SCHEMA_V4_ID = "fastapi-rs/python-api-workflow-result@4"
@@ -102,12 +106,14 @@ RESULT_SCHEMA_V4_ID = "fastapi-rs/python-asgi-workflow-result@4"
 RESULT_SCHEMA_V5_ID = "fastapi-rs/python-asgi-workflow-result@5"
 RESULT_SCHEMA_V6_ID = "fastapi-rs/python-asgi-workflow-result@6"
 RESULT_SCHEMA_V7_ID = "fastapi-rs/python-asgi-workflow-result@7"
+RESULT_SCHEMA_V8_ID = "fastapi-rs/python-asgi-workflow-result@8"
 COMPARISON_SCHEMA_ID = "fastapi-rs/python-asgi-comparison@2"
 COMPARISON_SCHEMA_V3_ID = "fastapi-rs/python-asgi-comparison@3"
 COMPARISON_SCHEMA_V4_ID = "fastapi-rs/python-asgi-comparison@4"
 COMPARISON_SCHEMA_V5_ID = "fastapi-rs/python-asgi-comparison@5"
 COMPARISON_SCHEMA_V6_ID = "fastapi-rs/python-asgi-comparison@6"
 COMPARISON_SCHEMA_V7_ID = "fastapi-rs/python-asgi-comparison@7"
+COMPARISON_SCHEMA_V8_ID = "fastapi-rs/python-asgi-comparison@8"
 
 WORKFLOW_SCHEMAS = {
     WORKFLOW_SCHEMA_ID: WORKFLOW_SCHEMA,
@@ -116,6 +122,7 @@ WORKFLOW_SCHEMAS = {
     WORKFLOW_SCHEMA_V5_ID: WORKFLOW_SCHEMA_V5,
     WORKFLOW_SCHEMA_V6_ID: WORKFLOW_SCHEMA_V6,
     WORKFLOW_SCHEMA_V7_ID: WORKFLOW_SCHEMA_V7,
+    WORKFLOW_SCHEMA_V8_ID: WORKFLOW_SCHEMA_V8,
     API_WORKFLOW_SCHEMA_ID: API_WORKFLOW_SCHEMA,
     API_WORKFLOW_SCHEMA_V2_ID: API_WORKFLOW_SCHEMA_V2,
     API_WORKFLOW_SCHEMA_V3_ID: API_WORKFLOW_SCHEMA_V3,
@@ -128,6 +135,7 @@ RESULT_SCHEMAS = {
     RESULT_SCHEMA_V5_ID: RESULT_SCHEMA_V5,
     RESULT_SCHEMA_V6_ID: RESULT_SCHEMA_V6,
     RESULT_SCHEMA_V7_ID: RESULT_SCHEMA_V7,
+    RESULT_SCHEMA_V8_ID: RESULT_SCHEMA_V8,
     API_RESULT_SCHEMA_ID: API_RESULT_SCHEMA,
     API_RESULT_SCHEMA_V3_ID: API_RESULT_SCHEMA_V3,
     API_RESULT_SCHEMA_V4_ID: API_RESULT_SCHEMA_V4,
@@ -140,6 +148,7 @@ COMPARISON_SCHEMAS = {
     COMPARISON_SCHEMA_V5_ID: COMPARISON_SCHEMA_V5,
     COMPARISON_SCHEMA_V6_ID: COMPARISON_SCHEMA_V6,
     COMPARISON_SCHEMA_V7_ID: COMPARISON_SCHEMA_V7,
+    COMPARISON_SCHEMA_V8_ID: COMPARISON_SCHEMA_V8,
     API_COMPARISON_SCHEMA_ID: API_COMPARISON_SCHEMA,
     API_COMPARISON_SCHEMA_V2_ID: API_COMPARISON_SCHEMA_V2,
     API_COMPARISON_SCHEMA_V3_ID: API_COMPARISON_SCHEMA_V3,
@@ -152,6 +161,7 @@ RESULT_SCHEMA_IDS_BY_WORKFLOW = {
     WORKFLOW_SCHEMA_V5_ID: RESULT_SCHEMA_V5_ID,
     WORKFLOW_SCHEMA_V6_ID: RESULT_SCHEMA_V6_ID,
     WORKFLOW_SCHEMA_V7_ID: RESULT_SCHEMA_V7_ID,
+    WORKFLOW_SCHEMA_V8_ID: RESULT_SCHEMA_V8_ID,
     **API_RESULT_SCHEMA_IDS_BY_WORKFLOW,
 }
 COMPARISON_SCHEMA_IDS_BY_WORKFLOW = {
@@ -161,6 +171,7 @@ COMPARISON_SCHEMA_IDS_BY_WORKFLOW = {
     WORKFLOW_SCHEMA_V5_ID: COMPARISON_SCHEMA_V5_ID,
     WORKFLOW_SCHEMA_V6_ID: COMPARISON_SCHEMA_V6_ID,
     WORKFLOW_SCHEMA_V7_ID: COMPARISON_SCHEMA_V7_ID,
+    WORKFLOW_SCHEMA_V8_ID: COMPARISON_SCHEMA_V8_ID,
     **API_COMPARISON_SCHEMA_IDS_BY_WORKFLOW,
 }
 
@@ -533,6 +544,26 @@ def read_manifest() -> dict[str, Any]:
             workflow_v7_contract.get(digest_key),
             label,
         )
+    workflow_v8_contract = unresolved.get("python_asgi_workflow_v8")
+    if not isinstance(workflow_v8_contract, dict):
+        raise ContractError("manifest Python/ASGI v8 workflow contract is missing")
+    if (
+        workflow_v8_contract.get("schema_id") != WORKFLOW_SCHEMA_V8_ID
+        or workflow_v8_contract.get("result_schema_id") != RESULT_SCHEMA_V8_ID
+        or workflow_v8_contract.get("comparison_schema_id") != COMPARISON_SCHEMA_V8_ID
+    ):
+        raise ContractError("manifest Python/ASGI v8 schema identities are unsupported")
+    workflow_v8_schema_refs = (
+        ("schema_path", "schema_sha256", "python-asgi-workflow v8 schema"),
+        ("result_schema_path", "result_schema_sha256", "workflow result v8 schema"),
+        ("comparison_schema_path", "comparison_schema_sha256", "comparison v8 schema"),
+    )
+    for path_key, digest_key, label in workflow_v8_schema_refs:
+        _verify_digest_ref(
+            workflow_v8_contract.get(path_key),
+            workflow_v8_contract.get(digest_key),
+            label,
+        )
     api_workflow_contract = (
         unresolved.get("python_api_workflow") if isinstance(unresolved, dict) else None
     )
@@ -748,7 +779,7 @@ def load_workflow(
         raise ContractError("workflow workload must live under tests/fixtures/workloads") from exc
     _validate_unique_ids(workflow["cases"], "case_id", "workflow cases")
     for case in workflow["cases"]:
-        if workflow_schema_id == WORKFLOW_SCHEMA_V7_ID:
+        if workflow_schema_id in {WORKFLOW_SCHEMA_V7_ID, WORKFLOW_SCHEMA_V8_ID}:
             try:
                 mode = verification_mode(case)
             except FaultContractError as exc:
@@ -786,6 +817,7 @@ def load_workflow(
             WORKFLOW_SCHEMA_V5_ID,
             WORKFLOW_SCHEMA_V6_ID,
             WORKFLOW_SCHEMA_V7_ID,
+            WORKFLOW_SCHEMA_V8_ID,
         }:
             _validate_unique_ids(case["actions"], "action_id", f"actions in {case['case_id']}")
             if workflow_schema_id in {
@@ -794,6 +826,7 @@ def load_workflow(
                 WORKFLOW_SCHEMA_V5_ID,
                 WORKFLOW_SCHEMA_V6_ID,
                 WORKFLOW_SCHEMA_V7_ID,
+                WORKFLOW_SCHEMA_V8_ID,
             }:
                 lifespan_positions = [
                     index
@@ -850,7 +883,8 @@ def load_workflow(
                         "WebSocket receive events must end with an explicit websocket.disconnect"
                     )
                 if (
-                    workflow_schema_id in {WORKFLOW_SCHEMA_V6_ID, WORKFLOW_SCHEMA_V7_ID}
+                    workflow_schema_id
+                    in {WORKFLOW_SCHEMA_V6_ID, WORKFLOW_SCHEMA_V7_ID, WORKFLOW_SCHEMA_V8_ID}
                     and action["kind"] == "websocket_conversation"
                 ):
                     sessions = {session["session_id"] for session in action["sessions"]}
