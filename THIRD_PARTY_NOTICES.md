@@ -1,12 +1,14 @@
 # Third-party notices
 
 FastAPI-RS's original code is licensed under MIT; see [`LICENSE.md`](LICENSE.md).
-This repository does not include FastAPI source or wholesale Starlette
-modules. Starlette-RS does include separately licensed Starlette-derived
-adaptations; its BSD-3-Clause notice is reproduced below. FastAPI 0.141.1 is
-the source oracle only; the target runtime must not install or import the
-original FastAPI package. The versioned source trees are compatibility
-authorities, not included source trees in this distribution.
+This repository does not include FastAPI implementation source or wholesale
+Starlette modules. `fastapi-rs/src/route_signature.json` does include
+FastAPI 0.141.1 signature metadata and annotation text copied from its pinned
+source; its MIT notice is reproduced below. Starlette-RS includes separately
+licensed Starlette-derived adaptations; its BSD-3-Clause notice is also
+reproduced below. The target runtime must not install or import the original
+FastAPI package. The versioned source trees are compatibility authorities, not
+included implementation source trees in this distribution.
 
 ## Dependencies
 
@@ -80,3 +82,31 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+## FastAPI 0.141.1 signature metadata — MIT
+
+The route signature metadata and annotation text in
+`fastapi-rs/src/route_signature.json` were copied from FastAPI 0.141.1 at the
+source commit recorded in that file.
+
+The MIT License (MIT)
+
+Copyright (c) 2018 Sebastián Ramírez
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.

@@ -1331,6 +1331,264 @@ struct RouterIncludePolicy<'policy> {
     strict_content_type: Option<bool>,
 }
 
+#[pyclass(name = "DefaultPlaceholder", module = "fastapi.datastructures")]
+struct PyFastApiDefaultPlaceholder {
+    value: Py<PyAny>,
+}
+
+#[pymethods]
+impl PyFastApiDefaultPlaceholder {
+    #[getter]
+    fn value(&self, py: Python<'_>) -> Py<PyAny> {
+        self.value.clone_ref(py)
+    }
+}
+
+#[pyclass(name = "_OperationRouteDescriptor", module = "fastapi_rs._core")]
+struct PyOperationRouteDescriptor {
+    method: Py<PyAny>,
+    is_router: bool,
+    signature: Py<PyAny>,
+}
+
+#[pymethods]
+impl PyOperationRouteDescriptor {
+    fn __get__(
+        &self,
+        py: Python<'_>,
+        instance: Option<Py<PyAny>>,
+        _owner: Option<Py<PyAny>>,
+    ) -> PyResult<Py<PyAny>> {
+        let signature = match instance {
+            Some(_) => bound_operation_signature(py, self.signature.bind(py))?,
+            None => self.signature.clone_ref(py),
+        };
+        let callable = Py::new(
+            py,
+            PyOperationRouteCallable {
+                method: self.method.clone_ref(py),
+                instance,
+                is_router: self.is_router,
+            },
+        )?;
+        callable
+            .bind(py)
+            .setattr("__signature__", signature.bind(py))?;
+        Ok(callable.into_any())
+    }
+}
+
+#[pyclass(name = "_OperationRouteCallable", module = "fastapi_rs._core", dict)]
+struct PyOperationRouteCallable {
+    method: Py<PyAny>,
+    instance: Option<Py<PyAny>>,
+    is_router: bool,
+}
+
+#[pymethods]
+impl PyOperationRouteCallable {
+    #[pyo3(signature = (*args, **kwargs))]
+    fn __call__(
+        &self,
+        py: Python<'_>,
+        args: &Bound<'_, PyTuple>,
+        kwargs: Option<&Bound<'_, PyDict>>,
+    ) -> PyResult<Py<PyAny>> {
+        let mut keyword_receiver_kwargs = None;
+        let (instance, first_argument) = match &self.instance {
+            Some(instance) => (instance.bind(py).clone(), 0),
+            None if !args.is_empty() => (args.get_item(0)?, 1),
+            None => {
+                let Some(kwargs) = kwargs else {
+                    return Err(PyTypeError::new_err(
+                        "missing required positional argument: 'self'",
+                    ));
+                };
+                let instance = kwargs.get_item("self")?.ok_or_else(|| {
+                    PyTypeError::new_err("missing required positional argument: 'self'")
+                })?;
+                let copied_kwargs = PyDict::new(py);
+                for (key, value) in kwargs.iter() {
+                    if key.extract::<String>()? != "self" {
+                        copied_kwargs.set_item(key, value)?;
+                    }
+                }
+                keyword_receiver_kwargs = Some(copied_kwargs.unbind());
+                (instance, 0)
+            }
+        };
+        let forwarded_kwargs = keyword_receiver_kwargs
+            .as_ref()
+            .map(|kwargs| kwargs.bind(py))
+            .or(kwargs);
+        let method_instance = if self.is_router {
+            instance
+                .extract::<PyRef<'_, PyApiRouter>>()?
+                .inner
+                .clone_ref(py)
+                .into_bound(py)
+                .into_any()
+        } else {
+            instance
+        };
+        let mut forwarded_arguments = Vec::with_capacity(args.len() + 1);
+        forwarded_arguments.push(method_instance);
+        forwarded_arguments.extend(args.iter().skip(first_argument));
+        let forwarded_arguments = PyTuple::new(py, forwarded_arguments)?;
+        self.method
+            .bind(py)
+            .call(&forwarded_arguments, forwarded_kwargs)
+            .map(Bound::unbind)
+    }
+}
+
+fn bound_operation_signature<'py>(
+    py: Python<'py>,
+    signature: &Bound<'py, PyAny>,
+) -> PyResult<Py<PyAny>> {
+    let parameters = signature.getattr("parameters")?.call_method0("values")?;
+    let parameter_values = parameters
+        .try_iter()?
+        .map(|parameter| parameter.map(Bound::unbind))
+        .collect::<PyResult<Vec<_>>>()?;
+    let bound_parameters = PyList::new(py, parameter_values.into_iter().skip(1))?;
+    let replace_kwargs = PyDict::new(py);
+    replace_kwargs.set_item("parameters", bound_parameters)?;
+    signature
+        .call_method("replace", (), Some(&replace_kwargs))
+        .map(Bound::unbind)
+}
+
+fn route_signature_default<'py>(
+    py: Python<'py>,
+    specification: &Bound<'py, PyAny>,
+    generate_unique_id: &Bound<'py, PyAny>,
+) -> PyResult<Bound<'py, PyAny>> {
+    let kind = specification
+        .get_item("kind")
+        .and_then(|value| value.extract::<String>());
+    match kind.as_deref() {
+        Ok("fastapi_default_placeholder") => {
+            let value_specification = specification.get_item("value")?;
+            let value = route_signature_default(py, &value_specification, generate_unique_id)?;
+            Py::new(
+                py,
+                PyFastApiDefaultPlaceholder {
+                    value: value.unbind(),
+                },
+            )
+            .map(|placeholder| placeholder.into_bound(py).into_any())
+        }
+        Ok("class") => {
+            let qualified_name = specification
+                .get_item("qualified_name")?
+                .extract::<String>()?;
+            let (module_name, attribute) = qualified_name.rsplit_once('.').ok_or_else(|| {
+                PyValueError::new_err("invalid qualified class in route signature contract")
+            })?;
+            py.import(module_name)?.getattr(attribute)
+        }
+        Ok("callable") => Ok(generate_unique_id.clone()),
+        _ => Ok(specification.clone()),
+    }
+}
+
+fn route_operation_signature(py: Python<'_>, module: &Bound<'_, PyModule>) -> PyResult<Py<PyAny>> {
+    let contract = py
+        .import("json")?
+        .call_method1("loads", (include_str!("route_signature.json"),))?;
+    if contract.get_item("schema")?.extract::<String>()? != "fastapi-rs/route-signature@1"
+        || contract
+            .get_item("source")?
+            .get_item("commit")?
+            .extract::<String>()?
+            != "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f"
+    {
+        return Err(PyRuntimeError::new_err(
+            "route signature contract is not pinned to FastAPI 0.141.1",
+        ));
+    }
+    let signature_specification = contract.get_item("signature")?;
+    let generate_unique_id = wrap_pyfunction!(generate_unique_id, module)?.into_any();
+    generate_unique_id.setattr("__module__", "fastapi.utils")?;
+    let inspect = py.import("inspect")?;
+    let parameter_type = inspect.getattr("Parameter")?;
+    let parameter_specifications = signature_specification
+        .get_item("parameters")?
+        .cast_into::<PyList>()?;
+    let parameters = PyList::empty(py);
+    for specification in parameter_specifications.iter() {
+        let name = specification.get_item("name")?.extract::<String>()?;
+        let kind_name = specification.get_item("kind")?.extract::<String>()?;
+        let kind = parameter_type.getattr(&kind_name)?;
+        let kwargs = PyDict::new(py);
+        if specification.get_item("has_default")?.extract::<bool>()? {
+            let default_specification = specification.get_item("default")?;
+            let default = route_signature_default(py, &default_specification, &generate_unique_id)?;
+            kwargs.set_item("default", default)?;
+        }
+        let annotation = specification.get_item("annotation")?;
+        if !annotation.is_none() {
+            kwargs.set_item("annotation", annotation)?;
+        }
+        parameters.append(parameter_type.call((name, kind), Some(&kwargs))?)?;
+    }
+    let signature_kwargs = PyDict::new(py);
+    let return_annotation = signature_specification.get_item("return_annotation")?;
+    if !return_annotation.is_none() {
+        signature_kwargs.set_item("return_annotation", return_annotation)?;
+    }
+    inspect
+        .getattr("Signature")?
+        .call((parameters,), Some(&signature_kwargs))
+        .map(Bound::unbind)
+}
+
+fn install_route_operation_descriptors(
+    py: Python<'_>,
+    module: &Bound<'_, PyModule>,
+) -> PyResult<()> {
+    let signature = route_operation_signature(py, module)?;
+    let fast_api_type = py.get_type::<PyFastApi>();
+    let api_router_type = py.get_type::<PyApiRouter>();
+    for name in [
+        "get", "put", "post", "delete", "options", "head", "patch", "trace",
+    ] {
+        let method = fast_api_type.getattr(name)?.unbind();
+        let fast_api_descriptor = Py::new(
+            py,
+            PyOperationRouteDescriptor {
+                method: method.clone_ref(py),
+                is_router: false,
+                signature: signature.clone_ref(py),
+            },
+        )?;
+        fast_api_type.setattr(name, fast_api_descriptor)?;
+        let router_descriptor = Py::new(
+            py,
+            PyOperationRouteDescriptor {
+                method,
+                is_router: true,
+                signature: signature.clone_ref(py),
+            },
+        )?;
+        api_router_type.setattr(name, router_descriptor)?;
+    }
+    Ok(())
+}
+
+#[pyfunction]
+fn generate_unique_id(route: &Bound<'_, PyAny>) -> PyResult<String> {
+    let name = route.getattr("name")?.extract::<String>()?;
+    let path = route.getattr("path_format")?.extract::<String>()?;
+    let mut methods = route.getattr("methods")?.try_iter()?;
+    let method = methods
+        .next()
+        .ok_or_else(|| PyValueError::new_err("route has no methods"))??
+        .extract::<String>()?;
+    Ok(operation_id(&name, &path, &method))
+}
+
 #[pymethods]
 impl PyFastApi {
     #[new]
@@ -11235,6 +11493,9 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     crate::lifespan::register(module)?;
     register_pydantic_schema_generator(module)?;
     module.add_function(wrap_pyfunction!(frontend_dependency_endpoint, module)?)?;
+    module.add_class::<PyFastApiDefaultPlaceholder>()?;
+    module.add_class::<PyOperationRouteDescriptor>()?;
+    module.add_class::<PyOperationRouteCallable>()?;
     module.add_class::<PyFastApi>()?;
     module.add_class::<PyFastApiAsgiApp>()?;
     module.add_class::<PyMiddlewareDecorator>()?;
@@ -11247,6 +11508,7 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     module.add_class::<PyExceptionHandlerDecorator>()?;
     module.add_class::<PyFastApiCallNext>()?;
     module.add_class::<PyApiRouter>()?;
+    install_route_operation_descriptors(module.py(), module)?;
     module.add_class::<PyApiRoute>()?;
     module.add_class::<PyRouteContext>()?;
     module.add_class::<PyRouteContextIterator>()?;

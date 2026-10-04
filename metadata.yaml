@@ -994,6 +994,9 @@ reviewed_api_contract_overlay:
         - {path: docs/en/docs/advanced/additional-responses.md}
         - {path: tests/test_tutorial/test_additional_responses/test_tutorial004.py}
         - {path: tests/test_extra_routes.py}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/operation-signatures-upstream.yaml
+          case_id: fastapi.test.test-operations-signatures.test-signatures-consistency
       feature_ids: [app-routing, openapi-docs]
       observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths]
       supported_slice: >-
@@ -1042,6 +1045,9 @@ reviewed_api_contract_overlay:
         - {path: docs/en/docs/advanced/additional-responses.md}
         - {path: tests/test_tutorial/test_additional_responses/test_tutorial004.py}
         - {path: tests/test_extra_routes.py}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/operation-signatures-upstream.yaml
+          case_id: fastapi.test.test-operations-signatures.test-signatures-consistency
       feature_ids: [app-routing, openapi-docs]
       observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths]
       supported_slice: >-
@@ -1091,6 +1097,9 @@ reviewed_api_contract_overlay:
         - {path: docs/en/docs/advanced/additional-responses.md}
         - {path: tests/test_tutorial/test_additional_responses/test_tutorial004.py}
         - {path: tests/test_extra_routes.py}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/operation-signatures-upstream.yaml
+          case_id: fastapi.test.test-operations-signatures.test-signatures-consistency
       feature_ids: [app-routing, openapi-docs]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.paths]
       supported_slice: >-
@@ -2924,7 +2933,7 @@ reviewed_api_contract_overlay:
         when the router is included in an app. Invalid event types and
         warning-filter error behavior are outside this slice.
     fastapi.routing.APIRouter.get:
-      rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::__getattr__
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyOperationRouteDescriptor::__get__
       source_evidence:
         - {path: fastapi/routing.py, symbol: APIRouter}
         - {path: fastapi/routing.py, symbol: get}
@@ -2936,6 +2945,9 @@ reviewed_api_contract_overlay:
         - {path: tests/test_additional_responses_router.py}
         - {path: docs/en/docs/advanced/additional-responses.md}
         - {path: tests/test_router_include_context.py}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/operation-signatures-upstream.yaml
+          case_id: fastapi.test.test-operations-signatures.test-signatures-consistency
       feature_ids: [app-routing, request-validation, openapi-docs]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.paths]
       supported_slice: >-
@@ -2960,7 +2972,7 @@ reviewed_api_contract_overlay:
         callback routes and callback operation objects remain outside this
         reviewed slice.
     fastapi.routing.APIRouter.post:
-      rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::__getattr__
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyOperationRouteDescriptor::__get__
       source_evidence:
         - {path: fastapi/routing.py, symbol: APIRouter}
         - {path: fastapi/routing.py, symbol: post}
@@ -2968,6 +2980,9 @@ reviewed_api_contract_overlay:
         - {path: tests/test_additional_responses_router.py}
         - {path: docs/en/docs/advanced/additional-responses.md}
         - {path: tests/test_router_include_context.py}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/operation-signatures-upstream.yaml
+          case_id: fastapi.test.test-operations-signatures.test-signatures-consistency
       feature_ids: [app-routing, openapi-docs]
       observation_selectors: [http.status, openapi.document, openapi.paths]
       supported_slice: >-
@@ -2987,7 +3002,7 @@ reviewed_api_contract_overlay:
         path-operation-status-code-none-isolated. Custom response-class
         defaults remain unresolved and outside this slice.
     fastapi.routing.APIRouter.put:
-      rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::__getattr__
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyOperationRouteDescriptor::__get__
       source_evidence:
         - {path: fastapi/routing.py, symbol: APIRouter}
         - {path: fastapi/routing.py, symbol: put}
@@ -2997,6 +3012,9 @@ reviewed_api_contract_overlay:
         - {path: tests/test_additional_responses_router.py}
         - {path: docs/en/docs/advanced/additional-responses.md}
         - {path: tests/test_router_include_context.py}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/operation-signatures-upstream.yaml
+          case_id: fastapi.test.test-operations-signatures.test-signatures-consistency
       feature_ids: [app-routing, openapi-docs]
       observation_selectors: [http.status, openapi.document, openapi.paths]
       supported_slice: >-
@@ -3018,7 +3036,7 @@ reviewed_api_contract_overlay:
         path-operation-status-code-none-isolated. Custom response-class
         defaults remain unresolved and outside this slice.
     fastapi.routing.APIRouter.delete:
-      rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::__getattr__
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyOperationRouteDescriptor::__get__
       source_evidence:
         - {path: fastapi/routing.py, symbol: APIRouter}
         - {path: fastapi/routing.py, symbol: delete}
@@ -3028,6 +3046,9 @@ reviewed_api_contract_overlay:
         - {path: tests/test_additional_responses_router.py}
         - {path: docs/en/docs/advanced/additional-responses.md}
         - {path: tests/test_router_include_context.py}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/operation-signatures-upstream.yaml
+          case_id: fastapi.test.test-operations-signatures.test-signatures-consistency
       feature_ids: [app-routing, openapi-docs]
       observation_selectors: [http.status, openapi.document, openapi.paths]
       supported_slice: >-
@@ -3049,7 +3070,7 @@ reviewed_api_contract_overlay:
         path-operation-status-code-none-isolated. Custom response-class
         defaults remain unresolved and outside this slice.
     fastapi.routing.APIRouter.patch:
-      rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::__getattr__
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyOperationRouteDescriptor::__get__
       source_evidence:
         - {path: fastapi/routing.py, symbol: APIRouter}
         - {path: fastapi/routing.py, symbol: patch}
@@ -3059,6 +3080,9 @@ reviewed_api_contract_overlay:
         - {path: tests/test_additional_responses_router.py}
         - {path: docs/en/docs/advanced/additional-responses.md}
         - {path: tests/test_router_include_context.py}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/operation-signatures-upstream.yaml
+          case_id: fastapi.test.test-operations-signatures.test-signatures-consistency
       feature_ids: [app-routing, openapi-docs]
       observation_selectors: [http.status, openapi.document, openapi.paths]
       supported_slice: >-
@@ -3080,7 +3104,7 @@ reviewed_api_contract_overlay:
         path-operation-status-code-none-isolated. Custom response-class
         defaults remain unresolved and outside this slice.
     fastapi.routing.APIRouter.head:
-      rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::__getattr__
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyOperationRouteDescriptor::__get__
       source_evidence:
         - {path: fastapi/routing.py, symbol: APIRouter}
         - {path: fastapi/routing.py, symbol: head}
@@ -3090,6 +3114,9 @@ reviewed_api_contract_overlay:
         - {path: tests/test_additional_responses_router.py}
         - {path: docs/en/docs/advanced/additional-responses.md}
         - {path: tests/test_router_include_context.py}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/operation-signatures-upstream.yaml
+          case_id: fastapi.test.test-operations-signatures.test-signatures-consistency
       feature_ids: [app-routing, openapi-docs]
       observation_selectors: [http.status, openapi.document, openapi.paths]
       supported_slice: >-
@@ -3111,7 +3138,7 @@ reviewed_api_contract_overlay:
         path-operation-status-code-none-isolated. Custom response-class
         defaults remain unresolved and outside this slice.
     fastapi.routing.APIRouter.options:
-      rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::__getattr__
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyOperationRouteDescriptor::__get__
       source_evidence:
         - {path: fastapi/routing.py, symbol: APIRouter}
         - {path: fastapi/routing.py, symbol: options}
@@ -3121,6 +3148,9 @@ reviewed_api_contract_overlay:
         - {path: tests/test_additional_responses_router.py}
         - {path: docs/en/docs/advanced/additional-responses.md}
         - {path: tests/test_router_include_context.py}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/operation-signatures-upstream.yaml
+          case_id: fastapi.test.test-operations-signatures.test-signatures-consistency
       feature_ids: [app-routing, openapi-docs]
       observation_selectors: [http.status, openapi.document, openapi.paths]
       supported_slice: >-
@@ -3142,7 +3172,7 @@ reviewed_api_contract_overlay:
         path-operation-status-code-none-isolated. Custom response-class
         defaults remain unresolved and outside this slice.
     fastapi.routing.APIRouter.trace:
-      rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::__getattr__
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyOperationRouteDescriptor::__get__
       source_evidence:
         - {path: fastapi/routing.py, symbol: APIRouter}
         - {path: fastapi/routing.py, symbol: trace}
@@ -3152,6 +3182,9 @@ reviewed_api_contract_overlay:
         - {path: tests/test_additional_responses_router.py}
         - {path: docs/en/docs/advanced/additional-responses.md}
         - {path: tests/test_router_include_context.py}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/operation-signatures-upstream.yaml
+          case_id: fastapi.test.test-operations-signatures.test-signatures-consistency
       feature_ids: [app-routing, openapi-docs]
       observation_selectors: [http.status, openapi.document, openapi.paths]
       supported_slice: >-
@@ -3201,6 +3234,9 @@ reviewed_api_contract_overlay:
         - {path: docs/en/docs/advanced/additional-responses.md}
         - {path: tests/test_tutorial/test_additional_responses/test_tutorial004.py}
         - {path: tests/test_extra_routes.py}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/operation-signatures-upstream.yaml
+          case_id: fastapi.test.test-operations-signatures.test-signatures-consistency
       feature_ids: [app-routing, request-validation, response-serialization, openapi-docs]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document]
       supported_slice: >-
@@ -3280,6 +3316,9 @@ reviewed_api_contract_overlay:
         - {path: docs/en/docs/advanced/additional-responses.md}
         - {path: tests/test_tutorial/test_additional_responses/test_tutorial004.py}
         - {path: tests/test_extra_routes.py}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/operation-signatures-upstream.yaml
+          case_id: fastapi.test.test-operations-signatures.test-signatures-consistency
       feature_ids: [app-routing, openapi-docs, response-serialization]
       observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths]
       supported_slice: >-
@@ -3333,6 +3372,9 @@ reviewed_api_contract_overlay:
         - {path: docs/en/docs/advanced/additional-responses.md}
         - {path: tests/test_tutorial/test_additional_responses/test_tutorial004.py}
         - {path: tests/test_extra_routes.py}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/operation-signatures-upstream.yaml
+          case_id: fastapi.test.test-operations-signatures.test-signatures-consistency
       feature_ids: [app-routing, response-serialization, openapi-docs]
       observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths]
       supported_slice: >-
@@ -3382,6 +3424,9 @@ reviewed_api_contract_overlay:
         - {path: docs/en/docs/advanced/additional-responses.md}
         - {path: tests/test_tutorial/test_additional_responses/test_tutorial004.py}
         - {path: tests/test_extra_routes.py}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/operation-signatures-upstream.yaml
+          case_id: fastapi.test.test-operations-signatures.test-signatures-consistency
       feature_ids: [app-routing, openapi-docs]
       observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths]
       supported_slice: >-
@@ -3431,6 +3476,9 @@ reviewed_api_contract_overlay:
         - {path: docs/en/docs/advanced/additional-responses.md}
         - {path: tests/test_tutorial/test_additional_responses/test_tutorial004.py}
         - {path: tests/test_extra_routes.py}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/operation-signatures-upstream.yaml
+          case_id: fastapi.test.test-operations-signatures.test-signatures-consistency
       feature_ids: [app-routing, openapi-docs, request-validation, response-serialization]
       observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths]
       supported_slice: >-
