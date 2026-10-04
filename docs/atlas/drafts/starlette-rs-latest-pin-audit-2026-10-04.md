@@ -1,10 +1,10 @@
 # Starlette-RS latest pin and parity audit — 2026-10-04
 
-FastAPI-RS now pins Starlette-RS 0.1.0 at `7703245507b68a05756e39e1135df9e5aa3e38ef`, the latest verified remote `main` head selected for this run. The clean source checkout used for generation and target parity matches that commit. The existing sibling checkout was left untouched.
+The initial audit below pinned Starlette-RS 0.1.0 at `7703245507b68a05756e39e1135df9e5aa3e38ef`. That pin was later superseded by the latest `origin/main` commit, recorded in the follow-up section. The clean source checkout used for the follow-up was separate from the existing sibling checkout, which was left untouched.
 
 From the prior `a345f8c` pin, the sibling contract adds four generic, input-only cases: module-level `Config.environ` mutation and read freezing; HTTPException header forwarding through a class handler; WebSocketException reason forwarding after acceptance; and a custom WebSocketException class handler controlling the close event. These change sibling metadata, fixtures, parity support, and coverage evidence, but not Starlette-RS runtime code, dependencies, API catalog, or API review. Commit `f9bade1` refreshes sibling documentation and benchmark evidence. Commit `50b6d50` adds the custom WebSocket exception-handler case plus parity adapter and contract support. The selected `7703245` commit refreshes benchmark evidence. FastAPI-RS does not claim these generic cases as standalone FastAPI API support.
 
-## Identity-checked FastAPI parity
+## Initial identity-checked FastAPI parity
 
 Both comparisons used manifest SHA-256 `af8a2335946571a9605e2440e0a8a77830e43e7afe12da96de668435128da9e4`. The oracle was FastAPI 0.141.1 at `95f8322ee1dcda7ceace7b1c4f6c9915b36d748f` with Starlette 1.6.0 at `4f250d6b814587e20c5365f0a5f0c4d42bcb929f`. The target was FastAPI-RS revision `c496ca40733c252e427e5e53f848b23ddc5a424a` (source-tree SHA-256 `08faa35e282e3bae8f9ecc2cfba7bc6dd8ed8b43ae61117e513cb61d67f10bcb`; binary SHA-256 `b114b8716b8289cf42f2ad39fc13fdb6890c55b17ed3bdcf7757756b7c493389`) with Starlette-RS `7703245507b68a05756e39e1135df9e5aa3e38ef`.
 
@@ -13,3 +13,13 @@ The new `fastapi.websocket-exception.custom-handler-close` input (`80dce3c0a855b
 The existing `public-errors-http-websocket-wave` input (`93570c9e572a530050157c142219c4adc7b294256a7f4932bfae6c11703dc55a`) passed 4/4. Oracle run `db596741-23cd-4151-a146-017e2c4e7f65`, target run `511ec0d3-0643-4fb2-828c-fff0499e0bdd`, and comparison `7228b4ae-8af2-4bf5-bbb1-37f586a8066e` record the result. The reviewed scope now maps the custom handler input but continues to mark WebSocket object identity/state as a partial-parity gap.
 
 No unit-test suite was run.
+
+## Follow-up: latest Starlette-RS commit
+
+FastAPI-RS now pins Starlette-RS 0.1.0 at `9f8d6dad582411ea1ca2728a5a5e89907d09e211`, the latest verified `origin/main` commit selected for this update. Generation and parity used the clean detached checkout `/private/tmp/fastapi-rs-starlette-rs-9f8d6dad`; the dirty sibling checkout was not changed. FastAPI-RS references were refreshed across the manifest, metadata, CI checkout, source review, crosswalks, licensing notes, dependency inventory, and generated atlas. Generic Starlette behavior remains owned by Starlette-RS; no sibling implementation files were copied into FastAPI-RS.
+
+The regenerated atlas and input index validate with manifest SHA-256 `a269920c8ab8897d50919fbc942925cfe753292d958d97946bc8fdb13537e69f`. It contains 1,593 classified API candidates (460 supported, 1,104 private/internal, 29 uncertain), 524 materialized input workflows, 2,060 cases, and 1,484 partial source mappings. The atlas remains incomplete: 350 public operation scopes are pending review, and 890 fixture backlog items remain.
+
+Against that current manifest, the first HTTP slice passed 12/12 cases (comparison `2c0c5874-66aa-4209-aa29-5537ccc2a4fa`). Six WebSocket workflows passed 18/18 cases: `websockets-upstream` 10/10 (`b0ddbe2d-885e-4590-ab74-7841bc9959a8`), `dependency-scope-websocket` 2/2 (`9b523189-47a4-4fee-baf1-ee8db7c7acd4`), `websocket-validation-handler-wave` 2/2 (`3b39a35e-b940-4217-96d2-51ff98f1152c`), `websocket-exception-handler` 1/1 (`79ca8a79-c508-49e0-81f0-f9bba52c6817`), `websocket-router-dependencies-upstream` 2/2 (`0971a96d-2477-4373-81ec-0db6b75f6ed4`), and `websocket-echo` 1/1 (`43177476-b5ee-4a59-8122-945eea67dc39`). The handler regression is fixed in FastAPI-RS: a registered WebSocket exception handler receives the endpoint's same connected socket, matching FastAPI's wrapper behavior. This remains narrow parity evidence, not broad FastAPI support.
+
+Rust formatting/Clippy, the Rust policy and Python facade checks, metadata/API contract checks, dependency inventory/graph checks, and atlas validation passed. No unit-test suite was run. The benchmark suite will be refreshed separately against the committed FastAPI-RS tree and this Starlette-RS pin.

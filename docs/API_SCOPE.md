@@ -20,9 +20,10 @@ source files, 24 reference Markdown pages, 61 unique reference autodoc targets,
 and 492 `test_*.py` modules. These are inventory inputs, **not** the number of
 manifest operations. Many targets expand into classes with multiple methods,
 many public names are aliases, and the `status`/OpenAPI-model targets expand to
-large value/model sets. The active manifest indexes 461 required public
-symbols with source-inventory and runtime-reflection pointers. This is the
-reviewed API denominator, not an implementation-support count. It records 224
+large value/model sets. The active manifest indexes 460 direct required public
+symbols plus 9 required inherited operations (469 required candidates total),
+with source-inventory and runtime-reflection pointers. This is the reviewed API
+denominator, not an implementation-support count. It records 224
 runtime-reflected signatures, one unavailable constructor signature for
 `Example` (`TypedDict(total=False)`), one module object with no call signature,
 and 234 non-callable values/fields. The source inventory records its

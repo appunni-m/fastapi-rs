@@ -8352,6 +8352,8 @@ enum PendingAction {
     LifespanCompletion,
     WebSocketEndpoint,
     WebSocketClose,
+    WebSocketExceptionHandler,
+    WebSocketExceptionResponse,
     MountedApp,
     FrontendConfig,
     FrontendResponse,
@@ -9647,6 +9649,91 @@ impl FastApiCall {
         Ok(MachineAction::Await(awaitable.unbind()))
     }
 
+    fn registered_websocket_exception_handler(
+        &self,
+        py: Python<'_>,
+        error: &PyErr,
+    ) -> PyResult<Option<Py<PyAny>>> {
+        let handlers = self.app.bind(py).borrow().exception_handlers.clone_ref(py);
+        let handlers = handlers.bind(py).cast::<PyDict>()?;
+        let value = error.value(py);
+        let http_exception_type = py
+            .import("starlette.exceptions")?
+            .getattr("HTTPException")?;
+        if value.is_instance(&http_exception_type)? {
+            let status_code = value.getattr("status_code")?;
+            if let Some(handler) = handlers.get_item(status_code)? {
+                return Ok(Some(handler.unbind()));
+            }
+        }
+
+        let exception_type = error.get_type(py);
+        let exception_mro = exception_type.getattr("__mro__")?.cast_into::<PyTuple>()?;
+        let server_error_type = py.get_type::<PyException>();
+        for class in exception_mro.iter() {
+            if class.is(&server_error_type) {
+                break;
+            }
+            if let Some(handler) = handlers.get_item(class)? {
+                return Ok(Some(handler.unbind()));
+            }
+        }
+        Ok(None)
+    }
+
+    fn invoke_websocket_exception_handler(
+        &mut self,
+        py: Python<'_>,
+        handler: Py<PyAny>,
+        error: &PyErr,
+    ) -> PyResult<MachineAction> {
+        let websocket = self
+            .websocket
+            .as_ref()
+            .ok_or_else(|| PyRuntimeError::new_err("FastAPI WebSocket was not initialized"))?;
+        let handler = handler.bind(py);
+        let websocket = websocket.bind(py);
+        let exception = error.value(py);
+        let inspect = py.import("inspect")?;
+        let iscoroutinefunction = inspect.getattr("iscoroutinefunction")?;
+        let is_async = iscoroutinefunction.call1((handler,))?.extract::<bool>()?
+            || (py
+                .import("builtins")?
+                .getattr("callable")?
+                .call1((handler,))?
+                .extract::<bool>()?
+                && iscoroutinefunction
+                    .call1((handler.getattr("__call__")?,))?
+                    .extract::<bool>()?);
+        let awaitable = if is_async {
+            handler.call1((websocket, exception))?
+        } else {
+            py.import("starlette.concurrency")?
+                .getattr("run_in_threadpool")?
+                .call1((handler, websocket, exception))?
+        };
+        self.pending = Some(PendingAction::WebSocketExceptionHandler);
+        Ok(MachineAction::Await(awaitable.unbind()))
+    }
+
+    fn websocket_exception_handler_resumed(
+        &mut self,
+        py: Python<'_>,
+        response: Py<PyAny>,
+    ) -> PyResult<MachineAction> {
+        let response = response.bind(py);
+        if response.is_none() {
+            return self.close_form_after_response(py);
+        }
+        let awaitable = response.call1((
+            self.scope.bind(py),
+            self.receive.bind(py),
+            self.send.bind(py),
+        ))?;
+        self.pending = Some(PendingAction::WebSocketExceptionResponse);
+        Ok(MachineAction::Await(awaitable.unbind()))
+    }
+
     fn receive_http_body(&mut self, py: Python<'_>) -> PyResult<MachineAction> {
         let request = self
             .request
@@ -10634,6 +10721,9 @@ impl FastApiCall {
         error: PyErr,
     ) -> PyResult<MachineAction> {
         if self.websocket_route_index.is_some() {
+            if let Some(handler) = self.registered_websocket_exception_handler(py, &error)? {
+                return self.invoke_websocket_exception_handler(py, handler, &error);
+            }
             if self.has_registered_exception_handler(py, &error)? {
                 return Err(error);
             }
@@ -10745,6 +10835,12 @@ impl FastApiCall {
                 Some(PendingAction::WebSocketEndpoint | PendingAction::WebSocketClose) => {
                     self.close_form_after_response(py)
                 }
+                Some(PendingAction::WebSocketExceptionHandler) => {
+                    self.websocket_exception_handler_resumed(py, value)
+                }
+                Some(PendingAction::WebSocketExceptionResponse) => {
+                    self.close_form_after_response(py)
+                }
                 Some(PendingAction::MountedApp) => Ok(MachineAction::Complete(py.None())),
                 Some(PendingAction::FrontendConfig) => self.get_frontend_response(py, None),
                 Some(PendingAction::FrontendResponse) => self.finish_frontend_response(py, value),
@@ -10830,6 +10926,10 @@ impl FastApiCall {
             },
             MachineResume::Error(error) => match self.pending.take() {
                 Some(PendingAction::FormParse) => self.form_parse_failed(py, error),
+                Some(
+                    PendingAction::WebSocketExceptionHandler
+                    | PendingAction::WebSocketExceptionResponse,
+                ) => Err(error),
                 Some(
                     PendingAction::WebSocketEndpoint
                     | PendingAction::WebSocketClose
