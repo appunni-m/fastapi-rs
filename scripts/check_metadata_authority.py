@@ -6,7 +6,9 @@ from __future__ import annotations
 import argparse
 import ast
 import hashlib
+import importlib
 import json
+import re
 import subprocess
 import sys
 from collections import Counter
@@ -276,6 +278,69 @@ def validate_target_runtime_lock(metadata: dict[str, Any], manifest: dict[str, A
             )
 
 
+def validate_fault_contract_policy(metadata: dict[str, Any], manifest: dict[str, Any]) -> None:
+    if str(ROOT) not in sys.path:
+        sys.path.insert(0, str(ROOT))
+    runtime_registry = importlib.import_module(
+        "scripts.parity.fault_contracts"
+    ).FAULT_POINT_CONTRACTS
+    policy = metadata.get("fault_contract_policy")
+    if not isinstance(policy, dict):
+        raise MetadataError("fault-contract policy is missing")
+    require_equal(
+        "fault-contract policy schema", policy.get("schema"), "fastapi-rs/fault-contract-policy@1"
+    )
+    require_equal("fault-contract lane", policy.get("target_only"), True)
+    require_equal("normal-build fault control", policy.get("normal_build_control"), "absent")
+    require_equal(
+        "fault input expected outputs", policy.get("inputs_contain_expected_outputs"), False
+    )
+    contracts = policy.get("contracts")
+    if not isinstance(contracts, list) or not contracts:
+        raise MetadataError("fault-contract policy must declare at least one contract")
+    points: dict[str, str] = {}
+    for row in contracts:
+        if not isinstance(row, dict):
+            raise MetadataError("fault-contract rows must be objects")
+        point, contract = row.get("point"), row.get("contract")
+        if not isinstance(point, str) or not isinstance(contract, str) or not point or not contract:
+            raise MetadataError("fault-contract rows need point and contract identifiers")
+        if point in points or contract in points.values():
+            raise MetadataError("fault point and contract identifiers must be unique")
+        points[point] = contract
+    require_equal("fault-contract runtime registry", runtime_registry, points)
+    require_equal(
+        "fault-contract public assertion",
+        contracts[0].get("assertion"),
+        {
+            "first_effect": {
+                "kind": "application_error",
+                "selector": "exception",
+                "exception_class": "builtins.RuntimeError",
+            },
+            "later_effect": {"kind": "http_response", "status": 200},
+        },
+    )
+    require_equal(
+        "fault-contract excluded observations",
+        contracts[0].get("excludes"),
+        ["exception_message", "stack_trace", "source_line", "private_state"],
+    )
+
+    workflow = manifest["unresolved"]["python_asgi_workflow_v7"]
+    schema_path = artifact_path(workflow["schema_path"])
+    schema = load_json(schema_path)
+    fault_schema = schema["$defs"]["case"]["properties"]["fault"]["properties"]
+    require_equal(
+        "workflow fault-point schema",
+        {fault_schema["point"]["const"]: fault_schema["contract"]["const"]},
+        points,
+    )
+    rust_fault_source = (ROOT / "fastapi-rs/src/fault_injection.rs").read_text(encoding="utf-8")
+    rust_points = set(re.findall(r'const [A-Z0-9_]+: &str = "([^"]+)";', rust_fault_source))
+    require_equal("Rust injection points", rust_points, set(points))
+
+
 def validate() -> None:
     metadata = load_yaml(METADATA_PATH)
     require_equal("metadata schema", metadata.get("schema"), "fastapi-rs/api-source-authority@1")
@@ -284,6 +349,7 @@ def validate() -> None:
     manifest_path = artifact_path(manifest_meta["path"])
     manifest = load_yaml(manifest_path)
     validate_target_runtime_lock(metadata, manifest)
+    validate_fault_contract_policy(metadata, manifest)
     authority = metadata["authority"]
     fastapi = authority["source"] if "source" in authority else authority
     starlette = authority["starlette"]

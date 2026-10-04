@@ -38,6 +38,21 @@ target_runtime:
     sha256: efb7ca633fc9a9c8587a6f59f8ee9b509151f6f77ceb75a56dd3cdeff2be99f7
     profile: CPython 3.12.13
 
+fault_contract_policy:
+  schema: fastapi-rs/fault-contract-policy@1
+  target_only: true
+  build_feature: fault-injection
+  normal_build_control: absent
+  result_rule: Oracle receipts must be not_applicable; target identity must prove the instrumented build.
+  inputs_contain_expected_outputs: false
+  contracts:
+    - point: http.route.invoke.before
+      contract: http-route-invocation-error-and-recovery
+      assertion:
+        first_effect: {kind: application_error, selector: exception, exception_class: builtins.RuntimeError}
+        later_effect: {kind: http_response, status: 200}
+      excludes: [exception_message, stack_trace, source_line, private_state]
+
 manifest:
   path: tests/fixtures/manifest.yaml
   fastapi_identity_pointer: /selected_contracts/fastapi

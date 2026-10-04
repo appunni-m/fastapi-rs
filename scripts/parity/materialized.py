@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
@@ -18,13 +19,15 @@ from scripts.parity.contract import (
     WORKFLOW_SCHEMA_V4_ID,
     WORKFLOW_SCHEMA_V5_ID,
     WORKFLOW_SCHEMA_V6_ID,
+    WORKFLOW_SCHEMA_V7_ID,
     ContractError,
     load_workflow,
     read_json,
     sha256_file,
 )
+from scripts.parity.fault_contracts import FaultContractError, verification_mode
 
-INDEX_SCHEMA = ROOT / "tests/fixtures/schemas/materialized-input-index.schema.json"
+INDEX_SCHEMA = ROOT / "tests/fixtures/schemas/materialized-input-index-v3.schema.json"
 INDEX_SCHEMA_ID = MATERIALIZED_INPUT_INDEX_SCHEMA_ID
 API_OBSERVATION_SELECTORS = {
     "python_attribute_value": "python.attribute_value",
@@ -93,18 +96,31 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
         WORKFLOW_SCHEMA_V4_ID,
         WORKFLOW_SCHEMA_V5_ID,
         WORKFLOW_SCHEMA_V6_ID,
+        WORKFLOW_SCHEMA_V7_ID,
     }:
         selectors.update(
             f"construction.{selector}" for selector in case["construction_observation"]["selectors"]
         )
     if (
-        workflow_schema in {WORKFLOW_SCHEMA_V4_ID, WORKFLOW_SCHEMA_V5_ID, WORKFLOW_SCHEMA_V6_ID}
+        workflow_schema
+        in {
+            WORKFLOW_SCHEMA_V4_ID,
+            WORKFLOW_SCHEMA_V5_ID,
+            WORKFLOW_SCHEMA_V6_ID,
+            WORKFLOW_SCHEMA_V7_ID,
+        }
         and case.get("construction_observation", {}).get("capture_warnings") is True
     ):
         selectors.add("python.warnings")
     for action in case["actions"]:
         if (
-            workflow_schema in {WORKFLOW_SCHEMA_V4_ID, WORKFLOW_SCHEMA_V5_ID, WORKFLOW_SCHEMA_V6_ID}
+            workflow_schema
+            in {
+                WORKFLOW_SCHEMA_V4_ID,
+                WORKFLOW_SCHEMA_V5_ID,
+                WORKFLOW_SCHEMA_V6_ID,
+                WORKFLOW_SCHEMA_V7_ID,
+            }
             and action.get("capture_warnings") is True
         ):
             selectors.add("warnings.category_message")
@@ -226,6 +242,8 @@ def validate_materialized_input_index(
     }
     workflow_cases: dict[str, dict[str, dict[str, Any]]] = {}
     workflow_schemas: dict[str, str] = {}
+    workflow_contracts: dict[str, dict[str, dict[str, Any]]] = {}
+    requirements_by_case: dict[tuple[str, str], set[str]] = defaultdict(set)
     api_definition_cases: dict[str, set[str]] = {}
     for workflow_id, workflow_ref in workflow_by_id.items():
         for path_key, digest_key, label in (
@@ -342,6 +360,38 @@ def validate_materialized_input_index(
         actual_cases = {case["case_id"]: case for case in workflow["cases"]}
         if set(actual_cases) != set(workflow_ref["case_ids"]):
             _fail(f"workflow case IDs differ from index: {workflow_id}")
+        case_contracts = workflow_ref.get("case_contracts")
+        if not isinstance(case_contracts, list):
+            _fail(f"workflow has no indexed case contracts: {workflow_id}")
+        indexed_contracts = {row["case_id"]: row for row in case_contracts}
+        if len(indexed_contracts) != len(case_contracts) or set(indexed_contracts) != set(
+            actual_cases
+        ):
+            _fail(f"indexed case contracts differ from workflow cases: {workflow_id}")
+        for case_id, case in actual_cases.items():
+            expected_mode = "parity"
+            if workflow["schema"] == WORKFLOW_SCHEMA_V7_ID:
+                try:
+                    expected_mode = verification_mode(case)
+                except FaultContractError as exc:
+                    raise ContractError(
+                        f"materialized input index: invalid case contract {case_id}: {exc}"
+                    ) from exc
+            elif "verification" in case or "fault" in case:
+                _fail(f"verification lanes require Python/ASGI workflow v7: {case_id}")
+            if indexed_contracts[case_id]["verification"] != expected_mode:
+                _fail(f"indexed verification lane differs from workflow: {case_id}")
+            if expected_mode == "fault-contract" and indexed_contracts[case_id].get(
+                "fault"
+            ) != case.get("fault"):
+                _fail(f"indexed fault point/contract differs from workflow: {case_id}")
+        workflow_contracts[workflow_id] = indexed_contracts
+        for definition in workflow_ref.get("api_definitions", []):
+            requirements_by_case[(workflow_id, definition["case_id"])].add(
+                f"api:{definition['symbol_id']}"
+            )
+        for probe in expected_api_probes:
+            requirements_by_case[(workflow_id, probe["case_id"])].add(f"api:{probe['symbol_id']}")
         workflow_cases[workflow_id] = actual_cases
         workflow_schemas[workflow_id] = workflow["schema"]
 
@@ -392,6 +442,8 @@ def validate_materialized_input_index(
         if not case_ids <= cases.keys():
             _fail(f"mapping references unknown workflow cases: {source_id}")
         mapped_cases[workflow_id].update(case_ids)
+        for case_id in case_ids:
+            requirements_by_case[(workflow_id, case_id)].add(f"source:{source_id}")
 
         expected_evidence_kind = {
             "upstream_test_module": "upstream_test",
@@ -435,6 +487,11 @@ def validate_materialized_input_index(
                 _fail(f"selector is missing or lacks workflow support: {selector_id}")
 
     for workflow_id, cases in workflow_cases.items():
+        for case_id in cases:
+            contract = workflow_contracts[workflow_id][case_id]
+            expected_requirements = sorted(requirements_by_case[(workflow_id, case_id)])
+            if contract["requirement_refs"] != expected_requirements:
+                _fail(f"indexed requirement references differ from source mappings: {case_id}")
         covered_cases = mapped_cases[workflow_id] | api_definition_cases[workflow_id]
         if covered_cases != cases.keys():
             _fail(

@@ -10,6 +10,8 @@ ORACLE_STANDARD_ENV ?= $(CURDIR)/.venv-oracle-standard
 ORACLE_STANDARD_PYTHON ?= $(ORACLE_STANDARD_ENV)/bin/python
 TARGET_ENV ?= $(CURDIR)/.venv-target
 TARGET_PYTHON ?= $(TARGET_ENV)/bin/python
+FAULT_TARGET_ENV ?= $(CURDIR)/target/fault-injection/venv
+FAULT_TARGET_PYTHON ?= $(FAULT_TARGET_ENV)/bin/python
 TARGET_RUNTIME_LOCK ?= $(CURDIR)/requirements/target-runtime-cpython-3.12.13.lock
 BUILD_TOOLS_ENV ?= $(CURDIR)/.venv-build-tools
 BUILD_TOOLS_PYTHON ?= $(BUILD_TOOLS_ENV)/bin/python
@@ -25,7 +27,7 @@ PARITY_API_INPUT ?= tests/fixtures/inputs/parity/encoding.json
 BENCHMARK_WORKLOAD ?= benchmarks/workloads/first-slice-valid-asgi.yaml
 
 .DEFAULT_GOAL := help
-.PHONY: help fmt format clippy build build-rust build-python build-tools-prepare python-facade-check rust-policy-check compatibility-atlas-update api-contract-update api-contract-check metadata-check dependency-inventory-update dependency-inventory-check dependency-graph-update dependency-graph-check parity-inputs parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-target parity-api-runtime parity-validate parity-index-update parity-index-check parity-oracle parity-oracle-standard parity-target parity-compare parity-api-validate parity-api-oracle parity-api-target parity-api-compare parity-first-slice benchmark-input-check benchmark-contract-check benchmark-first-slice benchmark-suite verify clean
+.PHONY: help fmt format clippy build build-rust build-python build-tools-prepare python-facade-check rust-policy-check compatibility-atlas-update api-contract-update api-contract-check metadata-check dependency-inventory-update dependency-inventory-check dependency-graph-update dependency-graph-check parity-inputs parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-target fault-injection-build parity-api-runtime parity-validate parity-index-update parity-index-check parity-oracle parity-oracle-standard parity-target parity-fault-target parity-compare parity-api-validate parity-api-oracle parity-api-target parity-api-compare parity-first-slice benchmark-input-check benchmark-contract-check benchmark-first-slice benchmark-suite verify clean
 
 help: ## Show common development commands
 	@printf '%s\n' \
@@ -51,6 +53,7 @@ help: ## Show common development commands
 	  '  make parity-prepare-oracle Prepare pinned FastAPI 0.141.1 / Starlette 1.6.0 Python env' \
 	  '  make parity-prepare-oracle-standard Prepare the locked optional-feature reflection profile' \
 	  '  make parity-prepare-target Prepare .venv-target with pinned shared deps and release FastAPI-RS / ../starlette-rs' \
+	  '  make fault-injection-build Build an isolated fault-enabled extension under target/fault-injection/' \
 	  '  make parity-api-runtime Reflect and verify the pinned FastAPI Python API surface' \
 	  '  make parity-validate Validate workflows, source atlas, and fixture mappings' \
 	  '  make parity-index-update Rebuild source mappings for current fixture workflows' \
@@ -58,6 +61,7 @@ help: ## Show common development commands
 	  '  make parity-oracle   Run PARITY_INPUT against the isolated FastAPI oracle' \
 	  '  make parity-oracle-standard Run PARITY_INPUT with locked standard extras' \
 	  '  make parity-target   Run PARITY_INPUT against the isolated FastAPI-RS target' \
+	  '  make parity-fault-target Run PARITY_INPUT against the isolated fault-enabled target' \
 	  '  make parity-compare  Compare live source/target result artifacts exactly' \
 	  '  make parity-api-*    Validate, run, and compare direct Python API probes' \
 	  '  make parity-first-slice Run and compare the pinned first HTTP slice end to end' \
@@ -149,6 +153,14 @@ parity-prepare-target: ## Prepare hash-locked CPython 3.12.13 target and sibling
 	$(UV) pip check --python "$(TARGET_PYTHON)"
 	$(TARGET_PYTHON) scripts/check_target_runtime_boundary.py
 
+fault-injection-build: ## Build a fault-enabled extension without replacing the normal target artifact
+	test -x "$(FAULT_TARGET_PYTHON)" || $(UV) venv --python 3.12.13 "$(FAULT_TARGET_ENV)"
+	$(FAULT_TARGET_PYTHON) -c 'import pathlib, platform, sys; pathlib.Path(sys.prefix).resolve().relative_to(pathlib.Path("$(CURDIR)/target/fault-injection").resolve()); (platform.python_implementation() == "CPython" and sys.version_info[:3] == (3, 12, 13)) or sys.exit("fault target runtime requires CPython 3.12.13 under target/fault-injection/")'
+	$(UV) pip sync --python "$(FAULT_TARGET_PYTHON)" --require-hashes "$(TARGET_RUNTIME_LOCK)"
+	PYO3_PYTHON="$(FAULT_TARGET_PYTHON)" $(UV) pip install --python "$(FAULT_TARGET_PYTHON)" --no-deps --editable "$(STARLETTE_RS_SOURCE)"
+	$(PYTHON) scripts/build_target_extension.py --fault-injection --python "$(FAULT_TARGET_PYTHON)" --uv "$(UV)" --starlette-rs-source "$(STARLETTE_RS_SOURCE)"
+	$(UV) pip check --python "$(FAULT_TARGET_PYTHON)"
+
 parity-api-runtime: parity-inputs ## Regenerate pinned-source runtime reflections for core and standard profiles
 	$(ORACLE_PYTHON) scripts/inventory_fastapi_runtime.py --output tests/fixtures/runtime-api-surface-core.json
 	$(ORACLE_STANDARD_PYTHON) scripts/inventory_fastapi_runtime.py --output tests/fixtures/runtime-api-surface-standard.json --optional-extras standard,docs-tests
@@ -175,6 +187,10 @@ parity-oracle-standard: parity-inputs ## Execute optional-feature inputs with St
 parity-target: parity-inputs ## Execute PARITY_INPUT against the isolated FastAPI-RS target
 	$(TARGET_PYTHON) scripts/check_target_runtime_boundary.py
 	$(PYTHON) -m scripts.parity.cli target --input "$(PARITY_INPUT)" --python "$(TARGET_PYTHON)" --starlette-rs-source "$(STARLETTE_RS_SOURCE)"
+
+parity-fault-target: parity-inputs fault-injection-build ## Execute fault-contract cases against the isolated fault-enabled target
+	$(FAULT_TARGET_PYTHON) scripts/check_target_runtime_boundary.py
+	$(PYTHON) -m scripts.parity.cli target --input "$(PARITY_INPUT)" --python "$(FAULT_TARGET_PYTHON)" --starlette-rs-source "$(STARLETTE_RS_SOURCE)"
 
 parity-compare: ## Compare live source/target result artifacts exactly
 	$(PYTHON) -m scripts.parity.cli compare --input "$(PARITY_INPUT)" --source-result "$(SOURCE_RESULT)" --target-result "$(TARGET_RESULT)"

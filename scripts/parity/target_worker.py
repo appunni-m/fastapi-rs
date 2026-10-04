@@ -24,23 +24,27 @@ from urllib.parse import unquote, urlsplit
 
 import tomllib
 
+from scripts.parity.fault_contracts import verification_mode
 from scripts.parity.worker import (
     RESULT_SCHEMA_ID,
     RESULT_SCHEMA_V3_ID,
     RESULT_SCHEMA_V4_ID,
     RESULT_SCHEMA_V5_ID,
     RESULT_SCHEMA_V6_ID,
+    RESULT_SCHEMA_V7_ID,
     ROOT,
     WORKFLOW_SCHEMA_ID,
     WORKFLOW_SCHEMA_V3_ID,
     WORKFLOW_SCHEMA_V4_ID,
     WORKFLOW_SCHEMA_V5_ID,
     WORKFLOW_SCHEMA_V6_ID,
+    WORKFLOW_SCHEMA_V7_ID,
     WorkerError,
     _assert_clean_source_tree,
     _git_commit,
     _is_under,
     _load_workload,
+    _run_case_v3,
     _run_cases,
     _run_cases_v3,
     _sha256_file,
@@ -49,6 +53,7 @@ from scripts.parity.worker import (
 
 TARGET_PACKAGE_ROOT = ROOT / "fastapi-rs-py/python/fastapi"
 TARGET_BINDING_ROOT = ROOT / "fastapi-rs-py/python/fastapi_rs"
+FAULT_BINDING_ROOT = ROOT / "target/fault-injection/python/fastapi_rs"
 STARLETTE_PACKAGE_RELATIVE_PATH = "starlette-rs-py/python/starlette"
 STARLETTE_BINDING_RELATIVE_PATH = "starlette-rs-py/python/starlette_rs_py"
 SHARED_ORACLE_PACKAGES = {
@@ -336,6 +341,7 @@ def _target_identity(
     starlette_rs_source: Path,
     *,
     target_profile: dict[str, Any],
+    fault_injection_required: bool | None = None,
 ) -> dict[str, Any]:
     if set(target_profile) != {"python", "shared_runtime_packages", "target"}:
         raise WorkerError("target profile is malformed")
@@ -466,18 +472,41 @@ def _target_identity(
         fastapi_native = importlib.import_module("fastapi_rs._core")
     except ImportError as exc:
         raise WorkerError(f"cannot import the FastAPI-RS compiled extension: {exc}") from exc
-    _assert_module_source(fastapi_rs, TARGET_BINDING_ROOT, "FastAPI-RS private binding")
     fastapi_native_path = _extension_path(fastapi_native, "FastAPI-RS")
     native_identity = getattr(fastapi_native, "identity", None)
     if not callable(native_identity):
         raise WorkerError("FastAPI-RS compiled extension does not expose its identity function")
     reported_identity = native_identity()
+    fault_injection_compiled = (
+        reported_identity.get("fault_injection_compiled")
+        if isinstance(reported_identity, dict)
+        else None
+    )
     if reported_identity != {
         "target": "fastapi-rs",
         "version": str(distribution_profile["version"]),
         "binding": "pyo3",
+        "fault_injection_compiled": fault_injection_compiled,
     }:
         raise WorkerError(f"FastAPI-RS compiled extension identity mismatch: {reported_identity}")
+    if type(fault_injection_compiled) is not bool:
+        raise WorkerError("FastAPI-RS extension did not report its fault-injection build identity")
+    if fault_injection_required is None and fault_injection_compiled:
+        raise WorkerError("fault-injection extension is forbidden for this target workflow")
+    if (
+        fault_injection_required is not None
+        and fault_injection_compiled != fault_injection_required
+    ):
+        raise WorkerError(
+            "fault-injection extension identity does not match the workflow lane: "
+            f"required={fault_injection_required}, compiled={fault_injection_compiled}"
+        )
+    if fault_injection_compiled and not _is_under(
+        Path(sys.prefix), ROOT / "target/fault-injection"
+    ):
+        raise WorkerError("fault-injection target must run from its isolated fault venv")
+    binding_root = FAULT_BINDING_ROOT if fault_injection_compiled else TARGET_BINDING_ROOT
+    _assert_module_source(fastapi_rs, binding_root, "FastAPI-RS private binding")
 
     fastapi_rs_revision = _git_commit(target_source, "FastAPI-RS")
     source_tree_sha256 = _combine_digests(
@@ -492,7 +521,7 @@ def _target_identity(
             "starlette_rs_py._core": _sha256_file(starlette_native_path),
         }
     )
-    return {
+    identity = {
         "distribution": "fastapi-rs",
         "version": str(distribution_profile["version"]),
         "python": python_identity,
@@ -512,6 +541,35 @@ def _target_identity(
         "target_binary_sha256": target_binary_sha256,
         "packages": actual_packages,
     }
+    if fault_injection_required is not None:
+        identity["fault_injection_compiled"] = fault_injection_compiled
+    return identity
+
+
+async def _run_cases_v7_target(
+    workflow: dict[str, Any],
+    factory: Any,
+    warning_package_roots: list[tuple[str, Path]],
+    native: Any,
+) -> list[dict[str, Any]]:
+    results = []
+    for case in workflow["cases"]:
+        mode = verification_mode(case)
+        if mode == "fault-contract":
+            arm = getattr(native, "arm_fault_injection", None)
+            clear = getattr(native, "clear_fault_injection", None)
+            if not callable(arm) or not callable(clear):
+                raise WorkerError("fault-injection extension is missing its private controls")
+            arm(case["fault"]["point"])
+            try:
+                result = await _run_case_v3(case, factory, warning_package_roots)
+            finally:
+                clear()
+        else:
+            result = await _run_case_v3(case, factory, warning_package_roots)
+        result["verification"] = mode
+        results.append(result)
+    return results
 
 
 def run_target(
@@ -541,8 +599,9 @@ def run_target(
         WORKFLOW_SCHEMA_V4_ID,
         WORKFLOW_SCHEMA_V5_ID,
         WORKFLOW_SCHEMA_V6_ID,
+        WORKFLOW_SCHEMA_V7_ID,
     }:
-        raise WorkerError("target worker accepts only Python/ASGI v2 through v6 workflows")
+        raise WorkerError("target worker accepts only Python/ASGI v2 through v7 workflows")
     workload_relative_path = workflow["workload"]["file"]
     if not isinstance(workload_relative_path, str):
         raise WorkerError("workflow workload file reference is malformed")
@@ -556,10 +615,16 @@ def run_target(
         raise WorkerError("manifest digest changed after host-side validation")
 
     started = datetime.now(UTC)
+    has_fault_contracts = workflow["schema"] == WORKFLOW_SCHEMA_V7_ID and any(
+        verification_mode(case) == "fault-contract" for case in workflow["cases"]
+    )
     identity = _target_identity(
         target_source,
         starlette_rs_source,
         target_profile=target_profile,
+        fault_injection_required=(
+            has_fault_contracts if workflow["schema"] == WORKFLOW_SCHEMA_V7_ID else None
+        ),
     )
     factory = _load_workload(resolved_workload, input_sha256, workflow["workload"]["factory"])
     if workflow["schema"] in {
@@ -567,6 +632,7 @@ def run_target(
         WORKFLOW_SCHEMA_V4_ID,
         WORKFLOW_SCHEMA_V5_ID,
         WORKFLOW_SCHEMA_V6_ID,
+        WORKFLOW_SCHEMA_V7_ID,
     }:
         warning_package_roots = (
             [
@@ -578,12 +644,21 @@ def run_target(
                 WORKFLOW_SCHEMA_V4_ID,
                 WORKFLOW_SCHEMA_V5_ID,
                 WORKFLOW_SCHEMA_V6_ID,
+                WORKFLOW_SCHEMA_V7_ID,
             }
             else []
         )
-        cases = asyncio.run(_run_cases_v3(workflow, factory, warning_package_roots))
+        if workflow["schema"] == WORKFLOW_SCHEMA_V7_ID:
+            native = importlib.import_module("fastapi_rs._core")
+            cases = asyncio.run(
+                _run_cases_v7_target(workflow, factory, warning_package_roots, native)
+            )
+        else:
+            cases = asyncio.run(_run_cases_v3(workflow, factory, warning_package_roots))
         result_schema_id = (
-            RESULT_SCHEMA_V6_ID
+            RESULT_SCHEMA_V7_ID
+            if workflow["schema"] == WORKFLOW_SCHEMA_V7_ID
+            else RESULT_SCHEMA_V6_ID
             if workflow["schema"] == WORKFLOW_SCHEMA_V6_ID
             else RESULT_SCHEMA_V5_ID
             if workflow["schema"] == WORKFLOW_SCHEMA_V5_ID

@@ -1,0 +1,57 @@
+schema: fastapi-rs/python-asgi-workflow@7
+workload:
+  file: tests/fixtures/workloads/route_invocation_fault_contract.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.fault-contract.route-invocation.recovery
+  verification: fault-contract
+  fault:
+    point: http.route.invoke.before
+    contract: http-route-invocation-error-and-recovery
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: injected-route-error
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /fault
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: application_error, selector: exception, comparison: exact}
+  - action_id: recovered-route-response
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /fault
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status], comparison: exact}
+  # Supports the public exception observation selector; it does not claim the
+  # upstream test injects this target-only fault.
+  source_evidence:
+  - {path: tests/test_validation_error_context.py, kind: upstream_test}

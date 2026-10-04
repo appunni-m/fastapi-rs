@@ -411,7 +411,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@5
-    sha256: 5eca95e3bdd1ce9b820d9eade6e811449f6060fdc8b8b383bb22f5ea469a408a
+    sha256: 86c8fcaa4331966ed28e0285fe2309ff39ea471f62fd238937ed6301d17a16b3
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -447,7 +447,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: f700414351b9e871e0225b9c3e1cba0fd74d8fda9ed6aacdcc360c82cbffdb34
+    sha256: f83571003b2d7e9164de6d56d57d364cbd25bb249733e12260fc8f9df2579dd9
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -483,15 +483,15 @@ source_artifacts:
       pydantic_model_classes: 49
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
-    schema: fastapi-rs/materialized-input-index@2
-    sha256: dc5d4d1e400ad7254f7b40738357c91315d66969042b8dcc26879029cd8ba333
-    schema_path: tests/fixtures/schemas/materialized-input-index.schema.json
-    schema_sha256: 56ac1cdfaa6f28b4277ef44b5ef78efebb3122111c5691e1b9c1bce869156aaf
+    schema: fastapi-rs/materialized-input-index@3
+    sha256: 34e21796ff724f6e0988b8d568af67a8d88f44d958bf720a8b1a16f69d951730
+    schema_path: tests/fixtures/schemas/materialized-input-index-v3.schema.json
+    schema_sha256: f81f2806e58e2b90a28253f01cee41c9de82281497949ebc34730dfb13f23d7d
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 531
-      cases: 2105
-      partial_source_mappings: 1489
+      workflows: 532
+      cases: 2106
+      partial_source_mappings: 1490
 
 contract_metadata:
   aliases:
@@ -668,6 +668,21 @@ unresolved:
       Models deterministic concurrent WebSocket sessions as an ordered client
       schedule; every conversation compares handshake event order and
       session-tagged message streams.
+  python_asgi_workflow_v7:
+    state: input-driven-parity-and-target-only-fault-contract-lanes; v1-v6-remain-supported
+    schema_id: fastapi-rs/python-asgi-workflow@7
+    schema_path: tests/fixtures/schemas/python-asgi-workflow-v7.schema.json
+    schema_sha256: 8e247aabb48ff92418712d302e8d1c6981c3379f16bfd8a51b5f24612112c4a6
+    result_schema_id: fastapi-rs/python-asgi-workflow-result@7
+    result_schema_path: tests/fixtures/schemas/python-asgi-workflow-result-v7.schema.json
+    result_schema_sha256: f654f77d271c77f0612f09eb0966e3bef1653d463f2412dd1a0959546f55c339
+    comparison_schema_id: fastapi-rs/python-asgi-comparison@7
+    comparison_schema_path: tests/fixtures/schemas/python-asgi-comparison-v7.schema.json
+    comparison_schema_sha256: f819ef3f8b79799483673450059251601b45ca33c9542bbd7bdfc47e378bc9e0
+    coverage: >-
+      Separates source-to-target parity observations from target-only fault contracts;
+      oracle fault cases are explicit not-applicable receipts and instrumented target
+      identity is recorded for fault-bearing workflows.
   python_api_workflow:
     state: isolated-oracle-and-target-workers-and-exact-comparator-present; broader-public-api-parity-pending
     schema_id: fastapi-rs/python-api-workflow@1

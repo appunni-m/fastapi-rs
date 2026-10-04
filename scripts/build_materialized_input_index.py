@@ -111,7 +111,7 @@ def _manifest_with_current_index(text: str, index: dict[str, Any]) -> str:
         "schema": index["schema"],
         "sha256": hashlib.sha256(index_bytes).hexdigest(),
         "schema_sha256": sha256_file(
-            ROOT / "tests/fixtures/schemas/materialized-input-index.schema.json"
+            ROOT / "tests/fixtures/schemas/materialized-input-index-v3.schema.json"
         ),
         "workflows": len(index["workflows"]),
         "cases": sum(len(row["case_ids"]) for row in index["workflows"]),
@@ -171,6 +171,7 @@ def build_index() -> dict[str, Any]:
     # stale workflow IDs after input files were renamed and made new source
     # citations invisible for cases that already had an index mapping.
     workflow_rows: dict[str, dict[str, Any]] = {}
+    workflow_documents: dict[str, dict[str, Any]] = {}
     mappings: dict[tuple[str, str], dict[str, Any]] = {}
 
     for input_path in sorted(INPUT_DIR.glob("*.json")):
@@ -259,6 +260,7 @@ def build_index() -> dict[str, Any]:
                 key=lambda row: (row["case_id"], row["probe_id"], row["symbol_id"]),
             )
         workflow_rows[workflow_id] = workflow_ref
+        workflow_documents[workflow_id] = workflow
 
         new_mapping_cases: dict[str, dict[str, Any]] = {}
         reviewed_doc_required_selectors: dict[str, set[str]] = {}
@@ -353,6 +355,36 @@ def build_index() -> dict[str, Any]:
                 "case_ids": sorted(all_case_ids),
                 "observation_selectors": sorted(all_selectors),
             }
+
+    requirements_by_case: dict[tuple[str, str], set[str]] = defaultdict(set)
+    for mapping in mappings.values():
+        for case_id in mapping["case_ids"]:
+            requirements_by_case[(mapping["workflow_id"], case_id)].add(
+                f"source:{mapping['source_item_id']}"
+            )
+    for workflow_id, workflow_ref in workflow_rows.items():
+        for definition in workflow_ref.get("api_definitions", []):
+            requirements_by_case[(workflow_id, definition["case_id"])].add(
+                f"api:{definition['symbol_id']}"
+            )
+        for probe in workflow_ref.get("api_probes", []):
+            requirements_by_case[(workflow_id, probe["case_id"])].add(f"api:{probe['symbol_id']}")
+        case_contracts = []
+        for case in workflow_documents[workflow_id]["cases"]:
+            requirement_refs = sorted(requirements_by_case[(workflow_id, case["case_id"])])
+            if not requirement_refs:
+                raise ContractError(
+                    f"workflow case has no indexed requirement reference: {case['case_id']}"
+                )
+            contract = {
+                "case_id": case["case_id"],
+                "verification": case.get("verification", "parity"),
+                "requirement_refs": requirement_refs,
+            }
+            if contract["verification"] == "fault-contract":
+                contract["fault"] = dict(case["fault"])
+            case_contracts.append(contract)
+        workflow_ref["case_contracts"] = case_contracts
 
     generated = {
         "schema": INDEX_SCHEMA,

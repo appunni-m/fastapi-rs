@@ -13,7 +13,13 @@ from scripts.parity.contract import (
     WORKFLOW_SCHEMA_V3_ID,
     WORKFLOW_SCHEMA_V5_ID,
     WORKFLOW_SCHEMA_V6_ID,
+    WORKFLOW_SCHEMA_V7_ID,
     ContractError,
+)
+from scripts.parity.fault_contracts import (
+    FaultContractError,
+    assert_fault_contract,
+    verification_mode,
 )
 
 WORKFLOW_SCHEMA_V4_ID = "fastapi-rs/python-asgi-workflow@4"
@@ -532,6 +538,16 @@ def compare_workflow_results(
         if result.get("schema") != expected_result_schema:
             raise ComparisonError("source or target result uses a different workflow result schema")
     _validate_identity_pair(source, target, oracle_profile, target_profile)
+    if workflow.get("schema") == WORKFLOW_SCHEMA_V7_ID:
+        fault_case_present = any(
+            verification_mode(case) == "fault-contract" for case in workflow["cases"]
+        )
+        if source["identity"].get("fault_injection_compiled") is not None:
+            raise ComparisonError("oracle identity must mark fault injection as not applicable")
+        if target["identity"].get("fault_injection_compiled") is not fault_case_present:
+            raise ComparisonError(
+                "target build identity does not match the selected verification lanes"
+            )
     workload_ref = {
         "path": workflow["workload"]["file"],
         "sha256": workload_sha256,
@@ -568,17 +584,90 @@ def compare_workflow_results(
         WORKFLOW_SCHEMA_V4_ID,
         WORKFLOW_SCHEMA_V5_ID,
         WORKFLOW_SCHEMA_V6_ID,
+        WORKFLOW_SCHEMA_V7_ID,
     }:
         compare_case = _compare_case_v4
     elif workflow["schema"] == WORKFLOW_SCHEMA_V3_ID:
         compare_case = _compare_case_v3
     else:
         compare_case = _compare_case
-    case_results = [
-        compare_case(case, source_cases.get(case["case_id"]), target_cases.get(case["case_id"]))
-        for case in workflow["cases"]
-    ]
+    case_results = []
+    for case in workflow["cases"]:
+        source_case = source_cases.get(case["case_id"])
+        target_case = target_cases.get(case["case_id"])
+        if workflow["schema"] == WORKFLOW_SCHEMA_V7_ID:
+            mode = verification_mode(case)
+            if source_case is None or target_case is None:
+                raise ComparisonError(f"missing product result for case {case['case_id']}")
+            if source_case.get("verification") != mode or target_case.get("verification") != mode:
+                raise ComparisonError(
+                    f"result verification lane differs from input: {case['case_id']}"
+                )
+            if mode == "fault-contract":
+                if source_case.get("status") != "not_applicable":
+                    raise ComparisonError(
+                        "oracle must not execute a target-only fault-contract case"
+                    )
+                contract_id = case["fault"]["contract"]
+                try:
+                    assert_fault_contract(case, target_case)
+                except FaultContractError as exc:
+                    case_results.append(
+                        {
+                            "case_id": case["case_id"],
+                            "verification": mode,
+                            "contract_id": contract_id,
+                            "outcome": "fail",
+                            "diffs": [
+                                {
+                                    "action_id": case["actions"][0]["action_id"],
+                                    "path": f"fault_contract.{contract_id}",
+                                    "comparison": "exact",
+                                    "source": "not_applicable",
+                                    "target": str(exc),
+                                }
+                            ],
+                        }
+                    )
+                else:
+                    case_results.append(
+                        {
+                            "case_id": case["case_id"],
+                            "verification": mode,
+                            "contract_id": contract_id,
+                            "outcome": "pass",
+                            "diffs": [],
+                        }
+                    )
+                continue
+            if source_case.get("status") != "completed" or target_case.get("status") != "completed":
+                raise ComparisonError("parity lane results must complete on both products")
+            compared = compare_case(case, source_case, target_case)
+            compared["verification"] = mode
+            case_results.append(compared)
+        else:
+            case_results.append(compare_case(case, source_case, target_case))
     outcomes = [case["outcome"] for case in case_results]
+    summary = {
+        "selected": len(case_results),
+        "passed": outcomes.count("pass"),
+        "failed": outcomes.count("fail"),
+        "not_run": outcomes.count("not_run"),
+    }
+    if workflow["schema"] == WORKFLOW_SCHEMA_V7_ID:
+        parity_results = [case for case in case_results if case["verification"] == "parity"]
+        fault_results = [case for case in case_results if case["verification"] == "fault-contract"]
+        summary["parity"] = {
+            "selected": len(parity_results),
+            "passed": sum(case["outcome"] == "pass" for case in parity_results),
+            "failed": sum(case["outcome"] == "fail" for case in parity_results),
+            "not_run": sum(case["outcome"] == "not_run" for case in parity_results),
+        }
+        summary["fault_contract"] = {
+            "selected": len(fault_results),
+            "passed": sum(case["outcome"] == "pass" for case in fault_results),
+            "failed": sum(case["outcome"] == "fail" for case in fault_results),
+        }
     return {
         "schema": comparison_schema,
         "run_id": str(uuid.uuid4()),
@@ -594,12 +683,7 @@ def compare_workflow_results(
         "target_result": target_result_ref,
         "command": {"argv": command, "cwd": "."},
         "status": "completed",
-        "summary": {
-            "selected": len(case_results),
-            "passed": outcomes.count("pass"),
-            "failed": outcomes.count("fail"),
-            "not_run": outcomes.count("not_run"),
-        },
+        "summary": summary,
         "cases": case_results,
         "infrastructure_errors": [],
     }

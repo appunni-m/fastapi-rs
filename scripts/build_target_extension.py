@@ -14,6 +14,8 @@ from pathlib import Path
 import tomllib
 
 ROOT = Path(__file__).resolve().parents[1]
+FAULT_INJECTION_ROOT = ROOT / "target" / "fault-injection"
+FAULT_INJECTION_FEATURE = "fastapi-rs-py/fault-injection"
 
 
 def _install_editable_target(uv: str, target_python: Path) -> int:
@@ -109,6 +111,7 @@ def _verify_overlay_metadata(
     cargo_command: list[str],
     *,
     all_features: bool = False,
+    fault_injection: bool = False,
 ) -> None:
     command = [
         *cargo_command,
@@ -123,7 +126,10 @@ def _verify_overlay_metadata(
     if all_features:
         command.append("--all-features")
     else:
-        command.extend(["--features", "pyo3/extension-module"])
+        features = ["pyo3/extension-module"]
+        if fault_injection:
+            features.append(FAULT_INJECTION_FEATURE)
+        command.extend(["--features", ",".join(features)])
     completed = subprocess.run(
         command,
         cwd=overlay_root,
@@ -228,6 +234,58 @@ def _install_extension_atomically(source: Path, destination: Path) -> None:
         temporary_path.unlink(missing_ok=True)
 
 
+def _fault_site_packages(target_python: Path) -> Path:
+    """Require the selected interpreter to use a venv contained in the fault output."""
+    site_packages_result = subprocess.run(
+        [
+            str(target_python),
+            "-c",
+            "import json, sys, sysconfig; print(json.dumps({"
+            "'prefix': sys.prefix, 'purelib': sysconfig.get_paths()['purelib']}))",
+        ],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if site_packages_result.returncode:
+        raise SystemExit(
+            site_packages_result.stderr.strip() or "cannot locate the fault target site-packages"
+        )
+    try:
+        environment_paths = json.loads(site_packages_result.stdout)
+    except json.JSONDecodeError as exc:
+        raise SystemExit("fault target Python returned malformed environment paths") from exc
+    if not isinstance(environment_paths, dict):
+        raise SystemExit("fault target Python returned malformed environment paths")
+    prefix = Path(environment_paths.get("prefix", ""))
+    site_packages = Path(environment_paths.get("purelib", ""))
+    if not prefix.is_absolute() or not site_packages.is_absolute():
+        raise SystemExit("fault target Python returned non-absolute environment paths")
+    try:
+        resolved_prefix = prefix.resolve()
+        resolved_prefix.relative_to(FAULT_INJECTION_ROOT.resolve())
+        site_packages.resolve().relative_to(resolved_prefix)
+    except ValueError as exc:
+        raise SystemExit(
+            "fault target Python must use site-packages inside a venv under target/fault-injection/"
+        ) from exc
+    return site_packages
+
+
+def _activate_fault_extension_overlay(site_packages: Path) -> Path:
+    """Put the isolated extension package before the editable source package."""
+    if not site_packages.is_absolute():
+        raise SystemExit("fault target Python returned a non-absolute site-packages path")
+    site_packages.mkdir(parents=True, exist_ok=True)
+
+    package_overlay = FAULT_INJECTION_ROOT / "python"
+    activation_file = site_packages / "fastapi_rs_fault_injection.pth"
+    activation = f"import sys; sys.path.insert(0, {str(package_overlay.resolve())!r})\n"
+    activation_mode = activation_file.stat().st_mode & 0o7777 if activation_file.exists() else 0o644
+    _atomic_write(activation_file, activation.encode("utf-8"), activation_mode)
+    return activation_file
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--python", type=Path, help="target virtualenv Python")
@@ -237,9 +295,18 @@ def main() -> int:
         "--clippy", action="store_true", help="run strict workspace Clippy without installing"
     )
     parser.add_argument(
+        "--fault-injection",
+        action="store_true",
+        help="build into target/fault-injection without replacing the normal extension",
+    )
+    parser.add_argument(
         "--starlette-rs-source", required=True, type=Path, help="selected Starlette-RS checkout"
     )
     args = parser.parse_args()
+    if args.clippy and args.fault_injection:
+        parser.error("--fault-injection cannot be combined with --clippy")
+    if args.fault_injection and args.python is None:
+        parser.error("--fault-injection requires --python inside target/fault-injection/")
     starlette_rs_source = args.starlette_rs_source.resolve()
     if not starlette_rs_source.is_dir():
         raise SystemExit(f"Starlette-RS source directory does not exist: {starlette_rs_source}")
@@ -249,7 +316,13 @@ def main() -> int:
     overlay_parent = ROOT
     default_target_directory = ROOT / "target"
     default_target_directory.mkdir(exist_ok=True)
-    target_directory = Path(os.environ.get("CARGO_TARGET_DIR", default_target_directory)).resolve()
+    target_directory = (
+        FAULT_INJECTION_ROOT / "cargo"
+        if args.fault_injection
+        else Path(os.environ.get("CARGO_TARGET_DIR", default_target_directory)).resolve()
+    )
+    if args.fault_injection:
+        target_directory.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(
         prefix=".fastapi-rs-build-", dir=overlay_parent
     ) as temporary_directory:
@@ -260,6 +333,7 @@ def main() -> int:
             starlette_rs_source,
             cargo_command,
             all_features=args.clippy,
+            fault_injection=args.fault_injection,
         )
         environment = os.environ.copy()
         environment["CARGO_TARGET_DIR"] = str(target_directory)
@@ -287,10 +361,22 @@ def main() -> int:
         target_python = args.python.absolute()
         if not target_python.is_file():
             raise SystemExit(f"target Python does not exist: {target_python}")
+        fault_site_packages = None
+        if args.fault_injection:
+            try:
+                target_python.relative_to(FAULT_INJECTION_ROOT)
+            except ValueError as exc:
+                raise SystemExit(
+                    "fault-injection Python must be inside target/fault-injection/"
+                ) from exc
+            fault_site_packages = _fault_site_packages(target_python)
         editable_status = _install_editable_target(args.uv, target_python)
         if editable_status:
             return editable_status
         environment["PYO3_PYTHON"] = str(target_python)
+        features = ["pyo3/extension-module"]
+        if args.fault_injection:
+            features.append(FAULT_INJECTION_FEATURE)
         command = [
             *cargo_command,
             "build",
@@ -300,7 +386,7 @@ def main() -> int:
             "--offline",
             "--release",
             "--features",
-            "pyo3/extension-module",
+            ",".join(features),
         ]
         completed = subprocess.run(command, cwd=overlay_root, env=environment, check=False)
         if completed.returncode:
@@ -316,9 +402,28 @@ def main() -> int:
                 f"expected one built FastAPI-RS library artifact, found {len(artifacts)}"
             )
         suffix = _extension_suffix(target_python)
-        destination = ROOT / "fastapi-rs-py/python/fastapi_rs" / f"_core{suffix}"
+        if args.fault_injection:
+            package_overlay = FAULT_INJECTION_ROOT / "python" / "fastapi_rs"
+            package_overlay.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(
+                ROOT / "fastapi-rs-py/python/fastapi_rs/__init__.py",
+                package_overlay / "__init__.py",
+            )
+            destination = package_overlay / f"_core{suffix}"
+        else:
+            destination = ROOT / "fastapi-rs-py/python/fastapi_rs" / f"_core{suffix}"
         _install_extension_atomically(artifacts[0], destination)
-    print(f"installed native extension built against {starlette_rs_source}")
+    if args.fault_injection:
+        if fault_site_packages is None:
+            raise SystemExit("fault target site-packages were not initialized")
+        activation_file = _activate_fault_extension_overlay(fault_site_packages)
+        print(
+            "installed fault-injection extension under "
+            f"{FAULT_INJECTION_ROOT / 'python' / 'fastapi_rs'} "
+            f"built against {starlette_rs_source}; activated by {activation_file}"
+        )
+    else:
+        print(f"installed native extension built against {starlette_rs_source}")
     return 0
 
 

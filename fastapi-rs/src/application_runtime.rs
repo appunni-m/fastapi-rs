@@ -10079,6 +10079,16 @@ impl FastApiCall {
         }
         let route_body_fields_embedded = self.selected_body_fields_embedded(py)?;
         self.pending = Some(PendingAction::RouteInvocation);
+        #[cfg(feature = "fault-injection")]
+        if self.route_index.is_some()
+            && self.websocket_route_index.is_none()
+            && self.frontend_route_index.is_none()
+            && crate::fault_injection::take_http_route_invoke_before()
+        {
+            return Err(PyRuntimeError::new_err(
+                "Fault injected at http.route.invoke.before",
+            ));
+        }
         let websocket = self.websocket.as_ref().map(|socket| socket.bind(py));
         let request = self.request.as_ref().map(|request| request.bind(py));
         let injected_response = self

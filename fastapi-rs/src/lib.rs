@@ -11,6 +11,8 @@ mod deprecated_api;
 mod docs;
 mod encoding;
 mod errors;
+#[cfg(feature = "fault-injection")]
+mod fault_injection;
 mod lifespan;
 mod openapi;
 mod operation;
@@ -26,6 +28,20 @@ pub use operation::{
     FastApiInputLocation, FastApiInputParameter, FastApiInputValue, FastApiOperation,
     FastApiOperationMatch, FastApiOperationRouter, FastApiRequestMatch,
 };
+
+/// Arms one allow-listed fault point in builds compiled with `fault-injection`.
+#[cfg(feature = "fault-injection")]
+#[doc(hidden)]
+pub fn arm_fault_injection(point: &str) -> Result<(), &'static str> {
+    fault_injection::arm(point)
+}
+
+/// Clears any still-armed allow-listed fault point in fault-injection builds.
+#[cfg(feature = "fault-injection")]
+#[doc(hidden)]
+pub fn clear_fault_injection() {
+    fault_injection::clear();
+}
 
 /// Registers FastAPI's public Python API from the Rust-owned implementation.
 pub fn register_python_api(module: &Bound<'_, PyModule>) -> PyResult<()> {

@@ -306,7 +306,23 @@ fn identity<'py>(py: Python<'py>) -> PyResult<Bound<'py, PyDict>> {
     identity.set_item("target", "fastapi-rs")?;
     identity.set_item("version", env!("CARGO_PKG_VERSION"))?;
     identity.set_item("binding", "pyo3")?;
+    identity.set_item(
+        "fault_injection_compiled",
+        cfg!(feature = "fault-injection"),
+    )?;
     Ok(identity)
+}
+
+#[cfg(feature = "fault-injection")]
+#[pyfunction]
+fn arm_fault_injection(point: &str) -> PyResult<()> {
+    fastapi_rs::arm_fault_injection(point).map_err(PyValueError::new_err)
+}
+
+#[cfg(feature = "fault-injection")]
+#[pyfunction]
+fn clear_fault_injection() {
+    fastapi_rs::clear_fault_injection();
 }
 
 #[pyfunction]
@@ -325,6 +341,10 @@ fn _core(module: &Bound<'_, PyModule>) -> PyResult<()> {
     module.add_function(wrap_pyfunction!(identity, module)?)?;
     module.add_function(wrap_pyfunction!(scope_kind, module)?)?;
     module.add_function(wrap_pyfunction!(require_supported_scope, module)?)?;
+    #[cfg(feature = "fault-injection")]
+    module.add_function(wrap_pyfunction!(arm_fault_injection, module)?)?;
+    #[cfg(feature = "fault-injection")]
+    module.add_function(wrap_pyfunction!(clear_fault_injection, module)?)?;
     module.add_class::<PyJsonableEncoder>()?;
     let encoder = Py::new(module.py(), PyJsonableEncoder)?;
     install_encoder_signature(module.py(), encoder.bind(module.py()))?;
