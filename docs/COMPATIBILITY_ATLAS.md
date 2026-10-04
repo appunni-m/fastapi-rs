@@ -6,7 +6,7 @@ This source-backed compatibility atlas indexes the API denominator and candidate
 
 - FastAPI: 0.141.1 at `95f8322ee1dcda7ceace7b1c4f6c9915b36d748f`.
 - Starlette oracle contract: 1.6.0 at `4f250d6b814587e20c5365f0a5f0c4d42bcb929f` (the sole selected Starlette version).
-- Starlette-RS implementation contract: at `a345f8c3f5306dbc00c5fc37f8f16d2e79666065`.
+- Starlette-RS implementation contract: at `7703245507b68a05756e39e1135df9e5aa3e38ef`.
 - FastAPI declares `starlette>=0.46.0`, which admits the selected contract. Its upstream lock graph is dependency-inventory evidence, not another compatibility profile.
 - Pydantic: 2.13.4 source-lock baseline; Python support is `>=3.10`.
 
@@ -14,7 +14,7 @@ This source-backed compatibility atlas indexes the API denominator and candidate
 
 | Candidates | Supported by source evidence | Private/internal | Uncertain |
 |---:|---:|---:|---:|
-| 1593 | 461 | 1104 | 28 |
+| 1593 | 460 | 1104 | 29 |
 
 `api_candidates` in the machine-readable atlas carries a FastAPI source path/line for every row plus public evidence or an explicit uncertainty/private rule. `supported` classifies the upstream API surface only; it does not claim target implementation support.
 
@@ -28,12 +28,12 @@ Supported inherited candidates link FastAPI inheritance, documentation, and sibl
 
 ## Per-symbol API contract in the active manifest
 
-The single `tests/fixtures/manifest.yaml` indexes 461 source-supported symbols and 9 supported inherited operations from 13 reviewed inherited candidates (470 supported public API entries total). The remaining inherited candidates have explicit private/internal or uncertain dispositions and do not create target operation contracts. Supported inherited operations delegate to a canonical Starlette-RS operation or record a pinned source signature and explicit sibling-contract gap. The contract links alias, deprecation, error, documented-feature, direct API workflow, selector, and planned Python import-path evidence; 455 direct symbols link to a documented-page fixture design and 34 to a direct API input workflow. Its operation-scope field distinguishes 108 source-described slices from 353 symbols still awaiting a slice description; slice descriptions are scope metadata, not parity evidence. It also links 37 symbol rows to 20 distinct source-defined class constructors, separately from reflected class-call signatures. The current Python facade directly re-exports 21 native names; this source contract does not measure behavioral completeness, and broader operation-level review remains pending.
+The single `tests/fixtures/manifest.yaml` indexes 460 source-supported symbols and 9 supported inherited operations from 13 reviewed inherited candidates (469 supported public API entries total). The remaining inherited candidates have explicit private/internal or uncertain dispositions and do not create target operation contracts. Supported inherited operations delegate to a canonical Starlette-RS operation or record a pinned source signature and explicit sibling-contract gap. The contract links alias, deprecation, error, documented-feature, direct API workflow, selector, and planned Python import-path evidence; 454 direct symbols link to a documented-page fixture design and 34 to a direct API input workflow. Its operation-scope field distinguishes 110 source-described slices from 350 symbols still awaiting a slice description; slice descriptions are scope metadata, not parity evidence. It also links 37 symbol rows to 20 distinct source-defined class constructors, separately from reflected class-call signatures. The current Python facade directly re-exports 21 native names; this source contract does not measure behavioral completeness, and broader operation-level review remains pending.
 
 | Signature/shape evidence | Symbols |
 |---|---:|
 | `module-object-no-call-signature` | 1 |
-| `non-callable-surface` | 235 |
+| `non-callable-surface` | 234 |
 | `runtime-signature-reflected` | 224 |
 | `runtime-signature-unavailable` | 1 |
 
@@ -47,13 +47,13 @@ The single `tests/fixtures/manifest.yaml` indexes 461 source-supported symbols a
 
 Python-source exclusions include the documented Pydantic Settings configuration file, one debugging/setup example, and 91 package initializers. Of the remaining examples, 333 have a reviewed direct input-workflow link; examples grouped with a documentation page inherit only page-level selectors, which do not claim that each example's behavior was exercised.
 
-Review state is separate from coverage completeness. `reviewed_partial` means pinned source evidence and exact indexed workflows, cases, and selectors were reviewed for the linked behavior; it does not claim complete source behavior or parity. Pending counts identify examples without that direct review. The materialized index has 453 distinct upstream test modules, 104 documentation pages, and 333 exact documentation Python examples linked to workflows; all 1483 mapping rows are partial. No source module, documentation page, or Python example is fully covered by an input workflow.
+Review state is separate from coverage completeness. `reviewed_partial` means pinned source evidence and exact indexed workflows, cases, and selectors were reviewed for the linked behavior; it does not claim complete source behavior or parity. Pending counts identify examples without that direct review. The materialized index has 453 distinct upstream test modules, 104 documentation pages, and 333 exact documentation Python examples linked to workflows; all 1484 mapping rows are partial. No source module, documentation page, or Python example is fully covered by an input workflow.
 
 `mapping_status` labels source-to-feature mapping, while `review_status` and independent workflow links record whether a partial input mapping was reviewed. A row may therefore retain `candidate` while already having `review_status: reviewed_partial` and exact fixture cases/selectors. The documentation denominator is feature pages; `documented_sections` are discovery leads, not separately reviewed workflow units.
 
 Candidate function and section records carry source path/SHA evidence, exact whole-token signals, family IDs, and family-level selectors. Per-function mapping scope distinguishes reviewed source mappings, function-body signals, and filename candidates. Test modules index function names/lines without copying bodies. These records are backlog leads, not independent executable parity cases; linked workflows cover only their declared partial behavior, and additional behavior needs tailored stimuli and selector review. Rows without a signal remain `review_required`; exclusions include a reason. Benchmark modules are routed to correctness-gated benchmark work.
 
-`make parity-validate` checks 1593 API classifications against pinned FastAPI source evidence, every source digest in the coverage matrix, fixture links or exclusion reasons for all 492 test modules and 155 documentation pages, direct Starlette 1.6.0 dependency edges, and all 50 declared observation selectors. It also validates 890 input-only design records, including 2118 per-function test designs, selector evidence, source digests, and the absence of expected result fields. The current materialized-input index contains 523 input-only workflows, 2059 cases, and 1483 partial source mappings. These are oracle inputs, not target parity results; the remaining design candidates still need review and materialization. Selectors marked `planned` in `observation-selectors.json` still need runner support.
+`make parity-validate` checks 1593 API classifications against pinned FastAPI source evidence, every source digest in the coverage matrix, fixture links or exclusion reasons for all 492 test modules and 155 documentation pages, direct Starlette 1.6.0 dependency edges, and all 50 declared observation selectors. It also validates 890 input-only design records, including 2118 per-function test designs, selector evidence, source digests, and the absence of expected result fields. The current materialized-input index contains 524 input-only workflows, 2060 cases, and 1484 partial source mappings. These are oracle inputs, not target parity results; the remaining design candidates still need review and materialization. Selectors marked `planned` in `observation-selectors.json` still need runner support.
 
 ## Independently authored input workflows
 
@@ -576,6 +576,7 @@ Reviewed workflow recipes live in `tests/fixtures/input-recipes/parity/*.yaml`. 
 | `validation-error-context-upstream` | 7 | 1 | [`tests/fixtures/input-recipes/parity/validation-error-context-upstream.yaml`](../tests/fixtures/input-recipes/parity/validation-error-context-upstream.yaml) | [`tests/fixtures/workloads/validation_error_context.py`](../tests/fixtures/workloads/validation_error_context.py) |
 | `webhooks-security` | 1 | 2 | [`tests/fixtures/input-recipes/parity/webhooks-security.yaml`](../tests/fixtures/input-recipes/parity/webhooks-security.yaml) | [`tests/fixtures/workloads/webhooks_security.py`](../tests/fixtures/workloads/webhooks_security.py) |
 | `websocket-echo` | 1 | 1 | [`tests/fixtures/input-recipes/parity/websocket-echo.yaml`](../tests/fixtures/input-recipes/parity/websocket-echo.yaml) | [`tests/fixtures/workloads/websocket_echo.py`](../tests/fixtures/workloads/websocket_echo.py) |
+| `websocket-exception-handler` | 1 | 1 | [`tests/fixtures/input-recipes/parity/websocket-exception-handler.yaml`](../tests/fixtures/input-recipes/parity/websocket-exception-handler.yaml) | [`tests/fixtures/workloads/websocket_exception_handler.py`](../tests/fixtures/workloads/websocket_exception_handler.py) |
 | `websocket-frontend-route-priority-upstream` | 1 | 1 | [`tests/fixtures/input-recipes/parity/websocket-frontend-route-priority-upstream.yaml`](../tests/fixtures/input-recipes/parity/websocket-frontend-route-priority-upstream.yaml) | [`tests/fixtures/workloads/websocket_frontend_route_priority_upstream.py`](../tests/fixtures/workloads/websocket_frontend_route_priority_upstream.py) |
 | `websocket-router-dependencies-upstream` | 2 | 1 | [`tests/fixtures/input-recipes/parity/websocket-router-dependencies-upstream.yaml`](../tests/fixtures/input-recipes/parity/websocket-router-dependencies-upstream.yaml) | [`tests/fixtures/workloads/websocket_router_dependencies_upstream.py`](../tests/fixtures/workloads/websocket_router_dependencies_upstream.py) |
 | `websocket-router-dependency-slice` | 2 | 1 | [`tests/fixtures/input-recipes/parity/websocket-router-dependency-slice.yaml`](../tests/fixtures/input-recipes/parity/websocket-router-dependency-slice.yaml) | [`tests/fixtures/workloads/websocket_router_dependency_slice.py`](../tests/fixtures/workloads/websocket_router_dependency_slice.py) |
@@ -593,7 +594,7 @@ The merged coverage matrix links each FastAPI test, documented feature, or examp
 |---:|---:|---:|---:|
 | 924 | 2409 | 485 | 12 |
 
-The sibling Starlette-RS manifest, API review, and coverage matrix remain the sole Starlette API inventory. FastAPI's atlas stores only relevant requirement references plus manifest/catalog/review/matrix SHA-256 digests. The inspected Starlette-RS implementation revision is a345f8c3f5306dbc00c5fc37f8f16d2e79666065 (pinned, clean Starlette-RS checkout).
+The sibling Starlette-RS manifest, API review, and coverage matrix remain the sole Starlette API inventory. FastAPI's atlas stores only relevant requirement references plus manifest/catalog/review/matrix SHA-256 digests. The inspected Starlette-RS implementation revision is 7703245507b68a05756e39e1135df9e5aa3e38ef (pinned, clean Starlette-RS checkout).
 
 ## Errors, aliases, optional features, and deprecations
 

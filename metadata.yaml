@@ -80,14 +80,14 @@ api_inventory:
 import_binding_classification_review:
   artifact: tests/fixtures/api-import-binding-classification-review.json
   schema: fastapi-starlette-import-binding-review/v1
-  sha256: 3807632f1300e7904d095e302b96019ef1231f8016389af817f2abf7118cf127
+  sha256: 1f70f48dfbc5880335d106af4f121f36c127ae6157db1abc6907b5716aa14238
   source_identity:
     package: FastAPI
     version: 0.141.1
     source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
     selected_starlette_profile: 1.6.0
     starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
-    starlette_rs_contract_commit: a345f8c3f5306dbc00c5fc37f8f16d2e79666065
+    starlette_rs_contract_commit: 7703245507b68a05756e39e1135df9e5aa3e38ef
   starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
   counts:
     candidates: 97
@@ -98,8 +98,8 @@ import_binding_classification_review:
     starlette_rs_unreviewed_unique_targets: 4
   candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
   pinned_starlette_rs_sources:
-    metadata_sha256: 2d7affbb42f9794ac7cd2a7a84897bd0b64c2c1cc43e1cadc0c61241d9ac687a
-    manifest_sha256: e189b7aad648ba65bff4185954040d5716ef19bedb783911b12afdacca9cd727
+    metadata_sha256: 1684d7a5c80b9c8bbebcb1325cb6d6bde95a63ea845ca97a98b3c91249640145
+    manifest_sha256: 5798582b87cb09de457d2d702537c6afe73f0d866423d891014e3e00247300a9
     api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
     api_review_sha256: 8b25f2e3a46753316446077bfde97b6ac8a342233e2f4e50b12d3d01eafbe099
 
@@ -363,16 +363,16 @@ source_api_classification_review:
 api_public_candidate_classification_review:
   artifact: tests/fixtures/api-public-candidate-classification-review.json
   schema: fastapi-rs/public-candidate-classification-review@1
-  sha256: 1bc0991330514eeae000b9212d0bac7fd81c4abe5ac7eaa95d9d0ddbd64b2dab
+  sha256: 1b9f203f2699261942b56bdd1220775c2e8a4ca5fdf6cdaf23b49a359aaf02f8
   source_identity:
     package: FastAPI
     version: 0.141.1
     source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
   counts:
     candidates: 137
-    supported: 9
+    supported: 8
     private_or_internal: 125
-    uncertain: 3
+    uncertain: 4
   candidate_ids_sha256: 69e78951df8bf49e40555500df2a4d9f61e970f4d5d635fb80ebe852d7126042
 
 classification_atlas:
@@ -435,7 +435,7 @@ classification_atlas:
 starlette_rs:
   owner: ../starlette-rs
   repository: https://github.com/appunni-m/starlette-rs
-  commit: a345f8c3f5306dbc00c5fc37f8f16d2e79666065
+  commit: 7703245507b68a05756e39e1135df9e5aa3e38ef
   distribution_version: 0.1.0
   contract_id: starlette-1.6.0-asgi-http-config-session-slice
   metadata: ../starlette-rs/metadata.yaml
@@ -810,6 +810,8 @@ reviewed_api_contract_overlay:
           case_id: fastapi.applications.exception-handler.after-stack-cache
         - recipe_path: tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml
           case_id: fastapi.websocket-validation.custom-handler-close
+        - recipe_path: tests/fixtures/input-recipes/parity/websocket-exception-handler.yaml
+          case_id: fastapi.websocket-exception.custom-handler-close
       feature_ids: [public-api-errors]
       observation_selectors:
         - http.status
@@ -823,6 +825,7 @@ reviewed_api_contract_overlay:
         - websocket.close_reason
         - websocket.event_order
         - websocket.messages
+        - websocket.workload_trace
       supported_slice: >-
         Partial native slice: registers custom HTTP exception handlers through
         the decorator and returns the original handler object. A custom class
@@ -834,10 +837,12 @@ reviewed_api_contract_overlay:
         Handler registration after the middleware stack has been cached,
         custom RequestValidationError handlers, constructor-argument
         registration of WebSocket validation handlers, custom WebSocket
-        exception object identity, and default FastAPI validation-handler
-        entries remain outside this slice. One independent invalid-path
-        WebSocket workflow registers a custom WebSocketRequestValidationError
-        handler and samples its close/event behavior.
+        exception handler object identity/state parity, and default FastAPI
+        validation-handler entries remain outside this slice. Independent
+        WebSocket workflows cover custom validation-error and
+        WebSocketException handlers; the latter records the endpoint socket,
+        handler socket, exception fields, state, and close event for direct
+        oracle comparison.
     fastapi.applications.FastAPI.frontend:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::frontend
       source_evidence:
@@ -1292,12 +1297,19 @@ reviewed_api_contract_overlay:
       source_evidence:
         - {path: fastapi/exception_handlers.py, symbol: http_exception_handler}
         - {path: docs_src/handling_errors/tutorial006_py310.py, symbol: custom_http_exception_handler}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/handling-errors-doc-tutorial006-review.yaml
+          case_id: fastapi.docs-example.handling-errors.tutorial006.delegated-http-error
       feature_ids: [public-api-errors]
-      observation_selectors:
-        - http.status
-        - http.headers.ordered
-        - http.body.bytes
-        - http.body.json
+      observation_selectors: [http.status, http.body.bytes]
+      supported_slice: >-
+        The documented tutorial imports this public coroutine and directly awaits
+        it from a registered Starlette HTTPException handler. The linked input
+        observes the delegated 409 response status and exact JSON body for one
+        FastAPI HTTPException. It does not establish direct-call identity or
+        signature parity, response-header behavior, body-forbidden statuses,
+        arbitrary Starlette HTTPException subclasses, or the full handler
+        contract.
       documentation_contract_refs:
         - source_path: docs/en/docs/tutorial/handling-errors.md
           fixture_id: fastapi.docs.tutorial-handling-errors
@@ -1339,14 +1351,18 @@ reviewed_api_contract_overlay:
       source_evidence:
         - {path: fastapi/exception_handlers.py, symbol: request_validation_exception_handler}
         - {path: docs_src/handling_errors/tutorial006_py310.py, symbol: validation_exception_handler}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/handling-errors-doc-tutorial006-review.yaml
+          case_id: fastapi.docs-example.handling-errors.tutorial006.delegated-validation-error
       feature_ids: [public-api-errors, request-validation]
-      observation_selectors:
-        - http.status
-        - http.headers.ordered
-        - http.body.bytes
-        - http.body.json
-        - validation.error_class
-        - validation.error_details
+      observation_selectors: [http.status, http.body.bytes]
+      supported_slice: >-
+        The documented tutorial imports this public coroutine and directly awaits
+        it from a registered RequestValidationError handler. The linked input
+        observes a 422 response and exact serialized error body for one invalid
+        path parameter. It does not establish direct-call identity or signature
+        parity, arbitrary validation records, body serialization options, or the
+        full handler contract.
       documentation_contract_refs:
         - source_path: docs/en/docs/tutorial/handling-errors.md
           fixture_id: fastapi.docs.tutorial-handling-errors
@@ -3553,6 +3569,8 @@ reviewed_api_contract_overlay:
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/direct-api-reference-wave.yaml
           case_id: fastapi.direct-api-reference-wave.websocket-exception-signature
+        - recipe_path: tests/fixtures/input-recipes/parity/websocket-exception-handler.yaml
+          case_id: fastapi.websocket-exception.custom-handler-close
       feature_ids: [public-api-errors, websocket-lifecycle]
       observation_selectors:
         - error.args
@@ -3563,13 +3581,16 @@ reviewed_api_contract_overlay:
         - python.signature
         - websocket.close_code
         - websocket.close_reason
+        - websocket.workload_trace
       supported_slice: >-
         FastAPI 0.141.1 documents `WebSocketException` as a top-level `fastapi`
         import. The linked direct API case captures its class signature, while
-        the identity workflow records the root-to-public-module relation. This
-        source and fixture scope covers only the documented import, signature,
-        and identity relation; it does not establish constructor-call,
-        Starlette-subclass, WebSocket close, or ASGI dispatch parity.
+        the identity workflow records the root-to-public-module relation. The
+        custom-handler workflow also constructs this error and observes its
+        code, reason, dispatch, and resulting close event. Socket identity and
+        state remain an explicit partial-parity gap under
+        FastAPI.exception_handler; the fixtures do not establish the complete
+        constructor signature or Starlette subclass contract.
     fastapi.exceptions.WebSocketException:
       rust_binding: fastapi-rs/src/errors.rs::register
       source_evidence:

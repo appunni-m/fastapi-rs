@@ -1,0 +1,45 @@
+# Input-only case for the FastAPI WebSocketException handler path. The workload
+# records handler dispatch, socket identity/state, and the close stimulus.
+schema: fastapi-rs/python-asgi-workflow@3
+workload:
+  file: tests/fixtures/workloads/websocket_exception_handler.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.websocket-exception.custom-handler-close
+  factory_input:
+    endpoint_code: 1011
+    endpoint_reason: endpoint failure
+    handler_close_code: 1008
+    handler_close_reason: custom policy
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: accepted-websocket-custom-exception-handler
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      scheme: ws
+      path: /ws
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+      subprotocols: []
+    receive_events:
+    - {type: websocket.connect}
+    - {type: websocket.disconnect, code: 1000, reason: client complete}
+    observations:
+    - {kind: websocket, selector: close_code, comparison: exact}
+    - {kind: websocket, selector: close_reason, comparison: exact}
+    - {kind: websocket, selector: event_order, comparison: ordered}
+    - {kind: websocket, selector: messages, comparison: ordered}
+    - {kind: websocket, selector: workload_trace, comparison: ordered}
+  source_evidence:
+  - {path: tests/test_ws_router.py, kind: upstream_test}
+  - {path: docs/en/docs/tutorial/handling-errors.md, kind: upstream_documentation}

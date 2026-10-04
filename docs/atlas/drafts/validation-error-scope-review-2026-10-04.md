@@ -62,3 +62,10 @@ FastAPI-RS 0.1.0 / Starlette-RS `a345f8c3f5306dbc00c5fc37f8f16d2e79666065`.
 This establishes only the exact response-projected error-sequence cases in the
 overlay; direct method invocation/signature, other validation subclasses, and
 the broader exception-handler matrix remain open.
+
+## Default HTTP handler workflow result
+
+The root task linked the two documented `fastapi.exception_handlers` functions
+to their existing tutorial 006 cases and added source-bounded operation scope
+descriptions. Identity-checked oracle execution completed both cases under
+FastAPI 0.141.1 / Starlette 1.6.0 (`parity-results/oracle/603ea750-d439-4dc9-a308-c9c2b8f3a070.json`). The 409 FastAPI HTTP-exception and 422 request-validation responses were observed as exact body bytes with status selectors. The target worker did not produce a result: it failed to import `fastapi.exception_handlers` with `ModuleNotFoundError`. Thus these cases are mapped source inputs, not parity evidence; implementing and exposing the two native handlers remains required before comparison.

@@ -6819,7 +6819,7 @@
       "input_path": "tests/fixtures/inputs/parity/response-model-data-filter-exclude-unset-none-review.json",
       "input_sha256": "e8df817a4df31b3f2f646068c8a9286416ff13577822d1fc572bbc5d8eb34a17",
       "recipe_path": "tests/fixtures/input-recipes/parity/response-model-data-filter-exclude-unset-none-review.yaml",
-      "recipe_sha256": "2f24f265ff12f6d65fc3663b98c4bb84a7b85a4b9e046ab1f7f1a0af968dc1fd",
+      "recipe_sha256": "cf8174dff7bebcc6da345a7bad0e90590639a85101e00454c60256dc130600f3",
       "workload_path": "tests/fixtures/workloads/response_model_data_filter_exclude_unset_none_review.py",
       "workload_sha256": "24b60f06b2472a0254c9ae15d0b208e0edd99d3cb8a3833696d343bacd0c13cd",
       "case_ids": [
@@ -8864,6 +8864,18 @@
       "workload_sha256": "80b17cc3cfa8edce786613940e882cf439becaed01c5af498a6b214159fcff89",
       "case_ids": [
         "fastapi.websocket.echo-text"
+      ]
+    },
+    {
+      "id": "websocket-exception-handler",
+      "input_path": "tests/fixtures/inputs/parity/websocket-exception-handler.json",
+      "input_sha256": "80dce3c0a855b4c7b6a78db4656f13b8973bac63f392a8affca31c7bd31411d7",
+      "recipe_path": "tests/fixtures/input-recipes/parity/websocket-exception-handler.yaml",
+      "recipe_sha256": "816d93a950a9a7e85c6153152d12c9ee434a85e52fd810a9d6464408d7cfb3f1",
+      "workload_path": "tests/fixtures/workloads/websocket_exception_handler.py",
+      "workload_sha256": "3ed65080fd2c95011ee65990ca222398e09217a121b38ae2e487368837f5c155",
+      "case_ids": [
+        "fastapi.websocket-exception.custom-handler-close"
       ]
     },
     {
@@ -32618,6 +32630,26 @@
       "observation_selectors": [
         "websocket.event_order",
         "websocket.messages"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_ws_router.py",
+      "fixture_id": "fastapi.test.test-ws-router",
+      "workflow_id": "websocket-exception-handler",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, websocket.close_code, websocket.close_reason, websocket.event_order, websocket.messages, websocket.workload_trace. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.websocket-exception.custom-handler-close"
+      ],
+      "observation_selectors": [
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
+        "websocket.close_code",
+        "websocket.close_reason",
+        "websocket.event_order",
+        "websocket.messages",
+        "websocket.workload_trace"
       ]
     },
     {
