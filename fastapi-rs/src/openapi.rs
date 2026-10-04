@@ -68,6 +68,7 @@ pub(crate) struct OpenApiInfo<'a> {
     pub(crate) contact: Option<&'a Py<PyAny>>,
     pub(crate) license_info: Option<&'a Py<PyAny>>,
     pub(crate) openapi_external_docs: Option<&'a Py<PyAny>>,
+    pub(crate) servers: Option<&'a Py<PyAny>>,
     pub(crate) version: &'a str,
 }
 
@@ -425,14 +426,25 @@ pub(crate) fn openapi_document(
     }
     info.set_item("version", app_info.version)?;
     document.set_item("info", info)?;
-    document.set_item("paths", paths)?;
+    let configured_servers = match app_info.servers.map(|servers| servers.bind(py)) {
+        Some(servers) if servers.is_truthy()? => Some(servers),
+        _ => None,
+    };
     if let Some(root_path) = root_path.filter(|path| !path.is_empty()) {
         let server = PyDict::new(py);
         server.set_item("url", root_path)?;
         let servers = PyList::empty(py);
         servers.append(server)?;
+        if let Some(configured_servers) = configured_servers.as_ref() {
+            for configured_server in configured_servers.try_iter()? {
+                servers.append(configured_server?)?;
+            }
+        }
+        document.set_item("servers", servers)?;
+    } else if let Some(servers) = configured_servers {
         document.set_item("servers", servers)?;
     }
+    document.set_item("paths", paths)?;
     if let Some(external_docs) = app_info.openapi_external_docs {
         let external_docs = external_docs.bind(py);
         if external_docs.is_truthy()? {

@@ -2,56 +2,16 @@
 //!
 //! The templates follow FastAPI 0.141.1's built-in openapi.docs helpers.
 
-use pyo3::exceptions::PyRuntimeError;
 use pyo3::prelude::*;
 use pyo3::types::{PyBool, PyDict, PyModule, PyString, PyTuple};
 
 const GOOGLE_FONTS_URL: &str =
     "https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700";
-
-/// Builds the default Swagger UI page.
-pub(crate) fn swagger_ui_html(openapi_url: &str, oauth2_redirect_url: &str, title: &str) -> String {
-    let mut html = String::from(
-        "\n    <!DOCTYPE html>\n    <html>\n    <head>\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <link type=\"text/css\" rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css\">\n    <link rel=\"shortcut icon\" href=\"https://fastapi.tiangolo.com/img/favicon.png\">\n    <title>",
-    );
-    html.push_str(title);
-    html.push_str(
-        "</title>\n    </head>\n    <body>\n    <div id=\"swagger-ui\">\n    </div>\n    <script src=\"https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js\"></script>\n    <!-- `SwaggerUIBundle` is now available on the page -->\n    <script>\n    const ui = SwaggerUIBundle({\n        url: '",
-    );
-    html.push_str(openapi_url);
-    html.push_str(
-        "',\n    \"dom_id\": \"#swagger-ui\",\n\"layout\": \"BaseLayout\",\n\"deepLinking\": true,\n\"showExtensions\": true,\n\"showCommonExtensions\": true,\noauth2RedirectUrl: window.location.origin + '",
-    );
-    html.push_str(oauth2_redirect_url);
-    html.push_str(
-        "',\n    presets: [\n        SwaggerUIBundle.presets.apis,\n        SwaggerUIBundle.SwaggerUIStandalonePreset\n        ],\n    })\n    </script>\n    </body>\n    </html>\n    ",
-    );
-    html
-}
-
-/// Adds FastAPI's optional Swagger UI OAuth initialization to the default page.
-pub(crate) fn swagger_ui_html_with_init_oauth(
-    py: Python<'_>,
-    openapi_url: &str,
-    oauth2_redirect_url: &str,
-    title: &str,
-    init_oauth: Option<&Bound<'_, PyAny>>,
-) -> PyResult<String> {
-    let mut html = swagger_ui_html(openapi_url, oauth2_redirect_url, title);
-    if let Some(init_oauth) = init_oauth {
-        if init_oauth.is_truthy()? {
-            let oauth_configuration = html_safe_encoded_json(py, init_oauth)?;
-            let script_end = html.rfind("\n    </script>").ok_or_else(|| {
-                PyRuntimeError::new_err("default Swagger UI HTML has no closing script tag")
-            })?;
-            let mut initialization = String::from("\n        ui.initOAuth(");
-            initialization.push_str(&oauth_configuration);
-            initialization.push_str(")\n        ");
-            html.insert_str(script_end, &initialization);
-        }
-    }
-    Ok(html)
-}
+pub(crate) const DEFAULT_SWAGGER_JS_URL: &str =
+    "https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js";
+pub(crate) const DEFAULT_SWAGGER_CSS_URL: &str =
+    "https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css";
+pub(crate) const DEFAULT_SWAGGER_FAVICON_URL: &str = "https://fastapi.tiangolo.com/img/favicon.png";
 
 /// Builds the default ReDoc page.
 pub(crate) fn redoc_html(openapi_url: &str, title: &str) -> String {
@@ -133,7 +93,7 @@ fn python_format(py: Python<'_>, value: &Bound<'_, PyAny>) -> PyResult<String> {
         swagger_ui_parameters
     )
 )]
-fn get_swagger_ui_html<'py>(
+pub(crate) fn get_swagger_ui_html<'py>(
     py: Python<'py>,
     openapi_url: Bound<'py, PyAny>,
     title: Bound<'py, PyAny>,

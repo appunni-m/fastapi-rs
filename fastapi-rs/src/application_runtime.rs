@@ -1110,8 +1110,11 @@ pub(crate) struct PyFastApi {
     summary: Option<String>,
     description: String,
     version: String,
-    openapi_url: String,
+    openapi_url: Option<String>,
+    servers: Py<PyAny>,
+    swagger_ui_oauth2_redirect_url: Option<String>,
     swagger_ui_init_oauth: Option<Py<PyAny>>,
+    swagger_ui_parameters: Option<Py<PyAny>>,
     terms_of_service: Option<String>,
     contact: Option<Py<PyAny>>,
     license_info: Option<Py<PyAny>>,
@@ -1272,7 +1275,7 @@ struct RouterIncludePolicy<'policy> {
 #[pymethods]
 impl PyFastApi {
     #[new]
-    #[pyo3(signature = (*, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", docs_url = "/docs", redoc_url = "/redoc", swagger_ui_init_oauth = None, terms_of_service = None, contact = None, license_info = None, openapi_external_docs = None, dependencies = None, default_response_class = None, redirect_slashes = true, middleware = None, exception_handlers = None, on_startup = None, on_shutdown = None, lifespan = None, strict_content_type = true))]
+    #[pyo3(signature = (*, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", servers = None, docs_url = "/docs", redoc_url = "/redoc", swagger_ui_oauth2_redirect_url = "/docs/oauth2-redirect", swagger_ui_init_oauth = None, swagger_ui_parameters = None, terms_of_service = None, contact = None, license_info = None, openapi_external_docs = None, dependencies = None, default_response_class = None, redirect_slashes = true, middleware = None, exception_handlers = None, on_startup = None, on_shutdown = None, lifespan = None, strict_content_type = true))]
     // lint-exception: PyO3 needs one Rust argument per Python constructor keyword.
     #[allow(
         clippy::too_many_arguments,
@@ -1284,10 +1287,13 @@ impl PyFastApi {
         summary: Option<String>,
         description: &str,
         version: &str,
-        openapi_url: &str,
+        openapi_url: Option<&str>,
+        servers: Option<Py<PyAny>>,
         docs_url: Option<&str>,
         redoc_url: Option<&str>,
+        swagger_ui_oauth2_redirect_url: Option<&str>,
         swagger_ui_init_oauth: Option<Py<PyAny>>,
+        swagger_ui_parameters: Option<Py<PyAny>>,
         terms_of_service: Option<String>,
         contact: Option<Py<PyAny>>,
         license_info: Option<Py<PyAny>>,
@@ -1315,6 +1321,10 @@ impl PyFastApi {
             .getattr("State")?
             .call0()?
             .unbind();
+        let servers = match servers {
+            Some(servers) if servers.bind(py).is_truthy()? => servers,
+            _ => PyList::empty(py).into_any().unbind(),
+        };
         let exception_handlers = match exception_handlers {
             Some(handlers) => py
                 .import("builtins")?
@@ -1341,16 +1351,20 @@ impl PyFastApi {
         }
         let mut docs_router = RouteTable::new();
         let mut docs_routes = Vec::new();
-        if !openapi_url.is_empty() {
+        if openapi_url.is_some_and(|url| !url.is_empty()) {
             if let Some(path) = docs_url {
                 docs_router
                     .add_route(path, ["GET"])
                     .map_err(|error| PyValueError::new_err(error.to_string()))?;
                 docs_routes.push(FastApiDocsRoute::SwaggerUi);
-                docs_router
-                    .add_route("/docs/oauth2-redirect", ["GET"])
-                    .map_err(|error| PyValueError::new_err(error.to_string()))?;
-                docs_routes.push(FastApiDocsRoute::OAuth2Redirect);
+                if let Some(redirect_path) =
+                    swagger_ui_oauth2_redirect_url.filter(|path| !path.is_empty())
+                {
+                    docs_router
+                        .add_route(redirect_path, ["GET"])
+                        .map_err(|error| PyValueError::new_err(error.to_string()))?;
+                    docs_routes.push(FastApiDocsRoute::OAuth2Redirect);
+                }
             }
             if let Some(path) = redoc_url {
                 docs_router
@@ -1367,8 +1381,11 @@ impl PyFastApi {
             summary,
             description: description.to_owned(),
             version: version.to_owned(),
-            openapi_url: openapi_url.to_owned(),
+            openapi_url: openapi_url.map(str::to_owned),
+            servers,
+            swagger_ui_oauth2_redirect_url: swagger_ui_oauth2_redirect_url.map(str::to_owned),
             swagger_ui_init_oauth,
+            swagger_ui_parameters,
             terms_of_service,
             contact,
             license_info,
@@ -1403,6 +1420,14 @@ impl PyFastApi {
     #[getter]
     fn state(&self, py: Python<'_>) -> Py<PyAny> {
         self.state.clone_ref(py)
+    }
+
+    #[getter]
+    fn openapi_url(&self, py: Python<'_>) -> Py<PyAny> {
+        self.openapi_url
+            .as_deref()
+            .map(|url| PyString::new(py, url).into_any().unbind())
+            .unwrap_or_else(|| py.None())
     }
 
     #[getter]
@@ -3088,6 +3113,7 @@ impl PyFastApi {
                 contact: self.contact.as_ref(),
                 license_info: self.license_info.as_ref(),
                 openapi_external_docs: self.openapi_external_docs.as_ref(),
+                servers: Some(&self.servers),
                 version: &self.version,
             },
             &operations,
@@ -3393,7 +3419,10 @@ impl PyApiRouter {
                 None,
                 "",
                 "0.1.0",
-                "/openapi.json",
+                Some("/openapi.json"),
+                None,
+                None,
+                None,
                 None,
                 None,
                 None,
@@ -9295,27 +9324,31 @@ impl FastApiCall {
             .call1((scope,))?
             .extract::<String>()?;
         let root_path = parse_scope_string(scope, "root_path", "")?;
-        let (openapi_url, title, init_oauth) = {
+        let (openapi_url, title, redirect_url, init_oauth, swagger_ui_parameters) = {
             let app = self.app.bind(py).borrow();
             (
                 app.openapi_url.clone(),
                 app.title.clone(),
+                app.swagger_ui_oauth2_redirect_url.clone(),
                 app.swagger_ui_init_oauth
                     .as_ref()
                     .map(|configuration| configuration.clone_ref(py)),
+                app.swagger_ui_parameters
+                    .as_ref()
+                    .map(|parameters| parameters.clone_ref(py)),
             )
         };
-        if !openapi_url.is_empty() && route_path == openapi_url && method == "GET" {
-            let root_path = root_path.trim_end_matches('/');
-            let document = {
-                let app = self.app.bind(py).borrow();
-                openapi_document_for_root_path(py, app.openapi(py)?, root_path)?
-            };
-            self.response_status = 200;
-            self.response_body = json_bytes(py, document.bind(py))?;
-            return self.send_start(py);
-        }
-        if !openapi_url.is_empty() {
+        if let Some(openapi_url) = openapi_url.as_deref().filter(|url| !url.is_empty()) {
+            if route_path == openapi_url && method == "GET" {
+                let root_path = root_path.trim_end_matches('/');
+                let document = {
+                    let app = self.app.bind(py).borrow();
+                    openapi_document_for_root_path(py, app.openapi(py)?, root_path)?
+                };
+                self.response_status = 200;
+                self.response_body = json_bytes(py, document.bind(py))?;
+                return self.send_start(py);
+            }
             let docs_match = self
                 .app
                 .bind(py)
@@ -9335,25 +9368,44 @@ impl FastApiCall {
                             PyRuntimeError::new_err("matched FastAPI docs route was lost")
                         })?;
                     let docs_root_path = root_path.trim_end_matches('/');
-                    let init_oauth_bound = init_oauth.as_ref().map(|value| value.bind(py));
-                    let html = match docs_route {
-                        FastApiDocsRoute::SwaggerUi => docs::swagger_ui_html_with_init_oauth(
-                            py,
-                            &format!("{docs_root_path}{openapi_url}"),
-                            &format!("{docs_root_path}/docs/oauth2-redirect"),
-                            &format!("{title} - Swagger UI"),
-                            init_oauth_bound,
-                        )?,
-                        FastApiDocsRoute::OAuth2Redirect => docs::oauth2_redirect_html().to_owned(),
-                        FastApiDocsRoute::ReDoc => docs::redoc_html(
-                            &format!("{docs_root_path}{openapi_url}"),
-                            &format!("{title} - ReDoc"),
-                        ),
+                    let response = match docs_route {
+                        FastApiDocsRoute::SwaggerUi => {
+                            let docs_openapi_url = format!("{docs_root_path}{openapi_url}");
+                            let docs_title = format!("{title} - Swagger UI");
+                            let oauth2_redirect_url = redirect_url
+                                .as_deref()
+                                .filter(|path| !path.is_empty())
+                                .map(|path| format!("{docs_root_path}{path}"));
+                            docs::get_swagger_ui_html(
+                                py,
+                                PyString::new(py, &docs_openapi_url).into_any(),
+                                PyString::new(py, &docs_title).into_any(),
+                                PyString::new(py, docs::DEFAULT_SWAGGER_JS_URL).into_any(),
+                                PyString::new(py, docs::DEFAULT_SWAGGER_CSS_URL).into_any(),
+                                PyString::new(py, docs::DEFAULT_SWAGGER_FAVICON_URL).into_any(),
+                                oauth2_redirect_url
+                                    .as_deref()
+                                    .map(|url| PyString::new(py, url).into_any()),
+                                init_oauth.as_ref().map(|value| value.bind(py).clone()),
+                                swagger_ui_parameters
+                                    .as_ref()
+                                    .map(|parameters| parameters.bind(py).clone()),
+                            )?
+                        }
+                        FastApiDocsRoute::OAuth2Redirect => py
+                            .import("starlette.responses")?
+                            .getattr("HTMLResponse")?
+                            .call1((docs::oauth2_redirect_html(),))?,
+                        FastApiDocsRoute::ReDoc => {
+                            let html = docs::redoc_html(
+                                &format!("{docs_root_path}{openapi_url}"),
+                                &format!("{title} - ReDoc"),
+                            );
+                            py.import("starlette.responses")?
+                                .getattr("HTMLResponse")?
+                                .call1((html,))?
+                        }
                     };
-                    let response = py
-                        .import("starlette.responses")?
-                        .getattr("HTMLResponse")?
-                        .call1((html,))?;
                     return self.start_returned_response(py, &response);
                 }
                 DetailedRouteMatch::MethodNotAllowed {

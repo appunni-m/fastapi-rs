@@ -80,14 +80,14 @@ api_inventory:
 import_binding_classification_review:
   artifact: tests/fixtures/api-import-binding-classification-review.json
   schema: fastapi-starlette-import-binding-review/v1
-  sha256: 26352263553505d0c1d54aaf718d80e762196cb650e0565f3ea8c1dec8436c39
+  sha256: c3fa72d53694a5a55428e77d7b109d411cf41c7db8fa1c5fec09d31383321317
   source_identity:
     package: FastAPI
     version: 0.141.1
     source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
     selected_starlette_profile: 1.6.0
     starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
-    starlette_rs_contract_commit: f26112a8a4748da76bf5bb441cdc857c0b316fd4
+    starlette_rs_contract_commit: be63c5f0af4983c2eb7c4a8cc146af2ac9e8ae6e
   starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
   counts:
     candidates: 97
@@ -99,7 +99,7 @@ import_binding_classification_review:
   candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
   pinned_starlette_rs_sources:
     metadata_sha256: 8340f3e8bf196f24b54096dc1ae7e2db1d019fe833cce2783b2c1f42f4df7b47
-    manifest_sha256: 5570af8c25a62bb825797953f14e97d3baae2bd706a99d8a80784635c6a75d40
+    manifest_sha256: 9c5a9769bf0436d28d91a5c887ba7cb16d31d8fb9821bc2b8036291bddc89c07
     api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
     api_review_sha256: 8b25f2e3a46753316446077bfde97b6ac8a342233e2f4e50b12d3d01eafbe099
 
@@ -435,7 +435,7 @@ classification_atlas:
 starlette_rs:
   owner: ../starlette-rs
   repository: https://github.com/appunni-m/starlette-rs
-  commit: f26112a8a4748da76bf5bb441cdc857c0b316fd4
+  commit: be63c5f0af4983c2eb7c4a8cc146af2ac9e8ae6e
   distribution_version: 0.1.0
   contract_id: starlette-1.6.0-asgi-http-config-session-slice
   metadata: ../starlette-rs/metadata.yaml
@@ -669,9 +669,9 @@ reviewed_api_contract_overlay:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - FastAPI-RS rejects the public `servers` constructor keyword, so configured-server OpenAPI behavior is not reached.
-          - FastAPI-RS rejects the public `swagger_ui_oauth2_redirect_url` constructor keyword, so disabling or customizing the OAuth redirect route is not reached.
-          - FastAPI-RS rejects the public `swagger_ui_parameters` constructor keyword, so configured Swagger UI options are not reached.
+          - Full FastAPI.__init__ parameter and attribute parity remains incomplete;
+            FastAPI-RS currently implements a selected subset of the public
+            constructor contract.
       source_evidence:
         - path: fastapi/applications.py
           symbol: __init__
@@ -2535,10 +2535,11 @@ reviewed_api_contract_overlay:
         registration. The built-in endpoint uses this canonical cache and adds
         a request root-path server to a shallow response copy without persisting
         it, as covered by openapi-cache-root-path. Assigning custom
-        openapi_schema values, late mutation of already-included routers,
-        webhooks, root_path_in_servers configuration, and complete OpenAPI
-        parity remain outside this slice. In the pinned sub-applications
-        workflow, the parsed `/paths` projections match for the parent and
+        openapi_schema values, per-instance replacement of the openapi method,
+        late mutation of already-included routers, callback declarations on
+        path operations, webhooks, root_path_in_servers configuration, and
+        complete OpenAPI parity remain outside this slice. In the pinned
+        sub-applications workflow, parsed `/paths` match for the parent and
         mounted app, but exact response-body bytes differ because the target
         serializes schema-object keys in a different order; raw OpenAPI bytes
         remain a parity gap.
@@ -2708,7 +2709,10 @@ reviewed_api_contract_overlay:
         Explicit `status_code=None` matches omission for the default
         JSONResponse class: HTTP status and OpenAPI use 200 in
         path-operation-status-code-none-isolated. Custom response-class
-        defaults remain unresolved and outside this slice.
+        defaults remain unresolved and outside this slice. The public
+        `callbacks` route option is not accepted or emitted into OpenAPI yet;
+        callback routes and callback operation objects remain outside this
+        reviewed slice.
     fastapi.routing.APIRouter.post:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::__getattr__
       source_evidence:
