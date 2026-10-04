@@ -37,7 +37,8 @@ pub fn register_python_api(module: &Bound<'_, PyModule>) -> PyResult<()> {
     docs::register(module)?;
     security::register(module)?;
     sse::register(module)?;
-    application_runtime::register(module)
+    application_runtime::register(module)?;
+    openapi::register(module)
 }
 
 /// Convert a Python value into JSON-compatible data using FastAPI's encoder rules.

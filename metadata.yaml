@@ -2373,7 +2373,7 @@ reviewed_api_contract_overlay:
       feature_ids: [openapi-docs]
       observation_selectors: [python.call_outcome]
     fastapi.openapi.utils.get_openapi:
-      rust_binding: null
+      rust_binding: fastapi-rs/src/openapi.rs::get_openapi
       source_evidence:
         - path: fastapi/openapi/utils.py
           symbol: get_openapi
@@ -2414,18 +2414,18 @@ reviewed_api_contract_overlay:
         - python.signature
       supported_slice: >-
         Direct calls require the keyword-only title, version, and routes inputs;
-        an empty-route call returns a JSON-compatible OpenAPI document with the
-        default OpenAPI 3.1.0 version and an empty paths object. A second
-        input-only call observes title, version, summary, description, tags,
-        servers, terms of service, contact, license, and external documentation
-        in the returned document. These cases do not cover route traversal,
-        webhooks, schema generation, security, duplicate operation IDs, or the
-        remaining options.
+        empty routes and webhooks return a JSON-compatible OpenAPI document with
+        the requested OpenAPI version and an empty paths object. The metadata
+        case covers title, version, summary, description, tags, servers, terms
+        of service, contact, license, and external documentation. Non-empty
+        route traversal is not implemented.
       target_binding:
         implementation_owner: fastapi-rs
-        status: unimplemented
+        status: partial-contract
         known_gaps:
-          - The target module has no fastapi.openapi.utils.get_openapi attribute; both direct input-only calls currently fail with AttributeError.
+          - Non-empty routes and webhooks are rejected instead of traversed to collect path operations.
+          - Request and response schema generation, security schemes, operation IDs, duplicate-ID warnings, and route-derived tags remain unimplemented for direct calls.
+          - The linked fixtures cover only empty routes and webhooks; invalid arguments, metadata validation errors, and the remaining options are not compared.
           - Native OpenAPI generation for the FastAPI application's /openapi.json route does not establish parity for this separately exported callable.
     fastapi.utils.generate_operation_id_for_path:
       rust_binding: fastapi-rs/src/deprecated_api.rs::generate_operation_id_for_path

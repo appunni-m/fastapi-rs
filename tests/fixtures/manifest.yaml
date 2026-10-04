@@ -25466,11 +25466,14 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/906
-      status: unimplemented
-      rust_binding: null
+      status: partial-contract
+      rust_binding: fastapi-rs/src/openapi.rs::get_openapi
       known_gaps:
-      - The target module has no fastapi.openapi.utils.get_openapi attribute; both direct input-only calls
-        currently fail with AttributeError.
+      - Non-empty routes and webhooks are rejected instead of traversed to collect path operations.
+      - Request and response schema generation, security schemes, operation IDs, duplicate-ID warnings,
+        and route-derived tags remain unimplemented for direct calls.
+      - The linked fixtures cover only empty routes and webhooks; invalid arguments, metadata validation
+        errors, and the remaining options are not compared.
       - Native OpenAPI generation for the FastAPI application's /openapi.json route does not establish
         parity for this separately exported callable.
   - id: fastapi.param_functions.Body

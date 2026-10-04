@@ -3,8 +3,9 @@
 use std::collections::BTreeMap;
 
 use crate::encoding::{JsonableEncoderInput, JsonableEncoderOptions, jsonable_encoder};
+use pyo3::exceptions::{PyNotImplementedError, PyValueError};
 use pyo3::prelude::*;
-use pyo3::types::{PyBool, PyDict, PyFloat, PyList, PyString};
+use pyo3::types::{PyBool, PyDict, PyFloat, PyList, PyModule, PyString, PyTuple};
 
 /// One OpenAPI parameter extracted from a FastAPI operation.
 pub(crate) struct OpenApiParameter {
@@ -483,6 +484,224 @@ pub(crate) fn openapi_document(
         sqlalchemy_safe: true,
     });
     jsonable_encoder(py, &document, &encoder_options).map(Bound::unbind)
+}
+
+#[pyclass(name = "_GetOpenApiCallable", module = "fastapi.openapi.utils", dict)]
+struct GetOpenApiCallable;
+
+#[pymethods]
+impl GetOpenApiCallable {
+    #[new]
+    fn new() -> Self {
+        Self
+    }
+
+    #[pyo3(signature = (*, title, version, openapi_version="3.1.0", summary=None, description=None, routes, webhooks=None, tags=None, servers=None, terms_of_service=None, contact=None, license_info=None, separate_input_output_schemas=true, external_docs=None))]
+    // lint-exception: The public FastAPI signature has fourteen ordered keyword-only parameters.
+    #[allow(
+        clippy::too_many_arguments,
+        reason = "Preserve FastAPI's reviewed 14-parameter public get_openapi signature"
+    )]
+    fn __call__(
+        &self,
+        py: Python<'_>,
+        title: &str,
+        version: &str,
+        openapi_version: &str,
+        summary: Option<&str>,
+        description: Option<&str>,
+        routes: &Bound<'_, PyAny>,
+        webhooks: Option<Bound<'_, PyAny>>,
+        tags: Option<Bound<'_, PyAny>>,
+        servers: Option<Bound<'_, PyAny>>,
+        terms_of_service: Option<&str>,
+        contact: Option<Bound<'_, PyAny>>,
+        license_info: Option<Bound<'_, PyAny>>,
+        separate_input_output_schemas: bool,
+        external_docs: Option<Bound<'_, PyAny>>,
+    ) -> PyResult<Py<PyAny>> {
+        let _ = separate_input_output_schemas;
+        if routes.len()? != 0
+            || webhooks
+                .as_ref()
+                .map(|items| items.len())
+                .transpose()?
+                .is_some_and(|length| length != 0)
+        {
+            return Err(PyNotImplementedError::new_err(
+                "FastAPI-RS get_openapi currently supports empty routes and webhooks only",
+            ));
+        }
+
+        let contact = contact.map(Bound::unbind);
+        let license_info = license_info.map(Bound::unbind);
+        let servers = servers.map(Bound::unbind);
+        let external_docs = external_docs.map(Bound::unbind);
+        let output = openapi_document(
+            py,
+            OpenApiInfo {
+                title,
+                summary,
+                description: description.unwrap_or_default(),
+                terms_of_service,
+                contact: contact.as_ref(),
+                license_info: license_info.as_ref(),
+                openapi_external_docs: external_docs.as_ref(),
+                servers: servers.as_ref(),
+                version,
+            },
+            &[],
+            None,
+        )?;
+        {
+            let output_dict = output.bind(py).cast::<PyDict>()?;
+            output_dict.set_item("openapi", openapi_version)?;
+            if let Some(tags) = tags {
+                if tags.is_truthy()? {
+                    output_dict.set_item("tags", tags)?;
+                }
+            }
+            if let Some(external_docs) = output_dict.get_item("externalDocs")? {
+                if let Ok(external_docs) = external_docs.cast::<PyDict>() {
+                    if let Some(url) = external_docs.get_item("url")? {
+                        let pydantic = py.import("pydantic")?;
+                        let adapter = pydantic
+                            .getattr("TypeAdapter")?
+                            .call1((pydantic.getattr("AnyUrl")?,))?;
+                        let normalized_url =
+                            adapter.call_method1("validate_python", (url,))?.str()?;
+                        external_docs.set_item("url", normalized_url)?;
+                    }
+                }
+            }
+        }
+        Ok(output)
+    }
+}
+
+fn install_get_openapi_annotations(
+    py: Python<'_>,
+    module: &Bound<'_, PyModule>,
+    callable: &Bound<'_, PyAny>,
+) -> PyResult<()> {
+    let annotations = PyDict::new(py);
+    let string_type = py.get_type::<PyString>().into_any();
+    let bool_type = py.get_type::<PyBool>().into_any();
+    let none_type = py.None().bind(py).get_type().into_any();
+    let any_type = py.import("typing")?.getattr("Any")?;
+    let builtins = py.import("builtins")?;
+    let dict_type = builtins.getattr("dict")?;
+    let list_type = builtins.getattr("list")?;
+    let operator = py.import("operator")?;
+    let union = operator.getattr("or_")?;
+    let optional_string = union.call1((string_type.as_any(), none_type.as_any()))?;
+    let string_any = union.call1((string_type.as_any(), any_type.as_any()))?;
+    let string_any_dict =
+        dict_type.get_item(PyTuple::new(py, [string_type.as_any(), any_type.as_any()])?)?;
+    let string_or_any_dict = dict_type.get_item(PyTuple::new(
+        py,
+        [string_type.as_any(), string_any.as_any()],
+    )?)?;
+    let optional_string_or_any_dict =
+        union.call1((string_or_any_dict.as_any(), none_type.as_any()))?;
+    let tags = list_type.get_item(string_any_dict.clone())?;
+    let optional_tags = union.call1((tags, none_type.as_any()))?;
+    let servers = list_type.get_item(string_or_any_dict)?;
+    let optional_servers = union.call1((servers, none_type.as_any()))?;
+    let routes_type = py.import("collections.abc")?.getattr("Sequence")?;
+    let base_route = py.import("starlette.routing")?.getattr("BaseRoute")?;
+    let route_context = module.getattr("RouteContext")?;
+    let route_type = union.call1((base_route, route_context))?;
+    let routes = routes_type.get_item(route_type)?;
+    let optional_routes = union.call1((routes.clone(), none_type.as_any()))?;
+    let optional_external_docs = union.call1((string_any_dict, none_type.as_any()))?;
+    annotations.set_item("title", string_type.clone())?;
+    annotations.set_item("version", string_type.clone())?;
+    annotations.set_item("openapi_version", string_type)?;
+    annotations.set_item("summary", optional_string.clone())?;
+    annotations.set_item("description", optional_string.clone())?;
+    annotations.set_item("routes", routes)?;
+    annotations.set_item("webhooks", optional_routes)?;
+    annotations.set_item("tags", optional_tags)?;
+    annotations.set_item("servers", optional_servers)?;
+    annotations.set_item("terms_of_service", optional_string)?;
+    annotations.set_item("contact", optional_string_or_any_dict.clone())?;
+    annotations.set_item("license_info", optional_string_or_any_dict)?;
+    annotations.set_item("separate_input_output_schemas", bool_type)?;
+    annotations.set_item("external_docs", optional_external_docs)?;
+    annotations.set_item(
+        "return",
+        dict_type.get_item(PyTuple::new(
+            py,
+            [py.get_type::<PyString>().as_any(), any_type.as_any()],
+        )?)?,
+    )?;
+    callable.setattr("__annotations__", &annotations)?;
+    callable.setattr("__module__", "fastapi.openapi.utils")?;
+    callable.setattr("__name__", "get_openapi")?;
+    callable.setattr("__qualname__", "get_openapi")?;
+
+    let inspect = py.import("inspect")?;
+    let parameter_type = inspect.getattr("Parameter")?;
+    let keyword_only = parameter_type.getattr("KEYWORD_ONLY")?;
+    let empty = parameter_type.getattr("empty")?;
+    enum DefaultValue {
+        Required,
+        None,
+        String(&'static str),
+        True,
+    }
+    let parameters = PyList::empty(py);
+    for (name, default) in [
+        ("title", DefaultValue::Required),
+        ("version", DefaultValue::Required),
+        ("openapi_version", DefaultValue::String("3.1.0")),
+        ("summary", DefaultValue::None),
+        ("description", DefaultValue::None),
+        ("routes", DefaultValue::Required),
+        ("webhooks", DefaultValue::None),
+        ("tags", DefaultValue::None),
+        ("servers", DefaultValue::None),
+        ("terms_of_service", DefaultValue::None),
+        ("contact", DefaultValue::None),
+        ("license_info", DefaultValue::None),
+        ("separate_input_output_schemas", DefaultValue::True),
+        ("external_docs", DefaultValue::None),
+    ] {
+        let parameter_kwargs = PyDict::new(py);
+        parameter_kwargs.set_item("kind", &keyword_only)?;
+        parameter_kwargs.set_item("annotation", annotation(&annotations, name)?)?;
+        match default {
+            DefaultValue::Required => parameter_kwargs.set_item("default", &empty)?,
+            DefaultValue::None => parameter_kwargs.set_item("default", py.None())?,
+            DefaultValue::String(default) => parameter_kwargs.set_item("default", default)?,
+            DefaultValue::True => parameter_kwargs.set_item("default", true)?,
+        }
+        parameters.append(parameter_type.call((name,), Some(&parameter_kwargs))?)?;
+    }
+    let signature_kwargs = PyDict::new(py);
+    signature_kwargs.set_item("return_annotation", annotation(&annotations, "return")?)?;
+    callable.setattr(
+        "__signature__",
+        inspect
+            .getattr("Signature")?
+            .call((parameters,), Some(&signature_kwargs))?,
+    )?;
+    Ok(())
+}
+
+fn annotation<'py>(annotations: &Bound<'py, PyDict>, name: &str) -> PyResult<Bound<'py, PyAny>> {
+    annotations
+        .get_item(name)?
+        .ok_or_else(|| PyValueError::new_err(format!("missing get_openapi annotation {name}")))
+}
+
+pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
+    module.add_class::<GetOpenApiCallable>()?;
+    let callable = module.getattr("_GetOpenApiCallable")?.call0()?;
+    install_get_openapi_annotations(module.py(), module, &callable)?;
+    module.add("get_openapi", callable)?;
+    Ok(())
 }
 
 const fn body_allowed_for_status_code(status_code: Option<u16>) -> bool {
