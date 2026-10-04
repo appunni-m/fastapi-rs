@@ -601,8 +601,10 @@ def derive_graph(lock_path: Path, project_path: Path) -> DerivedGraph:
             package = packages[parent]
             for requirement in _records(package.get("dependencies", []), parent, "dependencies"):
                 child = canonical_name(requirement["name"])
-                for context in contexts[parent]:
-                    incoming_edges[child].add(_edge(parent, context, requirement))
+                # The lock's base dependency list applies regardless of which
+                # extras were requested on this package. Only records under
+                # optional-dependencies are activated by a parent extra.
+                incoming_edges[child].add(_edge(parent, (), requirement))
             optional_dependencies = package.get("optional-dependencies", {})
             for extra in active_extras[parent]:
                 for requirement in _records(
