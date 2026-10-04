@@ -108,14 +108,14 @@ api_inventory:
 import_binding_classification_review:
   artifact: tests/fixtures/api-import-binding-classification-review.json
   schema: fastapi-starlette-import-binding-review/v1
-  sha256: b35c6c1a7226bda1f0f1cd7cc7a9383e9cb37e0b4897df3563610c290cad38a2
+  sha256: 6a4a788bd300b1b47f280657ec6e0f853591ce8286fba6b578ca2e0ac4f80f85
   source_identity:
     package: FastAPI
     version: 0.141.1
     source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
     selected_starlette_profile: 1.6.0
     starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
-    starlette_rs_contract_commit: 8f34aa1df1beb0cc1066252743099536793fcb2d
+    starlette_rs_contract_commit: b4c8a65c85e1b0d251ca05874412811eaa3ac7b8
   starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
   counts:
     candidates: 97
@@ -127,7 +127,7 @@ import_binding_classification_review:
   candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
   pinned_starlette_rs_sources:
     metadata_sha256: 09384dd30af7bc919c1e653e6a06227bdae94fc2d30246ce5d64825de5f62a47
-    manifest_sha256: d48ed7738c1d57d806d0796a9d24a34ac5922ac64de16964d9265b1ccf01c1dc
+    manifest_sha256: 4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c
     api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
     api_review_sha256: 8b25f2e3a46753316446077bfde97b6ac8a342233e2f4e50b12d3d01eafbe099
 
@@ -463,7 +463,7 @@ classification_atlas:
 starlette_rs:
   owner: ../starlette-rs
   repository: https://github.com/appunni-m/starlette-rs
-  commit: 8f34aa1df1beb0cc1066252743099536793fcb2d
+  commit: b4c8a65c85e1b0d251ca05874412811eaa3ac7b8
   distribution_version: 0.1.0
   contract_id: starlette-1.6.0-asgi-http-config-session-slice
   metadata: ../starlette-rs/metadata.yaml
@@ -2438,6 +2438,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.openapi.get-openapi.single-route
           workload_path: tests/fixtures/workloads/openapi_get_openapi_single_route.py
           observation_selectors: [python.attribute_value]
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-get-openapi-single-route.yaml
+          case_id: fastapi.openapi.get-openapi.single-route-tags-version
+          workload_path: tests/fixtures/workloads/openapi_get_openapi_single_route.py
+          observation_selectors: [python.attribute_value]
       feature_ids: [openapi-docs]
       observation_selectors:
         - http.status
@@ -2453,12 +2457,13 @@ reviewed_api_contract_overlay:
         static GET APIRoute with the default summary, operation ID, response
         class, and an empty dependency/parameter plan produces its default
         operation document. Other non-empty route shapes remain unsupported.
+        Route-level tags are preserved for that supported operation.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
           - Multiple routes, route contexts/included route trees, and non-empty webhooks are rejected; only one supported native APIRoute is traversed.
-          - Request/body/model schemas, security schemes, callbacks, custom route operation IDs, duplicate-ID warnings, route-derived tags, and custom response metadata remain unimplemented for direct calls.
+          - Request/body/model schemas, security schemes, callbacks, custom route operation IDs, duplicate-ID warnings, and custom response metadata remain unimplemented for direct calls.
           - The linked fixtures cover empty routes, metadata options, and one simple static GET; invalid arguments, metadata validation errors, and the remaining route shapes/options are not compared.
           - Native OpenAPI generation for the FastAPI application's /openapi.json route does not establish parity for this separately exported callable.
     fastapi.utils.generate_operation_id_for_path:

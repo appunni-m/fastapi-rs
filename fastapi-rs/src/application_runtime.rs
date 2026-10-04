@@ -1052,7 +1052,7 @@ pub(crate) fn direct_route_openapi_operation(
         response_description: DEFAULT_RESPONSE_DESCRIPTION.to_owned(),
         operation_id: operation_id(&route.name, &route.path_format, method),
         deprecated: None,
-        tags: None,
+        tags: (!route.tags.is_empty()).then(|| route.tags.clone()),
         status: None,
         response_status_key: Some("200".to_owned()),
         parameters: Vec::new(),
@@ -4634,7 +4634,6 @@ impl PyOperationDecorator {
             && self.name.is_none()
             && self.summary.is_none()
             && self.operation_id.is_none()
-            && self.tags.as_ref().is_none_or(Vec::is_empty)
             && self.deprecated.is_none()
             && self.status_code.is_none()
             && self.include_in_schema

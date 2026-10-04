@@ -23,3 +23,25 @@ cases:
     kind: upstream_api_definition
     sha256: 81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527
     symbol_id: fastapi.openapi.utils.get_openapi
+- case_id: fastapi.openapi.get-openapi.single-route-tags-version
+  probes:
+  - probe_id: one-tagged-static-get-route
+    public_callable:
+      module: fastapi.openapi.utils
+      attribute: get_openapi
+    argument_bundle: tagged-route
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  source_evidence:
+  - path: tests/test_router_include_context.py
+    kind: upstream_test
+    sha256: 60d72f784fd4df0fca5628f83fe7e348cbd3fa86a703eb8ca41787cd99424109
+  - path: docs/en/docs/how-to/extending-openapi.md
+    kind: upstream_documentation
+    sha256: 5c685bf0627b38937f38dce0a8365f1070559465868c1fa7ca8f7c27c037e798
+  - path: fastapi/openapi/utils.py
+    kind: upstream_api_definition
+    sha256: 81dcea2b8784bb1a68426c99c9525f44634b583916a894a3c7d924a72886f527
+    symbol_id: fastapi.openapi.utils.get_openapi

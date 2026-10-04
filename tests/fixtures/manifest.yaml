@@ -91,7 +91,7 @@ target:
     name: starlette-rs-py
     version: 0.1.0
     starlette_contract: 1.6.0
-    commit: 8f34aa1df1beb0cc1066252743099536793fcb2d
+    commit: b4c8a65c85e1b0d251ca05874412811eaa3ac7b8
   external_python_runtime_lock:
     path: requirements/target-runtime-cpython-3.12.13.lock
     sha256: efb7ca633fc9a9c8587a6f59f8ee9b509151f6f77ceb75a56dd3cdeff2be99f7
@@ -128,13 +128,13 @@ source_artifacts:
   api_import_binding_classification_review:
     path: tests/fixtures/api-import-binding-classification-review.json
     schema: fastapi-starlette-import-binding-review/v1
-    sha256: b35c6c1a7226bda1f0f1cd7cc7a9383e9cb37e0b4897df3563610c290cad38a2
+    sha256: 6a4a788bd300b1b47f280657ec6e0f853591ce8286fba6b578ca2e0ac4f80f85
     purpose: Reviewed source-backed disposition of uncertain FastAPI import bindings from the selected Starlette profile
     source_identity:
       package: FastAPI
       selected_starlette_profile: 1.6.0
       source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
-      starlette_rs_contract_commit: 8f34aa1df1beb0cc1066252743099536793fcb2d
+      starlette_rs_contract_commit: b4c8a65c85e1b0d251ca05874412811eaa3ac7b8
       starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
       version: 0.141.1
     starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
@@ -148,7 +148,7 @@ source_artifacts:
     candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
     pinned_starlette_rs_sources:
       metadata_sha256: 09384dd30af7bc919c1e653e6a06227bdae94fc2d30246ce5d64825de5f62a47
-      manifest_sha256: d48ed7738c1d57d806d0796a9d24a34ac5922ac64de16964d9265b1ccf01c1dc
+      manifest_sha256: 4b415afca096dfba1458e672154450efbc4878efb4ef36796fffd5fdc19e948c
       api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
       api_review_sha256: 8b25f2e3a46753316446077bfde97b6ac8a342233e2f4e50b12d3d01eafbe099
   api_source_classification_review:
@@ -411,7 +411,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@5
-    sha256: 5896547c8c8211f6cb957b8255bf059bc95de83d5024e9c00ebacd4444f252c4
+    sha256: 6e5b1f268ff17af2a5053cf06f01951977d2b83f6768f5cbee572a69e74b75e8
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -484,13 +484,13 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@4
-    sha256: c587f75766d98db97af238b6ff649a49b93a757a1294f521d5b9dd2efd612a6b
+    sha256: 978a94712607091955a095dbc9203298d155085ea8e3eabf35baddcda14cfe78
     schema_path: tests/fixtures/schemas/materialized-input-index-v4.schema.json
     schema_sha256: ee045ad383d444f24b92e872b4ef4a109416196f2f400984e205f1481f78ed4e
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
       workflows: 533
-      cases: 2115
+      cases: 2116
       partial_source_mappings: 1492
 
 contract_metadata:
@@ -858,7 +858,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 101
     symbols_with_operation_fixture_refs: 123
-    operation_fixture_refs: 604
+    operation_fixture_refs: 605
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -25606,13 +25606,25 @@ api_surface_contract:
       - python.signature
     - workflow_id: openapi-get-openapi-single-route
       input_path: tests/fixtures/inputs/parity/openapi-get-openapi-single-route.json
-      input_sha256: 7e9bb7fb80a497674498295b99c0785c0722c979be8c23cb5c7495cb4ecfa29b
+      input_sha256: 374e74983bea82108a38da7d74ab54d9163935f5dcc71db67dabcff590de3ba4
       recipe_path: tests/fixtures/input-recipes/parity/openapi-get-openapi-single-route.yaml
-      recipe_sha256: 633ae66d35a557264afd161f21d7ad8c1bec5256d02b2004df5a0535df78a94c
+      recipe_sha256: dbba1320edd0243ec4025bbe7bca19790b4f24a9be18f14f728e205879ade77d
       workload_path: tests/fixtures/workloads/openapi_get_openapi_single_route.py
-      workload_sha256: 36023da1dfb0ebb99badc20f11257dc9e04c104069fbce9f1619d7f414cf781c
+      workload_sha256: ee986ac377da11d377d92842149b69c79b4f43cdb19e400e3c3c41b9b8097b68
       case_id: fastapi.openapi.get-openapi.single-route
       probe_id: one-static-get-route
+      probe_kind: callable
+      observation_selectors:
+      - python.attribute_value
+    - workflow_id: openapi-get-openapi-single-route
+      input_path: tests/fixtures/inputs/parity/openapi-get-openapi-single-route.json
+      input_sha256: 374e74983bea82108a38da7d74ab54d9163935f5dcc71db67dabcff590de3ba4
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-get-openapi-single-route.yaml
+      recipe_sha256: dbba1320edd0243ec4025bbe7bca19790b4f24a9be18f14f728e205879ade77d
+      workload_path: tests/fixtures/workloads/openapi_get_openapi_single_route.py
+      workload_sha256: ee986ac377da11d377d92842149b69c79b4f43cdb19e400e3c3c41b9b8097b68
+      case_id: fastapi.openapi.get-openapi.single-route-tags-version
+      probe_id: one-tagged-static-get-route
       probe_kind: callable
       observation_selectors:
       - python.attribute_value
@@ -25640,12 +25652,22 @@ api_surface_contract:
       - python.attribute_value
     - workflow_id: openapi-get-openapi-single-route
       input_path: tests/fixtures/inputs/parity/openapi-get-openapi-single-route.json
-      input_sha256: 7e9bb7fb80a497674498295b99c0785c0722c979be8c23cb5c7495cb4ecfa29b
+      input_sha256: 374e74983bea82108a38da7d74ab54d9163935f5dcc71db67dabcff590de3ba4
       recipe_path: tests/fixtures/input-recipes/parity/openapi-get-openapi-single-route.yaml
-      recipe_sha256: 633ae66d35a557264afd161f21d7ad8c1bec5256d02b2004df5a0535df78a94c
+      recipe_sha256: dbba1320edd0243ec4025bbe7bca19790b4f24a9be18f14f728e205879ade77d
       workload_path: tests/fixtures/workloads/openapi_get_openapi_single_route.py
-      workload_sha256: 36023da1dfb0ebb99badc20f11257dc9e04c104069fbce9f1619d7f414cf781c
+      workload_sha256: ee986ac377da11d377d92842149b69c79b4f43cdb19e400e3c3c41b9b8097b68
       case_id: fastapi.openapi.get-openapi.single-route
+      observation_selectors:
+      - python.attribute_value
+    - workflow_id: openapi-get-openapi-single-route
+      input_path: tests/fixtures/inputs/parity/openapi-get-openapi-single-route.json
+      input_sha256: 374e74983bea82108a38da7d74ab54d9163935f5dcc71db67dabcff590de3ba4
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-get-openapi-single-route.yaml
+      recipe_sha256: dbba1320edd0243ec4025bbe7bca19790b4f24a9be18f14f728e205879ade77d
+      workload_path: tests/fixtures/workloads/openapi_get_openapi_single_route.py
+      workload_sha256: ee986ac377da11d377d92842149b69c79b4f43cdb19e400e3c3c41b9b8097b68
+      case_id: fastapi.openapi.get-openapi.single-route-tags-version
       observation_selectors:
       - python.attribute_value
     identity_workflow_refs: []
@@ -25674,7 +25696,7 @@ api_surface_contract:
       - Multiple routes, route contexts/included route trees, and non-empty webhooks are rejected; only
         one supported native APIRoute is traversed.
       - Request/body/model schemas, security schemes, callbacks, custom route operation IDs, duplicate-ID
-        warnings, route-derived tags, and custom response metadata remain unimplemented for direct calls.
+        warnings, and custom response metadata remain unimplemented for direct calls.
       - The linked fixtures cover empty routes, metadata options, and one simple static GET; invalid arguments,
         metadata validation errors, and the remaining route shapes/options are not compared.
       - Native OpenAPI generation for the FastAPI application's /openapi.json route does not establish
