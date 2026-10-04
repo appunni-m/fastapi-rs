@@ -91,7 +91,7 @@ target:
     name: starlette-rs-py
     version: 0.1.0
     starlette_contract: 1.6.0
-    commit: be63c5f0af4983c2eb7c4a8cc146af2ac9e8ae6e
+    commit: cfe9fc96d7c26c2a7bc82c742f3e27491a158534
   external_python_runtime_lock:
     path: requirements/target-runtime-cpython-3.12.13.lock
     sha256: efb7ca633fc9a9c8587a6f59f8ee9b509151f6f77ceb75a56dd3cdeff2be99f7
@@ -128,13 +128,13 @@ source_artifacts:
   api_import_binding_classification_review:
     path: tests/fixtures/api-import-binding-classification-review.json
     schema: fastapi-starlette-import-binding-review/v1
-    sha256: c3fa72d53694a5a55428e77d7b109d411cf41c7db8fa1c5fec09d31383321317
+    sha256: c94704ee89317d17ca1fe356ddca4c4ba1d964f2857608d0e8dbc7b61466327f
     purpose: Reviewed source-backed disposition of uncertain FastAPI import bindings from the selected Starlette profile
     source_identity:
       package: FastAPI
       selected_starlette_profile: 1.6.0
       source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
-      starlette_rs_contract_commit: be63c5f0af4983c2eb7c4a8cc146af2ac9e8ae6e
+      starlette_rs_contract_commit: cfe9fc96d7c26c2a7bc82c742f3e27491a158534
       starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
       version: 0.141.1
     starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
@@ -147,8 +147,8 @@ source_artifacts:
       starlette_rs_unreviewed_unique_targets: 4
     candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
     pinned_starlette_rs_sources:
-      metadata_sha256: 8340f3e8bf196f24b54096dc1ae7e2db1d019fe833cce2783b2c1f42f4df7b47
-      manifest_sha256: 9c5a9769bf0436d28d91a5c887ba7cb16d31d8fb9821bc2b8036291bddc89c07
+      metadata_sha256: 09384dd30af7bc919c1e653e6a06227bdae94fc2d30246ce5d64825de5f62a47
+      manifest_sha256: e07358c9560a810d9ab79aedaf64a17bd541196d787ab4e773c84aea69c429e5
       api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
       api_review_sha256: 8b25f2e3a46753316446077bfde97b6ac8a342233e2f4e50b12d3d01eafbe099
   api_source_classification_review:
@@ -411,7 +411,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@5
-    sha256: 5392a013d0e098da54865cd968d9a6775780274c21e0683507ad03b0bda33d8f
+    sha256: 8b3a0e61711e1fa4190d0e90742a1d757f8f878e72f0595c5a502218c101f92e
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -484,7 +484,7 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@2
-    sha256: 2712706386fbdc699b071271e195912042f10c96a14b8cb58086b21be08dda02
+    sha256: fe57c63f8f584a66aa1551af6097b57b9b61cc624f6222ca21e15f4dd7d7903c
     schema_path: tests/fixtures/schemas/materialized-input-index.schema.json
     schema_sha256: 56ac1cdfaa6f28b4277ef44b5ef78efebb3122111c5691e1b9c1bce869156aaf
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
@@ -800,8 +800,8 @@ api_surface_contract:
     symbols_with_constructor_definition_refs: 37
     unique_source_constructor_definitions: 20
     operation_scope_statuses:
-      scope-review-pending: 310
-      slice-described: 150
+      scope-review-pending: 306
+      slice-described: 154
     implementation_owner_plans:
       fastapi-rs: 429
       starlette-rs: 31
@@ -813,8 +813,8 @@ api_surface_contract:
     symbols_with_deprecation_refs: 15
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 47
-    symbols_with_operation_fixture_refs: 90
-    operation_fixture_refs: 505
+    symbols_with_operation_fixture_refs: 94
+    operation_fixture_refs: 523
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -9604,6 +9604,28 @@ api_surface_contract:
       probe_kind: callable
       observation_selectors:
       - python.signature
+    operation_fixture_refs:
+    - workflow_id: openapi-docs-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-docs-public-api.json
+      input_sha256: 7c629bb7ec5213d3e0054394a2aab65031b16dbbfb1ecd5334024111f91a8391
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-docs-public-api.yaml
+      recipe_sha256: 1d74c63ebd541922c552498d3d506757715d4169ac5d5635ed944f7d81176d18
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.openapi.docs.public-api.redoc-signature
+      observation_selectors:
+      - python.signature
+    - workflow_id: local-docs-helpers-upstream
+      input_path: tests/fixtures/inputs/parity/local-docs-helpers-upstream.json
+      input_sha256: 93e16c7a9f857ec61ea2d78ef1e254ea45c9d85e0d503e23ac7b6ac3f4a762a4
+      recipe_path: tests/fixtures/input-recipes/parity/local-docs-helpers-upstream.yaml
+      recipe_sha256: a7dea4da1027c46dddb4035be4b2fce157d22ce1c4b2e9b65a11035dd90f804d
+      workload_path: tests/fixtures/workloads/local_docs_helpers_upstream.py
+      workload_sha256: e5dd00872e7507caf0e6292b6d12d0534c5411efc3699eff8d0637c4545db1d5
+      case_id: fastapi.openapi.docs.local-docs-html-helpers
+      observation_selectors:
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -9614,8 +9636,9 @@ api_surface_contract:
     - python.attribute_value
     - python.signature
     operation_scope:
-      status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+      status: slice-described
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.openapi.docs.get_redoc_html/supported_slice
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.openapi.docs.get_redoc_html
@@ -9624,8 +9647,11 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/578
-      status: full-contract-not-established
-      rust_binding: null
+      status: partial-contract
+      rust_binding: fastapi-rs/src/docs.rs::get_redoc_html
+      known_gaps:
+      - ReDoc URL combinations, the default Google Fonts output, and direct HTMLResponse identity are
+        not all covered by the linked cases.
   - id: fastapi.openapi.docs.get_swagger_ui_html
     kind: function
     source_candidate_ref: /api_candidates/579
@@ -9670,6 +9696,121 @@ api_surface_contract:
       probe_kind: callable
       observation_selectors:
       - python.signature
+    operation_fixture_refs:
+    - workflow_id: openapi-docs-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-docs-public-api.json
+      input_sha256: 7c629bb7ec5213d3e0054394a2aab65031b16dbbfb1ecd5334024111f91a8391
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-docs-public-api.yaml
+      recipe_sha256: 1d74c63ebd541922c552498d3d506757715d4169ac5d5635ed944f7d81176d18
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.openapi.docs.public-api.swagger-ui-signature
+      observation_selectors:
+      - python.signature
+    - workflow_id: local-docs-helpers-upstream
+      input_path: tests/fixtures/inputs/parity/local-docs-helpers-upstream.json
+      input_sha256: 93e16c7a9f857ec61ea2d78ef1e254ea45c9d85e0d503e23ac7b6ac3f4a762a4
+      recipe_path: tests/fixtures/input-recipes/parity/local-docs-helpers-upstream.yaml
+      recipe_sha256: a7dea4da1027c46dddb4035be4b2fce157d22ce1c4b2e9b65a11035dd90f804d
+      workload_path: tests/fixtures/workloads/local_docs_helpers_upstream.py
+      workload_sha256: e5dd00872e7507caf0e6292b6d12d0534c5411efc3699eff8d0637c4545db1d5
+      case_id: fastapi.openapi.docs.local-docs-html-helpers
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: swagger-oauth-escape-upstream
+      input_path: tests/fixtures/inputs/parity/swagger-oauth-escape-upstream.json
+      input_sha256: 360f32e9ada72227d1f8bcebad210d7c61de3afff73b3770356b30f366abd62c
+      recipe_path: tests/fixtures/input-recipes/parity/swagger-oauth-escape-upstream.yaml
+      recipe_sha256: 2dee59e27e8633fdb050da78f2ccff7b570dc7ee09afca3fc4ab66637069dd0b
+      workload_path: tests/fixtures/workloads/swagger_oauth_escape_upstream.py
+      workload_sha256: d93ffd3f08ac7fd42c188061cf3d588e668d68db83e950612fa8b8c74dc0687c
+      case_id: fastapi.test.test-swagger-ui-init-oauth.test-swagger-ui
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: swagger-oauth-escape-upstream
+      input_path: tests/fixtures/inputs/parity/swagger-oauth-escape-upstream.json
+      input_sha256: 360f32e9ada72227d1f8bcebad210d7c61de3afff73b3770356b30f366abd62c
+      recipe_path: tests/fixtures/input-recipes/parity/swagger-oauth-escape-upstream.yaml
+      recipe_sha256: 2dee59e27e8633fdb050da78f2ccff7b570dc7ee09afca3fc4ab66637069dd0b
+      workload_path: tests/fixtures/workloads/swagger_oauth_escape_upstream.py
+      workload_sha256: d93ffd3f08ac7fd42c188061cf3d588e668d68db83e950612fa8b8c74dc0687c
+      case_id: fastapi.test.test-swagger-ui-escape.test-init-oauth-html-chars-are-escaped
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: swagger-oauth-escape-upstream
+      input_path: tests/fixtures/inputs/parity/swagger-oauth-escape-upstream.json
+      input_sha256: 360f32e9ada72227d1f8bcebad210d7c61de3afff73b3770356b30f366abd62c
+      recipe_path: tests/fixtures/input-recipes/parity/swagger-oauth-escape-upstream.yaml
+      recipe_sha256: 2dee59e27e8633fdb050da78f2ccff7b570dc7ee09afca3fc4ab66637069dd0b
+      workload_path: tests/fixtures/workloads/swagger_oauth_escape_upstream.py
+      workload_sha256: d93ffd3f08ac7fd42c188061cf3d588e668d68db83e950612fa8b8c74dc0687c
+      case_id: fastapi.test.test-swagger-ui-escape.test-swagger-ui-parameters-html-chars-are-escaped
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: swagger-no-redirect-upstream
+      input_path: tests/fixtures/inputs/parity/swagger-no-redirect-upstream.json
+      input_sha256: 5b8eb13f40f6fe2c12b43648fd4a09ee30db49bc1417445139dd3359c2937d93
+      recipe_path: tests/fixtures/input-recipes/parity/swagger-no-redirect-upstream.yaml
+      recipe_sha256: b9120e789807867c77be62dfdee2259795933524163507b8b1da61a89eca748c
+      workload_path: tests/fixtures/workloads/swagger_no_redirect_upstream.py
+      workload_sha256: 0cdb052f5f8b07bba8b69c3b25dc903d80d15bb7dee8a1e0031e5f80d99b3120
+      case_id: fastapi.test.test-no-swagger-ui-redirect.test-swagger-ui-no-oauth2-redirect
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: swagger-redirect-upstream
+      input_path: tests/fixtures/inputs/parity/swagger-redirect-upstream.json
+      input_sha256: a2398672c6b4761a188c79cabf51ce2dbbd2a415543c6dee200de4592741bfc0
+      recipe_path: tests/fixtures/input-recipes/parity/swagger-redirect-upstream.yaml
+      recipe_sha256: cfd83321481c73cd200d7342896b51a55908f3bcfbc42edc91e31c9480fcd9c1
+      workload_path: tests/fixtures/workloads/swagger_redirect_upstream.py
+      workload_sha256: b91471ff959e86e40cf60b559e2bbce8739c4f1bc97f83ab6dbaf9e9654bb4ee
+      case_id: fastapi.test.test-custom-swagger-ui-redirect.test-swagger-ui
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: swagger-ui-config-default-wave
+      input_path: tests/fixtures/inputs/parity/swagger-ui-config-default-wave.json
+      input_sha256: f0a24456c885be9c07a66cc021a1702963e2c844412a866fa627e73c62a4a16e
+      recipe_path: tests/fixtures/input-recipes/parity/swagger-ui-config-default-wave.yaml
+      recipe_sha256: efa7a8fda595fd616176bcfac34ed1ce536c2f84876f4e96c408a354d622e1fd
+      workload_path: tests/fixtures/workloads/swagger_ui_configuration_wave.py
+      workload_sha256: a89670b3f98160d24b9142fe5207f2dacc240e0c0de19ee6664fde6f2fa8381d
+      case_id: fastapi.docs-ui.swagger-parameters.default-config
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: swagger-ui-config-override-wave
+      input_path: tests/fixtures/inputs/parity/swagger-ui-config-override-wave.json
+      input_sha256: e2c26cfbb3b1401673af9a59245b407020e332ec1b606582326c22c1c2e8010c
+      recipe_path: tests/fixtures/input-recipes/parity/swagger-ui-config-override-wave.yaml
+      recipe_sha256: b56f52a80a73d25d48c38b5a81b06a574de3cbe444e65f0ea22f40912fb317db
+      workload_path: tests/fixtures/workloads/swagger_ui_configuration_wave.py
+      workload_sha256: a89670b3f98160d24b9142fe5207f2dacc240e0c0de19ee6664fde6f2fa8381d
+      case_id: fastapi.docs-ui.swagger-parameters.override-default
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: swagger-ui-config-theme-wave
+      input_path: tests/fixtures/inputs/parity/swagger-ui-config-theme-wave.json
+      input_sha256: ded1ee4662987bf4e7c5a92c24371b4a40a218a45ca57b16bd8bf52e8fa1fb42
+      recipe_path: tests/fixtures/input-recipes/parity/swagger-ui-config-theme-wave.yaml
+      recipe_sha256: 05befb5ed538f11ba58d6155dc5596f13cdf072f6c6bc6be3f22b57c77fde278
+      workload_path: tests/fixtures/workloads/swagger_ui_configuration_wave.py
+      workload_sha256: a89670b3f98160d24b9142fe5207f2dacc240e0c0de19ee6664fde6f2fa8381d
+      case_id: fastapi.docs-ui.swagger-parameters.nested-theme
+      observation_selectors:
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -9680,8 +9821,9 @@ api_surface_contract:
     - python.attribute_value
     - python.signature
     operation_scope:
-      status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+      status: slice-described
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.openapi.docs.get_swagger_ui_html/supported_slice
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.openapi.docs.get_swagger_ui_html
@@ -9690,8 +9832,11 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/579
-      status: full-contract-not-established
-      rust_binding: null
+      status: partial-contract
+      rust_binding: fastapi-rs/src/docs.rs::get_swagger_ui_html
+      known_gaps:
+      - The linked inputs do not cover every Swagger UI helper parameter combination, direct helper return-object
+        identity, or mutation behavior of the shared default parameter mapping.
   - id: fastapi.openapi.docs.get_swagger_ui_oauth2_redirect_html
     kind: function
     source_candidate_ref: /api_candidates/580
@@ -9736,6 +9881,29 @@ api_surface_contract:
       probe_kind: callable
       observation_selectors:
       - python.signature
+    operation_fixture_refs:
+    - workflow_id: openapi-docs-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-docs-public-api.json
+      input_sha256: 7c629bb7ec5213d3e0054394a2aab65031b16dbbfb1ecd5334024111f91a8391
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-docs-public-api.yaml
+      recipe_sha256: 1d74c63ebd541922c552498d3d506757715d4169ac5d5635ed944f7d81176d18
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.openapi.docs.public-api.oauth-redirect-signature
+      observation_selectors:
+      - python.signature
+    - workflow_id: swagger-redirect-upstream
+      input_path: tests/fixtures/inputs/parity/swagger-redirect-upstream.json
+      input_sha256: a2398672c6b4761a188c79cabf51ce2dbbd2a415543c6dee200de4592741bfc0
+      recipe_path: tests/fixtures/input-recipes/parity/swagger-redirect-upstream.yaml
+      recipe_sha256: cfd83321481c73cd200d7342896b51a55908f3bcfbc42edc91e31c9480fcd9c1
+      workload_path: tests/fixtures/workloads/swagger_redirect_upstream.py
+      workload_sha256: b91471ff959e86e40cf60b559e2bbce8739c4f1bc97f83ab6dbaf9e9654bb4ee
+      case_id: fastapi.test.test-custom-swagger-ui-redirect.test-swagger-ui-oauth2-redirect
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -9746,8 +9914,9 @@ api_surface_contract:
     - python.attribute_value
     - python.signature
     operation_scope:
-      status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+      status: slice-described
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.openapi.docs.get_swagger_ui_oauth2_redirect_html/supported_slice
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.openapi.docs.get_swagger_ui_oauth2_redirect_html
@@ -9756,8 +9925,11 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/580
-      status: full-contract-not-established
-      rust_binding: null
+      status: partial-contract
+      rust_binding: fastapi-rs/src/docs.rs::get_swagger_ui_oauth2_redirect_html
+      known_gaps:
+      - The helper's direct return object and every route-mounting or response-header context are outside
+        the selected workflow.
   - id: fastapi.openapi.docs.swagger_ui_default_parameters
     kind: value
     source_candidate_ref: /api_candidates/583
@@ -9801,6 +9973,50 @@ api_surface_contract:
       probe_kind: attribute
       observation_selectors:
       - python.attribute_value
+    operation_fixture_refs:
+    - workflow_id: openapi-docs-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-docs-public-api.json
+      input_sha256: 7c629bb7ec5213d3e0054394a2aab65031b16dbbfb1ecd5334024111f91a8391
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-docs-public-api.yaml
+      recipe_sha256: 1d74c63ebd541922c552498d3d506757715d4169ac5d5635ed944f7d81176d18
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.openapi.docs.public-api.swagger-default-parameters
+      observation_selectors:
+      - python.attribute_value
+    - workflow_id: swagger-ui-config-default-wave
+      input_path: tests/fixtures/inputs/parity/swagger-ui-config-default-wave.json
+      input_sha256: f0a24456c885be9c07a66cc021a1702963e2c844412a866fa627e73c62a4a16e
+      recipe_path: tests/fixtures/input-recipes/parity/swagger-ui-config-default-wave.yaml
+      recipe_sha256: efa7a8fda595fd616176bcfac34ed1ce536c2f84876f4e96c408a354d622e1fd
+      workload_path: tests/fixtures/workloads/swagger_ui_configuration_wave.py
+      workload_sha256: a89670b3f98160d24b9142fe5207f2dacc240e0c0de19ee6664fde6f2fa8381d
+      case_id: fastapi.docs-ui.swagger-parameters.default-config
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: swagger-ui-config-override-wave
+      input_path: tests/fixtures/inputs/parity/swagger-ui-config-override-wave.json
+      input_sha256: e2c26cfbb3b1401673af9a59245b407020e332ec1b606582326c22c1c2e8010c
+      recipe_path: tests/fixtures/input-recipes/parity/swagger-ui-config-override-wave.yaml
+      recipe_sha256: b56f52a80a73d25d48c38b5a81b06a574de3cbe444e65f0ea22f40912fb317db
+      workload_path: tests/fixtures/workloads/swagger_ui_configuration_wave.py
+      workload_sha256: a89670b3f98160d24b9142fe5207f2dacc240e0c0de19ee6664fde6f2fa8381d
+      case_id: fastapi.docs-ui.swagger-parameters.override-default
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: swagger-ui-config-theme-wave
+      input_path: tests/fixtures/inputs/parity/swagger-ui-config-theme-wave.json
+      input_sha256: ded1ee4662987bf4e7c5a92c24371b4a40a218a45ca57b16bd8bf52e8fa1fb42
+      recipe_path: tests/fixtures/input-recipes/parity/swagger-ui-config-theme-wave.yaml
+      recipe_sha256: 05befb5ed538f11ba58d6155dc5596f13cdf072f6c6bc6be3f22b57c77fde278
+      workload_path: tests/fixtures/workloads/swagger_ui_configuration_wave.py
+      workload_sha256: a89670b3f98160d24b9142fe5207f2dacc240e0c0de19ee6664fde6f2fa8381d
+      case_id: fastapi.docs-ui.swagger-parameters.nested-theme
+      observation_selectors:
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -9811,8 +10027,9 @@ api_surface_contract:
     - python.attribute_value
     - python.signature
     operation_scope:
-      status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+      status: slice-described
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.openapi.docs.swagger_ui_default_parameters/supported_slice
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.openapi.docs.swagger_ui_default_parameters
@@ -9821,8 +10038,11 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/583
-      status: full-contract-not-established
-      rust_binding: null
+      status: partial-contract
+      rust_binding: fastapi-rs/src/docs.rs::default_swagger_ui_parameters
+      known_gaps:
+      - The inputs do not compare object identity, mutation persistence, or the full mapping behavior
+        across multiple helper calls.
   - id: fastapi.openapi.models.APIKey
     kind: class
     source_candidate_ref: /api_candidates/584
@@ -36854,18 +37074,18 @@ api_surface_contract:
           status: partial
           manifest_target_ref:
             path: ../starlette-rs/tests/fixtures/manifest.yaml
-            json_pointer: /surfaces/40/operations/1/targets/0
+            json_pointer: /surfaces/41/operations/1/targets/0
         python-package:
           status: supported
           manifest_target_ref:
             path: ../starlette-rs/tests/fixtures/manifest.yaml
-            json_pointer: /surfaces/40/operations/1/targets/1
+            json_pointer: /surfaces/41/operations/1/targets/1
       manifest_operation_ref:
         path: ../starlette-rs/tests/fixtures/manifest.yaml
-        json_pointer: /surfaces/40/operations/1
+        json_pointer: /surfaces/41/operations/1
       source_operation_ref:
         path: ../starlette-rs/metadata.yaml
-        json_pointer: /api_sources/41/operations/1
+        json_pointer: /api_sources/42/operations/1
       api_catalog_ref:
         path: ../starlette-rs/docs/api-surface.csv
         line: 737
@@ -36960,10 +37180,10 @@ api_surface_contract:
       operation_absent_from_api_review: true
       api_source_surface_ref:
         path: ../starlette-rs/metadata.yaml
-        json_pointer: /api_sources/41
+        json_pointer: /api_sources/42
       manifest_surface_ref:
         path: ../starlette-rs/tests/fixtures/manifest.yaml
-        json_pointer: /surfaces/40
+        json_pointer: /surfaces/41
       api_catalog_surface_ref:
         path: ../starlette-rs/docs/api-surface.csv
         line: 725

@@ -87,7 +87,7 @@ import_binding_classification_review:
     source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
     selected_starlette_profile: 1.6.0
     starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
-    starlette_rs_contract_commit: be63c5f0af4983c2eb7c4a8cc146af2ac9e8ae6e
+    starlette_rs_contract_commit: cfe9fc96d7c26c2a7bc82c742f3e27491a158534
   starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
   counts:
     candidates: 97
@@ -98,8 +98,8 @@ import_binding_classification_review:
     starlette_rs_unreviewed_unique_targets: 4
   candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
   pinned_starlette_rs_sources:
-    metadata_sha256: 8340f3e8bf196f24b54096dc1ae7e2db1d019fe833cce2783b2c1f42f4df7b47
-    manifest_sha256: 9c5a9769bf0436d28d91a5c887ba7cb16d31d8fb9821bc2b8036291bddc89c07
+    metadata_sha256: 09384dd30af7bc919c1e653e6a06227bdae94fc2d30246ce5d64825de5f62a47
+    manifest_sha256: e07358c9560a810d9ab79aedaf64a17bd541196d787ab4e773c84aea69c429e5
     api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
     api_review_sha256: 8b25f2e3a46753316446077bfde97b6ac8a342233e2f4e50b12d3d01eafbe099
 
@@ -435,7 +435,7 @@ classification_atlas:
 starlette_rs:
   owner: ../starlette-rs
   repository: https://github.com/appunni-m/starlette-rs
-  commit: be63c5f0af4983c2eb7c4a8cc146af2ac9e8ae6e
+  commit: cfe9fc96d7c26c2a7bc82c742f3e27491a158534
   distribution_version: 0.1.0
   contract_id: starlette-1.6.0-asgi-http-config-session-slice
   metadata: ../starlette-rs/metadata.yaml
@@ -2237,6 +2237,124 @@ reviewed_api_contract_overlay:
         - {path: fastapi/encoders.py, symbol: jsonable_encoder}
       feature_ids: [python-data-encoding]
       observation_selectors: [python.attribute_value, python.signature, python.call_outcome]
+    fastapi.openapi.docs.get_swagger_ui_html:
+      rust_binding: fastapi-rs/src/docs.rs::get_swagger_ui_html
+      source_evidence:
+        - {path: fastapi/openapi/docs.py, symbol: get_swagger_ui_html}
+        - {path: tests/test_local_docs.py}
+        - {path: tests/test_swagger_ui_init_oauth.py}
+        - {path: tests/test_swagger_ui_escape.py}
+        - {path: tests/test_no_swagger_ui_redirect.py}
+        - {path: tests/test_custom_swagger_ui_redirect.py}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-docs-public-api.yaml
+          case_id: fastapi.openapi.docs.public-api.swagger-ui-signature
+        - recipe_path: tests/fixtures/input-recipes/parity/local-docs-helpers-upstream.yaml
+          case_id: fastapi.openapi.docs.local-docs-html-helpers
+        - recipe_path: tests/fixtures/input-recipes/parity/swagger-oauth-escape-upstream.yaml
+          case_id: fastapi.test.test-swagger-ui-init-oauth.test-swagger-ui
+        - recipe_path: tests/fixtures/input-recipes/parity/swagger-oauth-escape-upstream.yaml
+          case_id: fastapi.test.test-swagger-ui-escape.test-init-oauth-html-chars-are-escaped
+        - recipe_path: tests/fixtures/input-recipes/parity/swagger-oauth-escape-upstream.yaml
+          case_id: fastapi.test.test-swagger-ui-escape.test-swagger-ui-parameters-html-chars-are-escaped
+        - recipe_path: tests/fixtures/input-recipes/parity/swagger-no-redirect-upstream.yaml
+          case_id: fastapi.test.test-no-swagger-ui-redirect.test-swagger-ui-no-oauth2-redirect
+        - recipe_path: tests/fixtures/input-recipes/parity/swagger-redirect-upstream.yaml
+          case_id: fastapi.test.test-custom-swagger-ui-redirect.test-swagger-ui
+        - recipe_path: tests/fixtures/input-recipes/parity/swagger-ui-config-default-wave.yaml
+          case_id: fastapi.docs-ui.swagger-parameters.default-config
+        - recipe_path: tests/fixtures/input-recipes/parity/swagger-ui-config-override-wave.yaml
+          case_id: fastapi.docs-ui.swagger-parameters.override-default
+        - recipe_path: tests/fixtures/input-recipes/parity/swagger-ui-config-theme-wave.yaml
+          case_id: fastapi.docs-ui.swagger-parameters.nested-theme
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.signature, http.status, http.headers.ordered, http.body.bytes]
+      supported_slice: >-
+        The pinned signature and selected isolated HTML cases compare the
+        generated and custom Swagger UI pages, configured assets and redirect,
+        OAuth initialization and HTML escaping, omitted OAuth redirect, and
+        default and overridden Swagger UI parameter maps. Generic HTMLResponse
+        status/header behavior remains Starlette-owned; full helper option
+        combinations and the complete mutable defaults contract remain open.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - The linked inputs do not cover every Swagger UI helper parameter combination, direct helper return-object identity, or mutation behavior of the shared default parameter mapping.
+    fastapi.openapi.docs.get_redoc_html:
+      rust_binding: fastapi-rs/src/docs.rs::get_redoc_html
+      source_evidence:
+        - {path: fastapi/openapi/docs.py, symbol: get_redoc_html}
+        - {path: tests/test_local_docs.py}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-docs-public-api.yaml
+          case_id: fastapi.openapi.docs.public-api.redoc-signature
+        - recipe_path: tests/fixtures/input-recipes/parity/local-docs-helpers-upstream.yaml
+          case_id: fastapi.openapi.docs.local-docs-html-helpers
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.signature, http.status, http.body.bytes]
+      supported_slice: >-
+        The pinned signature and local-docs HTML fixture compare generated and
+        custom ReDoc asset URLs and the with_google_fonts=False output. Other
+        option combinations and direct helper return-object identity remain
+        outside this slice; generic HTMLResponse behavior remains Starlette-owned.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - ReDoc URL combinations, the default Google Fonts output, and direct HTMLResponse identity are not all covered by the linked cases.
+    fastapi.openapi.docs.get_swagger_ui_oauth2_redirect_html:
+      rust_binding: fastapi-rs/src/docs.rs::get_swagger_ui_oauth2_redirect_html
+      source_evidence:
+        - {path: fastapi/openapi/docs.py, symbol: get_swagger_ui_oauth2_redirect_html}
+        - {path: tests/test_custom_swagger_ui_redirect.py}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-docs-public-api.yaml
+          case_id: fastapi.openapi.docs.public-api.oauth-redirect-signature
+        - recipe_path: tests/fixtures/input-recipes/parity/swagger-redirect-upstream.yaml
+          case_id: fastapi.test.test-custom-swagger-ui-redirect.test-swagger-ui-oauth2-redirect
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.signature, http.status, http.headers.ordered, http.body.bytes]
+      supported_slice: >-
+        The pinned zero-argument signature and the isolated custom-redirect
+        workflow compare the helper's OAuth redirect HTML when mounted by the
+        FastAPI docs route. Generic response status and headers remain
+        Starlette-owned; direct return-object identity is not observed.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - The helper's direct return object and every route-mounting or response-header context are outside the selected workflow.
+    fastapi.openapi.docs.swagger_ui_default_parameters:
+      rust_binding: fastapi-rs/src/docs.rs::default_swagger_ui_parameters
+      source_evidence:
+        - path: fastapi/openapi/docs.py
+          kind: module-value
+          symbol: swagger_ui_default_parameters
+          start_line: 22
+          end_line: 37
+        - {path: tests/test_local_docs.py}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-docs-public-api.yaml
+          case_id: fastapi.openapi.docs.public-api.swagger-default-parameters
+        - recipe_path: tests/fixtures/input-recipes/parity/swagger-ui-config-default-wave.yaml
+          case_id: fastapi.docs-ui.swagger-parameters.default-config
+        - recipe_path: tests/fixtures/input-recipes/parity/swagger-ui-config-override-wave.yaml
+          case_id: fastapi.docs-ui.swagger-parameters.override-default
+        - recipe_path: tests/fixtures/input-recipes/parity/swagger-ui-config-theme-wave.yaml
+          case_id: fastapi.docs-ui.swagger-parameters.nested-theme
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.attribute_value, http.body.bytes]
+      supported_slice: >-
+        The direct attribute workflow compares the default JSON-compatible
+        parameter mapping, and the three UI workflows exercise default,
+        overridden, and nested theme configuration. Mutation and object
+        identity semantics of the shared mapping remain unreviewed.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - The inputs do not compare object identity, mutation persistence, or the full mapping behavior across multiple helper calls.
     fastapi.openapi.utils.generate_operation_id:
       rust_binding: fastapi-rs/src/deprecated_api.rs::generate_operation_id
       source_evidence:

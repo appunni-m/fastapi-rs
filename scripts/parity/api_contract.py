@@ -2174,15 +2174,45 @@ def build_api_surface_contract(
                     raise ContractError(
                         f"reviewed source import target differs: {source_path}:{line}:{target_path}"
                     )
-            elif not any(
-                isinstance(
-                    node,
-                    (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef),
-                )
+            elif reference.get("kind") != "module-value" and not any(
+                isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
                 and node.name == symbol
                 for node in ast.walk(tree)
             ):
                 raise ContractError(f"reviewed source symbol is missing: {source_path}:{symbol}")
+        if reference.get("kind") == "module-value":
+            try:
+                tree = ast.parse(source_text, filename=source_path)
+            except SyntaxError as exc:
+                raise ContractError(
+                    f"reviewed source evidence is not valid Python: {source_path}"
+                ) from exc
+            symbol = reference.get("symbol")
+            start_line = reference.get("start_line")
+            end_line = reference.get("end_line")
+            definitions = [
+                node
+                for node in tree.body
+                if (
+                    isinstance(node, ast.AnnAssign)
+                    and isinstance(node.target, ast.Name)
+                    and node.target.id == symbol
+                )
+                or (
+                    isinstance(node, ast.Assign)
+                    and any(
+                        isinstance(target, ast.Name) and target.id == symbol
+                        for target in node.targets
+                    )
+                )
+            ]
+            if not any(
+                node.lineno == start_line and getattr(node, "end_lineno", None) == end_line
+                for node in definitions
+            ):
+                raise ContractError(
+                    f"reviewed module value line range differs: {source_path}:{symbol}"
+                )
         if reference.get("kind") == "source-definition":
             try:
                 tree = ast.parse(source_text, filename=source_path)
