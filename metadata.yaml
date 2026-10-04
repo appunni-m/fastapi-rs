@@ -80,14 +80,14 @@ api_inventory:
 import_binding_classification_review:
   artifact: tests/fixtures/api-import-binding-classification-review.json
   schema: fastapi-starlette-import-binding-review/v1
-  sha256: c3fa72d53694a5a55428e77d7b109d411cf41c7db8fa1c5fec09d31383321317
+  sha256: 1c99d3dc10f585ef458925a1d7a3c93c0d997e1fe7b1a5f9fbcbb9f3cd1dcb2f
   source_identity:
     package: FastAPI
     version: 0.141.1
     source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
     selected_starlette_profile: 1.6.0
     starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
-    starlette_rs_contract_commit: cfe9fc96d7c26c2a7bc82c742f3e27491a158534
+    starlette_rs_contract_commit: ebfd3661f00b4368b404ef5162268b72dc2095a3
   starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
   counts:
     candidates: 97
@@ -99,7 +99,7 @@ import_binding_classification_review:
   candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
   pinned_starlette_rs_sources:
     metadata_sha256: 09384dd30af7bc919c1e653e6a06227bdae94fc2d30246ce5d64825de5f62a47
-    manifest_sha256: e07358c9560a810d9ab79aedaf64a17bd541196d787ab4e773c84aea69c429e5
+    manifest_sha256: 1816eed91d4268c5280d892b99caefac351a1fa9b715af4b53a07afeb701cc3c
     api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
     api_review_sha256: 8b25f2e3a46753316446077bfde97b6ac8a342233e2f4e50b12d3d01eafbe099
 
@@ -435,7 +435,7 @@ classification_atlas:
 starlette_rs:
   owner: ../starlette-rs
   repository: https://github.com/appunni-m/starlette-rs
-  commit: cfe9fc96d7c26c2a7bc82c742f3e27491a158534
+  commit: ebfd3661f00b4368b404ef5162268b72dc2095a3
   distribution_version: 0.1.0
   contract_id: starlette-1.6.0-asgi-http-config-session-slice
   metadata: ../starlette-rs/metadata.yaml
@@ -1202,8 +1202,11 @@ reviewed_api_contract_overlay:
         - {path: tests/test_request_params/test_form/test_required_str.py, symbol: test_required_alias_and_validation_alias_by_validation_alias}
         - {path: tests/test_request_params/test_form/test_required_str.py, symbol: test_required_alias_and_validation_alias_schema}
         - {path: docs/en/docs/tutorial/request-forms.md}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
+          case_id: fastapi.parameter-factory-signatures.form
       feature_ids: [request-validation, openapi-docs]
-      observation_selectors: [http.status, http.body.bytes, openapi.request_schema]
+      observation_selectors: [http.status, http.body.bytes, openapi.request_schema, python.signature]
       supported_slice: >-
         Partial native slice: Form accepts a string validation_alias; it takes
         precedence over alias for form-field lookup, missing-field error
@@ -1211,6 +1214,9 @@ reviewed_api_contract_overlay:
         declared-alias precedence, repeated fields, and ordinary multipart form
         extraction. Non-string AliasPath/AliasChoices, serialization_alias,
         default_factory, and other FieldInfo options remain outside this slice.
+        The identity-checked direct API signature comparison fails for Form:
+        FastAPI exposes 30 parameters and an Any return annotation, while the
+        target callable exposes 9 parameters and a None return annotation.
     fastapi.File:
       rust_binding: fastapi-rs/src/parameters.rs::file
       source_evidence:
@@ -1226,8 +1232,10 @@ reviewed_api_contract_overlay:
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/request-files-openapi-documented-shapes.yaml
           case_id: fastapi.request-files.openapi-documented-shapes
+        - recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
+          case_id: fastapi.parameter-factory-signatures.file
       feature_ids: [request-validation, openapi-docs]
-      observation_selectors: [http.status, http.body.bytes, openapi.request_schema]
+      observation_selectors: [http.status, http.body.bytes, openapi.request_schema, python.signature]
       supported_slice: >-
         Partial native slice: File accepts a string validation_alias; it takes
         precedence over alias for upload-field lookup, missing-field error
@@ -1238,6 +1246,9 @@ reviewed_api_contract_overlay:
         documentation workflow also projects the exact requestBody and
         referenced component schemas for its documented bytes and UploadFile
         routes; it does not establish whole-document OpenAPI equivalence.
+        The identity-checked direct API signature comparison fails for File:
+        FastAPI exposes 30 parameters and an Any return annotation, while the
+        target callable exposes 9 parameters and a None return annotation.
     fastapi.Query:
       rust_binding: fastapi-rs/src/parameters.rs::query
       source_evidence:
@@ -3401,8 +3412,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.request-parameters.cookie.review-slice.optional-missing
         - recipe_path: tests/fixtures/input-recipes/parity/cookie-parameter-surface-review.yaml
           case_id: fastapi.request-parameters.cookie.review-slice.openapi-parameter
+        - recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
+          case_id: fastapi.parameter-factory-signatures.cookie
       feature_ids: [request-validation, openapi-docs]
-      observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths]
+      observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths, python.signature]
       supported_slice: >-
         Source-backed, input-only scope for a required string cookie and an
         optional nullable string cookie, both declared with the explicit alias
@@ -3413,7 +3426,10 @@ reviewed_api_contract_overlay:
         `/paths/~1cookies~1required/get/parameters` and
         `/paths/~1cookies~1optional/get/parameters`. The recipe specifies
         stimuli and selectors; its presence does not establish identity-checked
-        parity or a target result. Direct factory call, signature or identity,
+        parity or a target result. The linked identity-checked direct API
+        comparison fails exact Cookie factory signature parity: FastAPI exposes
+        29 parameters and an Any return annotation, while the target exposes 6
+        parameters and a None return annotation. Constructor identity,
         validation_alias, model-valued cookies, other field types, and other
         Cookie options remain outside this reviewed scope.
     fastapi.Depends:
@@ -3779,7 +3795,7 @@ reviewed_api_contract_overlay:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - The Rust Path factory exposes fewer source parameters than FastAPI 0.141.1.
+          - Identity-checked comparison fails exact signature parity; source has 29 parameters and an Any return annotation, while target has 8 parameters and returns None.
           - The returned marker is not the upstream fastapi.params.Path FieldInfo subclass.
     fastapi.param_functions.Query:
       rust_binding: fastapi-rs/src/parameters.rs::query
@@ -3802,7 +3818,7 @@ reviewed_api_contract_overlay:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - The Rust Query factory does not expose the complete FastAPI 0.141.1 parameter set.
+          - Identity-checked comparison fails exact signature parity; source has 29 parameters and an Any return annotation, while target has 17 parameters and returns None.
           - The returned marker is not the upstream fastapi.params.Query FieldInfo subclass.
     fastapi.param_functions.Header:
       rust_binding: fastapi-rs/src/parameters.rs::header
@@ -3825,7 +3841,7 @@ reviewed_api_contract_overlay:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - The Rust Header factory does not expose the complete FastAPI 0.141.1 parameter set.
+          - Identity-checked comparison fails exact signature parity; source has 30 parameters and an Any return annotation, while target has 7 parameters and returns None.
           - The returned marker is not the upstream fastapi.params.Header FieldInfo subclass.
     fastapi.param_functions.Body:
       rust_binding: fastapi-rs/src/parameters.rs::body
@@ -3848,7 +3864,7 @@ reviewed_api_contract_overlay:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - The Rust Body factory does not expose the complete FastAPI 0.141.1 parameter set.
+          - Identity-checked comparison fails exact signature parity; source has 31 parameters and an Any return annotation, while target has 10 parameters and returns None.
           - The returned marker is not the upstream fastapi.params.Body FieldInfo subclass.
     fastapi.param_functions.Depends:
       rust_binding: fastapi-rs/src/parameters.rs::depends
@@ -3871,6 +3887,78 @@ reviewed_api_contract_overlay:
         status: partial-contract
         known_gaps:
           - Full FastAPI dependency marker and yielded-scope semantics remain outside this direct signature slice.
+    fastapi.param_functions.Cookie:
+      rust_binding: fastapi-rs/src/parameters.rs::cookie
+      source_evidence:
+        - path: fastapi/param_functions.py
+          symbol: Cookie
+          kind: source-definition
+          start_line: 1018
+          end_line: 1320
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
+          case_id: fastapi.parameter-factory-signatures.cookie
+      feature_ids: [request-validation]
+      observation_selectors: [python.signature]
+      supported_slice: >-
+        The direct API input declares exact signature probes for the pinned
+        callable at the root and module import paths; this fixture design is
+        not a parity result. Marker values, option behavior, and Cookie.__init__
+        remain outside this slice.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - Identity-checked comparison fails exact signature parity; source has 29 parameters and an Any return annotation, while target has 6 parameters and returns None.
+          - Cookie.__init__ and the complete FieldInfo option contract remain outside this slice.
+    fastapi.param_functions.File:
+      rust_binding: fastapi-rs/src/parameters.rs::file
+      source_evidence:
+        - path: fastapi/param_functions.py
+          symbol: File
+          kind: source-definition
+          start_line: 1968
+          end_line: 2280
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
+          case_id: fastapi.parameter-factory-signatures.file
+      feature_ids: [request-validation, openapi-docs]
+      observation_selectors: [python.signature]
+      supported_slice: >-
+        The direct API input declares exact signature probes for the pinned
+        callable at the root and module import paths; this fixture design is
+        not a parity result. Marker values, option behavior, multipart parsing,
+        and File.__init__ remain outside this slice.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - Identity-checked comparison fails exact signature parity; source has 30 parameters and an Any return annotation, while target has 9 parameters and returns None.
+          - File.__init__ and the complete FieldInfo option contract remain outside this slice.
+    fastapi.param_functions.Form:
+      rust_binding: fastapi-rs/src/parameters.rs::form
+      source_evidence:
+        - path: fastapi/param_functions.py
+          symbol: Form
+          kind: source-definition
+          start_line: 1653
+          end_line: 1965
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
+          case_id: fastapi.parameter-factory-signatures.form
+      feature_ids: [request-validation, openapi-docs]
+      observation_selectors: [python.signature]
+      supported_slice: >-
+        The direct API input declares exact signature probes for the pinned
+        callable at the root and module import paths; this fixture design is
+        not a parity result. Marker values, option behavior, form parsing, and
+        Form.__init__ remain outside this slice.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - Identity-checked comparison fails exact signature parity; source has 30 parameters and an Any return annotation, while target has 9 parameters and returns None.
+          - Form.__init__ and the complete FieldInfo option contract remain outside this slice.
     fastapi.params.Path.__init__:
       rust_binding: fastapi-rs/src/parameters.rs::path
       source_evidence:
@@ -3889,7 +3977,10 @@ reviewed_api_contract_overlay:
         Reviewed target gap: FastAPI 0.141.1 defines Path.__init__ on a Path
         class derived from Param and Pydantic FieldInfo. FastAPI-RS exposes a
         native Path factory function at the corresponding facade path, so this
-        constructor protocol and class behavior are not supported.
+        constructor protocol and class behavior are not supported. Its
+        identity-checked signature probe fails exact comparison: the upstream
+        method has 31 parameters, while the target function-object method
+        exposes only generic args and kwargs.
       target_binding:
         implementation_owner: fastapi-rs
         status: unimplemented
@@ -3914,7 +4005,10 @@ reviewed_api_contract_overlay:
         Reviewed target gap: FastAPI 0.141.1 defines Query.__init__ on a Query
         class derived from Param and Pydantic FieldInfo. FastAPI-RS exposes a
         native Query factory function at the corresponding facade path, so this
-        constructor protocol and class behavior are not supported.
+        constructor protocol and class behavior are not supported. Its
+        identity-checked signature probe fails exact comparison: the upstream
+        method has 31 parameters, while the target function-object method
+        exposes only generic args and kwargs.
       target_binding:
         implementation_owner: fastapi-rs
         status: unimplemented
@@ -3940,6 +4034,9 @@ reviewed_api_contract_overlay:
         Header class derived from Param and Pydantic FieldInfo. FastAPI-RS
         exposes a native Header factory function at the corresponding facade
         path, so this constructor protocol and class behavior are not supported.
+        Its identity-checked signature probe fails exact comparison: the
+        upstream method has 32 parameters, while the target function-object
+        method exposes only generic args and kwargs.
       target_binding:
         implementation_owner: fastapi-rs
         status: unimplemented
@@ -3964,13 +4061,91 @@ reviewed_api_contract_overlay:
         Reviewed target gap: FastAPI 0.141.1 defines Body.__init__ on a Body
         class derived from Pydantic FieldInfo. FastAPI-RS exposes a native Body
         factory function at the corresponding facade path, so this constructor
-        protocol and class behavior are not supported.
+        protocol and class behavior are not supported. Its identity-checked
+        signature probe fails exact comparison: the upstream method has 33
+        parameters, while the target function-object method exposes only generic
+        args and kwargs.
       target_binding:
         implementation_owner: fastapi-rs
         status: unimplemented
         known_gaps:
           - The fastapi.params.Body class constructor is replaced by a PyO3 Body factory function.
           - Pydantic FieldInfo inheritance, constructor signature, and Body instance fields are not implemented.
+    fastapi.params.Cookie.__init__:
+      rust_binding: fastapi-rs/src/parameters.rs::cookie
+      source_evidence:
+        - path: fastapi/params.py
+          symbol: __init__
+          kind: source-definition
+          owner: Cookie
+          start_line: 390
+          end_line: 466
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/parameter-class-constructor-signatures.yaml
+          case_id: fastapi.parameter-class-constructor-signatures.cookie
+      feature_ids: [request-validation]
+      observation_selectors: [python.signature]
+      supported_slice: >-
+        FastAPI 0.141.1 defines Cookie.__init__ on a Cookie(Param) class, while
+        FastAPI-RS exposes a native Cookie factory function at this path. The
+        identity-checked signature probe fails exact comparison: the upstream
+        method has 31 parameters, while the target function-object method
+        exposes only generic args and kwargs.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: unimplemented
+        known_gaps:
+          - The FastAPI Cookie class constructor and its Param/Pydantic FieldInfo behavior are not implemented.
+    fastapi.params.File.__init__:
+      rust_binding: fastapi-rs/src/parameters.rs::file
+      source_evidence:
+        - path: fastapi/params.py
+          symbol: __init__
+          kind: source-definition
+          owner: File
+          start_line: 664
+          end_line: 742
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/parameter-class-constructor-signatures.yaml
+          case_id: fastapi.parameter-class-constructor-signatures.file
+      feature_ids: [request-validation, openapi-docs]
+      observation_selectors: [python.signature]
+      supported_slice: >-
+        FastAPI 0.141.1 defines File.__init__ on a File(Form) class, while
+        FastAPI-RS exposes a native File factory function at this path. The
+        identity-checked signature probe fails exact comparison: the upstream
+        method has 32 parameters, while the target function-object method
+        exposes only generic args and kwargs.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: unimplemented
+        known_gaps:
+          - The FastAPI File/Form/Param inheritance and File constructor behavior are not implemented.
+    fastapi.params.Form.__init__:
+      rust_binding: fastapi-rs/src/parameters.rs::form
+      source_evidence:
+        - path: fastapi/params.py
+          symbol: __init__
+          kind: source-definition
+          owner: Form
+          start_line: 582
+          end_line: 660
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/parameter-class-constructor-signatures.yaml
+          case_id: fastapi.parameter-class-constructor-signatures.form
+      feature_ids: [request-validation, openapi-docs]
+      observation_selectors: [python.signature]
+      supported_slice: >-
+        FastAPI 0.141.1 defines Form.__init__ on a Form(Body) class, while
+        FastAPI-RS exposes a native Form factory function at this path. The
+        identity-checked signature probe fails exact comparison: the upstream
+        method has 32 parameters, while the target function-object method
+        exposes only generic args and kwargs.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: unimplemented
+        known_gaps:
+          - The FastAPI Form/Body/Param inheritance and Form constructor behavior are not implemented.
     fastapi.Security:
       rust_binding: fastapi-rs/src/parameters.rs::security
       source_evidence:

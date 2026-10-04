@@ -149,3 +149,90 @@ cases:
     kind: upstream_api_definition
     sha256: e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc
     symbol_id: fastapi.param_functions.Depends
+- case_id: fastapi.parameter-factory-signatures.cookie
+  probes:
+  - probe_id: root-cookie-signature
+    public_callable:
+      module: fastapi
+      attribute: Cookie
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: module-cookie-signature
+    public_callable:
+      module: fastapi.param_functions
+      attribute: Cookie
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  source_evidence:
+  - path: fastapi/param_functions.py
+    kind: upstream_api_definition
+    sha256: e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc
+    symbol_id: fastapi.Cookie
+  - path: fastapi/param_functions.py
+    kind: upstream_api_definition
+    sha256: e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc
+    symbol_id: fastapi.param_functions.Cookie
+- case_id: fastapi.parameter-factory-signatures.file
+  probes:
+  - probe_id: root-file-signature
+    public_callable:
+      module: fastapi
+      attribute: File
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: module-file-signature
+    public_callable:
+      module: fastapi.param_functions
+      attribute: File
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  source_evidence:
+  - path: fastapi/param_functions.py
+    kind: upstream_api_definition
+    sha256: e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc
+    symbol_id: fastapi.File
+  - path: fastapi/param_functions.py
+    kind: upstream_api_definition
+    sha256: e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc
+    symbol_id: fastapi.param_functions.File
+- case_id: fastapi.parameter-factory-signatures.form
+  probes:
+  - probe_id: root-form-signature
+    public_callable:
+      module: fastapi
+      attribute: Form
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: module-form-signature
+    public_callable:
+      module: fastapi.param_functions
+      attribute: Form
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  source_evidence:
+  - path: fastapi/param_functions.py
+    kind: upstream_api_definition
+    sha256: e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc
+    symbol_id: fastapi.Form
+  - path: fastapi/param_functions.py
+    kind: upstream_api_definition
+    sha256: e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc
+    symbol_id: fastapi.param_functions.Form

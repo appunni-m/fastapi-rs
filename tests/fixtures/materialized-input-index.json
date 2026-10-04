@@ -4329,21 +4329,42 @@
     {
       "id": "parameter-class-constructor-signatures",
       "input_path": "tests/fixtures/inputs/parity/parameter-class-constructor-signatures.json",
-      "input_sha256": "dde7319461dae3f590267cf8994789b954fe0563190f8ed1beadf21af6a41b46",
+      "input_sha256": "944a42c971a71637a64304cb5069cef0ae984447e62567d95fd58d861d552b6d",
       "recipe_path": "tests/fixtures/input-recipes/parity/parameter-class-constructor-signatures.yaml",
-      "recipe_sha256": "42e37f8b3cbdfaa08ce0b935f2d67ede7925e8eff977e6e82854b4d33f1d23d5",
+      "recipe_sha256": "8dd4df0cc357ec45b74085546c4cf293989e340a68bdf8c00a55afbc6c7b559c",
       "workload_path": "tests/fixtures/workloads/direct_api_reference_wave.py",
       "workload_sha256": "57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741",
       "case_ids": [
         "fastapi.parameter-class-constructor-signatures.path",
         "fastapi.parameter-class-constructor-signatures.query",
         "fastapi.parameter-class-constructor-signatures.header",
-        "fastapi.parameter-class-constructor-signatures.body"
+        "fastapi.parameter-class-constructor-signatures.body",
+        "fastapi.parameter-class-constructor-signatures.cookie",
+        "fastapi.parameter-class-constructor-signatures.file",
+        "fastapi.parameter-class-constructor-signatures.form"
       ],
       "api_definitions": [
         {
           "case_id": "fastapi.parameter-class-constructor-signatures.body",
           "symbol_id": "fastapi.params.Body.__init__",
+          "path": "fastapi/params.py",
+          "sha256": "d5f34d48ae49ecf339170f85e7ff6e3b2b00d8d802fbad666f72e5ac15a9a893"
+        },
+        {
+          "case_id": "fastapi.parameter-class-constructor-signatures.cookie",
+          "symbol_id": "fastapi.params.Cookie.__init__",
+          "path": "fastapi/params.py",
+          "sha256": "d5f34d48ae49ecf339170f85e7ff6e3b2b00d8d802fbad666f72e5ac15a9a893"
+        },
+        {
+          "case_id": "fastapi.parameter-class-constructor-signatures.file",
+          "symbol_id": "fastapi.params.File.__init__",
+          "path": "fastapi/params.py",
+          "sha256": "d5f34d48ae49ecf339170f85e7ff6e3b2b00d8d802fbad666f72e5ac15a9a893"
+        },
+        {
+          "case_id": "fastapi.parameter-class-constructor-signatures.form",
+          "symbol_id": "fastapi.params.Form.__init__",
           "path": "fastapi/params.py",
           "sha256": "d5f34d48ae49ecf339170f85e7ff6e3b2b00d8d802fbad666f72e5ac15a9a893"
         },
@@ -4371,6 +4392,33 @@
           "case_id": "fastapi.parameter-class-constructor-signatures.body",
           "probe_id": "body-class-constructor-signature",
           "symbol_id": "fastapi.params.Body.__init__",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.parameter-class-constructor-signatures.cookie",
+          "probe_id": "cookie-class-constructor-signature",
+          "symbol_id": "fastapi.params.Cookie.__init__",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.parameter-class-constructor-signatures.file",
+          "probe_id": "file-class-constructor-signature",
+          "symbol_id": "fastapi.params.File.__init__",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.parameter-class-constructor-signatures.form",
+          "probe_id": "form-class-constructor-signature",
+          "symbol_id": "fastapi.params.Form.__init__",
           "probe_kind": "callable",
           "observation_selectors": [
             "python.signature"
@@ -4408,9 +4456,9 @@
     {
       "id": "parameter-factory-signatures",
       "input_path": "tests/fixtures/inputs/parity/parameter-factory-signatures.json",
-      "input_sha256": "30737684004884a621aacb4b64101f65136a5aa2af9935c37c5b64289cba04f0",
+      "input_sha256": "c25252d5874ab5c07ec01963585a585c53d9fd8b32b98e98135ff8ae0e560018",
       "recipe_path": "tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml",
-      "recipe_sha256": "e8ce7bbc3db6c72204c0299c970bfcdcd31c0fec9f58f28e220e91cc1b8cad88",
+      "recipe_sha256": "8594006b652d2376f78f22490c64e074149d401b09c6e57f1271eda0d2be6e58",
       "workload_path": "tests/fixtures/workloads/direct_api_reference_wave.py",
       "workload_sha256": "57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741",
       "case_ids": [
@@ -4418,7 +4466,10 @@
         "fastapi.parameter-factory-signatures.query",
         "fastapi.parameter-factory-signatures.header",
         "fastapi.parameter-factory-signatures.body",
-        "fastapi.parameter-factory-signatures.depends"
+        "fastapi.parameter-factory-signatures.depends",
+        "fastapi.parameter-factory-signatures.cookie",
+        "fastapi.parameter-factory-signatures.file",
+        "fastapi.parameter-factory-signatures.form"
       ],
       "api_definitions": [
         {
@@ -4434,6 +4485,18 @@
           "sha256": "e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc"
         },
         {
+          "case_id": "fastapi.parameter-factory-signatures.cookie",
+          "symbol_id": "fastapi.Cookie",
+          "path": "fastapi/param_functions.py",
+          "sha256": "e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc"
+        },
+        {
+          "case_id": "fastapi.parameter-factory-signatures.cookie",
+          "symbol_id": "fastapi.param_functions.Cookie",
+          "path": "fastapi/param_functions.py",
+          "sha256": "e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc"
+        },
+        {
           "case_id": "fastapi.parameter-factory-signatures.depends",
           "symbol_id": "fastapi.Depends",
           "path": "fastapi/param_functions.py",
@@ -4442,6 +4505,30 @@
         {
           "case_id": "fastapi.parameter-factory-signatures.depends",
           "symbol_id": "fastapi.param_functions.Depends",
+          "path": "fastapi/param_functions.py",
+          "sha256": "e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc"
+        },
+        {
+          "case_id": "fastapi.parameter-factory-signatures.file",
+          "symbol_id": "fastapi.File",
+          "path": "fastapi/param_functions.py",
+          "sha256": "e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc"
+        },
+        {
+          "case_id": "fastapi.parameter-factory-signatures.file",
+          "symbol_id": "fastapi.param_functions.File",
+          "path": "fastapi/param_functions.py",
+          "sha256": "e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc"
+        },
+        {
+          "case_id": "fastapi.parameter-factory-signatures.form",
+          "symbol_id": "fastapi.Form",
+          "path": "fastapi/param_functions.py",
+          "sha256": "e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc"
+        },
+        {
+          "case_id": "fastapi.parameter-factory-signatures.form",
+          "symbol_id": "fastapi.param_functions.Form",
           "path": "fastapi/param_functions.py",
           "sha256": "e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc"
         },
@@ -4502,6 +4589,24 @@
           ]
         },
         {
+          "case_id": "fastapi.parameter-factory-signatures.cookie",
+          "probe_id": "module-cookie-signature",
+          "symbol_id": "fastapi.param_functions.Cookie",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.parameter-factory-signatures.cookie",
+          "probe_id": "root-cookie-signature",
+          "symbol_id": "fastapi.Cookie",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
           "case_id": "fastapi.parameter-factory-signatures.depends",
           "probe_id": "module-depends-signature",
           "symbol_id": "fastapi.param_functions.Depends",
@@ -4514,6 +4619,42 @@
           "case_id": "fastapi.parameter-factory-signatures.depends",
           "probe_id": "root-depends-signature",
           "symbol_id": "fastapi.Depends",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.parameter-factory-signatures.file",
+          "probe_id": "module-file-signature",
+          "symbol_id": "fastapi.param_functions.File",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.parameter-factory-signatures.file",
+          "probe_id": "root-file-signature",
+          "symbol_id": "fastapi.File",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.parameter-factory-signatures.form",
+          "probe_id": "module-form-signature",
+          "symbol_id": "fastapi.param_functions.Form",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.parameter-factory-signatures.form",
+          "probe_id": "root-form-signature",
+          "symbol_id": "fastapi.Form",
           "probe_kind": "callable",
           "observation_selectors": [
             "python.signature"
@@ -7147,7 +7288,7 @@
       "input_path": "tests/fixtures/inputs/parity/response-model-data-filter-exclude-unset-none-review.json",
       "input_sha256": "e8df817a4df31b3f2f646068c8a9286416ff13577822d1fc572bbc5d8eb34a17",
       "recipe_path": "tests/fixtures/input-recipes/parity/response-model-data-filter-exclude-unset-none-review.yaml",
-      "recipe_sha256": "354b9dcb9be3655f8a606d7c110de56163251f40c687a57d2c7ac55c41327baf",
+      "recipe_sha256": "6ca9e6fa6df4d754a3d30c0e388928b9074d639029e6d6f1ea2272930752958d",
       "workload_path": "tests/fixtures/workloads/response_model_data_filter_exclude_unset_none_review.py",
       "workload_sha256": "24b60f06b2472a0254c9ae15d0b208e0edd99d3cb8a3833696d343bacd0c13cd",
       "case_ids": [
