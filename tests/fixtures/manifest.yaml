@@ -91,7 +91,7 @@ target:
     name: starlette-rs-py
     version: 0.1.0
     starlette_contract: 1.6.0
-    commit: ebfd3661f00b4368b404ef5162268b72dc2095a3
+    commit: f21a17f88a0edc71a2bf3ba6179df036ad376f05
   external_python_runtime_lock:
     path: requirements/target-runtime-cpython-3.12.13.lock
     sha256: efb7ca633fc9a9c8587a6f59f8ee9b509151f6f77ceb75a56dd3cdeff2be99f7
@@ -128,13 +128,13 @@ source_artifacts:
   api_import_binding_classification_review:
     path: tests/fixtures/api-import-binding-classification-review.json
     schema: fastapi-starlette-import-binding-review/v1
-    sha256: 1c99d3dc10f585ef458925a1d7a3c93c0d997e1fe7b1a5f9fbcbb9f3cd1dcb2f
+    sha256: 5975451a24c27b70a5c8bff16b5aaff5d51c8adbfba263bbeb23ee408a1625db
     purpose: Reviewed source-backed disposition of uncertain FastAPI import bindings from the selected Starlette profile
     source_identity:
       package: FastAPI
       selected_starlette_profile: 1.6.0
       source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
-      starlette_rs_contract_commit: ebfd3661f00b4368b404ef5162268b72dc2095a3
+      starlette_rs_contract_commit: f21a17f88a0edc71a2bf3ba6179df036ad376f05
       starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
       version: 0.141.1
     starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
@@ -148,7 +148,7 @@ source_artifacts:
     candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
     pinned_starlette_rs_sources:
       metadata_sha256: 09384dd30af7bc919c1e653e6a06227bdae94fc2d30246ce5d64825de5f62a47
-      manifest_sha256: 1816eed91d4268c5280d892b99caefac351a1fa9b715af4b53a07afeb701cc3c
+      manifest_sha256: f423846fa1454ee20386de5b3daff5f83d4ab7925af7930b104efe3821029092
       api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
       api_review_sha256: 8b25f2e3a46753316446077bfde97b6ac8a342233e2f4e50b12d3d01eafbe099
   api_source_classification_review:
@@ -411,7 +411,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@5
-    sha256: 098354eeabdc097d8c9e2d5dbd8639c0498fffb5033fa708d59f2bf9488bc119
+    sha256: 3a3f68876c1290f8cad3c666ecf8caad335e47001458cc21219b3000112cc259
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -447,7 +447,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 02d9b9d0144d0591beaf2a97c0e3d1f9608a132e25e9a1f730e6f5b372d10605
+    sha256: 5eae5a7b09df388fd1d25ab14e5c2eaa1f6a1954b3d66f6b955e4b9cb1971acb
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -456,10 +456,10 @@ source_artifacts:
   observation_selector_catalog:
     path: tests/fixtures/observation-selectors.json
     schema: fastapi-rs/observation-selector-catalog@1
-    sha256: 14183963d5a5a86f379997fb2c236e5d94a9d940ca36555f623fce20f77e02de
+    sha256: 1e309a71a967760462e7053e6680dd406a46d2e288675f4a68b5a2c374c6d1f1
     purpose: Exact projection semantics for the atlas and fixture selectors
     counts:
-      selectors: 50
+      selectors: 51
       parameterized_selectors: 1
   runtime_api_surface_core:
     path: tests/fixtures/runtime-api-surface-core.json
@@ -484,14 +484,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@2
-    sha256: b4391c616bab9aec09f80a6077ac7a3d6b2d6a7b418092113bac3065c01ee496
+    sha256: da6d53c5c55872543d76081b225e532e9533cf35f5c34aefe62f81c5ded6f2f5
     schema_path: tests/fixtures/schemas/materialized-input-index.schema.json
     schema_sha256: 56ac1cdfaa6f28b4277ef44b5ef78efebb3122111c5691e1b9c1bce869156aaf
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 527
-      cases: 2079
-      partial_source_mappings: 1484
+      workflows: 530
+      cases: 2101
+      partial_source_mappings: 1485
 
 contract_metadata:
   aliases:
@@ -724,6 +724,21 @@ unresolved:
     coverage: >-
       Adds ordered warning category, exact message, stable filename, and line
       observations on selected direct-call probes, including probes that raise.
+  python_api_workflow_v4:
+    state: fixed-pydantic-model-result-projection; v1-v3-remain-supported
+    schema_id: fastapi-rs/python-api-workflow@4
+    schema_path: tests/fixtures/schemas/python-api-workflow-v4.schema.json
+    schema_sha256: 58a83dca483c33d15ac52a1c6baa0ee8e75c7c941305864a4d5c79bd79013cb4
+    result_schema_id: fastapi-rs/python-api-workflow-result@5
+    result_schema_path: tests/fixtures/schemas/python-api-workflow-result-v5.schema.json
+    result_schema_sha256: 91459ce78b6f648179d038fe693e4c2d0381eadece7db88b4f9c7d2e8d7646cd
+    comparison_schema_id: fastapi-rs/python-api-comparison@4
+    comparison_schema_path: tests/fixtures/schemas/python-api-comparison-v4.schema.json
+    comparison_schema_sha256: a92a654a21732378e09ec5b634262c3f945010d9a8fe140ba861f1489b60cad1
+    coverage: >-
+      Adds one exact model_dump(mode=json) projection for direct Pydantic
+      model results and tagged projections for Pydantic model-instance
+      signature defaults, with aliases and unset/default/None fields included.
   fixture_backlog_integrity:
     state: source-linked-designs-validated; incremental-materialization-indexed; full-backlog-pending
     source_artifacts: [compatibility_atlas, fixture_backlog, materialized_input_index]
@@ -812,9 +827,9 @@ api_surface_contract:
     symbols_with_alias_refs: 46
     symbols_with_deprecation_refs: 15
     symbols_with_error_contract_refs: 13
-    symbols_with_direct_api_input_workflow_refs: 55
-    symbols_with_operation_fixture_refs: 101
-    operation_fixture_refs: 532
+    symbols_with_direct_api_input_workflow_refs: 101
+    symbols_with_operation_fixture_refs: 121
+    operation_fixture_refs: 597
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -10147,7 +10162,19 @@ api_surface_contract:
       - python.signature
       - python.attribute_value
       - openapi.document
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: openapi-model-result-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
+      input_sha256: 6a459922f2ec22d2df361bea22f148456bd521a7d90acd247fdd3338f022dd16
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+      recipe_sha256: d4d0bfb7747c49556bf9337bc140a0731986c36eae95a9f22ada516db535f8a8
+      workload_path: tests/fixtures/workloads/openapi_model_projection.py
+      workload_sha256: 7a9092dda00609457036eb44ed0cec9e3d21db9678f212f1157efdd6f6c2e0b7
+      case_id: fastapi.openapi-models.api-key.model-result
+      probe_id: api-key-model-result
+      probe_kind: callable
+      observation_selectors:
+      - python.pydantic_model_result
     operation_fixture_refs:
     - workflow_id: security-credentials-upstream
       input_path: tests/fixtures/inputs/parity/security_credentials_upstream.json
@@ -10266,6 +10293,16 @@ api_surface_contract:
       - docs.response.status
       - http.status
       - openapi.document
+    - workflow_id: openapi-model-result-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
+      input_sha256: 6a459922f2ec22d2df361bea22f148456bd521a7d90acd247fdd3338f022dd16
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+      recipe_sha256: d4d0bfb7747c49556bf9337bc140a0731986c36eae95a9f22ada516db535f8a8
+      workload_path: tests/fixtures/workloads/openapi_model_projection.py
+      workload_sha256: 7a9092dda00609457036eb44ed0cec9e3d21db9678f212f1157efdd6f6c2e0b7
+      case_id: fastapi.openapi-models.api-key.model-result
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -10275,6 +10312,7 @@ api_surface_contract:
     - openapi.security
     - python.attribute_value
     - python.import_path
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: slice-described
@@ -10439,6 +10477,16 @@ api_surface_contract:
       - docs.response.status
       - http.status
       - openapi.document
+    - workflow_id: openapi-model-result-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
+      input_sha256: 6a459922f2ec22d2df361bea22f148456bd521a7d90acd247fdd3338f022dd16
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+      recipe_sha256: d4d0bfb7747c49556bf9337bc140a0731986c36eae95a9f22ada516db535f8a8
+      workload_path: tests/fixtures/workloads/openapi_model_projection.py
+      workload_sha256: 7a9092dda00609457036eb44ed0cec9e3d21db9678f212f1157efdd6f6c2e0b7
+      case_id: fastapi.openapi-models.api-key.model-result
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -10612,6 +10660,16 @@ api_surface_contract:
       - docs.response.status
       - http.status
       - openapi.document
+    - workflow_id: openapi-model-result-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
+      input_sha256: 6a459922f2ec22d2df361bea22f148456bd521a7d90acd247fdd3338f022dd16
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+      recipe_sha256: d4d0bfb7747c49556bf9337bc140a0731986c36eae95a9f22ada516db535f8a8
+      workload_path: tests/fixtures/workloads/openapi_model_projection.py
+      workload_sha256: 7a9092dda00609457036eb44ed0cec9e3d21db9678f212f1157efdd6f6c2e0b7
+      case_id: fastapi.openapi-models.api-key.model-result
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -10785,6 +10843,16 @@ api_surface_contract:
       - docs.response.status
       - http.status
       - openapi.document
+    - workflow_id: openapi-model-result-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
+      input_sha256: 6a459922f2ec22d2df361bea22f148456bd521a7d90acd247fdd3338f022dd16
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+      recipe_sha256: d4d0bfb7747c49556bf9337bc140a0731986c36eae95a9f22ada516db535f8a8
+      workload_path: tests/fixtures/workloads/openapi_model_projection.py
+      workload_sha256: 7a9092dda00609457036eb44ed0cec9e3d21db9678f212f1157efdd6f6c2e0b7
+      case_id: fastapi.openapi-models.api-key.model-result
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -10958,6 +11026,16 @@ api_surface_contract:
       - docs.response.status
       - http.status
       - openapi.document
+    - workflow_id: openapi-model-result-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
+      input_sha256: 6a459922f2ec22d2df361bea22f148456bd521a7d90acd247fdd3338f022dd16
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+      recipe_sha256: d4d0bfb7747c49556bf9337bc140a0731986c36eae95a9f22ada516db535f8a8
+      workload_path: tests/fixtures/workloads/openapi_model_projection.py
+      workload_sha256: 7a9092dda00609457036eb44ed0cec9e3d21db9678f212f1157efdd6f6c2e0b7
+      case_id: fastapi.openapi-models.api-key.model-result
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -11131,6 +11209,16 @@ api_surface_contract:
       - docs.response.status
       - http.status
       - openapi.document
+    - workflow_id: openapi-model-result-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
+      input_sha256: 6a459922f2ec22d2df361bea22f148456bd521a7d90acd247fdd3338f022dd16
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+      recipe_sha256: d4d0bfb7747c49556bf9337bc140a0731986c36eae95a9f22ada516db535f8a8
+      workload_path: tests/fixtures/workloads/openapi_model_projection.py
+      workload_sha256: 7a9092dda00609457036eb44ed0cec9e3d21db9678f212f1157efdd6f6c2e0b7
+      case_id: fastapi.openapi-models.api-key.model-result
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -11304,6 +11392,16 @@ api_surface_contract:
       - docs.response.status
       - http.status
       - openapi.document
+    - workflow_id: openapi-model-result-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
+      input_sha256: 6a459922f2ec22d2df361bea22f148456bd521a7d90acd247fdd3338f022dd16
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+      recipe_sha256: d4d0bfb7747c49556bf9337bc140a0731986c36eae95a9f22ada516db535f8a8
+      workload_path: tests/fixtures/workloads/openapi_model_projection.py
+      workload_sha256: 7a9092dda00609457036eb44ed0cec9e3d21db9678f212f1157efdd6f6c2e0b7
+      case_id: fastapi.openapi-models.api-key.model-result
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -11477,6 +11575,16 @@ api_surface_contract:
       - docs.response.status
       - http.status
       - openapi.document
+    - workflow_id: openapi-model-result-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
+      input_sha256: 6a459922f2ec22d2df361bea22f148456bd521a7d90acd247fdd3338f022dd16
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+      recipe_sha256: d4d0bfb7747c49556bf9337bc140a0731986c36eae95a9f22ada516db535f8a8
+      workload_path: tests/fixtures/workloads/openapi_model_projection.py
+      workload_sha256: 7a9092dda00609457036eb44ed0cec9e3d21db9678f212f1157efdd6f6c2e0b7
+      case_id: fastapi.openapi-models.api-key.model-result
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -11584,7 +11692,52 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-openapi-models
       fixture_design_ref: /fixture_designs/379
       observation_selectors: *id012
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: openapi-model-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-model-public-api.json
+      input_sha256: bede489410d8b4d1d8f808cca0741239b01eb22f22f8b6aea29e56c3c41b4841
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-public-api.yaml
+      recipe_sha256: ca5dc143d5a7fdffd12c78803ac0aed4107c1e8361dd0fe6fe6eb517573d5c1a
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.openapi-models.components.signature
+      probe_id: components-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
+    - workflow_id: openapi-model-result-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
+      input_sha256: 6a459922f2ec22d2df361bea22f148456bd521a7d90acd247fdd3338f022dd16
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+      recipe_sha256: d4d0bfb7747c49556bf9337bc140a0731986c36eae95a9f22ada516db535f8a8
+      workload_path: tests/fixtures/workloads/openapi_model_projection.py
+      workload_sha256: 7a9092dda00609457036eb44ed0cec9e3d21db9678f212f1157efdd6f6c2e0b7
+      case_id: fastapi.openapi-models.components.model-result
+      probe_id: components-model-result
+      probe_kind: callable
+      observation_selectors:
+      - python.pydantic_model_result
+    operation_fixture_refs:
+    - workflow_id: openapi-model-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-model-public-api.json
+      input_sha256: bede489410d8b4d1d8f808cca0741239b01eb22f22f8b6aea29e56c3c41b4841
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-public-api.yaml
+      recipe_sha256: ca5dc143d5a7fdffd12c78803ac0aed4107c1e8361dd0fe6fe6eb517573d5c1a
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.openapi-models.components.signature
+      observation_selectors:
+      - python.signature
+    - workflow_id: openapi-model-result-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
+      input_sha256: 6a459922f2ec22d2df361bea22f148456bd521a7d90acd247fdd3338f022dd16
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+      recipe_sha256: d4d0bfb7747c49556bf9337bc140a0731986c36eae95a9f22ada516db535f8a8
+      workload_path: tests/fixtures/workloads/openapi_model_projection.py
+      workload_sha256: 7a9092dda00609457036eb44ed0cec9e3d21db9678f212f1157efdd6f6c2e0b7
+      case_id: fastapi.openapi-models.components.model-result
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -11592,10 +11745,11 @@ api_surface_contract:
     - openapi.document
     - python.attribute_value
     - python.import_path
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.openapi.models.Components
@@ -11604,8 +11758,11 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/599
-      status: full-contract-not-established
+      status: unimplemented
       rust_binding: null
+      known_gaps:
+      - The target fastapi.openapi.models façade does not export Components; the direct model input records
+        source construction and serialization only.
   - id: fastapi.openapi.models.Components.callbacks
     kind: field
     source_candidate_ref: /api_candidates/600
@@ -12364,7 +12521,52 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-openapi-models
       fixture_design_ref: /fixture_designs/379
       observation_selectors: *id012
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: openapi-model-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-model-public-api.json
+      input_sha256: bede489410d8b4d1d8f808cca0741239b01eb22f22f8b6aea29e56c3c41b4841
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-public-api.yaml
+      recipe_sha256: ca5dc143d5a7fdffd12c78803ac0aed4107c1e8361dd0fe6fe6eb517573d5c1a
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.openapi-models.discriminator.signature
+      probe_id: discriminator-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
+    - workflow_id: openapi-model-result-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
+      input_sha256: 6a459922f2ec22d2df361bea22f148456bd521a7d90acd247fdd3338f022dd16
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+      recipe_sha256: d4d0bfb7747c49556bf9337bc140a0731986c36eae95a9f22ada516db535f8a8
+      workload_path: tests/fixtures/workloads/openapi_model_projection.py
+      workload_sha256: 7a9092dda00609457036eb44ed0cec9e3d21db9678f212f1157efdd6f6c2e0b7
+      case_id: fastapi.openapi-models.discriminator.model-result
+      probe_id: discriminator-model-result
+      probe_kind: callable
+      observation_selectors:
+      - python.pydantic_model_result
+    operation_fixture_refs:
+    - workflow_id: openapi-model-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-model-public-api.json
+      input_sha256: bede489410d8b4d1d8f808cca0741239b01eb22f22f8b6aea29e56c3c41b4841
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-public-api.yaml
+      recipe_sha256: ca5dc143d5a7fdffd12c78803ac0aed4107c1e8361dd0fe6fe6eb517573d5c1a
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.openapi-models.discriminator.signature
+      observation_selectors:
+      - python.signature
+    - workflow_id: openapi-model-result-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
+      input_sha256: 6a459922f2ec22d2df361bea22f148456bd521a7d90acd247fdd3338f022dd16
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+      recipe_sha256: d4d0bfb7747c49556bf9337bc140a0731986c36eae95a9f22ada516db535f8a8
+      workload_path: tests/fixtures/workloads/openapi_model_projection.py
+      workload_sha256: 7a9092dda00609457036eb44ed0cec9e3d21db9678f212f1157efdd6f6c2e0b7
+      case_id: fastapi.openapi-models.discriminator.model-result
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -12372,10 +12574,11 @@ api_surface_contract:
     - openapi.document
     - python.attribute_value
     - python.import_path
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.openapi.models.Discriminator
@@ -12384,8 +12587,11 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/614
-      status: full-contract-not-established
+      status: unimplemented
       rust_binding: null
+      known_gaps:
+      - The target fastapi.openapi.models façade does not export Discriminator; the direct model input
+        records source construction and serialization only.
   - id: fastapi.openapi.models.Discriminator.mapping
     kind: field
     source_candidate_ref: /api_candidates/615
@@ -19681,6 +19887,51 @@ api_surface_contract:
       probe_kind: callable
       observation_selectors:
       - python.signature
+    - workflow_id: openapi-model-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-model-public-api.json
+      input_sha256: bede489410d8b4d1d8f808cca0741239b01eb22f22f8b6aea29e56c3c41b4841
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-public-api.yaml
+      recipe_sha256: ca5dc143d5a7fdffd12c78803ac0aed4107c1e8361dd0fe6fe6eb517573d5c1a
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.openapi-models.schema.signature
+      probe_id: schema-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
+    - workflow_id: openapi-model-result-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
+      input_sha256: 6a459922f2ec22d2df361bea22f148456bd521a7d90acd247fdd3338f022dd16
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+      recipe_sha256: d4d0bfb7747c49556bf9337bc140a0731986c36eae95a9f22ada516db535f8a8
+      workload_path: tests/fixtures/workloads/openapi_model_projection.py
+      workload_sha256: 7a9092dda00609457036eb44ed0cec9e3d21db9678f212f1157efdd6f6c2e0b7
+      case_id: fastapi.openapi-models.schema.model-result
+      probe_id: schema-model-result
+      probe_kind: callable
+      observation_selectors:
+      - python.pydantic_model_result
+    operation_fixture_refs:
+    - workflow_id: openapi-model-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-model-public-api.json
+      input_sha256: bede489410d8b4d1d8f808cca0741239b01eb22f22f8b6aea29e56c3c41b4841
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-public-api.yaml
+      recipe_sha256: ca5dc143d5a7fdffd12c78803ac0aed4107c1e8361dd0fe6fe6eb517573d5c1a
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.openapi-models.schema.signature
+      observation_selectors:
+      - python.signature
+    - workflow_id: openapi-model-result-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
+      input_sha256: 6a459922f2ec22d2df361bea22f148456bd521a7d90acd247fdd3338f022dd16
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+      recipe_sha256: d4d0bfb7747c49556bf9337bc140a0731986c36eae95a9f22ada516db535f8a8
+      workload_path: tests/fixtures/workloads/openapi_model_projection.py
+      workload_sha256: 7a9092dda00609457036eb44ed0cec9e3d21db9678f212f1157efdd6f6c2e0b7
+      case_id: fastapi.openapi-models.schema.model-result
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -19688,10 +19939,11 @@ api_surface_contract:
     - openapi.document
     - python.attribute_value
     - python.import_path
+    - python.pydantic_model_result
     - python.signature
     operation_scope:
       status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.openapi.models.Schema
@@ -19700,8 +19952,11 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/761
-      status: full-contract-not-established
+      status: unimplemented
       rust_binding: null
+      known_gaps:
+      - The target fastapi.openapi.models façade does not export Schema; the direct model input records
+        source construction and serialization only.
   - id: fastapi.openapi.models.Schema.additionalProperties
     kind: field
     source_candidate_ref: /api_candidates/762
@@ -23127,6 +23382,16 @@ api_surface_contract:
       - docs.response.status
       - http.status
       - openapi.document
+    - workflow_id: openapi-model-result-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
+      input_sha256: 6a459922f2ec22d2df361bea22f148456bd521a7d90acd247fdd3338f022dd16
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+      recipe_sha256: d4d0bfb7747c49556bf9337bc140a0731986c36eae95a9f22ada516db535f8a8
+      workload_path: tests/fixtures/workloads/openapi_model_projection.py
+      workload_sha256: 7a9092dda00609457036eb44ed0cec9e3d21db9678f212f1157efdd6f6c2e0b7
+      case_id: fastapi.openapi-models.api-key.model-result
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -23300,6 +23565,16 @@ api_surface_contract:
       - docs.response.status
       - http.status
       - openapi.document
+    - workflow_id: openapi-model-result-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
+      input_sha256: 6a459922f2ec22d2df361bea22f148456bd521a7d90acd247fdd3338f022dd16
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+      recipe_sha256: d4d0bfb7747c49556bf9337bc140a0731986c36eae95a9f22ada516db535f8a8
+      workload_path: tests/fixtures/workloads/openapi_model_projection.py
+      workload_sha256: 7a9092dda00609457036eb44ed0cec9e3d21db9678f212f1157efdd6f6c2e0b7
+      case_id: fastapi.openapi-models.api-key.model-result
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -23473,6 +23748,16 @@ api_surface_contract:
       - docs.response.status
       - http.status
       - openapi.document
+    - workflow_id: openapi-model-result-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
+      input_sha256: 6a459922f2ec22d2df361bea22f148456bd521a7d90acd247fdd3338f022dd16
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+      recipe_sha256: d4d0bfb7747c49556bf9337bc140a0731986c36eae95a9f22ada516db535f8a8
+      workload_path: tests/fixtures/workloads/openapi_model_projection.py
+      workload_sha256: 7a9092dda00609457036eb44ed0cec9e3d21db9678f212f1157efdd6f6c2e0b7
+      case_id: fastapi.openapi-models.api-key.model-result
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -23698,6 +23983,16 @@ api_surface_contract:
       - docs.response.status
       - http.status
       - openapi.document
+    - workflow_id: openapi-model-result-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
+      input_sha256: 6a459922f2ec22d2df361bea22f148456bd521a7d90acd247fdd3338f022dd16
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+      recipe_sha256: d4d0bfb7747c49556bf9337bc140a0731986c36eae95a9f22ada516db535f8a8
+      workload_path: tests/fixtures/workloads/openapi_model_projection.py
+      workload_sha256: 7a9092dda00609457036eb44ed0cec9e3d21db9678f212f1157efdd6f6c2e0b7
+      case_id: fastapi.openapi-models.api-key.model-result
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -23871,6 +24166,16 @@ api_surface_contract:
       - docs.response.status
       - http.status
       - openapi.document
+    - workflow_id: openapi-model-result-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-model-result-public-api.json
+      input_sha256: 6a459922f2ec22d2df361bea22f148456bd521a7d90acd247fdd3338f022dd16
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+      recipe_sha256: d4d0bfb7747c49556bf9337bc140a0731986c36eae95a9f22ada516db535f8a8
+      workload_path: tests/fixtures/workloads/openapi_model_projection.py
+      workload_sha256: 7a9092dda00609457036eb44ed0cec9e3d21db9678f212f1157efdd6f6c2e0b7
+      case_id: fastapi.openapi-models.api-key.model-result
+      observation_selectors:
+      - python.pydantic_model_result
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -29169,7 +29474,19 @@ api_surface_contract:
       - openapi.document
       - openapi.request_schema
       - openapi.security
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.api-key-cookie
+      probe_id: root-api-key-cookie-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
     operation_fixture_refs:
     - workflow_id: security-credentials-upstream
       input_path: tests/fixtures/inputs/parity/security_credentials_upstream.json
@@ -29300,6 +29617,16 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.api-key-cookie
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -29314,6 +29641,7 @@ api_surface_contract:
     - openapi.document
     - openapi.request_schema
     - openapi.security
+    - python.signature
     - validation.error_class
     - validation.error_details
     operation_scope:
@@ -29364,7 +29692,19 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-security-index
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.api-key-header
+      probe_id: root-api-key-header-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
     operation_fixture_refs:
     - workflow_id: security-credentials-upstream
       input_path: tests/fixtures/inputs/parity/security_credentials_upstream.json
@@ -29441,6 +29781,16 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.api-key-header
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -29455,6 +29805,7 @@ api_surface_contract:
     - openapi.document
     - openapi.request_schema
     - openapi.security
+    - python.signature
     - validation.error_class
     - validation.error_details
     operation_scope:
@@ -29505,7 +29856,19 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-security-index
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.api-key-query
+      probe_id: root-api-key-query-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
     operation_fixture_refs:
     - workflow_id: security-credentials-upstream
       input_path: tests/fixtures/inputs/parity/security_credentials_upstream.json
@@ -29636,6 +29999,16 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.api-key-query
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -29650,6 +30023,7 @@ api_surface_contract:
     - openapi.document
     - openapi.request_schema
     - openapi.security
+    - python.signature
     - validation.error_class
     - validation.error_details
     operation_scope:
@@ -29698,7 +30072,19 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-security-index
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.http-authorization-credentials
+      probe_id: root-http-authorization-credentials-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
     operation_fixture_refs:
     - workflow_id: authentication-error-status-code-tutorial
       input_path: tests/fixtures/inputs/parity/authentication-error-status-code-tutorial.json
@@ -29712,6 +30098,16 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.http-authorization-credentials
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -29726,6 +30122,7 @@ api_surface_contract:
     - openapi.document
     - openapi.request_schema
     - openapi.security
+    - python.signature
     - validation.error_class
     - validation.error_details
     operation_scope:
@@ -29776,7 +30173,19 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-security-index
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.http-basic
+      probe_id: root-http-basic-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
     operation_fixture_refs:
     - workflow_id: security-wave
       input_path: tests/fixtures/inputs/parity/security-wave.json
@@ -29874,6 +30283,16 @@ api_surface_contract:
       - docs.response.status
       - http.status
       - openapi.security
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.http-basic
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -29889,6 +30308,7 @@ api_surface_contract:
     - openapi.paths
     - openapi.request_schema
     - openapi.security
+    - python.signature
     - validation.error_class
     - validation.error_details
     operation_scope:
@@ -29937,7 +30357,30 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-security-index
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.http-basic-credentials
+      probe_id: root-http-basic-credentials-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
+    operation_fixture_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.http-basic-credentials
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -29954,6 +30397,7 @@ api_surface_contract:
     - openapi.security
     - python.import_path
     - python.object_identity
+    - python.signature
     - validation.error_class
     - validation.error_details
     operation_scope:
@@ -30013,7 +30457,19 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.http-bearer
+      probe_id: root-http-bearer-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
     operation_fixture_refs:
     - workflow_id: authentication-error-status-code-tutorial
       input_path: tests/fixtures/inputs/parity/authentication-error-status-code-tutorial.json
@@ -30039,6 +30495,16 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.http-bearer
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -30054,6 +30520,7 @@ api_surface_contract:
     - openapi.document
     - openapi.request_schema
     - openapi.security
+    - python.signature
     - validation.error_class
     - validation.error_details
     operation_scope:
@@ -30104,7 +30571,19 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-security-index
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.http-digest
+      probe_id: root-http-digest-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
     operation_fixture_refs:
     - workflow_id: http-digest-auth-upstream
       input_path: tests/fixtures/inputs/parity/http-digest-auth-upstream.json
@@ -30130,6 +30609,16 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.http-digest
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -30145,6 +30634,7 @@ api_surface_contract:
     - openapi.document
     - openapi.request_schema
     - openapi.security
+    - python.signature
     - validation.error_class
     - validation.error_details
     operation_scope:
@@ -30195,7 +30685,19 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-security-index
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.oauth2
+      probe_id: root-oauth2-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
     operation_fixture_refs:
     - workflow_id: security-wave
       input_path: tests/fixtures/inputs/parity/security-wave.json
@@ -30221,6 +30723,16 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.oauth2
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -30236,6 +30748,7 @@ api_surface_contract:
     - openapi.document
     - openapi.request_schema
     - openapi.security
+    - python.signature
     - validation.error_class
     - validation.error_details
     operation_scope:
@@ -30286,7 +30799,30 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-security-index
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.oauth2-authorization-code-bearer
+      probe_id: root-oauth2-authorization-code-bearer-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
+    operation_fixture_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.oauth2-authorization-code-bearer
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -30301,11 +30837,12 @@ api_surface_contract:
     - openapi.document
     - openapi.request_schema
     - openapi.security
+    - python.signature
     - validation.error_class
     - validation.error_details
     operation_scope:
       status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.security.OAuth2AuthorizationCodeBearer
@@ -30315,8 +30852,11 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1418
         - /api_candidates/1494
-      status: full-contract-not-established
+      status: unimplemented
       rust_binding: null
+      known_gaps:
+      - no OAuth2 authorization-code bearer class export or implementation is present in the FastAPI-RS
+        security facades or Rust security module.
   - id: fastapi.security.OAuth2PasswordBearer
     kind: import_binding
     source_candidate_ref: /api_candidates/1419
@@ -30350,7 +30890,19 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-security-index
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.oauth2-password-bearer
+      probe_id: root-oauth2-password-bearer-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
     operation_fixture_refs:
     - workflow_id: security-wave
       input_path: tests/fixtures/inputs/parity/security-wave.json
@@ -30364,6 +30916,16 @@ api_surface_contract:
       - docs.response.status
       - http.status
       - openapi.security
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.oauth2-password-bearer
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -30379,6 +30941,7 @@ api_surface_contract:
     - openapi.paths
     - openapi.request_schema
     - openapi.security
+    - python.signature
     - validation.error_class
     - validation.error_details
     operation_scope:
@@ -30429,7 +30992,30 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-security-index
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.oauth2-password-request-form
+      probe_id: root-oauth2-password-request-form-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
+    operation_fixture_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.oauth2-password-request-form
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -30444,11 +31030,12 @@ api_surface_contract:
     - openapi.document
     - openapi.request_schema
     - openapi.security
+    - python.signature
     - validation.error_class
     - validation.error_details
     operation_scope:
       status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.security.OAuth2PasswordRequestForm
@@ -30458,8 +31045,11 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1420
         - /api_candidates/1501
-      status: full-contract-not-established
+      status: unimplemented
       rust_binding: null
+      known_gaps:
+      - the FastAPI-RS security facades do not export the form class or implement its constructor and
+        request form integration.
   - id: fastapi.security.OAuth2PasswordRequestFormStrict
     kind: import_binding
     source_candidate_ref: /api_candidates/1421
@@ -30493,7 +31083,30 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-security-index
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.oauth2-password-request-form-strict
+      probe_id: root-oauth2-password-request-form-strict-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
+    operation_fixture_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.oauth2-password-request-form-strict
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -30508,11 +31121,12 @@ api_surface_contract:
     - openapi.document
     - openapi.request_schema
     - openapi.security
+    - python.signature
     - validation.error_class
     - validation.error_details
     operation_scope:
       status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.security.OAuth2PasswordRequestFormStrict
@@ -30522,8 +31136,11 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1421
         - /api_candidates/1503
-      status: full-contract-not-established
+      status: unimplemented
       rust_binding: null
+      known_gaps:
+      - the FastAPI-RS security facades do not export the strict form class or implement its constructor
+        and request form integration.
   - id: fastapi.security.OpenIdConnect
     kind: import_binding
     source_candidate_ref: /api_candidates/1422
@@ -30557,7 +31174,30 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-security-index
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.open-id-connect
+      probe_id: root-open-id-connect-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
+    operation_fixture_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.open-id-connect
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -30572,11 +31212,12 @@ api_surface_contract:
     - openapi.document
     - openapi.request_schema
     - openapi.security
+    - python.signature
     - validation.error_class
     - validation.error_details
     operation_scope:
       status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.security.OpenIdConnect
@@ -30586,8 +31227,11 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1422
         - /api_candidates/1516
-      status: full-contract-not-established
+      status: unimplemented
       rust_binding: null
+      known_gaps:
+      - the FastAPI-RS security facades do not export OpenIdConnect or implement its dependency and OpenAPI
+        behavior.
   - id: fastapi.security.SecurityScopes
     kind: import_binding
     source_candidate_ref: /api_candidates/1423
@@ -30621,7 +31265,30 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-security-index
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.security-scopes
+      probe_id: root-security-scopes-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
+    operation_fixture_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.security-scopes
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -30636,11 +31303,12 @@ api_surface_contract:
     - openapi.document
     - openapi.request_schema
     - openapi.security
+    - python.signature
     - validation.error_class
     - validation.error_details
     operation_scope:
       status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.security.SecurityScopes
@@ -30650,8 +31318,11 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1423
         - /api_candidates/1508
-      status: full-contract-not-established
+      status: unimplemented
       rust_binding: null
+      known_gaps:
+      - the FastAPI-RS security facades do not export SecurityScopes or implement its FastAPI scope-injection
+        contract.
   - id: fastapi.security.api_key.APIKeyBase.make_not_authenticated_error
     kind: method
     source_candidate_ref: /api_candidates/1428
@@ -30808,7 +31479,19 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-security-index
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.api-key-cookie
+      probe_id: module-api-key-cookie-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
     operation_fixture_refs:
     - workflow_id: security-credentials-upstream
       input_path: tests/fixtures/inputs/parity/security_credentials_upstream.json
@@ -30939,6 +31622,16 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.api-key-cookie
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -30953,6 +31646,7 @@ api_surface_contract:
     - openapi.document
     - openapi.request_schema
     - openapi.security
+    - python.signature
     - validation.error_class
     - validation.error_details
     operation_scope:
@@ -31131,6 +31825,16 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.api-key-cookie
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -31193,7 +31897,19 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-security-index
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.api-key-cookie
+      probe_id: module-a-p-i-key-cookie-init-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
     operation_fixture_refs:
     - workflow_id: security-credentials-upstream
       input_path: tests/fixtures/inputs/parity/security_credentials_upstream.json
@@ -31324,6 +32040,16 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.api-key-cookie
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -31338,6 +32064,7 @@ api_surface_contract:
     - openapi.document
     - openapi.request_schema
     - openapi.security
+    - python.signature
     - validation.error_class
     - validation.error_details
     operation_scope:
@@ -31386,7 +32113,19 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-security-index
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.api-key-header
+      probe_id: module-api-key-header-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
     operation_fixture_refs:
     - workflow_id: security-credentials-upstream
       input_path: tests/fixtures/inputs/parity/security_credentials_upstream.json
@@ -31463,6 +32202,16 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.api-key-header
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -31477,6 +32226,7 @@ api_surface_contract:
     - openapi.document
     - openapi.request_schema
     - openapi.security
+    - python.signature
     - validation.error_class
     - validation.error_details
     operation_scope:
@@ -31601,6 +32351,16 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.api-key-header
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -31663,7 +32423,19 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-security-index
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.api-key-header
+      probe_id: module-a-p-i-key-header-init-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
     operation_fixture_refs:
     - workflow_id: security-credentials-upstream
       input_path: tests/fixtures/inputs/parity/security_credentials_upstream.json
@@ -31740,6 +32512,16 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.api-key-header
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -31754,6 +32536,7 @@ api_surface_contract:
     - openapi.document
     - openapi.request_schema
     - openapi.security
+    - python.signature
     - validation.error_class
     - validation.error_details
     operation_scope:
@@ -31802,7 +32585,19 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-security-index
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.api-key-query
+      probe_id: module-api-key-query-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
     operation_fixture_refs:
     - workflow_id: security-credentials-upstream
       input_path: tests/fixtures/inputs/parity/security_credentials_upstream.json
@@ -31933,6 +32728,16 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.api-key-query
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -31947,6 +32752,7 @@ api_surface_contract:
     - openapi.document
     - openapi.request_schema
     - openapi.security
+    - python.signature
     - validation.error_class
     - validation.error_details
     operation_scope:
@@ -32125,6 +32931,16 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.api-key-query
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -32187,7 +33003,19 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-security-index
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.api-key-query
+      probe_id: module-a-p-i-key-query-init-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
     operation_fixture_refs:
     - workflow_id: security-credentials-upstream
       input_path: tests/fixtures/inputs/parity/security_credentials_upstream.json
@@ -32318,6 +33146,16 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.api-key-query
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -32332,6 +33170,7 @@ api_surface_contract:
     - openapi.document
     - openapi.request_schema
     - openapi.security
+    - python.signature
     - validation.error_class
     - validation.error_details
     operation_scope:
@@ -32458,7 +33297,19 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-security-index
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.http-authorization-credentials
+      probe_id: module-http-authorization-credentials-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
     operation_fixture_refs:
     - workflow_id: authentication-error-status-code-tutorial
       input_path: tests/fixtures/inputs/parity/authentication-error-status-code-tutorial.json
@@ -32472,6 +33323,16 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.http-authorization-credentials
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -32486,6 +33347,7 @@ api_surface_contract:
     - openapi.document
     - openapi.request_schema
     - openapi.security
+    - python.signature
     - validation.error_class
     - validation.error_details
     operation_scope:
@@ -32737,7 +33599,19 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-security-index
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.http-basic
+      probe_id: module-http-basic-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
     operation_fixture_refs:
     - workflow_id: security-wave
       input_path: tests/fixtures/inputs/parity/security-wave.json
@@ -32835,6 +33709,16 @@ api_surface_contract:
       - docs.response.status
       - http.status
       - openapi.security
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.http-basic
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -32850,6 +33734,7 @@ api_surface_contract:
     - openapi.paths
     - openapi.request_schema
     - openapi.security
+    - python.signature
     - validation.error_class
     - validation.error_details
     operation_scope:
@@ -33045,7 +33930,19 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-security-index
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.http-basic
+      probe_id: module-h-t-t-p-basic-init-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
     operation_fixture_refs:
     - workflow_id: security-wave
       input_path: tests/fixtures/inputs/parity/security-wave.json
@@ -33071,6 +33968,16 @@ api_surface_contract:
       - docs.response.status
       - http.status
       - openapi.security
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.http-basic
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -33086,6 +33993,7 @@ api_surface_contract:
     - openapi.paths
     - openapi.request_schema
     - openapi.security
+    - python.signature
     - validation.error_class
     - validation.error_details
     operation_scope:
@@ -33132,7 +34040,30 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-security-index
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.http-basic-credentials
+      probe_id: module-http-basic-credentials-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
+    operation_fixture_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.http-basic-credentials
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -33148,6 +34079,7 @@ api_surface_contract:
     - openapi.request_schema
     - openapi.security
     - python.call_outcome
+    - python.signature
     - validation.error_class
     - validation.error_details
     operation_scope:
@@ -33360,7 +34292,19 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.http-bearer
+      probe_id: module-http-bearer-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
     operation_fixture_refs:
     - workflow_id: authentication-error-status-code-tutorial
       input_path: tests/fixtures/inputs/parity/authentication-error-status-code-tutorial.json
@@ -33386,6 +34330,16 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.http-bearer
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -33401,6 +34355,7 @@ api_surface_contract:
     - openapi.document
     - openapi.request_schema
     - openapi.security
+    - python.signature
     - validation.error_class
     - validation.error_details
     operation_scope:
@@ -33536,7 +34491,19 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-security-index
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.http-bearer
+      probe_id: module-h-t-t-p-bearer-init-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
     operation_fixture_refs:
     - workflow_id: authentication-error-status-code-tutorial
       input_path: tests/fixtures/inputs/parity/authentication-error-status-code-tutorial.json
@@ -33562,6 +34529,16 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.http-bearer
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -33576,6 +34553,7 @@ api_surface_contract:
     - openapi.document
     - openapi.request_schema
     - openapi.security
+    - python.signature
     - validation.error_class
     - validation.error_details
     operation_scope:
@@ -33624,7 +34602,19 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-security-index
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.http-digest
+      probe_id: module-http-digest-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
     operation_fixture_refs:
     - workflow_id: http-digest-auth-upstream
       input_path: tests/fixtures/inputs/parity/http-digest-auth-upstream.json
@@ -33650,6 +34640,16 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.http-digest
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -33665,6 +34665,7 @@ api_surface_contract:
     - openapi.document
     - openapi.request_schema
     - openapi.security
+    - python.signature
     - validation.error_class
     - validation.error_details
     operation_scope:
@@ -33800,7 +34801,19 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-security-index
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.http-digest
+      probe_id: module-h-t-t-p-digest-init-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
     operation_fixture_refs:
     - workflow_id: http-digest-auth-upstream
       input_path: tests/fixtures/inputs/parity/http-digest-auth-upstream.json
@@ -33826,6 +34839,16 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.http-digest
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -33840,6 +34863,7 @@ api_surface_contract:
     - openapi.document
     - openapi.request_schema
     - openapi.security
+    - python.signature
     - validation.error_class
     - validation.error_details
     operation_scope:
@@ -33888,7 +34912,19 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-security-index
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.oauth2
+      probe_id: module-oauth2-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
     operation_fixture_refs:
     - workflow_id: security-wave
       input_path: tests/fixtures/inputs/parity/security-wave.json
@@ -33914,6 +34950,16 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.oauth2
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -33929,6 +34975,7 @@ api_surface_contract:
     - openapi.document
     - openapi.request_schema
     - openapi.security
+    - python.signature
     - validation.error_class
     - validation.error_details
     operation_scope:
@@ -34064,7 +35111,19 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-security-index
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.oauth2
+      probe_id: module-o-auth2-init-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
     operation_fixture_refs:
     - workflow_id: security-wave
       input_path: tests/fixtures/inputs/parity/security-wave.json
@@ -34090,6 +35149,16 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.oauth2
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -34104,6 +35173,7 @@ api_surface_contract:
     - openapi.document
     - openapi.request_schema
     - openapi.security
+    - python.signature
     - validation.error_class
     - validation.error_details
     operation_scope:
@@ -34221,7 +35291,30 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-security-index
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.oauth2-authorization-code-bearer
+      probe_id: module-oauth2-authorization-code-bearer-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
+    operation_fixture_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.oauth2-authorization-code-bearer
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -34236,11 +35329,12 @@ api_surface_contract:
     - openapi.document
     - openapi.request_schema
     - openapi.security
+    - python.signature
     - validation.error_class
     - validation.error_details
     operation_scope:
       status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.security.oauth2.OAuth2AuthorizationCodeBearer
@@ -34249,8 +35343,11 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1494
-      status: full-contract-not-established
+      status: unimplemented
       rust_binding: null
+      known_gaps:
+      - no OAuth2 authorization-code bearer class export or implementation is present in the FastAPI-RS
+        security facades or Rust security module.
   - id: fastapi.security.oauth2.OAuth2AuthorizationCodeBearer.__call__
     kind: protocol_method
     source_candidate_ref: /api_candidates/1495
@@ -34343,7 +35440,30 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-security-index
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.oauth2-authorization-code-bearer
+      probe_id: module-o-auth2-authorization-code-bearer-init-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
+    operation_fixture_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.oauth2-authorization-code-bearer
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -34358,11 +35478,12 @@ api_surface_contract:
     - openapi.document
     - openapi.request_schema
     - openapi.security
+    - python.signature
     - validation.error_class
     - validation.error_details
     operation_scope:
       status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.security.oauth2.OAuth2AuthorizationCodeBearer.__init__
@@ -34371,8 +35492,11 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1496
-      status: full-contract-not-established
+      status: unimplemented
       rust_binding: null
+      known_gaps:
+      - no OAuth2 authorization-code bearer class export or implementation is present in the FastAPI-RS
+        security facades or Rust security module.
   - id: fastapi.security.oauth2.OAuth2PasswordBearer
     kind: class
     source_candidate_ref: /api_candidates/1498
@@ -34405,7 +35529,19 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-security-index
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.oauth2-password-bearer
+      probe_id: module-oauth2-password-bearer-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
     operation_fixture_refs:
     - workflow_id: security-wave
       input_path: tests/fixtures/inputs/parity/security-wave.json
@@ -34419,6 +35555,16 @@ api_surface_contract:
       - docs.response.status
       - http.status
       - openapi.security
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.oauth2-password-bearer
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -34434,6 +35580,7 @@ api_surface_contract:
     - openapi.paths
     - openapi.request_schema
     - openapi.security
+    - python.signature
     - validation.error_class
     - validation.error_details
     operation_scope:
@@ -34545,7 +35692,19 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-security-index
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.oauth2-password-bearer
+      probe_id: module-o-auth2-password-bearer-init-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
     operation_fixture_refs:
     - workflow_id: security-wave
       input_path: tests/fixtures/inputs/parity/security-wave.json
@@ -34559,6 +35718,16 @@ api_surface_contract:
       - docs.response.status
       - http.status
       - openapi.security
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.oauth2-password-bearer
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -34573,6 +35742,7 @@ api_surface_contract:
     - openapi.document
     - openapi.request_schema
     - openapi.security
+    - python.signature
     - validation.error_class
     - validation.error_details
     operation_scope:
@@ -34621,7 +35791,30 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-security-index
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.oauth2-password-request-form
+      probe_id: module-oauth2-password-request-form-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
+    operation_fixture_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.oauth2-password-request-form
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -34636,11 +35829,12 @@ api_surface_contract:
     - openapi.document
     - openapi.request_schema
     - openapi.security
+    - python.signature
     - validation.error_class
     - validation.error_details
     operation_scope:
       status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.security.oauth2.OAuth2PasswordRequestForm
@@ -34649,8 +35843,11 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1501
-      status: full-contract-not-established
+      status: unimplemented
       rust_binding: null
+      known_gaps:
+      - the FastAPI-RS security facades do not export the form class or implement its constructor and
+        request form integration.
   - id: fastapi.security.oauth2.OAuth2PasswordRequestForm.__init__
     kind: protocol_method
     source_candidate_ref: /api_candidates/1502
@@ -34682,7 +35879,30 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-security-index
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.oauth2-password-request-form
+      probe_id: module-o-auth2-password-request-form-init-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
+    operation_fixture_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.oauth2-password-request-form
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -34697,11 +35917,12 @@ api_surface_contract:
     - openapi.document
     - openapi.request_schema
     - openapi.security
+    - python.signature
     - validation.error_class
     - validation.error_details
     operation_scope:
       status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.security.oauth2.OAuth2PasswordRequestForm.__init__
@@ -34710,8 +35931,11 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1502
-      status: full-contract-not-established
+      status: unimplemented
       rust_binding: null
+      known_gaps:
+      - the FastAPI-RS security facades do not export the form class or implement its constructor and
+        request form integration.
   - id: fastapi.security.oauth2.OAuth2PasswordRequestFormStrict
     kind: class
     source_candidate_ref: /api_candidates/1503
@@ -34744,7 +35968,30 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-security-index
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.oauth2-password-request-form-strict
+      probe_id: module-oauth2-password-request-form-strict-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
+    operation_fixture_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.oauth2-password-request-form-strict
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -34759,11 +36006,12 @@ api_surface_contract:
     - openapi.document
     - openapi.request_schema
     - openapi.security
+    - python.signature
     - validation.error_class
     - validation.error_details
     operation_scope:
       status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.security.oauth2.OAuth2PasswordRequestFormStrict
@@ -34772,8 +36020,11 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1503
-      status: full-contract-not-established
+      status: unimplemented
       rust_binding: null
+      known_gaps:
+      - the FastAPI-RS security facades do not export the strict form class or implement its constructor
+        and request form integration.
   - id: fastapi.security.oauth2.OAuth2PasswordRequestFormStrict.__init__
     kind: protocol_method
     source_candidate_ref: /api_candidates/1504
@@ -34805,7 +36056,30 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-security-index
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.oauth2-password-request-form-strict
+      probe_id: module-o-auth2-password-request-form-strict-init-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
+    operation_fixture_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.oauth2-password-request-form-strict
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -34820,11 +36094,12 @@ api_surface_contract:
     - openapi.document
     - openapi.request_schema
     - openapi.security
+    - python.signature
     - validation.error_class
     - validation.error_details
     operation_scope:
       status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.security.oauth2.OAuth2PasswordRequestFormStrict.__init__
@@ -34833,8 +36108,11 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1504
-      status: full-contract-not-established
+      status: unimplemented
       rust_binding: null
+      known_gaps:
+      - the FastAPI-RS security facades do not export the strict form class or implement its constructor
+        and request form integration.
   - id: fastapi.security.oauth2.SecurityScopes
     kind: class
     source_candidate_ref: /api_candidates/1508
@@ -34867,7 +36145,30 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-security-index
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.security-scopes
+      probe_id: module-security-scopes-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
+    operation_fixture_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.security-scopes
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -34882,11 +36183,12 @@ api_surface_contract:
     - openapi.document
     - openapi.request_schema
     - openapi.security
+    - python.signature
     - validation.error_class
     - validation.error_details
     operation_scope:
       status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.security.oauth2.SecurityScopes
@@ -34895,8 +36197,11 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1508
-      status: full-contract-not-established
+      status: unimplemented
       rust_binding: null
+      known_gaps:
+      - the FastAPI-RS security facades do not export SecurityScopes or implement its FastAPI scope-injection
+        contract.
   - id: fastapi.security.oauth2.SecurityScopes.__init__
     kind: protocol_method
     source_candidate_ref: /api_candidates/1509
@@ -34940,7 +36245,30 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-security-index
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.security-scopes
+      probe_id: module-security-scopes-init-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
+    operation_fixture_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.security-scopes
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -34957,11 +36285,12 @@ api_surface_contract:
     - openapi.paths
     - openapi.request_schema
     - openapi.security
+    - python.signature
     - validation.error_class
     - validation.error_details
     operation_scope:
       status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.security.oauth2.SecurityScopes.__init__
@@ -34970,8 +36299,11 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1509
-      status: full-contract-not-established
+      status: unimplemented
       rust_binding: null
+      known_gaps:
+      - the FastAPI-RS security facades do not export SecurityScopes or implement its FastAPI scope-injection
+        contract.
   - id: fastapi.security.open_id_connect_url.OpenIdConnect
     kind: class
     source_candidate_ref: /api_candidates/1516
@@ -35004,7 +36336,30 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-security-index
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.open-id-connect
+      probe_id: module-open-id-connect-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
+    operation_fixture_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.open-id-connect
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -35019,11 +36374,12 @@ api_surface_contract:
     - openapi.document
     - openapi.request_schema
     - openapi.security
+    - python.signature
     - validation.error_class
     - validation.error_details
     operation_scope:
       status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.security.open_id_connect_url.OpenIdConnect
@@ -35032,8 +36388,11 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1516
-      status: full-contract-not-established
+      status: unimplemented
       rust_binding: null
+      known_gaps:
+      - the FastAPI-RS security facades do not export OpenIdConnect or implement its dependency and OpenAPI
+        behavior.
   - id: fastapi.security.open_id_connect_url.OpenIdConnect.__call__
     kind: protocol_method
     source_candidate_ref: /api_candidates/1517
@@ -35126,7 +36485,30 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-security-index
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.open-id-connect
+      probe_id: module-open-id-connect-init-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
+    operation_fixture_refs:
+    - workflow_id: security-oauth-public-api
+      input_path: tests/fixtures/inputs/parity/security-oauth-public-api.json
+      input_sha256: 25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+      recipe_sha256: c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.security.public-api.open-id-connect
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -35141,11 +36523,12 @@ api_surface_contract:
     - openapi.document
     - openapi.request_schema
     - openapi.security
+    - python.signature
     - validation.error_class
     - validation.error_details
     operation_scope:
       status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.security.open_id_connect_url.OpenIdConnect.__init__
@@ -35154,8 +36537,11 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1518
-      status: full-contract-not-established
+      status: unimplemented
       rust_binding: null
+      known_gaps:
+      - the FastAPI-RS security facades do not export OpenIdConnect or implement its dependency and OpenAPI
+        behavior.
   - id: fastapi.security.open_id_connect_url.OpenIdConnect.make_not_authenticated_error
     kind: method
     source_candidate_ref: /api_candidates/1519

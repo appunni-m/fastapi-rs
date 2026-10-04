@@ -4038,6 +4038,148 @@
       ]
     },
     {
+      "id": "openapi-model-public-api",
+      "input_path": "tests/fixtures/inputs/parity/openapi-model-public-api.json",
+      "input_sha256": "bede489410d8b4d1d8f808cca0741239b01eb22f22f8b6aea29e56c3c41b4841",
+      "recipe_path": "tests/fixtures/input-recipes/parity/openapi-model-public-api.yaml",
+      "recipe_sha256": "ca5dc143d5a7fdffd12c78803ac0aed4107c1e8361dd0fe6fe6eb517573d5c1a",
+      "workload_path": "tests/fixtures/workloads/direct_api_reference_wave.py",
+      "workload_sha256": "57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741",
+      "case_ids": [
+        "fastapi.openapi-models.schema.signature",
+        "fastapi.openapi-models.discriminator.signature",
+        "fastapi.openapi-models.components.signature"
+      ],
+      "api_definitions": [
+        {
+          "case_id": "fastapi.openapi-models.components.signature",
+          "symbol_id": "fastapi.openapi.models.Components",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-models.discriminator.signature",
+          "symbol_id": "fastapi.openapi.models.Discriminator",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-models.schema.signature",
+          "symbol_id": "fastapi.openapi.models.Schema",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        }
+      ],
+      "api_probes": [
+        {
+          "case_id": "fastapi.openapi-models.components.signature",
+          "probe_id": "components-signature",
+          "symbol_id": "fastapi.openapi.models.Components",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.discriminator.signature",
+          "probe_id": "discriminator-signature",
+          "symbol_id": "fastapi.openapi.models.Discriminator",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.schema.signature",
+          "probe_id": "schema-signature",
+          "symbol_id": "fastapi.openapi.models.Schema",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "openapi-model-result-public-api",
+      "input_path": "tests/fixtures/inputs/parity/openapi-model-result-public-api.json",
+      "input_sha256": "6a459922f2ec22d2df361bea22f148456bd521a7d90acd247fdd3338f022dd16",
+      "recipe_path": "tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml",
+      "recipe_sha256": "d4d0bfb7747c49556bf9337bc140a0731986c36eae95a9f22ada516db535f8a8",
+      "workload_path": "tests/fixtures/workloads/openapi_model_projection.py",
+      "workload_sha256": "7a9092dda00609457036eb44ed0cec9e3d21db9678f212f1157efdd6f6c2e0b7",
+      "case_ids": [
+        "fastapi.openapi-models.api-key.model-result",
+        "fastapi.openapi-models.schema.model-result",
+        "fastapi.openapi-models.discriminator.model-result",
+        "fastapi.openapi-models.components.model-result"
+      ],
+      "api_definitions": [
+        {
+          "case_id": "fastapi.openapi-models.api-key.model-result",
+          "symbol_id": "fastapi.openapi.models.APIKey",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-models.components.model-result",
+          "symbol_id": "fastapi.openapi.models.Components",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-models.discriminator.model-result",
+          "symbol_id": "fastapi.openapi.models.Discriminator",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        },
+        {
+          "case_id": "fastapi.openapi-models.schema.model-result",
+          "symbol_id": "fastapi.openapi.models.Schema",
+          "path": "fastapi/openapi/models.py",
+          "sha256": "b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d"
+        }
+      ],
+      "api_probes": [
+        {
+          "case_id": "fastapi.openapi-models.api-key.model-result",
+          "probe_id": "api-key-model-result",
+          "symbol_id": "fastapi.openapi.models.APIKey",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.components.model-result",
+          "probe_id": "components-model-result",
+          "symbol_id": "fastapi.openapi.models.Components",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.discriminator.model-result",
+          "probe_id": "discriminator-model-result",
+          "symbol_id": "fastapi.openapi.models.Discriminator",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-models.schema.model-result",
+          "probe_id": "schema-model-result",
+          "symbol_id": "fastapi.openapi.models.Schema",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.pydantic_model_result"
+          ]
+        }
+      ]
+    },
+    {
       "id": "openapi-operations",
       "input_path": "tests/fixtures/inputs/parity/openapi-operations.json",
       "input_sha256": "87799d3c2ecbc2d46d307870ad61055c857b7b54dd0c62d6da00faa92650c4fd",
@@ -7288,7 +7430,7 @@
       "input_path": "tests/fixtures/inputs/parity/response-model-data-filter-exclude-unset-none-review.json",
       "input_sha256": "e8df817a4df31b3f2f646068c8a9286416ff13577822d1fc572bbc5d8eb34a17",
       "recipe_path": "tests/fixtures/input-recipes/parity/response-model-data-filter-exclude-unset-none-review.yaml",
-      "recipe_sha256": "6ca9e6fa6df4d754a3d30c0e388928b9074d639029e6d6f1ea2272930752958d",
+      "recipe_sha256": "2b14814c37cdc7ff49f1aa7fc3b568d66dc686aab666775185b02422508dfa6f",
       "workload_path": "tests/fixtures/workloads/response_model_data_filter_exclude_unset_none_review.py",
       "workload_sha256": "24b60f06b2472a0254c9ae15d0b208e0edd99d3cb8a3833696d343bacd0c13cd",
       "case_ids": [
@@ -8294,6 +8436,681 @@
         "fastapi.security.oauth2-authorization-code-bearer-description.test-incorrect-token",
         "fastapi.security.oauth2-authorization-code-bearer-description.test-token",
         "fastapi.security.oauth2-authorization-code-bearer-description.test-openapi-schema"
+      ]
+    },
+    {
+      "id": "security-oauth-public-api",
+      "input_path": "tests/fixtures/inputs/parity/security-oauth-public-api.json",
+      "input_sha256": "25b32fd7b3f4245d0ffce1d6d207d776a4eacf06531749f10538927101c394ce",
+      "recipe_path": "tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml",
+      "recipe_sha256": "c3dcc253c888ee313ccfd0d674261d9e510bea0824b1caadaa1bc2e4e60eb000",
+      "workload_path": "tests/fixtures/workloads/direct_api_reference_wave.py",
+      "workload_sha256": "57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741",
+      "case_ids": [
+        "fastapi.security.public-api.api-key-cookie",
+        "fastapi.security.public-api.api-key-header",
+        "fastapi.security.public-api.api-key-query",
+        "fastapi.security.public-api.http-authorization-credentials",
+        "fastapi.security.public-api.http-basic",
+        "fastapi.security.public-api.http-basic-credentials",
+        "fastapi.security.public-api.http-bearer",
+        "fastapi.security.public-api.http-digest",
+        "fastapi.security.public-api.oauth2",
+        "fastapi.security.public-api.oauth2-authorization-code-bearer",
+        "fastapi.security.public-api.oauth2-password-bearer",
+        "fastapi.security.public-api.oauth2-password-request-form",
+        "fastapi.security.public-api.oauth2-password-request-form-strict",
+        "fastapi.security.public-api.security-scopes",
+        "fastapi.security.public-api.open-id-connect"
+      ],
+      "api_definitions": [
+        {
+          "case_id": "fastapi.security.public-api.api-key-cookie",
+          "symbol_id": "fastapi.security.APIKeyCookie",
+          "path": "fastapi/security/__init__.py",
+          "sha256": "6cef29366c6a5515d48df97698e2a25592e7d05a4143ad555185639a9a676c9c"
+        },
+        {
+          "case_id": "fastapi.security.public-api.api-key-cookie",
+          "symbol_id": "fastapi.security.api_key.APIKeyCookie",
+          "path": "fastapi/security/api_key.py",
+          "sha256": "e0234b355012b4eb0c872b47f42e4439410e66bb4b83f2293104bf1dc4433f83"
+        },
+        {
+          "case_id": "fastapi.security.public-api.api-key-cookie",
+          "symbol_id": "fastapi.security.api_key.APIKeyCookie.__init__",
+          "path": "fastapi/security/api_key.py",
+          "sha256": "e0234b355012b4eb0c872b47f42e4439410e66bb4b83f2293104bf1dc4433f83"
+        },
+        {
+          "case_id": "fastapi.security.public-api.api-key-header",
+          "symbol_id": "fastapi.security.APIKeyHeader",
+          "path": "fastapi/security/__init__.py",
+          "sha256": "6cef29366c6a5515d48df97698e2a25592e7d05a4143ad555185639a9a676c9c"
+        },
+        {
+          "case_id": "fastapi.security.public-api.api-key-header",
+          "symbol_id": "fastapi.security.api_key.APIKeyHeader",
+          "path": "fastapi/security/api_key.py",
+          "sha256": "e0234b355012b4eb0c872b47f42e4439410e66bb4b83f2293104bf1dc4433f83"
+        },
+        {
+          "case_id": "fastapi.security.public-api.api-key-header",
+          "symbol_id": "fastapi.security.api_key.APIKeyHeader.__init__",
+          "path": "fastapi/security/api_key.py",
+          "sha256": "e0234b355012b4eb0c872b47f42e4439410e66bb4b83f2293104bf1dc4433f83"
+        },
+        {
+          "case_id": "fastapi.security.public-api.api-key-query",
+          "symbol_id": "fastapi.security.APIKeyQuery",
+          "path": "fastapi/security/__init__.py",
+          "sha256": "6cef29366c6a5515d48df97698e2a25592e7d05a4143ad555185639a9a676c9c"
+        },
+        {
+          "case_id": "fastapi.security.public-api.api-key-query",
+          "symbol_id": "fastapi.security.api_key.APIKeyQuery",
+          "path": "fastapi/security/api_key.py",
+          "sha256": "e0234b355012b4eb0c872b47f42e4439410e66bb4b83f2293104bf1dc4433f83"
+        },
+        {
+          "case_id": "fastapi.security.public-api.api-key-query",
+          "symbol_id": "fastapi.security.api_key.APIKeyQuery.__init__",
+          "path": "fastapi/security/api_key.py",
+          "sha256": "e0234b355012b4eb0c872b47f42e4439410e66bb4b83f2293104bf1dc4433f83"
+        },
+        {
+          "case_id": "fastapi.security.public-api.http-authorization-credentials",
+          "symbol_id": "fastapi.security.HTTPAuthorizationCredentials",
+          "path": "fastapi/security/__init__.py",
+          "sha256": "6cef29366c6a5515d48df97698e2a25592e7d05a4143ad555185639a9a676c9c"
+        },
+        {
+          "case_id": "fastapi.security.public-api.http-authorization-credentials",
+          "symbol_id": "fastapi.security.http.HTTPAuthorizationCredentials",
+          "path": "fastapi/security/http.py",
+          "sha256": "674c402c3ab080965101a0ece3449aebcac09e317310bf7d50498ee4f2734ca0"
+        },
+        {
+          "case_id": "fastapi.security.public-api.http-basic",
+          "symbol_id": "fastapi.security.HTTPBasic",
+          "path": "fastapi/security/__init__.py",
+          "sha256": "6cef29366c6a5515d48df97698e2a25592e7d05a4143ad555185639a9a676c9c"
+        },
+        {
+          "case_id": "fastapi.security.public-api.http-basic",
+          "symbol_id": "fastapi.security.http.HTTPBasic",
+          "path": "fastapi/security/http.py",
+          "sha256": "674c402c3ab080965101a0ece3449aebcac09e317310bf7d50498ee4f2734ca0"
+        },
+        {
+          "case_id": "fastapi.security.public-api.http-basic",
+          "symbol_id": "fastapi.security.http.HTTPBasic.__init__",
+          "path": "fastapi/security/http.py",
+          "sha256": "674c402c3ab080965101a0ece3449aebcac09e317310bf7d50498ee4f2734ca0"
+        },
+        {
+          "case_id": "fastapi.security.public-api.http-basic-credentials",
+          "symbol_id": "fastapi.security.HTTPBasicCredentials",
+          "path": "fastapi/security/__init__.py",
+          "sha256": "6cef29366c6a5515d48df97698e2a25592e7d05a4143ad555185639a9a676c9c"
+        },
+        {
+          "case_id": "fastapi.security.public-api.http-basic-credentials",
+          "symbol_id": "fastapi.security.http.HTTPBasicCredentials",
+          "path": "fastapi/security/http.py",
+          "sha256": "674c402c3ab080965101a0ece3449aebcac09e317310bf7d50498ee4f2734ca0"
+        },
+        {
+          "case_id": "fastapi.security.public-api.http-bearer",
+          "symbol_id": "fastapi.security.HTTPBearer",
+          "path": "fastapi/security/__init__.py",
+          "sha256": "6cef29366c6a5515d48df97698e2a25592e7d05a4143ad555185639a9a676c9c"
+        },
+        {
+          "case_id": "fastapi.security.public-api.http-bearer",
+          "symbol_id": "fastapi.security.http.HTTPBearer",
+          "path": "fastapi/security/http.py",
+          "sha256": "674c402c3ab080965101a0ece3449aebcac09e317310bf7d50498ee4f2734ca0"
+        },
+        {
+          "case_id": "fastapi.security.public-api.http-bearer",
+          "symbol_id": "fastapi.security.http.HTTPBearer.__init__",
+          "path": "fastapi/security/http.py",
+          "sha256": "674c402c3ab080965101a0ece3449aebcac09e317310bf7d50498ee4f2734ca0"
+        },
+        {
+          "case_id": "fastapi.security.public-api.http-digest",
+          "symbol_id": "fastapi.security.HTTPDigest",
+          "path": "fastapi/security/__init__.py",
+          "sha256": "6cef29366c6a5515d48df97698e2a25592e7d05a4143ad555185639a9a676c9c"
+        },
+        {
+          "case_id": "fastapi.security.public-api.http-digest",
+          "symbol_id": "fastapi.security.http.HTTPDigest",
+          "path": "fastapi/security/http.py",
+          "sha256": "674c402c3ab080965101a0ece3449aebcac09e317310bf7d50498ee4f2734ca0"
+        },
+        {
+          "case_id": "fastapi.security.public-api.http-digest",
+          "symbol_id": "fastapi.security.http.HTTPDigest.__init__",
+          "path": "fastapi/security/http.py",
+          "sha256": "674c402c3ab080965101a0ece3449aebcac09e317310bf7d50498ee4f2734ca0"
+        },
+        {
+          "case_id": "fastapi.security.public-api.oauth2",
+          "symbol_id": "fastapi.security.OAuth2",
+          "path": "fastapi/security/__init__.py",
+          "sha256": "6cef29366c6a5515d48df97698e2a25592e7d05a4143ad555185639a9a676c9c"
+        },
+        {
+          "case_id": "fastapi.security.public-api.oauth2",
+          "symbol_id": "fastapi.security.oauth2.OAuth2",
+          "path": "fastapi/security/oauth2.py",
+          "sha256": "b12a96e2d6efa07696365778e9361ab6d6b9ae015f8e87782e1c6679d5f3908f"
+        },
+        {
+          "case_id": "fastapi.security.public-api.oauth2",
+          "symbol_id": "fastapi.security.oauth2.OAuth2.__init__",
+          "path": "fastapi/security/oauth2.py",
+          "sha256": "b12a96e2d6efa07696365778e9361ab6d6b9ae015f8e87782e1c6679d5f3908f"
+        },
+        {
+          "case_id": "fastapi.security.public-api.oauth2-authorization-code-bearer",
+          "symbol_id": "fastapi.security.OAuth2AuthorizationCodeBearer",
+          "path": "fastapi/security/__init__.py",
+          "sha256": "6cef29366c6a5515d48df97698e2a25592e7d05a4143ad555185639a9a676c9c"
+        },
+        {
+          "case_id": "fastapi.security.public-api.oauth2-authorization-code-bearer",
+          "symbol_id": "fastapi.security.oauth2.OAuth2AuthorizationCodeBearer",
+          "path": "fastapi/security/oauth2.py",
+          "sha256": "b12a96e2d6efa07696365778e9361ab6d6b9ae015f8e87782e1c6679d5f3908f"
+        },
+        {
+          "case_id": "fastapi.security.public-api.oauth2-authorization-code-bearer",
+          "symbol_id": "fastapi.security.oauth2.OAuth2AuthorizationCodeBearer.__init__",
+          "path": "fastapi/security/oauth2.py",
+          "sha256": "b12a96e2d6efa07696365778e9361ab6d6b9ae015f8e87782e1c6679d5f3908f"
+        },
+        {
+          "case_id": "fastapi.security.public-api.oauth2-password-bearer",
+          "symbol_id": "fastapi.security.OAuth2PasswordBearer",
+          "path": "fastapi/security/__init__.py",
+          "sha256": "6cef29366c6a5515d48df97698e2a25592e7d05a4143ad555185639a9a676c9c"
+        },
+        {
+          "case_id": "fastapi.security.public-api.oauth2-password-bearer",
+          "symbol_id": "fastapi.security.oauth2.OAuth2PasswordBearer",
+          "path": "fastapi/security/oauth2.py",
+          "sha256": "b12a96e2d6efa07696365778e9361ab6d6b9ae015f8e87782e1c6679d5f3908f"
+        },
+        {
+          "case_id": "fastapi.security.public-api.oauth2-password-bearer",
+          "symbol_id": "fastapi.security.oauth2.OAuth2PasswordBearer.__init__",
+          "path": "fastapi/security/oauth2.py",
+          "sha256": "b12a96e2d6efa07696365778e9361ab6d6b9ae015f8e87782e1c6679d5f3908f"
+        },
+        {
+          "case_id": "fastapi.security.public-api.oauth2-password-request-form",
+          "symbol_id": "fastapi.security.OAuth2PasswordRequestForm",
+          "path": "fastapi/security/__init__.py",
+          "sha256": "6cef29366c6a5515d48df97698e2a25592e7d05a4143ad555185639a9a676c9c"
+        },
+        {
+          "case_id": "fastapi.security.public-api.oauth2-password-request-form",
+          "symbol_id": "fastapi.security.oauth2.OAuth2PasswordRequestForm",
+          "path": "fastapi/security/oauth2.py",
+          "sha256": "b12a96e2d6efa07696365778e9361ab6d6b9ae015f8e87782e1c6679d5f3908f"
+        },
+        {
+          "case_id": "fastapi.security.public-api.oauth2-password-request-form",
+          "symbol_id": "fastapi.security.oauth2.OAuth2PasswordRequestForm.__init__",
+          "path": "fastapi/security/oauth2.py",
+          "sha256": "b12a96e2d6efa07696365778e9361ab6d6b9ae015f8e87782e1c6679d5f3908f"
+        },
+        {
+          "case_id": "fastapi.security.public-api.oauth2-password-request-form-strict",
+          "symbol_id": "fastapi.security.OAuth2PasswordRequestFormStrict",
+          "path": "fastapi/security/__init__.py",
+          "sha256": "6cef29366c6a5515d48df97698e2a25592e7d05a4143ad555185639a9a676c9c"
+        },
+        {
+          "case_id": "fastapi.security.public-api.oauth2-password-request-form-strict",
+          "symbol_id": "fastapi.security.oauth2.OAuth2PasswordRequestFormStrict",
+          "path": "fastapi/security/oauth2.py",
+          "sha256": "b12a96e2d6efa07696365778e9361ab6d6b9ae015f8e87782e1c6679d5f3908f"
+        },
+        {
+          "case_id": "fastapi.security.public-api.oauth2-password-request-form-strict",
+          "symbol_id": "fastapi.security.oauth2.OAuth2PasswordRequestFormStrict.__init__",
+          "path": "fastapi/security/oauth2.py",
+          "sha256": "b12a96e2d6efa07696365778e9361ab6d6b9ae015f8e87782e1c6679d5f3908f"
+        },
+        {
+          "case_id": "fastapi.security.public-api.open-id-connect",
+          "symbol_id": "fastapi.security.OpenIdConnect",
+          "path": "fastapi/security/__init__.py",
+          "sha256": "6cef29366c6a5515d48df97698e2a25592e7d05a4143ad555185639a9a676c9c"
+        },
+        {
+          "case_id": "fastapi.security.public-api.open-id-connect",
+          "symbol_id": "fastapi.security.open_id_connect_url.OpenIdConnect",
+          "path": "fastapi/security/open_id_connect_url.py",
+          "sha256": "57c58b3c4b04abf5899488cfc093b6bc2a095862eef954edd7e3761fb695f83e"
+        },
+        {
+          "case_id": "fastapi.security.public-api.open-id-connect",
+          "symbol_id": "fastapi.security.open_id_connect_url.OpenIdConnect.__init__",
+          "path": "fastapi/security/open_id_connect_url.py",
+          "sha256": "57c58b3c4b04abf5899488cfc093b6bc2a095862eef954edd7e3761fb695f83e"
+        },
+        {
+          "case_id": "fastapi.security.public-api.security-scopes",
+          "symbol_id": "fastapi.security.SecurityScopes",
+          "path": "fastapi/security/__init__.py",
+          "sha256": "6cef29366c6a5515d48df97698e2a25592e7d05a4143ad555185639a9a676c9c"
+        },
+        {
+          "case_id": "fastapi.security.public-api.security-scopes",
+          "symbol_id": "fastapi.security.oauth2.SecurityScopes",
+          "path": "fastapi/security/oauth2.py",
+          "sha256": "b12a96e2d6efa07696365778e9361ab6d6b9ae015f8e87782e1c6679d5f3908f"
+        },
+        {
+          "case_id": "fastapi.security.public-api.security-scopes",
+          "symbol_id": "fastapi.security.oauth2.SecurityScopes.__init__",
+          "path": "fastapi/security/oauth2.py",
+          "sha256": "b12a96e2d6efa07696365778e9361ab6d6b9ae015f8e87782e1c6679d5f3908f"
+        }
+      ],
+      "api_probes": [
+        {
+          "case_id": "fastapi.security.public-api.api-key-cookie",
+          "probe_id": "module-a-p-i-key-cookie-init-signature",
+          "symbol_id": "fastapi.security.api_key.APIKeyCookie.__init__",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.public-api.api-key-cookie",
+          "probe_id": "module-api-key-cookie-signature",
+          "symbol_id": "fastapi.security.api_key.APIKeyCookie",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.public-api.api-key-cookie",
+          "probe_id": "root-api-key-cookie-signature",
+          "symbol_id": "fastapi.security.APIKeyCookie",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.public-api.api-key-header",
+          "probe_id": "module-a-p-i-key-header-init-signature",
+          "symbol_id": "fastapi.security.api_key.APIKeyHeader.__init__",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.public-api.api-key-header",
+          "probe_id": "module-api-key-header-signature",
+          "symbol_id": "fastapi.security.api_key.APIKeyHeader",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.public-api.api-key-header",
+          "probe_id": "root-api-key-header-signature",
+          "symbol_id": "fastapi.security.APIKeyHeader",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.public-api.api-key-query",
+          "probe_id": "module-a-p-i-key-query-init-signature",
+          "symbol_id": "fastapi.security.api_key.APIKeyQuery.__init__",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.public-api.api-key-query",
+          "probe_id": "module-api-key-query-signature",
+          "symbol_id": "fastapi.security.api_key.APIKeyQuery",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.public-api.api-key-query",
+          "probe_id": "root-api-key-query-signature",
+          "symbol_id": "fastapi.security.APIKeyQuery",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.public-api.http-authorization-credentials",
+          "probe_id": "module-http-authorization-credentials-signature",
+          "symbol_id": "fastapi.security.http.HTTPAuthorizationCredentials",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.public-api.http-authorization-credentials",
+          "probe_id": "root-http-authorization-credentials-signature",
+          "symbol_id": "fastapi.security.HTTPAuthorizationCredentials",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.public-api.http-basic",
+          "probe_id": "module-h-t-t-p-basic-init-signature",
+          "symbol_id": "fastapi.security.http.HTTPBasic.__init__",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.public-api.http-basic",
+          "probe_id": "module-http-basic-signature",
+          "symbol_id": "fastapi.security.http.HTTPBasic",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.public-api.http-basic",
+          "probe_id": "root-http-basic-signature",
+          "symbol_id": "fastapi.security.HTTPBasic",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.public-api.http-basic-credentials",
+          "probe_id": "module-http-basic-credentials-signature",
+          "symbol_id": "fastapi.security.http.HTTPBasicCredentials",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.public-api.http-basic-credentials",
+          "probe_id": "root-http-basic-credentials-signature",
+          "symbol_id": "fastapi.security.HTTPBasicCredentials",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.public-api.http-bearer",
+          "probe_id": "module-h-t-t-p-bearer-init-signature",
+          "symbol_id": "fastapi.security.http.HTTPBearer.__init__",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.public-api.http-bearer",
+          "probe_id": "module-http-bearer-signature",
+          "symbol_id": "fastapi.security.http.HTTPBearer",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.public-api.http-bearer",
+          "probe_id": "root-http-bearer-signature",
+          "symbol_id": "fastapi.security.HTTPBearer",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.public-api.http-digest",
+          "probe_id": "module-h-t-t-p-digest-init-signature",
+          "symbol_id": "fastapi.security.http.HTTPDigest.__init__",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.public-api.http-digest",
+          "probe_id": "module-http-digest-signature",
+          "symbol_id": "fastapi.security.http.HTTPDigest",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.public-api.http-digest",
+          "probe_id": "root-http-digest-signature",
+          "symbol_id": "fastapi.security.HTTPDigest",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.public-api.oauth2",
+          "probe_id": "module-o-auth2-init-signature",
+          "symbol_id": "fastapi.security.oauth2.OAuth2.__init__",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.public-api.oauth2",
+          "probe_id": "module-oauth2-signature",
+          "symbol_id": "fastapi.security.oauth2.OAuth2",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.public-api.oauth2",
+          "probe_id": "root-oauth2-signature",
+          "symbol_id": "fastapi.security.OAuth2",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.public-api.oauth2-authorization-code-bearer",
+          "probe_id": "module-o-auth2-authorization-code-bearer-init-signature",
+          "symbol_id": "fastapi.security.oauth2.OAuth2AuthorizationCodeBearer.__init__",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.public-api.oauth2-authorization-code-bearer",
+          "probe_id": "module-oauth2-authorization-code-bearer-signature",
+          "symbol_id": "fastapi.security.oauth2.OAuth2AuthorizationCodeBearer",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.public-api.oauth2-authorization-code-bearer",
+          "probe_id": "root-oauth2-authorization-code-bearer-signature",
+          "symbol_id": "fastapi.security.OAuth2AuthorizationCodeBearer",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.public-api.oauth2-password-bearer",
+          "probe_id": "module-o-auth2-password-bearer-init-signature",
+          "symbol_id": "fastapi.security.oauth2.OAuth2PasswordBearer.__init__",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.public-api.oauth2-password-bearer",
+          "probe_id": "module-oauth2-password-bearer-signature",
+          "symbol_id": "fastapi.security.oauth2.OAuth2PasswordBearer",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.public-api.oauth2-password-bearer",
+          "probe_id": "root-oauth2-password-bearer-signature",
+          "symbol_id": "fastapi.security.OAuth2PasswordBearer",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.public-api.oauth2-password-request-form",
+          "probe_id": "module-o-auth2-password-request-form-init-signature",
+          "symbol_id": "fastapi.security.oauth2.OAuth2PasswordRequestForm.__init__",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.public-api.oauth2-password-request-form",
+          "probe_id": "module-oauth2-password-request-form-signature",
+          "symbol_id": "fastapi.security.oauth2.OAuth2PasswordRequestForm",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.public-api.oauth2-password-request-form",
+          "probe_id": "root-oauth2-password-request-form-signature",
+          "symbol_id": "fastapi.security.OAuth2PasswordRequestForm",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.public-api.oauth2-password-request-form-strict",
+          "probe_id": "module-o-auth2-password-request-form-strict-init-signature",
+          "symbol_id": "fastapi.security.oauth2.OAuth2PasswordRequestFormStrict.__init__",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.public-api.oauth2-password-request-form-strict",
+          "probe_id": "module-oauth2-password-request-form-strict-signature",
+          "symbol_id": "fastapi.security.oauth2.OAuth2PasswordRequestFormStrict",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.public-api.oauth2-password-request-form-strict",
+          "probe_id": "root-oauth2-password-request-form-strict-signature",
+          "symbol_id": "fastapi.security.OAuth2PasswordRequestFormStrict",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.public-api.open-id-connect",
+          "probe_id": "module-open-id-connect-init-signature",
+          "symbol_id": "fastapi.security.open_id_connect_url.OpenIdConnect.__init__",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.public-api.open-id-connect",
+          "probe_id": "module-open-id-connect-signature",
+          "symbol_id": "fastapi.security.open_id_connect_url.OpenIdConnect",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.public-api.open-id-connect",
+          "probe_id": "root-open-id-connect-signature",
+          "symbol_id": "fastapi.security.OpenIdConnect",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.public-api.security-scopes",
+          "probe_id": "module-security-scopes-init-signature",
+          "symbol_id": "fastapi.security.oauth2.SecurityScopes.__init__",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.public-api.security-scopes",
+          "probe_id": "module-security-scopes-signature",
+          "symbol_id": "fastapi.security.oauth2.SecurityScopes",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.public-api.security-scopes",
+          "probe_id": "root-security-scopes-signature",
+          "symbol_id": "fastapi.security.SecurityScopes",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        }
       ]
     },
     {
@@ -19432,6 +20249,21 @@
       ],
       "observation_selectors": [
         "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:reference/openapi/models.md",
+      "fixture_id": "fastapi.docs.reference-openapi-models",
+      "workflow_id": "openapi-model-public-api",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes python.signature. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.openapi-models.components.signature",
+        "fastapi.openapi-models.discriminator.signature",
+        "fastapi.openapi-models.schema.signature"
+      ],
+      "observation_selectors": [
+        "python.signature"
       ]
     },
     {

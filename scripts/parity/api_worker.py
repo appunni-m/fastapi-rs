@@ -31,14 +31,19 @@ from scripts.parity.worker import (
 WORKFLOW_SCHEMA_ID = "fastapi-rs/python-api-workflow@1"
 WORKFLOW_SCHEMA_V2_ID = "fastapi-rs/python-api-workflow@2"
 WORKFLOW_SCHEMA_V3_ID = "fastapi-rs/python-api-workflow@3"
-WORKFLOW_SCHEMA_IDS = frozenset({WORKFLOW_SCHEMA_ID, WORKFLOW_SCHEMA_V2_ID, WORKFLOW_SCHEMA_V3_ID})
+WORKFLOW_SCHEMA_V4_ID = "fastapi-rs/python-api-workflow@4"
+WORKFLOW_SCHEMA_IDS = frozenset(
+    {WORKFLOW_SCHEMA_ID, WORKFLOW_SCHEMA_V2_ID, WORKFLOW_SCHEMA_V3_ID, WORKFLOW_SCHEMA_V4_ID}
+)
 RESULT_SCHEMA_ID = "fastapi-rs/python-api-workflow-result@2"
 RESULT_SCHEMA_V3_ID = "fastapi-rs/python-api-workflow-result@3"
 RESULT_SCHEMA_V4_ID = "fastapi-rs/python-api-workflow-result@4"
+RESULT_SCHEMA_V5_ID = "fastapi-rs/python-api-workflow-result@5"
 RESULT_SCHEMA_IDS_BY_WORKFLOW = {
     WORKFLOW_SCHEMA_ID: RESULT_SCHEMA_ID,
     WORKFLOW_SCHEMA_V2_ID: RESULT_SCHEMA_V3_ID,
     WORKFLOW_SCHEMA_V3_ID: RESULT_SCHEMA_V4_ID,
+    WORKFLOW_SCHEMA_V4_ID: RESULT_SCHEMA_V5_ID,
 }
 MANIFEST_PATH = ROOT / "tests/fixtures/manifest.yaml"
 ATLAS_SCHEMA_ID = "fastapi-rs/compatibility-atlas@5"
@@ -199,6 +204,27 @@ def _json_safe_with_nonfinite(value: Any) -> tuple[Any, list[dict[str, str]]]:
         ) from exc
 
 
+def _pydantic_model_projection(value: Any) -> tuple[Any, list[dict[str, str]]]:
+    """Project one returned Pydantic model with the fixed v4 model_dump contract."""
+    from pydantic import BaseModel
+
+    if not isinstance(value, BaseModel):
+        raise TypeError("public callable result is not a pydantic.BaseModel instance")
+    try:
+        dumped = value.model_dump(
+            mode="json",
+            by_alias=True,
+            exclude_unset=False,
+            exclude_defaults=False,
+            exclude_none=False,
+            round_trip=False,
+            warnings="error",
+        )
+        return _json_safe_with_nonfinite(dumped)
+    except WorkerError as exc:
+        raise ValueError(f"Pydantic model_dump projection failed: {exc}") from exc
+
+
 def _signature_object_identity(value: Any, kind: str) -> dict[str, str] | None:
     module = getattr(value, "__module__", None)
     qualified_name = getattr(value, "__qualname__", None)
@@ -225,7 +251,9 @@ def _is_strict_json_value(value: Any, *, depth: int = 0) -> bool:
     return False
 
 
-def _signature_component(value: Any, *, depth: int = 0) -> Any:
+def _signature_component(
+    value: Any, *, depth: int = 0, allow_pydantic_model_defaults: bool = False
+) -> Any:
     """Keep JSON defaults exact and encode non-JSON signature values without loss."""
     if value is inspect.Signature.empty:
         return None
@@ -250,8 +278,25 @@ def _signature_component(value: Any, *, depth: int = 0) -> Any:
     if qualified_type == "fastapi.datastructures.DefaultPlaceholder":
         return {
             "kind": "fastapi_default_placeholder",
-            "value": _signature_component(value.value, depth=depth + 1),
+            "value": _signature_component(
+                value.value,
+                depth=depth + 1,
+                allow_pydantic_model_defaults=allow_pydantic_model_defaults,
+            ),
         }
+    if allow_pydantic_model_defaults and any(
+        base.__module__ == "pydantic.main" and base.__name__ == "BaseModel"
+        for base in value_type.__mro__
+    ):
+        dumped, nonfinite_floats = _pydantic_model_projection(value)
+        projection: dict[str, Any] = {
+            "kind": "pydantic_model_default",
+            "qualified_name": qualified_type,
+            "value": dumped,
+        }
+        if nonfinite_floats:
+            projection["nonfinite_floats"] = nonfinite_floats
+        return projection
     if inspect.isclass(value):
         identity = _signature_object_identity(value, "class")
         if identity is not None:
@@ -266,7 +311,9 @@ def _signature_component(value: Any, *, depth: int = 0) -> Any:
     ) from None
 
 
-def _signature_value(function: Any) -> dict[str, Any]:
+def _signature_value(
+    function: Any, *, allow_pydantic_model_defaults: bool = False
+) -> dict[str, Any]:
     signature = inspect.signature(function)
     return {
         "parameters": [
@@ -274,7 +321,10 @@ def _signature_value(function: Any) -> dict[str, Any]:
                 "name": parameter.name,
                 "kind": parameter.kind.name,
                 "has_default": parameter.default is not inspect.Parameter.empty,
-                "default": _signature_component(parameter.default),
+                "default": _signature_component(
+                    parameter.default,
+                    allow_pydantic_model_defaults=allow_pydantic_model_defaults,
+                ),
                 "annotation": (
                     None
                     if parameter.annotation is inspect.Parameter.empty
@@ -371,10 +421,28 @@ def _validate_workflow_callables(
         for probe in case["probes"]:
             if not isinstance(probe, dict):
                 raise WorkerError("direct Python API workflow probe is malformed")
+            observations = probe.get("observations")
+            if not isinstance(observations, list):
+                raise WorkerError("direct Python API probe observations are malformed")
+            model_result_selected = any(
+                isinstance(observation, dict)
+                and observation.get("kind") == "python_pydantic_model_result"
+                for observation in observations
+            )
+            if model_result_selected and (
+                workflow.get("schema") != WORKFLOW_SCHEMA_V4_ID
+                or len(observations) != 1
+                or "public_callable" not in probe
+                or "argument_bundle" not in probe
+            ):
+                raise WorkerError(
+                    "Pydantic model result requires one v4 public-callable observation"
+                )
             if "public_callable" in probe:
                 if any(
-                    observation.get("kind") == "python_attribute_value"
-                    for observation in probe.get("observations", [])
+                    isinstance(observation, dict)
+                    and observation.get("kind") == "python_attribute_value"
+                    for observation in observations
                 ):
                     raise WorkerError("python_attribute_value requires a public_attribute probe")
                 selected.add(
@@ -429,6 +497,7 @@ async def _run_probe(
     supported_symbols: frozenset[str],
     *,
     allow_nonfinite_floats: bool = False,
+    allow_pydantic_model_defaults: bool = False,
 ) -> dict[str, Any]:
     capture_warnings = probe.get("capture_warnings") is True
     captured_warnings: list[dict[str, Any]] = []
@@ -452,13 +521,24 @@ async def _run_probe(
         has_return_value_observation = any(
             observation["kind"] == "python_return_value" for observation in probe["observations"]
         )
+        has_pydantic_model_result_observation = any(
+            observation["kind"] == "python_pydantic_model_result"
+            for observation in probe["observations"]
+        )
         has_call_outcome_observation = any(
             observation["kind"] == "python_call_outcome" for observation in probe["observations"]
         )
-        signature = _signature_value(function) if has_signature_observation else None
+        signature = (
+            _signature_value(
+                function,
+                allow_pydantic_model_defaults=allow_pydantic_model_defaults,
+            )
+            if has_signature_observation
+            else None
+        )
         result = None
         call_outcome = None
-        if has_return_value_observation:
+        if has_return_value_observation or has_pydantic_model_result_observation:
             args, kwargs = _get_arguments(bundles, probe["argument_bundle"])
             result = await _invoke_public_callable(
                 function,
@@ -512,6 +592,11 @@ async def _run_probe(
                         values["nonfinite_floats"] = nonfinite_floats
                 else:
                     values = {"value": _json_safe(result)}
+            elif observation["kind"] == "python_pydantic_model_result":
+                projected, nonfinite_floats = _pydantic_model_projection(result)
+                values = {"value": projected}
+                if nonfinite_floats:
+                    values["nonfinite_floats"] = nonfinite_floats
             elif observation["kind"] == "python_call_outcome":
                 values = {"outcome": call_outcome}
             else:
@@ -546,6 +631,7 @@ async def _run_case(
     supported_symbols: frozenset[str],
     *,
     allow_nonfinite_floats: bool = False,
+    allow_pydantic_model_defaults: bool = False,
 ) -> dict[str, Any]:
     bundles = (
         await _make_bundles(factory)
@@ -561,6 +647,7 @@ async def _run_case(
                 fastapi_root,
                 supported_symbols,
                 allow_nonfinite_floats=allow_nonfinite_floats,
+                allow_pydantic_model_defaults=allow_pydantic_model_defaults,
             )
         )
     errors = [probe["error"] for probe in probes if probe["status"] == "product_error"]
@@ -581,6 +668,7 @@ async def _run_cases(
     supported_symbols: frozenset[str],
     *,
     allow_nonfinite_floats: bool = False,
+    allow_pydantic_model_defaults: bool = False,
 ) -> list[dict[str, Any]]:
     cases = []
     for case in workflow["cases"]:
@@ -591,6 +679,7 @@ async def _run_cases(
                 fastapi_root,
                 supported_symbols,
                 allow_nonfinite_floats=allow_nonfinite_floats,
+                allow_pydantic_model_defaults=allow_pydantic_model_defaults,
             )
         )
     return cases
@@ -901,7 +990,8 @@ def run_oracle(
             fastapi_root,
             supported_symbols,
             allow_nonfinite_floats=workflow["schema"]
-            in {WORKFLOW_SCHEMA_V2_ID, WORKFLOW_SCHEMA_V3_ID},
+            in {WORKFLOW_SCHEMA_V2_ID, WORKFLOW_SCHEMA_V3_ID, WORKFLOW_SCHEMA_V4_ID},
+            allow_pydantic_model_defaults=workflow["schema"] == WORKFLOW_SCHEMA_V4_ID,
         )
     )
     _validate_result_consistency(cases)

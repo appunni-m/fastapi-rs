@@ -80,14 +80,14 @@ api_inventory:
 import_binding_classification_review:
   artifact: tests/fixtures/api-import-binding-classification-review.json
   schema: fastapi-starlette-import-binding-review/v1
-  sha256: 1c99d3dc10f585ef458925a1d7a3c93c0d997e1fe7b1a5f9fbcbb9f3cd1dcb2f
+  sha256: 5975451a24c27b70a5c8bff16b5aaff5d51c8adbfba263bbeb23ee408a1625db
   source_identity:
     package: FastAPI
     version: 0.141.1
     source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
     selected_starlette_profile: 1.6.0
     starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
-    starlette_rs_contract_commit: ebfd3661f00b4368b404ef5162268b72dc2095a3
+    starlette_rs_contract_commit: f21a17f88a0edc71a2bf3ba6179df036ad376f05
   starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
   counts:
     candidates: 97
@@ -99,7 +99,7 @@ import_binding_classification_review:
   candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
   pinned_starlette_rs_sources:
     metadata_sha256: 09384dd30af7bc919c1e653e6a06227bdae94fc2d30246ce5d64825de5f62a47
-    manifest_sha256: 1816eed91d4268c5280d892b99caefac351a1fa9b715af4b53a07afeb701cc3c
+    manifest_sha256: f423846fa1454ee20386de5b3daff5f83d4ab7925af7930b104efe3821029092
     api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
     api_review_sha256: 8b25f2e3a46753316446077bfde97b6ac8a342233e2f4e50b12d3d01eafbe099
 
@@ -435,7 +435,7 @@ classification_atlas:
 starlette_rs:
   owner: ../starlette-rs
   repository: https://github.com/appunni-m/starlette-rs
-  commit: ebfd3661f00b4368b404ef5162268b72dc2095a3
+  commit: f21a17f88a0edc71a2bf3ba6179df036ad376f05
   distribution_version: 0.1.0
   contract_id: starlette-1.6.0-asgi-http-config-session-slice
   metadata: ../starlette-rs/metadata.yaml
@@ -4193,8 +4193,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.docs.auth-error-status.legacy-forbidden
         - recipe_path: tests/fixtures/input-recipes/parity/authentication-error-status-code-tutorial.yaml
           case_id: fastapi.docs.auth-error-status.valid-bearer
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+          case_id: fastapi.security.public-api.http-bearer
       feature_ids: [dependency-security, public-api-errors]
-      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, python.signature]
       supported_slice: >-
         Partial native HTTPBearer slice: the documented root import constructs
         a bearer dependency with default arguments. The independent
@@ -4220,8 +4222,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.docs.auth-error-status.legacy-forbidden
         - recipe_path: tests/fixtures/input-recipes/parity/authentication-error-status-code-tutorial.yaml
           case_id: fastapi.docs.auth-error-status.valid-bearer
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+          case_id: fastapi.security.public-api.http-bearer
       feature_ids: [dependency-security, public-api-errors]
-      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, python.signature]
       supported_slice: >-
         Partial native HTTPBearer slice: exposes a Python-subclassable Rust
         dependency with an awaitable Request call path. Identity-checked ASGI
@@ -4241,8 +4245,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.docs.auth-error-status.legacy-forbidden
         - recipe_path: tests/fixtures/input-recipes/parity/authentication-error-status-code-tutorial.yaml
           case_id: fastapi.docs.auth-error-status.valid-bearer
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+          case_id: fastapi.security.public-api.http-bearer
       feature_ids: [dependency-security]
-      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, python.signature]
       supported_slice: >-
         Partial constructor slice: the reviewed workflow constructs HTTPBearer
         and its Python subclass with all defaults. Non-default options and full
@@ -4289,8 +4295,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.security-wave.http-basic-tutorial-007.invalid-username
         - recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
           case_id: fastapi.security-wave.http-basic-tutorials.openapi
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+          case_id: fastapi.security.public-api.http-basic
       feature_ids: [dependency-security]
-      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.paths, openapi.security]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.paths, openapi.security, python.signature]
       supported_slice: >-
         The reviewed request and OpenAPI workloads import HTTPBasic from the
         root security package and exercise the Rust-owned implementation.
@@ -4320,8 +4328,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.security-wave.http-basic-tutorial-007.invalid-username
         - recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
           case_id: fastapi.security-wave.http-basic-tutorials.openapi
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+          case_id: fastapi.security.public-api.http-basic
       feature_ids: [dependency-security]
-      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.paths, openapi.security]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.paths, openapi.security, python.signature]
       supported_slice: >-
         Partial Rust implementation: identity-checked cases cover default
         construction, the selected Basic request outcomes, and OpenAPI
@@ -4342,8 +4352,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.security-wave.http-basic-tutorial-006.test-security-http-basic
         - recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
           case_id: fastapi.security-wave.http-basic-tutorials.openapi
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+          case_id: fastapi.security.public-api.http-basic
       feature_ids: [dependency-security]
-      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.paths, openapi.security]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.paths, openapi.security, python.signature]
       supported_slice: >-
         The workflow constructs HTTPBasic with defaults for request handling
         and OpenAPI generation. Non-default constructor options, signature
@@ -4388,8 +4400,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.test.test-security-http-digest-description.test-security-http-digest-no-credentials
         - recipe_path: tests/fixtures/input-recipes/parity/http-digest-auth-upstream.yaml
           case_id: fastapi.test.test-security-http-digest-description.test-security-http-digest-incorrect-scheme-credentials
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+          case_id: fastapi.security.public-api.http-digest
       feature_ids: [dependency-security, public-api-errors]
-      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, python.signature]
       supported_slice: >-
         Partial Rust-owned Digest dependency with keyword-only constructor,
         HTTP Digest challenge, case-insensitive scheme recognition, and
@@ -4410,8 +4424,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.test.test-security-http-digest-description.test-security-http-digest-no-credentials
         - recipe_path: tests/fixtures/input-recipes/parity/http-digest-auth-upstream.yaml
           case_id: fastapi.test.test-security-http-digest-description.test-security-http-digest-incorrect-scheme-credentials
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+          case_id: fastapi.security.public-api.http-digest
       feature_ids: [dependency-security, public-api-errors]
-      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, python.signature]
       supported_slice: >-
         Partial native implementation handles Digest authorization parsing and
         authentication errors in Rust. Source HTTPBase inheritance, optional
@@ -4430,8 +4446,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.test.test-security-http-digest-description.test-security-http-digest-no-credentials
         - recipe_path: tests/fixtures/input-recipes/parity/http-digest-auth-upstream.yaml
           case_id: fastapi.test.test-security-http-digest-description.test-security-http-digest-incorrect-scheme-credentials
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+          case_id: fastapi.security.public-api.http-digest
       feature_ids: [dependency-security]
-      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, python.signature]
       supported_slice: >-
         Partial constructor supports the reviewed description argument and
         keyword-only scheme_name and auto_error options. Annotated Doc metadata,
@@ -4463,11 +4481,14 @@ reviewed_api_contract_overlay:
       source_evidence:
         - {path: fastapi/security/__init__.py}
       feature_ids: [dependency-security]
-      observation_selectors: [python.import_path, python.object_identity]
+      observation_selectors: [python.import_path, python.object_identity, python.signature]
       supported_slice: >-
         Native root alias to the Pydantic credentials model created by the
         Rust registration layer; field validation and schema parity are not
         established by an identity-checked fixture mapping here.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+          case_id: fastapi.security.public-api.http-basic-credentials
     fastapi.security.http.HTTPBasicCredentials:
       rust_binding: fastapi-rs/src/security.rs::create_http_basic_credentials_model
       source_evidence:
@@ -4477,11 +4498,14 @@ reviewed_api_contract_overlay:
           start_line: 16
           end_line: 26
       feature_ids: [dependency-security]
-      observation_selectors: [python.call_outcome]
+      observation_selectors: [python.call_outcome, python.signature]
       supported_slice: >-
         Partial model implementation has required username and password
         string fields and the documented field descriptions. Schema parity
         and field-level validation outcomes remain unverified.
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+          case_id: fastapi.security.public-api.http-basic-credentials
     fastapi.security.OAuth2:
       rust_binding: fastapi-rs/src/security.rs::PyOAuth2
       source_evidence:
@@ -4491,8 +4515,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.security-wave.oauth2-base.test-security-oauth2
         - recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
           case_id: fastapi.security-wave.oauth2-optional.test-security-oauth2-password-bearer-no-header
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+          case_id: fastapi.security.public-api.oauth2
       feature_ids: [dependency-security, public-api-errors]
-      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, python.signature]
       supported_slice: >-
         Partial Rust-owned OAuth2 base dependency constructs the configured
         OAuth2 model, returns a present Authorization value unchanged, and
@@ -4506,8 +4532,10 @@ reviewed_api_contract_overlay:
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
           case_id: fastapi.security-wave.oauth2-scope-propagation.nested-same-scheme-openapi
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+          case_id: fastapi.security.public-api.oauth2-password-bearer
       feature_ids: [dependency-security]
-      observation_selectors: [openapi.document, openapi.paths, openapi.security]
+      observation_selectors: [openapi.document, openapi.paths, openapi.security, python.signature]
       supported_slice: >-
         The root-package export participates in an identity-checked scoped
         dependency OpenAPI case, which observes its named scheme and merged
@@ -4526,8 +4554,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.security-wave.oauth2-base.test-security-oauth2
         - recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
           case_id: fastapi.security-wave.oauth2-optional.test-security-oauth2-password-bearer-no-header
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+          case_id: fastapi.security.public-api.oauth2
       feature_ids: [dependency-security, public-api-errors]
-      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, python.signature]
       supported_slice: >-
         Partial native OAuth2 base class supports the reviewed flow mapping,
         scheme_name, description, auto_error, raw Authorization return, and
@@ -4546,8 +4576,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.security-wave.oauth2-base.test-security-oauth2
         - recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
           case_id: fastapi.security-wave.oauth2-optional.test-security-oauth2-password-bearer-no-header
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+          case_id: fastapi.security.public-api.oauth2
       feature_ids: [dependency-security]
-      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, python.signature]
       supported_slice: >-
         Partial constructor covers password-flow mappings and the optional
         auto_error setting in the selected workload. Other OAuth2 flow fields,
@@ -4582,8 +4614,10 @@ reviewed_api_contract_overlay:
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
           case_id: fastapi.security-wave.oauth2-scope-propagation.nested-same-scheme-openapi
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+          case_id: fastapi.security.public-api.oauth2-password-bearer
       feature_ids: [dependency-security]
-      observation_selectors: [openapi.document, openapi.paths, openapi.security]
+      observation_selectors: [openapi.document, openapi.paths, openapi.security, python.signature]
       supported_slice: >-
         Partial native implementation is covered for construction of a named
         password-flow scheme and merging scopes through repeated nested
@@ -4601,8 +4635,10 @@ reviewed_api_contract_overlay:
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
           case_id: fastapi.security-wave.oauth2-scope-propagation.nested-same-scheme-openapi
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+          case_id: fastapi.security.public-api.oauth2-password-bearer
       feature_ids: [dependency-security]
-      observation_selectors: [openapi.document, openapi.security]
+      observation_selectors: [openapi.document, openapi.security, python.signature]
       supported_slice: >-
         The fixture constructs the default password-flow scheme with a
         configured name and scope descriptions, then observes merged required
@@ -4630,8 +4666,10 @@ reviewed_api_contract_overlay:
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/authentication-error-status-code-tutorial.yaml
           case_id: fastapi.docs.auth-error-status.valid-bearer
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+          case_id: fastapi.security.public-api.http-authorization-credentials
       feature_ids: [dependency-security]
-      observation_selectors: [http.body.bytes]
+      observation_selectors: [http.body.bytes, python.signature]
       supported_slice: >-
         Partial model slice: the documented root import provides the native
         Pydantic credentials type returned by HTTPBearer; the valid-bearer case
@@ -4648,8 +4686,10 @@ reviewed_api_contract_overlay:
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/authentication-error-status-code-tutorial.yaml
           case_id: fastapi.docs.auth-error-status.valid-bearer
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+          case_id: fastapi.security.public-api.http-authorization-credentials
       feature_ids: [dependency-security]
-      observation_selectors: [http.body.bytes]
+      observation_selectors: [http.body.bytes, python.signature]
       supported_slice: >-
         Partial model slice: exposes the native Pydantic credentials class used
         by HTTPBearer, with the valid-bearer case observing its credentials
@@ -4862,8 +4902,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.security.api-key-cookie-description.test-openapi-schema
         - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
           case_id: fastapi.security.api-key-cookie.empty-string-credential
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+          case_id: fastapi.security.public-api.api-key-cookie
       feature_ids: [dependency-security, openapi-docs]
-      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.security]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.security, python.signature]
       supported_slice: >-
         Partial Rust-owned API-key dependency slice for the documented
         `fastapi.security` export. The selected input cases cover cookie
@@ -4902,8 +4944,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.security.api-key-header.empty-string-credential
         - recipe_path: tests/fixtures/input-recipes/parity/security-api-key-exception-boundary.yaml
           case_id: fastapi.security.api-key-header.fastapi-http-exception-handler-boundary
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+          case_id: fastapi.security.public-api.api-key-header
       feature_ids: [dependency-security, openapi-docs]
-      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.security]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.security, python.signature]
       supported_slice: >-
         Partial Rust-owned API-key dependency slice for the documented
         `fastapi.security` export. The selected input cases cover header
@@ -4951,8 +4995,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.security.api-key-query-description.test-openapi-schema
         - recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
           case_id: fastapi.security.api-key-query.empty-string-credential
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+          case_id: fastapi.security.public-api.api-key-query
       feature_ids: [dependency-security, openapi-docs]
-      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.security]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.security, python.signature]
       supported_slice: >-
         Partial Rust-owned API-key dependency slice for the documented
         `fastapi.security` export. The selected input cases cover query
@@ -4970,7 +5016,7 @@ reviewed_api_contract_overlay:
           end_line: 320
       fixture_refs: *api_key_cookie_fixtures
       feature_ids: [dependency-security, openapi-docs]
-      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.security]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.security, python.signature]
       supported_slice: >-
         Partial native class slice: construction preserves the configured
         cookie name, scheme name, optional description, and `auto_error`
@@ -5009,7 +5055,7 @@ reviewed_api_contract_overlay:
           end_line: 316
       fixture_refs: *api_key_cookie_fixtures
       feature_ids: [dependency-security, openapi-docs]
-      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.security]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.security, python.signature]
       supported_slice: >-
         Partial constructor slice accepts the required keyword-only cookie
         name, optional scheme name and description, and `auto_error`. Selected
@@ -5027,7 +5073,7 @@ reviewed_api_contract_overlay:
           end_line: 232
       fixture_refs: *api_key_header_fixtures
       feature_ids: [dependency-security, openapi-docs]
-      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.security]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.security, python.signature]
       supported_slice: >-
         Partial native class slice: construction preserves the configured
         header name, scheme name, optional description, and `auto_error`
@@ -5066,7 +5112,7 @@ reviewed_api_contract_overlay:
           end_line: 228
       fixture_refs: *api_key_header_fixtures
       feature_ids: [dependency-security, openapi-docs]
-      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.security]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.security, python.signature]
       supported_slice: >-
         Partial constructor slice accepts the required keyword-only header
         name, optional scheme name and description, and `auto_error`. Selected
@@ -5084,7 +5130,7 @@ reviewed_api_contract_overlay:
           end_line: 144
       fixture_refs: *api_key_query_fixtures
       feature_ids: [dependency-security, openapi-docs]
-      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.security]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.security, python.signature]
       supported_slice: >-
         Partial native class slice: construction preserves the configured
         query name, scheme name, optional description, and `auto_error`
@@ -5123,7 +5169,7 @@ reviewed_api_contract_overlay:
           end_line: 140
       fixture_refs: *api_key_query_fixtures
       feature_ids: [dependency-security, openapi-docs]
-      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.security]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.security, python.signature]
       supported_slice: >-
         Partial constructor slice accepts the required keyword-only query
         name, optional scheme name and description, and `auto_error`. Selected
@@ -5172,6 +5218,346 @@ reviewed_api_contract_overlay:
         APIKey security dependencies and carries the source `model` and
         `scheme_name` annotations. Direct base-class identity and MRO parity
         remain unverified by a dedicated input workflow.
+    fastapi.security.OAuth2AuthorizationCodeBearer:
+      rust_binding: null
+      source_evidence:
+        - path: fastapi/security/__init__.py
+          symbol: OAuth2AuthorizationCodeBearer
+          kind: import-binding
+          line: 10
+          imported_module: oauth2
+          relative_level: 1
+          imported_name: OAuth2AuthorizationCodeBearer
+          alias_spelling: OAuth2AuthorizationCodeBearer
+          local_name: OAuth2AuthorizationCodeBearer
+          target_path: fastapi.security.oauth2.OAuth2AuthorizationCodeBearer
+        - path: fastapi/security/oauth2.py
+          symbol: OAuth2AuthorizationCodeBearer
+          kind: source-definition
+          start_line: 547
+          end_line: 650
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+          case_id: fastapi.security.public-api.oauth2-authorization-code-bearer
+      feature_ids: [dependency-security, openapi-docs]
+      observation_selectors: [python.signature]
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: unimplemented
+        known_gaps:
+          - no OAuth2 authorization-code bearer class export or implementation is present in the FastAPI-RS security facades or Rust security module.
+        rust_binding: null
+    fastapi.security.oauth2.OAuth2AuthorizationCodeBearer:
+      rust_binding: null
+      source_evidence:
+        - path: fastapi/security/oauth2.py
+          symbol: OAuth2AuthorizationCodeBearer
+          kind: source-definition
+          start_line: 547
+          end_line: 650
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+          case_id: fastapi.security.public-api.oauth2-authorization-code-bearer
+      feature_ids: [dependency-security, openapi-docs]
+      observation_selectors: [python.signature]
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: unimplemented
+        known_gaps:
+          - no OAuth2 authorization-code bearer class export or implementation is present in the FastAPI-RS security facades or Rust security module.
+        rust_binding: null
+    fastapi.security.oauth2.OAuth2AuthorizationCodeBearer.__init__:
+      rust_binding: null
+      source_evidence:
+        - path: fastapi/security/oauth2.py
+          symbol: __init__
+          kind: source-definition
+          owner: OAuth2AuthorizationCodeBearer
+          start_line: 553
+          end_line: 640
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+          case_id: fastapi.security.public-api.oauth2-authorization-code-bearer
+      feature_ids: [dependency-security, openapi-docs]
+      observation_selectors: [python.signature]
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: unimplemented
+        known_gaps:
+          - no OAuth2 authorization-code bearer class export or implementation is present in the FastAPI-RS security facades or Rust security module.
+        rust_binding: null
+    fastapi.security.OAuth2PasswordRequestForm:
+      rust_binding: null
+      source_evidence:
+        - path: fastapi/security/__init__.py
+          symbol: OAuth2PasswordRequestForm
+          kind: import-binding
+          line: 12
+          imported_module: oauth2
+          relative_level: 1
+          imported_name: OAuth2PasswordRequestForm
+          alias_spelling: OAuth2PasswordRequestForm
+          local_name: OAuth2PasswordRequestForm
+          target_path: fastapi.security.oauth2.OAuth2PasswordRequestForm
+        - path: fastapi/security/oauth2.py
+          symbol: OAuth2PasswordRequestForm
+          kind: source-definition
+          start_line: 14
+          end_line: 159
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+          case_id: fastapi.security.public-api.oauth2-password-request-form
+      feature_ids: [dependency-security, request-validation]
+      observation_selectors: [python.signature]
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: unimplemented
+        known_gaps:
+          - the FastAPI-RS security facades do not export the form class or implement its constructor and request form integration.
+        rust_binding: null
+    fastapi.security.oauth2.OAuth2PasswordRequestForm:
+      rust_binding: null
+      source_evidence:
+        - path: fastapi/security/oauth2.py
+          symbol: OAuth2PasswordRequestForm
+          kind: source-definition
+          start_line: 14
+          end_line: 159
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+          case_id: fastapi.security.public-api.oauth2-password-request-form
+      feature_ids: [dependency-security, request-validation]
+      observation_selectors: [python.signature]
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: unimplemented
+        known_gaps:
+          - the FastAPI-RS security facades do not export the form class or implement its constructor and request form integration.
+        rust_binding: null
+    fastapi.security.oauth2.OAuth2PasswordRequestForm.__init__:
+      rust_binding: null
+      source_evidence:
+        - path: fastapi/security/oauth2.py
+          symbol: __init__
+          kind: source-definition
+          owner: OAuth2PasswordRequestForm
+          start_line: 59
+          end_line: 159
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+          case_id: fastapi.security.public-api.oauth2-password-request-form
+      feature_ids: [dependency-security, request-validation]
+      observation_selectors: [python.signature]
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: unimplemented
+        known_gaps:
+          - the FastAPI-RS security facades do not export the form class or implement its constructor and request form integration.
+        rust_binding: null
+    fastapi.security.OAuth2PasswordRequestFormStrict:
+      rust_binding: null
+      source_evidence:
+        - path: fastapi/security/__init__.py
+          symbol: OAuth2PasswordRequestFormStrict
+          kind: import-binding
+          line: 13
+          imported_module: oauth2
+          relative_level: 1
+          imported_name: OAuth2PasswordRequestFormStrict
+          alias_spelling: OAuth2PasswordRequestFormStrict
+          local_name: OAuth2PasswordRequestFormStrict
+          target_path: fastapi.security.oauth2.OAuth2PasswordRequestFormStrict
+        - path: fastapi/security/oauth2.py
+          symbol: OAuth2PasswordRequestFormStrict
+          kind: source-definition
+          start_line: 162
+          end_line: 327
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+          case_id: fastapi.security.public-api.oauth2-password-request-form-strict
+      feature_ids: [dependency-security, request-validation]
+      observation_selectors: [python.signature]
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: unimplemented
+        known_gaps:
+          - the FastAPI-RS security facades do not export the strict form class or implement its constructor and request form integration.
+        rust_binding: null
+    fastapi.security.oauth2.OAuth2PasswordRequestFormStrict:
+      rust_binding: null
+      source_evidence:
+        - path: fastapi/security/oauth2.py
+          symbol: OAuth2PasswordRequestFormStrict
+          kind: source-definition
+          start_line: 162
+          end_line: 327
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+          case_id: fastapi.security.public-api.oauth2-password-request-form-strict
+      feature_ids: [dependency-security, request-validation]
+      observation_selectors: [python.signature]
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: unimplemented
+        known_gaps:
+          - the FastAPI-RS security facades do not export the strict form class or implement its constructor and request form integration.
+        rust_binding: null
+    fastapi.security.oauth2.OAuth2PasswordRequestFormStrict.__init__:
+      rust_binding: null
+      source_evidence:
+        - path: fastapi/security/oauth2.py
+          symbol: __init__
+          kind: source-definition
+          owner: OAuth2PasswordRequestFormStrict
+          start_line: 226
+          end_line: 327
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+          case_id: fastapi.security.public-api.oauth2-password-request-form-strict
+      feature_ids: [dependency-security, request-validation]
+      observation_selectors: [python.signature]
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: unimplemented
+        known_gaps:
+          - the FastAPI-RS security facades do not export the strict form class or implement its constructor and request form integration.
+        rust_binding: null
+    fastapi.security.SecurityScopes:
+      rust_binding: null
+      source_evidence:
+        - path: fastapi/security/__init__.py
+          symbol: SecurityScopes
+          kind: import-binding
+          line: 14
+          imported_module: oauth2
+          relative_level: 1
+          imported_name: SecurityScopes
+          alias_spelling: SecurityScopes
+          local_name: SecurityScopes
+          target_path: fastapi.security.oauth2.SecurityScopes
+        - path: fastapi/security/oauth2.py
+          symbol: SecurityScopes
+          kind: source-definition
+          start_line: 653
+          end_line: 693
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+          case_id: fastapi.security.public-api.security-scopes
+      feature_ids: [dependency-security, openapi-docs]
+      observation_selectors: [python.signature]
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: unimplemented
+        known_gaps:
+          - the FastAPI-RS security facades do not export SecurityScopes or implement its FastAPI scope-injection contract.
+        rust_binding: null
+    fastapi.security.oauth2.SecurityScopes:
+      rust_binding: null
+      source_evidence:
+        - path: fastapi/security/oauth2.py
+          symbol: SecurityScopes
+          kind: source-definition
+          start_line: 653
+          end_line: 693
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+          case_id: fastapi.security.public-api.security-scopes
+      feature_ids: [dependency-security, openapi-docs]
+      observation_selectors: [python.signature]
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: unimplemented
+        known_gaps:
+          - the FastAPI-RS security facades do not export SecurityScopes or implement its FastAPI scope-injection contract.
+        rust_binding: null
+    fastapi.security.oauth2.SecurityScopes.__init__:
+      rust_binding: null
+      source_evidence:
+        - path: fastapi/security/oauth2.py
+          symbol: __init__
+          kind: source-definition
+          owner: SecurityScopes
+          start_line: 666
+          end_line: 693
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+          case_id: fastapi.security.public-api.security-scopes
+      feature_ids: [dependency-security, openapi-docs]
+      observation_selectors: [python.signature]
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: unimplemented
+        known_gaps:
+          - the FastAPI-RS security facades do not export SecurityScopes or implement its FastAPI scope-injection contract.
+        rust_binding: null
+    fastapi.security.OpenIdConnect:
+      rust_binding: null
+      source_evidence:
+        - path: fastapi/security/__init__.py
+          symbol: OpenIdConnect
+          kind: import-binding
+          line: 15
+          imported_module: open_id_connect_url
+          relative_level: 1
+          imported_name: OpenIdConnect
+          alias_spelling: OpenIdConnect
+          local_name: OpenIdConnect
+          target_path: fastapi.security.open_id_connect_url.OpenIdConnect
+        - path: fastapi/security/open_id_connect_url.py
+          symbol: OpenIdConnect
+          kind: source-definition
+          start_line: 11
+          end_line: 94
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+          case_id: fastapi.security.public-api.open-id-connect
+      feature_ids: [dependency-security, openapi-docs]
+      observation_selectors: [python.signature]
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: unimplemented
+        known_gaps:
+          - the FastAPI-RS security facades do not export OpenIdConnect or implement its dependency and OpenAPI behavior.
+        rust_binding: null
+    fastapi.security.open_id_connect_url.OpenIdConnect:
+      rust_binding: null
+      source_evidence:
+        - path: fastapi/security/open_id_connect_url.py
+          symbol: OpenIdConnect
+          kind: source-definition
+          start_line: 11
+          end_line: 94
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+          case_id: fastapi.security.public-api.open-id-connect
+      feature_ids: [dependency-security, openapi-docs]
+      observation_selectors: [python.signature]
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: unimplemented
+        known_gaps:
+          - the FastAPI-RS security facades do not export OpenIdConnect or implement its dependency and OpenAPI behavior.
+        rust_binding: null
+    fastapi.security.open_id_connect_url.OpenIdConnect.__init__:
+      rust_binding: null
+      source_evidence:
+        - path: fastapi/security/open_id_connect_url.py
+          symbol: __init__
+          kind: source-definition
+          owner: OpenIdConnect
+          start_line: 22
+          end_line: 78
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
+          case_id: fastapi.security.public-api.open-id-connect
+      feature_ids: [dependency-security, openapi-docs]
+      observation_selectors: [python.signature]
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: unimplemented
+        known_gaps:
+          - the FastAPI-RS security facades do not export OpenIdConnect or implement its dependency and OpenAPI behavior.
+        rust_binding: null
     fastapi.openapi.models.APIKey:
       rust_binding: fastapi-rs/src/security.rs::create_api_key_models
       source_evidence:
@@ -5197,15 +5583,20 @@ reviewed_api_contract_overlay:
           case_id: fastapi.security.api-key-header-description.test-openapi-schema
         - recipe_path: tests/fixtures/input-recipes/parity/security_api_key_header_openapi.yaml
           case_id: fastapi.test.security-api-key-header.default-name-openapi
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+          case_id: fastapi.openapi-models.api-key.model-result
       feature_ids: [openapi-docs, dependency-security]
-      observation_selectors: [openapi.document, openapi.security]
+      observation_selectors: [openapi.document, openapi.security, python.pydantic_model_result]
       supported_slice: >-
         Native Pydantic APIKey model is exposed at the pinned OpenAPI model
         path with the documented `type`, `in`, `name`, and optional
         `description` fields. Selected APIKey OpenAPI cases exercise its
-        serialized scheme fields and operation requirements. Direct model
-        identity, full validation/schema behavior, and unknown extra fields
-        remain unverified pending live parity.
+        serialized scheme fields and operation requirements. A direct
+        model-result input probes its aliases, defaults, and allowed extra
+        values through the fixed model_dump projection; live equality is
+        reported by its isolated parity result. Direct model identity, full
+        validation/schema behavior, and other extra-field values remain
+        unverified.
     fastapi.openapi.models.APIKey.in_:
       rust_binding: fastapi-rs/src/security.rs::create_api_key_models
       source_evidence:
@@ -5249,6 +5640,69 @@ reviewed_api_contract_overlay:
       supported_slice: >-
         The selected OpenAPI cases serialize the APIKey scheme type as
         `apiKey`; direct field validation remains unverified.
+    fastapi.openapi.models.Components:
+      rust_binding: null
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          symbol: Components
+          kind: source-definition
+          start_line: 399
+          end_line: 410
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-model-public-api.yaml
+          case_id: fastapi.openapi-models.components.signature
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+          case_id: fastapi.openapi-models.components.model-result
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.signature, python.pydantic_model_result]
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: unimplemented
+        known_gaps:
+          - The target fastapi.openapi.models façade does not export Components; the direct model input records source construction and serialization only.
+        rust_binding: null
+    fastapi.openapi.models.Discriminator:
+      rust_binding: null
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          symbol: Discriminator
+          kind: source-definition
+          start_line: 99
+          end_line: 101
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-model-public-api.yaml
+          case_id: fastapi.openapi-models.discriminator.signature
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+          case_id: fastapi.openapi-models.discriminator.model-result
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.signature, python.pydantic_model_result]
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: unimplemented
+        known_gaps:
+          - The target fastapi.openapi.models façade does not export Discriminator; the direct model input records source construction and serialization only.
+        rust_binding: null
+    fastapi.openapi.models.Schema:
+      rust_binding: null
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          symbol: Schema
+          kind: source-definition
+          start_line: 123
+          end_line: 204
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-model-public-api.yaml
+          case_id: fastapi.openapi-models.schema.signature
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-model-result-public-api.yaml
+          case_id: fastapi.openapi-models.schema.model-result
+      feature_ids: [openapi-docs]
+      observation_selectors: [python.signature, python.pydantic_model_result]
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: unimplemented
+        known_gaps:
+          - The target fastapi.openapi.models façade does not export Schema; the direct model input records source construction and serialization only.
+        rust_binding: null
     fastapi.openapi.models.APIKeyIn:
       rust_binding: fastapi-rs/src/security.rs::create_api_key_models
       source_evidence:

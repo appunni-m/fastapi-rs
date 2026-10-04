@@ -11,6 +11,7 @@ from scripts.build_parity_inputs import read_recipe
 from scripts.parity.contract import (
     API_WORKFLOW_SCHEMA_IDS,
     API_WORKFLOW_SCHEMA_V3_ID,
+    API_WORKFLOW_SCHEMA_V4_ID,
     MATERIALIZED_INPUT_INDEX_SCHEMA_ID,
     ROOT,
     WORKFLOW_SCHEMA_V3_ID,
@@ -31,6 +32,7 @@ API_OBSERVATION_SELECTORS = {
     "python_import_path": "python.import_path",
     "python_object_identity": "python.object_identity",
     "python_return_value": "python.attribute_value",
+    "python_pydantic_model_result": "python.pydantic_model_result",
     "python_signature": "python.signature",
 }
 
@@ -69,7 +71,7 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
     if "probes" in case:
         for probe in case["probes"]:
             if (
-                workflow_schema == API_WORKFLOW_SCHEMA_V3_ID
+                workflow_schema in {API_WORKFLOW_SCHEMA_V3_ID, API_WORKFLOW_SCHEMA_V4_ID}
                 and probe.get("capture_warnings") is True
             ):
                 selectors.add("python.warnings")
@@ -82,6 +84,8 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
                     selectors.add("python.signature")
                 elif observation["kind"] == "python_call_outcome":
                     selectors.add("python.call_outcome")
+                elif observation["kind"] == "python_pydantic_model_result":
+                    selectors.add("python.pydantic_model_result")
         return selectors
 
     if workflow_schema in {

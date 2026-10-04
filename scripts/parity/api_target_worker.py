@@ -138,7 +138,9 @@ def run_target(
             in {
                 api_worker.WORKFLOW_SCHEMA_V2_ID,
                 api_worker.WORKFLOW_SCHEMA_V3_ID,
+                api_worker.WORKFLOW_SCHEMA_V4_ID,
             },
+            allow_pydantic_model_defaults=(workflow["schema"] == api_worker.WORKFLOW_SCHEMA_V4_ID),
         )
     )
     api_worker._validate_result_consistency(cases)

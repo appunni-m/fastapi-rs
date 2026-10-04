@@ -1,0 +1,610 @@
+schema: fastapi-rs/python-api-workflow@4
+workload:
+  file: tests/fixtures/workloads/direct_api_reference_wave.py
+  factory: create_argument_bundles
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.security.public-api.api-key-cookie
+  probes:
+  - probe_id: root-api-key-cookie-signature
+    public_callable:
+      module: fastapi.security
+      attribute: APIKeyCookie
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: module-api-key-cookie-signature
+    public_callable:
+      module: fastapi.security.api_key
+      attribute: APIKeyCookie
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: module-a-p-i-key-cookie-init-signature
+    public_callable:
+      module: fastapi.security.api_key
+      attribute: APIKeyCookie.__init__
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  source_evidence:
+  - path: fastapi/security/__init__.py
+    kind: upstream_api_definition
+    sha256: 6cef29366c6a5515d48df97698e2a25592e7d05a4143ad555185639a9a676c9c
+    symbol_id: fastapi.security.APIKeyCookie
+  - path: fastapi/security/api_key.py
+    kind: upstream_api_definition
+    sha256: e0234b355012b4eb0c872b47f42e4439410e66bb4b83f2293104bf1dc4433f83
+    symbol_id: fastapi.security.api_key.APIKeyCookie
+  - path: fastapi/security/api_key.py
+    kind: upstream_api_definition
+    sha256: e0234b355012b4eb0c872b47f42e4439410e66bb4b83f2293104bf1dc4433f83
+    symbol_id: fastapi.security.api_key.APIKeyCookie.__init__
+- case_id: fastapi.security.public-api.api-key-header
+  probes:
+  - probe_id: root-api-key-header-signature
+    public_callable:
+      module: fastapi.security
+      attribute: APIKeyHeader
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: module-api-key-header-signature
+    public_callable:
+      module: fastapi.security.api_key
+      attribute: APIKeyHeader
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: module-a-p-i-key-header-init-signature
+    public_callable:
+      module: fastapi.security.api_key
+      attribute: APIKeyHeader.__init__
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  source_evidence:
+  - path: fastapi/security/__init__.py
+    kind: upstream_api_definition
+    sha256: 6cef29366c6a5515d48df97698e2a25592e7d05a4143ad555185639a9a676c9c
+    symbol_id: fastapi.security.APIKeyHeader
+  - path: fastapi/security/api_key.py
+    kind: upstream_api_definition
+    sha256: e0234b355012b4eb0c872b47f42e4439410e66bb4b83f2293104bf1dc4433f83
+    symbol_id: fastapi.security.api_key.APIKeyHeader
+  - path: fastapi/security/api_key.py
+    kind: upstream_api_definition
+    sha256: e0234b355012b4eb0c872b47f42e4439410e66bb4b83f2293104bf1dc4433f83
+    symbol_id: fastapi.security.api_key.APIKeyHeader.__init__
+- case_id: fastapi.security.public-api.api-key-query
+  probes:
+  - probe_id: root-api-key-query-signature
+    public_callable:
+      module: fastapi.security
+      attribute: APIKeyQuery
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: module-api-key-query-signature
+    public_callable:
+      module: fastapi.security.api_key
+      attribute: APIKeyQuery
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: module-a-p-i-key-query-init-signature
+    public_callable:
+      module: fastapi.security.api_key
+      attribute: APIKeyQuery.__init__
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  source_evidence:
+  - path: fastapi/security/__init__.py
+    kind: upstream_api_definition
+    sha256: 6cef29366c6a5515d48df97698e2a25592e7d05a4143ad555185639a9a676c9c
+    symbol_id: fastapi.security.APIKeyQuery
+  - path: fastapi/security/api_key.py
+    kind: upstream_api_definition
+    sha256: e0234b355012b4eb0c872b47f42e4439410e66bb4b83f2293104bf1dc4433f83
+    symbol_id: fastapi.security.api_key.APIKeyQuery
+  - path: fastapi/security/api_key.py
+    kind: upstream_api_definition
+    sha256: e0234b355012b4eb0c872b47f42e4439410e66bb4b83f2293104bf1dc4433f83
+    symbol_id: fastapi.security.api_key.APIKeyQuery.__init__
+- case_id: fastapi.security.public-api.http-authorization-credentials
+  probes:
+  - probe_id: root-http-authorization-credentials-signature
+    public_callable:
+      module: fastapi.security
+      attribute: HTTPAuthorizationCredentials
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: module-http-authorization-credentials-signature
+    public_callable:
+      module: fastapi.security.http
+      attribute: HTTPAuthorizationCredentials
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  source_evidence:
+  - path: fastapi/security/__init__.py
+    kind: upstream_api_definition
+    sha256: 6cef29366c6a5515d48df97698e2a25592e7d05a4143ad555185639a9a676c9c
+    symbol_id: fastapi.security.HTTPAuthorizationCredentials
+  - path: fastapi/security/http.py
+    kind: upstream_api_definition
+    sha256: 674c402c3ab080965101a0ece3449aebcac09e317310bf7d50498ee4f2734ca0
+    symbol_id: fastapi.security.http.HTTPAuthorizationCredentials
+- case_id: fastapi.security.public-api.http-basic
+  probes:
+  - probe_id: root-http-basic-signature
+    public_callable:
+      module: fastapi.security
+      attribute: HTTPBasic
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: module-http-basic-signature
+    public_callable:
+      module: fastapi.security.http
+      attribute: HTTPBasic
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: module-h-t-t-p-basic-init-signature
+    public_callable:
+      module: fastapi.security.http
+      attribute: HTTPBasic.__init__
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  source_evidence:
+  - path: fastapi/security/__init__.py
+    kind: upstream_api_definition
+    sha256: 6cef29366c6a5515d48df97698e2a25592e7d05a4143ad555185639a9a676c9c
+    symbol_id: fastapi.security.HTTPBasic
+  - path: fastapi/security/http.py
+    kind: upstream_api_definition
+    sha256: 674c402c3ab080965101a0ece3449aebcac09e317310bf7d50498ee4f2734ca0
+    symbol_id: fastapi.security.http.HTTPBasic
+  - path: fastapi/security/http.py
+    kind: upstream_api_definition
+    sha256: 674c402c3ab080965101a0ece3449aebcac09e317310bf7d50498ee4f2734ca0
+    symbol_id: fastapi.security.http.HTTPBasic.__init__
+- case_id: fastapi.security.public-api.http-basic-credentials
+  probes:
+  - probe_id: root-http-basic-credentials-signature
+    public_callable:
+      module: fastapi.security
+      attribute: HTTPBasicCredentials
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: module-http-basic-credentials-signature
+    public_callable:
+      module: fastapi.security.http
+      attribute: HTTPBasicCredentials
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  source_evidence:
+  - path: fastapi/security/__init__.py
+    kind: upstream_api_definition
+    sha256: 6cef29366c6a5515d48df97698e2a25592e7d05a4143ad555185639a9a676c9c
+    symbol_id: fastapi.security.HTTPBasicCredentials
+  - path: fastapi/security/http.py
+    kind: upstream_api_definition
+    sha256: 674c402c3ab080965101a0ece3449aebcac09e317310bf7d50498ee4f2734ca0
+    symbol_id: fastapi.security.http.HTTPBasicCredentials
+- case_id: fastapi.security.public-api.http-bearer
+  probes:
+  - probe_id: root-http-bearer-signature
+    public_callable:
+      module: fastapi.security
+      attribute: HTTPBearer
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: module-http-bearer-signature
+    public_callable:
+      module: fastapi.security.http
+      attribute: HTTPBearer
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: module-h-t-t-p-bearer-init-signature
+    public_callable:
+      module: fastapi.security.http
+      attribute: HTTPBearer.__init__
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  source_evidence:
+  - path: fastapi/security/__init__.py
+    kind: upstream_api_definition
+    sha256: 6cef29366c6a5515d48df97698e2a25592e7d05a4143ad555185639a9a676c9c
+    symbol_id: fastapi.security.HTTPBearer
+  - path: fastapi/security/http.py
+    kind: upstream_api_definition
+    sha256: 674c402c3ab080965101a0ece3449aebcac09e317310bf7d50498ee4f2734ca0
+    symbol_id: fastapi.security.http.HTTPBearer
+  - path: fastapi/security/http.py
+    kind: upstream_api_definition
+    sha256: 674c402c3ab080965101a0ece3449aebcac09e317310bf7d50498ee4f2734ca0
+    symbol_id: fastapi.security.http.HTTPBearer.__init__
+- case_id: fastapi.security.public-api.http-digest
+  probes:
+  - probe_id: root-http-digest-signature
+    public_callable:
+      module: fastapi.security
+      attribute: HTTPDigest
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: module-http-digest-signature
+    public_callable:
+      module: fastapi.security.http
+      attribute: HTTPDigest
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: module-h-t-t-p-digest-init-signature
+    public_callable:
+      module: fastapi.security.http
+      attribute: HTTPDigest.__init__
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  source_evidence:
+  - path: fastapi/security/__init__.py
+    kind: upstream_api_definition
+    sha256: 6cef29366c6a5515d48df97698e2a25592e7d05a4143ad555185639a9a676c9c
+    symbol_id: fastapi.security.HTTPDigest
+  - path: fastapi/security/http.py
+    kind: upstream_api_definition
+    sha256: 674c402c3ab080965101a0ece3449aebcac09e317310bf7d50498ee4f2734ca0
+    symbol_id: fastapi.security.http.HTTPDigest
+  - path: fastapi/security/http.py
+    kind: upstream_api_definition
+    sha256: 674c402c3ab080965101a0ece3449aebcac09e317310bf7d50498ee4f2734ca0
+    symbol_id: fastapi.security.http.HTTPDigest.__init__
+- case_id: fastapi.security.public-api.oauth2
+  probes:
+  - probe_id: root-oauth2-signature
+    public_callable:
+      module: fastapi.security
+      attribute: OAuth2
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: module-oauth2-signature
+    public_callable:
+      module: fastapi.security.oauth2
+      attribute: OAuth2
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: module-o-auth2-init-signature
+    public_callable:
+      module: fastapi.security.oauth2
+      attribute: OAuth2.__init__
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  source_evidence:
+  - path: fastapi/security/__init__.py
+    kind: upstream_api_definition
+    sha256: 6cef29366c6a5515d48df97698e2a25592e7d05a4143ad555185639a9a676c9c
+    symbol_id: fastapi.security.OAuth2
+  - path: fastapi/security/oauth2.py
+    kind: upstream_api_definition
+    sha256: b12a96e2d6efa07696365778e9361ab6d6b9ae015f8e87782e1c6679d5f3908f
+    symbol_id: fastapi.security.oauth2.OAuth2
+  - path: fastapi/security/oauth2.py
+    kind: upstream_api_definition
+    sha256: b12a96e2d6efa07696365778e9361ab6d6b9ae015f8e87782e1c6679d5f3908f
+    symbol_id: fastapi.security.oauth2.OAuth2.__init__
+- case_id: fastapi.security.public-api.oauth2-authorization-code-bearer
+  probes:
+  - probe_id: root-oauth2-authorization-code-bearer-signature
+    public_callable:
+      module: fastapi.security
+      attribute: OAuth2AuthorizationCodeBearer
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: module-oauth2-authorization-code-bearer-signature
+    public_callable:
+      module: fastapi.security.oauth2
+      attribute: OAuth2AuthorizationCodeBearer
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: module-o-auth2-authorization-code-bearer-init-signature
+    public_callable:
+      module: fastapi.security.oauth2
+      attribute: OAuth2AuthorizationCodeBearer.__init__
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  source_evidence:
+  - path: fastapi/security/__init__.py
+    kind: upstream_api_definition
+    sha256: 6cef29366c6a5515d48df97698e2a25592e7d05a4143ad555185639a9a676c9c
+    symbol_id: fastapi.security.OAuth2AuthorizationCodeBearer
+  - path: fastapi/security/oauth2.py
+    kind: upstream_api_definition
+    sha256: b12a96e2d6efa07696365778e9361ab6d6b9ae015f8e87782e1c6679d5f3908f
+    symbol_id: fastapi.security.oauth2.OAuth2AuthorizationCodeBearer
+  - path: fastapi/security/oauth2.py
+    kind: upstream_api_definition
+    sha256: b12a96e2d6efa07696365778e9361ab6d6b9ae015f8e87782e1c6679d5f3908f
+    symbol_id: fastapi.security.oauth2.OAuth2AuthorizationCodeBearer.__init__
+- case_id: fastapi.security.public-api.oauth2-password-bearer
+  probes:
+  - probe_id: root-oauth2-password-bearer-signature
+    public_callable:
+      module: fastapi.security
+      attribute: OAuth2PasswordBearer
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: module-oauth2-password-bearer-signature
+    public_callable:
+      module: fastapi.security.oauth2
+      attribute: OAuth2PasswordBearer
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: module-o-auth2-password-bearer-init-signature
+    public_callable:
+      module: fastapi.security.oauth2
+      attribute: OAuth2PasswordBearer.__init__
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  source_evidence:
+  - path: fastapi/security/__init__.py
+    kind: upstream_api_definition
+    sha256: 6cef29366c6a5515d48df97698e2a25592e7d05a4143ad555185639a9a676c9c
+    symbol_id: fastapi.security.OAuth2PasswordBearer
+  - path: fastapi/security/oauth2.py
+    kind: upstream_api_definition
+    sha256: b12a96e2d6efa07696365778e9361ab6d6b9ae015f8e87782e1c6679d5f3908f
+    symbol_id: fastapi.security.oauth2.OAuth2PasswordBearer
+  - path: fastapi/security/oauth2.py
+    kind: upstream_api_definition
+    sha256: b12a96e2d6efa07696365778e9361ab6d6b9ae015f8e87782e1c6679d5f3908f
+    symbol_id: fastapi.security.oauth2.OAuth2PasswordBearer.__init__
+- case_id: fastapi.security.public-api.oauth2-password-request-form
+  probes:
+  - probe_id: root-oauth2-password-request-form-signature
+    public_callable:
+      module: fastapi.security
+      attribute: OAuth2PasswordRequestForm
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: module-oauth2-password-request-form-signature
+    public_callable:
+      module: fastapi.security.oauth2
+      attribute: OAuth2PasswordRequestForm
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: module-o-auth2-password-request-form-init-signature
+    public_callable:
+      module: fastapi.security.oauth2
+      attribute: OAuth2PasswordRequestForm.__init__
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  source_evidence:
+  - path: fastapi/security/__init__.py
+    kind: upstream_api_definition
+    sha256: 6cef29366c6a5515d48df97698e2a25592e7d05a4143ad555185639a9a676c9c
+    symbol_id: fastapi.security.OAuth2PasswordRequestForm
+  - path: fastapi/security/oauth2.py
+    kind: upstream_api_definition
+    sha256: b12a96e2d6efa07696365778e9361ab6d6b9ae015f8e87782e1c6679d5f3908f
+    symbol_id: fastapi.security.oauth2.OAuth2PasswordRequestForm
+  - path: fastapi/security/oauth2.py
+    kind: upstream_api_definition
+    sha256: b12a96e2d6efa07696365778e9361ab6d6b9ae015f8e87782e1c6679d5f3908f
+    symbol_id: fastapi.security.oauth2.OAuth2PasswordRequestForm.__init__
+- case_id: fastapi.security.public-api.oauth2-password-request-form-strict
+  probes:
+  - probe_id: root-oauth2-password-request-form-strict-signature
+    public_callable:
+      module: fastapi.security
+      attribute: OAuth2PasswordRequestFormStrict
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: module-oauth2-password-request-form-strict-signature
+    public_callable:
+      module: fastapi.security.oauth2
+      attribute: OAuth2PasswordRequestFormStrict
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: module-o-auth2-password-request-form-strict-init-signature
+    public_callable:
+      module: fastapi.security.oauth2
+      attribute: OAuth2PasswordRequestFormStrict.__init__
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  source_evidence:
+  - path: fastapi/security/__init__.py
+    kind: upstream_api_definition
+    sha256: 6cef29366c6a5515d48df97698e2a25592e7d05a4143ad555185639a9a676c9c
+    symbol_id: fastapi.security.OAuth2PasswordRequestFormStrict
+  - path: fastapi/security/oauth2.py
+    kind: upstream_api_definition
+    sha256: b12a96e2d6efa07696365778e9361ab6d6b9ae015f8e87782e1c6679d5f3908f
+    symbol_id: fastapi.security.oauth2.OAuth2PasswordRequestFormStrict
+  - path: fastapi/security/oauth2.py
+    kind: upstream_api_definition
+    sha256: b12a96e2d6efa07696365778e9361ab6d6b9ae015f8e87782e1c6679d5f3908f
+    symbol_id: fastapi.security.oauth2.OAuth2PasswordRequestFormStrict.__init__
+- case_id: fastapi.security.public-api.security-scopes
+  probes:
+  - probe_id: root-security-scopes-signature
+    public_callable:
+      module: fastapi.security
+      attribute: SecurityScopes
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: module-security-scopes-signature
+    public_callable:
+      module: fastapi.security.oauth2
+      attribute: SecurityScopes
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: module-security-scopes-init-signature
+    public_callable:
+      module: fastapi.security.oauth2
+      attribute: SecurityScopes.__init__
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  source_evidence:
+  - path: fastapi/security/__init__.py
+    kind: upstream_api_definition
+    sha256: 6cef29366c6a5515d48df97698e2a25592e7d05a4143ad555185639a9a676c9c
+    symbol_id: fastapi.security.SecurityScopes
+  - path: fastapi/security/oauth2.py
+    kind: upstream_api_definition
+    sha256: b12a96e2d6efa07696365778e9361ab6d6b9ae015f8e87782e1c6679d5f3908f
+    symbol_id: fastapi.security.oauth2.SecurityScopes
+  - path: fastapi/security/oauth2.py
+    kind: upstream_api_definition
+    sha256: b12a96e2d6efa07696365778e9361ab6d6b9ae015f8e87782e1c6679d5f3908f
+    symbol_id: fastapi.security.oauth2.SecurityScopes.__init__
+- case_id: fastapi.security.public-api.open-id-connect
+  probes:
+  - probe_id: root-open-id-connect-signature
+    public_callable:
+      module: fastapi.security
+      attribute: OpenIdConnect
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: module-open-id-connect-signature
+    public_callable:
+      module: fastapi.security.open_id_connect_url
+      attribute: OpenIdConnect
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: module-open-id-connect-init-signature
+    public_callable:
+      module: fastapi.security.open_id_connect_url
+      attribute: OpenIdConnect.__init__
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  source_evidence:
+  - path: fastapi/security/__init__.py
+    kind: upstream_api_definition
+    sha256: 6cef29366c6a5515d48df97698e2a25592e7d05a4143ad555185639a9a676c9c
+    symbol_id: fastapi.security.OpenIdConnect
+  - path: fastapi/security/open_id_connect_url.py
+    kind: upstream_api_definition
+    sha256: 57c58b3c4b04abf5899488cfc093b6bc2a095862eef954edd7e3761fb695f83e
+    symbol_id: fastapi.security.open_id_connect_url.OpenIdConnect
+  - path: fastapi/security/open_id_connect_url.py
+    kind: upstream_api_definition
+    sha256: 57c58b3c4b04abf5899488cfc093b6bc2a095862eef954edd7e3761fb695f83e
+    symbol_id: fastapi.security.open_id_connect_url.OpenIdConnect.__init__

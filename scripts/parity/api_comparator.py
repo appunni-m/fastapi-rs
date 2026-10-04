@@ -15,6 +15,7 @@ from scripts.parity.contract import (
 )
 
 WORKFLOW_SCHEMA_V3_ID = "fastapi-rs/python-api-workflow@3"
+WORKFLOW_SCHEMA_V4_ID = "fastapi-rs/python-api-workflow@4"
 
 
 def _diff(probe_id: str, path: str, source: Any, target: Any) -> dict[str, Any]:
@@ -150,7 +151,7 @@ def compare_api_workflow_results(
             base = f"/probes/{probe_id}"
             if source_status != target_status:
                 diffs.append(_diff(probe_id, f"{base}/status", source_status, target_status))
-            if workflow_schema_id == WORKFLOW_SCHEMA_V3_ID:
+            if workflow_schema_id in {WORKFLOW_SCHEMA_V3_ID, WORKFLOW_SCHEMA_V4_ID}:
                 if probe_spec.get("capture_warnings") is True:
                     source_warnings = source_probe.get("warnings")
                     target_warnings = target_probe.get("warnings")

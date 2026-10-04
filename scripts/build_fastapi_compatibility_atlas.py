@@ -831,6 +831,34 @@ TEST_EXCLUSIONS = {
     "tests/test_request_params/test_path/test_optional_str.py": "Comments-only unsupported boundary: optional Path parameter behavior has no executable test, input, or observation; the precise failure mode is unresolved.",
 }
 
+PERFORMANCE_TEST_MODULE_EXCLUSION_REASON = (
+    "Performance harness module: exclude from behavioral parity inputs and map to a separate "
+    "correctness-gated benchmark workload."
+)
+RELEASE_MAINTENANCE_TEST_MODULE_EXCLUSION_REASON = (
+    "Release automation test does not observe FastAPI's consumer-facing runtime contract."
+)
+
+from atlas_test_module_exclusion_evidence import (  # noqa: E402
+    TEST_MODULE_EXCLUSION_EVIDENCE,
+)
+
+_test_module_exclusion_reviews: dict[str, dict[str, Any]] = {}
+for _test_path, _supporting_sources in TEST_MODULE_EXCLUSION_EVIDENCE.items():
+    if _test_path.startswith(("tests/benchmarks/", "tests/memory_benchmarks/")):
+        _exclusion_rationale = PERFORMANCE_TEST_MODULE_EXCLUSION_REASON
+    elif Path(_test_path).stem == "test_prepare_release":
+        _exclusion_rationale = RELEASE_MAINTENANCE_TEST_MODULE_EXCLUSION_REASON
+    else:
+        _exclusion_rationale = TEST_EXCLUSIONS.get(_test_path)
+    if _exclusion_rationale is None:
+        raise RuntimeError("exclusion evidence has no owning whole-module reason: " + _test_path)
+    _test_module_exclusion_reviews[_test_path] = {
+        "rationale": _exclusion_rationale,
+        "supporting_sources": _supporting_sources,
+    }
+merge_test_review_mappings(_test_module_exclusion_reviews)
+
 TEST_FUNCTION_EXCLUSIONS = {
     "tests/test_tutorial/test_settings/test_app01.py": {
         "test_settings_validation_error": (
@@ -5821,6 +5849,7 @@ FEATURES = [
         ),
         "observations": [
             "openapi.document",
+            "python.pydantic_model_result",
             "docs.response.status",
             "docs.response.headers",
             "docs.response.body.bytes",
@@ -8808,9 +8837,9 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         fixture_id = "fastapi.test." + norm_id(rel[len("tests/") :].removesuffix(".py"))
         exclusion = None
         if is_benchmark:
-            exclusion = "Performance harness module: exclude from behavioral parity inputs and map to a separate correctness-gated benchmark workload."
+            exclusion = PERFORMANCE_TEST_MODULE_EXCLUSION_REASON
         elif is_maintenance:
-            exclusion = "Release automation test does not observe FastAPI's consumer-facing runtime contract."
+            exclusion = RELEASE_MAINTENANCE_TEST_MODULE_EXCLUSION_REASON
         elif rel in TEST_EXCLUSIONS:
             exclusion = TEST_EXCLUSIONS[rel]
         elif test_functions and all(

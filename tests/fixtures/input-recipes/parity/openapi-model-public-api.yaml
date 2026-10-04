@@ -1,0 +1,63 @@
+schema: fastapi-rs/python-api-workflow@3
+workload:
+  file: tests/fixtures/workloads/direct_api_reference_wave.py
+  factory: create_argument_bundles
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.openapi-models.schema.signature
+  probes:
+  - probe_id: schema-signature
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: Schema
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  source_evidence:
+  - path: fastapi/openapi/models.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.openapi.models.Schema
+    sha256: b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d
+  - path: docs/en/docs/reference/openapi/models.md
+    kind: upstream_documentation
+    sha256: edcc6862b45c3c393494c66db826080da6125afb4cbe13f9d05c182db49a45ab
+- case_id: fastapi.openapi-models.discriminator.signature
+  probes:
+  - probe_id: discriminator-signature
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: Discriminator
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  source_evidence:
+  - path: fastapi/openapi/models.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.openapi.models.Discriminator
+    sha256: b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d
+  - path: docs/en/docs/reference/openapi/models.md
+    kind: upstream_documentation
+    sha256: edcc6862b45c3c393494c66db826080da6125afb4cbe13f9d05c182db49a45ab
+- case_id: fastapi.openapi-models.components.signature
+  probes:
+  - probe_id: components-signature
+    public_callable:
+      module: fastapi.openapi.models
+      attribute: Components
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  source_evidence:
+  - path: fastapi/openapi/models.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.openapi.models.Components
+    sha256: b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d
+  - path: docs/en/docs/reference/openapi/models.md
+    kind: upstream_documentation
+    sha256: edcc6862b45c3c393494c66db826080da6125afb4cbe13f9d05c182db49a45ab
