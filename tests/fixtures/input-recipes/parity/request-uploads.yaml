@@ -300,4 +300,81 @@ cases:
     kind: upstream_test
   - path: docs/en/docs/tutorial/request-files.md
     kind: upstream_documentation
+- case_id: fastapi.request-uploads.file-form-order.test-file-list-form-order
+  actions:
+  - action_id: files-before-label
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /ordered-byte-list-files-first
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=MultipartOrder
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: "--MultipartOrder\r\nContent-Disposition: form-data; name=\"files\"; filename=\"east.txt\"\r\nContent-Type: text/plain\r\n\r\namber\r\n--MultipartOrder\r\nContent-Disposition: form-data; name=\"files\"; filename=\"west.txt\"\r\nContent-Type: text/plain\r\n\r\nteal\r\n--MultipartOrder\r\nContent-Disposition: form-data; name=\"label\"\r\n\r\nsector-7\r\n--MultipartOrder--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: label-before-files
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /ordered-byte-list-label-first
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=MultipartOrder
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: "--MultipartOrder\r\nContent-Disposition: form-data; name=\"files\"; filename=\"east.txt\"\r\nContent-Type: text/plain\r\n\r\namber\r\n--MultipartOrder\r\nContent-Disposition: form-data; name=\"files\"; filename=\"west.txt\"\r\nContent-Type: text/plain\r\n\r\nteal\r\n--MultipartOrder\r\nContent-Disposition: form-data; name=\"label\"\r\n\r\nsector-7\r\n--MultipartOrder--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: tests/test_file_and_form_order_issue_9116.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/request-files.md
+    kind: upstream_documentation
+  - path: docs/en/docs/tutorial/request-forms-and-files.md
+    kind: upstream_documentation
 oracle_profile_extension: standard-multipart

@@ -32,6 +32,24 @@ def create_app() -> FastAPI:
         names = [upload.filename for upload in uploads]
         return {"label": label, "filenames": names}
 
+    @app.post("/ordered-byte-list-files-first")
+    async def ordered_byte_list_files_first(
+        files: Annotated[list[bytes], File()], label: Annotated[str, Form()]
+    ) -> dict[str, object]:
+        return {
+            "label": label,
+            "files": [content.decode("utf-8") for content in files],
+        }
+
+    @app.post("/ordered-byte-list-label-first")
+    async def ordered_byte_list_label_first(
+        label: Annotated[str, Form()], files: Annotated[list[bytes], File()]
+    ) -> dict[str, object]:
+        return {
+            "label": label,
+            "files": [content.decode("utf-8") for content in files],
+        }
+
     @app.post("/preserve-bytes")
     async def preserve_bytes(files: Annotated[list[bytes], File()]) -> list[str]:
         return [content.decode("utf-8") for content in files]

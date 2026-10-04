@@ -8330,7 +8330,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             ),
             "request-validation": (
                 "composed request boundary",
-                "Starlette-RS covers only generic ASGI Request/scope extraction in this slice; FastAPI parameter classification and Pydantic validation remain FastAPI-RS behavior.",
+                "Starlette-RS covers generic ASGI Request/scope extraction, body buffering, and JSON parsing for chunked requests; FastAPI content-type selection, parameter classification, Pydantic validation, and error formatting remain FastAPI-RS behavior.",
                 [
                     (
                         "starlette.applications.Starlette",
@@ -8339,6 +8339,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                             "starlette.request.path-param-int",
                             "starlette.request.query-params-getlist-scalar",
                             "starlette.request.headers-case-insensitive",
+                            "starlette.request.json-chunked-body",
                         ],
                     ),
                 ],

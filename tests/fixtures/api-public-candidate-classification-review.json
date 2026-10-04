@@ -2988,17 +2988,29 @@
           "role": "fastapi-source-declaration"
         },
         {
-          "line": 1829,
+          "line": 1830,
+          "path": "fastapi/routing.py",
+          "role": "fastapi-source-declaration"
+        },
+        {
+          "line": 1837,
           "path": "fastapi/routing.py",
           "role": "fastapi-implementation-use"
+        },
+        {
+          "line": 300,
+          "path": "docs/en/docs/release-notes.md",
+          "role": "fastapi-public-documentation"
         }
       ],
       "evidence_basis": [
-        "implementation-only"
+        "documented",
+        "source-declaration",
+        "member-exposure-unresolved"
       ],
       "id": "fastapi.routing.RouteContext",
-      "reason": "FastAPI 0.141.1 declares `fastapi.routing.RouteContext` and uses it at fastapi/routing.py:1829 within framework implementation. The pinned docs do not establish this exact import/member as a consumer-facing contract; classify the source name as private/internal.",
-      "recommendation": "private/internal",
+      "reason": "FastAPI 0.141.1 release notes announce iter_route_contexts() for advanced consumer use, and fastapi.routing.iter_route_contexts is annotated as Iterator[RouteContext] and yields RouteContext instances. This exposes the type in the announced helper’s result, so implementation-only evidence is insufficient for a private/internal classification. The pinned docs do not establish fastapi.routing.RouteContext as a consumer import path or define its stable type contract; retain uncertain.",
+      "recommendation": "uncertain",
       "source": {
         "line": 1545,
         "path": "fastapi/routing.py"
@@ -3016,14 +3028,31 @@
           "line": 1553,
           "path": "fastapi/routing.py",
           "role": "fastapi-implementation-use"
+        },
+        {
+          "line": 1830,
+          "path": "fastapi/routing.py",
+          "role": "fastapi-source-declaration"
+        },
+        {
+          "line": 1837,
+          "path": "fastapi/routing.py",
+          "role": "fastapi-implementation-use"
+        },
+        {
+          "line": 300,
+          "path": "docs/en/docs/release-notes.md",
+          "role": "fastapi-public-documentation"
         }
       ],
       "evidence_basis": [
-        "implementation-only"
+        "documented",
+        "source-declaration",
+        "member-exposure-unresolved"
       ],
       "id": "fastapi.routing.RouteContext.route",
-      "reason": "FastAPI 0.141.1 declares `fastapi.routing.RouteContext.route` and uses it at fastapi/routing.py:1553 within framework implementation. The pinned docs do not establish this exact import/member as a consumer-facing contract; classify the source name as private/internal.",
-      "recommendation": "private/internal",
+      "reason": "The announced iter_route_contexts() helper yields RouteContext instances, and fastapi.routing.RouteContext defines a readable route field on those objects. The pinned implementation uses route internally to provide original_route, while the docs and source do not establish .route itself as a stable consumer-facing member. Because the field is observable through an announced helper but its contract is unresolved, retain uncertain.",
+      "recommendation": "uncertain",
       "source": {
         "line": 1546,
         "path": "fastapi/routing.py"
@@ -3465,9 +3494,9 @@
     "candidate_count": 137,
     "candidate_ids_sha256": "69e78951df8bf49e40555500df2a4d9f61e970f4d5d635fb80ebe852d7126042",
     "recommendation_counts": {
-      "private/internal": 125,
-      "supported": 8,
-      "uncertain": 4
+      "private/internal": 123,
+      "uncertain": 6,
+      "supported": 8
     }
   },
   "source_identity": {

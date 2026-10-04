@@ -565,6 +565,10 @@ _OPTIONAL_LIST_SCHEMA_CASES = {
     "fastapi.request-body.optional-list-openapi.validation-alias",
     "fastapi.request-body.optional-list-openapi.both-aliases",
 }
+_REQUEST_UPLOADS_RECIPE = "tests/fixtures/input-recipes/parity/request-uploads.yaml"
+_FILE_LIST_FORM_ORDER_CASE = (
+    "fastapi.request-uploads.file-form-order.test-file-list-form-order"
+)
 
 
 def _tail_function_mapping(
@@ -680,7 +684,60 @@ def _optional_list_schema_function_mapping(
     }
 
 
+def _request_http_function_mapping(
+    test_path: str,
+    function_name: str,
+    case_id: str,
+    action_ids: list[str],
+    behavior: str,
+) -> dict[str, Any]:
+    tree = ast.parse((FASTAPI_ROOT / test_path).read_text(encoding="utf-8"))
+    matches = [
+        node
+        for node in tree.body
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == function_name
+    ]
+    if len(matches) != 1:
+        raise ValueError(f"expected exact source function {function_name} in {test_path}")
+    function = matches[0]
+    return {
+        "source_span": _source(
+            test_path,
+            function.lineno,
+            function.end_lineno or function.lineno,
+            f"upstream FastAPI 0.141.1 test function {function_name}",
+        ),
+        "workflow_case": {
+            "recipe_path": _REQUEST_UPLOADS_RECIPE,
+            "case_id": case_id,
+            "action_ids": list(action_ids),
+            "observation_selectors": ["http.body.bytes", "http.status"],
+        },
+        "rationale": behavior,
+        "contract_gate": (
+            "Partial: the input case links this one source function to two independently "
+            "declared `list[bytes]`/Form routes and observes only HTTP status and response bytes. "
+            "It is a source-to-input mapping, not a parity result; multipart parsing remains "
+            "under the separate Starlette 1.6.0 contract."
+        ),
+    }
+
+
 REQUEST_PARAMETER_FUNCTION_MAPPINGS = {
+    "tests/test_file_and_form_order_issue_9116.py": {
+        "test_file_list_form_order": _request_http_function_mapping(
+            "tests/test_file_and_form_order_issue_9116.py",
+            "test_file_list_form_order",
+            _FILE_LIST_FORM_ORDER_CASE,
+            ["files-before-label", "label-before-files"],
+            (
+                "The independent multipart case declares repeated byte-file fields and one scalar "
+                "form field in both parameter orders, then submits the same request stimulus to "
+                "each route. It samples the source function's status/body observations without "
+                "reusing its file contents, form value, or response assertion."
+            ),
+        ),
+    },
     "tests/test_request_params/test_body/test_required_str.py": {
         "test_required_alias_and_validation_alias_by_alias": _tail_function_mapping(
             "tests/test_request_params/test_body/test_required_str.py",
@@ -804,14 +861,14 @@ for _test_path, _function_rows in REQUEST_PARAMETER_FUNCTION_MAPPINGS.items():
         _group["action_ids"].update(_workflow["action_ids"])
         _group["selectors"].update(_workflow["observation_selectors"])
     for (_recipe_path, _case_id), _group in _groups.items():
-        _entry["workflow_cases"].append(
-            {
-                "recipe_path": _recipe_path,
-                "case_id": _case_id,
-                "action_ids": sorted(_group["action_ids"]),
-                "observation_selectors": sorted(_group["selectors"]),
-            }
-        )
+        _workflow_case = {
+            "recipe_path": _recipe_path,
+            "case_id": _case_id,
+            "action_ids": sorted(_group["action_ids"]),
+            "observation_selectors": sorted(_group["selectors"]),
+        }
+        if _workflow_case not in _entry["workflow_cases"]:
+            _entry["workflow_cases"].append(_workflow_case)
         _entry["observation_selectors"] = sorted(
             set(_entry["observation_selectors"]) | _group["selectors"]
         )
@@ -1033,7 +1090,7 @@ def validate_request_parameter_mappings() -> list[str]:
                 f"{sorted(referenced_actions - declared_actions)}"
             )
 
-    tail_spans = {
+    function_spans = {
         (
             row["source_span"]["path"],
             row["source_span"]["start_line"],
@@ -1044,46 +1101,49 @@ def validate_request_parameter_mappings() -> list[str]:
     }
     for test_path, rows in REQUEST_PARAMETER_FUNCTION_MAPPINGS.items():
         source_lines = (FASTAPI_ROOT / test_path).read_text(encoding="utf-8").splitlines()
+        source_tree = ast.parse("\n".join(source_lines))
         for function_name, row in rows.items():
             span = row["source_span"]
             if not (1 <= span["start_line"] <= span["end_line"] <= len(source_lines)):
                 errors.append(
                     f"invalid request-parameter function source span: {test_path}:{function_name}"
                 )
+            source_functions = [
+                node
+                for node in source_tree.body
+                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+                and node.name == function_name
+            ]
+            if (
+                len(source_functions) != 1
+                or span["path"] != test_path
+                or span["start_line"] != source_functions[0].lineno
+                or span["end_line"] != (source_functions[0].end_lineno or source_functions[0].lineno)
+            ):
+                errors.append(
+                    f"request-parameter source span does not identify {test_path}:{function_name}"
+                )
             workflow = row["workflow_case"]
-            if workflow["case_id"] == _TAIL_WAVE_CASE_ID:
-                expected_recipe = _TAIL_WAVE_RECIPE
-            elif workflow["case_id"] in {
-                _OPTIONAL_UPLOAD_ALIAS_CASE_ID,
-                _OPTIONAL_UPLOAD_MISSING_CASE_ID,
-            }:
-                expected_recipe = _OPTIONAL_UPLOAD_RECIPE
-            else:
-                expected_recipe = _OPTIONAL_LIST_SCHEMA_RECIPE
-            valid_case_ids = {
-                _TAIL_WAVE_CASE_ID,
-                _OPTIONAL_UPLOAD_ALIAS_CASE_ID,
-                _OPTIONAL_UPLOAD_MISSING_CASE_ID,
-            } | _OPTIONAL_LIST_SCHEMA_CASES
-            if workflow["case_id"] not in valid_case_ids:
-                errors.append(
-                    f"request-parameter function case ID mismatch: {test_path}:{function_name}"
-                )
-            if workflow["recipe_path"] != expected_recipe:
-                errors.append(
-                    f"request-parameter function recipe path mismatch: {test_path}:{function_name}"
-                )
-            case_map = (
-                {case["case_id"]: case for case in tail_cases}
-                | optional_upload_cases
-                | optional_list_schema_cases
-            )
-            case = case_map.get(workflow["case_id"])
-            if case is None:
+            case_row = recipe_index.get(workflow["case_id"])
+            if case_row is None:
                 errors.append(
                     f"unknown request-parameter function case: {test_path}:{function_name}"
                 )
                 continue
+            if workflow["recipe_path"] != case_row["recipe_path"]:
+                errors.append(
+                    f"request-parameter function recipe path mismatch: {test_path}:{function_name}"
+                )
+            case = case_row["case"]
+            source_paths = {
+                evidence.get("path")
+                for evidence in case.get("source_evidence", []) or []
+                if evidence.get("kind") == "upstream_test"
+            }
+            if test_path not in source_paths:
+                errors.append(
+                    f"request-parameter function case does not cite {test_path}:{function_name}"
+                )
             declared_action_ids = {action.get("action_id") for action in case.get("actions", [])}
             if not set(workflow["action_ids"]) <= declared_action_ids:
                 errors.append(
@@ -1094,7 +1154,7 @@ def validate_request_parameter_mappings() -> list[str]:
                 errors.append(
                     f"request-parameter function selectors mismatch: {test_path}:{function_name}"
                 )
-    if len(tail_spans) != sum(len(rows) for rows in REQUEST_PARAMETER_FUNCTION_MAPPINGS.values()):
+    if len(function_spans) != sum(len(rows) for rows in REQUEST_PARAMETER_FUNCTION_MAPPINGS.values()):
         errors.append("request-parameter function mappings reuse an ambiguous source span")
     return errors
 

@@ -18642,11 +18642,11 @@
     {
       "id": "request-uploads",
       "input_path": "tests/fixtures/inputs/parity/request-uploads.json",
-      "input_sha256": "17593bb5af860d5104180ebaf754812784bc53828f69c888a1f4fd085521ad7f",
+      "input_sha256": "1c5c247f56bb6da55754c9cad2324a439a5d52ebdbf54b17ffbed19ac0536e01",
       "recipe_path": "tests/fixtures/input-recipes/parity/request-uploads.yaml",
-      "recipe_sha256": "8545158d66e3f89c2c30eda3ae738c40e194b48b513ae6aa9f6a22b9bd8cd27f",
+      "recipe_sha256": "01ad9402f835a9785083b1693ef44309e8be3cc18a9483954369a3f2c0de908b",
       "workload_path": "tests/fixtures/workloads/request_uploads.py",
-      "workload_sha256": "934b7d2453af1185edbe45f99fc8413ef86ff26ef6f952d2efcd505e9feddba2",
+      "workload_sha256": "cd2ce85961119e92f97822cc67d7e2a73ae7f3f5c12177317f6aa6cacd940ec9",
       "case_ids": [
         "fastapi.request-uploads.optional-file-list.test-optional-bytes-list",
         "fastapi.request-uploads.file-form-order.test-file-form-order",
@@ -18654,7 +18654,8 @@
         "fastapi.request-uploads.request-files-001-02.test-post-upload-file",
         "fastapi.request-uploads.request-files-002.test-post-files",
         "fastapi.request-uploads.request-forms-files-001.test-post-files-and-token",
-        "fastapi.request-uploads.request-files.openapi-schema"
+        "fastapi.request-uploads.request-files.openapi-schema",
+        "fastapi.request-uploads.file-form-order.test-file-list-form-order"
       ],
       "oracle_profile_extension": "standard-multipart",
       "case_contracts": [
@@ -18708,6 +18709,15 @@
           "requirement_refs": [
             "source:documented-page:tutorial/request-files.md",
             "source:upstream-test:tests/test_tutorial/test_request_files/test_tutorial001_02.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.request-uploads.file-form-order.test-file-list-form-order",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/request-files.md",
+            "source:documented-page:tutorial/request-forms-and-files.md",
+            "source:upstream-test:tests/test_file_and_form_order_issue_9116.py"
           ]
         }
       ]
@@ -43427,8 +43437,9 @@
       "fixture_id": "fastapi.docs.tutorial-request-files",
       "workflow_id": "request-uploads",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 3 case(s); observes http.body.bytes, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 4 case(s); observes http.body.bytes, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
+        "fastapi.request-uploads.file-form-order.test-file-list-form-order",
         "fastapi.request-uploads.request-files-001-02.test-post-upload-file",
         "fastapi.request-uploads.request-files-002.test-post-files",
         "fastapi.request-uploads.request-files.openapi-schema"
@@ -43440,13 +43451,28 @@
       ]
     },
     {
-      "source_item_id": "upstream-test:tests/test_file_and_form_order_issue_9116.py",
-      "fixture_id": "fastapi.test.test-file-and-form-order-issue-9116",
+      "source_item_id": "documented-page:tutorial/request-forms-and-files.md",
+      "fixture_id": "fastapi.docs.tutorial-request-forms-and-files",
       "workflow_id": "request-uploads",
       "coverage_status": "partial",
       "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
-        "fastapi.request-uploads.file-form-order.test-file-form-order"
+        "fastapi.request-uploads.file-form-order.test-file-list-form-order"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_file_and_form_order_issue_9116.py",
+      "fixture_id": "fastapi.test.test-file-and-form-order-issue-9116",
+      "workflow_id": "request-uploads",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.request-uploads.file-form-order.test-file-form-order",
+        "fastapi.request-uploads.file-form-order.test-file-list-form-order"
       ],
       "observation_selectors": [
         "http.body.bytes",
