@@ -256,6 +256,16 @@ network/server latency or isolate native Rust time; compare later runs only
 when their source identities and workload contracts match. The generated suite
 and per-workload result artifacts remain in ignored `benchmark-results/`.
 
+An exploratory warm-request call profile of this invalid workload counted four
+`TypeAdapter` constructions in FastAPI-RS and none in FastAPI after each app was
+constructed. FastAPI-RS currently calls `TypeAdapter(annotation)` inside
+`validate_python_value` for each validated input
+(`fastapi-rs/src/application_runtime.rs`); this identifies repeated adapter
+setup as an optimization candidate, but does not establish how much of the
+2.636x gap it causes. After the public operation contract is complete, measure
+per-parameter adapter reuse on the full boundary, including dependency
+overrides, and retain the invalid error-body parity gate.
+
 | Tier | Workload | Timing boundary and purpose |
 | --- | --- | --- |
 | 1. Request path | Preserve sync/async input-model validation; small dict/model output with and without `response_model`; nested dependencies; large request payload; and large dict/model response with and without `response_model`. The upstream large response contains 300 items with 25 integers each plus metadata. Add a plain-route control implemented with Starlette 1.6.0's public `Route` and response APIs. | Match upstream's in-process `TestClient` path. Construct the app and client outside the timed request; exclude the one warmup request. Keep the raw Starlette control to the same simple request/response work; it is not a feature-equivalent FastAPI comparison. This is an integrated Python/ASGI/client measurement, not network-server latency. |
