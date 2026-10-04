@@ -800,8 +800,8 @@ api_surface_contract:
     symbols_with_constructor_definition_refs: 37
     unique_source_constructor_definitions: 20
     operation_scope_statuses:
-      scope-review-pending: 335
-      slice-described: 125
+      scope-review-pending: 318
+      slice-described: 142
     implementation_owner_plans:
       fastapi-rs: 429
       starlette-rs: 31
@@ -9184,10 +9184,13 @@ api_surface_contract:
       - /aliases/39
     feature_ids:
     - middleware-integrations
-    observation_selectors: []
+    observation_selectors:
+    - http.body.bytes
+    - http.status
     operation_scope:
-      status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+      status: slice-described
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.middleware.cors.CORSMiddleware/supported_slice
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.middleware.cors.CORSMiddleware
@@ -9197,7 +9200,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/565
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/application_runtime.rs::register
   - id: fastapi.middleware.gzip.GZipMiddleware
     kind: import_binding
     source_candidate_ref: /api_candidates/566
@@ -9250,10 +9253,13 @@ api_surface_contract:
       - /aliases/40
     feature_ids:
     - middleware-integrations
-    observation_selectors: []
+    observation_selectors:
+    - http.body.bytes
+    - http.status
     operation_scope:
-      status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+      status: slice-described
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.middleware.gzip.GZipMiddleware/supported_slice
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.middleware.gzip.GZipMiddleware
@@ -9263,7 +9269,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/566
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/application_runtime.rs::register
   - id: fastapi.middleware.httpsredirect.HTTPSRedirectMiddleware
     kind: import_binding
     source_candidate_ref: /api_candidates/567
@@ -9316,10 +9322,13 @@ api_surface_contract:
       - /aliases/41
     feature_ids:
     - middleware-integrations
-    observation_selectors: []
+    observation_selectors:
+    - http.body.bytes
+    - http.status
     operation_scope:
-      status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+      status: slice-described
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.middleware.httpsredirect.HTTPSRedirectMiddleware/supported_slice
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.middleware.httpsredirect.HTTPSRedirectMiddleware
@@ -9329,7 +9338,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/567
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/application_runtime.rs::register
   - id: fastapi.middleware.trustedhost.TrustedHostMiddleware
     kind: import_binding
     source_candidate_ref: /api_candidates/568
@@ -9382,10 +9391,13 @@ api_surface_contract:
       - /aliases/42
     feature_ids:
     - middleware-integrations
-    observation_selectors: []
+    observation_selectors:
+    - http.body.bytes
+    - http.status
     operation_scope:
-      status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+      status: slice-described
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.middleware.trustedhost.TrustedHostMiddleware/supported_slice
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.middleware.trustedhost.TrustedHostMiddleware
@@ -9395,7 +9407,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/568
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/application_runtime.rs::register
   - id: fastapi.middleware.wsgi.WSGIMiddleware
     kind: import_binding
     source_candidate_ref: /api_candidates/569
@@ -9454,10 +9466,13 @@ api_surface_contract:
       - /aliases/43
     feature_ids:
     - middleware-integrations
-    observation_selectors: []
+    observation_selectors:
+    - http.body.bytes
+    - http.status
     operation_scope:
-      status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+      status: slice-described
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.middleware.wsgi.WSGIMiddleware/supported_slice
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.middleware.wsgi.WSGIMiddleware
@@ -9467,7 +9482,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/569
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/application_runtime.rs::register
   - id: fastapi.openapi.docs.get_redoc_html
     kind: function
     source_candidate_ref: /api_candidates/578
@@ -26079,8 +26094,9 @@ api_surface_contract:
     - python.object_identity
     - route.match
     operation_scope:
-      status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+      status: slice-described
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.requests.Request/supported_slice
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.requests.Request
@@ -26090,7 +26106,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/995
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/application_runtime.rs::register
   - id: fastapi.responses.FileResponse
     kind: import_binding
     source_candidate_ref: /api_candidates/999
@@ -26162,8 +26178,9 @@ api_surface_contract:
     - python.object_identity
     - warnings.category_message
     operation_scope:
-      status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+      status: slice-described
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.responses.FileResponse/supported_slice
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.responses.FileResponse
@@ -26173,7 +26190,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/999
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/application_runtime.rs::register
   - id: fastapi.responses.HTMLResponse
     kind: import_binding
     source_candidate_ref: /api_candidates/1000
@@ -26237,8 +26254,9 @@ api_surface_contract:
     - python.object_identity
     - warnings.category_message
     operation_scope:
-      status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+      status: slice-described
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.responses.HTMLResponse/supported_slice
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.responses.HTMLResponse
@@ -26248,7 +26266,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1000
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/application_runtime.rs::register
   - id: fastapi.responses.JSONResponse
     kind: import_binding
     source_candidate_ref: /api_candidates/1001
@@ -26312,8 +26330,9 @@ api_surface_contract:
     - python.object_identity
     - warnings.category_message
     operation_scope:
-      status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+      status: slice-described
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.responses.JSONResponse/supported_slice
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.responses.JSONResponse
@@ -26323,7 +26342,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1001
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/application_runtime.rs::register
   - id: fastapi.responses.ORJSONResponse
     kind: class
     source_candidate_ref: /api_candidates/1002
@@ -26503,8 +26522,9 @@ api_surface_contract:
     - python.object_identity
     - warnings.category_message
     operation_scope:
-      status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+      status: slice-described
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.responses.PlainTextResponse/supported_slice
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.responses.PlainTextResponse
@@ -26514,7 +26534,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1004
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/application_runtime.rs::register
   - id: fastapi.responses.RedirectResponse
     kind: import_binding
     source_candidate_ref: /api_candidates/1006
@@ -26578,8 +26598,9 @@ api_surface_contract:
     - python.object_identity
     - warnings.category_message
     operation_scope:
-      status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+      status: slice-described
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.responses.RedirectResponse/supported_slice
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.responses.RedirectResponse
@@ -26589,7 +26610,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1006
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/application_runtime.rs::register
   - id: fastapi.responses.Response
     kind: import_binding
     source_candidate_ref: /api_candidates/1007
@@ -26663,8 +26684,9 @@ api_surface_contract:
     - route.match
     - warnings.category_message
     operation_scope:
-      status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+      status: slice-described
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.responses.Response/supported_slice
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.responses.Response
@@ -26674,7 +26696,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1007
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/application_runtime.rs::register
   - id: fastapi.responses.StreamingResponse
     kind: import_binding
     source_candidate_ref: /api_candidates/1008
@@ -26738,8 +26760,9 @@ api_surface_contract:
     - python.object_identity
     - warnings.category_message
     operation_scope:
-      status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+      status: slice-described
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.responses.StreamingResponse/supported_slice
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.responses.StreamingResponse
@@ -26749,7 +26772,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1008
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/application_runtime.rs::register
   - id: fastapi.responses.UJSONResponse
     kind: class
     source_candidate_ref: /api_candidates/1009
@@ -35128,10 +35151,13 @@ api_surface_contract:
       - /aliases/63
     feature_ids:
     - middleware-integrations
-    observation_selectors: []
+    observation_selectors:
+    - http.body.bytes
+    - http.status
     operation_scope:
-      status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+      status: slice-described
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.staticfiles.StaticFiles/supported_slice
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.staticfiles.StaticFiles
@@ -35141,7 +35167,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1550
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/application_runtime.rs::register
   - id: fastapi.status
     kind: import_binding
     source_candidate_ref: /api_candidates/1551
@@ -35436,8 +35462,9 @@ api_surface_contract:
     - websocket.event_order
     - websocket.messages
     operation_scope:
-      status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+      status: slice-described
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.websockets.WebSocket/supported_slice
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.websockets.WebSocket
@@ -35447,7 +35474,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1590
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/application_runtime.rs::register
   - id: fastapi.websockets.WebSocketDisconnect
     kind: import_binding
     source_candidate_ref: /api_candidates/1591
@@ -35511,8 +35538,9 @@ api_surface_contract:
     - websocket.event_order
     - websocket.messages
     operation_scope:
-      status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+      status: slice-described
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.websockets.WebSocketDisconnect/supported_slice
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.websockets.WebSocketDisconnect
@@ -35522,7 +35550,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1591
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/application_runtime.rs::register
   - id: fastapi.websockets.WebSocketState
     kind: import_binding
     source_candidate_ref: /api_candidates/1592
@@ -35582,8 +35610,9 @@ api_surface_contract:
     - websocket.event_order
     - websocket.messages
     operation_scope:
-      status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+      status: slice-described
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.websockets.WebSocketState/supported_slice
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.websockets.WebSocketState
@@ -35593,7 +35622,7 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/1592
       status: full-contract-not-established
-      rust_binding: null
+      rust_binding: fastapi-rs/src/application_runtime.rs::register
   inherited_operations:
   - id: fastapi.applications.FastAPI.add_route
     kind: inherited_method

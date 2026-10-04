@@ -1497,6 +1497,226 @@ reviewed_api_contract_overlay:
         object identity. This FastAPI scope covers alias exposure and identity;
         generic construction and method behavior remain in the pinned
         Starlette-RS API contract and are not claimed here.
+    fastapi.middleware.cors.CORSMiddleware:
+      rust_binding: fastapi-rs/src/application_runtime.rs::register
+      source_evidence:
+        - {path: fastapi/middleware/cors.py}
+      observation_selectors: [http.status, http.body.bytes]
+      supported_slice: >-
+        FastAPI directly re-exports Starlette's CORSMiddleware under
+        fastapi.middleware.cors. FastAPI-RS registers the canonical
+        starlette.middleware.cors.CORSMiddleware object from Starlette-RS. The
+        root-alias-identity workflow observes exact public-module-to-Starlette
+        object identity. This scope covers alias exposure and identity;
+        middleware behavior remains in the pinned Starlette-RS API contract and
+        is not claimed here.
+    fastapi.middleware.gzip.GZipMiddleware:
+      rust_binding: fastapi-rs/src/application_runtime.rs::register
+      source_evidence:
+        - {path: fastapi/middleware/gzip.py}
+      observation_selectors: [http.status, http.body.bytes]
+      supported_slice: >-
+        FastAPI directly re-exports Starlette's GZipMiddleware under
+        fastapi.middleware.gzip. FastAPI-RS registers the canonical
+        starlette.middleware.gzip.GZipMiddleware object from Starlette-RS. The
+        root-alias-identity workflow observes exact public-module-to-Starlette
+        object identity. This scope covers alias exposure and identity;
+        middleware behavior remains in the pinned Starlette-RS API contract and
+        is not claimed here.
+    fastapi.middleware.httpsredirect.HTTPSRedirectMiddleware:
+      rust_binding: fastapi-rs/src/application_runtime.rs::register
+      source_evidence:
+        - {path: fastapi/middleware/httpsredirect.py}
+      observation_selectors: [http.status, http.body.bytes]
+      supported_slice: >-
+        FastAPI directly re-exports Starlette's HTTPSRedirectMiddleware under
+        fastapi.middleware.httpsredirect. FastAPI-RS registers the canonical
+        starlette.middleware.httpsredirect.HTTPSRedirectMiddleware object from
+        Starlette-RS. The root-alias-identity workflow observes exact
+        public-module-to-Starlette object identity. This scope covers alias
+        exposure and identity; middleware behavior remains in the pinned
+        Starlette-RS API contract and is not claimed here.
+    fastapi.middleware.trustedhost.TrustedHostMiddleware:
+      rust_binding: fastapi-rs/src/application_runtime.rs::register
+      source_evidence:
+        - {path: fastapi/middleware/trustedhost.py}
+      observation_selectors: [http.status, http.body.bytes]
+      supported_slice: >-
+        FastAPI directly re-exports Starlette's TrustedHostMiddleware under
+        fastapi.middleware.trustedhost. FastAPI-RS registers the canonical
+        starlette.middleware.trustedhost.TrustedHostMiddleware object from
+        Starlette-RS. The root-alias-identity workflow observes exact
+        public-module-to-Starlette object identity. This scope covers alias
+        exposure and identity; middleware behavior remains in the pinned
+        Starlette-RS API contract and is not claimed here.
+    fastapi.middleware.wsgi.WSGIMiddleware:
+      rust_binding: fastapi-rs/src/application_runtime.rs::register
+      source_evidence:
+        - {path: fastapi/middleware/wsgi.py}
+      observation_selectors: [http.status, http.body.bytes]
+      supported_slice: >-
+        FastAPI directly re-exports Starlette's WSGIMiddleware under
+        fastapi.middleware.wsgi. FastAPI-RS registers the canonical
+        starlette.middleware.wsgi.WSGIMiddleware object from Starlette-RS. The
+        root-alias-identity workflow observes exact public-module-to-Starlette
+        object identity. This scope covers alias exposure and identity;
+        middleware behavior remains in the pinned Starlette-RS API contract and
+        is not claimed here.
+    fastapi.requests.Request:
+      rust_binding: fastapi-rs/src/application_runtime.rs::register
+      source_evidence:
+        - {path: fastapi/requests.py}
+      observation_selectors: [http.status, http.body.bytes]
+      supported_slice: >-
+        FastAPI directly re-exports Starlette's Request under fastapi.requests.
+        FastAPI-RS registers the canonical starlette.requests.Request object
+        from Starlette-RS. The root-alias-identity workflow observes exact
+        public-module-to-Starlette object identity. This scope covers alias
+        exposure and identity; generic request behavior remains in the pinned
+        Starlette-RS API contract and is not claimed here.
+    fastapi.responses.FileResponse:
+      rust_binding: fastapi-rs/src/application_runtime.rs::register
+      source_evidence:
+        - {path: fastapi/responses.py}
+      observation_selectors: [http.status, http.body.bytes]
+      supported_slice: >-
+        FastAPI directly re-exports Starlette's FileResponse under
+        fastapi.responses. FastAPI-RS registers the canonical
+        starlette.responses.FileResponse object from Starlette-RS. The
+        root-alias-identity workflow observes exact public-module-to-Starlette
+        object identity. This scope covers alias exposure and identity;
+        response behavior remains in the pinned Starlette-RS API contract and
+        is not claimed here.
+    fastapi.responses.HTMLResponse:
+      rust_binding: fastapi-rs/src/application_runtime.rs::register
+      source_evidence:
+        - {path: fastapi/responses.py}
+      observation_selectors: [http.status, http.body.bytes]
+      supported_slice: >-
+        FastAPI directly re-exports Starlette's HTMLResponse under
+        fastapi.responses. FastAPI-RS registers the canonical
+        starlette.responses.HTMLResponse object from Starlette-RS. The
+        root-alias-identity workflow observes exact public-module-to-Starlette
+        object identity. This scope covers alias exposure and identity;
+        response behavior remains in the pinned Starlette-RS API contract and
+        is not claimed here.
+    fastapi.responses.JSONResponse:
+      rust_binding: fastapi-rs/src/application_runtime.rs::register
+      source_evidence:
+        - {path: fastapi/responses.py}
+      observation_selectors: [http.status, http.body.bytes]
+      supported_slice: >-
+        FastAPI directly re-exports Starlette's JSONResponse under
+        fastapi.responses. FastAPI-RS registers the canonical
+        starlette.responses.JSONResponse object from Starlette-RS. The
+        root-alias-identity workflow observes exact public-module-to-Starlette
+        object identity. This scope covers alias exposure and identity;
+        response behavior remains in the pinned Starlette-RS API contract and
+        is not claimed here.
+    fastapi.responses.PlainTextResponse:
+      rust_binding: fastapi-rs/src/application_runtime.rs::register
+      source_evidence:
+        - {path: fastapi/responses.py}
+      observation_selectors: [http.status, http.body.bytes]
+      supported_slice: >-
+        FastAPI directly re-exports Starlette's PlainTextResponse under
+        fastapi.responses. FastAPI-RS registers the canonical
+        starlette.responses.PlainTextResponse object from Starlette-RS. The
+        root-alias-identity workflow observes exact public-module-to-Starlette
+        object identity. This scope covers alias exposure and identity;
+        response behavior remains in the pinned Starlette-RS API contract and
+        is not claimed here.
+    fastapi.responses.RedirectResponse:
+      rust_binding: fastapi-rs/src/application_runtime.rs::register
+      source_evidence:
+        - {path: fastapi/responses.py}
+      observation_selectors: [http.status, http.body.bytes]
+      supported_slice: >-
+        FastAPI directly re-exports Starlette's RedirectResponse under
+        fastapi.responses. FastAPI-RS registers the canonical
+        starlette.responses.RedirectResponse object from Starlette-RS. The
+        root-alias-identity workflow observes exact public-module-to-Starlette
+        object identity. This scope covers alias exposure and identity;
+        response behavior remains in the pinned Starlette-RS API contract and
+        is not claimed here.
+    fastapi.responses.Response:
+      rust_binding: fastapi-rs/src/application_runtime.rs::register
+      source_evidence:
+        - {path: fastapi/responses.py}
+      observation_selectors: [http.status, http.body.bytes]
+      supported_slice: >-
+        FastAPI directly re-exports Starlette's Response under
+        fastapi.responses. FastAPI-RS registers the canonical
+        starlette.responses.Response object from Starlette-RS. The
+        root-alias-identity workflow observes exact public-module-to-Starlette
+        object identity. This scope covers alias exposure and identity;
+        response behavior remains in the pinned Starlette-RS API contract and
+        is not claimed here.
+    fastapi.responses.StreamingResponse:
+      rust_binding: fastapi-rs/src/application_runtime.rs::register
+      source_evidence:
+        - {path: fastapi/responses.py}
+      observation_selectors: [http.status, http.body.bytes]
+      supported_slice: >-
+        FastAPI directly re-exports Starlette's StreamingResponse under
+        fastapi.responses. FastAPI-RS registers the canonical
+        starlette.responses.StreamingResponse object from Starlette-RS. The
+        root-alias-identity workflow observes exact public-module-to-Starlette
+        object identity. This scope covers alias exposure and identity;
+        response behavior remains in the pinned Starlette-RS API contract and
+        is not claimed here.
+    fastapi.staticfiles.StaticFiles:
+      rust_binding: fastapi-rs/src/application_runtime.rs::register
+      source_evidence:
+        - {path: fastapi/staticfiles.py}
+      observation_selectors: [http.status, http.body.bytes]
+      supported_slice: >-
+        FastAPI directly re-exports Starlette's StaticFiles under
+        fastapi.staticfiles. FastAPI-RS registers the canonical
+        starlette.staticfiles.StaticFiles object from Starlette-RS. The
+        root-alias-identity workflow observes exact public-module-to-Starlette
+        object identity. This scope covers alias exposure and identity;
+        static-file behavior remains in the pinned Starlette-RS API contract
+        and is not claimed here.
+    fastapi.websockets.WebSocket:
+      rust_binding: fastapi-rs/src/application_runtime.rs::register
+      source_evidence:
+        - {path: fastapi/websockets.py}
+      observation_selectors: [websocket.messages]
+      supported_slice: >-
+        FastAPI directly re-exports Starlette's WebSocket under
+        fastapi.websockets. FastAPI-RS registers the canonical
+        starlette.websockets.WebSocket object from Starlette-RS. The
+        root-alias-identity workflow observes exact public-module-to-Starlette
+        object identity in a WebSocket message. This scope covers alias
+        exposure and identity; WebSocket behavior remains in the pinned
+        Starlette-RS API contract and is not claimed here.
+    fastapi.websockets.WebSocketDisconnect:
+      rust_binding: fastapi-rs/src/application_runtime.rs::register
+      source_evidence:
+        - {path: fastapi/websockets.py}
+      observation_selectors: [websocket.messages]
+      supported_slice: >-
+        FastAPI directly re-exports Starlette's WebSocketDisconnect under
+        fastapi.websockets. FastAPI-RS registers the canonical
+        starlette.websockets.WebSocketDisconnect object from Starlette-RS. The
+        root-alias-identity workflow observes exact public-module-to-Starlette
+        object identity in a WebSocket message. This scope covers alias
+        exposure and identity; exception behavior remains in the pinned
+        Starlette-RS API contract and is not claimed here.
+    fastapi.websockets.WebSocketState:
+      rust_binding: fastapi-rs/src/application_runtime.rs::register
+      source_evidence:
+        - {path: fastapi/websockets.py}
+      observation_selectors: [websocket.messages]
+      supported_slice: >-
+        FastAPI directly re-exports Starlette's WebSocketState under
+        fastapi.websockets. FastAPI-RS registers the canonical
+        starlette.websockets.WebSocketState object from Starlette-RS. The
+        root-alias-identity workflow observes exact public-module-to-Starlette
+        object identity in a WebSocket message. This scope covers alias
+        exposure and identity; enum behavior remains in the pinned
+        Starlette-RS API contract and is not claimed here.
     fastapi.Header:
       rust_binding: fastapi-rs/src/parameters.rs::header
       source_evidence:
