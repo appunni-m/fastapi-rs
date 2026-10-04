@@ -35,6 +35,17 @@ PYDANTIC_IDENTITY = {
     "role": "field construction, type coercion, and value validation",
 }
 
+_API_WORKFLOW_SCHEMA = "fastapi-rs/python-api-workflow@3"
+_API_OBSERVATION_SELECTORS = {
+    "python_attribute_value": "python.attribute_value",
+    "python_call_outcome": "python.call_outcome",
+    "python_import_path": "python.import_path",
+    "python_object_identity": "python.object_identity",
+    "python_pydantic_model_result": "python.pydantic_model_result",
+    "python_return_value": "python.attribute_value",
+    "python_signature": "python.signature",
+}
+
 
 TOP_LEVEL_REQUEST_PARAMETER_TESTS = (
     "tests/test_ambiguous_params.py",
@@ -126,11 +137,16 @@ def _workflow_selectors(case: dict[str, Any]) -> list[str]:
     selected: set[str] = set()
     if "probes" in case:
         for probe in case["probes"]:
+            if probe.get("capture_warnings") is True:
+                selected.add("python.warnings")
             for observation in probe.get("observations", []):
-                if observation.get("kind") == "python_return_value":
-                    selected.add("python.attribute_value")
-                elif observation.get("kind") == "python_signature":
-                    selected.add("python.signature")
+                kind = observation.get("kind")
+                selector = _API_OBSERVATION_SELECTORS.get(kind)
+                if selector is None:
+                    raise ValueError(
+                        f"unknown direct API observation kind in source mapping: {kind}"
+                    )
+                selected.add(selector)
         return sorted(selected)
     if "construction_observation" in case:
         selected.update(
@@ -190,6 +206,7 @@ def _recipe_case_index() -> dict[str, dict[str, Any]]:
         if not isinstance(data, dict) or data.get("schema") not in {
             "fastapi-rs/python-asgi-workflow@2",
             "fastapi-rs/python-asgi-workflow@3",
+            _API_WORKFLOW_SCHEMA,
         }:
             continue
         for case in data.get("cases", []):
