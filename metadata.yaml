@@ -80,14 +80,14 @@ api_inventory:
 import_binding_classification_review:
   artifact: tests/fixtures/api-import-binding-classification-review.json
   schema: fastapi-starlette-import-binding-review/v1
-  sha256: 4f687eb9637e9d49028570e4ccb1d1e3c803c02df79fae1c7ae0c8c642201ed4
+  sha256: 72298ec09b83fe89b9e5d4adac9d1649cbe5afb27617f85dea333809725f74ea
   source_identity:
     package: FastAPI
     version: 0.141.1
     source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
     selected_starlette_profile: 1.6.0
     starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
-    starlette_rs_contract_commit: 2305a3581b4758c84602e80a5bf41835e9f31eab
+    starlette_rs_contract_commit: 1ddca31a4886c75a5d3695828f489e038660cf49
   starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
   counts:
     candidates: 97
@@ -99,7 +99,7 @@ import_binding_classification_review:
   candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
   pinned_starlette_rs_sources:
     metadata_sha256: 09384dd30af7bc919c1e653e6a06227bdae94fc2d30246ce5d64825de5f62a47
-    manifest_sha256: 1d4d8a188a18be9f1b7def6526f52b8d0441bbc7cc7eaa4166334c7ad109dd40
+    manifest_sha256: f77de55f7005740be2e64bf7b780dd0a76eb64cb29bce9379decfb13d7affb8f
     api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
     api_review_sha256: 8b25f2e3a46753316446077bfde97b6ac8a342233e2f4e50b12d3d01eafbe099
 
@@ -435,7 +435,7 @@ classification_atlas:
 starlette_rs:
   owner: ../starlette-rs
   repository: https://github.com/appunni-m/starlette-rs
-  commit: 2305a3581b4758c84602e80a5bf41835e9f31eab
+  commit: 1ddca31a4886c75a5d3695828f489e038660cf49
   distribution_version: 0.1.0
   contract_id: starlette-1.6.0-asgi-http-config-session-slice
   metadata: ../starlette-rs/metadata.yaml
@@ -2380,6 +2380,11 @@ reviewed_api_contract_overlay:
           kind: source-definition
           start_line: 585
           end_line: 679
+        - path: tests/test_router_include_context.py
+          symbol: test_get_openapi_accepts_filtered_route_contexts_with_effective_paths
+          kind: source-definition
+          start_line: 82
+          end_line: 109
         - path: docs/en/docs/how-to/extending-openapi.md
           kind: documentation-text
           start_line: 19
@@ -2392,12 +2397,36 @@ reviewed_api_contract_overlay:
         - source_path: docs/en/docs/how-to/extending-openapi.md
           fixture_id: fastapi.docs.how-to-extending-openapi
           observation_selectors: [http.status, openapi.document]
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-get-openapi-public-api.yaml
+          case_id: fastapi.openapi.get-openapi.empty-routes
+          workload_path: tests/fixtures/workloads/openapi_get_openapi_public_api.py
+          observation_selectors: [python.signature, python.attribute_value]
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-get-openapi-public-api.yaml
+          case_id: fastapi.openapi.get-openapi.document-metadata
+          workload_path: tests/fixtures/workloads/openapi_get_openapi_public_api.py
+          observation_selectors: [python.attribute_value]
       feature_ids: [openapi-docs]
       observation_selectors:
         - http.status
         - openapi.document
         - python.attribute_value
         - python.signature
+      supported_slice: >-
+        Direct calls require the keyword-only title, version, and routes inputs;
+        an empty-route call returns a JSON-compatible OpenAPI document with the
+        default OpenAPI 3.1.0 version and an empty paths object. A second
+        input-only call observes title, version, summary, description, tags,
+        servers, terms of service, contact, license, and external documentation
+        in the returned document. These cases do not cover route traversal,
+        webhooks, schema generation, security, duplicate operation IDs, or the
+        remaining options.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: unimplemented
+        known_gaps:
+          - The target module has no fastapi.openapi.utils.get_openapi attribute; both direct input-only calls currently fail with AttributeError.
+          - Native OpenAPI generation for the FastAPI application's /openapi.json route does not establish parity for this separately exported callable.
     fastapi.utils.generate_operation_id_for_path:
       rust_binding: fastapi-rs/src/deprecated_api.rs::generate_operation_id_for_path
       source_evidence:

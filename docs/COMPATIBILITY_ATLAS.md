@@ -6,7 +6,7 @@ This source-backed compatibility atlas indexes the API denominator and candidate
 
 - FastAPI: 0.141.1 at `95f8322ee1dcda7ceace7b1c4f6c9915b36d748f`.
 - Starlette oracle contract: 1.6.0 at `4f250d6b814587e20c5365f0a5f0c4d42bcb929f` (the sole selected Starlette version).
-- Starlette-RS implementation contract: at `2305a3581b4758c84602e80a5bf41835e9f31eab`.
+- Starlette-RS implementation contract: at `1ddca31a4886c75a5d3695828f489e038660cf49`.
 - FastAPI declares `starlette>=0.46.0`, which admits the selected contract. Its upstream lock graph is dependency-inventory evidence, not another compatibility profile.
 - Pydantic: 2.13.4 source-lock baseline; Python support is `>=3.10`.
 
@@ -28,7 +28,7 @@ Supported inherited candidates link FastAPI inheritance, documentation, and sibl
 
 ## Per-symbol API contract in the active manifest
 
-The single `tests/fixtures/manifest.yaml` indexes 460 source-supported symbols and 9 supported inherited operations from 13 reviewed inherited candidates (469 supported public API entries total). The remaining inherited candidates have explicit private/internal or uncertain dispositions and do not create target operation contracts. Supported inherited operations delegate to a canonical Starlette-RS operation or record a pinned source signature and explicit sibling-contract gap. The contract links alias, deprecation, error, documented-feature, direct API workflow, selector, and planned Python import-path evidence; 454 direct symbols link to a documented-page fixture design and 101 to a direct API input workflow. Its operation-scope field distinguishes 160 source-described slices from 300 symbols still awaiting a slice description; slice descriptions are scope metadata, not parity evidence. It also links 37 symbol rows to 20 distinct source-defined class constructors, separately from reflected class-call signatures. The current Python facade directly re-exports 21 native names; this source contract does not measure behavioral completeness, and broader operation-level review remains pending.
+The single `tests/fixtures/manifest.yaml` indexes 460 source-supported symbols and 9 supported inherited operations from 13 reviewed inherited candidates (469 supported public API entries total). The remaining inherited candidates have explicit private/internal or uncertain dispositions and do not create target operation contracts. Supported inherited operations delegate to a canonical Starlette-RS operation or record a pinned source signature and explicit sibling-contract gap. The contract links alias, deprecation, error, documented-feature, direct API workflow, selector, and planned Python import-path evidence; 454 direct symbols link to a documented-page fixture design and 101 to a direct API input workflow. Its operation-scope field distinguishes 161 source-described slices from 299 symbols still awaiting a slice description; slice descriptions are scope metadata, not parity evidence. It also links 37 symbol rows to 20 distinct source-defined class constructors, separately from reflected class-call signatures. The current Python facade directly re-exports 21 native names; this source contract does not measure behavioral completeness, and broader operation-level review remains pending.
 
 | Signature/shape evidence | Symbols |
 |---|---:|
@@ -600,7 +600,7 @@ The merged coverage matrix links each FastAPI test, documented feature, or examp
 |---:|---:|---:|---:|
 | 924 | 2409 | 485 | 12 |
 
-The sibling Starlette-RS manifest, API review, and coverage matrix remain the sole Starlette API inventory. FastAPI's atlas stores only relevant requirement references plus manifest/catalog/review/matrix SHA-256 digests. The inspected Starlette-RS implementation revision is 2305a3581b4758c84602e80a5bf41835e9f31eab (pinned, clean Starlette-RS checkout).
+The sibling Starlette-RS manifest, API review, and coverage matrix remain the sole Starlette API inventory. FastAPI's atlas stores only relevant requirement references plus manifest/catalog/review/matrix SHA-256 digests. The inspected Starlette-RS implementation revision is 1ddca31a4886c75a5d3695828f489e038660cf49 (pinned, clean Starlette-RS checkout).
 
 ## Errors, aliases, optional features, and deprecations
 

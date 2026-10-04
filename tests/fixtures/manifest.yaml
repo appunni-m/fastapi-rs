@@ -91,7 +91,7 @@ target:
     name: starlette-rs-py
     version: 0.1.0
     starlette_contract: 1.6.0
-    commit: 2305a3581b4758c84602e80a5bf41835e9f31eab
+    commit: 1ddca31a4886c75a5d3695828f489e038660cf49
   external_python_runtime_lock:
     path: requirements/target-runtime-cpython-3.12.13.lock
     sha256: efb7ca633fc9a9c8587a6f59f8ee9b509151f6f77ceb75a56dd3cdeff2be99f7
@@ -128,13 +128,13 @@ source_artifacts:
   api_import_binding_classification_review:
     path: tests/fixtures/api-import-binding-classification-review.json
     schema: fastapi-starlette-import-binding-review/v1
-    sha256: 4f687eb9637e9d49028570e4ccb1d1e3c803c02df79fae1c7ae0c8c642201ed4
+    sha256: a50d364d620d5e805c90b17bd32c36ad39994fd83189cd87c117758c987c63ff
     purpose: Reviewed source-backed disposition of uncertain FastAPI import bindings from the selected Starlette profile
     source_identity:
       package: FastAPI
       selected_starlette_profile: 1.6.0
       source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
-      starlette_rs_contract_commit: 2305a3581b4758c84602e80a5bf41835e9f31eab
+      starlette_rs_contract_commit: 1ddca31a4886c75a5d3695828f489e038660cf49
       starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
       version: 0.141.1
     starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
@@ -148,7 +148,7 @@ source_artifacts:
     candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
     pinned_starlette_rs_sources:
       metadata_sha256: 09384dd30af7bc919c1e653e6a06227bdae94fc2d30246ce5d64825de5f62a47
-      manifest_sha256: 1d4d8a188a18be9f1b7def6526f52b8d0441bbc7cc7eaa4166334c7ad109dd40
+      manifest_sha256: f77de55f7005740be2e64bf7b780dd0a76eb64cb29bce9379decfb13d7affb8f
       api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
       api_review_sha256: 8b25f2e3a46753316446077bfde97b6ac8a342233e2f4e50b12d3d01eafbe099
   api_source_classification_review:
@@ -411,7 +411,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@5
-    sha256: ad5df4f80f416625d8a31370e8286b993da8d3199525583dca1bee2ceb78303c
+    sha256: d8e962ccf7d8ee9f5e13a4803ce188b77739259a280caca3f4716d6533d708fd
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -484,7 +484,7 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@2
-    sha256: 67216af8738e9acad0907f12f12d146d59cdf95d9e4ea8d8b576849f9c06d1af
+    sha256: dfb0de9fcea07718b2daec7ff4640c3eca9d3c61fb47c18426c52fee059059ac
     schema_path: tests/fixtures/schemas/materialized-input-index.schema.json
     schema_sha256: 56ac1cdfaa6f28b4277ef44b5ef78efebb3122111c5691e1b9c1bce869156aaf
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
@@ -815,8 +815,8 @@ api_surface_contract:
     symbols_with_constructor_definition_refs: 37
     unique_source_constructor_definitions: 20
     operation_scope_statuses:
-      scope-review-pending: 300
-      slice-described: 160
+      scope-review-pending: 299
+      slice-described: 161
     implementation_owner_plans:
       fastapi-rs: 429
       starlette-rs: 31
@@ -828,8 +828,8 @@ api_surface_contract:
     symbols_with_deprecation_refs: 15
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 101
-    symbols_with_operation_fixture_refs: 121
-    operation_fixture_refs: 597
+    symbols_with_operation_fixture_refs: 122
+    operation_fixture_refs: 599
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -25424,6 +25424,28 @@ api_surface_contract:
       observation_selectors:
       - python.attribute_value
       - python.signature
+    operation_fixture_refs:
+    - workflow_id: openapi-get-openapi-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-get-openapi-public-api.json
+      input_sha256: 29d53396ae531b88d61c589f8bfba8e8295290634031cc4d2e6b2fc93b779403
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-get-openapi-public-api.yaml
+      recipe_sha256: f289000d06a511cf72c390920ff218179214dd362fe3143a90d7ee60fcaa5cb3
+      workload_path: tests/fixtures/workloads/openapi_get_openapi_public_api.py
+      workload_sha256: c537d9ce6ab385eb186af19d52b38e21d4e93d270c183dda96259047a69a4478
+      case_id: fastapi.openapi.get-openapi.empty-routes
+      observation_selectors:
+      - python.attribute_value
+      - python.signature
+    - workflow_id: openapi-get-openapi-public-api
+      input_path: tests/fixtures/inputs/parity/openapi-get-openapi-public-api.json
+      input_sha256: 29d53396ae531b88d61c589f8bfba8e8295290634031cc4d2e6b2fc93b779403
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-get-openapi-public-api.yaml
+      recipe_sha256: f289000d06a511cf72c390920ff218179214dd362fe3143a90d7ee60fcaa5cb3
+      workload_path: tests/fixtures/workloads/openapi_get_openapi_public_api.py
+      workload_sha256: c537d9ce6ab385eb186af19d52b38e21d4e93d270c183dda96259047a69a4478
+      case_id: fastapi.openapi.get-openapi.document-metadata
+      observation_selectors:
+      - python.attribute_value
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -25433,7 +25455,8 @@ api_surface_contract:
     - python.attribute_value
     - python.signature
     operation_scope:
-      status: scope-review-pending
+      status: slice-described
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.openapi.utils.get_openapi/supported_slice
     behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
@@ -25443,8 +25466,13 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/906
-      status: full-contract-not-established
+      status: unimplemented
       rust_binding: null
+      known_gaps:
+      - The target module has no fastapi.openapi.utils.get_openapi attribute; both direct input-only calls
+        currently fail with AttributeError.
+      - Native OpenAPI generation for the FastAPI application's /openapi.json route does not establish
+        parity for this separately exported callable.
   - id: fastapi.param_functions.Body
     kind: function
     source_candidate_ref: /api_candidates/926
