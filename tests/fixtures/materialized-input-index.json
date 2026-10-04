@@ -4564,14 +4564,20 @@
     {
       "id": "direct-api-warnings",
       "input_path": "tests/fixtures/inputs/parity/direct-api-warnings.json",
-      "input_sha256": "0d9efeba873fe77fb012f7102afd38ac9c36e190c07f42d8453ab353aeb115d7",
+      "input_sha256": "684d77bf1b987669f727a0a09daa04a26099b65707e30fbcfee1e6821f7e09b3",
       "recipe_path": "tests/fixtures/input-recipes/parity/direct-api-warnings.yaml",
-      "recipe_sha256": "1c7bf0bd78e0c72f14830f7d16c5e7a9b23ef6b37a632c718342d0894bd31876",
+      "recipe_sha256": "dd4774c0c00cf2aea058fa3f5840c25665ce868f96a9ba32c6781a7a05994c0b",
       "workload_path": "tests/fixtures/workloads/direct_api_warnings.py",
-      "workload_sha256": "61c6a2588aa6fc6efe244c24ba32ef94611ae90879b54142b9d64dff347c0753",
+      "workload_sha256": "de5173ce7b73189dc12cba0c4aaa0db912e33746991ea84ec3e0615272d34ee2",
       "case_ids": [
         "fastapi.deprecation.query-example-warning",
         "fastapi.deprecation.query-regex-warning",
+        "fastapi.deprecation.path-regex-warning",
+        "fastapi.deprecation.header-regex-warning",
+        "fastapi.deprecation.cookie-regex-warning",
+        "fastapi.deprecation.body-regex-warning",
+        "fastapi.deprecation.form-regex-warning",
+        "fastapi.deprecation.file-regex-warning",
         "fastapi.deprecation.body-example-warning",
         "fastapi.deprecation.path-example-warning",
         "fastapi.deprecation.header-example-warning",
@@ -4588,8 +4594,32 @@
           "sha256": "e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc"
         },
         {
+          "case_id": "fastapi.deprecation.body-regex-warning",
+          "symbol_id": "fastapi.Body",
+          "path": "fastapi/param_functions.py",
+          "sha256": "e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc"
+        },
+        {
           "case_id": "fastapi.deprecation.cookie-example-warning",
           "symbol_id": "fastapi.Cookie",
+          "path": "fastapi/param_functions.py",
+          "sha256": "e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc"
+        },
+        {
+          "case_id": "fastapi.deprecation.cookie-regex-warning",
+          "symbol_id": "fastapi.Cookie",
+          "path": "fastapi/param_functions.py",
+          "sha256": "e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc"
+        },
+        {
+          "case_id": "fastapi.deprecation.file-regex-warning",
+          "symbol_id": "fastapi.File",
+          "path": "fastapi/param_functions.py",
+          "sha256": "e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc"
+        },
+        {
+          "case_id": "fastapi.deprecation.form-regex-warning",
+          "symbol_id": "fastapi.Form",
           "path": "fastapi/param_functions.py",
           "sha256": "e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc"
         },
@@ -4618,7 +4648,19 @@
           "sha256": "e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc"
         },
         {
+          "case_id": "fastapi.deprecation.header-regex-warning",
+          "symbol_id": "fastapi.Header",
+          "path": "fastapi/param_functions.py",
+          "sha256": "e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc"
+        },
+        {
           "case_id": "fastapi.deprecation.path-example-warning",
+          "symbol_id": "fastapi.Path",
+          "path": "fastapi/param_functions.py",
+          "sha256": "e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc"
+        },
+        {
+          "case_id": "fastapi.deprecation.path-regex-warning",
           "symbol_id": "fastapi.Path",
           "path": "fastapi/param_functions.py",
           "sha256": "e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc"
@@ -4648,9 +4690,49 @@
           ]
         },
         {
+          "case_id": "fastapi.deprecation.body-regex-warning",
+          "probe_id": "body-regex",
+          "symbol_id": "fastapi.Body",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome",
+            "python.warnings"
+          ]
+        },
+        {
           "case_id": "fastapi.deprecation.cookie-example-warning",
           "probe_id": "cookie-example",
           "symbol_id": "fastapi.Cookie",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome",
+            "python.warnings"
+          ]
+        },
+        {
+          "case_id": "fastapi.deprecation.cookie-regex-warning",
+          "probe_id": "cookie-regex",
+          "symbol_id": "fastapi.Cookie",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome",
+            "python.warnings"
+          ]
+        },
+        {
+          "case_id": "fastapi.deprecation.file-regex-warning",
+          "probe_id": "file-regex",
+          "symbol_id": "fastapi.File",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome",
+            "python.warnings"
+          ]
+        },
+        {
+          "case_id": "fastapi.deprecation.form-regex-warning",
+          "probe_id": "form-regex",
+          "symbol_id": "fastapi.Form",
           "probe_kind": "callable",
           "observation_selectors": [
             "python.call_outcome",
@@ -4698,8 +4780,28 @@
           ]
         },
         {
+          "case_id": "fastapi.deprecation.header-regex-warning",
+          "probe_id": "header-regex",
+          "symbol_id": "fastapi.Header",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome",
+            "python.warnings"
+          ]
+        },
+        {
           "case_id": "fastapi.deprecation.path-example-warning",
           "probe_id": "path-example",
+          "symbol_id": "fastapi.Path",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome",
+            "python.warnings"
+          ]
+        },
+        {
+          "case_id": "fastapi.deprecation.path-regex-warning",
+          "probe_id": "path-regex",
           "symbol_id": "fastapi.Path",
           "probe_kind": "callable",
           "observation_selectors": [
@@ -4743,6 +4845,48 @@
           "requirement_refs": [
             "api:fastapi.Query",
             "source:upstream-test:tests/test_regex_deprecated_params.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.deprecation.path-regex-warning",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.Path"
+          ]
+        },
+        {
+          "case_id": "fastapi.deprecation.header-regex-warning",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.Header"
+          ]
+        },
+        {
+          "case_id": "fastapi.deprecation.cookie-regex-warning",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.Cookie"
+          ]
+        },
+        {
+          "case_id": "fastapi.deprecation.body-regex-warning",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.Body"
+          ]
+        },
+        {
+          "case_id": "fastapi.deprecation.form-regex-warning",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.Form"
+          ]
+        },
+        {
+          "case_id": "fastapi.deprecation.file-regex-warning",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.File"
           ]
         },
         {

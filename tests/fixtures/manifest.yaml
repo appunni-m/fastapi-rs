@@ -411,7 +411,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@5
-    sha256: f984e343e5126b48a33196142921a346fcc412f866d46f291c0718432bf7f519
+    sha256: 53378aab9c327781ec880b8b63a07583c6fbe87c361a29249ac22280a36b86cb
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -484,13 +484,13 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@4
-    sha256: f58f61a5962dcf45147daa9835a4569277e950a7fe5e83481d82acd72e1e7088
+    sha256: c3970859599604793189044389ec9819ecae12602eacd307d2af2d6a870bf37f
     schema_path: tests/fixtures/schemas/materialized-input-index-v4.schema.json
     schema_sha256: ee045ad383d444f24b92e872b4ef4a109416196f2f400984e205f1481f78ed4e
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
       workflows: 532
-      cases: 2107
+      cases: 2113
       partial_source_mappings: 1491
 
 contract_metadata:
@@ -1097,13 +1097,26 @@ api_surface_contract:
     input_workflow_refs:
     - workflow_id: direct-api-warnings
       input_path: tests/fixtures/inputs/parity/direct-api-warnings.json
-      input_sha256: 0d9efeba873fe77fb012f7102afd38ac9c36e190c07f42d8453ab353aeb115d7
+      input_sha256: 684d77bf1b987669f727a0a09daa04a26099b65707e30fbcfee1e6821f7e09b3
       recipe_path: tests/fixtures/input-recipes/parity/direct-api-warnings.yaml
-      recipe_sha256: 1c7bf0bd78e0c72f14830f7d16c5e7a9b23ef6b37a632c718342d0894bd31876
+      recipe_sha256: dd4774c0c00cf2aea058fa3f5840c25665ce868f96a9ba32c6781a7a05994c0b
       workload_path: tests/fixtures/workloads/direct_api_warnings.py
-      workload_sha256: 61c6a2588aa6fc6efe244c24ba32ef94611ae90879b54142b9d64dff347c0753
+      workload_sha256: de5173ce7b73189dc12cba0c4aaa0db912e33746991ea84ec3e0615272d34ee2
       case_id: fastapi.deprecation.body-example-warning
       probe_id: body-example
+      probe_kind: callable
+      observation_selectors:
+      - python.call_outcome
+      - python.warnings
+    - workflow_id: direct-api-warnings
+      input_path: tests/fixtures/inputs/parity/direct-api-warnings.json
+      input_sha256: 684d77bf1b987669f727a0a09daa04a26099b65707e30fbcfee1e6821f7e09b3
+      recipe_path: tests/fixtures/input-recipes/parity/direct-api-warnings.yaml
+      recipe_sha256: dd4774c0c00cf2aea058fa3f5840c25665ce868f96a9ba32c6781a7a05994c0b
+      workload_path: tests/fixtures/workloads/direct_api_warnings.py
+      workload_sha256: de5173ce7b73189dc12cba0c4aaa0db912e33746991ea84ec3e0615272d34ee2
+      case_id: fastapi.deprecation.body-regex-warning
+      probe_id: body-regex
       probe_kind: callable
       observation_selectors:
       - python.call_outcome
@@ -1659,13 +1672,26 @@ api_surface_contract:
     input_workflow_refs:
     - workflow_id: direct-api-warnings
       input_path: tests/fixtures/inputs/parity/direct-api-warnings.json
-      input_sha256: 0d9efeba873fe77fb012f7102afd38ac9c36e190c07f42d8453ab353aeb115d7
+      input_sha256: 684d77bf1b987669f727a0a09daa04a26099b65707e30fbcfee1e6821f7e09b3
       recipe_path: tests/fixtures/input-recipes/parity/direct-api-warnings.yaml
-      recipe_sha256: 1c7bf0bd78e0c72f14830f7d16c5e7a9b23ef6b37a632c718342d0894bd31876
+      recipe_sha256: dd4774c0c00cf2aea058fa3f5840c25665ce868f96a9ba32c6781a7a05994c0b
       workload_path: tests/fixtures/workloads/direct_api_warnings.py
-      workload_sha256: 61c6a2588aa6fc6efe244c24ba32ef94611ae90879b54142b9d64dff347c0753
+      workload_sha256: de5173ce7b73189dc12cba0c4aaa0db912e33746991ea84ec3e0615272d34ee2
       case_id: fastapi.deprecation.cookie-example-warning
       probe_id: cookie-example
+      probe_kind: callable
+      observation_selectors:
+      - python.call_outcome
+      - python.warnings
+    - workflow_id: direct-api-warnings
+      input_path: tests/fixtures/inputs/parity/direct-api-warnings.json
+      input_sha256: 684d77bf1b987669f727a0a09daa04a26099b65707e30fbcfee1e6821f7e09b3
+      recipe_path: tests/fixtures/input-recipes/parity/direct-api-warnings.yaml
+      recipe_sha256: dd4774c0c00cf2aea058fa3f5840c25665ce868f96a9ba32c6781a7a05994c0b
+      workload_path: tests/fixtures/workloads/direct_api_warnings.py
+      workload_sha256: de5173ce7b73189dc12cba0c4aaa0db912e33746991ea84ec3e0615272d34ee2
+      case_id: fastapi.deprecation.cookie-regex-warning
+      probe_id: cookie-regex
       probe_kind: callable
       observation_selectors:
       - python.call_outcome
@@ -2464,6 +2490,19 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id001
     input_workflow_refs:
+    - workflow_id: direct-api-warnings
+      input_path: tests/fixtures/inputs/parity/direct-api-warnings.json
+      input_sha256: 684d77bf1b987669f727a0a09daa04a26099b65707e30fbcfee1e6821f7e09b3
+      recipe_path: tests/fixtures/input-recipes/parity/direct-api-warnings.yaml
+      recipe_sha256: dd4774c0c00cf2aea058fa3f5840c25665ce868f96a9ba32c6781a7a05994c0b
+      workload_path: tests/fixtures/workloads/direct_api_warnings.py
+      workload_sha256: de5173ce7b73189dc12cba0c4aaa0db912e33746991ea84ec3e0615272d34ee2
+      case_id: fastapi.deprecation.file-regex-warning
+      probe_id: file-regex
+      probe_kind: callable
+      observation_selectors:
+      - python.call_outcome
+      - python.warnings
     - workflow_id: parameter-factory-signatures
       input_path: tests/fixtures/inputs/parity/parameter-factory-signatures.json
       input_sha256: c25252d5874ab5c07ec01963585a585c53d9fd8b32b98e98135ff8ae0e560018
@@ -2528,7 +2567,9 @@ api_surface_contract:
     - http.status
     - openapi.paths
     - openapi.request_schema
+    - python.call_outcome
     - python.signature
+    - python.warnings
     operation_scope:
       status: slice-described
       metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.File/supported_slice
@@ -2584,6 +2625,19 @@ api_surface_contract:
       fixture_design_ref: null
       observation_selectors: *id002
     input_workflow_refs:
+    - workflow_id: direct-api-warnings
+      input_path: tests/fixtures/inputs/parity/direct-api-warnings.json
+      input_sha256: 684d77bf1b987669f727a0a09daa04a26099b65707e30fbcfee1e6821f7e09b3
+      recipe_path: tests/fixtures/input-recipes/parity/direct-api-warnings.yaml
+      recipe_sha256: dd4774c0c00cf2aea058fa3f5840c25665ce868f96a9ba32c6781a7a05994c0b
+      workload_path: tests/fixtures/workloads/direct_api_warnings.py
+      workload_sha256: de5173ce7b73189dc12cba0c4aaa0db912e33746991ea84ec3e0615272d34ee2
+      case_id: fastapi.deprecation.form-regex-warning
+      probe_id: form-regex
+      probe_kind: callable
+      observation_selectors:
+      - python.call_outcome
+      - python.warnings
     - workflow_id: parameter-factory-signatures
       input_path: tests/fixtures/inputs/parity/parameter-factory-signatures.json
       input_sha256: c25252d5874ab5c07ec01963585a585c53d9fd8b32b98e98135ff8ae0e560018
@@ -2637,7 +2691,9 @@ api_surface_contract:
     - http.status
     - openapi.paths
     - openapi.request_schema
+    - python.call_outcome
     - python.signature
+    - python.warnings
     operation_scope:
       status: slice-described
       metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.Form/supported_slice
@@ -2816,13 +2872,26 @@ api_surface_contract:
     input_workflow_refs:
     - workflow_id: direct-api-warnings
       input_path: tests/fixtures/inputs/parity/direct-api-warnings.json
-      input_sha256: 0d9efeba873fe77fb012f7102afd38ac9c36e190c07f42d8453ab353aeb115d7
+      input_sha256: 684d77bf1b987669f727a0a09daa04a26099b65707e30fbcfee1e6821f7e09b3
       recipe_path: tests/fixtures/input-recipes/parity/direct-api-warnings.yaml
-      recipe_sha256: 1c7bf0bd78e0c72f14830f7d16c5e7a9b23ef6b37a632c718342d0894bd31876
+      recipe_sha256: dd4774c0c00cf2aea058fa3f5840c25665ce868f96a9ba32c6781a7a05994c0b
       workload_path: tests/fixtures/workloads/direct_api_warnings.py
-      workload_sha256: 61c6a2588aa6fc6efe244c24ba32ef94611ae90879b54142b9d64dff347c0753
+      workload_sha256: de5173ce7b73189dc12cba0c4aaa0db912e33746991ea84ec3e0615272d34ee2
       case_id: fastapi.deprecation.header-example-warning
       probe_id: header-example
+      probe_kind: callable
+      observation_selectors:
+      - python.call_outcome
+      - python.warnings
+    - workflow_id: direct-api-warnings
+      input_path: tests/fixtures/inputs/parity/direct-api-warnings.json
+      input_sha256: 684d77bf1b987669f727a0a09daa04a26099b65707e30fbcfee1e6821f7e09b3
+      recipe_path: tests/fixtures/input-recipes/parity/direct-api-warnings.yaml
+      recipe_sha256: dd4774c0c00cf2aea058fa3f5840c25665ce868f96a9ba32c6781a7a05994c0b
+      workload_path: tests/fixtures/workloads/direct_api_warnings.py
+      workload_sha256: de5173ce7b73189dc12cba0c4aaa0db912e33746991ea84ec3e0615272d34ee2
+      case_id: fastapi.deprecation.header-regex-warning
+      probe_id: header-regex
       probe_kind: callable
       observation_selectors:
       - python.call_outcome
@@ -2972,13 +3041,26 @@ api_surface_contract:
     input_workflow_refs:
     - workflow_id: direct-api-warnings
       input_path: tests/fixtures/inputs/parity/direct-api-warnings.json
-      input_sha256: 0d9efeba873fe77fb012f7102afd38ac9c36e190c07f42d8453ab353aeb115d7
+      input_sha256: 684d77bf1b987669f727a0a09daa04a26099b65707e30fbcfee1e6821f7e09b3
       recipe_path: tests/fixtures/input-recipes/parity/direct-api-warnings.yaml
-      recipe_sha256: 1c7bf0bd78e0c72f14830f7d16c5e7a9b23ef6b37a632c718342d0894bd31876
+      recipe_sha256: dd4774c0c00cf2aea058fa3f5840c25665ce868f96a9ba32c6781a7a05994c0b
       workload_path: tests/fixtures/workloads/direct_api_warnings.py
-      workload_sha256: 61c6a2588aa6fc6efe244c24ba32ef94611ae90879b54142b9d64dff347c0753
+      workload_sha256: de5173ce7b73189dc12cba0c4aaa0db912e33746991ea84ec3e0615272d34ee2
       case_id: fastapi.deprecation.path-example-warning
       probe_id: path-example
+      probe_kind: callable
+      observation_selectors:
+      - python.call_outcome
+      - python.warnings
+    - workflow_id: direct-api-warnings
+      input_path: tests/fixtures/inputs/parity/direct-api-warnings.json
+      input_sha256: 684d77bf1b987669f727a0a09daa04a26099b65707e30fbcfee1e6821f7e09b3
+      recipe_path: tests/fixtures/input-recipes/parity/direct-api-warnings.yaml
+      recipe_sha256: dd4774c0c00cf2aea058fa3f5840c25665ce868f96a9ba32c6781a7a05994c0b
+      workload_path: tests/fixtures/workloads/direct_api_warnings.py
+      workload_sha256: de5173ce7b73189dc12cba0c4aaa0db912e33746991ea84ec3e0615272d34ee2
+      case_id: fastapi.deprecation.path-regex-warning
+      probe_id: path-regex
       probe_kind: callable
       observation_selectors:
       - python.call_outcome
@@ -3143,11 +3225,11 @@ api_surface_contract:
     input_workflow_refs:
     - workflow_id: direct-api-warnings
       input_path: tests/fixtures/inputs/parity/direct-api-warnings.json
-      input_sha256: 0d9efeba873fe77fb012f7102afd38ac9c36e190c07f42d8453ab353aeb115d7
+      input_sha256: 684d77bf1b987669f727a0a09daa04a26099b65707e30fbcfee1e6821f7e09b3
       recipe_path: tests/fixtures/input-recipes/parity/direct-api-warnings.yaml
-      recipe_sha256: 1c7bf0bd78e0c72f14830f7d16c5e7a9b23ef6b37a632c718342d0894bd31876
+      recipe_sha256: dd4774c0c00cf2aea058fa3f5840c25665ce868f96a9ba32c6781a7a05994c0b
       workload_path: tests/fixtures/workloads/direct_api_warnings.py
-      workload_sha256: 61c6a2588aa6fc6efe244c24ba32ef94611ae90879b54142b9d64dff347c0753
+      workload_sha256: de5173ce7b73189dc12cba0c4aaa0db912e33746991ea84ec3e0615272d34ee2
       case_id: fastapi.deprecation.query-example-warning
       probe_id: query-example
       probe_kind: callable
@@ -3156,11 +3238,11 @@ api_surface_contract:
       - python.warnings
     - workflow_id: direct-api-warnings
       input_path: tests/fixtures/inputs/parity/direct-api-warnings.json
-      input_sha256: 0d9efeba873fe77fb012f7102afd38ac9c36e190c07f42d8453ab353aeb115d7
+      input_sha256: 684d77bf1b987669f727a0a09daa04a26099b65707e30fbcfee1e6821f7e09b3
       recipe_path: tests/fixtures/input-recipes/parity/direct-api-warnings.yaml
-      recipe_sha256: 1c7bf0bd78e0c72f14830f7d16c5e7a9b23ef6b37a632c718342d0894bd31876
+      recipe_sha256: dd4774c0c00cf2aea058fa3f5840c25665ce868f96a9ba32c6781a7a05994c0b
       workload_path: tests/fixtures/workloads/direct_api_warnings.py
-      workload_sha256: 61c6a2588aa6fc6efe244c24ba32ef94611ae90879b54142b9d64dff347c0753
+      workload_sha256: de5173ce7b73189dc12cba0c4aaa0db912e33746991ea84ec3e0615272d34ee2
       case_id: fastapi.deprecation.query-regex-warning
       probe_id: query-regex
       probe_kind: callable
@@ -25419,11 +25501,11 @@ api_surface_contract:
     input_workflow_refs:
     - workflow_id: direct-api-warnings
       input_path: tests/fixtures/inputs/parity/direct-api-warnings.json
-      input_sha256: 0d9efeba873fe77fb012f7102afd38ac9c36e190c07f42d8453ab353aeb115d7
+      input_sha256: 684d77bf1b987669f727a0a09daa04a26099b65707e30fbcfee1e6821f7e09b3
       recipe_path: tests/fixtures/input-recipes/parity/direct-api-warnings.yaml
-      recipe_sha256: 1c7bf0bd78e0c72f14830f7d16c5e7a9b23ef6b37a632c718342d0894bd31876
+      recipe_sha256: dd4774c0c00cf2aea058fa3f5840c25665ce868f96a9ba32c6781a7a05994c0b
       workload_path: tests/fixtures/workloads/direct_api_warnings.py
-      workload_sha256: 61c6a2588aa6fc6efe244c24ba32ef94611ae90879b54142b9d64dff347c0753
+      workload_sha256: de5173ce7b73189dc12cba0c4aaa0db912e33746991ea84ec3e0615272d34ee2
       case_id: fastapi.deprecation.generate-operation-id-explicit-route
       probe_id: generate-operation-id-explicit
       probe_kind: callable
@@ -25432,11 +25514,11 @@ api_surface_contract:
       - python.warnings
     - workflow_id: direct-api-warnings
       input_path: tests/fixtures/inputs/parity/direct-api-warnings.json
-      input_sha256: 0d9efeba873fe77fb012f7102afd38ac9c36e190c07f42d8453ab353aeb115d7
+      input_sha256: 684d77bf1b987669f727a0a09daa04a26099b65707e30fbcfee1e6821f7e09b3
       recipe_path: tests/fixtures/input-recipes/parity/direct-api-warnings.yaml
-      recipe_sha256: 1c7bf0bd78e0c72f14830f7d16c5e7a9b23ef6b37a632c718342d0894bd31876
+      recipe_sha256: dd4774c0c00cf2aea058fa3f5840c25665ce868f96a9ba32c6781a7a05994c0b
       workload_path: tests/fixtures/workloads/direct_api_warnings.py
-      workload_sha256: 61c6a2588aa6fc6efe244c24ba32ef94611ae90879b54142b9d64dff347c0753
+      workload_sha256: de5173ce7b73189dc12cba0c4aaa0db912e33746991ea84ec3e0615272d34ee2
       case_id: fastapi.deprecation.generate-operation-id-fallback-route
       probe_id: generate-operation-id-fallback
       probe_kind: callable
@@ -38213,11 +38295,11 @@ api_surface_contract:
     input_workflow_refs:
     - workflow_id: direct-api-warnings
       input_path: tests/fixtures/inputs/parity/direct-api-warnings.json
-      input_sha256: 0d9efeba873fe77fb012f7102afd38ac9c36e190c07f42d8453ab353aeb115d7
+      input_sha256: 684d77bf1b987669f727a0a09daa04a26099b65707e30fbcfee1e6821f7e09b3
       recipe_path: tests/fixtures/input-recipes/parity/direct-api-warnings.yaml
-      recipe_sha256: 1c7bf0bd78e0c72f14830f7d16c5e7a9b23ef6b37a632c718342d0894bd31876
+      recipe_sha256: dd4774c0c00cf2aea058fa3f5840c25665ce868f96a9ba32c6781a7a05994c0b
       workload_path: tests/fixtures/workloads/direct_api_warnings.py
-      workload_sha256: 61c6a2588aa6fc6efe244c24ba32ef94611ae90879b54142b9d64dff347c0753
+      workload_sha256: de5173ce7b73189dc12cba0c4aaa0db912e33746991ea84ec3e0615272d34ee2
       case_id: fastapi.deprecation.generate-operation-id-for-path
       probe_id: generate-operation-id-for-path
       probe_kind: callable

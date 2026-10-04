@@ -1554,6 +1554,11 @@ def validate_compatibility_artifacts(
     statuses = Counter(
         row.get("mapping_status") for row in coverage_rows if row.get("kind") in FIXTURE_KINDS
     )
+    from scripts.atlas_source_wave_b_review_mappings import (
+        validate_source_wave_b_review_mappings,
+    )
+
+    source_wave_b_review = validate_source_wave_b_review_mappings()
     return {
         "starlette_contract": "1.6.0",
         "api_candidates": len(api_rows),
@@ -1591,4 +1596,5 @@ def validate_compatibility_artifacts(
             for row in coverage_rows
         ),
         "starlette_integration_edges": len(atlas.get("starlette_integration_edges", [])),
+        "source_wave_b_function_review": source_wave_b_review,
     }

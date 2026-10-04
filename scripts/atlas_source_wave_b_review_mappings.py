@@ -1185,6 +1185,7 @@ SOURCE_WAVE_B_REVIEW = {
     "test_modules": SOURCE_WAVE_B_TEST_REVIEW_MAPPINGS,
     "recipe_paths": [
         ROUTER_RECIPE,
+        URL_PATH_FOR_RECIPE,
         REDIRECT_RECIPE,
         ANNOTATION_RECIPE,
         STARLETTE_RECIPE,
@@ -1193,6 +1194,7 @@ SOURCE_WAVE_B_REVIEW = {
     ],
     "workload_paths": [
         "tests/fixtures/workloads/source_wave_b_router_config.py",
+        "tests/fixtures/workloads/starlette_url_converters_upstream.py",
         "tests/fixtures/workloads/redirect_slashes_forwarding.py",
         "tests/fixtures/workloads/source_wave_b_annotations.py",
         "tests/fixtures/workloads/source_wave_b_starlette_integration.py",

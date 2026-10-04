@@ -44,6 +44,108 @@ cases:
     kind: upstream_api_definition
     sha256: e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc
     symbol_id: fastapi.Query
+- case_id: fastapi.deprecation.path-regex-warning
+  probes:
+  - probe_id: path-regex
+    public_callable:
+      module: fastapi
+      attribute: Path
+    argument_bundle: path-regex
+    capture_warnings: true
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence:
+  - path: fastapi/param_functions.py
+    kind: upstream_api_definition
+    sha256: e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc
+    symbol_id: fastapi.Path
+- case_id: fastapi.deprecation.header-regex-warning
+  probes:
+  - probe_id: header-regex
+    public_callable:
+      module: fastapi
+      attribute: Header
+    argument_bundle: header-regex
+    capture_warnings: true
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence:
+  - path: fastapi/param_functions.py
+    kind: upstream_api_definition
+    sha256: e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc
+    symbol_id: fastapi.Header
+- case_id: fastapi.deprecation.cookie-regex-warning
+  probes:
+  - probe_id: cookie-regex
+    public_callable:
+      module: fastapi
+      attribute: Cookie
+    argument_bundle: cookie-regex
+    capture_warnings: true
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence:
+  - path: fastapi/param_functions.py
+    kind: upstream_api_definition
+    sha256: e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc
+    symbol_id: fastapi.Cookie
+- case_id: fastapi.deprecation.body-regex-warning
+  probes:
+  - probe_id: body-regex
+    public_callable:
+      module: fastapi
+      attribute: Body
+    argument_bundle: body-regex
+    capture_warnings: true
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence:
+  - path: fastapi/param_functions.py
+    kind: upstream_api_definition
+    sha256: e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc
+    symbol_id: fastapi.Body
+- case_id: fastapi.deprecation.form-regex-warning
+  probes:
+  - probe_id: form-regex
+    public_callable:
+      module: fastapi
+      attribute: Form
+    argument_bundle: form-regex
+    capture_warnings: true
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence:
+  - path: fastapi/param_functions.py
+    kind: upstream_api_definition
+    sha256: e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc
+    symbol_id: fastapi.Form
+- case_id: fastapi.deprecation.file-regex-warning
+  probes:
+  - probe_id: file-regex
+    public_callable:
+      module: fastapi
+      attribute: File
+    argument_bundle: file-regex
+    capture_warnings: true
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence:
+  - path: fastapi/param_functions.py
+    kind: upstream_api_definition
+    sha256: e1f4c2565bc40db010afb82f59890e5fc864b5d97623093e92fe05693cfb3fcc
+    symbol_id: fastapi.File
 - case_id: fastapi.deprecation.body-example-warning
   probes:
   - probe_id: body-example

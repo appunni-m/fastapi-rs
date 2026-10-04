@@ -9687,15 +9687,15 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         },
         {
             "id": "case-construction-input-contract",
-            "status": "workflow-v3-present; dependency-module-state-and-warning-controls-pending",
+            "status": "workflow-v4-warning-capture-present; dependency-module-state-parity-pending",
             "question": "Which controlled dependency-module states and warning observations are still required for setup-time errors beyond the v3 per-case factory input and construction-exception selectors?",
-            "evidence": "The v3 workflow expresses per-case factory input and exact construction outcome/class/message, and construction-error cases now map invalid path/sequence parameters, response models, and Pydantic v1 models. tests/test_multipart_installation.py still mutates multipart module state before route setup, and warnings remain a separate selector without runner support.",
+            "evidence": "The v4 workflow expresses per-case factory input, exact construction outcome/class/message, and ordered warning capture for construction and ASGI actions. Construction-error cases map invalid path/sequence parameters, response models, and Pydantic v1 models. The router-events lifespan recipe selects warning capture around deprecated on_event registration; tests/test_multipart_installation.py still mutates multipart module state before route setup. Warning parity beyond mapped, executed cases remains unestablished.",
         },
         {
             "id": "lifespan-input-and-observation-contract",
-            "status": "workflow-v3-expressible; fixture-and-warning-coverage-pending",
+            "status": "workflow-v4-warning-capture-present; additional-lifespan-combinations-pending",
             "question": "Which FastAPI and APIRouter lifespan combinations still need independent input cases and exact deprecation-warning observations under the v3 lifecycle workflow?",
-            "evidence": "The v3 contract now drives lifespan startup before requests and shutdown after them, carries yielded state into request scopes, and selects protocol order, stage outcomes, errors, and workload side effects. The source-backed fixture wave is being mapped; TestClient-specific effects and on_event warnings are not claimed by these direct-ASGI inputs.",
+            "evidence": "The v3 contract drives lifespan startup before requests and shutdown after them, carries yielded state into request scopes, and selects protocol order, stage outcomes, errors, and workload side effects. Workflow v4 adds ordered warning capture, selected by the router-events lifespan recipe around deprecated on_event registration. Broader lifespan combinations and warning parity remain unestablished; TestClient-specific effects are outside these direct-ASGI inputs.",
         },
         {
             "id": "fastapi-cli-compatibility-boundary",

@@ -8,6 +8,8 @@ static EXAMPLE_UNSET: PyOnceLock<Py<PyAny>> = PyOnceLock::new();
 const EXAMPLE_DEPRECATION_WARNING: &str =
     "`example` has been deprecated, please use `examples` instead";
 const REGEX_DEPRECATION_WARNING: &str = "`regex` has been deprecated, please use `pattern` instead";
+const FASTAPI_FILE_REGEX_WARNING_PATH: &str = "fastapi/param_functions.py";
+const FASTAPI_FILE_REGEX_WARNING_LINE: u32 = 2249;
 
 #[pyclass(name = "_ParameterUnset", module = "fastapi_rs._core")]
 struct ParameterUnset;
@@ -222,6 +224,18 @@ fn warn_parameter_deprecation_at_level(
     warnings
         .getattr("warn")?
         .call((message, category), Some(&kwargs))?;
+    Ok(())
+}
+
+fn warn_fastapi_file_regex_deprecation(py: Python<'_>) -> PyResult<()> {
+    let warnings = py.import("warnings")?;
+    let category = crate::errors::fastapi_deprecation_warning_type(py);
+    warnings.getattr("warn_explicit")?.call1((
+        REGEX_DEPRECATION_WARNING,
+        category,
+        FASTAPI_FILE_REGEX_WARNING_PATH,
+        FASTAPI_FILE_REGEX_WARNING_LINE,
+    ))?;
     Ok(())
 }
 
@@ -827,7 +841,9 @@ fn file(
         warn_parameter_deprecation(py, EXAMPLE_DEPRECATION_WARNING)?;
     }
     if regex.is_some() {
-        warn_parameter_deprecation(py, REGEX_DEPRECATION_WARNING)?;
+        // Match FastAPI 0.141.1's public File wrapper, which emits this warning
+        // from its params.File call at param_functions.py:2249.
+        warn_fastapi_file_regex_deprecation(py)?;
     }
     Py::new(
         py,

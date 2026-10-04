@@ -17,6 +17,12 @@ def create_argument_bundles() -> dict[str, dict[str, object]]:
             "kwargs": {"default": None, "example": "query1"},
         },
         "query-regex": {"args": [], "kwargs": {"regex": "^fixedquery$"}},
+        "path-regex": {"args": [], "kwargs": {"regex": "^fixedpath$"}},
+        "header-regex": {"args": [], "kwargs": {"regex": "^fixedheader$"}},
+        "cookie-regex": {"args": [], "kwargs": {"regex": "^fixedcookie$"}},
+        "body-regex": {"args": [], "kwargs": {"regex": "^fixedbody$"}},
+        "form-regex": {"args": [], "kwargs": {"regex": "^fixedform$"}},
+        "file-regex": {"args": [], "kwargs": {"regex": "^fixedfile$"}},
         "body-example": {
             "args": [],
             "kwargs": {"example": {"data": "Data in Body example"}},
