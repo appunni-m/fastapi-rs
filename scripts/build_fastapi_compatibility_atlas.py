@@ -9672,7 +9672,21 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             "id": "starlette-rs-streaming-taskgroup-callback",
             "status": "identity-checked target mismatch; sibling-owned fix pending",
             "question": "Does the pinned Starlette-RS ASGI 2.0 StreamingResponse disconnect race pass a native coroutine callback to AnyIO TaskGroup.start_soon, preserving stream cancellation and request-scoped dependency cleanup?",
-            "evidence": "The identity-checked stream-cancellation comparison against FastAPI 0.141.1 and Starlette 1.6.0 records failures in all three FastAPI-RS target cases at the previously pinned Starlette-RS revision 50460eb366338cc843b90f071b3f323a4992aa5f. starlette-rs-py/src/runtime_calls.rs wraps a custom PyO3 AwaitableFactory around a PythonAwaitable and passes it to AnyIO 4.12.1 TaskGroup.start_soon; AnyIO rejects the returned object because it is not a native coroutine, then raises AttributeError while formatting the missing __qualname__. The same response path fails while registering the stream child, before the streaming iterator starts. This generic ASGI response behavior is Starlette-RS-owned; adding __qualname__ alone is not a fix.",
+            "evidence": (
+                f"The live identity-checked `stream-cancellation` input workflow "
+                f"(`tests/fixtures/input-recipes/parity/stream-cancellation.yaml`) "
+                f"compares FastAPI {FASTAPI_VERSION} at {FASTAPI_COMMIT} and Starlette "
+                f"{STARLETTE_VERSION} at {STARLETTE_COMMIT} with FastAPI-RS at "
+                f"bd100876afc3953fb4e1331be82da2cde1dd87a8, built against the pinned "
+                f"Starlette-RS revision {starlette_rs_revision}; all three target cases "
+                f"fail. Each stream action raises `AttributeError: 'builtins.AwaitableFactory' "
+                f"object has no attribute '__qualname__'` while AnyIO 4.12.1 "
+                f"TaskGroup.start_soon handles the custom PyO3 awaitable factory, before "
+                f"the streaming iterator starts. The yielded-dependency follow-up observes "
+                f"resource cleanup, but the cancelled request still fails. This generic "
+                f"ASGI response behavior is Starlette-RS-owned; adding `__qualname__` alone "
+                f"is not a fix."
+            ),
         },
         {
             "id": "pydantic-runtime-generated-api",
