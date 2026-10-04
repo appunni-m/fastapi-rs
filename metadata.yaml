@@ -80,14 +80,14 @@ api_inventory:
 import_binding_classification_review:
   artifact: tests/fixtures/api-import-binding-classification-review.json
   schema: fastapi-starlette-import-binding-review/v1
-  sha256: 6f9b60661926c7348a27d868d1a6b486d99607e89acfc1dbf7a8fe7739369699
+  sha256: 57f8b5c0171eff63ec943d5c245589c5f53af0767a8a11dc7d744c8bdff2bd7f
   source_identity:
     package: FastAPI
     version: 0.141.1
     source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
     selected_starlette_profile: 1.6.0
     starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
-    starlette_rs_contract_commit: 80c0a269b8b10ed427e3f1ebda36320ae375776c
+    starlette_rs_contract_commit: eafe5d3d0d62bb3c34cdf52aec0a971b735c4171
   starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
   counts:
     candidates: 97
@@ -99,7 +99,7 @@ import_binding_classification_review:
   candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
   pinned_starlette_rs_sources:
     metadata_sha256: 8340f3e8bf196f24b54096dc1ae7e2db1d019fe833cce2783b2c1f42f4df7b47
-    manifest_sha256: d1f8a36d8579946cc6e3a451405393578419f352e93cf7253110f944659fbd2f
+    manifest_sha256: a1e9dbf833ff52c6c8aac871968b88e1b4445be648d529fe37348b73f2c04186
     api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
     api_review_sha256: 8b25f2e3a46753316446077bfde97b6ac8a342233e2f4e50b12d3d01eafbe099
 
@@ -435,7 +435,7 @@ classification_atlas:
 starlette_rs:
   owner: ../starlette-rs
   repository: https://github.com/appunni-m/starlette-rs
-  commit: 80c0a269b8b10ed427e3f1ebda36320ae375776c
+  commit: eafe5d3d0d62bb3c34cdf52aec0a971b735c4171
   distribution_version: 0.1.0
   contract_id: starlette-1.6.0-asgi-http-config-session-slice
   metadata: ../starlette-rs/metadata.yaml
@@ -665,6 +665,13 @@ reviewed_api_contract_overlay:
   operations:
     fastapi.applications.FastAPI.__init__:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::new
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - FastAPI-RS rejects the public `servers` constructor keyword, so configured-server OpenAPI behavior is not reached.
+          - FastAPI-RS rejects the public `swagger_ui_oauth2_redirect_url` constructor keyword, so disabling or customizing the OAuth redirect route is not reached.
+          - FastAPI-RS rejects the public `swagger_ui_parameters` constructor keyword, so configured Swagger UI options are not reached.
       source_evidence:
         - path: fastapi/applications.py
           symbol: __init__
@@ -676,6 +683,12 @@ reviewed_api_contract_overlay:
           kind: source-definition
           start_line: 48
           end_line: 51
+        - {path: tests/test_openapi_servers.py, symbol: test_openapi_schema}
+        - {path: tests/test_no_swagger_ui_redirect.py, symbol: test_swagger_ui_no_oauth2_redirect}
+        - {path: tests/test_custom_swagger_ui_redirect.py, symbol: test_swagger_ui}
+        - {path: tests/test_tutorial/test_configure_swagger_ui/test_tutorial001.py, symbol: test_swagger_ui}
+        - {path: tests/test_tutorial/test_configure_swagger_ui/test_tutorial002.py, symbol: test_swagger_ui}
+        - {path: tests/test_tutorial/test_configure_swagger_ui/test_tutorial003.py, symbol: test_swagger_ui}
         - path: tests/test_exception_handlers.py
           symbol: test_override_http_exception
           kind: source-definition
@@ -729,6 +742,18 @@ reviewed_api_contract_overlay:
           case_id: fastapi.applications.constructor.redirect-slashes-enabled
         - recipe_path: tests/fixtures/input-recipes/parity/redirect-slashes-forwarding.yaml
           case_id: fastapi.applications.constructor.redirect-slashes-disabled
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-docs.yaml
+          case_id: fastapi.openapi.openapi-servers.openapi-schema
+        - recipe_path: tests/fixtures/input-recipes/parity/swagger-no-redirect-upstream.yaml
+          case_id: fastapi.test.test-no-swagger-ui-redirect.test-swagger-ui-no-oauth2-redirect
+        - recipe_path: tests/fixtures/input-recipes/parity/swagger-redirect-upstream.yaml
+          case_id: fastapi.test.test-custom-swagger-ui-redirect.test-swagger-ui
+        - recipe_path: tests/fixtures/input-recipes/parity/swagger-ui-config-default-wave.yaml
+          case_id: fastapi.docs-ui.swagger-parameters.default-config
+        - recipe_path: tests/fixtures/input-recipes/parity/swagger-ui-config-override-wave.yaml
+          case_id: fastapi.docs-ui.swagger-parameters.override-default
+        - recipe_path: tests/fixtures/input-recipes/parity/swagger-ui-config-theme-wave.yaml
+          case_id: fastapi.docs-ui.swagger-parameters.nested-theme
       feature_ids: [public-api-errors, app-routing, dependency-security, request-validation, websocket-lifecycle, openapi-docs]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes, websocket.close_code, websocket.close_reason, websocket.event_order, websocket.messages, construction.outcome, construction.exception_class, construction.exception_message, openapi.document, asgi.lifespan.event_order, asgi.lifespan.startup, asgi.lifespan.shutdown, asgi.lifespan.application_errors, asgi.lifespan.workload_trace, warnings.category_message]
       supported_slice: >-

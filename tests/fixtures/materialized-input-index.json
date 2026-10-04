@@ -3897,6 +3897,85 @@
       ]
     },
     {
+      "id": "openapi-docs-public-api",
+      "input_path": "tests/fixtures/inputs/parity/openapi-docs-public-api.json",
+      "input_sha256": "7c629bb7ec5213d3e0054394a2aab65031b16dbbfb1ecd5334024111f91a8391",
+      "recipe_path": "tests/fixtures/input-recipes/parity/openapi-docs-public-api.yaml",
+      "recipe_sha256": "1d74c63ebd541922c552498d3d506757715d4169ac5d5635ed944f7d81176d18",
+      "workload_path": "tests/fixtures/workloads/direct_api_reference_wave.py",
+      "workload_sha256": "57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741",
+      "case_ids": [
+        "fastapi.openapi.docs.public-api.swagger-ui-signature",
+        "fastapi.openapi.docs.public-api.redoc-signature",
+        "fastapi.openapi.docs.public-api.oauth-redirect-signature",
+        "fastapi.openapi.docs.public-api.swagger-default-parameters"
+      ],
+      "api_definitions": [
+        {
+          "case_id": "fastapi.openapi.docs.public-api.oauth-redirect-signature",
+          "symbol_id": "fastapi.openapi.docs.get_swagger_ui_oauth2_redirect_html",
+          "path": "fastapi/openapi/docs.py",
+          "sha256": "3dc8c7d129feca9f7b3b47b15e29dc1bc7a9b18ec04f2242e7aeb66cad4345aa"
+        },
+        {
+          "case_id": "fastapi.openapi.docs.public-api.redoc-signature",
+          "symbol_id": "fastapi.openapi.docs.get_redoc_html",
+          "path": "fastapi/openapi/docs.py",
+          "sha256": "3dc8c7d129feca9f7b3b47b15e29dc1bc7a9b18ec04f2242e7aeb66cad4345aa"
+        },
+        {
+          "case_id": "fastapi.openapi.docs.public-api.swagger-default-parameters",
+          "symbol_id": "fastapi.openapi.docs.swagger_ui_default_parameters",
+          "path": "fastapi/openapi/docs.py",
+          "sha256": "3dc8c7d129feca9f7b3b47b15e29dc1bc7a9b18ec04f2242e7aeb66cad4345aa"
+        },
+        {
+          "case_id": "fastapi.openapi.docs.public-api.swagger-ui-signature",
+          "symbol_id": "fastapi.openapi.docs.get_swagger_ui_html",
+          "path": "fastapi/openapi/docs.py",
+          "sha256": "3dc8c7d129feca9f7b3b47b15e29dc1bc7a9b18ec04f2242e7aeb66cad4345aa"
+        }
+      ],
+      "api_probes": [
+        {
+          "case_id": "fastapi.openapi.docs.public-api.oauth-redirect-signature",
+          "probe_id": "oauth-redirect-signature",
+          "symbol_id": "fastapi.openapi.docs.get_swagger_ui_oauth2_redirect_html",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi.docs.public-api.redoc-signature",
+          "probe_id": "redoc-signature",
+          "symbol_id": "fastapi.openapi.docs.get_redoc_html",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi.docs.public-api.swagger-default-parameters",
+          "probe_id": "swagger-default-parameters",
+          "symbol_id": "fastapi.openapi.docs.swagger_ui_default_parameters",
+          "probe_kind": "attribute",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi.docs.public-api.swagger-ui-signature",
+          "probe_id": "swagger-ui-signature",
+          "symbol_id": "fastapi.openapi.docs.get_swagger_ui_html",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        }
+      ]
+    },
+    {
       "id": "openapi-event-shapes-wave",
       "input_path": "tests/fixtures/inputs/parity/openapi-event-shapes-wave.json",
       "input_sha256": "923c3784d82853a6bd443b9bdbf13f30b7216e237ee9a837c98a7ac3334a04d8",
@@ -7068,7 +7147,7 @@
       "input_path": "tests/fixtures/inputs/parity/response-model-data-filter-exclude-unset-none-review.json",
       "input_sha256": "e8df817a4df31b3f2f646068c8a9286416ff13577822d1fc572bbc5d8eb34a17",
       "recipe_path": "tests/fixtures/input-recipes/parity/response-model-data-filter-exclude-unset-none-review.yaml",
-      "recipe_sha256": "31ab318285dfb04196b90a7640d2c605da667e04256fc58938bc18613806744a",
+      "recipe_sha256": "38c32236b678a0b758a8a996d95ee7626ea67fe4562c1ad0df782fb8898cf0fc",
       "workload_path": "tests/fixtures/workloads/response_model_data_filter_exclude_unset_none_review.py",
       "workload_sha256": "24b60f06b2472a0254c9ae15d0b208e0edd99d3cb8a3833696d343bacd0c13cd",
       "case_ids": [

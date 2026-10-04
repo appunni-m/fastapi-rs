@@ -1,0 +1,61 @@
+schema: fastapi-rs/python-api-workflow@3
+workload:
+  file: tests/fixtures/workloads/direct_api_reference_wave.py
+  factory: create_argument_bundles
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.openapi.docs.public-api.swagger-ui-signature
+  probes:
+  - probe_id: swagger-ui-signature
+    public_callable:
+      module: fastapi.openapi.docs
+      attribute: get_swagger_ui_html
+    argument_bundle: unused
+    observations:
+    - {kind: python_signature, selector: signature, comparison: exact}
+  source_evidence:
+  - path: fastapi/openapi/docs.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.openapi.docs.get_swagger_ui_html
+    sha256: 3dc8c7d129feca9f7b3b47b15e29dc1bc7a9b18ec04f2242e7aeb66cad4345aa
+- case_id: fastapi.openapi.docs.public-api.redoc-signature
+  probes:
+  - probe_id: redoc-signature
+    public_callable:
+      module: fastapi.openapi.docs
+      attribute: get_redoc_html
+    argument_bundle: unused
+    observations:
+    - {kind: python_signature, selector: signature, comparison: exact}
+  source_evidence:
+  - path: fastapi/openapi/docs.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.openapi.docs.get_redoc_html
+    sha256: 3dc8c7d129feca9f7b3b47b15e29dc1bc7a9b18ec04f2242e7aeb66cad4345aa
+- case_id: fastapi.openapi.docs.public-api.oauth-redirect-signature
+  probes:
+  - probe_id: oauth-redirect-signature
+    public_callable:
+      module: fastapi.openapi.docs
+      attribute: get_swagger_ui_oauth2_redirect_html
+    argument_bundle: unused
+    observations:
+    - {kind: python_signature, selector: signature, comparison: exact}
+  source_evidence:
+  - path: fastapi/openapi/docs.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.openapi.docs.get_swagger_ui_oauth2_redirect_html
+    sha256: 3dc8c7d129feca9f7b3b47b15e29dc1bc7a9b18ec04f2242e7aeb66cad4345aa
+- case_id: fastapi.openapi.docs.public-api.swagger-default-parameters
+  probes:
+  - probe_id: swagger-default-parameters
+    public_attribute:
+      module: fastapi.openapi.docs
+      attribute: swagger_ui_default_parameters
+    observations:
+    - {kind: python_attribute_value, selector: value, comparison: exact}
+  source_evidence:
+  - path: fastapi/openapi/docs.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.openapi.docs.swagger_ui_default_parameters
+    sha256: 3dc8c7d129feca9f7b3b47b15e29dc1bc7a9b18ec04f2242e7aeb66cad4345aa
