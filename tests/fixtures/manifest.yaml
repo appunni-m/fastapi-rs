@@ -91,7 +91,7 @@ target:
     name: starlette-rs-py
     version: 0.1.0
     starlette_contract: 1.6.0
-    commit: b8038efff71fe823272abd053567bf488b355312
+    commit: 8f34aa1df1beb0cc1066252743099536793fcb2d
   external_python_runtime_lock:
     path: requirements/target-runtime-cpython-3.12.13.lock
     sha256: efb7ca633fc9a9c8587a6f59f8ee9b509151f6f77ceb75a56dd3cdeff2be99f7
@@ -128,13 +128,13 @@ source_artifacts:
   api_import_binding_classification_review:
     path: tests/fixtures/api-import-binding-classification-review.json
     schema: fastapi-starlette-import-binding-review/v1
-    sha256: c87b4b5fcb3402e9fd8e2b976fd08f1509576ae21b3a52e12e6bd6d5ed4e081b
+    sha256: b35c6c1a7226bda1f0f1cd7cc7a9383e9cb37e0b4897df3563610c290cad38a2
     purpose: Reviewed source-backed disposition of uncertain FastAPI import bindings from the selected Starlette profile
     source_identity:
       package: FastAPI
       selected_starlette_profile: 1.6.0
       source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
-      starlette_rs_contract_commit: b8038efff71fe823272abd053567bf488b355312
+      starlette_rs_contract_commit: 8f34aa1df1beb0cc1066252743099536793fcb2d
       starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
       version: 0.141.1
     starlette_rs_contract_id: starlette-1.6.0-asgi-http-config-session-slice
@@ -148,7 +148,7 @@ source_artifacts:
     candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
     pinned_starlette_rs_sources:
       metadata_sha256: 09384dd30af7bc919c1e653e6a06227bdae94fc2d30246ce5d64825de5f62a47
-      manifest_sha256: 2b1129eafcc679bff83d9cd736325d0e481a9ec2f86bb8c24d3374a575a0ada8
+      manifest_sha256: d48ed7738c1d57d806d0796a9d24a34ac5922ac64de16964d9265b1ccf01c1dc
       api_catalog_sha256: 2cdcf776f086cd771529e140aa9733ca769078abef4e10f0cbfa19afb3fc186e
       api_review_sha256: 8b25f2e3a46753316446077bfde97b6ac8a342233e2f4e50b12d3d01eafbe099
   api_source_classification_review:
@@ -411,7 +411,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@5
-    sha256: c416010733d75f2dbd02d4f3e066651a4fa29cb5de8e079858e139cab5920f84
+    sha256: a2301e425225962a213b635648bbb0c01f663829e85fe72a15505d2e7dddf3b5
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -447,7 +447,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: f16464be7cb806852c3b6c5e5e7da75ac9bcbf527ed54ef3be007c8b53f8de5a
+    sha256: cc87d36f0b09fc807ac5e15b344aa62b49fca99086820ed6261ac2cdc0790ae1
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -484,7 +484,7 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@2
-    sha256: 801b96469a894de6191fa49002bb9037805d719fbebf278ee081278b92f580ee
+    sha256: ec180f99163fb10596ffeb2b71ea5a3dde00837435bc8a6ff4b7a1ffdf6a777a
     schema_path: tests/fixtures/schemas/materialized-input-index.schema.json
     schema_sha256: 56ac1cdfaa6f28b4277ef44b5ef78efebb3122111c5691e1b9c1bce869156aaf
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
@@ -9769,14 +9769,15 @@ api_surface_contract:
       - python.signature
     - workflow_id: local-docs-helpers-upstream
       input_path: tests/fixtures/inputs/parity/local-docs-helpers-upstream.json
-      input_sha256: 93e16c7a9f857ec61ea2d78ef1e254ea45c9d85e0d503e23ac7b6ac3f4a762a4
+      input_sha256: 46fc0948461b8230d7d953d82c48420c99c84b153ff0048fba321adc4f4fe498
       recipe_path: tests/fixtures/input-recipes/parity/local-docs-helpers-upstream.yaml
-      recipe_sha256: a7dea4da1027c46dddb4035be4b2fce157d22ce1c4b2e9b65a11035dd90f804d
+      recipe_sha256: 0ed4b5a8467b7168f124e83a2d38c81e899827a2010c140b9c2d31432219d313
       workload_path: tests/fixtures/workloads/local_docs_helpers_upstream.py
       workload_sha256: e5dd00872e7507caf0e6292b6d12d0534c5411efc3699eff8d0637c4545db1d5
       case_id: fastapi.openapi.docs.local-docs-html-helpers
       observation_selectors:
       - http.body.bytes
+      - http.headers.ordered
       - http.status
     identity_workflow_refs: []
     feature_ids:
@@ -9861,14 +9862,15 @@ api_surface_contract:
       - python.signature
     - workflow_id: local-docs-helpers-upstream
       input_path: tests/fixtures/inputs/parity/local-docs-helpers-upstream.json
-      input_sha256: 93e16c7a9f857ec61ea2d78ef1e254ea45c9d85e0d503e23ac7b6ac3f4a762a4
+      input_sha256: 46fc0948461b8230d7d953d82c48420c99c84b153ff0048fba321adc4f4fe498
       recipe_path: tests/fixtures/input-recipes/parity/local-docs-helpers-upstream.yaml
-      recipe_sha256: a7dea4da1027c46dddb4035be4b2fce157d22ce1c4b2e9b65a11035dd90f804d
+      recipe_sha256: 0ed4b5a8467b7168f124e83a2d38c81e899827a2010c140b9c2d31432219d313
       workload_path: tests/fixtures/workloads/local_docs_helpers_upstream.py
       workload_sha256: e5dd00872e7507caf0e6292b6d12d0534c5411efc3699eff8d0637c4545db1d5
       case_id: fastapi.openapi.docs.local-docs-html-helpers
       observation_selectors:
       - http.body.bytes
+      - http.headers.ordered
       - http.status
     - workflow_id: swagger-oauth-escape-upstream
       input_path: tests/fixtures/inputs/parity/swagger-oauth-escape-upstream.json

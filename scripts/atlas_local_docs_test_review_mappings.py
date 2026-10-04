@@ -20,7 +20,7 @@ __all__ = ["LOCAL_DOCS_TEST_REVIEW_MAPPINGS", "SOURCE_IDENTITIES"]
 
 _RECIPE = "tests/fixtures/input-recipes/parity/local-docs-helpers-upstream.yaml"
 _CASE = "fastapi.openapi.docs.local-docs-html-helpers"
-_JSON_BODY = ["http.status", "http.body.bytes"]
+_HTTP_RESPONSE = ["http.status", "http.headers.ordered", "http.body.bytes"]
 
 
 def _source(path: str, start: int, end: int, role: str) -> dict[str, Any]:
@@ -37,7 +37,7 @@ def _function(
 ) -> dict[str, Any]:
     return {
         "feature_ids": ["openapi-docs"],
-        "observation_selectors": _JSON_BODY,
+        "observation_selectors": _HTTP_RESPONSE,
         "rationale": rationale,
         "replace_features": True,
         "supporting_sources": [
@@ -54,17 +54,17 @@ def _function(
                 "recipe_path": _RECIPE,
                 "case_id": _CASE,
                 "action_ids": action_ids,
-                "observation_selectors": _JSON_BODY,
+                "observation_selectors": _HTTP_RESPONSE,
             }
         ],
         "stimulus_notes": (
             f"The input-only ASGI helper workload reaches {', '.join(action_ids)}. "
-            "It compares status and raw body bytes; recipes contain no expected HTML."
+            "It compares status, ordered response headers, and raw body bytes; recipes contain no expected HTML."
         ),
         "contract_gate": (
             "Partial: upstream assertions check selected strings in the helper's "
-            "HTMLResponse body. The ASGI workflow compares the full body bytes but "
-            "does not directly compare the helper return type or response headers."
+            "HTMLResponse body. The ASGI workflow compares the full body bytes and "
+            "ordered response headers, but does not directly compare the helper return type."
         ),
     }
 
@@ -89,7 +89,7 @@ _REDOC = [
 LOCAL_DOCS_TEST_REVIEW_MAPPINGS = {
     "tests/test_local_docs.py": {
         "feature_ids": ["openapi-docs"],
-        "module_observation_selectors": _JSON_BODY,
+        "module_observation_selectors": _HTTP_RESPONSE,
         "rationale": "The tests call FastAPI's public Swagger UI and ReDoc HTML helpers with default and custom asset options.",
         "supporting_sources": [*_SWAGGER, *_REDOC],
         "functions": {

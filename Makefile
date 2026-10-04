@@ -17,6 +17,7 @@ BUILD_TOOLS_LOCK ?= $(CURDIR)/requirements/build-tools-cpython-3.12.13.lock
 FASTAPI_SOURCE ?= $(abspath ../fastapi)
 STARLETTE_SOURCE ?= $(abspath ../starlette)
 STARLETTE_RS_SOURCE ?= $(abspath ../starlette-rs)
+export STARLETTE_RS_SOURCE
 SOURCE_RESULT ?=
 TARGET_RESULT ?=
 PARITY_INPUT ?= tests/fixtures/inputs/parity/first-asgi-request.json
