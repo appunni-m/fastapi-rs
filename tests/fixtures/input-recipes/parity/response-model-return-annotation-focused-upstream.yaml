@@ -2,8 +2,8 @@
 # Exact source line ranges are recorded below each case because source_evidence
 # stores the pinned module path while this schema has no line-span field.
 # Partial: the rest of the module's annotation/no-annotation combinations,
-# submodel and forward-reference matrix, JSONResponse case, extra-field variants,
-# and invalid response-model field construction error are not represented here.
+# submodel and forward-reference matrix, other JSONResponse cases, extra-field
+# variants, and invalid response-model field construction error remain open.
 schema: fastapi-rs/python-asgi-workflow@3
 workload:
   file: tests/fixtures/workloads/response_model_return_annotation_focused_upstream.py
@@ -94,6 +94,38 @@ cases:
     - {kind: http_response, selectors: [status, headers, body], comparison: exact}
   source_evidence:
   - {path: tests/test_response_model_as_return_annotation.py, kind: upstream_test}
+- case_id: fastapi.response-model-return-annotation.explicit-response-model-bypass
+  # Derived from FastAPI's fastapi/routing.py:get_request_handler branch at
+  # 706-715 and custom-response.md:7. This explicit response_model plus
+  # JSONResponse conjunction is source/docs-derived, not a single upstream
+  # test case.
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: explicit-response-model-jsonresponse-bypass
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /explicit-response-model-passthrough
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+    - {kind: asgi_send, selector: message_types, comparison: ordered}
+  source_evidence:
+  - {path: docs/en/docs/advanced/custom-response.md, kind: upstream_documentation}
 - case_id: fastapi.response-model-return-annotation.union-and-list
   # Source: ../fastapi/tests/test_response_model_as_return_annotation.py:191-229, 436-484.
   factory_input: {}

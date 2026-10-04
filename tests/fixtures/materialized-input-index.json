@@ -7430,7 +7430,7 @@
       "input_path": "tests/fixtures/inputs/parity/response-model-data-filter-exclude-unset-none-review.json",
       "input_sha256": "e8df817a4df31b3f2f646068c8a9286416ff13577822d1fc572bbc5d8eb34a17",
       "recipe_path": "tests/fixtures/input-recipes/parity/response-model-data-filter-exclude-unset-none-review.yaml",
-      "recipe_sha256": "5854cbc650c01cf16177bafb7d4b9adf8148061cf9b74bf4787a8d5f3e6bfba8",
+      "recipe_sha256": "66836aaf7e3d84f0c468a77c1bacf73894014f1e52c7c6e85208e64e7d5c687e",
       "workload_path": "tests/fixtures/workloads/response_model_data_filter_exclude_unset_none_review.py",
       "workload_sha256": "24b60f06b2472a0254c9ae15d0b208e0edd99d3cb8a3833696d343bacd0c13cd",
       "case_ids": [
@@ -7552,15 +7552,16 @@
     {
       "id": "response-model-return-annotation-focused-upstream",
       "input_path": "tests/fixtures/inputs/parity/response-model-return-annotation-focused-upstream.json",
-      "input_sha256": "16371b2cfc29bf88eaa05cffaffb4ba063e8d883746bd3a214b09d2d4581f6e2",
+      "input_sha256": "2697a146aded1173ea51dd6c2c150650e0a57e7adaec88331de72ebba79a1ffd",
       "recipe_path": "tests/fixtures/input-recipes/parity/response-model-return-annotation-focused-upstream.yaml",
-      "recipe_sha256": "b4d489dec04f6790b155435de38cd657ab4c84e0eb5ee8b296669a44d5bf5868",
+      "recipe_sha256": "34bf75b1a353ae1431fb968f5e3e2b31999fcf519eb8c20f4aa34e9360a38546",
       "workload_path": "tests/fixtures/workloads/response_model_return_annotation_focused_upstream.py",
-      "workload_sha256": "7028aea784d029b98a68106131ba397fc21296256af38a504d706dab65c2f63a",
+      "workload_sha256": "3d4f1c71cc1bb4356ed7dc299ac0e806881c2f30072d87e4b7f60802a34ad478",
       "case_ids": [
         "fastapi.response-model-return-annotation.decorator-precedence",
         "fastapi.response-model-return-annotation.explicit-none-override",
         "fastapi.response-model-return-annotation.response-passthrough",
+        "fastapi.response-model-return-annotation.explicit-response-model-bypass",
         "fastapi.response-model-return-annotation.union-and-list",
         "fastapi.response-model-return-annotation.openapi-shapes",
         "fastapi.response-model-return-annotation.invalid-value"
@@ -27595,6 +27596,22 @@
       ],
       "observation_selectors": [
         "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:advanced/custom-response.md",
+      "fixture_id": "fastapi.docs.advanced-custom-response",
+      "workflow_id": "response-model-return-annotation-focused-upstream",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.response-model-return-annotation.explicit-response-model-bypass"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.headers.ordered",
         "http.status"
       ]
     },

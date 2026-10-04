@@ -6,6 +6,7 @@ from collections.abc import Mapping
 from typing import Any, cast
 
 from fastapi import FastAPI, Response
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 
@@ -45,6 +46,19 @@ def create_app(factory_input: Mapping[str, Any], event_trace: list[str]) -> Fast
     @app.get("/passthrough")
     def response_passthrough() -> Response:
         return Response(content="Foo")
+
+    @app.get("/explicit-response-model-passthrough", response_model=User)
+    def explicit_response_model_passthrough() -> JSONResponse:
+        return JSONResponse(
+            content={
+                "name": "John",
+                "surname": "Doe",
+                "password_hash": "secret",
+                "extra": "preserved",
+            },
+            status_code=202,
+            headers={"x-response-model-bypass": "true"},
+        )
 
     @app.get("/users", response_model=list[User])
     def list_users():
