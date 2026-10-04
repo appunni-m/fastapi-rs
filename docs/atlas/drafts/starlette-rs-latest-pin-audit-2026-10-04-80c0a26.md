@@ -27,5 +27,11 @@ FastAPI parity remains incomplete.
 
 Formatting, Clippy, Rust policy, Python facade, metadata authority, API
 contract, fixture index, dependency inventory, and dependency graph checks
-passed. The six-workload benchmark suite still needs a fresh run against this
-pin. No unit-test suite was run.
+passed. The six-workload direct-ASGI suite then passed all six parity gates
+(41/41 selected cases) against this pin (suite
+`814ae067-4f70-48f8-aae1-468bf71d84d0`). On CPython 3.12.13 / macOS 15.7.7
+ARM64, FastAPI-RS median latency ranged from 0.786x to 2.636x FastAPI; the
+invalid-request lane was 2.636x median and 2.476x p95. See the recorded run in
+`docs/PARITY_BENCHMARK_PLAN.md`. Historical suite results were retained under
+the ignored benchmark-results archive so the active contract check sees only
+the current suite. No unit-test suite was run.

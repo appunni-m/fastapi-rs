@@ -227,30 +227,34 @@ server or a native-only Rust boundary. Those measurements remain separate
 future workloads; do not infer them by subtracting the Starlette control or
 from the end-to-end target time.
 
-#### Recorded six-workload baseline
+#### Recorded six-workload run
 
-The completed run at `2026-10-03T23:18:10Z` used FastAPI-RS commit
-`50c54729727768a260f6da7277da4c385ebae58f`, FastAPI `0.141.1` at
+The completed run at `2026-10-04T04:58:56Z` has suite ID
+`814ae067-4f70-48f8-aae1-468bf71d84d0`. It used FastAPI-RS commit
+`725b53951e60940b77bf9c466cec31fab7b5c7b4`, FastAPI `0.141.1` at
 `95f8322ee1dcda7ceace7b1c4f6c9915b36d748f`, Starlette `1.6.0` at
 `4f250d6b814587e20c5365f0a5f0c4d42bcb929f`, and Starlette-RS at
-`2de1e56b38c32d9d1b89445190f37bd1e7739515`. It ran on CPython 3.12.13,
+`80c0a269b8b10ed427e3f1ebda36320ae375776c`. It ran on CPython 3.12.13,
 macOS 15.7.7 ARM64, with Cargo's release profile. All six workload parity
-gates passed (41/41 selected cases). The table reports median direct-ASGI
-latency; the ratio is FastAPI-RS divided by FastAPI, so values above `1.0x`
-mean FastAPI-RS took longer on this host.
+gates passed (41/41 selected cases). The table reports median and p95
+direct-ASGI latency; ratios are FastAPI-RS divided by FastAPI, so values above
+`1.0x` mean FastAPI-RS took longer on this host.
 
-| Workload | FastAPI median | FastAPI-RS median | Median ratio |
+| Workload | FastAPI median / p95 | FastAPI-RS median / p95 | Median / p95 ratio |
 | --- | ---: | ---: | ---: |
-| Async nested dependencies, distinct query aliases | 511.0 µs | 693.9 µs | 1.358x |
-| Async nested dependencies, two query parameters | 408.1 µs | 568.5 µs | 1.393x |
-| Chunked request body | 133.3 µs | 132.3 µs | 0.993x |
-| Invalid request | 145.5 µs | 309.6 µs | 2.129x |
-| Valid request | 132.5 µs | 130.7 µs | 0.986x |
-| Repeated sequence query | 98.5 µs | 84.4 µs | 0.857x |
+| Async nested dependencies, distinct query aliases | 504.7 / 541.7 µs | 686.5 / 745.7 µs | 1.360x / 1.377x |
+| Async nested dependencies, two query parameters | 422.3 / 453.8 µs | 580.4 / 612.4 µs | 1.374x / 1.350x |
+| Chunked request body | 135.5 / 155.9 µs | 134.7 / 156.1 µs | 0.994x / 1.001x |
+| Invalid request | 305.3 / 504.8 µs | 804.8 / 1,249.7 µs | 2.636x / 2.476x |
+| Valid request | 136.7 / 156.6 µs | 133.0 / 149.0 µs | 0.973x / 0.952x |
+| Repeated sequence query | 101.5 / 112.5 µs | 79.8 / 93.1 µs | 0.786x / 0.828x |
 
-This is one machine's baseline for the declared direct-ASGI boundary. It does
-not measure network/server latency or isolate native Rust time; compare later
-runs only when their source identities and workload contracts match.
+The invalid-request lane is the largest measured gap and should be the first
+performance investigation after its error-body parity remains covered. This is
+one machine's result for the declared direct-ASGI boundary. It does not measure
+network/server latency or isolate native Rust time; compare later runs only
+when their source identities and workload contracts match. The generated suite
+and per-workload result artifacts remain in ignored `benchmark-results/`.
 
 | Tier | Workload | Timing boundary and purpose |
 | --- | --- | --- |
