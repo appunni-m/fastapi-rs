@@ -226,11 +226,22 @@ def _is_strict_json_value(value: Any, *, depth: int = 0) -> bool:
 
 
 def _signature_component(value: Any, *, depth: int = 0) -> Any:
-    """Keep JSON defaults exact and encode FastAPI wrapper/type/callable defaults by identity."""
+    """Keep JSON defaults exact and encode non-JSON signature values without loss."""
     if value is inspect.Signature.empty:
         return None
     if depth > 8:
         raise WorkerError("signature default projection exceeded its nesting limit")
+    if value is Ellipsis:
+        return {"kind": "python_singleton", "name": "Ellipsis"}
+    if (
+        f"{type(value).__module__}.{type(value).__qualname__}"
+        == "pydantic_core._pydantic_core.PydanticUndefinedType"
+    ):
+        return {
+            "kind": "python_singleton",
+            "name": "PydanticUndefined",
+            "qualified_name": "pydantic_core._pydantic_core.PydanticUndefinedType",
+        }
     if _is_strict_json_value(value):
         return _json_safe(value)
     value_type = type(value)

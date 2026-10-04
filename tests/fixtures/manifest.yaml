@@ -484,13 +484,13 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@2
-    sha256: 1ed22fee349e0aa80136ec75f1cf83c42384f315b160174804dfb8fd80f7375b
+    sha256: 138ab2e6b9b343477cbab6605bf172a04c1487a0a163cbdf6d1e13ce7aa38cb9
     schema_path: tests/fixtures/schemas/materialized-input-index.schema.json
     schema_sha256: 56ac1cdfaa6f28b4277ef44b5ef78efebb3122111c5691e1b9c1bce869156aaf
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 524
-      cases: 2060
+      workflows: 526
+      cases: 2069
       partial_source_mappings: 1484
 
 contract_metadata:
@@ -800,8 +800,8 @@ api_surface_contract:
     symbols_with_constructor_definition_refs: 37
     unique_source_constructor_definitions: 20
     operation_scope_statuses:
-      scope-review-pending: 350
-      slice-described: 110
+      scope-review-pending: 341
+      slice-described: 119
     implementation_owner_plans:
       fastapi-rs: 429
       starlette-rs: 31
@@ -812,9 +812,9 @@ api_surface_contract:
     symbols_with_alias_refs: 46
     symbols_with_deprecation_refs: 15
     symbols_with_error_contract_refs: 13
-    symbols_with_direct_api_input_workflow_refs: 34
-    symbols_with_operation_fixture_refs: 69
-    operation_fixture_refs: 330
+    symbols_with_direct_api_input_workflow_refs: 43
+    symbols_with_operation_fixture_refs: 82
+    operation_fixture_refs: 446
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -1064,6 +1064,18 @@ api_surface_contract:
       observation_selectors:
       - python.call_outcome
       - python.warnings
+    - workflow_id: parameter-factory-signatures
+      input_path: tests/fixtures/inputs/parity/parameter-factory-signatures.json
+      input_sha256: 30737684004884a621aacb4b64101f65136a5aa2af9935c37c5b64289cba04f0
+      recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
+      recipe_sha256: e8ce7bbc3db6c72204c0299c970bfcdcd31c0fec9f58f28e220e91cc1b8cad88
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.parameter-factory-signatures.body
+      probe_id: root-body-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
     operation_fixture_refs:
     - workflow_id: request-body-media-type-upstream-v3
       input_path: tests/fixtures/inputs/parity/request-body-media-type-upstream-v3.json
@@ -1242,6 +1254,276 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: body-gt-zero
+      input_path: tests/fixtures/inputs/parity/body-gt-zero.json
+      input_sha256: c15cd163be9410058e1dd934c8090fc5aa5363627879c203356ee0eeaecb1f89
+      recipe_path: tests/fixtures/input-recipes/parity/body-gt-zero.yaml
+      recipe_sha256: da641d728bb290b34dd0c9075a3a81ebc44eeecf78df4737c2f5ff0752cac342
+      workload_path: tests/fixtures/workloads/body_gt_zero.py
+      workload_sha256: 250c19d6ef8dd06531171420d4e433b8000a2f2fd654b4c9afbff52c4d87a807
+      case_id: fastapi.body.gt-zero.positive-integer
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: body-gt-zero
+      input_path: tests/fixtures/inputs/parity/body-gt-zero.json
+      input_sha256: c15cd163be9410058e1dd934c8090fc5aa5363627879c203356ee0eeaecb1f89
+      recipe_path: tests/fixtures/input-recipes/parity/body-gt-zero.yaml
+      recipe_sha256: da641d728bb290b34dd0c9075a3a81ebc44eeecf78df4737c2f5ff0752cac342
+      workload_path: tests/fixtures/workloads/body_gt_zero.py
+      workload_sha256: 250c19d6ef8dd06531171420d4e433b8000a2f2fd654b4c9afbff52c4d87a807
+      case_id: fastapi.body.gt-zero.annotated-positive-integer
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: body-gt-zero
+      input_path: tests/fixtures/inputs/parity/body-gt-zero.json
+      input_sha256: c15cd163be9410058e1dd934c8090fc5aa5363627879c203356ee0eeaecb1f89
+      recipe_path: tests/fixtures/input-recipes/parity/body-gt-zero.yaml
+      recipe_sha256: da641d728bb290b34dd0c9075a3a81ebc44eeecf78df4737c2f5ff0752cac342
+      workload_path: tests/fixtures/workloads/body_gt_zero.py
+      workload_sha256: 250c19d6ef8dd06531171420d4e433b8000a2f2fd654b4c9afbff52c4d87a807
+      case_id: fastapi.body.gt-zero.annotated-zero-rejected
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: body-gt-zero
+      input_path: tests/fixtures/inputs/parity/body-gt-zero.json
+      input_sha256: c15cd163be9410058e1dd934c8090fc5aa5363627879c203356ee0eeaecb1f89
+      recipe_path: tests/fixtures/input-recipes/parity/body-gt-zero.yaml
+      recipe_sha256: da641d728bb290b34dd0c9075a3a81ebc44eeecf78df4737c2f5ff0752cac342
+      workload_path: tests/fixtures/workloads/body_gt_zero.py
+      workload_sha256: 250c19d6ef8dd06531171420d4e433b8000a2f2fd654b4c9afbff52c4d87a807
+      case_id: fastapi.body.gt-zero.zero-rejected
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: body-surface
+      input_path: tests/fixtures/inputs/parity/body-surface.json
+      input_sha256: 5bc87e9aa49d203e7d4e02b5601646191b985db50347f98fa6e0dbfca9adf5fa
+      recipe_path: tests/fixtures/input-recipes/parity/body-surface.yaml
+      recipe_sha256: 1370c5fcd46eafba44754f8d8ea56581194ef5733121a333af4b3b03cc5fa609
+      workload_path: tests/fixtures/workloads/body_surface.py
+      workload_sha256: 8481dd24509f48994a53c884cb5d7103ce18327e3960085a0dc8544f3d144e82
+      case_id: fastapi.body.embedded-scalar-valid
+      observation_selectors:
+      - asgi.send.message_types
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: body-surface
+      input_path: tests/fixtures/inputs/parity/body-surface.json
+      input_sha256: 5bc87e9aa49d203e7d4e02b5601646191b985db50347f98fa6e0dbfca9adf5fa
+      recipe_path: tests/fixtures/input-recipes/parity/body-surface.yaml
+      recipe_sha256: 1370c5fcd46eafba44754f8d8ea56581194ef5733121a333af4b3b03cc5fa609
+      workload_path: tests/fixtures/workloads/body_surface.py
+      workload_sha256: 8481dd24509f48994a53c884cb5d7103ce18327e3960085a0dc8544f3d144e82
+      case_id: fastapi.body.embedded-scalar-missing
+      observation_selectors:
+      - asgi.send.message_types
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: body-surface
+      input_path: tests/fixtures/inputs/parity/body-surface.json
+      input_sha256: 5bc87e9aa49d203e7d4e02b5601646191b985db50347f98fa6e0dbfca9adf5fa
+      recipe_path: tests/fixtures/input-recipes/parity/body-surface.yaml
+      recipe_sha256: 1370c5fcd46eafba44754f8d8ea56581194ef5733121a333af4b3b03cc5fa609
+      workload_path: tests/fixtures/workloads/body_surface.py
+      workload_sha256: 8481dd24509f48994a53c884cb5d7103ce18327e3960085a0dc8544f3d144e82
+      case_id: fastapi.body.embedded-list-valid
+      observation_selectors:
+      - asgi.send.message_types
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: body-surface
+      input_path: tests/fixtures/inputs/parity/body-surface.json
+      input_sha256: 5bc87e9aa49d203e7d4e02b5601646191b985db50347f98fa6e0dbfca9adf5fa
+      recipe_path: tests/fixtures/input-recipes/parity/body-surface.yaml
+      recipe_sha256: 1370c5fcd46eafba44754f8d8ea56581194ef5733121a333af4b3b03cc5fa609
+      workload_path: tests/fixtures/workloads/body_surface.py
+      workload_sha256: 8481dd24509f48994a53c884cb5d7103ce18327e3960085a0dc8544f3d144e82
+      case_id: fastapi.body.required-list-alias-by-name
+      observation_selectors:
+      - asgi.send.message_types
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: body-surface
+      input_path: tests/fixtures/inputs/parity/body-surface.json
+      input_sha256: 5bc87e9aa49d203e7d4e02b5601646191b985db50347f98fa6e0dbfca9adf5fa
+      recipe_path: tests/fixtures/input-recipes/parity/body-surface.yaml
+      recipe_sha256: 1370c5fcd46eafba44754f8d8ea56581194ef5733121a333af4b3b03cc5fa609
+      workload_path: tests/fixtures/workloads/body_surface.py
+      workload_sha256: 8481dd24509f48994a53c884cb5d7103ce18327e3960085a0dc8544f3d144e82
+      case_id: fastapi.body.required-list-alias-valid
+      observation_selectors:
+      - asgi.send.message_types
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: body-surface
+      input_path: tests/fixtures/inputs/parity/body-surface.json
+      input_sha256: 5bc87e9aa49d203e7d4e02b5601646191b985db50347f98fa6e0dbfca9adf5fa
+      recipe_path: tests/fixtures/input-recipes/parity/body-surface.yaml
+      recipe_sha256: 1370c5fcd46eafba44754f8d8ea56581194ef5733121a333af4b3b03cc5fa609
+      workload_path: tests/fixtures/workloads/body_surface.py
+      workload_sha256: 8481dd24509f48994a53c884cb5d7103ce18327e3960085a0dc8544f3d144e82
+      case_id: fastapi.body.optional-list-alias-ignored
+      observation_selectors:
+      - asgi.send.message_types
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: body-surface
+      input_path: tests/fixtures/inputs/parity/body-surface.json
+      input_sha256: 5bc87e9aa49d203e7d4e02b5601646191b985db50347f98fa6e0dbfca9adf5fa
+      recipe_path: tests/fixtures/input-recipes/parity/body-surface.yaml
+      recipe_sha256: 1370c5fcd46eafba44754f8d8ea56581194ef5733121a333af4b3b03cc5fa609
+      workload_path: tests/fixtures/workloads/body_surface.py
+      workload_sha256: 8481dd24509f48994a53c884cb5d7103ce18327e3960085a0dc8544f3d144e82
+      case_id: fastapi.body.optional-list-validation-alias-valid
+      observation_selectors:
+      - asgi.send.message_types
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: body-surface
+      input_path: tests/fixtures/inputs/parity/body-surface.json
+      input_sha256: 5bc87e9aa49d203e7d4e02b5601646191b985db50347f98fa6e0dbfca9adf5fa
+      recipe_path: tests/fixtures/input-recipes/parity/body-surface.yaml
+      recipe_sha256: 1370c5fcd46eafba44754f8d8ea56581194ef5733121a333af4b3b03cc5fa609
+      workload_path: tests/fixtures/workloads/body_surface.py
+      workload_sha256: 8481dd24509f48994a53c884cb5d7103ce18327e3960085a0dc8544f3d144e82
+      case_id: fastapi.body.multiple-values-valid
+      observation_selectors:
+      - asgi.send.message_types
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: body-surface
+      input_path: tests/fixtures/inputs/parity/body-surface.json
+      input_sha256: 5bc87e9aa49d203e7d4e02b5601646191b985db50347f98fa6e0dbfca9adf5fa
+      recipe_path: tests/fixtures/input-recipes/parity/body-surface.yaml
+      recipe_sha256: 1370c5fcd46eafba44754f8d8ea56581194ef5733121a333af4b3b03cc5fa609
+      workload_path: tests/fixtures/workloads/body_surface.py
+      workload_sha256: 8481dd24509f48994a53c884cb5d7103ce18327e3960085a0dc8544f3d144e82
+      case_id: fastapi.body.multiple-values-invalid
+      observation_selectors:
+      - asgi.send.message_types
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: body-surface
+      input_path: tests/fixtures/inputs/parity/body-surface.json
+      input_sha256: 5bc87e9aa49d203e7d4e02b5601646191b985db50347f98fa6e0dbfca9adf5fa
+      recipe_path: tests/fixtures/input-recipes/parity/body-surface.yaml
+      recipe_sha256: 1370c5fcd46eafba44754f8d8ea56581194ef5733121a333af4b3b03cc5fa609
+      workload_path: tests/fixtures/workloads/body_surface.py
+      workload_sha256: 8481dd24509f48994a53c884cb5d7103ce18327e3960085a0dc8544f3d144e82
+      case_id: fastapi.body.optional-model-absent
+      observation_selectors:
+      - asgi.send.message_types
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: body-surface
+      input_path: tests/fixtures/inputs/parity/body-surface.json
+      input_sha256: 5bc87e9aa49d203e7d4e02b5601646191b985db50347f98fa6e0dbfca9adf5fa
+      recipe_path: tests/fixtures/input-recipes/parity/body-surface.yaml
+      recipe_sha256: 1370c5fcd46eafba44754f8d8ea56581194ef5733121a333af4b3b03cc5fa609
+      workload_path: tests/fixtures/workloads/body_surface.py
+      workload_sha256: 8481dd24509f48994a53c884cb5d7103ce18327e3960085a0dc8544f3d144e82
+      case_id: fastapi.body.optional-model-present
+      observation_selectors:
+      - asgi.send.message_types
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: body-surface
+      input_path: tests/fixtures/inputs/parity/body-surface.json
+      input_sha256: 5bc87e9aa49d203e7d4e02b5601646191b985db50347f98fa6e0dbfca9adf5fa
+      recipe_path: tests/fixtures/input-recipes/parity/body-surface.yaml
+      recipe_sha256: 1370c5fcd46eafba44754f8d8ea56581194ef5733121a333af4b3b03cc5fa609
+      workload_path: tests/fixtures/workloads/body_surface.py
+      workload_sha256: 8481dd24509f48994a53c884cb5d7103ce18327e3960085a0dc8544f3d144e82
+      case_id: fastapi.body.openapi-schemas
+      observation_selectors:
+      - asgi.send.message_types
+      - docs.response.headers
+      - docs.response.status
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: optional-list-openapi-schema-source-review
+      input_path: tests/fixtures/inputs/parity/optional-list-openapi-schema-source-review.json
+      input_sha256: f6b3728e9e1627c9e4aac09fa5767e5b1d51bdc8e2ab6806972d608bad10b83c
+      recipe_path: tests/fixtures/input-recipes/parity/optional-list-openapi-schema-source-review.yaml
+      recipe_sha256: 8f6efe876fb86a2ca643cea7c0e79587dc428b21392a6ca648c3922e2ed73f32
+      workload_path: tests/fixtures/workloads/optional_list_openapi_schema_source_review.py
+      workload_sha256: 7e3903d8e16baa005a8bc028eeac65820decf5da4a8b9aa5439170b0f739561c
+      case_id: fastapi.request-body.optional-list-openapi.no-alias
+      observation_selectors:
+      - openapi.document
+      - openapi.paths
+    - workflow_id: optional-list-openapi-schema-source-review
+      input_path: tests/fixtures/inputs/parity/optional-list-openapi-schema-source-review.json
+      input_sha256: f6b3728e9e1627c9e4aac09fa5767e5b1d51bdc8e2ab6806972d608bad10b83c
+      recipe_path: tests/fixtures/input-recipes/parity/optional-list-openapi-schema-source-review.yaml
+      recipe_sha256: 8f6efe876fb86a2ca643cea7c0e79587dc428b21392a6ca648c3922e2ed73f32
+      workload_path: tests/fixtures/workloads/optional_list_openapi_schema_source_review.py
+      workload_sha256: 7e3903d8e16baa005a8bc028eeac65820decf5da4a8b9aa5439170b0f739561c
+      case_id: fastapi.request-body.optional-list-openapi.alias
+      observation_selectors:
+      - openapi.document
+      - openapi.paths
+    - workflow_id: optional-list-openapi-schema-source-review
+      input_path: tests/fixtures/inputs/parity/optional-list-openapi-schema-source-review.json
+      input_sha256: f6b3728e9e1627c9e4aac09fa5767e5b1d51bdc8e2ab6806972d608bad10b83c
+      recipe_path: tests/fixtures/input-recipes/parity/optional-list-openapi-schema-source-review.yaml
+      recipe_sha256: 8f6efe876fb86a2ca643cea7c0e79587dc428b21392a6ca648c3922e2ed73f32
+      workload_path: tests/fixtures/workloads/optional_list_openapi_schema_source_review.py
+      workload_sha256: 7e3903d8e16baa005a8bc028eeac65820decf5da4a8b9aa5439170b0f739561c
+      case_id: fastapi.request-body.optional-list-openapi.validation-alias
+      observation_selectors:
+      - openapi.document
+      - openapi.paths
+    - workflow_id: optional-list-openapi-schema-source-review
+      input_path: tests/fixtures/inputs/parity/optional-list-openapi-schema-source-review.json
+      input_sha256: f6b3728e9e1627c9e4aac09fa5767e5b1d51bdc8e2ab6806972d608bad10b83c
+      recipe_path: tests/fixtures/input-recipes/parity/optional-list-openapi-schema-source-review.yaml
+      recipe_sha256: 8f6efe876fb86a2ca643cea7c0e79587dc428b21392a6ca648c3922e2ed73f32
+      workload_path: tests/fixtures/workloads/optional_list_openapi_schema_source_review.py
+      workload_sha256: 7e3903d8e16baa005a8bc028eeac65820decf5da4a8b9aa5439170b0f739561c
+      case_id: fastapi.request-body.optional-list-openapi.both-aliases
+      observation_selectors:
+      - openapi.document
+      - openapi.paths
+    - workflow_id: body-fields-doc-tutorial001-review
+      input_path: tests/fixtures/inputs/parity/body-fields-doc-tutorial001-review.json
+      input_sha256: 8fdddbcff727f728a614270862e487b0f1117a91185c1013db3383e3fe22ce4b
+      recipe_path: tests/fixtures/input-recipes/parity/body-fields-doc-tutorial001-review.yaml
+      recipe_sha256: 78d6d7320c99a3d01db45d3091eafd2f2282ce2341bd957941d3526fcf4d5a96
+      workload_path: tests/fixtures/workloads/body_fields_doc_tutorial001_review.py
+      workload_sha256: 61303491471c2ae9245679a5e5763279dc0c47e5ba6753df96b57a2c5c21deba
+      case_id: fastapi.docs-example.body-fields.tutorial001.openapi-embedded-schema
+      observation_selectors:
+      - docs.response.status
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: parameter-factory-signatures
+      input_path: tests/fixtures/inputs/parity/parameter-factory-signatures.json
+      input_sha256: 30737684004884a621aacb4b64101f65136a5aa2af9935c37c5b64289cba04f0
+      recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
+      recipe_sha256: e8ce7bbc3db6c72204c0299c970bfcdcd31c0fec9f58f28e220e91cc1b8cad88
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.parameter-factory-signatures.body
+      observation_selectors:
+      - python.signature
     identity_workflow_refs:
     - workflow_id: root-alias-identity
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
@@ -1274,6 +1556,7 @@ api_surface_contract:
     - openapi.document
     - openapi.paths
     - python.call_outcome
+    - python.signature
     - python.warnings
     operation_scope:
       status: slice-described
@@ -1504,6 +1787,365 @@ api_surface_contract:
       probe_kind: callable
       observation_selectors:
       - python.signature
+    - workflow_id: parameter-factory-signatures
+      input_path: tests/fixtures/inputs/parity/parameter-factory-signatures.json
+      input_sha256: 30737684004884a621aacb4b64101f65136a5aa2af9935c37c5b64289cba04f0
+      recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
+      recipe_sha256: e8ce7bbc3db6c72204c0299c970bfcdcd31c0fec9f58f28e220e91cc1b8cad88
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.parameter-factory-signatures.depends
+      probe_id: root-depends-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
+    operation_fixture_refs:
+    - workflow_id: dependency-wave
+      input_path: tests/fixtures/inputs/parity/dependency-wave.json
+      input_sha256: fc3ca0b98f14ed757f5171d1c94585b52f04917d51ab5ebce0aedc0d2c5e3dc7
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-wave.yaml
+      recipe_sha256: 1e041259912546411f1c69a41e30bb400e25859df7bd2eef8f7eecfb579e32cd
+      workload_path: tests/fixtures/workloads/dependency_injection_wave.py
+      workload_sha256: 2a236013bcd74d97fa38372c0eb2edcc55b5b45d26f866cdd1da5bedc8d45dc7
+      case_id: fastapi.dependency-wave.generic-parameterless.test-generic-parameterless-depends
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-wave
+      input_path: tests/fixtures/inputs/parity/dependency-wave.json
+      input_sha256: fc3ca0b98f14ed757f5171d1c94585b52f04917d51ab5ebce0aedc0d2c5e3dc7
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-wave.yaml
+      recipe_sha256: 1e041259912546411f1c69a41e30bb400e25859df7bd2eef8f7eecfb579e32cd
+      workload_path: tests/fixtures/workloads/dependency_injection_wave.py
+      workload_sha256: 2a236013bcd74d97fa38372c0eb2edcc55b5b45d26f866cdd1da5bedc8d45dc7
+      case_id: fastapi.dependency-wave.dependency-current-user.test-get-users-me
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-wave
+      input_path: tests/fixtures/inputs/parity/dependency-wave.json
+      input_sha256: fc3ca0b98f14ed757f5171d1c94585b52f04917d51ab5ebce0aedc0d2c5e3dc7
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-wave.yaml
+      recipe_sha256: 1e041259912546411f1c69a41e30bb400e25859df7bd2eef8f7eecfb579e32cd
+      workload_path: tests/fixtures/workloads/dependency_injection_wave.py
+      workload_sha256: 2a236013bcd74d97fa38372c0eb2edcc55b5b45d26f866cdd1da5bedc8d45dc7
+      case_id: fastapi.dependency-wave.dependency-yield-resource.test-get-db
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-cache-source-wave
+      input_path: tests/fixtures/inputs/parity/dependency-cache-source-wave.json
+      input_sha256: 524f8b15cb19ef7dccef0f3a1fc6aceff46bdaf5cd87c85a77eacffdf517f163
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-cache-source-wave.yaml
+      recipe_sha256: 169cffeffa3bcdf795b2e22363b84485fb699648663fbeba037890aa13440192
+      workload_path: tests/fixtures/workloads/dependency_cache_source_wave.py
+      workload_sha256: 7cddcfbe79564595ecbb90786c5f671eda0d235dfd9301a9ebf1f7b53816a41b
+      case_id: fastapi.dependencies.cache-shared-subdependency-source-wave
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-cache-source-wave
+      input_path: tests/fixtures/inputs/parity/dependency-cache-source-wave.json
+      input_sha256: 524f8b15cb19ef7dccef0f3a1fc6aceff46bdaf5cd87c85a77eacffdf517f163
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-cache-source-wave.yaml
+      recipe_sha256: 169cffeffa3bcdf795b2e22363b84485fb699648663fbeba037890aa13440192
+      workload_path: tests/fixtures/workloads/dependency_cache_source_wave.py
+      workload_sha256: 7cddcfbe79564595ecbb90786c5f671eda0d235dfd9301a9ebf1f7b53816a41b
+      case_id: fastapi.dependencies.cache-bypass-subdependency-source-wave
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-cache-request-local
+      input_path: tests/fixtures/inputs/parity/dependency-override-cache-request-local.json
+      input_sha256: 5069cf65eb332a12e1774c90e86c322d68e4739334f91354b3daa2f8ee7cfe03
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-request-local.yaml
+      recipe_sha256: 68a3da29df19cde6525e142d67c1bb87810c9212bb2aa1f1407a5d1dbd8de8ca
+      workload_path: tests/fixtures/workloads/dependency_override_cache_request_local.py
+      workload_sha256: 4d474e593bfa0d3466475190849c4a6756b7c9ca7e09d668095573b5ce2fc57f
+      case_id: fastapi.dependencies.override-cache-request-local
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-overrides-required-subdependency-wave
+      input_path: tests/fixtures/inputs/parity/dependency-overrides-required-subdependency-wave.json
+      input_sha256: 82a38b26fc4a7046d4b061bf63ce20aa403ff0a995522f43ebdfdb6091aabb5b
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-overrides-required-subdependency-wave.yaml
+      recipe_sha256: 1fcadeb0e84d0c3f774984a0378a18edc113f3ec1a114a364e709cc1e3d100f3
+      workload_path: tests/fixtures/workloads/dependency_override_required_subdependency_wave.py
+      workload_sha256: c663cfef8bb2ccadc9ecf5ec5fd7e29a57d10d09d35e6a1d2fb60bea3ffbb579
+      case_id: fastapi.dependency-overrides.required-nested-query-parameter
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-sync-defaults-upstream
+      input_path: tests/fixtures/inputs/parity/dependency-override-sync-defaults-upstream.json
+      input_sha256: 55cf5a43e7abaa8dd4fad830bf804db8a0d93888dc4ed0eb0d111a07ffd497e1
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-sync-defaults-upstream.yaml
+      recipe_sha256: 2458854a724aedb85699eea08ad191bffd91c50f0aac091e6a955af2d81be2a7
+      workload_path: tests/fixtures/workloads/dependency_override_sync_defaults_upstream.py
+      workload_sha256: 3e07c88d0c10313217884c6eb94ee40d7be81208ee5c028ac69d03d2b52c5219
+      case_id: fastapi.dependency-overrides.sync-defaults
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-async-cache-request-local
+      input_path: tests/fixtures/inputs/parity/dependency-override-async-cache-request-local.json
+      input_sha256: bc4c209bbfa117e4c2ba0c28143cc9a52793b7737085c7c30dc67dc2984ebee4
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-async-cache-request-local.yaml
+      recipe_sha256: 8f7907a5aebc5ff542d47e0f431682ee40db7f4877bed101998d6ebc6f22a06b
+      workload_path: tests/fixtures/workloads/dependency_override_async_cache_request_local.py
+      workload_sha256: 148e045c279ba577a5001b3bffab22bd3be30d169ee0a971ab8dba2154deec6d
+      case_id: fastapi.dependencies.override-async-cache-request-local
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-async-two-keys-request-local
+      input_path: tests/fixtures/inputs/parity/dependency-override-async-two-keys-request-local.json
+      input_sha256: aa7c51af2800193dfbe44ddb6f48612b3f72a499f06b444a17e4f367370782b5
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-async-two-keys-request-local.yaml
+      recipe_sha256: 523bd78fddab71bdaddbf3f780b5475a757968ed904fb1f7a18dc3e1dbb20902
+      workload_path: tests/fixtures/workloads/dependency_override_async_two_keys_request_local.py
+      workload_sha256: b9f664ab04b65b791dc471cb536a94a59e6df55ff8928e117ccd0ffecd744d88
+      case_id: fastapi.dependencies.override-async-two-keys-request-local
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-async-query-cache-request-local
+      input_path: tests/fixtures/inputs/parity/dependency-override-async-query-cache-request-local.json
+      input_sha256: 11b12de96309629fed67756b4b90de5fc6dcf8e761e654fb647b9049e8d7dece
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-async-query-cache-request-local.yaml
+      recipe_sha256: 4321904d0a2536d6b59dcc225e09692f64aede7adc97758d544eb471a0e10d0b
+      workload_path: tests/fixtures/workloads/dependency_override_async_query_cache_request_local.py
+      workload_sha256: 737dcce3ee8debcfcee898932d57d200c499feb951253120769bee3360c4b448
+      case_id: fastapi.dependencies.override-async-query-cache-request-local
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-async-query-alias-cache-request-local
+      input_path: tests/fixtures/inputs/parity/dependency-override-async-query-alias-cache-request-local.json
+      input_sha256: e36b272ebd4512d21c2e7257dadde1f4dbff786fc895df134c2ccaa2bdbc3f1d
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-async-query-alias-cache-request-local.yaml
+      recipe_sha256: 37eec31d9e3f9728aeca656c1ef28cff1582e22bff48c0547b135ab0eba2feb6
+      workload_path: tests/fixtures/workloads/dependency_override_async_query_alias_cache_request_local.py
+      workload_sha256: 9bbb0af6784cf7246bf9a37b61ffde8d39ce3ad3012c9f2e93d161506fb49995
+      case_id: fastapi.dependencies.override-async-query-alias-cache-request-local
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-async-query-validation-aggregation
+      input_path: tests/fixtures/inputs/parity/dependency-override-async-query-validation-aggregation.json
+      input_sha256: 53a222c9c8b46662a0c326cf9346dcbee725e87787c53b7ff48fcb6eaeebfcbf
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-async-query-validation-aggregation.yaml
+      recipe_sha256: 7f8299ecd34276025f2c7038534d46edff360e212cbcad7f5f377811dd3e7184
+      workload_path: tests/fixtures/workloads/dependency_override_async_query_validation_aggregation.py
+      workload_sha256: 19cb99fc9331d186bc5112e33d0a831aae48bf1659ba741294580cfc98c3f927
+      case_id: fastapi.dependencies.override-async-query-validation-aggregation
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-async-uncached-edges-request-local
+      input_path: tests/fixtures/inputs/parity/dependency-override-async-uncached-edges-request-local.json
+      input_sha256: 1e84f528a01b00ac321d2267e448e8096f3e61b492392aa998097baf794de34c
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-async-uncached-edges-request-local.yaml
+      recipe_sha256: 46b1147eab35f17628e7b1899eda3a7ee9a5759119f59d73e7e47e42b770bcb4
+      workload_path: tests/fixtures/workloads/dependency_override_async_uncached_edges_request_local.py
+      workload_sha256: f080a6bc240afe8ebe7427d2ab884da3dfaddbc5fc0b5406081e18a1fc443e80
+      case_id: fastapi.dependencies.override-async-uncached-edges-request-local
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-async-uncached-edges-request-local
+      input_path: tests/fixtures/inputs/parity/dependency-override-async-uncached-edges-request-local.json
+      input_sha256: 1e84f528a01b00ac321d2267e448e8096f3e61b492392aa998097baf794de34c
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-async-uncached-edges-request-local.yaml
+      recipe_sha256: 46b1147eab35f17628e7b1899eda3a7ee9a5759119f59d73e7e47e42b770bcb4
+      workload_path: tests/fixtures/workloads/dependency_override_async_uncached_edges_request_local.py
+      workload_sha256: f080a6bc240afe8ebe7427d2ab884da3dfaddbc5fc0b5406081e18a1fc443e80
+      case_id: fastapi.dependencies.override-async-cache-uncached-edges-request-local
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-mixed-sync-async-direct-order-request-local
+      input_path: tests/fixtures/inputs/parity/dependency-override-mixed-sync-async-direct-order-request-local.json
+      input_sha256: 4a503d0dd3a5056512710757c50f467e277bf7c045f54a30cb2c0c61fc5ec918
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-mixed-sync-async-direct-order-request-local.yaml
+      recipe_sha256: 3382014e19fe82b1414fd23b64fca97ddbb326d64a9556770014295abe1492fe
+      workload_path: tests/fixtures/workloads/dependency_override_mixed_sync_async_direct_order_request_local.py
+      workload_sha256: e2082661c5350a82318ba4ed967ae20c6dd4fa4bd2f1748cbb8fb23216f3547c
+      case_id: fastapi.dependencies.override-mixed-sync-async-direct-order-request-local
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-async-endpoint-request-local
+      input_path: tests/fixtures/inputs/parity/dependency-override-async-endpoint-request-local.json
+      input_sha256: 78785f97d9746e17d01715661cd7d1dcc67e9330c7b99ba55dcd014c9504324e
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-async-endpoint-request-local.yaml
+      recipe_sha256: 1c23861ed2154b17f7b5d16a5af22908336efa2e79879f2b75e3942a41565d9b
+      workload_path: tests/fixtures/workloads/dependency_override_async_endpoint_request_local.py
+      workload_sha256: aca58a64f8e1ab48095cf2f2018567095a98406a51d9f776f28f930635494ed8
+      case_id: fastapi.dependencies.override-async-endpoint-omitted-query
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-async-endpoint-request-local
+      input_path: tests/fixtures/inputs/parity/dependency-override-async-endpoint-request-local.json
+      input_sha256: 78785f97d9746e17d01715661cd7d1dcc67e9330c7b99ba55dcd014c9504324e
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-async-endpoint-request-local.yaml
+      recipe_sha256: 1c23861ed2154b17f7b5d16a5af22908336efa2e79879f2b75e3942a41565d9b
+      workload_path: tests/fixtures/workloads/dependency_override_async_endpoint_request_local.py
+      workload_sha256: aca58a64f8e1ab48095cf2f2018567095a98406a51d9f776f28f930635494ed8
+      case_id: fastapi.dependencies.override-async-endpoint-supplied-query
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-async-nested-query-wave
+      input_path: tests/fixtures/inputs/parity/dependency-override-async-nested-query-wave.json
+      input_sha256: db0bc90dd3d69cdc48164c562001252894ee23a86a50fd774399209ba2dc7438
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-async-nested-query-wave.yaml
+      recipe_sha256: 289e9aeb6c18ea548e8ec844f6b2f74364b4b49a9a2926593d1f22745671d5ec
+      workload_path: tests/fixtures/workloads/dependency_override_async_nested_query_wave.py
+      workload_sha256: 47a748429141c5142aa9d6e44adc075ce3f7050c2fd8b4dcba47c16ef9fcb33e
+      case_id: fastapi.dependency-overrides.async-nested-required-query
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-async-nested-two-required-query-wave
+      input_path: tests/fixtures/inputs/parity/dependency-override-async-nested-two-required-query-wave.json
+      input_sha256: ad4c97b7ca940bba454249f4076faf2860a4f3eb80cdec433c492a1e9b331d11
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-async-nested-two-required-query-wave.yaml
+      recipe_sha256: 9f8510206fd5397f591f3360b580f32ceb9e1e10a8c36103ba01a93497249016
+      workload_path: tests/fixtures/workloads/dependency_override_async_nested_two_required_query_wave.py
+      workload_sha256: b141d4a519a40acd92aab0f195b39f783713256c25678307630c098b0716a5c4
+      case_id: fastapi.dependency-overrides.async-nested-two-required-query
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-async-nested-two-required-query-wave
+      input_path: tests/fixtures/inputs/parity/dependency-override-async-nested-two-required-query-wave.json
+      input_sha256: ad4c97b7ca940bba454249f4076faf2860a4f3eb80cdec433c492a1e9b331d11
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-async-nested-two-required-query-wave.yaml
+      recipe_sha256: 9f8510206fd5397f591f3360b580f32ceb9e1e10a8c36103ba01a93497249016
+      workload_path: tests/fixtures/workloads/dependency_override_async_nested_two_required_query_wave.py
+      workload_sha256: b141d4a519a40acd92aab0f195b39f783713256c25678307630c098b0716a5c4
+      case_id: fastapi.dependency-overrides.async-nested-two-distinct-query-aliases
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-yield-tutorials-upstream
+      input_path: tests/fixtures/inputs/parity/dependency-yield-tutorials-upstream.json
+      input_sha256: 8ea3635c758588e2e906e83e072f467c7f3e9c95e5be9500ea2784c7d26f0881
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-yield-tutorials-upstream.yaml
+      recipe_sha256: b694981e922671b14b07a7a114ae3d55041268b515d5329a85a6872e9cb806db
+      workload_path: tests/fixtures/workloads/dependency_yield_tutorials_upstream.py
+      workload_sha256: 1a2a6d2142d705064e83dd41e5420d377de6928eda1cf4dd2514c089cefd86ee
+      case_id: fastapi.dependencies.tutorial008e.function-scope-yield-rick
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-yield-tutorials-upstream
+      input_path: tests/fixtures/inputs/parity/dependency-yield-tutorials-upstream.json
+      input_sha256: 8ea3635c758588e2e906e83e072f467c7f3e9c95e5be9500ea2784c7d26f0881
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-yield-tutorials-upstream.yaml
+      recipe_sha256: b694981e922671b14b07a7a114ae3d55041268b515d5329a85a6872e9cb806db
+      workload_path: tests/fixtures/workloads/dependency_yield_tutorials_upstream.py
+      workload_sha256: 1a2a6d2142d705064e83dd41e5420d377de6928eda1cf4dd2514c089cefd86ee
+      case_id: fastapi.dependencies.tutorial008e.annotated-function-scope-yield-rick
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-lifecycle
+      input_path: tests/fixtures/inputs/parity/dependency-lifecycle.json
+      input_sha256: c739d2072875b6df889a288b94bcdb5ee0ea77110403cc6b76c0fec296cf192c
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-lifecycle.yaml
+      recipe_sha256: ed8f3daaea132414bcdaa59bdf85df625cf4b17336693d51d827349304aa1798
+      workload_path: tests/fixtures/workloads/dependency_lifecycle.py
+      workload_sha256: 9def1f56483fe1e554423b201924325ad2c9f2bfbec90ec1bbcac059d76e07cf
+      case_id: fastapi.dependencies.yield-scope-cleanup
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-scope-websocket
+      input_path: tests/fixtures/inputs/parity/dependency-scope-websocket.json
+      input_sha256: 2f28f0331235cc9bcbef00a5d0754b9db4017914804692ffaff428fec570dc76
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-scope-websocket.yaml
+      recipe_sha256: d54489c5c56963efcc47d1cef8608132db81a1198189fd8e77786e90bdda0bad
+      workload_path: tests/fixtures/workloads/dependency_scope_websocket.py
+      workload_sha256: e073559aecc1aa06ac2cb36c12a252291e7fa291c682423ec4a601ede186f1ff
+      case_id: fastapi.dependencies.websocket-function-scope-isolated
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+      - websocket.close_code
+      - websocket.messages
+    - workflow_id: dependency-scope-websocket
+      input_path: tests/fixtures/inputs/parity/dependency-scope-websocket.json
+      input_sha256: 2f28f0331235cc9bcbef00a5d0754b9db4017914804692ffaff428fec570dc76
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-scope-websocket.yaml
+      recipe_sha256: d54489c5c56963efcc47d1cef8608132db81a1198189fd8e77786e90bdda0bad
+      workload_path: tests/fixtures/workloads/dependency_scope_websocket.py
+      workload_sha256: e073559aecc1aa06ac2cb36c12a252291e7fa291c682423ec4a601ede186f1ff
+      case_id: fastapi.dependencies.websocket-request-scope-isolated
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+      - websocket.close_code
+      - websocket.messages
+    - workflow_id: dependency-scope-construction-errors
+      input_path: tests/fixtures/inputs/parity/dependency-scope-construction-errors.json
+      input_sha256: 3010b0948dd9c62512084655100fdca1dbbe2a40a86b27aff791b63824874413
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-scope-construction-errors.yaml
+      recipe_sha256: 60ed7e4c936c1c48a81049ab9822284c4855065eb20dbcacac4d552970e722ed
+      workload_path: tests/fixtures/workloads/dependency_scope_construction_errors.py
+      workload_sha256: 1313e5a6f88ded5c080b983437afe693823d1cfa03abeef564194ec4c65723f5
+      case_id: fastapi.dependencies.invalid-request-scope-depends-on-function-http
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+    - workflow_id: dependency-scope-construction-errors
+      input_path: tests/fixtures/inputs/parity/dependency-scope-construction-errors.json
+      input_sha256: 3010b0948dd9c62512084655100fdca1dbbe2a40a86b27aff791b63824874413
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-scope-construction-errors.yaml
+      recipe_sha256: 60ed7e4c936c1c48a81049ab9822284c4855065eb20dbcacac4d552970e722ed
+      workload_path: tests/fixtures/workloads/dependency_scope_construction_errors.py
+      workload_sha256: 1313e5a6f88ded5c080b983437afe693823d1cfa03abeef564194ec4c65723f5
+      case_id: fastapi.dependencies.invalid-request-scope-depends-on-function-websocket
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+    - workflow_id: depends-signature
+      input_path: tests/fixtures/inputs/parity/depends-signature.json
+      input_sha256: 057d26345fcac0ae5feb09744125a80272492c69a2c6e39c3460df2451adde3e
+      recipe_path: tests/fixtures/input-recipes/parity/depends-signature.yaml
+      recipe_sha256: eecede1bd798578bf9db9fda4b753ee7ce4d52716928f39470502f6c3f2c80af
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.dependencies.depends-yield-scope-signature
+      observation_selectors:
+      - python.signature
+    - workflow_id: parameter-factory-signatures
+      input_path: tests/fixtures/inputs/parity/parameter-factory-signatures.json
+      input_sha256: 30737684004884a621aacb4b64101f65136a5aa2af9935c37c5b64289cba04f0
+      recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
+      recipe_sha256: e8ce7bbc3db6c72204c0299c970bfcdcd31c0fec9f58f28e220e91cc1b8cad88
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.parameter-factory-signatures.depends
+      observation_selectors:
+      - python.signature
     identity_workflow_refs:
     - workflow_id: root-alias-identity
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
@@ -1529,6 +2171,9 @@ api_surface_contract:
     - openapi-docs
     - request-validation
     observation_selectors:
+    - construction.exception_class
+    - construction.exception_message
+    - construction.outcome
     - http.body.bytes
     - http.headers.ordered
     - http.status
@@ -2068,6 +2713,62 @@ api_surface_contract:
       observation_selectors:
       - python.call_outcome
       - python.warnings
+    - workflow_id: parameter-factory-signatures
+      input_path: tests/fixtures/inputs/parity/parameter-factory-signatures.json
+      input_sha256: 30737684004884a621aacb4b64101f65136a5aa2af9935c37c5b64289cba04f0
+      recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
+      recipe_sha256: e8ce7bbc3db6c72204c0299c970bfcdcd31c0fec9f58f28e220e91cc1b8cad88
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.parameter-factory-signatures.header
+      probe_id: root-header-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
+    operation_fixture_refs:
+    - workflow_id: header-convert-underscores-false
+      input_path: tests/fixtures/inputs/parity/header-convert-underscores-false.json
+      input_sha256: 4939a9137767299b5f01a8b7713ab55ba85427de82893e749431e1ccbea5f3d8
+      recipe_path: tests/fixtures/input-recipes/parity/header-convert-underscores-false.yaml
+      recipe_sha256: 2eeecc7085d0eb3e6e456a8f78990fbad2f359511196326afa0c01de38e0f70a
+      workload_path: tests/fixtures/workloads/header_convert_underscores_false.py
+      workload_sha256: 4f62064661de35099fe5e97394206268cea5f7f0713155f4e3376a29a701acf6
+      case_id: fastapi.header.convert-underscores-false.missing
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: header-convert-underscores-false
+      input_path: tests/fixtures/inputs/parity/header-convert-underscores-false.json
+      input_sha256: 4939a9137767299b5f01a8b7713ab55ba85427de82893e749431e1ccbea5f3d8
+      recipe_path: tests/fixtures/input-recipes/parity/header-convert-underscores-false.yaml
+      recipe_sha256: 2eeecc7085d0eb3e6e456a8f78990fbad2f359511196326afa0c01de38e0f70a
+      workload_path: tests/fixtures/workloads/header_convert_underscores_false.py
+      workload_sha256: 4f62064661de35099fe5e97394206268cea5f7f0713155f4e3376a29a701acf6
+      case_id: fastapi.header.convert-underscores-false.underscore-name
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: header-convert-underscores-false
+      input_path: tests/fixtures/inputs/parity/header-convert-underscores-false.json
+      input_sha256: 4939a9137767299b5f01a8b7713ab55ba85427de82893e749431e1ccbea5f3d8
+      recipe_path: tests/fixtures/input-recipes/parity/header-convert-underscores-false.yaml
+      recipe_sha256: 2eeecc7085d0eb3e6e456a8f78990fbad2f359511196326afa0c01de38e0f70a
+      workload_path: tests/fixtures/workloads/header_convert_underscores_false.py
+      workload_sha256: 4f62064661de35099fe5e97394206268cea5f7f0713155f4e3376a29a701acf6
+      case_id: fastapi.header.convert-underscores-false.hyphen-name
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: parameter-factory-signatures
+      input_path: tests/fixtures/inputs/parity/parameter-factory-signatures.json
+      input_sha256: 30737684004884a621aacb4b64101f65136a5aa2af9935c37c5b64289cba04f0
+      recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
+      recipe_sha256: e8ce7bbc3db6c72204c0299c970bfcdcd31c0fec9f58f28e220e91cc1b8cad88
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.parameter-factory-signatures.header
+      observation_selectors:
+      - python.signature
     identity_workflow_refs:
     - workflow_id: root-alias-identity
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
@@ -2098,6 +2799,7 @@ api_surface_contract:
     - http.status
     - openapi.paths
     - python.call_outcome
+    - python.signature
     - python.warnings
     operation_scope:
       status: slice-described
@@ -2167,6 +2869,77 @@ api_surface_contract:
       observation_selectors:
       - python.call_outcome
       - python.warnings
+    - workflow_id: parameter-factory-signatures
+      input_path: tests/fixtures/inputs/parity/parameter-factory-signatures.json
+      input_sha256: 30737684004884a621aacb4b64101f65136a5aa2af9935c37c5b64289cba04f0
+      recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
+      recipe_sha256: e8ce7bbc3db6c72204c0299c970bfcdcd31c0fec9f58f28e220e91cc1b8cad88
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.parameter-factory-signatures.path
+      probe_id: root-path-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
+    operation_fixture_refs:
+    - workflow_id: path-gt-zero
+      input_path: tests/fixtures/inputs/parity/path-gt-zero.json
+      input_sha256: 095c90741db7423b998bf1e1d795b6730472a9980788c07c7d49fae186f7f685
+      recipe_path: tests/fixtures/input-recipes/parity/path-gt-zero.yaml
+      recipe_sha256: 11ea9488aa919304659ca8c0c9123bc87b63bb53e0525aa29b8db664a4e7703a
+      workload_path: tests/fixtures/workloads/path_gt_zero.py
+      workload_sha256: 7446e6bd58209c57ab58fe6cb2c8fafe892f13c55a33100af9e544425c9dad15
+      case_id: fastapi.path.gt-zero.positive-integer
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: path-gt-zero
+      input_path: tests/fixtures/inputs/parity/path-gt-zero.json
+      input_sha256: 095c90741db7423b998bf1e1d795b6730472a9980788c07c7d49fae186f7f685
+      recipe_path: tests/fixtures/input-recipes/parity/path-gt-zero.yaml
+      recipe_sha256: 11ea9488aa919304659ca8c0c9123bc87b63bb53e0525aa29b8db664a4e7703a
+      workload_path: tests/fixtures/workloads/path_gt_zero.py
+      workload_sha256: 7446e6bd58209c57ab58fe6cb2c8fafe892f13c55a33100af9e544425c9dad15
+      case_id: fastapi.path.gt-zero.zero-rejected
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: body-surface
+      input_path: tests/fixtures/inputs/parity/body-surface.json
+      input_sha256: 5bc87e9aa49d203e7d4e02b5601646191b985db50347f98fa6e0dbfca9adf5fa
+      recipe_path: tests/fixtures/input-recipes/parity/body-surface.yaml
+      recipe_sha256: 1370c5fcd46eafba44754f8d8ea56581194ef5733121a333af4b3b03cc5fa609
+      workload_path: tests/fixtures/workloads/body_surface.py
+      workload_sha256: 8481dd24509f48994a53c884cb5d7103ce18327e3960085a0dc8544f3d144e82
+      case_id: fastapi.path.ge-le-lower-bound-invalid
+      observation_selectors:
+      - asgi.send.message_types
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: body-surface
+      input_path: tests/fixtures/inputs/parity/body-surface.json
+      input_sha256: 5bc87e9aa49d203e7d4e02b5601646191b985db50347f98fa6e0dbfca9adf5fa
+      recipe_path: tests/fixtures/input-recipes/parity/body-surface.yaml
+      recipe_sha256: 1370c5fcd46eafba44754f8d8ea56581194ef5733121a333af4b3b03cc5fa609
+      workload_path: tests/fixtures/workloads/body_surface.py
+      workload_sha256: 8481dd24509f48994a53c884cb5d7103ce18327e3960085a0dc8544f3d144e82
+      case_id: fastapi.path.ge-le-upper-bound-invalid
+      observation_selectors:
+      - asgi.send.message_types
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: parameter-factory-signatures
+      input_path: tests/fixtures/inputs/parity/parameter-factory-signatures.json
+      input_sha256: 30737684004884a621aacb4b64101f65136a5aa2af9935c37c5b64289cba04f0
+      recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
+      recipe_sha256: e8ce7bbc3db6c72204c0299c970bfcdcd31c0fec9f58f28e220e91cc1b8cad88
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.parameter-factory-signatures.path
+      observation_selectors:
+      - python.signature
     identity_workflow_refs:
     - workflow_id: root-alias-identity
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
@@ -2197,6 +2970,7 @@ api_surface_contract:
     - http.status
     - openapi.paths
     - python.call_outcome
+    - python.signature
     - python.warnings
     operation_scope:
       status: slice-described
@@ -2279,6 +3053,526 @@ api_surface_contract:
       observation_selectors:
       - python.call_outcome
       - python.warnings
+    - workflow_id: parameter-factory-signatures
+      input_path: tests/fixtures/inputs/parity/parameter-factory-signatures.json
+      input_sha256: 30737684004884a621aacb4b64101f65136a5aa2af9935c37c5b64289cba04f0
+      recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
+      recipe_sha256: e8ce7bbc3db6c72204c0299c970bfcdcd31c0fec9f58f28e220e91cc1b8cad88
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.parameter-factory-signatures.query
+      probe_id: root-query-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
+    operation_fixture_refs:
+    - workflow_id: query-gt-zero
+      input_path: tests/fixtures/inputs/parity/query-gt-zero.json
+      input_sha256: dc5ca5daee9e02b624fde7419e0f68b873d81ab2c7dfe34b4073fd9d4b1d62f6
+      recipe_path: tests/fixtures/input-recipes/parity/query-gt-zero.yaml
+      recipe_sha256: ffd3e0257c639b7e282c8b192f04ac5495337ceff2d860f7b2bb1bb32d9ae6c0
+      workload_path: tests/fixtures/workloads/query_gt_zero.py
+      workload_sha256: d1abf6cd831bc042a5f1081a2df38711151dc92282d952f9256c0a507ca4c103
+      case_id: fastapi.query.gt-zero.positive-value
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: query-gt-zero
+      input_path: tests/fixtures/inputs/parity/query-gt-zero.json
+      input_sha256: dc5ca5daee9e02b624fde7419e0f68b873d81ab2c7dfe34b4073fd9d4b1d62f6
+      recipe_path: tests/fixtures/input-recipes/parity/query-gt-zero.yaml
+      recipe_sha256: ffd3e0257c639b7e282c8b192f04ac5495337ceff2d860f7b2bb1bb32d9ae6c0
+      workload_path: tests/fixtures/workloads/query_gt_zero.py
+      workload_sha256: d1abf6cd831bc042a5f1081a2df38711151dc92282d952f9256c0a507ca4c103
+      case_id: fastapi.query.gt-zero.zero-rejected
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: query-gt-zero
+      input_path: tests/fixtures/inputs/parity/query-gt-zero.json
+      input_sha256: dc5ca5daee9e02b624fde7419e0f68b873d81ab2c7dfe34b4073fd9d4b1d62f6
+      recipe_path: tests/fixtures/input-recipes/parity/query-gt-zero.yaml
+      recipe_sha256: ffd3e0257c639b7e282c8b192f04ac5495337ceff2d860f7b2bb1bb32d9ae6c0
+      workload_path: tests/fixtures/workloads/query_gt_zero.py
+      workload_sha256: d1abf6cd831bc042a5f1081a2df38711151dc92282d952f9256c0a507ca4c103
+      case_id: fastapi.query.gt-zero.lt-upper-bound-and-openapi
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: query-params-str-validations-doc-examples
+      input_path: tests/fixtures/inputs/parity/query-params-str-validations-doc-examples.json
+      input_sha256: 9baf3f7694ac24baa9946f89cccac994aaed00911d9198ddff86f84f57a01392
+      recipe_path: tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml
+      recipe_sha256: 271bc5cd5559ea5717839af7c49406496e38eac678f9c0afcdd20d8bb8962cbc
+      workload_path: tests/fixtures/workloads/query_params_str_validations_doc_examples.py
+      workload_sha256: 17720c0359ca6304c1cfbf80e076ae02e87640a3a187348b044587eddc8d5dac
+      case_id: fastapi.docs-example.query-params-str-validations.tutorial001
+      observation_selectors:
+      - docs.response.status
+      - http.body.bytes
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: query-params-str-validations-doc-examples
+      input_path: tests/fixtures/inputs/parity/query-params-str-validations-doc-examples.json
+      input_sha256: 9baf3f7694ac24baa9946f89cccac994aaed00911d9198ddff86f84f57a01392
+      recipe_path: tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml
+      recipe_sha256: 271bc5cd5559ea5717839af7c49406496e38eac678f9c0afcdd20d8bb8962cbc
+      workload_path: tests/fixtures/workloads/query_params_str_validations_doc_examples.py
+      workload_sha256: 17720c0359ca6304c1cfbf80e076ae02e87640a3a187348b044587eddc8d5dac
+      case_id: fastapi.docs-example.query-params-str-validations.tutorial002
+      observation_selectors:
+      - docs.response.status
+      - http.body.bytes
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: query-params-str-validations-doc-examples
+      input_path: tests/fixtures/inputs/parity/query-params-str-validations-doc-examples.json
+      input_sha256: 9baf3f7694ac24baa9946f89cccac994aaed00911d9198ddff86f84f57a01392
+      recipe_path: tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml
+      recipe_sha256: 271bc5cd5559ea5717839af7c49406496e38eac678f9c0afcdd20d8bb8962cbc
+      workload_path: tests/fixtures/workloads/query_params_str_validations_doc_examples.py
+      workload_sha256: 17720c0359ca6304c1cfbf80e076ae02e87640a3a187348b044587eddc8d5dac
+      case_id: fastapi.docs-example.query-params-str-validations.tutorial003
+      observation_selectors:
+      - docs.response.status
+      - http.body.bytes
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: query-params-str-validations-doc-examples
+      input_path: tests/fixtures/inputs/parity/query-params-str-validations-doc-examples.json
+      input_sha256: 9baf3f7694ac24baa9946f89cccac994aaed00911d9198ddff86f84f57a01392
+      recipe_path: tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml
+      recipe_sha256: 271bc5cd5559ea5717839af7c49406496e38eac678f9c0afcdd20d8bb8962cbc
+      workload_path: tests/fixtures/workloads/query_params_str_validations_doc_examples.py
+      workload_sha256: 17720c0359ca6304c1cfbf80e076ae02e87640a3a187348b044587eddc8d5dac
+      case_id: fastapi.docs-example.query-params-str-validations.tutorial005
+      observation_selectors:
+      - docs.response.status
+      - http.body.bytes
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: query-params-str-validations-doc-examples
+      input_path: tests/fixtures/inputs/parity/query-params-str-validations-doc-examples.json
+      input_sha256: 9baf3f7694ac24baa9946f89cccac994aaed00911d9198ddff86f84f57a01392
+      recipe_path: tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml
+      recipe_sha256: 271bc5cd5559ea5717839af7c49406496e38eac678f9c0afcdd20d8bb8962cbc
+      workload_path: tests/fixtures/workloads/query_params_str_validations_doc_examples.py
+      workload_sha256: 17720c0359ca6304c1cfbf80e076ae02e87640a3a187348b044587eddc8d5dac
+      case_id: fastapi.docs-example.query-params-str-validations.tutorial006
+      observation_selectors:
+      - docs.response.status
+      - http.body.bytes
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: query-params-str-validations-doc-examples
+      input_path: tests/fixtures/inputs/parity/query-params-str-validations-doc-examples.json
+      input_sha256: 9baf3f7694ac24baa9946f89cccac994aaed00911d9198ddff86f84f57a01392
+      recipe_path: tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml
+      recipe_sha256: 271bc5cd5559ea5717839af7c49406496e38eac678f9c0afcdd20d8bb8962cbc
+      workload_path: tests/fixtures/workloads/query_params_str_validations_doc_examples.py
+      workload_sha256: 17720c0359ca6304c1cfbf80e076ae02e87640a3a187348b044587eddc8d5dac
+      case_id: fastapi.docs-example.query-params-str-validations.tutorial006c
+      observation_selectors:
+      - docs.response.status
+      - http.body.bytes
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: query-params-str-validations-doc-examples
+      input_path: tests/fixtures/inputs/parity/query-params-str-validations-doc-examples.json
+      input_sha256: 9baf3f7694ac24baa9946f89cccac994aaed00911d9198ddff86f84f57a01392
+      recipe_path: tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml
+      recipe_sha256: 271bc5cd5559ea5717839af7c49406496e38eac678f9c0afcdd20d8bb8962cbc
+      workload_path: tests/fixtures/workloads/query_params_str_validations_doc_examples.py
+      workload_sha256: 17720c0359ca6304c1cfbf80e076ae02e87640a3a187348b044587eddc8d5dac
+      case_id: fastapi.docs-example.query-params-str-validations.tutorial009
+      observation_selectors:
+      - docs.response.status
+      - http.body.bytes
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: query-params-str-validations-doc-examples
+      input_path: tests/fixtures/inputs/parity/query-params-str-validations-doc-examples.json
+      input_sha256: 9baf3f7694ac24baa9946f89cccac994aaed00911d9198ddff86f84f57a01392
+      recipe_path: tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml
+      recipe_sha256: 271bc5cd5559ea5717839af7c49406496e38eac678f9c0afcdd20d8bb8962cbc
+      workload_path: tests/fixtures/workloads/query_params_str_validations_doc_examples.py
+      workload_sha256: 17720c0359ca6304c1cfbf80e076ae02e87640a3a187348b044587eddc8d5dac
+      case_id: fastapi.docs-example.query-params-str-validations.tutorial011
+      observation_selectors:
+      - docs.response.status
+      - http.body.bytes
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: query-params-str-validations-doc-examples
+      input_path: tests/fixtures/inputs/parity/query-params-str-validations-doc-examples.json
+      input_sha256: 9baf3f7694ac24baa9946f89cccac994aaed00911d9198ddff86f84f57a01392
+      recipe_path: tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml
+      recipe_sha256: 271bc5cd5559ea5717839af7c49406496e38eac678f9c0afcdd20d8bb8962cbc
+      workload_path: tests/fixtures/workloads/query_params_str_validations_doc_examples.py
+      workload_sha256: 17720c0359ca6304c1cfbf80e076ae02e87640a3a187348b044587eddc8d5dac
+      case_id: fastapi.docs-example.query-params-str-validations.tutorial012
+      observation_selectors:
+      - docs.response.status
+      - http.body.bytes
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: query-params-str-validations-doc-examples
+      input_path: tests/fixtures/inputs/parity/query-params-str-validations-doc-examples.json
+      input_sha256: 9baf3f7694ac24baa9946f89cccac994aaed00911d9198ddff86f84f57a01392
+      recipe_path: tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml
+      recipe_sha256: 271bc5cd5559ea5717839af7c49406496e38eac678f9c0afcdd20d8bb8962cbc
+      workload_path: tests/fixtures/workloads/query_params_str_validations_doc_examples.py
+      workload_sha256: 17720c0359ca6304c1cfbf80e076ae02e87640a3a187348b044587eddc8d5dac
+      case_id: fastapi.docs-example.query-params-str-validations.tutorial013
+      observation_selectors:
+      - docs.response.status
+      - http.body.bytes
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: query-params-str-validations-doc-examples
+      input_path: tests/fixtures/inputs/parity/query-params-str-validations-doc-examples.json
+      input_sha256: 9baf3f7694ac24baa9946f89cccac994aaed00911d9198ddff86f84f57a01392
+      recipe_path: tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml
+      recipe_sha256: 271bc5cd5559ea5717839af7c49406496e38eac678f9c0afcdd20d8bb8962cbc
+      workload_path: tests/fixtures/workloads/query_params_str_validations_doc_examples.py
+      workload_sha256: 17720c0359ca6304c1cfbf80e076ae02e87640a3a187348b044587eddc8d5dac
+      case_id: fastapi.docs-example.query-params-str-validations.tutorial015
+      observation_selectors:
+      - docs.response.status
+      - http.body.bytes
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: query-params-str-validations-doc-pattern-examples
+      input_path: tests/fixtures/inputs/parity/query-params-str-validations-doc-pattern-examples.json
+      input_sha256: e3613cf1d2ddecc1b5a24f3db66dd4017ac0d7cc1b00560a3de5a74954bcb126
+      recipe_path: tests/fixtures/input-recipes/parity/query-params-str-validations-doc-pattern-examples.yaml
+      recipe_sha256: 74c4013fa9c7006da5b0190e7d378e7f2880a9c264267844da17244e749937ad
+      workload_path: tests/fixtures/workloads/query_params_str_validations_doc_pattern_examples.py
+      workload_sha256: 88408e42790d90b2031d3c638b83f22b4382fc44010dde8b2f24f40a79f8b995
+      case_id: fastapi.docs-example.query-params-str-validations.tutorial004
+      observation_selectors:
+      - docs.response.status
+      - http.body.bytes
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: query-params-str-validations-doc-pattern-examples
+      input_path: tests/fixtures/inputs/parity/query-params-str-validations-doc-pattern-examples.json
+      input_sha256: e3613cf1d2ddecc1b5a24f3db66dd4017ac0d7cc1b00560a3de5a74954bcb126
+      recipe_path: tests/fixtures/input-recipes/parity/query-params-str-validations-doc-pattern-examples.yaml
+      recipe_sha256: 74c4013fa9c7006da5b0190e7d378e7f2880a9c264267844da17244e749937ad
+      workload_path: tests/fixtures/workloads/query_params_str_validations_doc_pattern_examples.py
+      workload_sha256: 88408e42790d90b2031d3c638b83f22b4382fc44010dde8b2f24f40a79f8b995
+      case_id: fastapi.docs-example.query-params-str-validations.tutorial010
+      observation_selectors:
+      - docs.response.status
+      - http.body.bytes
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: query-params-str-validations-doc-title-description-examples
+      input_path: tests/fixtures/inputs/parity/query-params-str-validations-doc-title-description-examples.json
+      input_sha256: 73e8138f463c6579b4d929d99779ebbb1108f23ef58603df83e6ba567c291e32
+      recipe_path: tests/fixtures/input-recipes/parity/query-params-str-validations-doc-title-description-examples.yaml
+      recipe_sha256: b44ceae2c94a5554e572ae7b9e8347b61e5a620d5a3c7ce4b2a1f6abbdfa5491
+      workload_path: tests/fixtures/workloads/query_params_str_validations_doc_title_description_examples.py
+      workload_sha256: 6d4fe4b2a6ffcf47b315b4ef982b9f9d108c10a122b80157912ad385b3401d13
+      case_id: fastapi.docs-example.query-params-str-validations.tutorial007
+      observation_selectors:
+      - docs.response.status
+      - http.body.bytes
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: query-params-str-validations-doc-title-description-examples
+      input_path: tests/fixtures/inputs/parity/query-params-str-validations-doc-title-description-examples.json
+      input_sha256: 73e8138f463c6579b4d929d99779ebbb1108f23ef58603df83e6ba567c291e32
+      recipe_path: tests/fixtures/input-recipes/parity/query-params-str-validations-doc-title-description-examples.yaml
+      recipe_sha256: b44ceae2c94a5554e572ae7b9e8347b61e5a620d5a3c7ce4b2a1f6abbdfa5491
+      workload_path: tests/fixtures/workloads/query_params_str_validations_doc_title_description_examples.py
+      workload_sha256: 6d4fe4b2a6ffcf47b315b4ef982b9f9d108c10a122b80157912ad385b3401d13
+      case_id: fastapi.docs-example.query-params-str-validations.tutorial008
+      observation_selectors:
+      - docs.response.status
+      - http.body.bytes
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: query-params-str-validations-doc-exclude-schema-examples
+      input_path: tests/fixtures/inputs/parity/query-params-str-validations-doc-exclude-schema-examples.json
+      input_sha256: 3edca27082949673811be59f0add6078b73335a6c1cb8d2b4203e3624caddf38
+      recipe_path: tests/fixtures/input-recipes/parity/query-params-str-validations-doc-exclude-schema-examples.yaml
+      recipe_sha256: 24d0c9d6e4fdab5f3634eaef3f56e82642c0822779f6568a669608ace61cc795
+      workload_path: tests/fixtures/workloads/query_params_str_validations_doc_exclude_schema_examples.py
+      workload_sha256: b439bf264de674d306bae3a145e3c93cebaeb02d6a7961466715a7f3cac9061e
+      case_id: fastapi.docs-example.query-params-str-validations.tutorial014
+      observation_selectors:
+      - docs.response.status
+      - http.body.bytes
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: query-validation-alias-direct
+      input_path: tests/fixtures/inputs/parity/query-validation-alias-direct.json
+      input_sha256: 128fdd750a78d1d9931b28679a2608d9ba38762b1c46d5e0a9f1bb332999c4fb
+      recipe_path: tests/fixtures/input-recipes/parity/query-validation-alias-direct.yaml
+      recipe_sha256: bfaf5008b9c8d84e5ec46d55c4fdc8018d29ab375d55ea752faf8fed53ab99e2
+      workload_path: tests/fixtures/workloads/query_validation_alias_direct.py
+      workload_sha256: 6a9b7f53a0eb121ad277064224f95ee517423bc7dccc82e5807ce7012728c38f
+      case_id: fastapi.request-parameters.query.validation-alias.direct.rejects-declared-alias
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: query-validation-alias-direct
+      input_path: tests/fixtures/inputs/parity/query-validation-alias-direct.json
+      input_sha256: 128fdd750a78d1d9931b28679a2608d9ba38762b1c46d5e0a9f1bb332999c4fb
+      recipe_path: tests/fixtures/input-recipes/parity/query-validation-alias-direct.yaml
+      recipe_sha256: bfaf5008b9c8d84e5ec46d55c4fdc8018d29ab375d55ea752faf8fed53ab99e2
+      workload_path: tests/fixtures/workloads/query_validation_alias_direct.py
+      workload_sha256: 6a9b7f53a0eb121ad277064224f95ee517423bc7dccc82e5807ce7012728c38f
+      case_id: fastapi.request-parameters.query.validation-alias.direct.rejects-parameter-name
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: query-validation-alias-direct
+      input_path: tests/fixtures/inputs/parity/query-validation-alias-direct.json
+      input_sha256: 128fdd750a78d1d9931b28679a2608d9ba38762b1c46d5e0a9f1bb332999c4fb
+      recipe_path: tests/fixtures/input-recipes/parity/query-validation-alias-direct.yaml
+      recipe_sha256: bfaf5008b9c8d84e5ec46d55c4fdc8018d29ab375d55ea752faf8fed53ab99e2
+      workload_path: tests/fixtures/workloads/query_validation_alias_direct.py
+      workload_sha256: 6a9b7f53a0eb121ad277064224f95ee517423bc7dccc82e5807ce7012728c38f
+      case_id: fastapi.request-parameters.query.validation-alias.direct.accepts-validation-alias
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: query-validation-alias-direct
+      input_path: tests/fixtures/inputs/parity/query-validation-alias-direct.json
+      input_sha256: 128fdd750a78d1d9931b28679a2608d9ba38762b1c46d5e0a9f1bb332999c4fb
+      recipe_path: tests/fixtures/input-recipes/parity/query-validation-alias-direct.yaml
+      recipe_sha256: bfaf5008b9c8d84e5ec46d55c4fdc8018d29ab375d55ea752faf8fed53ab99e2
+      workload_path: tests/fixtures/workloads/query_validation_alias_direct.py
+      workload_sha256: 6a9b7f53a0eb121ad277064224f95ee517423bc7dccc82e5807ce7012728c38f
+      case_id: fastapi.request-parameters.query.validation-alias.direct.openapi
+      observation_selectors:
+      - openapi.document
+      - openapi.paths
+    - workflow_id: query-param-models
+      input_path: tests/fixtures/inputs/parity/query-param-models.json
+      input_sha256: 9d6b3a0842d1b05fbdc08ad01db22ef64a405fddbe10137cc2f8bb8a53a79a1a
+      recipe_path: tests/fixtures/input-recipes/parity/query-param-models.yaml
+      recipe_sha256: 8aae9c03ca43d85fb84345e8c799dc9274c2d8a9dabb58d18e80f248f77d01a2
+      workload_path: tests/fixtures/workloads/query_param_models.py
+      workload_sha256: bb9cd450c80a415bee4954ad950b73eea38b2ab389224206466c24adaabdb494
+      case_id: fastapi.query-param-models.grouped-repeated-list
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: query-param-models
+      input_path: tests/fixtures/inputs/parity/query-param-models.json
+      input_sha256: 9d6b3a0842d1b05fbdc08ad01db22ef64a405fddbe10137cc2f8bb8a53a79a1a
+      recipe_path: tests/fixtures/input-recipes/parity/query-param-models.yaml
+      recipe_sha256: 8aae9c03ca43d85fb84345e8c799dc9274c2d8a9dabb58d18e80f248f77d01a2
+      workload_path: tests/fixtures/workloads/query_param_models.py
+      workload_sha256: bb9cd450c80a415bee4954ad950b73eea38b2ab389224206466c24adaabdb494
+      case_id: fastapi.query-param-models.grouped-defaults
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: query-param-models
+      input_path: tests/fixtures/inputs/parity/query-param-models.json
+      input_sha256: 9d6b3a0842d1b05fbdc08ad01db22ef64a405fddbe10137cc2f8bb8a53a79a1a
+      recipe_path: tests/fixtures/input-recipes/parity/query-param-models.yaml
+      recipe_sha256: 8aae9c03ca43d85fb84345e8c799dc9274c2d8a9dabb58d18e80f248f77d01a2
+      workload_path: tests/fixtures/workloads/query_param_models.py
+      workload_sha256: bb9cd450c80a415bee4954ad950b73eea38b2ab389224206466c24adaabdb494
+      case_id: fastapi.query-param-models.grouped-validation-invalid
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: query-param-models
+      input_path: tests/fixtures/inputs/parity/query-param-models.json
+      input_sha256: 9d6b3a0842d1b05fbdc08ad01db22ef64a405fddbe10137cc2f8bb8a53a79a1a
+      recipe_path: tests/fixtures/input-recipes/parity/query-param-models.yaml
+      recipe_sha256: 8aae9c03ca43d85fb84345e8c799dc9274c2d8a9dabb58d18e80f248f77d01a2
+      workload_path: tests/fixtures/workloads/query_param_models.py
+      workload_sha256: bb9cd450c80a415bee4954ad950b73eea38b2ab389224206466c24adaabdb494
+      case_id: fastapi.query-param-models.openapi-query-parameters
+      observation_selectors:
+      - docs.response.status
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: query-param-model-tutorial-edges
+      input_path: tests/fixtures/inputs/parity/query-param-model-tutorial-edges.json
+      input_sha256: 7d345d64781ab06be79aa355025cad1ca45d80a82969f369c3e5f1de5d6f02b8
+      recipe_path: tests/fixtures/input-recipes/parity/query-param-model-tutorial-edges.yaml
+      recipe_sha256: 3568a1fe61b126cb768c6613eaf75d1e9cf510f967b5924195ad53b6aa2d959d
+      workload_path: tests/fixtures/workloads/query_param_models.py
+      workload_sha256: bb9cd450c80a415bee4954ad950b73eea38b2ab389224206466c24adaabdb494
+      case_id: fastapi.request-parameter-model-tutorial.query-001-extra-ignore
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: request-parameter-model-tutorial-edges
+      input_path: tests/fixtures/inputs/parity/request-parameter-model-tutorial-edges.json
+      input_sha256: 65edb32d06e8eef46ff819e487067bbd1582fdbe6ec1bd148312466edb3cb060
+      recipe_path: tests/fixtures/input-recipes/parity/request-parameter-model-tutorial-edges.yaml
+      recipe_sha256: eecf68f5e72a0d90164162e77837cb93383b39d6691fa4d0bb761b32decab34e
+      workload_path: tests/fixtures/workloads/request_models.py
+      workload_sha256: 52949b9f52eeb00baef1ca11015e32bb5a49b75a123ed6edb7fbea8d20373d3b
+      case_id: fastapi.request-parameter-model-tutorial.query-002
+      observation_selectors:
+      - docs.response.status
+      - http.body.bytes
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: model-extra-request-parameters-upstream
+      input_path: tests/fixtures/inputs/parity/model-extra-request-parameters-upstream.json
+      input_sha256: 22a690f98f0a5bf8f8346a78d36604ce53491be72152ff602e77a27bf7fc5f9b
+      recipe_path: tests/fixtures/input-recipes/parity/model-extra-request-parameters-upstream.yaml
+      recipe_sha256: 21b98862a448ef46fddee41259b8abc51cf707a9d888f6f323f47e88d248a82e
+      workload_path: tests/fixtures/workloads/model_extra_request_parameters.py
+      workload_sha256: ed0415ba6fccfb68c14c23c99bb19233355377c8ccb8484f500102cdfa075cba
+      case_id: fastapi.request-parameters.extra-model.query-repeated-values
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: query-validation-alias-model
+      input_path: tests/fixtures/inputs/parity/query-validation-alias-model.json
+      input_sha256: 14e45659d2a97232027de1c8c2a4224143ce3ff20ef5d0ae03ee1be6f4c6fcba
+      recipe_path: tests/fixtures/input-recipes/parity/query-validation-alias-model.yaml
+      recipe_sha256: e907784e531dcd7cbbe71d20bdb9d68af2b110f746d4e71dbb3d3b71a8449685
+      workload_path: tests/fixtures/workloads/query_validation_alias_model.py
+      workload_sha256: 7a4c5b5145e46f7e46faa377d2e2f6d3f2fa5b42c7d8980efb51c8bb5800c789
+      case_id: fastapi.request-parameters.query.validation-alias.model.rejects-declared-alias
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: query-validation-alias-model
+      input_path: tests/fixtures/inputs/parity/query-validation-alias-model.json
+      input_sha256: 14e45659d2a97232027de1c8c2a4224143ce3ff20ef5d0ae03ee1be6f4c6fcba
+      recipe_path: tests/fixtures/input-recipes/parity/query-validation-alias-model.yaml
+      recipe_sha256: e907784e531dcd7cbbe71d20bdb9d68af2b110f746d4e71dbb3d3b71a8449685
+      workload_path: tests/fixtures/workloads/query_validation_alias_model.py
+      workload_sha256: 7a4c5b5145e46f7e46faa377d2e2f6d3f2fa5b42c7d8980efb51c8bb5800c789
+      case_id: fastapi.request-parameters.query.validation-alias.model.accepts-validation-alias
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: query-validation-alias-model
+      input_path: tests/fixtures/inputs/parity/query-validation-alias-model.json
+      input_sha256: 14e45659d2a97232027de1c8c2a4224143ce3ff20ef5d0ae03ee1be6f4c6fcba
+      recipe_path: tests/fixtures/input-recipes/parity/query-validation-alias-model.yaml
+      recipe_sha256: e907784e531dcd7cbbe71d20bdb9d68af2b110f746d4e71dbb3d3b71a8449685
+      workload_path: tests/fixtures/workloads/query_validation_alias_model.py
+      workload_sha256: 7a4c5b5145e46f7e46faa377d2e2f6d3f2fa5b42c7d8980efb51c8bb5800c789
+      case_id: fastapi.request-parameters.query.validation-alias.model.required-missing
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: query-validation-alias-model
+      input_path: tests/fixtures/inputs/parity/query-validation-alias-model.json
+      input_sha256: 14e45659d2a97232027de1c8c2a4224143ce3ff20ef5d0ae03ee1be6f4c6fcba
+      recipe_path: tests/fixtures/input-recipes/parity/query-validation-alias-model.yaml
+      recipe_sha256: e907784e531dcd7cbbe71d20bdb9d68af2b110f746d4e71dbb3d3b71a8449685
+      workload_path: tests/fixtures/workloads/query_validation_alias_model.py
+      workload_sha256: 7a4c5b5145e46f7e46faa377d2e2f6d3f2fa5b42c7d8980efb51c8bb5800c789
+      case_id: fastapi.request-parameters.query.validation-alias.model.rejects-python-name
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: query-validation-alias-model
+      input_path: tests/fixtures/inputs/parity/query-validation-alias-model.json
+      input_sha256: 14e45659d2a97232027de1c8c2a4224143ce3ff20ef5d0ae03ee1be6f4c6fcba
+      recipe_path: tests/fixtures/input-recipes/parity/query-validation-alias-model.yaml
+      recipe_sha256: e907784e531dcd7cbbe71d20bdb9d68af2b110f746d4e71dbb3d3b71a8449685
+      workload_path: tests/fixtures/workloads/query_validation_alias_model.py
+      workload_sha256: 7a4c5b5145e46f7e46faa377d2e2f6d3f2fa5b42c7d8980efb51c8bb5800c789
+      case_id: fastapi.request-parameters.query.validation-alias.model.openapi
+      observation_selectors:
+      - openapi.document
+      - openapi.paths
+    - workflow_id: query-model-extra-forbid
+      input_path: tests/fixtures/inputs/parity/query-model-extra-forbid.json
+      input_sha256: 64700e4a097a957bd1001f00df56f68bd74ee17cedbea9f9531d4eadad04babe
+      recipe_path: tests/fixtures/input-recipes/parity/query-model-extra-forbid.yaml
+      recipe_sha256: a045157043ba25537f3bd237804b0f2cda0550d0f9de0ee106a4e5abea692658
+      workload_path: tests/fixtures/workloads/request_models.py
+      workload_sha256: 52949b9f52eeb00baef1ca11015e32bb5a49b75a123ed6edb7fbea8d20373d3b
+      case_id: fastapi.query-model-extra-forbid.query-extra-rejected
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: query-model-extra-allow
+      input_path: tests/fixtures/inputs/parity/query-model-extra-allow.json
+      input_sha256: d92bbdac5bd3965328de494f2ec1b54926605a0cdf02560d637765a3622cc4c7
+      recipe_path: tests/fixtures/input-recipes/parity/query-model-extra-allow.yaml
+      recipe_sha256: 635637cca81c91a120db4ecdc5ee9e8e467eb34a06f48b1c3a9cf23b664eccfe
+      workload_path: tests/fixtures/workloads/model_extra_request_parameters.py
+      workload_sha256: ed0415ba6fccfb68c14c23c99bb19233355377c8ccb8484f500102cdfa075cba
+      case_id: fastapi.query-model-extra-allow.query-repeated-extra-values
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: request-param-model-field-aliases-wave
+      input_path: tests/fixtures/inputs/parity/request-param-model-field-aliases-wave.json
+      input_sha256: 375b89103ef39e35367e72a38c724ff53823dc784901da33ae206c532f373665
+      recipe_path: tests/fixtures/input-recipes/parity/request-param-model-field-aliases-wave.yaml
+      recipe_sha256: dfdfd8c28df58b2e2940ce26bc1a6432059c3d24d66805a57b1499a57582cd65
+      workload_path: tests/fixtures/workloads/request_param_model_aliases.py
+      workload_sha256: 3e4f664f44250cbd27569de4f7973dab7ac1f23479e9ea83c508bfffc7b716d3
+      case_id: fastapi.request-param-model-alias.query-field-name-rejected
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: request-param-model-field-aliases-wave
+      input_path: tests/fixtures/inputs/parity/request-param-model-field-aliases-wave.json
+      input_sha256: 375b89103ef39e35367e72a38c724ff53823dc784901da33ae206c532f373665
+      recipe_path: tests/fixtures/input-recipes/parity/request-param-model-field-aliases-wave.yaml
+      recipe_sha256: dfdfd8c28df58b2e2940ce26bc1a6432059c3d24d66805a57b1499a57582cd65
+      workload_path: tests/fixtures/workloads/request_param_model_aliases.py
+      workload_sha256: 3e4f664f44250cbd27569de4f7973dab7ac1f23479e9ea83c508bfffc7b716d3
+      case_id: fastapi.request-param-model-alias.query-alias-valid
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: request-param-model-field-aliases-wave
+      input_path: tests/fixtures/inputs/parity/request-param-model-field-aliases-wave.json
+      input_sha256: 375b89103ef39e35367e72a38c724ff53823dc784901da33ae206c532f373665
+      recipe_path: tests/fixtures/input-recipes/parity/request-param-model-field-aliases-wave.yaml
+      recipe_sha256: dfdfd8c28df58b2e2940ce26bc1a6432059c3d24d66805a57b1499a57582cd65
+      workload_path: tests/fixtures/workloads/request_param_model_aliases.py
+      workload_sha256: 3e4f664f44250cbd27569de4f7973dab7ac1f23479e9ea83c508bfffc7b716d3
+      case_id: fastapi.request-param-model-alias.query-alias-openapi
+      observation_selectors:
+      - docs.response.status
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: parameter-factory-signatures
+      input_path: tests/fixtures/inputs/parity/parameter-factory-signatures.json
+      input_sha256: 30737684004884a621aacb4b64101f65136a5aa2af9935c37c5b64289cba04f0
+      recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
+      recipe_sha256: e8ce7bbc3db6c72204c0299c970bfcdcd31c0fec9f58f28e220e91cc1b8cad88
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.parameter-factory-signatures.query
+      observation_selectors:
+      - python.signature
     identity_workflow_refs:
     - workflow_id: root-alias-identity
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
@@ -2310,6 +3604,7 @@ api_surface_contract:
     - openapi.document
     - openapi.paths
     - python.call_outcome
+    - python.signature
     - python.warnings
     operation_scope:
       status: slice-described
@@ -23434,7 +24729,41 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-parameters
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id001
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: parameter-factory-signatures
+      input_path: tests/fixtures/inputs/parity/parameter-factory-signatures.json
+      input_sha256: 30737684004884a621aacb4b64101f65136a5aa2af9935c37c5b64289cba04f0
+      recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
+      recipe_sha256: e8ce7bbc3db6c72204c0299c970bfcdcd31c0fec9f58f28e220e91cc1b8cad88
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.parameter-factory-signatures.body
+      probe_id: module-body-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
+    operation_fixture_refs:
+    - workflow_id: root-alias-identity
+      input_path: tests/fixtures/inputs/parity/root-alias-identity.json
+      input_sha256: 4113becb3c2fc41b631895f5e0f17a1a1c662c26d8619a58d4ab8216e68e3e1d
+      recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
+      recipe_sha256: 4f7186ec29a4ea3f6e6fe34a4a946d662f4a061265297b0b859065624899888f
+      workload_path: tests/fixtures/workloads/root_alias_identity.py
+      workload_sha256: 6e00762c3937ac0efbca7459ec0a260074150b354926a2394c6cc523ab38144d
+      case_id: fastapi.root-alias-identity.http-reexports
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: parameter-factory-signatures
+      input_path: tests/fixtures/inputs/parity/parameter-factory-signatures.json
+      input_sha256: 30737684004884a621aacb4b64101f65136a5aa2af9935c37c5b64289cba04f0
+      recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
+      recipe_sha256: e8ce7bbc3db6c72204c0299c970bfcdcd31c0fec9f58f28e220e91cc1b8cad88
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.parameter-factory-signatures.body
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -23446,9 +24775,11 @@ api_surface_contract:
     - http.headers.ordered
     - http.status
     - openapi.paths
+    - python.signature
     operation_scope:
-      status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+      status: slice-described
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.param_functions.Body/supported_slice
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.param_functions.Body
@@ -23457,8 +24788,11 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/926
-      status: full-contract-not-established
-      rust_binding: null
+      status: partial-contract
+      rust_binding: fastapi-rs/src/parameters.rs::body
+      known_gaps:
+      - The Rust Body factory does not expose the complete FastAPI 0.141.1 parameter set.
+      - The returned marker is not the upstream fastapi.params.Body FieldInfo subclass.
   - id: fastapi.param_functions.Cookie
     kind: function
     source_candidate_ref: /api_candidates/928
@@ -23547,7 +24881,41 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-dependencies
       fixture_design_ref: /fixture_designs/373
       observation_selectors: *id003
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: parameter-factory-signatures
+      input_path: tests/fixtures/inputs/parity/parameter-factory-signatures.json
+      input_sha256: 30737684004884a621aacb4b64101f65136a5aa2af9935c37c5b64289cba04f0
+      recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
+      recipe_sha256: e8ce7bbc3db6c72204c0299c970bfcdcd31c0fec9f58f28e220e91cc1b8cad88
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.parameter-factory-signatures.depends
+      probe_id: module-depends-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
+    operation_fixture_refs:
+    - workflow_id: root-alias-identity
+      input_path: tests/fixtures/inputs/parity/root-alias-identity.json
+      input_sha256: 4113becb3c2fc41b631895f5e0f17a1a1c662c26d8619a58d4ab8216e68e3e1d
+      recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
+      recipe_sha256: 4f7186ec29a4ea3f6e6fe34a4a946d662f4a061265297b0b859065624899888f
+      workload_path: tests/fixtures/workloads/root_alias_identity.py
+      workload_sha256: 6e00762c3937ac0efbca7459ec0a260074150b354926a2394c6cc523ab38144d
+      case_id: fastapi.root-alias-identity.http-reexports
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: parameter-factory-signatures
+      input_path: tests/fixtures/inputs/parity/parameter-factory-signatures.json
+      input_sha256: 30737684004884a621aacb4b64101f65136a5aa2af9935c37c5b64289cba04f0
+      recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
+      recipe_sha256: e8ce7bbc3db6c72204c0299c970bfcdcd31c0fec9f58f28e220e91cc1b8cad88
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.parameter-factory-signatures.depends
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -23560,9 +24928,11 @@ api_surface_contract:
     - openapi.document
     - openapi.paths
     - openapi.security
+    - python.signature
     operation_scope:
-      status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+      status: slice-described
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.param_functions.Depends/supported_slice
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.param_functions.Depends
@@ -23571,8 +24941,11 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/929
-      status: full-contract-not-established
-      rust_binding: null
+      status: partial-contract
+      rust_binding: fastapi-rs/src/parameters.rs::depends
+      known_gaps:
+      - Full FastAPI dependency marker and yielded-scope semantics remain outside this direct signature
+        slice.
   - id: fastapi.param_functions.File
     kind: function
     source_candidate_ref: /api_candidates/932
@@ -23719,7 +25092,41 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-parameters
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id001
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: parameter-factory-signatures
+      input_path: tests/fixtures/inputs/parity/parameter-factory-signatures.json
+      input_sha256: 30737684004884a621aacb4b64101f65136a5aa2af9935c37c5b64289cba04f0
+      recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
+      recipe_sha256: e8ce7bbc3db6c72204c0299c970bfcdcd31c0fec9f58f28e220e91cc1b8cad88
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.parameter-factory-signatures.header
+      probe_id: module-header-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
+    operation_fixture_refs:
+    - workflow_id: root-alias-identity
+      input_path: tests/fixtures/inputs/parity/root-alias-identity.json
+      input_sha256: 4113becb3c2fc41b631895f5e0f17a1a1c662c26d8619a58d4ab8216e68e3e1d
+      recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
+      recipe_sha256: 4f7186ec29a4ea3f6e6fe34a4a946d662f4a061265297b0b859065624899888f
+      workload_path: tests/fixtures/workloads/root_alias_identity.py
+      workload_sha256: 6e00762c3937ac0efbca7459ec0a260074150b354926a2394c6cc523ab38144d
+      case_id: fastapi.root-alias-identity.http-reexports
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: parameter-factory-signatures
+      input_path: tests/fixtures/inputs/parity/parameter-factory-signatures.json
+      input_sha256: 30737684004884a621aacb4b64101f65136a5aa2af9935c37c5b64289cba04f0
+      recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
+      recipe_sha256: e8ce7bbc3db6c72204c0299c970bfcdcd31c0fec9f58f28e220e91cc1b8cad88
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.parameter-factory-signatures.header
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -23731,9 +25138,11 @@ api_surface_contract:
     - http.headers.ordered
     - http.status
     - openapi.paths
+    - python.signature
     operation_scope:
-      status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+      status: slice-described
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.param_functions.Header/supported_slice
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.param_functions.Header
@@ -23742,8 +25151,11 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/934
-      status: full-contract-not-established
-      rust_binding: null
+      status: partial-contract
+      rust_binding: fastapi-rs/src/parameters.rs::header
+      known_gaps:
+      - The Rust Header factory does not expose the complete FastAPI 0.141.1 parameter set.
+      - The returned marker is not the upstream fastapi.params.Header FieldInfo subclass.
   - id: fastapi.param_functions.Path
     kind: function
     source_candidate_ref: /api_candidates/936
@@ -23776,7 +25188,41 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-parameters
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id001
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: parameter-factory-signatures
+      input_path: tests/fixtures/inputs/parity/parameter-factory-signatures.json
+      input_sha256: 30737684004884a621aacb4b64101f65136a5aa2af9935c37c5b64289cba04f0
+      recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
+      recipe_sha256: e8ce7bbc3db6c72204c0299c970bfcdcd31c0fec9f58f28e220e91cc1b8cad88
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.parameter-factory-signatures.path
+      probe_id: module-path-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
+    operation_fixture_refs:
+    - workflow_id: root-alias-identity
+      input_path: tests/fixtures/inputs/parity/root-alias-identity.json
+      input_sha256: 4113becb3c2fc41b631895f5e0f17a1a1c662c26d8619a58d4ab8216e68e3e1d
+      recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
+      recipe_sha256: 4f7186ec29a4ea3f6e6fe34a4a946d662f4a061265297b0b859065624899888f
+      workload_path: tests/fixtures/workloads/root_alias_identity.py
+      workload_sha256: 6e00762c3937ac0efbca7459ec0a260074150b354926a2394c6cc523ab38144d
+      case_id: fastapi.root-alias-identity.http-reexports
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: parameter-factory-signatures
+      input_path: tests/fixtures/inputs/parity/parameter-factory-signatures.json
+      input_sha256: 30737684004884a621aacb4b64101f65136a5aa2af9935c37c5b64289cba04f0
+      recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
+      recipe_sha256: e8ce7bbc3db6c72204c0299c970bfcdcd31c0fec9f58f28e220e91cc1b8cad88
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.parameter-factory-signatures.path
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -23788,9 +25234,11 @@ api_surface_contract:
     - http.headers.ordered
     - http.status
     - openapi.paths
+    - python.signature
     operation_scope:
-      status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+      status: slice-described
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.param_functions.Path/supported_slice
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.param_functions.Path
@@ -23799,8 +25247,11 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/936
-      status: full-contract-not-established
-      rust_binding: null
+      status: partial-contract
+      rust_binding: fastapi-rs/src/parameters.rs::path
+      known_gaps:
+      - The Rust Path factory exposes fewer source parameters than FastAPI 0.141.1.
+      - The returned marker is not the upstream fastapi.params.Path FieldInfo subclass.
   - id: fastapi.param_functions.Query
     kind: function
     source_candidate_ref: /api_candidates/937
@@ -23833,7 +25284,41 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-parameters
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id001
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: parameter-factory-signatures
+      input_path: tests/fixtures/inputs/parity/parameter-factory-signatures.json
+      input_sha256: 30737684004884a621aacb4b64101f65136a5aa2af9935c37c5b64289cba04f0
+      recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
+      recipe_sha256: e8ce7bbc3db6c72204c0299c970bfcdcd31c0fec9f58f28e220e91cc1b8cad88
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.parameter-factory-signatures.query
+      probe_id: module-query-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
+    operation_fixture_refs:
+    - workflow_id: root-alias-identity
+      input_path: tests/fixtures/inputs/parity/root-alias-identity.json
+      input_sha256: 4113becb3c2fc41b631895f5e0f17a1a1c662c26d8619a58d4ab8216e68e3e1d
+      recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
+      recipe_sha256: 4f7186ec29a4ea3f6e6fe34a4a946d662f4a061265297b0b859065624899888f
+      workload_path: tests/fixtures/workloads/root_alias_identity.py
+      workload_sha256: 6e00762c3937ac0efbca7459ec0a260074150b354926a2394c6cc523ab38144d
+      case_id: fastapi.root-alias-identity.http-reexports
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: parameter-factory-signatures
+      input_path: tests/fixtures/inputs/parity/parameter-factory-signatures.json
+      input_sha256: 30737684004884a621aacb4b64101f65136a5aa2af9935c37c5b64289cba04f0
+      recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
+      recipe_sha256: e8ce7bbc3db6c72204c0299c970bfcdcd31c0fec9f58f28e220e91cc1b8cad88
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.parameter-factory-signatures.query
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -23845,9 +25330,11 @@ api_surface_contract:
     - http.headers.ordered
     - http.status
     - openapi.paths
+    - python.signature
     operation_scope:
-      status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+      status: slice-described
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.param_functions.Query/supported_slice
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.param_functions.Query
@@ -23856,8 +25343,11 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/937
-      status: full-contract-not-established
-      rust_binding: null
+      status: partial-contract
+      rust_binding: fastapi-rs/src/parameters.rs::query
+      known_gaps:
+      - The Rust Query factory does not expose the complete FastAPI 0.141.1 parameter set.
+      - The returned marker is not the upstream fastapi.params.Query FieldInfo subclass.
   - id: fastapi.param_functions.Security
     kind: function
     source_candidate_ref: /api_candidates/938
@@ -23961,7 +25451,30 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-parameters
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id001
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: parameter-class-constructor-signatures
+      input_path: tests/fixtures/inputs/parity/parameter-class-constructor-signatures.json
+      input_sha256: dde7319461dae3f590267cf8994789b954fe0563190f8ed1beadf21af6a41b46
+      recipe_path: tests/fixtures/input-recipes/parity/parameter-class-constructor-signatures.yaml
+      recipe_sha256: 42e37f8b3cbdfaa08ce0b935f2d67ede7925e8eff977e6e82854b4d33f1d23d5
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.parameter-class-constructor-signatures.body
+      probe_id: body-class-constructor-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
+    operation_fixture_refs:
+    - workflow_id: parameter-class-constructor-signatures
+      input_path: tests/fixtures/inputs/parity/parameter-class-constructor-signatures.json
+      input_sha256: dde7319461dae3f590267cf8994789b954fe0563190f8ed1beadf21af6a41b46
+      recipe_path: tests/fixtures/input-recipes/parity/parameter-class-constructor-signatures.yaml
+      recipe_sha256: 42e37f8b3cbdfaa08ce0b935f2d67ede7925e8eff977e6e82854b4d33f1d23d5
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.parameter-class-constructor-signatures.body
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -23973,9 +25486,11 @@ api_surface_contract:
     - http.headers.ordered
     - http.status
     - openapi.paths
+    - python.signature
     operation_scope:
-      status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+      status: slice-described
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.params.Body.__init__/supported_slice
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.params.Body.__init__
@@ -23984,8 +25499,11 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/949
-      status: full-contract-not-established
-      rust_binding: null
+      status: unimplemented
+      rust_binding: fastapi-rs/src/parameters.rs::body
+      known_gaps:
+      - The fastapi.params.Body class constructor is replaced by a PyO3 Body factory function.
+      - Pydantic FieldInfo inheritance, constructor signature, and Body instance fields are not implemented.
   - id: fastapi.params.Cookie.__init__
     kind: protocol_method
     source_candidate_ref: /api_candidates/953
@@ -24185,7 +25703,30 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-parameters
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id001
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: parameter-class-constructor-signatures
+      input_path: tests/fixtures/inputs/parity/parameter-class-constructor-signatures.json
+      input_sha256: dde7319461dae3f590267cf8994789b954fe0563190f8ed1beadf21af6a41b46
+      recipe_path: tests/fixtures/input-recipes/parity/parameter-class-constructor-signatures.yaml
+      recipe_sha256: 42e37f8b3cbdfaa08ce0b935f2d67ede7925e8eff977e6e82854b4d33f1d23d5
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.parameter-class-constructor-signatures.header
+      probe_id: header-class-constructor-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
+    operation_fixture_refs:
+    - workflow_id: parameter-class-constructor-signatures
+      input_path: tests/fixtures/inputs/parity/parameter-class-constructor-signatures.json
+      input_sha256: dde7319461dae3f590267cf8994789b954fe0563190f8ed1beadf21af6a41b46
+      recipe_path: tests/fixtures/input-recipes/parity/parameter-class-constructor-signatures.yaml
+      recipe_sha256: 42e37f8b3cbdfaa08ce0b935f2d67ede7925e8eff977e6e82854b4d33f1d23d5
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.parameter-class-constructor-signatures.header
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -24197,9 +25738,11 @@ api_surface_contract:
     - http.headers.ordered
     - http.status
     - openapi.paths
+    - python.signature
     operation_scope:
-      status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+      status: slice-described
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.params.Header.__init__/supported_slice
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.params.Header.__init__
@@ -24208,8 +25751,11 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/968
-      status: full-contract-not-established
-      rust_binding: null
+      status: unimplemented
+      rust_binding: fastapi-rs/src/parameters.rs::header
+      known_gaps:
+      - The fastapi.params.Header class constructor is replaced by a PyO3 Header factory function.
+      - Pydantic FieldInfo inheritance, constructor signature, and Header instance fields are not implemented.
   - id: fastapi.params.Path.__init__
     kind: protocol_method
     source_candidate_ref: /api_candidates/981
@@ -24241,7 +25787,30 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-parameters
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id001
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: parameter-class-constructor-signatures
+      input_path: tests/fixtures/inputs/parity/parameter-class-constructor-signatures.json
+      input_sha256: dde7319461dae3f590267cf8994789b954fe0563190f8ed1beadf21af6a41b46
+      recipe_path: tests/fixtures/input-recipes/parity/parameter-class-constructor-signatures.yaml
+      recipe_sha256: 42e37f8b3cbdfaa08ce0b935f2d67ede7925e8eff977e6e82854b4d33f1d23d5
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.parameter-class-constructor-signatures.path
+      probe_id: path-class-constructor-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
+    operation_fixture_refs:
+    - workflow_id: parameter-class-constructor-signatures
+      input_path: tests/fixtures/inputs/parity/parameter-class-constructor-signatures.json
+      input_sha256: dde7319461dae3f590267cf8994789b954fe0563190f8ed1beadf21af6a41b46
+      recipe_path: tests/fixtures/input-recipes/parity/parameter-class-constructor-signatures.yaml
+      recipe_sha256: 42e37f8b3cbdfaa08ce0b935f2d67ede7925e8eff977e6e82854b4d33f1d23d5
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.parameter-class-constructor-signatures.path
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -24253,9 +25822,11 @@ api_surface_contract:
     - http.headers.ordered
     - http.status
     - openapi.paths
+    - python.signature
     operation_scope:
-      status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+      status: slice-described
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.params.Path.__init__/supported_slice
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.params.Path.__init__
@@ -24264,8 +25835,11 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/981
-      status: full-contract-not-established
-      rust_binding: null
+      status: unimplemented
+      rust_binding: fastapi-rs/src/parameters.rs::path
+      known_gaps:
+      - The fastapi.params.Path class constructor is replaced by a PyO3 Path factory function.
+      - Pydantic FieldInfo inheritance, constructor signature, and Path instance fields are not implemented.
   - id: fastapi.params.Query.__init__
     kind: protocol_method
     source_candidate_ref: /api_candidates/984
@@ -24297,7 +25871,30 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-parameters
       fixture_design_ref: /fixture_designs/380
       observation_selectors: *id001
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: parameter-class-constructor-signatures
+      input_path: tests/fixtures/inputs/parity/parameter-class-constructor-signatures.json
+      input_sha256: dde7319461dae3f590267cf8994789b954fe0563190f8ed1beadf21af6a41b46
+      recipe_path: tests/fixtures/input-recipes/parity/parameter-class-constructor-signatures.yaml
+      recipe_sha256: 42e37f8b3cbdfaa08ce0b935f2d67ede7925e8eff977e6e82854b4d33f1d23d5
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.parameter-class-constructor-signatures.query
+      probe_id: query-class-constructor-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
+    operation_fixture_refs:
+    - workflow_id: parameter-class-constructor-signatures
+      input_path: tests/fixtures/inputs/parity/parameter-class-constructor-signatures.json
+      input_sha256: dde7319461dae3f590267cf8994789b954fe0563190f8ed1beadf21af6a41b46
+      recipe_path: tests/fixtures/input-recipes/parity/parameter-class-constructor-signatures.yaml
+      recipe_sha256: 42e37f8b3cbdfaa08ce0b935f2d67ede7925e8eff977e6e82854b4d33f1d23d5
+      workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
+      workload_sha256: 57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741
+      case_id: fastapi.parameter-class-constructor-signatures.query
+      observation_selectors:
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -24309,9 +25906,11 @@ api_surface_contract:
     - http.headers.ordered
     - http.status
     - openapi.paths
+    - python.signature
     operation_scope:
-      status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+      status: slice-described
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.params.Query.__init__/supported_slice
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.params.Query.__init__
@@ -24320,8 +25919,11 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/984
-      status: full-contract-not-established
-      rust_binding: null
+      status: unimplemented
+      rust_binding: fastapi-rs/src/parameters.rs::query
+      known_gaps:
+      - The fastapi.params.Query class constructor is replaced by a PyO3 Query factory function.
+      - Pydantic FieldInfo inheritance, constructor signature, and Query instance fields are not implemented.
   - id: fastapi.requests.HTTPConnection
     kind: import_binding
     source_candidate_ref: /api_candidates/994

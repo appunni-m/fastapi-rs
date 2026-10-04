@@ -890,12 +890,25 @@ reviewed_api_contract_overlay:
         - {path: tests/test_path.py, symbol: test_path_param_ge_int_2}
         - {path: tests/test_path.py, symbol: test_path_param_le_ge_int_4}
         - {path: tests/test_path.py, symbol: test_path_param_le_int_42}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/path-gt-zero.yaml
+          case_id: fastapi.path.gt-zero.positive-integer
+        - recipe_path: tests/fixtures/input-recipes/parity/path-gt-zero.yaml
+          case_id: fastapi.path.gt-zero.zero-rejected
+        - recipe_path: tests/fixtures/input-recipes/parity/body-surface.yaml
+          case_id: fastapi.path.ge-le-lower-bound-invalid
+        - recipe_path: tests/fixtures/input-recipes/parity/body-surface.yaml
+          case_id: fastapi.path.ge-le-upper-bound-invalid
+        - recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
+          case_id: fastapi.parameter-factory-signatures.path
       feature_ids: [request-validation]
-      observation_selectors: [http.status, http.body.bytes]
+      observation_selectors: [http.status, http.body.bytes, python.signature]
       supported_slice: >-
         Partial native slice: Annotated[int, Path(gt=0)] validates path integers
-        with a strict lower bound; Path(ge=..., le=...) applies inclusive integer
-        bounds. The body-surface workflow checks lower and upper bound failures.
+        with a strict lower bound; the linked Path(ge=..., le=...) inputs reject
+        integer values below the lower bound and above the upper bound. Equality
+        at either bound is not yet represented. The body-surface workflow checks
+        both rejection paths.
         Other Path constructor parameters and FieldInfo options remain outside
         this reviewed slice.
     fastapi.applications.FastAPI.options:
@@ -1085,8 +1098,52 @@ reviewed_api_contract_overlay:
           case_id: fastapi.request-body-media-type.source-derived.direct-body-default
         - recipe_path: tests/fixtures/input-recipes/parity/request-body-media-type-upstream-v3.yaml
           case_id: fastapi.request-body-media-type.source-derived.direct-body-unvalidated-default
+        - recipe_path: tests/fixtures/input-recipes/parity/body-gt-zero.yaml
+          case_id: fastapi.body.gt-zero.positive-integer
+        - recipe_path: tests/fixtures/input-recipes/parity/body-gt-zero.yaml
+          case_id: fastapi.body.gt-zero.annotated-positive-integer
+        - recipe_path: tests/fixtures/input-recipes/parity/body-gt-zero.yaml
+          case_id: fastapi.body.gt-zero.annotated-zero-rejected
+        - recipe_path: tests/fixtures/input-recipes/parity/body-gt-zero.yaml
+          case_id: fastapi.body.gt-zero.zero-rejected
+        - recipe_path: tests/fixtures/input-recipes/parity/body-surface.yaml
+          case_id: fastapi.body.embedded-scalar-valid
+        - recipe_path: tests/fixtures/input-recipes/parity/body-surface.yaml
+          case_id: fastapi.body.embedded-scalar-missing
+        - recipe_path: tests/fixtures/input-recipes/parity/body-surface.yaml
+          case_id: fastapi.body.embedded-list-valid
+        - recipe_path: tests/fixtures/input-recipes/parity/body-surface.yaml
+          case_id: fastapi.body.required-list-alias-by-name
+        - recipe_path: tests/fixtures/input-recipes/parity/body-surface.yaml
+          case_id: fastapi.body.required-list-alias-valid
+        - recipe_path: tests/fixtures/input-recipes/parity/body-surface.yaml
+          case_id: fastapi.body.optional-list-alias-ignored
+        - recipe_path: tests/fixtures/input-recipes/parity/body-surface.yaml
+          case_id: fastapi.body.optional-list-validation-alias-valid
+        - recipe_path: tests/fixtures/input-recipes/parity/body-surface.yaml
+          case_id: fastapi.body.multiple-values-valid
+        - recipe_path: tests/fixtures/input-recipes/parity/body-surface.yaml
+          case_id: fastapi.body.multiple-values-invalid
+        - recipe_path: tests/fixtures/input-recipes/parity/body-surface.yaml
+          case_id: fastapi.body.optional-model-absent
+        - recipe_path: tests/fixtures/input-recipes/parity/body-surface.yaml
+          case_id: fastapi.body.optional-model-present
+        - recipe_path: tests/fixtures/input-recipes/parity/body-surface.yaml
+          case_id: fastapi.body.openapi-schemas
+        - recipe_path: tests/fixtures/input-recipes/parity/optional-list-openapi-schema-source-review.yaml
+          case_id: fastapi.request-body.optional-list-openapi.no-alias
+        - recipe_path: tests/fixtures/input-recipes/parity/optional-list-openapi-schema-source-review.yaml
+          case_id: fastapi.request-body.optional-list-openapi.alias
+        - recipe_path: tests/fixtures/input-recipes/parity/optional-list-openapi-schema-source-review.yaml
+          case_id: fastapi.request-body.optional-list-openapi.validation-alias
+        - recipe_path: tests/fixtures/input-recipes/parity/optional-list-openapi-schema-source-review.yaml
+          case_id: fastapi.request-body.optional-list-openapi.both-aliases
+        - recipe_path: tests/fixtures/input-recipes/parity/body-fields-doc-tutorial001-review.yaml
+          case_id: fastapi.docs-example.body-fields.tutorial001.openapi-embedded-schema
+        - recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
+          case_id: fastapi.parameter-factory-signatures.body
       feature_ids: [request-validation, openapi-docs]
-      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, openapi.document]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, openapi.document, python.signature]
       supported_slice: >-
         Partial native slice: Body(gt=...) marks a request-body input and applies
         the numeric strict-greater-than constraint. Body(embed=True) wraps scalar
@@ -1194,8 +1251,91 @@ reviewed_api_contract_overlay:
         - {path: tests/test_tutorial/test_query_params_str_validations/test_tutorial014.py}
         - {path: docs_src/query_params_str_validations/tutorial015_an_py310.py}
         - {path: tests/test_tutorial/test_query_params_str_validations/test_tutorial015.py}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/query-gt-zero.yaml
+          case_id: fastapi.query.gt-zero.positive-value
+        - recipe_path: tests/fixtures/input-recipes/parity/query-gt-zero.yaml
+          case_id: fastapi.query.gt-zero.zero-rejected
+        - recipe_path: tests/fixtures/input-recipes/parity/query-gt-zero.yaml
+          case_id: fastapi.query.gt-zero.lt-upper-bound-and-openapi
+        - recipe_path: tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml
+          case_id: fastapi.docs-example.query-params-str-validations.tutorial001
+        - recipe_path: tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml
+          case_id: fastapi.docs-example.query-params-str-validations.tutorial002
+        - recipe_path: tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml
+          case_id: fastapi.docs-example.query-params-str-validations.tutorial003
+        - recipe_path: tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml
+          case_id: fastapi.docs-example.query-params-str-validations.tutorial005
+        - recipe_path: tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml
+          case_id: fastapi.docs-example.query-params-str-validations.tutorial006
+        - recipe_path: tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml
+          case_id: fastapi.docs-example.query-params-str-validations.tutorial006c
+        - recipe_path: tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml
+          case_id: fastapi.docs-example.query-params-str-validations.tutorial009
+        - recipe_path: tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml
+          case_id: fastapi.docs-example.query-params-str-validations.tutorial011
+        - recipe_path: tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml
+          case_id: fastapi.docs-example.query-params-str-validations.tutorial012
+        - recipe_path: tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml
+          case_id: fastapi.docs-example.query-params-str-validations.tutorial013
+        - recipe_path: tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml
+          case_id: fastapi.docs-example.query-params-str-validations.tutorial015
+        - recipe_path: tests/fixtures/input-recipes/parity/query-params-str-validations-doc-pattern-examples.yaml
+          case_id: fastapi.docs-example.query-params-str-validations.tutorial004
+        - recipe_path: tests/fixtures/input-recipes/parity/query-params-str-validations-doc-pattern-examples.yaml
+          case_id: fastapi.docs-example.query-params-str-validations.tutorial010
+        - recipe_path: tests/fixtures/input-recipes/parity/query-params-str-validations-doc-title-description-examples.yaml
+          case_id: fastapi.docs-example.query-params-str-validations.tutorial007
+        - recipe_path: tests/fixtures/input-recipes/parity/query-params-str-validations-doc-title-description-examples.yaml
+          case_id: fastapi.docs-example.query-params-str-validations.tutorial008
+        - recipe_path: tests/fixtures/input-recipes/parity/query-params-str-validations-doc-exclude-schema-examples.yaml
+          case_id: fastapi.docs-example.query-params-str-validations.tutorial014
+        - recipe_path: tests/fixtures/input-recipes/parity/query-validation-alias-direct.yaml
+          case_id: fastapi.request-parameters.query.validation-alias.direct.rejects-declared-alias
+        - recipe_path: tests/fixtures/input-recipes/parity/query-validation-alias-direct.yaml
+          case_id: fastapi.request-parameters.query.validation-alias.direct.rejects-parameter-name
+        - recipe_path: tests/fixtures/input-recipes/parity/query-validation-alias-direct.yaml
+          case_id: fastapi.request-parameters.query.validation-alias.direct.accepts-validation-alias
+        - recipe_path: tests/fixtures/input-recipes/parity/query-validation-alias-direct.yaml
+          case_id: fastapi.request-parameters.query.validation-alias.direct.openapi
+        - recipe_path: tests/fixtures/input-recipes/parity/query-param-models.yaml
+          case_id: fastapi.query-param-models.grouped-repeated-list
+        - recipe_path: tests/fixtures/input-recipes/parity/query-param-models.yaml
+          case_id: fastapi.query-param-models.grouped-defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/query-param-models.yaml
+          case_id: fastapi.query-param-models.grouped-validation-invalid
+        - recipe_path: tests/fixtures/input-recipes/parity/query-param-models.yaml
+          case_id: fastapi.query-param-models.openapi-query-parameters
+        - recipe_path: tests/fixtures/input-recipes/parity/query-param-model-tutorial-edges.yaml
+          case_id: fastapi.request-parameter-model-tutorial.query-001-extra-ignore
+        - recipe_path: tests/fixtures/input-recipes/parity/request-parameter-model-tutorial-edges.yaml
+          case_id: fastapi.request-parameter-model-tutorial.query-002
+        - recipe_path: tests/fixtures/input-recipes/parity/model-extra-request-parameters-upstream.yaml
+          case_id: fastapi.request-parameters.extra-model.query-repeated-values
+        - recipe_path: tests/fixtures/input-recipes/parity/query-validation-alias-model.yaml
+          case_id: fastapi.request-parameters.query.validation-alias.model.rejects-declared-alias
+        - recipe_path: tests/fixtures/input-recipes/parity/query-validation-alias-model.yaml
+          case_id: fastapi.request-parameters.query.validation-alias.model.accepts-validation-alias
+        - recipe_path: tests/fixtures/input-recipes/parity/query-validation-alias-model.yaml
+          case_id: fastapi.request-parameters.query.validation-alias.model.required-missing
+        - recipe_path: tests/fixtures/input-recipes/parity/query-validation-alias-model.yaml
+          case_id: fastapi.request-parameters.query.validation-alias.model.rejects-python-name
+        - recipe_path: tests/fixtures/input-recipes/parity/query-validation-alias-model.yaml
+          case_id: fastapi.request-parameters.query.validation-alias.model.openapi
+        - recipe_path: tests/fixtures/input-recipes/parity/query-model-extra-forbid.yaml
+          case_id: fastapi.query-model-extra-forbid.query-extra-rejected
+        - recipe_path: tests/fixtures/input-recipes/parity/query-model-extra-allow.yaml
+          case_id: fastapi.query-model-extra-allow.query-repeated-extra-values
+        - recipe_path: tests/fixtures/input-recipes/parity/request-param-model-field-aliases-wave.yaml
+          case_id: fastapi.request-param-model-alias.query-field-name-rejected
+        - recipe_path: tests/fixtures/input-recipes/parity/request-param-model-field-aliases-wave.yaml
+          case_id: fastapi.request-param-model-alias.query-alias-valid
+        - recipe_path: tests/fixtures/input-recipes/parity/request-param-model-field-aliases-wave.yaml
+          case_id: fastapi.request-param-model-alias.query-alias-openapi
+        - recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
+          case_id: fastapi.parameter-factory-signatures.query
       feature_ids: [request-validation, openapi-docs]
-      observation_selectors: [http.status, http.body.bytes, openapi.document]
+      observation_selectors: [http.status, http.body.bytes, openapi.document, python.signature]
       supported_slice: >-
         Partial native slice: direct and Annotated Query declarations apply
         exclusive gt/lt and inclusive min_length/max_length validation and project
@@ -1286,8 +1426,17 @@ reviewed_api_contract_overlay:
         - {path: fastapi/params.py, symbol: Header}
         - {path: fastapi/dependencies/utils.py, symbol: analyze_param}
         - {path: tests/test_tutorial/test_header_params/test_tutorial002.py, symbol: test}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/header-convert-underscores-false.yaml
+          case_id: fastapi.header.convert-underscores-false.missing
+        - recipe_path: tests/fixtures/input-recipes/parity/header-convert-underscores-false.yaml
+          case_id: fastapi.header.convert-underscores-false.underscore-name
+        - recipe_path: tests/fixtures/input-recipes/parity/header-convert-underscores-false.yaml
+          case_id: fastapi.header.convert-underscores-false.hyphen-name
+        - recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
+          case_id: fastapi.parameter-factory-signatures.header
       feature_ids: [request-validation]
-      observation_selectors: [http.status, http.body.bytes]
+      observation_selectors: [http.status, http.body.bytes, python.signature]
       supported_slice: >-
         Partial native slice: an Annotated optional string header accepts an
         underscore-preserving name with Header(convert_underscores=False), while
@@ -2786,6 +2935,67 @@ reviewed_api_contract_overlay:
           kind: source-definition
           start_line: 10
           end_line: 29
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-wave.yaml
+          case_id: fastapi.dependency-wave.generic-parameterless.test-generic-parameterless-depends
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-wave.yaml
+          case_id: fastapi.dependency-wave.dependency-current-user.test-get-users-me
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-wave.yaml
+          case_id: fastapi.dependency-wave.dependency-yield-resource.test-get-db
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-cache-source-wave.yaml
+          case_id: fastapi.dependencies.cache-shared-subdependency-source-wave
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-cache-source-wave.yaml
+          case_id: fastapi.dependencies.cache-bypass-subdependency-source-wave
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-request-local.yaml
+          case_id: fastapi.dependencies.override-cache-request-local
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-overrides-required-subdependency-wave.yaml
+          case_id: fastapi.dependency-overrides.required-nested-query-parameter
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-sync-defaults-upstream.yaml
+          case_id: fastapi.dependency-overrides.sync-defaults
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-async-cache-request-local.yaml
+          case_id: fastapi.dependencies.override-async-cache-request-local
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-async-two-keys-request-local.yaml
+          case_id: fastapi.dependencies.override-async-two-keys-request-local
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-async-query-cache-request-local.yaml
+          case_id: fastapi.dependencies.override-async-query-cache-request-local
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-async-query-alias-cache-request-local.yaml
+          case_id: fastapi.dependencies.override-async-query-alias-cache-request-local
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-async-query-validation-aggregation.yaml
+          case_id: fastapi.dependencies.override-async-query-validation-aggregation
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-async-uncached-edges-request-local.yaml
+          case_id: fastapi.dependencies.override-async-uncached-edges-request-local
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-async-uncached-edges-request-local.yaml
+          case_id: fastapi.dependencies.override-async-cache-uncached-edges-request-local
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-mixed-sync-async-direct-order-request-local.yaml
+          case_id: fastapi.dependencies.override-mixed-sync-async-direct-order-request-local
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-async-endpoint-request-local.yaml
+          case_id: fastapi.dependencies.override-async-endpoint-omitted-query
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-async-endpoint-request-local.yaml
+          case_id: fastapi.dependencies.override-async-endpoint-supplied-query
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-async-nested-query-wave.yaml
+          case_id: fastapi.dependency-overrides.async-nested-required-query
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-async-nested-two-required-query-wave.yaml
+          case_id: fastapi.dependency-overrides.async-nested-two-required-query
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-async-nested-two-required-query-wave.yaml
+          case_id: fastapi.dependency-overrides.async-nested-two-distinct-query-aliases
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-yield-tutorials-upstream.yaml
+          case_id: fastapi.dependencies.tutorial008e.function-scope-yield-rick
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-yield-tutorials-upstream.yaml
+          case_id: fastapi.dependencies.tutorial008e.annotated-function-scope-yield-rick
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-lifecycle.yaml
+          case_id: fastapi.dependencies.yield-scope-cleanup
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-scope-websocket.yaml
+          case_id: fastapi.dependencies.websocket-function-scope-isolated
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-scope-websocket.yaml
+          case_id: fastapi.dependencies.websocket-request-scope-isolated
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-scope-construction-errors.yaml
+          case_id: fastapi.dependencies.invalid-request-scope-depends-on-function-http
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-scope-construction-errors.yaml
+          case_id: fastapi.dependencies.invalid-request-scope-depends-on-function-websocket
+        - recipe_path: tests/fixtures/input-recipes/parity/depends-signature.yaml
+          case_id: fastapi.dependencies.depends-yield-scope-signature
+        - recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
+          case_id: fastapi.parameter-factory-signatures.depends
       feature_ids: [dependency-security, request-validation]
       observation_selectors:
         - http.status
@@ -2793,6 +3003,9 @@ reviewed_api_contract_overlay:
         - websocket.messages
         - websocket.close_code
         - python.signature
+        - construction.outcome
+        - construction.exception_class
+        - construction.exception_message
       supported_slice: >-
         When Depends() omits its callable, FastAPI infers the dependency from
         the annotated type. Zero-argument dependency classes are instantiated
@@ -2942,6 +3155,219 @@ reviewed_api_contract_overlay:
         annotated parameter documentation, is covered by the independent
         `tests/fixtures/input-recipes/parity/depends-signature.yaml` case
         `fastapi.dependencies.depends-yield-scope-signature`.
+    fastapi.param_functions.Path:
+      rust_binding: fastapi-rs/src/parameters.rs::path
+      source_evidence:
+        - {path: fastapi/param_functions.py, symbol: Path}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
+          case_id: fastapi.root-alias-identity.http-reexports
+        - recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
+          case_id: fastapi.parameter-factory-signatures.path
+      feature_ids: [request-validation]
+      observation_selectors: [http.body.bytes, python.signature]
+      supported_slice: >-
+        Module-callable review only: the root-alias identity workflow observes
+        `fastapi.Path` and `fastapi.param_functions.Path` as the same object,
+        and the direct signature input probes the module path itself. This does
+        not establish the full upstream factory signature, marker return type,
+        or constructor behavior.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - The Rust Path factory exposes fewer source parameters than FastAPI 0.141.1.
+          - The returned marker is not the upstream fastapi.params.Path FieldInfo subclass.
+    fastapi.param_functions.Query:
+      rust_binding: fastapi-rs/src/parameters.rs::query
+      source_evidence:
+        - {path: fastapi/param_functions.py, symbol: Query}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
+          case_id: fastapi.root-alias-identity.http-reexports
+        - recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
+          case_id: fastapi.parameter-factory-signatures.query
+      feature_ids: [request-validation]
+      observation_selectors: [http.body.bytes, python.signature]
+      supported_slice: >-
+        Module-callable review only: the root-alias identity workflow observes
+        `fastapi.Query` and `fastapi.param_functions.Query` as the same object,
+        and the direct signature input probes the module path itself. This does
+        not establish the full upstream factory signature, marker return type,
+        or constructor behavior.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - The Rust Query factory does not expose the complete FastAPI 0.141.1 parameter set.
+          - The returned marker is not the upstream fastapi.params.Query FieldInfo subclass.
+    fastapi.param_functions.Header:
+      rust_binding: fastapi-rs/src/parameters.rs::header
+      source_evidence:
+        - {path: fastapi/param_functions.py, symbol: Header}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
+          case_id: fastapi.root-alias-identity.http-reexports
+        - recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
+          case_id: fastapi.parameter-factory-signatures.header
+      feature_ids: [request-validation]
+      observation_selectors: [http.body.bytes, python.signature]
+      supported_slice: >-
+        Module-callable review only: the root-alias identity workflow observes
+        `fastapi.Header` and `fastapi.param_functions.Header` as the same object,
+        and the direct signature input probes the module path itself. This does
+        not establish the full upstream factory signature, marker return type,
+        or constructor behavior.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - The Rust Header factory does not expose the complete FastAPI 0.141.1 parameter set.
+          - The returned marker is not the upstream fastapi.params.Header FieldInfo subclass.
+    fastapi.param_functions.Body:
+      rust_binding: fastapi-rs/src/parameters.rs::body
+      source_evidence:
+        - {path: fastapi/param_functions.py, symbol: Body}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
+          case_id: fastapi.root-alias-identity.http-reexports
+        - recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
+          case_id: fastapi.parameter-factory-signatures.body
+      feature_ids: [request-validation, openapi-docs]
+      observation_selectors: [http.body.bytes, python.signature]
+      supported_slice: >-
+        Module-callable review only: the root-alias identity workflow observes
+        `fastapi.Body` and `fastapi.param_functions.Body` as the same object,
+        and the direct signature input probes the module path itself. This does
+        not establish the full upstream factory signature, marker return type,
+        or constructor behavior.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - The Rust Body factory does not expose the complete FastAPI 0.141.1 parameter set.
+          - The returned marker is not the upstream fastapi.params.Body FieldInfo subclass.
+    fastapi.param_functions.Depends:
+      rust_binding: fastapi-rs/src/parameters.rs::depends
+      source_evidence:
+        - {path: fastapi/param_functions.py, symbol: Depends}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
+          case_id: fastapi.root-alias-identity.http-reexports
+        - recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
+          case_id: fastapi.parameter-factory-signatures.depends
+      feature_ids: [dependency-security]
+      observation_selectors: [http.body.bytes, python.signature]
+      supported_slice: >-
+        Module-callable review only: the root-alias identity workflow observes
+        `fastapi.Depends` and `fastapi.param_functions.Depends` as the same
+        object, and the direct signature input probes the module path itself.
+        This does not establish full dependency-marker or scope semantics.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - Full FastAPI dependency marker and yielded-scope semantics remain outside this direct signature slice.
+    fastapi.params.Path.__init__:
+      rust_binding: fastapi-rs/src/parameters.rs::path
+      source_evidence:
+        - path: fastapi/params.py
+          symbol: __init__
+          kind: source-definition
+          owner: Path
+          start_line: 140
+          end_line: 218
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/parameter-class-constructor-signatures.yaml
+          case_id: fastapi.parameter-class-constructor-signatures.path
+      feature_ids: [request-validation]
+      observation_selectors: [python.signature]
+      supported_slice: >-
+        Reviewed target gap: FastAPI 0.141.1 defines Path.__init__ on a Path
+        class derived from Param and Pydantic FieldInfo. FastAPI-RS exposes a
+        native Path factory function at the corresponding facade path, so this
+        constructor protocol and class behavior are not supported.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: unimplemented
+        known_gaps:
+          - The fastapi.params.Path class constructor is replaced by a PyO3 Path factory function.
+          - Pydantic FieldInfo inheritance, constructor signature, and Path instance fields are not implemented.
+    fastapi.params.Query.__init__:
+      rust_binding: fastapi-rs/src/parameters.rs::query
+      source_evidence:
+        - path: fastapi/params.py
+          symbol: __init__
+          kind: source-definition
+          owner: Query
+          start_line: 224
+          end_line: 300
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/parameter-class-constructor-signatures.yaml
+          case_id: fastapi.parameter-class-constructor-signatures.query
+      feature_ids: [request-validation]
+      observation_selectors: [python.signature]
+      supported_slice: >-
+        Reviewed target gap: FastAPI 0.141.1 defines Query.__init__ on a Query
+        class derived from Param and Pydantic FieldInfo. FastAPI-RS exposes a
+        native Query factory function at the corresponding facade path, so this
+        constructor protocol and class behavior are not supported.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: unimplemented
+        known_gaps:
+          - The fastapi.params.Query class constructor is replaced by a PyO3 Query factory function.
+          - Pydantic FieldInfo inheritance, constructor signature, and Query instance fields are not implemented.
+    fastapi.params.Header.__init__:
+      rust_binding: fastapi-rs/src/parameters.rs::header
+      source_evidence:
+        - path: fastapi/params.py
+          symbol: __init__
+          kind: source-definition
+          owner: Header
+          start_line: 306
+          end_line: 384
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/parameter-class-constructor-signatures.yaml
+          case_id: fastapi.parameter-class-constructor-signatures.header
+      feature_ids: [request-validation]
+      observation_selectors: [python.signature]
+      supported_slice: >-
+        Reviewed target gap: FastAPI 0.141.1 defines Header.__init__ on a
+        Header class derived from Param and Pydantic FieldInfo. FastAPI-RS
+        exposes a native Header factory function at the corresponding facade
+        path, so this constructor protocol and class behavior are not supported.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: unimplemented
+        known_gaps:
+          - The fastapi.params.Header class constructor is replaced by a PyO3 Header factory function.
+          - Pydantic FieldInfo inheritance, constructor signature, and Header instance fields are not implemented.
+    fastapi.params.Body.__init__:
+      rust_binding: fastapi-rs/src/parameters.rs::body
+      source_evidence:
+        - path: fastapi/params.py
+          symbol: __init__
+          kind: source-definition
+          owner: Body
+          start_line: 470
+          end_line: 575
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/parameter-class-constructor-signatures.yaml
+          case_id: fastapi.parameter-class-constructor-signatures.body
+      feature_ids: [request-validation, openapi-docs]
+      observation_selectors: [python.signature]
+      supported_slice: >-
+        Reviewed target gap: FastAPI 0.141.1 defines Body.__init__ on a Body
+        class derived from Pydantic FieldInfo. FastAPI-RS exposes a native Body
+        factory function at the corresponding facade path, so this constructor
+        protocol and class behavior are not supported.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: unimplemented
+        known_gaps:
+          - The fastapi.params.Body class constructor is replaced by a PyO3 Body factory function.
+          - Pydantic FieldInfo inheritance, constructor signature, and Body instance fields are not implemented.
     fastapi.Security:
       rust_binding: fastapi-rs/src/parameters.rs::security
       source_evidence:
