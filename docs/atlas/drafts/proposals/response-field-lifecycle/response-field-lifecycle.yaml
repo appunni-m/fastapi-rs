@@ -1,0 +1,312 @@
+# Prospective normal parity inputs only. No outputs are prescribed here.
+schema: fastapi-rs/python-asgi-workflow@9
+workload:
+  file: tests/fixtures/workloads/response_field_lifecycle.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.response-field-lifecycle.direct-annotated-reuse
+  verification: parity
+  factory_input: {model: traced-int}
+  construction_observation: &construction
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions: &direct-actions
+  - &state-before
+    action_id: read-state-before
+    kind: http_request
+    scope: &state-scope
+      type: http
+      asgi: &asgi {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers: &headers [[host, testserver]]
+      client: &client [127.0.0.1, 123]
+      server: &server [testserver, 80]
+    receive_events: &empty-request
+    - {type: http.request, body: '', more_body: false}
+    observations: &http-observations
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+    - {kind: asgi_send, selector: message_types, comparison: ordered}
+    - {kind: application_error, selector: exception, comparison: exact}
+  - &direct-first
+    action_id: invoke-first
+    kind: http_request
+    scope: &direct-first-scope
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /probe
+      query_string: 'value=7'
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *http-observations
+  - &direct-second
+    action_id: invoke-second
+    kind: http_request
+    scope: &direct-second-scope
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /probe
+      query_string: 'value=9'
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *http-observations
+  - &state-after
+    action_id: read-state-after
+    kind: http_request
+    scope: *state-scope
+    receive_events: *empty-request
+    observations: *http-observations
+  source_evidence: &model-evidence
+  - {path: docs/en/docs/tutorial/response-model.md, kind: upstream_documentation}
+  - {path: tests/test_serialize_response_model.py, kind: upstream_test}
+
+- case_id: fastapi.response-field-lifecycle.included-annotated-reuse
+  verification: parity
+  factory_input: {model: traced-int, include: true, include_twice: true}
+  construction_observation: *construction
+  actions:
+  - *state-before
+  - &included-first
+    action_id: invoke-left-first
+    kind: http_request
+    scope: &included-first-scope
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /left/probe
+      query_string: 'value=7'
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *http-observations
+  - action_id: read-state-after-left-first
+    kind: http_request
+    scope: *state-scope
+    receive_events: *empty-request
+    observations: *http-observations
+  - &included-second
+    action_id: invoke-left-second
+    kind: http_request
+    scope: &included-second-scope
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /left/probe
+      query_string: 'value=9'
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *http-observations
+  - action_id: read-state-after-left-second
+    kind: http_request
+    scope: *state-scope
+    receive_events: *empty-request
+    observations: *http-observations
+  - action_id: invoke-right-first
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /right/probe
+      query_string: 'value=11'
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *http-observations
+  - *state-after
+  source_evidence:
+  - {path: docs/en/docs/tutorial/response-model.md, kind: upstream_documentation}
+  - {path: docs/en/docs/tutorial/bigger-applications.md, kind: upstream_documentation}
+
+- case_id: fastapi.response-field-lifecycle.field-metadata-warning-error-recovery
+  verification: parity
+  factory_input: {model: field-int}
+  construction_observation: *construction
+  actions:
+  - *state-before
+  - action_id: invoke-constrained-value
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /probe
+      query_string: 'value=-2'
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+    - {kind: asgi_send, selector: message_types, comparison: ordered}
+    - {kind: application_error, selector: exception, comparison: exact}
+    - {kind: application_error, selector: validation_error_details, comparison: exact}
+    - kind: application_error
+      selector: error_public_attributes
+      attributes: [body]
+      comparison: exact
+  - action_id: read-state-after-constrained-value
+    kind: http_request
+    scope: *state-scope
+    receive_events: *empty-request
+    observations: *http-observations
+  - *direct-second
+  - *state-after
+  source_evidence: *model-evidence
+
+- case_id: fastapi.response-field-lifecycle.model-field-aliases-output-flags
+  verification: parity
+  factory_input: {model: field-model}
+  construction_observation: *construction
+  actions: *direct-actions
+  source_evidence:
+  - {path: tests/test_response_model_include_exclude.py, kind: upstream_test}
+  - {path: tests/test_response_by_alias.py, kind: upstream_test}
+  - {path: docs/en/docs/tutorial/response-model.md, kind: upstream_documentation}
+
+- case_id: fastapi.response-field-lifecycle.schema-hook-registration-error
+  verification: parity
+  factory_input: {model: reject-schema, capture_setup_error: true}
+  construction_observation: *construction
+  actions:
+  - *state-after
+  source_evidence:
+  - {path: tests/test_response_model_invalid.py, kind: upstream_test}
+  - {path: docs/en/docs/tutorial/response-model.md, kind: upstream_documentation}
+
+- case_id: fastapi.response-field-lifecycle.unsupported-model-construction-error
+  verification: parity
+  factory_input: {model: unsupported}
+  construction_observation: *construction
+  actions: []
+  source_evidence:
+  - {path: tests/test_response_model_invalid.py, kind: upstream_test}
+
+- case_id: fastapi.response-class-provenance.omitted-model-nan
+  verification: parity
+  factory_input: {model: metric-model, nan: true}
+  construction_observation: *construction
+  actions: *direct-actions
+  source_evidence: &response-class-evidence
+  - {path: docs/en/docs/advanced/custom-response.md, kind: upstream_documentation}
+  - {path: tests/test_default_response_class_router.py, kind: upstream_test}
+  - {path: tests/test_serialize_response_model.py, kind: upstream_test}
+
+- case_id: fastapi.response-class-provenance.explicit-jsonresponse-model-nan
+  verification: parity
+  factory_input: {model: metric-model, nan: true, route_class: json}
+  construction_observation: *construction
+  actions: *direct-actions
+  source_evidence: *response-class-evidence
+
+- case_id: fastapi.response-class-provenance.explicit-custom-class-model
+  verification: parity
+  factory_input: {model: metric-model, route_class: tag-route}
+  construction_observation: *construction
+  actions: *direct-actions
+  source_evidence: *response-class-evidence
+
+- case_id: fastapi.response-class-provenance.application-explicit-json-default-model-nan
+  verification: parity
+  factory_input: {model: metric-model, nan: true, app_class: json}
+  construction_observation: *construction
+  actions: *direct-actions
+  source_evidence: *response-class-evidence
+
+- case_id: fastapi.response-class-provenance.router-custom-default-model
+  verification: parity
+  factory_input:
+    model: metric-model
+    include: true
+    app_class: tag-app
+    router_class: tag-router
+    include_class: tag-include
+  construction_observation: *construction
+  actions: &included-actions
+  - *state-before
+  - *included-first
+  - *included-second
+  - *state-after
+  source_evidence: *response-class-evidence
+
+- case_id: fastapi.response-class-provenance.include-custom-default-model
+  verification: parity
+  factory_input:
+    model: metric-model
+    include: true
+    app_class: tag-app
+    include_class: tag-include
+  construction_observation: *construction
+  actions: *included-actions
+  source_evidence: *response-class-evidence
+
+- case_id: fastapi.response-class-provenance.route-explicit-over-inherited-model
+  verification: parity
+  factory_input:
+    model: metric-model
+    include: true
+    app_class: tag-app
+    router_class: tag-router
+    include_class: tag-include
+    route_class: json
+    nan: true
+  construction_observation: *construction
+  actions: *included-actions
+  source_evidence: *response-class-evidence
+
+- case_id: fastapi.response-class-provenance.inherited-omitted-defaults-model-nan
+  verification: parity
+  factory_input: {model: metric-model, include: true, nan: true}
+  construction_observation: *construction
+  actions: *included-actions
+  source_evidence: *response-class-evidence
+
+- case_id: fastapi.response-class-provenance.explicit-none-over-default-model
+  verification: parity
+  factory_input: {model: metric-model, app_class: tag-app, route_class: null}
+  construction_observation: *construction
+  actions: *direct-actions
+  source_evidence: *response-class-evidence
+
+- case_id: fastapi.response-class-provenance.returned-response-bypasses-model-and-none
+  verification: parity
+  factory_input: {model: traced-int, route_class: null, return_response: true}
+  construction_observation: *construction
+  actions: *direct-actions
+  source_evidence:
+  - {path: docs/en/docs/advanced/response-directly.md, kind: upstream_documentation}
+  - {path: tests/test_response_model_as_return_annotation.py, kind: upstream_test}

@@ -1,0 +1,330 @@
+# Inactive independent inputs for CPython 3.12.13 iterable-coroutine generators.
+# FastAPI 0.141.1 utils.py:673-674 awaits a coroutine-classified call exactly once.
+# A nongenerator sync routine marked through public inspect.markcoroutinefunction
+# returns a generator created by public types.coroutine. It has no __wrapped__
+# link to that generator function, avoiding the source yield-dependency branch.
+# CPython v3.12.13 Objects/genobject.c:940-996 accepts a direct flagged generator
+# as the original await iterator and rejects one returned from __await__.
+# No expected outputs, source imports, fixture-ID dispatch, private marker/code
+# mutation, timing assumptions, process addresses or output normalization.
+schema: fastapi-rs/python-asgi-workflow@9
+workload:
+  file: tests/fixtures/workloads/generator_awaitable_protocol.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.awaitables.generator-protocol.marked-immediate-validation-cache
+  verification: parity
+  factory_input: {suspension: immediate}
+  construction_observation: &construction
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: invalid-input-before-any-generator-is-allocated
+    kind: http_request
+    scope:
+      type: http
+      asgi: &asgi {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /pair
+      query_string: 'seed=invalid'
+      root_path: ''
+      headers: &headers [[host, testserver]]
+      client: &client [127.0.0.1, 123]
+      server: &server [testserver, 80]
+    receive_events: &request [{type: http.request, body: '', more_body: false}]
+    observations: &response
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+    - {kind: asgi_send, selector: message_types, comparison: ordered}
+  - action_id: observe-validation-suppression-and-entered-guard-cleanup
+    kind: http_request
+    scope: &state-scope {type: http, asgi: *asgi, http_version: '1.1', method: GET,
+      scheme: http, path: /state, query_string: '', root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *request
+    observations: *response
+  - action_id: immediate-generator-return-with-cache-hit-and-uncached-repeat
+    kind: http_request
+    scope: &pair-scope {type: http, asgi: *asgi, http_version: '1.1', method: GET,
+      scheme: http, path: /pair, query_string: 'seed=31', root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *request
+    observations: *response
+  - action_id: observe-original-marked-invocations-stop-values-and-response-boundaries
+    kind: http_request
+    scope: *state-scope
+    receive_events: *request
+    observations: *response
+  source_evidence: &await-reference
+  - {kind: upstream_documentation, path: docs/en/docs/async.md}
+  - {kind: upstream_documentation, path: docs/en/docs/tutorial/dependencies/sub-dependencies.md}
+  - {kind: upstream_documentation, path: docs/en/docs/tutorial/dependencies/dependencies-with-yield.md}
+- case_id: fastapi.awaitables.generator-protocol.marked-checkpoint
+  verification: parity
+  factory_input: {suspension: checkpoint}
+  construction_observation: *construction
+  actions:
+  - action_id: direct-generator-yields-none-and-resumes-with-cache-controls
+    kind: http_request
+    scope: *pair-scope
+    receive_events: *request
+    observations: *response
+  - action_id: observe-checkpoint-resume-state-and-scope-cleanup
+    kind: http_request
+    scope: *state-scope
+    receive_events: *request
+    observations: *response
+  source_evidence: *await-reference
+- case_id: fastapi.awaitables.generator-protocol.marked-future-nested-cache
+  verification: parity
+  factory_input: {suspension: future}
+  construction_observation: *construction
+  actions:
+  - action_id: future-completes-before-nested-parent-and-later-cache-reuse
+    kind: http_request
+    scope: &nested-scope {type: http, asgi: *asgi, http_version: '1.1', method: GET,
+      scheme: http, path: /nested, query_string: 'seed=37', root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *request
+    observations: *response
+  - action_id: observe-future-callback-completion-parent-and-original-generator-state
+    kind: http_request
+    scope: *state-scope
+    receive_events: *request
+    observations: *response
+  source_evidence: *await-reference
+- case_id: fastapi.awaitables.generator-protocol.caught-future-error
+  verification: parity
+  factory_input: {suspension: future, failure: catch}
+  construction_observation: *construction
+  actions:
+  - action_id: generator-catches-future-error-and-returns-ordinary-values
+    kind: http_request
+    scope: *pair-scope
+    receive_events: *request
+    observations: *response
+  - action_id: observe-full-error-throw-warning-protocol-finally-and-success-cleanup
+    kind: http_request
+    scope: *state-scope
+    receive_events: *request
+    observations: *response
+  source_evidence: *await-reference
+- case_id: fastapi.awaitables.generator-protocol.propagated-future-error-cleanup-recovery
+  verification: parity
+  factory_input: {suspension: future, failure: propagate}
+  construction_observation: *construction
+  actions:
+  - action_id: future-error-propagates-through-generator-and-entered-scopes
+    kind: http_request
+    scope: *pair-scope
+    receive_events: *request
+    observations: *response
+  - action_id: inspect-exact-handler-error-cleanup-and-all-deprecation-messages
+    kind: http_request
+    scope: *state-scope
+    receive_events: *request
+    observations: *response
+  - action_id: clear-ordinary-failure-switch-and-close-retained-generators
+    kind: http_request
+    scope: &clear-scope {type: http, asgi: *asgi, http_version: '1.1', method: POST,
+      scheme: http, path: /configure/clear, query_string: '', root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *request
+    observations: *response
+  - action_id: fresh-generator-callbacks-and-cache-values-after-user-error
+    kind: http_request
+    scope: *pair-scope
+    receive_events: *request
+    observations: *response
+  - action_id: inspect-successful-recovery-resource-exits-and-raw-sends
+    kind: http_request
+    scope: *state-scope
+    receive_events: *request
+    observations: *response
+  source_evidence: *await-reference
+- case_id: fastapi.awaitables.generator-protocol.marked-endpoint-future
+  verification: parity
+  factory_input: {suspension: future}
+  construction_observation: *construction
+  actions:
+  - action_id: public-marked-nongenerator-endpoint-returns-an-iterable-coroutine
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /endpoint, query_string: 'seed=41', root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *request
+    observations: *response
+  - action_id: observe-original-endpoint-return-delegation-and-both-scope-boundaries
+    kind: http_request
+    scope: *state-scope
+    receive_events: *request
+    observations: *response
+  source_evidence: *await-reference
+- case_id: fastapi.awaitables.generator-protocol.genuine-async-bridge-control
+  verification: parity
+  factory_input: {suspension: future}
+  construction_observation: *construction
+  actions:
+  - action_id: ordinary-async-body-awaits-the-same-public-generator-protocol
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /bridge, query_string: 'seed=43', root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *request
+    observations: *response
+  - action_id: inspect-inner-generator-completion-with-existing-native-coroutine-boundary
+    kind: http_request
+    scope: *state-scope
+    receive_events: *request
+    observations: *response
+  source_evidence: *await-reference
+- case_id: fastapi.awaitables.generator-protocol.unmarked-returned-generator-is-a-value
+  verification: parity
+  factory_input: {suspension: future}
+  construction_observation: *construction
+  actions:
+  - action_id: unmarked-sync-dependency-returns-original-unstarted-generator
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /raw-value, query_string: 'seed=47', root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *request
+    observations: *response
+  - action_id: observe-identity-public-state-explicit-close-and-absence-of-generator-body
+    kind: http_request
+    scope: *state-scope
+    receive_events: *request
+    observations: *response
+  source_evidence: *await-reference
+- case_id: fastapi.awaitables.generator-protocol.unflagged-generator-error-cleanup-recovery
+  verification: parity
+  factory_input: {suspension: future, returned_kind: unflagged}
+  construction_observation: *construction
+  actions:
+  - action_id: marked-routine-returns-an-ordinary-nonawaitable-generator
+    kind: http_request
+    scope: *pair-scope
+    receive_events: *request
+    observations: *response
+  - action_id: inspect-full-await-error-created-state-and-entered-resource-cleanup
+    kind: http_request
+    scope: *state-scope
+    receive_events: *request
+    observations: *response
+  - action_id: close-retained-ordinary-generator-through-public-recovery-operation
+    kind: http_request
+    scope: *clear-scope
+    receive_events: *request
+    observations: *response
+  - action_id: real-async-bridge-recovers-with-a-fresh-iterable-generator
+    kind: http_request
+    scope: &recovery-scope {type: http, asgi: *asgi, http_version: '1.1', method: GET,
+      scheme: http, path: /recovery, query_string: 'seed=53', root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *request
+    observations: *response
+  - action_id: inspect-explicit-close-and-completed-recovery-with-fresh-guards
+    kind: http_request
+    scope: *state-scope
+    receive_events: *request
+    observations: *response
+  source_evidence: *await-reference
+- case_id: fastapi.awaitables.generator-protocol.ordinary-await-iterator-control
+  verification: parity
+  factory_input: {suspension: future, returned_kind: await-iterator}
+  construction_observation: *construction
+  actions:
+  - action_id: await-method-returns-an-ordinary-generator-iterator
+    kind: http_request
+    scope: *pair-scope
+    receive_events: *request
+    observations: *response
+  - action_id: observe-ordinary-iterator-forwarding-inner-generator-and-cache-controls
+    kind: http_request
+    scope: *state-scope
+    receive_events: *request
+    observations: *response
+  source_evidence: *await-reference
+- case_id: fastapi.awaitables.generator-protocol.direct-generator-declaration-is-a-yield-role
+  verification: parity
+  factory_input: {suspension: future}
+  construction_observation: *construction
+  actions:
+  - action_id: depends-directly-on-public-types-coroutine-generator-function
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /direct-yield, query_string: 'seed=59', root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *request
+    observations: *response
+  - action_id: observe-entered-resource-value-and-request-cleanup-not-await-delegation
+    kind: http_request
+    scope: *state-scope
+    receive_events: *request
+    observations: *response
+  source_evidence: *await-reference
+- case_id: fastapi.awaitables.generator-protocol.await-method-generator-error-cleanup-recovery
+  verification: parity
+  factory_input: {suspension: future, returned_kind: await-generator}
+  construction_observation: *construction
+  actions:
+  - action_id: await-method-returns-a-generator-that-is-itself-an-iterable-coroutine
+    kind: http_request
+    scope: *pair-scope
+    receive_events: *request
+    observations: *response
+  - action_id: inspect-full-returned-coroutine-error-without-advancing-generator-body
+    kind: http_request
+    scope: *state-scope
+    receive_events: *request
+    observations: *response
+  - action_id: close-rejected-unstarted-iterable-generator-through-public-operation
+    kind: http_request
+    scope: *clear-scope
+    receive_events: *request
+    observations: *response
+  - action_id: normal-async-generator-await-after-rejected-await-method-result
+    kind: http_request
+    scope: *recovery-scope
+    receive_events: *request
+    observations: *response
+  - action_id: inspect-exact-error-cleanup-and-completed-recovery
+    kind: http_request
+    scope: *state-scope
+    receive_events: *request
+    observations: *response
+  source_evidence: *await-reference
+- case_id: fastapi.awaitables.generator-protocol.await-method-noniterator-error-cleanup-recovery
+  verification: parity
+  factory_input: {suspension: future, returned_kind: await-noniterator}
+  construction_observation: *construction
+  actions:
+  - action_id: await-method-returns-an-integer
+    kind: http_request
+    scope: *pair-scope
+    receive_events: *request
+    observations: *response
+  - action_id: inspect-full-noniterator-message-original-invocation-and-yielded-cleanup
+    kind: http_request
+    scope: *state-scope
+    receive_events: *request
+    observations: *response
+  - action_id: ordinary-public-clear-operation-after-await-method-error
+    kind: http_request
+    scope: *clear-scope
+    receive_events: *request
+    observations: *response
+  - action_id: real-async-bridge-and-fresh-resources-recover-after-protocol-error
+    kind: http_request
+    scope: *recovery-scope
+    receive_events: *request
+    observations: *response
+  - action_id: inspect-completed-recovery-cleanup-and-exact-raw-send-fields
+    kind: http_request
+    scope: *state-scope
+    receive_events: *request
+    observations: *response
+  source_evidence: *await-reference

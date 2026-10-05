@@ -47,3 +47,18 @@ live parity and an approved new dependency revision are still required.
    explicit when interpreting results.
 
 Full FastAPI compatibility remains unfinished.
+
+## Reviewed next inputs
+
+- `generator-awaitable/`: 13 cases / 40 actions cover direct generator-based
+  awaitables, invalid await results, future errors/warnings, cleanup and recovery.
+  Its native adapter patch has bounded independent static review, but remains
+  unapplied and uncompiled. Generic throw arity and audit hooks remain gaps.
+- `response-field-lifecycle/`: 16 cases / 61 actions cover registration-time
+  adapters, reuse, metadata, schema errors/warnings and immutable public response
+  class precedence. Included response class defaults remain a deliberate target
+  gap. No runtime execution or native implementation is claimed.
+
+Both proposals passed recipe-loader/Ruff admission and independent static review.
+They are outside active inputs and have no expected outputs. Activate and map
+them before implementation or coverage claims.
