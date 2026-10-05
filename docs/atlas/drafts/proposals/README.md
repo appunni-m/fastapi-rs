@@ -105,8 +105,11 @@ Full FastAPI compatibility remains unfinished.
   mapped only to retry; all three register handlers. Inner Annotated Field metadata
   does not establish nondefault outer FieldInfo title/alias branches. Fresh pinned
   oracle and unchanged-target receipts completed all three cases and 19 actions,
-  recording three parity failures. The reviewed native patch awaits fresh build
-  and parity evidence.
+  recording three parity failures. The retained-field patch, private Rust-authored
+  OpenAPI model graph and pinned-build correction now pass these three within
+  210 declared normal cases, with separate fault, coverage and benchmark evidence.
+  The [measured report](../openapi-final-model-native-contract-review-2026-10-05.md)
+  retains the failed stages and remaining legacy schema key-order gap.
   No expected outputs, private field mutation or comparator normalization is used.
 
 - `openapi-validation-response/`: independently authored and reviewed four-case /
@@ -122,6 +125,7 @@ admitted and measured. The traversal follow-on has its own independent static
 review. Historical authored copies remain outside active inputs; active traversal
 copies now have fresh live receipts. The recovery follow-on still requires its
 own reviewed mappings and live observations. Positive OpenAPI retained-hook,
-shared-definition, generated outer-title and cache retry behavior is the next
-source-backed gate. Additional response-field attachment/included lifecycle now
-has the bounded live evidence recorded in the native contract report.
+shared-definition, generated outer-title and cache retry behavior now has bounded
+live evidence. Automatic validation-response/status-key behavior is the next
+source-first gate. A separate raw HTTP gate is proposed for the remaining legacy
+inline-schema order gap; its structural selector remains unchanged.
