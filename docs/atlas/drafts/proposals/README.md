@@ -18,7 +18,9 @@ The selected classifier and normal regression gates passed on measured revision
 4b4a18c; see `../generator-awaitable-native-contract-review-2026-10-05.md`. The
 complete worker gate remains blocked below. Classification history, mutable
 descriptors, unselected await protocols, response adapter construction/reuse and
-explicit placeholder provenance remain separate boundaries.
+mutable placeholder provenance remain separate boundaries. Retained response
+fields and immutable response-class precedence are now measured at `ebcdf2d`;
+see `../response-field-native-contract-review-2026-10-05.md`.
 
 ## Confirmed sibling blocker
 
@@ -56,13 +58,21 @@ Full FastAPI compatibility remains unfinished.
   Future-error controls were added without workload changes. Native integration
   and all 15 comparisons passed as part of 175 selected regression cases at
   4b4a18c. Generic throw arity, audit hooks and unselected protocols remain gaps.
-- `response-field-lifecycle/`: 16 cases / 61 actions cover registration-time
-  adapters, reuse, metadata, schema errors/warnings and immutable public response
-  class precedence. Included response class defaults remain a deliberate target
-  gap. `native-design.md` records a source-backed ownership and lazy-context
-  proposal. No live or implementation evidence follows from that design.
+- `response-field-lifecycle/`: historical 16-case / 61-action inputs and native
+  design are retained. Active copies now cover registration-time adapters,
+  retained reuse, metadata, schema errors/warnings and immutable direct/included
+  response-class precedence. Native implementation passed all 16 comparisons
+  within 191 selected normal cases at `ebcdf2d`. Dynamic refresh, concurrency,
+  raw proxies and wider field traversal remain separate gaps.
+- `response-field-traversal/`: independently reviewed inactive seven-case /
+  42-action inputs cover whole-branch failure/retry, parent/child field order,
+  full/partial matches, misses, redirects and returned-Response setup. Normal
+  user exceptions provide the failure stimulus; no fault hook or expected outputs
+  are present. Admission and fresh live observations remain required. Terminal
+  405, dynamic refresh and workers are outside this backlog.
 
 Both historical proposals passed recipe-loader/Ruff admission and independent
 static review; their authored copies remain outside active inputs with no
-expected outputs. The awaitable active copy is admitted and measured; the
-response-field follow-on requires its own reviewed mappings and fresh receipts.
+expected outputs. Awaitable and response-field lifecycle active copies are
+admitted and measured. The traversal follow-on has its own independent static
+review and remains outside active inputs.
