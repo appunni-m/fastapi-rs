@@ -62,3 +62,37 @@ Mutable policies and side-effectful or failing `__bool__` remain a separate
 execution gap; constructor raw-value observations and ordinary boolean cache
 inputs do not prove those behaviors. Parameterless lists skip the supplied
 policy in both implementations.
+
+## Broader regression follow-up
+
+The first broader run selected 137 parity cases across 36 workflows: 130
+passed and seven failed. Those failures identified three existing gaps:
+`Path(default=...)` binding, `add_api_route(methods=...)` registration, and
+duplicate query parameters in generated OpenAPI. Preserve that failed run as
+evidence and rerun the same inputs after the bounded repairs.
+
+`Path` now accepts the raw positional-or-keyword Ellipsis default and checks
+its identity before warnings or marker construction, matching
+`fastapi/params.py:185`. Its native factory still has 10 parameters compared
+with the source factory's 29, and it is not a FieldInfo-derived class.
+OpenAPI parameter projection follows `fastapi/openapi/utils.py:364-376`:
+deduplicate by `(in, name)`, retain the first key position, use the last value,
+then give the last required value priority without changing its schema.
+The existing construction and required-parameter workflows retain their exact
+selectors. Direct route-registration methods remain private/internal in the
+reviewed atlas; native registration fixes do not promote them into the public
+manifest or establish full multi-method route-object parity.
+
+The callable workflow also exposed blockers after registration: source
+`fastapi/dependencies/utils.py:392-394` unpacks a TypeAliasType once before
+selecting Annotated metadata. Native analysis now follows that rule for the
+pinned standard-library and typing_extensions alias classes. Async callable
+instances retain their original callable object and use the existing
+coroutine scheduling path, including dependency overrides; yielded instances
+continue through the generator cleanup path. The unchanged callable workflow
+covers ordinary instances, bound methods, functions, partial functions,
+wrapped functions, a dependency-bearing alias, and string annotations.
+Complex wrapped/partial callable-instance classification and mutable callable
+classification caches remain unverified. Native direct registration uses one
+route row per normalized method, so grouped route introspection, shared
+generated operation IDs, and analysis side-effect counts remain gaps.

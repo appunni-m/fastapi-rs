@@ -878,7 +878,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 101
     symbols_with_operation_fixture_refs: 143
-    operation_fixture_refs: 769
+    operation_fixture_refs: 772
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -3599,6 +3599,18 @@ api_surface_contract:
       observation_selectors:
       - python.signature
     operation_fixture_refs:
+    - workflow_id: core-ambiguous-params-construction-upstream
+      input_path: tests/fixtures/inputs/parity/core-ambiguous-params-construction-upstream.json
+      input_sha256: 8032322ecc8e9777997402fd4164cfe79d74690e0a0a281ca03c372e53f40883
+      recipe_path: tests/fixtures/input-recipes/parity/core-ambiguous-params-construction-upstream.yaml
+      recipe_sha256: 87108b86defadfa5c5fff1998b85ce139cc1dc2dd8689fd8903025b7d9ac7b81
+      workload_path: tests/fixtures/workloads/core_ambiguous_params_construction_upstream.py
+      workload_sha256: bdb5d29d28eb325f449188d1ab6afab9e6d671cde6559e2c606088d42cde2e1a
+      case_id: fastapi.request.ambiguous-params.path-default-in-annotated
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
     - workflow_id: path-gt-zero
       input_path: tests/fixtures/inputs/parity/path-gt-zero.json
       input_sha256: 095c90741db7423b998bf1e1d795b6730472a9980788c07c7d49fae186f7f685
@@ -3682,6 +3694,9 @@ api_surface_contract:
     - openapi-docs
     - request-validation
     observation_selectors:
+    - construction.exception_class
+    - construction.exception_message
+    - construction.outcome
     - http.body.bytes
     - http.headers.ordered
     - http.status
@@ -6818,6 +6833,17 @@ api_surface_contract:
       observation_selectors: *id006
     input_workflow_refs: []
     operation_fixture_refs:
+    - workflow_id: dependency-required-parameter-once-upstream
+      input_path: tests/fixtures/inputs/parity/dependency-required-parameter-once-upstream.json
+      input_sha256: dc837536c5413f08715730d834e4963b5fa9e59a417730222851661e8cf5bd0c
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-required-parameter-once-upstream.yaml
+      recipe_sha256: 248ee1e01217468b928d8145f3f241ee5950ba746acfabdf95015019e6bdfab8
+      workload_path: tests/fixtures/workloads/dependency_required_parameter_once_upstream.py
+      workload_sha256: c160ca2a7415b9c66e03033ee594eabd206dbc2b5ea3ec26fc96bbd2dd0f2970
+      case_id: fastapi.dependencies.required-parameter-once.openapi
+      observation_selectors:
+      - openapi.document
+      - openapi.paths
     - workflow_id: request-files-openapi-documented-shapes
       input_path: tests/fixtures/inputs/parity/request-files-openapi-documented-shapes.json
       input_sha256: 53ec41a31d9d459a69185bb81162bb0be778a131b05747dae5936b26d76a1658
@@ -27459,6 +27485,18 @@ api_surface_contract:
       observation_selectors:
       - python.signature
     operation_fixture_refs:
+    - workflow_id: core-ambiguous-params-construction-upstream
+      input_path: tests/fixtures/inputs/parity/core-ambiguous-params-construction-upstream.json
+      input_sha256: 8032322ecc8e9777997402fd4164cfe79d74690e0a0a281ca03c372e53f40883
+      recipe_path: tests/fixtures/input-recipes/parity/core-ambiguous-params-construction-upstream.yaml
+      recipe_sha256: 87108b86defadfa5c5fff1998b85ce139cc1dc2dd8689fd8903025b7d9ac7b81
+      workload_path: tests/fixtures/workloads/core_ambiguous_params_construction_upstream.py
+      workload_sha256: bdb5d29d28eb325f449188d1ab6afab9e6d671cde6559e2c606088d42cde2e1a
+      case_id: fastapi.request.ambiguous-params.path-default-in-annotated
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
     - workflow_id: root-alias-identity
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
       input_sha256: 4113becb3c2fc41b631895f5e0f17a1a1c662c26d8619a58d4ab8216e68e3e1d
@@ -27487,6 +27525,9 @@ api_surface_contract:
     - openapi-docs
     - request-validation
     observation_selectors:
+    - construction.exception_class
+    - construction.exception_message
+    - construction.outcome
     - http.body.bytes
     - http.headers.ordered
     - http.status
@@ -27507,8 +27548,8 @@ api_surface_contract:
       status: partial-contract
       rust_binding: fastapi-rs/src/parameters.rs::path
       known_gaps:
-      - Identity-checked comparison fails exact signature parity; source has 29 parameters and an Any
-        return annotation, while target has 8 parameters and returns None.
+      - Exact signature parity remains incomplete; source has 29 parameters and an Any return annotation,
+        while target has 10 parameters and returns None.
       - The returned marker is not the upstream fastapi.params.Path FieldInfo subclass.
   - id: fastapi.param_functions.Query
     kind: function

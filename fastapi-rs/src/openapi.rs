@@ -3,7 +3,7 @@
 use std::collections::BTreeMap;
 
 use crate::encoding::{JsonableEncoderInput, JsonableEncoderOptions, jsonable_encoder};
-use pyo3::exceptions::{PyNotImplementedError, PyValueError};
+use pyo3::exceptions::{PyKeyError, PyNotImplementedError, PyValueError};
 use pyo3::prelude::*;
 use pyo3::types::{PyBool, PyDict, PyFloat, PyList, PyModule, PyString, PyTuple};
 
@@ -71,6 +71,46 @@ pub(crate) struct OpenApiInfo<'a> {
     pub(crate) openapi_external_docs: Option<&'a Py<PyAny>>,
     pub(crate) servers: Option<&'a Py<PyAny>>,
     pub(crate) version: &'a str,
+}
+
+fn deduplicate_operation_parameters<'py>(
+    parameters: &Bound<'py, PyList>,
+) -> PyResult<Bound<'py, PyList>> {
+    let py = parameters.py();
+    let parameter_key = |parameter: &Bound<'py, PyDict>| -> PyResult<Bound<'py, PyTuple>> {
+        PyTuple::new(
+            py,
+            [
+                parameter
+                    .get_item("in")?
+                    .ok_or_else(|| PyKeyError::new_err("in"))?,
+                parameter
+                    .get_item("name")?
+                    .ok_or_else(|| PyKeyError::new_err("name"))?,
+            ],
+        )
+    };
+    let all_parameters = PyDict::new(py);
+    for parameter in parameters.iter() {
+        let parameter = parameter.cast::<PyDict>()?;
+        all_parameters.set_item(parameter_key(parameter)?, parameter)?;
+    }
+    let required_parameters = PyDict::new(py);
+    for parameter in parameters.iter() {
+        let parameter = parameter.cast::<PyDict>()?;
+        let Some(required) = parameter.get_item("required")? else {
+            continue;
+        };
+        if required.is_truthy()? {
+            required_parameters.set_item(parameter_key(parameter)?, parameter)?;
+        }
+    }
+    // Replacing values preserves the first (in, name) position while the last
+    // required definition takes precedence over the last overall definition.
+    for (key, parameter) in required_parameters.iter() {
+        all_parameters.set_item(key, parameter)?;
+    }
+    PyList::new(py, all_parameters.iter().map(|(_, parameter)| parameter))
 }
 
 /// Assemble the first-slice FastAPI OpenAPI 3.1 document from Rust-owned
@@ -182,7 +222,8 @@ pub(crate) fn openapi_document(
                 parameter_document.set_item("schema", schema)?;
                 parameters.append(parameter_document)?;
             }
-            operation_document.set_item("parameters", parameters)?;
+            operation_document
+                .set_item("parameters", deduplicate_operation_parameters(&parameters)?)?;
         }
         if operation.request_body_present {
             let request_body = PyDict::new(py);

@@ -1025,10 +1025,13 @@ reviewed_api_contract_overlay:
       source_evidence:
         - {path: fastapi/param_functions.py, symbol: Path}
         - {path: fastapi/params.py, symbol: Path}
+        - {path: tests/test_ambiguous_params.py}
         - {path: tests/test_path.py, symbol: test_path_param_ge_int_2}
         - {path: tests/test_path.py, symbol: test_path_param_le_ge_int_4}
         - {path: tests/test_path.py, symbol: test_path_param_le_int_42}
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/core-ambiguous-params-construction-upstream.yaml
+          case_id: fastapi.request.ambiguous-params.path-default-in-annotated
         - recipe_path: tests/fixtures/input-recipes/parity/path-gt-zero.yaml
           case_id: fastapi.path.gt-zero.positive-integer
         - recipe_path: tests/fixtures/input-recipes/parity/path-gt-zero.yaml
@@ -1040,13 +1043,16 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
           case_id: fastapi.parameter-factory-signatures.path
       feature_ids: [request-validation]
-      observation_selectors: [http.status, http.body.bytes, python.signature]
+      observation_selectors: [http.status, http.body.bytes, python.signature, construction.outcome, construction.exception_class, construction.exception_message]
       supported_slice: >-
         Partial native slice: Annotated[int, Path(gt=0)] validates path integers
         with a strict lower bound; the linked Path(ge=..., le=...) inputs reject
         integer values below the lower bound and above the upper bound. Equality
         at either bound is not yet represented. The body-surface workflow checks
         both rejection paths.
+        The raw default argument defaults to Ellipsis; any other object raises
+        AssertionError with the source message before marker construction.
+        The ambiguous-parameters input observes that construction failure.
         Other Path constructor parameters and FieldInfo options remain outside
         this reviewed slice.
     fastapi.applications.FastAPI.options:
@@ -2850,8 +2856,13 @@ reviewed_api_contract_overlay:
         - path: tests/test_tutorial/test_request_files/test_tutorial001.py
           symbol: test_openapi_schema
         - path: tests/test_openapi_cache_root_path.py
+        - path: tests/test_enforce_once_required_parameter.py
+        - path: fastapi/openapi/utils.py
+          symbol: get_openapi_path
         - path: docs/en/docs/how-to/extending-openapi.md
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-required-parameter-once-upstream.yaml
+          case_id: fastapi.dependencies.required-parameter-once.openapi
         - recipe_path: tests/fixtures/input-recipes/parity/request-files-openapi-documented-shapes.yaml
           case_id: fastapi.request-files.openapi-documented-shapes
         - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-signature-reanalysis.yaml
@@ -2859,6 +2870,12 @@ reviewed_api_contract_overlay:
       feature_ids: [openapi-docs]
       observation_selectors: [http.status, http.body.json, openapi.document, openapi.paths, openapi.request_schema]
       supported_slice: >-
+        Operation parameters are deduplicated by their (in, name) pair while
+        preserving the first key position. The last definition supplies the
+        value unless a required definition exists, in which case the last
+        required definition takes precedence. The required-parameter-once
+        input observes the resulting query parameter array without reducing
+        its schema selectors.
         The signature-reanalysis workflow selects registered OpenAPI parameters
         after request-time signature mutation and override-map changes. This
         observes that request-time dependency reanalysis does not replace the
@@ -4137,23 +4154,26 @@ reviewed_api_contract_overlay:
       source_evidence:
         - {path: fastapi/param_functions.py, symbol: Path}
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/core-ambiguous-params-construction-upstream.yaml
+          case_id: fastapi.request.ambiguous-params.path-default-in-annotated
         - recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
           case_id: fastapi.root-alias-identity.http-reexports
         - recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
           case_id: fastapi.parameter-factory-signatures.path
       feature_ids: [request-validation]
-      observation_selectors: [http.body.bytes, python.signature]
+      observation_selectors: [http.body.bytes, python.signature, construction.outcome, construction.exception_class, construction.exception_message]
       supported_slice: >-
         Module-callable review only: the root-alias identity workflow observes
         `fastapi.Path` and `fastapi.param_functions.Path` as the same object,
         and the direct signature input probes the module path itself. This does
         not establish the full upstream factory signature, marker return type,
-        or constructor behavior.
+        or constructor behavior. The default argument's Ellipsis identity
+        assertion is separately observed by the ambiguous-parameters input.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Identity-checked comparison fails exact signature parity; source has 29 parameters and an Any return annotation, while target has 8 parameters and returns None.
+          - Exact signature parity remains incomplete; source has 29 parameters and an Any return annotation, while target has 10 parameters and returns None.
           - The returned marker is not the upstream fastapi.params.Path FieldInfo subclass.
     fastapi.param_functions.Query:
       rust_binding: fastapi-rs/src/parameters.rs::query

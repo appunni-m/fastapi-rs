@@ -1,5 +1,6 @@
 //! Rust-owned Python metadata for FastAPI parameters and dependencies.
 
+use pyo3::exceptions::PyAssertionError;
 use pyo3::prelude::*;
 use pyo3::sync::PyOnceLock;
 use pyo3::types::{PyDict, PyList, PyModule, PyString, PyTuple};
@@ -527,6 +528,7 @@ fn query(
 #[pyfunction(
     name = "Path",
     signature = (
+        default = query_ellipsis_default(),
         *,
         alias = None,
         gt = None,
@@ -546,6 +548,7 @@ fn query(
 )]
 fn path(
     py: Python<'_>,
+    default: Py<PyAny>,
     alias: Option<String>,
     gt: Option<Py<PyAny>>,
     ge: Option<Py<PyAny>>,
@@ -556,6 +559,11 @@ fn path(
     example: Py<PyAny>,
     examples: Option<Py<PyAny>>,
 ) -> PyResult<Py<ParameterMetadata>> {
+    if !default.bind(py).is(py.Ellipsis().bind(py)) {
+        return Err(PyAssertionError::new_err(
+            "Path parameters cannot have a default value",
+        ));
+    }
     if !is_example_unset(py, &example) {
         warn_parameter_deprecation(py, EXAMPLE_DEPRECATION_WARNING)?;
     }

@@ -429,11 +429,6 @@ impl DependencyExecutionNode {
             .unwrap_or_else(|| original_plan.clone_ref(context.py));
         let callable_kind =
             dependency_override_callable(context.py, plan.callable.bind(context.py))?;
-        if callable_kind == DependencyOverrideCallable::AsyncCallableInstance {
-            return Err(PyNotImplementedError::new_err(
-                "async dependency graphs do not support callable-instance dependencies",
-            ));
-        }
         let generator_kind =
             dependency_callable_generator_kind(context.py, plan.callable.bind(context.py))?;
         let cache_key = original_plan.dependency_cache_key();
@@ -2450,8 +2445,13 @@ impl PyFastApi {
     }
 
     #[pyo3(
-        signature = (path, endpoint, *, dependencies = None, include_in_schema = true, name = None),
-        text_signature = "($self, path, endpoint, *, dependencies=None, include_in_schema=True, name=None)"
+        signature = (path, endpoint, *, dependencies = None, methods = None, include_in_schema = true, name = None),
+        text_signature = "($self, path, endpoint, *, dependencies=None, methods=None, include_in_schema=True, name=None)"
+    )]
+    // lint-exception: preserve the supported FastAPI.add_api_route keyword signature.
+    #[allow(
+        clippy::too_many_arguments,
+        reason = "preserve the supported FastAPI.add_api_route keyword signature"
     )]
     fn add_api_route(
         slf: Py<Self>,
@@ -2459,11 +2459,26 @@ impl PyFastApi {
         path: &str,
         endpoint: Py<PyAny>,
         dependencies: Option<Vec<Py<PyAny>>>,
+        methods: Option<Py<PyAny>>,
         include_in_schema: bool,
         name: Option<String>,
     ) -> PyResult<()> {
+        let normalized_methods = PySet::empty(py)?;
+        if let Some(methods) = methods {
+            for method in methods.bind(py).try_iter()? {
+                normalized_methods.add(method?.call_method0("upper")?)?;
+            }
+        } else {
+            normalized_methods.add("GET")?;
+        }
+        if normalized_methods.is_empty() {
+            return Err(PyAssertionError::new_err(""));
+        }
         let decorator = Self::api_route(slf, py, path, dependencies, include_in_schema, name)?;
-        decorator.bind(py).call1((endpoint,))?;
+        for method in normalized_methods.iter() {
+            decorator.bind(py).borrow_mut().method = method.extract::<String>()?;
+            decorator.bind(py).call1((endpoint.bind(py),))?;
+        }
         Ok(())
     }
 
@@ -5817,12 +5832,8 @@ impl CallablePlan {
                 Some(replacement) if !replacement.is(original_callable) => {
                     let callable_kind = dependency_override_callable(context.py, &replacement)?;
                     match callable_kind {
-                        DependencyOverrideCallable::AsyncCallableInstance => {
-                            return Err(PyNotImplementedError::new_err(
-                                "async callable-instance dependency overrides are not supported",
-                            ));
-                        }
-                        DependencyOverrideCallable::CoroutineFunction => {
+                        DependencyOverrideCallable::CoroutineFunction
+                        | DependencyOverrideCallable::AsyncCallableInstance => {
                             has_async_dependency = true;
                         }
                         DependencyOverrideCallable::Sync => {}
@@ -5833,8 +5844,7 @@ impl CallablePlan {
                     let callable = plan.callable.clone_ref(context.py);
                     let callable_kind =
                         dependency_override_callable(context.py, callable.bind(context.py))?;
-                    has_async_dependency |=
-                        callable_kind == DependencyOverrideCallable::CoroutineFunction;
+                    has_async_dependency |= callable_kind != DependencyOverrideCallable::Sync;
                     (callable, callable_kind)
                 }
             };
@@ -5860,14 +5870,9 @@ impl CallablePlan {
             return Ok(OverridePreparation::Ready);
         }
 
-        if !has_direct_dependency
-            || matches!(
-                dependency_override_callable(context.py, self.callable.bind(context.py))?,
-                DependencyOverrideCallable::AsyncCallableInstance
-            )
-        {
+        if !has_direct_dependency {
             return Err(PyNotImplementedError::new_err(
-                "async dependencies require flat direct dependencies; async callable-instance endpoints are not supported",
+                "async dependencies require direct dependencies",
             ));
         }
 
@@ -5903,11 +5908,6 @@ impl CallablePlan {
             original_plan,
         ) in direct_dependencies
         {
-            if callable_kind == DependencyOverrideCallable::AsyncCallableInstance {
-                return Err(PyNotImplementedError::new_err(
-                    "async dependency graphs do not support callable-instance dependencies",
-                ));
-            }
             let mut dependency_plan = original_plan
                 .reanalyze_dependency(context, scope.as_deref())?
                 .unwrap_or_else(|| original_plan.clone_ref(context.py));
@@ -5979,7 +5979,7 @@ impl CallablePlan {
             if direct_dependency_count != 1
                 || nested_override.is_some()
                 || nested_dependencies.len() != 1
-                || callable_kind != DependencyOverrideCallable::CoroutineFunction
+                || callable_kind == DependencyOverrideCallable::Sync
             {
                 return Err(PyNotImplementedError::new_err(
                     "async nested dependency support is limited to one coroutine dependency with one coroutine query dependency",
@@ -5991,7 +5991,7 @@ impl CallablePlan {
                 .unwrap_or_else(|| nested_plan.clone_ref(context.py));
             let nested_callable = subdependency_plan.callable.bind(context.py);
             let nested_kind = dependency_override_callable(context.py, nested_callable)?;
-            if nested_kind != DependencyOverrideCallable::CoroutineFunction
+            if nested_kind == DependencyOverrideCallable::Sync
                 || dependency_callable_is_generator(context.py, nested_callable)?
             {
                 return Err(PyNotImplementedError::new_err(
@@ -6125,16 +6125,12 @@ impl CallablePlan {
                 )
             } else {
                 match callable_kind {
-                    DependencyOverrideCallable::CoroutineFunction => {
+                    DependencyOverrideCallable::CoroutineFunction
+                    | DependencyOverrideCallable::AsyncCallableInstance => {
                         dependency_plan.invoke(context, None, None)?
                     }
                     DependencyOverrideCallable::Sync => {
                         dependency_plan.invoke_in_threadpool(context, None, None)?
-                    }
-                    DependencyOverrideCallable::AsyncCallableInstance => {
-                        return Err(PyNotImplementedError::new_err(
-                            "async callable-instance dependency overrides are not supported",
-                        ));
                     }
                 }
             };
@@ -6839,6 +6835,18 @@ fn annotation_parts(
     annotation: Py<PyAny>,
 ) -> PyResult<(Py<PyAny>, Vec<Py<PyAny>>)> {
     let typing = py.import("typing")?;
+    let is_type_alias = annotation
+        .bind(py)
+        .is_instance(&typing.getattr("TypeAliasType")?)?
+        || annotation
+            .bind(py)
+            .is_instance(&py.import("typing_extensions")?.getattr("TypeAliasType")?)?;
+    // Source parameter analysis unpacks one alias before selecting Annotated metadata.
+    let annotation = if is_type_alias {
+        annotation.bind(py).getattr("__value__")?.unbind()
+    } else {
+        annotation
+    };
     let origin = typing
         .getattr("get_origin")?
         .call1((annotation.bind(py),))?;
