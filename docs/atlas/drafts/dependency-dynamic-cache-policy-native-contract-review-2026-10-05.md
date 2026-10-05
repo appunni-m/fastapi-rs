@@ -31,3 +31,34 @@ source request, while native graph construction currently rebuilds the later
 edge early. Same-request override-map mutation, signature/property access
 counts, mutable callable-classification caches, custom callable hash/equality,
 and arbitrary OAuth-scope execution are outside this bounded slice.
+
+## Execution at 064c74f
+
+Fresh normal-build regression at `064c74f96c7e47535a954624eaea6aac4b86c974`
+passed 137 parity cases across 36 workflows. A separately instrumented build
+remeasured the baseline, prior nested-dependency cases, native-record cases,
+and new cache-policy cases on one fixed source/build: 37 parity cases and five
+target-only cleanup faults passed. This includes all 13 new parity cases and
+their cleanup fault. The mixed v9 workflows require a fault-enabled target;
+a later normal-target attempt was rejected by that identity gate before product
+execution and adds no parity evidence.
+
+Coverage MCP verified 1,935 new Rust regions beyond the remeasured accepted
+selections: 10,004/29,863 became 11,939/29,863, a 6.479590 percentage-point
+gain. This is selected-workload region coverage; full-suite coverage regression
+is unknown. Reports from changed source/build snapshots are not combined.
+
+The full source digest is
+`ea55bd8993b74c9ca6273406a115a3f0e804635065682551f395628af712c1d8`.
+The normal binary aggregate is
+`7ce612eac3867093b5f5dc91c8292e6f4e0c451c786715295f16fd1f4510e4da`.
+Normal receipts are under `parity-results/dynamic-cache-policy-wave/final-normal/`;
+instrumented input/source/build snapshots, comparison receipts, fault ledger,
+and `coverage-mcp-comparison.json` are under
+`parity-results/coverage/dynamic-cache-policy-incremental/064c74f-first/`.
+Generated artifacts remain ignored and local. Formatting, strict Clippy,
+Python facade/runtime boundaries, metadata, atlas, dependency inventories,
+and benchmark contracts passed. No unit tests were used.
+
+The restored normal release build completed all seven benchmark gates;
+see [the measurements](../../benchmarks/2026-10-05-064c74f.md).

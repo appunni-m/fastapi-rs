@@ -71,7 +71,7 @@ help: ## Show common development commands
 	  '  make benchmark-input-check Validate workload declarations and their parity inputs' \
 	  '  make benchmark-contract-check Validate benchmark workloads against parity inputs and runner policy' \
 	  '  make benchmark-first-slice Gate and measure the selected direct-ASGI workload' \
-	  '  make benchmark-suite  Gate and measure all six reviewed direct-ASGI workloads' \
+	  '  make benchmark-suite  Gate and measure all seven reviewed direct-ASGI workloads' \
 	  '  make verify         Run formatting, lint, static contracts, and wheel build' \
 	  '  make clean          Remove Cargo outputs under target/' '' \
 	  'Builds use the separate hash-locked CPython 3.12.13 Maturin environment; override BUILD_TOOLS_ENV, CARGO, or MATURIN as needed.'

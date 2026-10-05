@@ -7,6 +7,7 @@ import argparse
 import hashlib
 import importlib
 import json
+import os
 import platform
 import subprocess
 import sys
@@ -75,6 +76,9 @@ def main() -> int:
     parser.add_argument("--oracle-python", type=Path, default=ROOT / ".venv-oracle/bin/python")
     parser.add_argument("--target-python", type=Path, default=ROOT / ".venv-target/bin/python")
     args = parser.parse_args()
+    # Contract validation and child parity commands must use the selected pin,
+    # including validation commands without a source-path CLI option.
+    os.environ["STARLETTE_RS_SOURCE"] = str(args.starlette_rs_source.resolve())
     workload, workload_path, input_workflow, input_path, selected_action = contract.load_workload(
         args.workload
     )

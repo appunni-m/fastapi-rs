@@ -551,6 +551,9 @@ def main() -> int:
         help="validate the exact workload set, pinned oracles, and clean target checkout",
     )
     args = parser.parse_args()
+    # The public source-path option is authoritative for contract validation and
+    # every child parity process, including those without a matching CLI option.
+    os.environ["STARLETTE_RS_SOURCE"] = str(args.starlette_rs_source.resolve())
 
     try:
         if args.check:
