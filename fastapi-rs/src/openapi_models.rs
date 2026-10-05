@@ -190,7 +190,7 @@ impl Annotation {
                     .getattr("Field")?
                     .call((), Some(&options))?;
                 py.import("typing")?.getattr("Annotated")?.call_method1(
-                    "__getitem__",
+                    "__class_getitem__",
                     ((annotation.resolve(py, namespace)?, metadata),),
                 )
             }
