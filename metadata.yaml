@@ -861,6 +861,12 @@ reviewed_api_contract_overlay:
           case_id: fastapi.docs-ui.swagger-parameters.override-default
         - recipe_path: tests/fixtures/input-recipes/parity/swagger-ui-config-theme-wave.yaml
           case_id: fastapi.docs-ui.swagger-parameters.nested-theme
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-signature-reanalysis.yaml
+          case_id: fastapi.dependency-overrides.signature-reanalysis.sync-empty-map
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-signature-reanalysis.yaml
+          case_id: fastapi.dependency-overrides.signature-reanalysis.sync-unrelated-map
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-signature-reanalysis.yaml
+          case_id: fastapi.dependency-overrides.signature-reanalysis.sync-self-map
       feature_ids: [public-api-errors, app-routing, dependency-security, request-validation, websocket-lifecycle, openapi-docs]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes, websocket.close_code, websocket.close_reason, websocket.event_order, websocket.messages, construction.outcome, construction.exception_class, construction.exception_message, openapi.document, asgi.lifespan.event_order, asgi.lifespan.startup, asgi.lifespan.shutdown, asgi.lifespan.application_errors, asgi.lifespan.workload_trace, warnings.category_message]
       supported_slice: >-
@@ -2846,9 +2852,15 @@ reviewed_api_contract_overlay:
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/request-files-openapi-documented-shapes.yaml
           case_id: fastapi.request-files.openapi-documented-shapes
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-signature-reanalysis.yaml
+          case_id: fastapi.dependency-overrides.signature-reanalysis.sync-unrelated-map
       feature_ids: [openapi-docs]
       observation_selectors: [http.status, http.body.json, openapi.document, openapi.paths, openapi.request_schema]
       supported_slice: >-
+        The signature-reanalysis workflow selects registered OpenAPI parameters
+        after request-time signature mutation and override-map changes. This
+        observes that request-time dependency reanalysis does not replace the
+        route's stored schema parameters.
         Reuses the same cached schema object while the app route version is
         unchanged. Direct app.add_api_route registration invalidates that cache;
         the next openapi() call regenerates the schema and subsequent calls
@@ -3670,6 +3682,10 @@ reviewed_api_contract_overlay:
     fastapi.Depends:
       rust_binding: fastapi-rs/src/parameters.rs::depends
       source_evidence:
+        - {path: fastapi/dependencies/utils.py, symbol: _get_signature}
+        - {path: fastapi/dependencies/utils.py, symbol: get_typed_signature}
+        - {path: fastapi/dependencies/utils.py, symbol: get_typed_annotation}
+        - {path: fastapi/_compat/v2.py, symbol: evaluate_forwardref}
         - {path: fastapi/param_functions.py, symbol: Depends}
         - {path: fastapi/params.py, symbol: Depends}
         - path: fastapi/dependencies/models.py
@@ -3848,6 +3864,24 @@ reviewed_api_contract_overlay:
           case_id: fastapi.dependencies.sync-parent-async-yield-endpoint-error-cleanup
         - recipe_path: tests/fixtures/input-recipes/parity/dependency-sync-parent-nested-async.yaml
           case_id: fastapi.fault-contract.sync-parent-async-yield-dependency-cleanup
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-signature-reanalysis.yaml
+          case_id: fastapi.dependency-overrides.signature-reanalysis.sync-empty-map
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-signature-reanalysis.yaml
+          case_id: fastapi.dependency-overrides.signature-reanalysis.sync-unrelated-map
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-signature-reanalysis.yaml
+          case_id: fastapi.dependency-overrides.signature-reanalysis.sync-self-map
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-signature-reanalysis.yaml
+          case_id: fastapi.dependency-overrides.signature-reanalysis.same-name-annotation-mutation
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-signature-reanalysis.yaml
+          case_id: fastapi.dependency-overrides.signature-reanalysis.sync-parent-async-child
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-signature-reanalysis.yaml
+          case_id: fastapi.dependency-overrides.signature-reanalysis.async-parent-sync-child
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-signature-reanalysis.yaml
+          case_id: fastapi.dependency-overrides.signature-reanalysis.replacement-callable-changes
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-signature-reanalysis.yaml
+          case_id: fastapi.dependency-overrides.signature-reanalysis.rebuilt-yield-cleanup
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-signature-reanalysis.yaml
+          case_id: fastapi.fault-contract.dependency-overrides.signature-reanalysis.rebuilt-yield-cleanup
         - recipe_path: tests/fixtures/input-recipes/parity/dependency-yield-tutorials-upstream.yaml
           case_id: fastapi.dependencies.tutorial008e.function-scope-yield-rick
         - recipe_path: tests/fixtures/input-recipes/parity/dependency-yield-tutorials-upstream.yaml
@@ -3866,13 +3900,14 @@ reviewed_api_contract_overlay:
           case_id: fastapi.dependencies.depends-yield-scope-signature
         - recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
           case_id: fastapi.parameter-factory-signatures.depends
-      feature_ids: [dependency-security, request-validation]
+      feature_ids: [dependency-security, request-validation, openapi-docs]
       observation_selectors:
         - http.status
         - http.body.bytes
         - websocket.messages
         - websocket.close_code
         - python.signature
+        - openapi.paths
         - construction.outcome
         - construction.exception_class
         - construction.exception_message
@@ -3899,9 +3934,17 @@ reviewed_api_contract_overlay:
         checks cleanup once and recovery after injected post-resolution failure.
         This independent sample composes the source solver's recursive rules;
         arbitrary graphs and all cache/scope combinations are not claimed.
-        Post-registration signature mutation with a nonempty, unrelated
-        override mapping remains unreviewed; source reanalyzes unchanged edges
-        in that configuration while the target retains their registered plans.
+        The signature-reanalysis workflow declares post-registration signature
+        mutation with empty, unrelated, and self-mapped override dictionaries,
+        same-name annotation replacement despite stale function annotations,
+        nested synchronous/asynchronous dependency edges, replacement changes
+        between requests, and rebuilt yielded-child cleanup. A nonempty map
+        rebuilds every dependency edge; an empty map retains registration
+        snapshots. Original edge callable/scope cache identity is retained.
+        Selected OpenAPI parameters retain the registered signature rather than
+        request-time overrides. Dynamic signature-descriptor access counts,
+        validator-construction side effects, arbitrary override-provider
+        mappings, and broader annotation-resolution behavior remain unproven.
         Partial native slice: synchronous callable dependencies with one nested
         dependency level share cached results for repeated dependencies during a
         request. For unoverridden dependency edges, use_cache=False bypasses
@@ -4389,7 +4432,7 @@ reviewed_api_contract_overlay:
         implementation_owner: fastapi-rs
         status: unimplemented
         known_gaps:
-          - The FastAPI File/Form/Param inheritance and File constructor behavior are not implemented.
+          - The FastAPI File/Form/Body/FieldInfo inheritance and File constructor behavior are not implemented.
     fastapi.params.Form.__init__:
       rust_binding: fastapi-rs/src/parameters.rs::form
       source_evidence:
@@ -4414,7 +4457,7 @@ reviewed_api_contract_overlay:
         implementation_owner: fastapi-rs
         status: unimplemented
         known_gaps:
-          - The FastAPI Form/Body/Param inheritance and Form constructor behavior are not implemented.
+          - The FastAPI Form/Body/FieldInfo inheritance and Form constructor behavior are not implemented.
     fastapi.Security:
       rust_binding: fastapi-rs/src/parameters.rs::security
       source_evidence:

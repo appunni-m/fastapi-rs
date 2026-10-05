@@ -22,6 +22,14 @@ target at runtime. Pydantic remains a separately pinned user-model/schema
 dependency; its Python model layer and native `pydantic-core` engine are
 distinct parts of that boundary.
 
+Dependency signature resolution also uses the pinned Pydantic 2.13.4 private
+`pydantic._internal._typing_extra.try_eval_type` helper through PyO3. It
+resolves string annotations from `inspect.signature` in the unwrapped
+callable's globals, matching FastAPI's `_compat/v2.py::evaluate_forwardref`
+bridge. Rust selects the signature, handles fallback and constructs dependency
+plans; Pydantic owns Python typing evaluation. This private interface is tied
+to the exact Pydantic pin and needs review before a version change.
+
 Generated dependency records are refreshed from pinned source and lockfiles;
 do not edit generated tables by hand. Review their evidence in
 `docs/audit-locks/fastapi-0.141.1-source-use.yaml` and

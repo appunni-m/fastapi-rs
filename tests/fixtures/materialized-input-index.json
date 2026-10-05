@@ -3542,6 +3542,104 @@
       ]
     },
     {
+      "id": "dependency-override-signature-reanalysis",
+      "input_path": "tests/fixtures/inputs/parity/dependency-override-signature-reanalysis.json",
+      "input_sha256": "7e9bf870e21b42cdb0ef9e128292c3f08b595db6ffc7a380b5d40a2c4c23e6b3",
+      "recipe_path": "tests/fixtures/input-recipes/parity/dependency-override-signature-reanalysis.yaml",
+      "recipe_sha256": "9f631a94deaeaecaecc67ddb440143aa76ce8990d65f54280374937e2f4f52fe",
+      "workload_path": "tests/fixtures/workloads/dependency_override_signature_reanalysis.py",
+      "workload_sha256": "d5b5e430b5a8401993bab54c47647e040d66eb6f7f40d591e16282d2715f035b",
+      "case_ids": [
+        "fastapi.dependency-overrides.signature-reanalysis.sync-empty-map",
+        "fastapi.dependency-overrides.signature-reanalysis.sync-unrelated-map",
+        "fastapi.dependency-overrides.signature-reanalysis.sync-self-map",
+        "fastapi.dependency-overrides.signature-reanalysis.sync-parent-async-child",
+        "fastapi.dependency-overrides.signature-reanalysis.async-parent-sync-child",
+        "fastapi.dependency-overrides.signature-reanalysis.replacement-callable-changes",
+        "fastapi.dependency-overrides.signature-reanalysis.rebuilt-yield-cleanup",
+        "fastapi.dependency-overrides.signature-reanalysis.same-name-annotation-mutation",
+        "fastapi.fault-contract.dependency-overrides.signature-reanalysis.rebuilt-yield-cleanup"
+      ],
+      "case_contracts": [
+        {
+          "case_id": "fastapi.dependency-overrides.signature-reanalysis.sync-empty-map",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_dependency_overrides.py",
+            "source:upstream-test:tests/test_request_params/test_query/test_optional_str.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.dependency-overrides.signature-reanalysis.sync-unrelated-map",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_dependency_overrides.py",
+            "source:upstream-test:tests/test_request_params/test_query/test_optional_str.py",
+            "source:upstream-test:tests/test_request_params/test_query/test_required_str.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.dependency-overrides.signature-reanalysis.sync-self-map",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_dependency_overrides.py",
+            "source:upstream-test:tests/test_request_params/test_query/test_required_str.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.dependency-overrides.signature-reanalysis.sync-parent-async-child",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_dependency_contextmanager.py",
+            "source:upstream-test:tests/test_dependency_overrides.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.dependency-overrides.signature-reanalysis.async-parent-sync-child",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_dependency_contextmanager.py",
+            "source:upstream-test:tests/test_dependency_overrides.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.dependency-overrides.signature-reanalysis.replacement-callable-changes",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_dependency_overrides.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.dependency-overrides.signature-reanalysis.rebuilt-yield-cleanup",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_dependency_contextmanager.py",
+            "source:upstream-test:tests/test_dependency_overrides.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.dependency-overrides.signature-reanalysis.same-name-annotation-mutation",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_dependency_overrides.py",
+            "source:upstream-test:tests/test_request_params/test_query/test_required_str.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.fault-contract.dependency-overrides.signature-reanalysis.rebuilt-yield-cleanup",
+          "verification": "fault-contract",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_dependency_contextmanager.py",
+            "source:upstream-test:tests/test_dependency_overrides.py"
+          ],
+          "fault": {
+            "point": "http.route.invoke.after_dependencies.before",
+            "contract": "http-route-invocation-error-cleans-dependencies"
+          }
+        }
+      ]
+    },
+    {
       "id": "dependency-override-sync-defaults-upstream",
       "input_path": "tests/fixtures/inputs/parity/dependency-override-sync-defaults-upstream.json",
       "input_sha256": "55cf5a43e7abaa8dd4fad830bf804db8a0d93888dc4ed0eb0d111a07ffd497e1",
@@ -31316,6 +31414,89 @@
       "observation_selectors": [
         "http.body.bytes",
         "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_dependency_contextmanager.py",
+      "fixture_id": "fastapi.test.test-dependency-contextmanager",
+      "workflow_id": "dependency-override-signature-reanalysis",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 4 case(s); observes asgi.application_error.exception, asgi.send.message_types, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.dependency-overrides.signature-reanalysis.async-parent-sync-child",
+        "fastapi.dependency-overrides.signature-reanalysis.rebuilt-yield-cleanup",
+        "fastapi.dependency-overrides.signature-reanalysis.sync-parent-async-child",
+        "fastapi.fault-contract.dependency-overrides.signature-reanalysis.rebuilt-yield-cleanup"
+      ],
+      "observation_selectors": [
+        "asgi.application_error.exception",
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_dependency_overrides.py",
+      "fixture_id": "fastapi.test.test-dependency-overrides",
+      "workflow_id": "dependency-override-signature-reanalysis",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 9 case(s); observes asgi.send.message_types, http.body.bytes, http.status, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.dependency-overrides.signature-reanalysis.async-parent-sync-child",
+        "fastapi.dependency-overrides.signature-reanalysis.rebuilt-yield-cleanup",
+        "fastapi.dependency-overrides.signature-reanalysis.replacement-callable-changes",
+        "fastapi.dependency-overrides.signature-reanalysis.same-name-annotation-mutation",
+        "fastapi.dependency-overrides.signature-reanalysis.sync-empty-map",
+        "fastapi.dependency-overrides.signature-reanalysis.sync-parent-async-child",
+        "fastapi.dependency-overrides.signature-reanalysis.sync-self-map",
+        "fastapi.dependency-overrides.signature-reanalysis.sync-unrelated-map",
+        "fastapi.fault-contract.dependency-overrides.signature-reanalysis.rebuilt-yield-cleanup"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.status",
+        "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_request_params/test_query/test_optional_str.py",
+      "fixture_id": "fastapi.test.test-request-params-test-query-test-optional-str",
+      "workflow_id": "dependency-override-signature-reanalysis",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes docs.response.status, http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.dependency-overrides.signature-reanalysis.sync-empty-map",
+        "fastapi.dependency-overrides.signature-reanalysis.sync-unrelated-map"
+      ],
+      "observation_selectors": [
+        "docs.response.status",
+        "http.body.bytes",
+        "http.status",
+        "openapi.document",
+        "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_request_params/test_query/test_required_str.py",
+      "fixture_id": "fastapi.test.test-request-params-test-query-test-required-str",
+      "workflow_id": "dependency-override-signature-reanalysis",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, docs.response.status, http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.dependency-overrides.signature-reanalysis.same-name-annotation-mutation",
+        "fastapi.dependency-overrides.signature-reanalysis.sync-self-map",
+        "fastapi.dependency-overrides.signature-reanalysis.sync-unrelated-map"
+      ],
+      "observation_selectors": [
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
+        "docs.response.status",
+        "http.body.bytes",
+        "http.status",
+        "openapi.document",
+        "openapi.paths"
       ]
     },
     {

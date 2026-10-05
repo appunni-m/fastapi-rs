@@ -330,6 +330,31 @@ impl CallablePlan {
             computed_scope: self.computed_scope.clone(),
         }
     }
+
+    fn reanalyze_dependency(
+        &self,
+        context: &InvocationContext<'_, '_>,
+        declared_scope: Option<&str>,
+    ) -> PyResult<Option<Self>> {
+        if context.dependency_overrides.is_empty() {
+            return Ok(None);
+        }
+        // FastAPI rebuilds every edge for a nonempty override map, including
+        // unchanged callables. The caller retains the original edge's cache
+        // identity and use_cache flag while solving the rebuilt signature.
+        let callable = context
+            .dependency_overrides
+            .get_item(self.callable.bind(context.py))?
+            .unwrap_or_else(|| self.callable.bind(context.py).clone())
+            .unbind();
+        Self::build(
+            context.py,
+            callable,
+            &self.path_parameters,
+            declared_scope.map(str::to_owned),
+        )
+        .map(Some)
+    }
 }
 
 impl DependencyExecutionNode {
@@ -340,17 +365,9 @@ impl DependencyExecutionNode {
         binding_index: usize,
         context: &InvocationContext<'_, '_>,
     ) -> PyResult<Self> {
-        let original_callable = original_plan.callable.bind(context.py);
-        let replacement = context.dependency_overrides.get_item(original_callable)?;
-        let plan = match replacement {
-            Some(replacement) if !replacement.is(original_callable) => CallablePlan::build(
-                context.py,
-                replacement.unbind(),
-                &original_plan.path_parameters,
-                scope,
-            )?,
-            _ => original_plan.clone_ref(context.py),
-        };
+        let plan = original_plan
+            .reanalyze_dependency(context, scope.as_deref())?
+            .unwrap_or_else(|| original_plan.clone_ref(context.py));
         let callable_kind =
             dependency_override_callable(context.py, plan.callable.bind(context.py))?;
         if callable_kind == DependencyOverrideCallable::AsyncCallableInstance {
@@ -5073,25 +5090,11 @@ impl CallablePlan {
         context: &InvocationContext<'_, '_>,
     ) -> PyResult<bool> {
         for parameter in &self.parameters {
-            let ParameterSource::Dependency { plan, .. } = &parameter.source else {
+            let ParameterSource::Dependency { plan, scope, .. } = &parameter.source else {
                 continue;
             };
-            let original_callable = plan.callable.bind(context.py);
-            let replacement = context.dependency_overrides.get_item(original_callable)?;
-            let replacement_plan = match replacement {
-                Some(replacement) if !replacement.is(original_callable) => {
-                    Some(CallablePlan::build(
-                        context.py,
-                        replacement.unbind(),
-                        &plan.path_parameters,
-                        plan.computed_scope.clone(),
-                    )?)
-                }
-                _ => None,
-            };
-            // Retain registered plans for unchanged edges so this async-presence
-            // check does not repeatedly rebuild their validators.
-            let dependency_plan = replacement_plan.as_ref().unwrap_or(plan.as_ref());
+            let reanalyzed_plan = plan.reanalyze_dependency(context, scope.as_deref())?;
+            let dependency_plan = reanalyzed_plan.as_ref().unwrap_or(plan.as_ref());
             let callable = dependency_plan.callable.bind(context.py);
             if dependency_override_callable(context.py, callable)?
                 != DependencyOverrideCallable::Sync
@@ -5121,15 +5124,15 @@ impl CallablePlan {
         };
         let inspect = py.import("inspect")?;
         let typing = py.import("typing")?;
-        let signature = inspect.getattr("signature")?.call1((callable.bind(py),))?;
-        let hints_kwargs = PyDict::new(py);
-        hints_kwargs.set_item("include_extras", true)?;
-        let get_type_hints = typing.getattr("get_type_hints")?;
-        let hints = match get_type_hints.call((callable.bind(py),), Some(&hints_kwargs)) {
-            Ok(hints) => hints,
-            Err(error) if error.is_instance_of::<PyTypeError>(py) => {
-                let call_method = callable.bind(py).getattr("__call__")?;
-                get_type_hints.call((call_method,), Some(&hints_kwargs))?
+        let signature_kwargs = PyDict::new(py);
+        signature_kwargs.set_item("eval_str", true)?;
+        let signature = match inspect
+            .getattr("signature")?
+            .call((callable.bind(py),), Some(&signature_kwargs))
+        {
+            Ok(signature) => signature,
+            Err(error) if error.is_instance_of::<PyNameError>(py) => {
+                inspect.getattr("signature")?.call1((callable.bind(py),))?
             }
             Err(error) => return Err(error),
         };
@@ -5148,9 +5151,7 @@ impl CallablePlan {
                 let annotation = if raw_annotation.is(&empty) {
                     typing.getattr("Any")?.unbind()
                 } else {
-                    hints
-                        .call_method1("get", (&name, &raw_annotation))?
-                        .unbind()
+                    typed_parameter_annotation(py, callable.bind(py), &raw_annotation)?
                 };
                 let raw_default = item.getattr("default")?;
                 let (annotation, mut metadata) = annotation_parts(py, annotation)?;
@@ -5694,7 +5695,7 @@ impl CallablePlan {
                 callable,
                 callable_kind,
                 generator_kind,
-                plan.path_parameters.clone(),
+                plan,
             ));
         }
 
@@ -5745,7 +5746,7 @@ impl CallablePlan {
             callable,
             callable_kind,
             generator_kind,
-            path_parameters,
+            original_plan,
         ) in direct_dependencies
         {
             if callable_kind == DependencyOverrideCallable::AsyncCallableInstance {
@@ -5753,17 +5754,16 @@ impl CallablePlan {
                     "async dependency graphs do not support callable-instance dependencies",
                 ));
             }
-            let mut dependency_plan = CallablePlan::build(
-                context.py,
-                callable.clone_ref(context.py),
-                &path_parameters,
-                scope.clone(),
-            )?;
+            let mut dependency_plan = original_plan
+                .reanalyze_dependency(context, scope.as_deref())?
+                .unwrap_or_else(|| original_plan.clone_ref(context.py));
             let nested_dependencies = dependency_plan
                 .parameters
                 .iter()
                 .filter_map(|parameter| match &parameter.source {
-                    ParameterSource::Dependency { plan, .. } => Some(plan.as_ref()),
+                    ParameterSource::Dependency { plan, scope, .. } => {
+                        Some((plan.as_ref(), scope.as_deref()))
+                    }
                     ParameterSource::Input { .. }
                     | ParameterSource::WebSocket
                     | ParameterSource::Request
@@ -5831,32 +5831,19 @@ impl CallablePlan {
                     "async nested dependency support is limited to one coroutine dependency with one coroutine query dependency",
                 ));
             }
-            let nested_plan = nested_dependencies[0];
-            let nested_original = nested_plan.callable.bind(context.py);
-            let nested_replacement = context.dependency_overrides.get_item(nested_original)?;
-            let (nested_callable, nested_kind) = match nested_replacement {
-                Some(replacement) if !replacement.is(nested_original) => {
-                    let kind = dependency_override_callable(context.py, &replacement)?;
-                    (replacement.unbind(), kind)
-                }
-                _ => (
-                    nested_plan.callable.clone_ref(context.py),
-                    dependency_override_callable(context.py, nested_original)?,
-                ),
-            };
+            let (nested_plan, nested_scope) = nested_dependencies[0];
+            let subdependency_plan = nested_plan
+                .reanalyze_dependency(context, nested_scope)?
+                .unwrap_or_else(|| nested_plan.clone_ref(context.py));
+            let nested_callable = subdependency_plan.callable.bind(context.py);
+            let nested_kind = dependency_override_callable(context.py, nested_callable)?;
             if nested_kind != DependencyOverrideCallable::CoroutineFunction
-                || dependency_callable_is_generator(context.py, nested_callable.bind(context.py))?
+                || dependency_callable_is_generator(context.py, nested_callable)?
             {
                 return Err(PyNotImplementedError::new_err(
                     "async nested dependency support requires a coroutine query dependency",
                 ));
             }
-            let subdependency_plan = CallablePlan::build(
-                context.py,
-                nested_callable,
-                &nested_plan.path_parameters,
-                nested_plan.computed_scope.clone(),
-            )?;
             let mut supported_query_parameters = true;
             for parameter in &subdependency_plan.parameters {
                 // QueryParams::get supplies one scalar value. Sequence
@@ -6170,24 +6157,10 @@ impl CallablePlan {
                 }
                 let original_cache_key =
                     (plan.callable.as_ptr() as usize, plan.computed_scope.clone());
-                let original_callable = plan.callable.bind(context.py);
-                let replacement = context.dependency_overrides.get_item(original_callable)?;
-                let value = match replacement {
-                    Some(replacement) if !replacement.is(original_callable) => {
-                        let replacement_plan = CallablePlan::build(
-                            context.py,
-                            replacement.unbind(),
-                            &plan.path_parameters,
-                            scope.clone(),
-                        )?;
-                        replacement_plan.invoke(
-                            context,
-                            Some(*use_cache),
-                            Some(original_cache_key.clone()),
-                        )?
-                    }
-                    _ => plan.invoke(context, Some(*use_cache), Some(original_cache_key))?,
-                };
+                let reanalyzed_plan = plan.reanalyze_dependency(context, scope.as_deref())?;
+                let dependency_plan = reanalyzed_plan.as_ref().unwrap_or(plan.as_ref());
+                let value =
+                    dependency_plan.invoke(context, Some(*use_cache), Some(original_cache_key))?;
                 if let Some(value) = value {
                     if *bind_value {
                         kwargs.set_item(&parameter.name, value.bind(context.py))?;
@@ -7408,6 +7381,42 @@ fn is_response_annotation(py: Python<'_>, annotation: &Bound<'_, PyAny>) -> PyRe
         .getattr("issubclass")?
         .call1((annotation_type, response_type))?
         .extract::<bool>()
+}
+
+fn typed_parameter_annotation(
+    py: Python<'_>,
+    callable: &Bound<'_, PyAny>,
+    annotation: &Bound<'_, PyAny>,
+) -> PyResult<Py<PyAny>> {
+    let Ok(annotation_string) = annotation.cast::<PyString>() else {
+        return Ok(annotation.clone().unbind());
+    };
+    // Resolve the signature's expression itself. Looking up this parameter in
+    // __annotations__ can replace a changed __signature__ with stale types.
+    let unwrapped = py
+        .import("inspect")?
+        .getattr("unwrap")?
+        .call1((callable,))?;
+    let globalns = match unwrapped.getattr("__globals__") {
+        Ok(globalns) => globalns,
+        Err(error) if error.is_instance_of::<PyAttributeError>(py) => PyDict::new(py).into_any(),
+        Err(error) => return Err(error),
+    };
+    let forward_ref = py
+        .import("typing")?
+        .getattr("ForwardRef")?
+        .call1((annotation_string,))?;
+    let evaluated = py
+        .import("pydantic._internal._typing_extra")?
+        .getattr("try_eval_type")?
+        .call1((forward_ref, &globalns, &globalns))?
+        .get_item(0)?;
+    let none = py.None();
+    if evaluated.is(none.bind(py).get_type()) {
+        Ok(none)
+    } else {
+        Ok(evaluated.unbind())
+    }
 }
 
 fn typed_return_annotation(

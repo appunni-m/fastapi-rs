@@ -1,0 +1,733 @@
+# Pinned FastAPI 0.141.1 source evidence (tag commit
+# 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f):
+# fastapi/dependencies/utils.py:198-230 obtains each callable's inspect
+# signature and resolves annotations from that signature; :271-347 recursively
+# constructs dependencies and query fields. solve_dependencies at :623-638
+# checks whether dependency_overrides is nonempty, selects the mapped callable
+# or the original, and rebuilds EVERY edge, including unrelated and self maps.
+# :640-681 recursively resolves child inputs before executing the selected
+# sync, coroutine, or yielded callable, and :684-701 gathers query errors.
+# fastapi/routing.py:853-869 captures the route's dependency declaration.
+# fastapi/openapi/utils.py:334-378 reads that registered route.dependant for
+# OpenAPI parameter generation; runtime reanalysis does not replace it.
+# tests/test_dependency_overrides.py:10-48 and :208-257 exercise replacement
+# callables, recursive overrides, and restoration by clearing the override map.
+# tests/test_dependency_models.py:22-35 distinguish sync, coroutine, and yield
+# callables; tests/test_dependency_contextmanager.py:23-48 and :73-87 exercise
+# async children and yielded cleanup. The independent public callable mutations
+# below combine these source rules; no upstream test asserts this exact
+# post-registration signature-mutation workflow. Recipes store stimuli and
+# exact observation selectors only. The last case reuses the reviewed
+# target-only cleanup fault contract and is never executed by the oracle.
+schema: fastapi-rs/python-asgi-workflow@9
+workload:
+  file: tests/fixtures/workloads/dependency_override_signature_reanalysis.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.dependency-overrides.signature-reanalysis.sync-empty-map
+  verification: parity
+  factory_input: {map_mode: empty}
+  construction_observation: &construction
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: optional-registered-query
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /direct
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: &empty-request
+    - {type: http.request, body: '', more_body: false}
+    observations: &response-value
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: registered-query-after-signature-mutation
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /direct
+      query_string: registered-value=5&live-value=not-an-integer
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence:
+  - {path: tests/test_dependency_overrides.py, kind: upstream_test}
+  - {path: tests/test_request_params/test_query/test_optional_str.py, kind: upstream_test}
+- case_id: fastapi.dependency-overrides.signature-reanalysis.sync-unrelated-map
+  verification: parity
+  factory_input: {map_mode: unrelated}
+  construction_observation: *construction
+  actions:
+  - action_id: registered-openapi-parameters-before-requests
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations:
+    - {kind: http_response, selectors: [status], comparison: exact}
+    - kind: openapi
+      json_pointers:
+      - /paths/~1direct/get/parameters
+      - /paths/~1annotation/get/parameters
+      comparison: exact
+  - action_id: registered-query-without-live-alias
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /direct
+      query_string: registered-value=5
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: invalid-live-integer
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /direct
+      query_string: live-value=not-an-integer
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: valid-live-integer
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /direct
+      query_string: live-value=7
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: clear-overrides-map
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /map/empty
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: registered-signature-after-clearing-map
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /direct
+      query_string: registered-value=11&live-value=not-an-integer
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: repopulate-unrelated-overrides-map
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /map/unrelated
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: live-signature-after-repopulating-map
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /direct
+      query_string: live-value=13
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: registered-openapi-parameters-after-requests
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations:
+    - {kind: http_response, selectors: [status], comparison: exact}
+    - kind: openapi
+      json_pointers:
+      - /paths/~1direct/get/parameters
+      - /paths/~1annotation/get/parameters
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_dependency_overrides.py, kind: upstream_test}
+  - {path: tests/test_request_params/test_query/test_required_str.py, kind: upstream_test}
+  - {path: tests/test_request_params/test_query/test_optional_str.py, kind: upstream_test}
+- case_id: fastapi.dependency-overrides.signature-reanalysis.sync-self-map
+  verification: parity
+  factory_input: {map_mode: self}
+  construction_observation: *construction
+  actions:
+  - action_id: self-map-without-live-alias
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /direct
+      query_string: registered-value=5
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: self-map-with-valid-live-alias
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /direct
+      query_string: live-value=9
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence:
+  - {path: tests/test_dependency_overrides.py, kind: upstream_test}
+  - {path: tests/test_request_params/test_query/test_required_str.py, kind: upstream_test}
+- case_id: fastapi.dependency-overrides.signature-reanalysis.sync-parent-async-child
+  verification: parity
+  factory_input: {map_mode: unrelated}
+  construction_observation: *construction
+  actions:
+  - action_id: mutated-child-and-parent-query-values-missing
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /sync-parent-async-child
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: mutated-child-and-parent-query-values-invalid
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /sync-parent-async-child
+      query_string: live-async=not-an-integer&live-sync-parent=0
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: mutated-child-and-parent-query-values-valid
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /sync-parent-async-child
+      query_string: live-async=3&live-sync-parent=5
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence:
+  - {path: tests/test_dependency_overrides.py, kind: upstream_test}
+  - {path: tests/test_dependency_models.py, kind: upstream_test}
+  - {path: tests/test_dependency_contextmanager.py, kind: upstream_test}
+- case_id: fastapi.dependency-overrides.signature-reanalysis.async-parent-sync-child
+  verification: parity
+  factory_input: {map_mode: unrelated}
+  construction_observation: *construction
+  actions:
+  - action_id: mutated-child-and-parent-query-values-missing
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /async-parent-sync-child
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: mutated-child-and-parent-query-values-invalid
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /async-parent-sync-child
+      query_string: live-sync=not-an-integer&live-async-parent=0
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: mutated-child-and-parent-query-values-valid
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /async-parent-sync-child
+      query_string: live-sync=2&live-async-parent=7
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence:
+  - {path: tests/test_dependency_overrides.py, kind: upstream_test}
+  - {path: tests/test_dependency_models.py, kind: upstream_test}
+  - {path: tests/test_dependency_contextmanager.py, kind: upstream_test}
+- case_id: fastapi.dependency-overrides.signature-reanalysis.replacement-callable-changes
+  verification: parity
+  factory_input: {map_mode: first}
+  construction_observation: *construction
+  actions:
+  - action_id: first-replacement-query-value-missing
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /replacement
+      query_string: registered-source=11
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: synchronous-replacement-query-value-valid
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /replacement
+      query_string: sync-replacement=17
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: change-replacement-callable
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /map/second
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: former-replacement-query-only
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /replacement
+      query_string: sync-replacement=19
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: asynchronous-replacement-query-value-valid
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /replacement
+      query_string: async-replacement=23
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence:
+  - {path: tests/test_dependency_overrides.py, kind: upstream_test}
+  - {path: tests/test_dependency_models.py, kind: upstream_test}
+- case_id: fastapi.dependency-overrides.signature-reanalysis.rebuilt-yield-cleanup
+  verification: parity
+  factory_input: {map_mode: unrelated}
+  construction_observation: *construction
+  actions:
+  - action_id: mutated-graph-resolves-yielded-resource
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /resource
+      query_string: resource-seed=8
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: completed-request-cleanup-state
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: invalid-resource-query-after-cleanup
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /resource
+      query_string: resource-seed=not-an-integer
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: validation-failure-cleanup-state
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence:
+  - {path: tests/test_dependency_overrides.py, kind: upstream_test}
+  - {path: tests/test_dependency_contextmanager.py, kind: upstream_test}
+- case_id: fastapi.dependency-overrides.signature-reanalysis.same-name-annotation-mutation
+  verification: parity
+  factory_input: {map_mode: empty}
+  construction_observation: *construction
+  actions:
+  - action_id: empty-map-original-integer-coercion
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /annotation
+      query_string: typed-value=009
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: enable-unrelated-overrides-map
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /map/unrelated
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: actual-type-annotation-string-value
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /annotation
+      query_string: typed-value=river
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: actual-type-annotation-leading-zero-value
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /annotation
+      query_string: typed-value=009
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: change-annotation-to-string-expression
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /annotation-string
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: string-annotation-expression-value
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /annotation
+      query_string: typed-value=forest
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: clear-map-after-string-annotation-mutation
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /map/empty
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: empty-map-original-integer-validation
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /annotation
+      query_string: typed-value=river
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence:
+  - {path: tests/test_dependency_overrides.py, kind: upstream_test}
+  - {path: tests/test_request_params/test_query/test_required_str.py, kind: upstream_test}
+- case_id: fastapi.fault-contract.dependency-overrides.signature-reanalysis.rebuilt-yield-cleanup
+  verification: fault-contract
+  fault:
+    point: http.route.invoke.after_dependencies.before
+    contract: http-route-invocation-error-cleans-dependencies
+  factory_input: {map_mode: unrelated}
+  construction_observation: *construction
+  actions:
+  - action_id: injected-error-after-rebuilt-yielded-dependency
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /resource
+      query_string: resource-seed=31
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations:
+    - {kind: application_error, selector: exception, comparison: exact}
+    - {kind: asgi_send, selector: message_types, comparison: ordered}
+    - {kind: http_response, selectors: [status], comparison: exact}
+  - action_id: rebuilt-dependency-cleanup-state
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence:
+  - {path: tests/test_dependency_overrides.py, kind: upstream_test}
+  - {path: tests/test_dependency_contextmanager.py, kind: upstream_test}

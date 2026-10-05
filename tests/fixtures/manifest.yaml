@@ -415,7 +415,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@5
-    sha256: ed936cb738316babbb102eaeb10ff48147e99611276106bf7cdd9823f993e104
+    sha256: 8b2446a1c34c7f63457bba701d3491a156ee5ee46cb6013f9c3a661ec78d5f4d
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -451,7 +451,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 0a06b62bacf586c4f1bc1ac48fb6c5bda446a0155ff7c57537e2b3d6e589e403
+    sha256: ec6e0b40ec9439cce097566a6b5423877d62faf28ea9df286f42d86648654c78
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -488,14 +488,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@5
-    sha256: 44fc790bd82945508486a74a50017332b3c485153c7e9b236cd97562daf01ca6
+    sha256: 6dd3d3f8b2e98a94698b276f3ef70f9342af11ea1a5a97068466969b0a47de28
     schema_path: tests/fixtures/schemas/materialized-input-index-v5.schema.json
     schema_sha256: 13dd4cf1032a4ad9161712364d94b9f91834afee380e1f8eee6f4f05c123261d
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 543
-      cases: 2155
-      partial_source_mappings: 1505
+      workflows: 544
+      cases: 2164
+      partial_source_mappings: 1509
 
 contract_metadata:
   aliases:
@@ -878,7 +878,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 101
     symbols_with_operation_fixture_refs: 141
-    operation_fixture_refs: 686
+    operation_fixture_refs: 699
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -2264,6 +2264,137 @@ api_surface_contract:
       workload_path: tests/fixtures/workloads/dependency_sync_parent_nested_async.py
       workload_sha256: 8ac2fbc0bac9dc300c3d126522f5341f2e739fe6d2e8cbc92cab6afff3c4222e
       case_id: fastapi.fault-contract.sync-parent-async-yield-dependency-cleanup
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-signature-reanalysis
+      input_path: tests/fixtures/inputs/parity/dependency-override-signature-reanalysis.json
+      input_sha256: 7e9bf870e21b42cdb0ef9e128292c3f08b595db6ffc7a380b5d40a2c4c23e6b3
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-signature-reanalysis.yaml
+      recipe_sha256: 9f631a94deaeaecaecc67ddb440143aa76ce8990d65f54280374937e2f4f52fe
+      workload_path: tests/fixtures/workloads/dependency_override_signature_reanalysis.py
+      workload_sha256: d5b5e430b5a8401993bab54c47647e040d66eb6f7f40d591e16282d2715f035b
+      case_id: fastapi.dependency-overrides.signature-reanalysis.sync-empty-map
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-signature-reanalysis
+      input_path: tests/fixtures/inputs/parity/dependency-override-signature-reanalysis.json
+      input_sha256: 7e9bf870e21b42cdb0ef9e128292c3f08b595db6ffc7a380b5d40a2c4c23e6b3
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-signature-reanalysis.yaml
+      recipe_sha256: 9f631a94deaeaecaecc67ddb440143aa76ce8990d65f54280374937e2f4f52fe
+      workload_path: tests/fixtures/workloads/dependency_override_signature_reanalysis.py
+      workload_sha256: d5b5e430b5a8401993bab54c47647e040d66eb6f7f40d591e16282d2715f035b
+      case_id: fastapi.dependency-overrides.signature-reanalysis.sync-unrelated-map
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.status
+      - http.body.bytes
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: dependency-override-signature-reanalysis
+      input_path: tests/fixtures/inputs/parity/dependency-override-signature-reanalysis.json
+      input_sha256: 7e9bf870e21b42cdb0ef9e128292c3f08b595db6ffc7a380b5d40a2c4c23e6b3
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-signature-reanalysis.yaml
+      recipe_sha256: 9f631a94deaeaecaecc67ddb440143aa76ce8990d65f54280374937e2f4f52fe
+      workload_path: tests/fixtures/workloads/dependency_override_signature_reanalysis.py
+      workload_sha256: d5b5e430b5a8401993bab54c47647e040d66eb6f7f40d591e16282d2715f035b
+      case_id: fastapi.dependency-overrides.signature-reanalysis.sync-self-map
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-signature-reanalysis
+      input_path: tests/fixtures/inputs/parity/dependency-override-signature-reanalysis.json
+      input_sha256: 7e9bf870e21b42cdb0ef9e128292c3f08b595db6ffc7a380b5d40a2c4c23e6b3
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-signature-reanalysis.yaml
+      recipe_sha256: 9f631a94deaeaecaecc67ddb440143aa76ce8990d65f54280374937e2f4f52fe
+      workload_path: tests/fixtures/workloads/dependency_override_signature_reanalysis.py
+      workload_sha256: d5b5e430b5a8401993bab54c47647e040d66eb6f7f40d591e16282d2715f035b
+      case_id: fastapi.dependency-overrides.signature-reanalysis.same-name-annotation-mutation
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-signature-reanalysis
+      input_path: tests/fixtures/inputs/parity/dependency-override-signature-reanalysis.json
+      input_sha256: 7e9bf870e21b42cdb0ef9e128292c3f08b595db6ffc7a380b5d40a2c4c23e6b3
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-signature-reanalysis.yaml
+      recipe_sha256: 9f631a94deaeaecaecc67ddb440143aa76ce8990d65f54280374937e2f4f52fe
+      workload_path: tests/fixtures/workloads/dependency_override_signature_reanalysis.py
+      workload_sha256: d5b5e430b5a8401993bab54c47647e040d66eb6f7f40d591e16282d2715f035b
+      case_id: fastapi.dependency-overrides.signature-reanalysis.sync-parent-async-child
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-signature-reanalysis
+      input_path: tests/fixtures/inputs/parity/dependency-override-signature-reanalysis.json
+      input_sha256: 7e9bf870e21b42cdb0ef9e128292c3f08b595db6ffc7a380b5d40a2c4c23e6b3
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-signature-reanalysis.yaml
+      recipe_sha256: 9f631a94deaeaecaecc67ddb440143aa76ce8990d65f54280374937e2f4f52fe
+      workload_path: tests/fixtures/workloads/dependency_override_signature_reanalysis.py
+      workload_sha256: d5b5e430b5a8401993bab54c47647e040d66eb6f7f40d591e16282d2715f035b
+      case_id: fastapi.dependency-overrides.signature-reanalysis.async-parent-sync-child
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-signature-reanalysis
+      input_path: tests/fixtures/inputs/parity/dependency-override-signature-reanalysis.json
+      input_sha256: 7e9bf870e21b42cdb0ef9e128292c3f08b595db6ffc7a380b5d40a2c4c23e6b3
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-signature-reanalysis.yaml
+      recipe_sha256: 9f631a94deaeaecaecc67ddb440143aa76ce8990d65f54280374937e2f4f52fe
+      workload_path: tests/fixtures/workloads/dependency_override_signature_reanalysis.py
+      workload_sha256: d5b5e430b5a8401993bab54c47647e040d66eb6f7f40d591e16282d2715f035b
+      case_id: fastapi.dependency-overrides.signature-reanalysis.replacement-callable-changes
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-signature-reanalysis
+      input_path: tests/fixtures/inputs/parity/dependency-override-signature-reanalysis.json
+      input_sha256: 7e9bf870e21b42cdb0ef9e128292c3f08b595db6ffc7a380b5d40a2c4c23e6b3
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-signature-reanalysis.yaml
+      recipe_sha256: 9f631a94deaeaecaecc67ddb440143aa76ce8990d65f54280374937e2f4f52fe
+      workload_path: tests/fixtures/workloads/dependency_override_signature_reanalysis.py
+      workload_sha256: d5b5e430b5a8401993bab54c47647e040d66eb6f7f40d591e16282d2715f035b
+      case_id: fastapi.dependency-overrides.signature-reanalysis.rebuilt-yield-cleanup
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-signature-reanalysis
+      input_path: tests/fixtures/inputs/parity/dependency-override-signature-reanalysis.json
+      input_sha256: 7e9bf870e21b42cdb0ef9e128292c3f08b595db6ffc7a380b5d40a2c4c23e6b3
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-signature-reanalysis.yaml
+      recipe_sha256: 9f631a94deaeaecaecc67ddb440143aa76ce8990d65f54280374937e2f4f52fe
+      workload_path: tests/fixtures/workloads/dependency_override_signature_reanalysis.py
+      workload_sha256: d5b5e430b5a8401993bab54c47647e040d66eb6f7f40d591e16282d2715f035b
+      case_id: fastapi.fault-contract.dependency-overrides.signature-reanalysis.rebuilt-yield-cleanup
       observation_selectors:
       - asgi.application_error.exception
       - asgi.send.message_types
@@ -5163,6 +5294,51 @@ api_surface_contract:
       observation_selectors:
       - http.body.bytes
       - http.status
+    - workflow_id: dependency-override-signature-reanalysis
+      input_path: tests/fixtures/inputs/parity/dependency-override-signature-reanalysis.json
+      input_sha256: 7e9bf870e21b42cdb0ef9e128292c3f08b595db6ffc7a380b5d40a2c4c23e6b3
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-signature-reanalysis.yaml
+      recipe_sha256: 9f631a94deaeaecaecc67ddb440143aa76ce8990d65f54280374937e2f4f52fe
+      workload_path: tests/fixtures/workloads/dependency_override_signature_reanalysis.py
+      workload_sha256: d5b5e430b5a8401993bab54c47647e040d66eb6f7f40d591e16282d2715f035b
+      case_id: fastapi.dependency-overrides.signature-reanalysis.sync-empty-map
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-signature-reanalysis
+      input_path: tests/fixtures/inputs/parity/dependency-override-signature-reanalysis.json
+      input_sha256: 7e9bf870e21b42cdb0ef9e128292c3f08b595db6ffc7a380b5d40a2c4c23e6b3
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-signature-reanalysis.yaml
+      recipe_sha256: 9f631a94deaeaecaecc67ddb440143aa76ce8990d65f54280374937e2f4f52fe
+      workload_path: tests/fixtures/workloads/dependency_override_signature_reanalysis.py
+      workload_sha256: d5b5e430b5a8401993bab54c47647e040d66eb6f7f40d591e16282d2715f035b
+      case_id: fastapi.dependency-overrides.signature-reanalysis.sync-unrelated-map
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.status
+      - http.body.bytes
+      - http.status
+      - openapi.document
+      - openapi.paths
+    - workflow_id: dependency-override-signature-reanalysis
+      input_path: tests/fixtures/inputs/parity/dependency-override-signature-reanalysis.json
+      input_sha256: 7e9bf870e21b42cdb0ef9e128292c3f08b595db6ffc7a380b5d40a2c4c23e6b3
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-signature-reanalysis.yaml
+      recipe_sha256: 9f631a94deaeaecaecc67ddb440143aa76ce8990d65f54280374937e2f4f52fe
+      workload_path: tests/fixtures/workloads/dependency_override_signature_reanalysis.py
+      workload_sha256: d5b5e430b5a8401993bab54c47647e040d66eb6f7f40d591e16282d2715f035b
+      case_id: fastapi.dependency-overrides.signature-reanalysis.sync-self-map
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -6158,6 +6334,23 @@ api_surface_contract:
       workload_sha256: c961ca822c3ff0d6a4afc3fe377a27d5edf71ce3ad473b1cf8602c9b5e1f25dc
       case_id: fastapi.request-files.openapi-documented-shapes
       observation_selectors:
+      - openapi.document
+      - openapi.paths
+    - workflow_id: dependency-override-signature-reanalysis
+      input_path: tests/fixtures/inputs/parity/dependency-override-signature-reanalysis.json
+      input_sha256: 7e9bf870e21b42cdb0ef9e128292c3f08b595db6ffc7a380b5d40a2c4c23e6b3
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-signature-reanalysis.yaml
+      recipe_sha256: 9f631a94deaeaecaecc67ddb440143aa76ce8990d65f54280374937e2f4f52fe
+      workload_path: tests/fixtures/workloads/dependency_override_signature_reanalysis.py
+      workload_sha256: d5b5e430b5a8401993bab54c47647e040d66eb6f7f40d591e16282d2715f035b
+      case_id: fastapi.dependency-overrides.signature-reanalysis.sync-unrelated-map
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.status
+      - http.body.bytes
+      - http.status
       - openapi.document
       - openapi.paths
     identity_workflow_refs: []
@@ -26988,7 +27181,7 @@ api_surface_contract:
       status: unimplemented
       rust_binding: fastapi-rs/src/parameters.rs::file
       known_gaps:
-      - The FastAPI File/Form/Param inheritance and File constructor behavior are not implemented.
+      - The FastAPI File/Form/Body/FieldInfo inheritance and File constructor behavior are not implemented.
   - id: fastapi.params.Form.__init__
     kind: protocol_method
     source_candidate_ref: /api_candidates/966
@@ -27071,7 +27264,7 @@ api_surface_contract:
       status: unimplemented
       rust_binding: fastapi-rs/src/parameters.rs::form
       known_gaps:
-      - The FastAPI Form/Body/Param inheritance and Form constructor behavior are not implemented.
+      - The FastAPI Form/Body/FieldInfo inheritance and Form constructor behavior are not implemented.
   - id: fastapi.params.Header.__init__
     kind: protocol_method
     source_candidate_ref: /api_candidates/968
