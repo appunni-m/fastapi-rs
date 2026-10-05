@@ -1,0 +1,119 @@
+schema: fastapi-rs/python-api-workflow@4
+workload:
+  file: tests/fixtures/workloads/security_explicit_reinitialization.py
+  factory: create_argument_bundles
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.security.explicit-initializer-api.oauth2-code
+  probes:
+  - probe_id: code-explicit
+    public_callable:
+      module: fastapi.security.oauth2
+      attribute: OAuth2AuthorizationCodeBearer.__init__
+    argument_bundle: code-explicit
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  - probe_id: code-missing-token
+    public_callable:
+      module: fastapi.security.oauth2
+      attribute: OAuth2AuthorizationCodeBearer.__init__
+    argument_bundle: code-missing-token
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  - probe_id: code-duplicate-authorization
+    public_callable:
+      module: fastapi.security.oauth2
+      attribute: OAuth2AuthorizationCodeBearer.__init__
+    argument_bundle: code-duplicate-authorization
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  - probe_id: code-unexpected-keyword
+    public_callable:
+      module: fastapi.security.oauth2
+      attribute: OAuth2AuthorizationCodeBearer.__init__
+    argument_bundle: code-unexpected-keyword
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  - probe_id: code-too-many-positionals
+    public_callable:
+      module: fastapi.security.oauth2
+      attribute: OAuth2AuthorizationCodeBearer.__init__
+    argument_bundle: code-too-many-positionals
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence:
+  - path: fastapi/security/oauth2.py
+    kind: upstream_api_definition
+    sha256: b12a96e2d6efa07696365778e9361ab6d6b9ae015f8e87782e1c6679d5f3908f
+    symbol_id: fastapi.security.oauth2.OAuth2AuthorizationCodeBearer.__init__
+- case_id: fastapi.security.explicit-initializer-api.openid
+  probes:
+  - probe_id: openid-explicit
+    public_callable:
+      module: fastapi.security.open_id_connect_url
+      attribute: OpenIdConnect.__init__
+    argument_bundle: openid-explicit
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  - probe_id: openid-missing-url
+    public_callable:
+      module: fastapi.security.open_id_connect_url
+      attribute: OpenIdConnect.__init__
+    argument_bundle: openid-missing-url
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  - probe_id: openid-positional-url
+    public_callable:
+      module: fastapi.security.open_id_connect_url
+      attribute: OpenIdConnect.__init__
+    argument_bundle: openid-positional-url
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  - probe_id: openid-extra-positional-and-url
+    public_callable:
+      module: fastapi.security.open_id_connect_url
+      attribute: OpenIdConnect.__init__
+    argument_bundle: openid-extra-positional-and-url
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  - probe_id: openid-duplicate-receiver
+    public_callable:
+      module: fastapi.security.open_id_connect_url
+      attribute: OpenIdConnect.__init__
+    argument_bundle: openid-duplicate-receiver
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  - probe_id: openid-unexpected-keyword
+    public_callable:
+      module: fastapi.security.open_id_connect_url
+      attribute: OpenIdConnect.__init__
+    argument_bundle: openid-unexpected-keyword
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence:
+  - path: fastapi/security/open_id_connect_url.py
+    kind: upstream_api_definition
+    sha256: 57c58b3c4b04abf5899488cfc093b6bc2a095862eef954edd7e3761fb695f83e
+    symbol_id: fastapi.security.open_id_connect_url.OpenIdConnect.__init__

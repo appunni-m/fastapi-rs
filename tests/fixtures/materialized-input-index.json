@@ -3682,6 +3682,87 @@
       ]
     },
     {
+      "id": "dependency-sync-parent-nested-async",
+      "input_path": "tests/fixtures/inputs/parity/dependency-sync-parent-nested-async.json",
+      "input_sha256": "725af15eb4242af8c227717bb4d3ecd9ec0f89b57a92925411ae630ceefb88af",
+      "recipe_path": "tests/fixtures/input-recipes/parity/dependency-sync-parent-nested-async.yaml",
+      "recipe_sha256": "707f2bcd751df51f2f311816c0508b78dd5096c2c074d6153ea480679f045025",
+      "workload_path": "tests/fixtures/workloads/dependency_sync_parent_nested_async.py",
+      "workload_sha256": "8ac2fbc0bac9dc300c3d126522f5341f2e739fe6d2e8cbc92cab6afff3c4222e",
+      "case_ids": [
+        "fastapi.dependencies.sync-parent-nested-async-query",
+        "fastapi.dependencies.sync-async-deeper-alternation",
+        "fastapi.dependencies.sync-parent-async-child-override",
+        "fastapi.dependencies.sync-parent-async-uncached-child",
+        "fastapi.dependencies.sync-parent-async-child-parent-query-aggregation",
+        "fastapi.dependencies.sync-parent-async-yield-cleanup",
+        "fastapi.dependencies.sync-parent-async-yield-endpoint-error-cleanup",
+        "fastapi.fault-contract.sync-parent-async-yield-dependency-cleanup"
+      ],
+      "case_contracts": [
+        {
+          "case_id": "fastapi.dependencies.sync-parent-nested-async-query",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_dependency_contextmanager.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.dependencies.sync-async-deeper-alternation",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_dependency_contextmanager.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.dependencies.sync-parent-async-child-override",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_dependency_overrides.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.dependencies.sync-parent-async-uncached-child",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_dependency_cache.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.dependencies.sync-parent-async-child-parent-query-aggregation",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_dependency_overrides.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.dependencies.sync-parent-async-yield-cleanup",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_dependency_contextmanager.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.dependencies.sync-parent-async-yield-endpoint-error-cleanup",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_dependency_contextmanager.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.fault-contract.sync-parent-async-yield-dependency-cleanup",
+          "verification": "fault-contract",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_dependency_contextmanager.py"
+          ],
+          "fault": {
+            "point": "http.route.invoke.after_dependencies.before",
+            "contract": "http-route-invocation-error-cleans-dependencies"
+          }
+        }
+      ]
+    },
+    {
       "id": "dependency-tutorial-review-upstream",
       "input_path": "tests/fixtures/inputs/parity/dependency-tutorial-review-upstream.json",
       "input_sha256": "bffa1a30fef69ac5927c3fd1d43fcd763ce7f6794d557b6e946889c0b7de2eac",
@@ -22536,6 +22617,291 @@
       ]
     },
     {
+      "id": "security-explicit-initializer-api",
+      "input_path": "tests/fixtures/inputs/parity/security-explicit-initializer-api.json",
+      "input_sha256": "b5c6987c44624c9cf9e9b7314add90b9ab7f4a6f4d2e1f589df6394cb35854a7",
+      "recipe_path": "tests/fixtures/input-recipes/parity/security-explicit-initializer-api.yaml",
+      "recipe_sha256": "d3191ca9f8cd6658902da0f832d6d24a5ac79268071137fe5507e03a9051eead",
+      "workload_path": "tests/fixtures/workloads/security_explicit_reinitialization.py",
+      "workload_sha256": "04effaf078028db8f25b3d983c6b0ede8a95a6606edf864ed35bdf403716deec",
+      "case_ids": [
+        "fastapi.security.explicit-initializer-api.oauth2-code",
+        "fastapi.security.explicit-initializer-api.openid"
+      ],
+      "api_definitions": [
+        {
+          "case_id": "fastapi.security.explicit-initializer-api.oauth2-code",
+          "symbol_id": "fastapi.security.oauth2.OAuth2AuthorizationCodeBearer.__init__",
+          "path": "fastapi/security/oauth2.py",
+          "sha256": "b12a96e2d6efa07696365778e9361ab6d6b9ae015f8e87782e1c6679d5f3908f"
+        },
+        {
+          "case_id": "fastapi.security.explicit-initializer-api.openid",
+          "symbol_id": "fastapi.security.open_id_connect_url.OpenIdConnect.__init__",
+          "path": "fastapi/security/open_id_connect_url.py",
+          "sha256": "57c58b3c4b04abf5899488cfc093b6bc2a095862eef954edd7e3761fb695f83e"
+        }
+      ],
+      "api_probes": [
+        {
+          "case_id": "fastapi.security.explicit-initializer-api.oauth2-code",
+          "probe_id": "code-duplicate-authorization",
+          "symbol_id": "fastapi.security.oauth2.OAuth2AuthorizationCodeBearer.__init__",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.explicit-initializer-api.oauth2-code",
+          "probe_id": "code-explicit",
+          "symbol_id": "fastapi.security.oauth2.OAuth2AuthorizationCodeBearer.__init__",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.explicit-initializer-api.oauth2-code",
+          "probe_id": "code-missing-token",
+          "symbol_id": "fastapi.security.oauth2.OAuth2AuthorizationCodeBearer.__init__",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.explicit-initializer-api.oauth2-code",
+          "probe_id": "code-too-many-positionals",
+          "symbol_id": "fastapi.security.oauth2.OAuth2AuthorizationCodeBearer.__init__",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.explicit-initializer-api.oauth2-code",
+          "probe_id": "code-unexpected-keyword",
+          "symbol_id": "fastapi.security.oauth2.OAuth2AuthorizationCodeBearer.__init__",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.explicit-initializer-api.openid",
+          "probe_id": "openid-duplicate-receiver",
+          "symbol_id": "fastapi.security.open_id_connect_url.OpenIdConnect.__init__",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.explicit-initializer-api.openid",
+          "probe_id": "openid-explicit",
+          "symbol_id": "fastapi.security.open_id_connect_url.OpenIdConnect.__init__",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.explicit-initializer-api.openid",
+          "probe_id": "openid-extra-positional-and-url",
+          "symbol_id": "fastapi.security.open_id_connect_url.OpenIdConnect.__init__",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.explicit-initializer-api.openid",
+          "probe_id": "openid-missing-url",
+          "symbol_id": "fastapi.security.open_id_connect_url.OpenIdConnect.__init__",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.explicit-initializer-api.openid",
+          "probe_id": "openid-positional-url",
+          "symbol_id": "fastapi.security.open_id_connect_url.OpenIdConnect.__init__",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.explicit-initializer-api.openid",
+          "probe_id": "openid-unexpected-keyword",
+          "symbol_id": "fastapi.security.open_id_connect_url.OpenIdConnect.__init__",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        }
+      ],
+      "case_contracts": [
+        {
+          "case_id": "fastapi.security.explicit-initializer-api.oauth2-code",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.security.oauth2.OAuth2AuthorizationCodeBearer.__init__"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.explicit-initializer-api.openid",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.security.open_id_connect_url.OpenIdConnect.__init__"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "security-explicit-reinitialization",
+      "input_path": "tests/fixtures/inputs/parity/security-explicit-reinitialization.json",
+      "input_sha256": "ad347fbffe63bd42e9890eafdfb6cfcc9cb5c1165a8a18e7bed88d27c975b8ce",
+      "recipe_path": "tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml",
+      "recipe_sha256": "4852d34efa7288911835204f60070b84ee8cba98a584ce574df312e945d5b56b",
+      "workload_path": "tests/fixtures/workloads/security_explicit_reinitialization.py",
+      "workload_sha256": "04effaf078028db8f25b3d983c6b0ede8a95a6606edf864ed35bdf403716deec",
+      "case_ids": [
+        "fastapi.security.explicit-reinitialization.oauth2-code-bound",
+        "fastapi.security.explicit-reinitialization.oauth2-code-unbound",
+        "fastapi.security.explicit-reinitialization.oauth2-code-descriptor-subclass",
+        "fastapi.security.explicit-reinitialization.openid-bound",
+        "fastapi.security.explicit-reinitialization.openid-unbound",
+        "fastapi.security.explicit-reinitialization.openid-descriptor-subclass",
+        "fastapi.security.explicit-reinitialization.oauth2-code-auto-error-zero",
+        "fastapi.security.explicit-reinitialization.openid-auto-error-null",
+        "fastapi.security.explicit-reinitialization.oauth2-code-missing-token",
+        "fastapi.security.explicit-reinitialization.oauth2-code-duplicate-authorization",
+        "fastapi.security.explicit-reinitialization.oauth2-code-unexpected-keyword",
+        "fastapi.security.explicit-reinitialization.oauth2-code-too-many-positionals",
+        "fastapi.security.explicit-reinitialization.openid-missing-url",
+        "fastapi.security.explicit-reinitialization.openid-positional-url",
+        "fastapi.security.explicit-reinitialization.openid-extra-positional-and-url",
+        "fastapi.security.explicit-reinitialization.openid-unexpected-keyword"
+      ],
+      "case_contracts": [
+        {
+          "case_id": "fastapi.security.explicit-reinitialization.oauth2-code-bound",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_security_oauth2_authorization_code_bearer.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.explicit-reinitialization.oauth2-code-unbound",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_security_oauth2_authorization_code_bearer.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.explicit-reinitialization.oauth2-code-descriptor-subclass",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_security_oauth2_authorization_code_bearer.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.explicit-reinitialization.openid-bound",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_security_openid_connect.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.explicit-reinitialization.openid-unbound",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_security_openid_connect.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.explicit-reinitialization.openid-descriptor-subclass",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_security_openid_connect.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.explicit-reinitialization.oauth2-code-auto-error-zero",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_security_oauth2_authorization_code_bearer.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.explicit-reinitialization.openid-auto-error-null",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_security_openid_connect.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.explicit-reinitialization.oauth2-code-missing-token",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_security_oauth2_authorization_code_bearer.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.explicit-reinitialization.oauth2-code-duplicate-authorization",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_security_oauth2_authorization_code_bearer.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.explicit-reinitialization.oauth2-code-unexpected-keyword",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_security_oauth2_authorization_code_bearer.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.explicit-reinitialization.oauth2-code-too-many-positionals",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_security_oauth2_authorization_code_bearer.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.explicit-reinitialization.openid-missing-url",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_security_openid_connect.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.explicit-reinitialization.openid-positional-url",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_security_openid_connect.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.explicit-reinitialization.openid-extra-positional-and-url",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_security_openid_connect.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.explicit-reinitialization.openid-unexpected-keyword",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_security_openid_connect.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "security-http-auth-gaps-wave",
       "input_path": "tests/fixtures/inputs/parity/security-http-auth-gaps-wave.json",
       "input_sha256": "ebb1a0a787f686c35f257d045b45fad64e985c186371f2a8cb290b8ed1c50efb",
@@ -31072,6 +31438,55 @@
         "http.status",
         "websocket.close_code",
         "websocket.messages"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_dependency_cache.py",
+      "fixture_id": "fastapi.test.test-dependency-cache",
+      "workflow_id": "dependency-sync-parent-nested-async",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.dependencies.sync-parent-async-uncached-child"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_dependency_contextmanager.py",
+      "fixture_id": "fastapi.test.test-dependency-contextmanager",
+      "workflow_id": "dependency-sync-parent-nested-async",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 5 case(s); observes asgi.application_error.exception, asgi.send.message_types, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.dependencies.sync-async-deeper-alternation",
+        "fastapi.dependencies.sync-parent-async-yield-cleanup",
+        "fastapi.dependencies.sync-parent-async-yield-endpoint-error-cleanup",
+        "fastapi.dependencies.sync-parent-nested-async-query",
+        "fastapi.fault-contract.sync-parent-async-yield-dependency-cleanup"
+      ],
+      "observation_selectors": [
+        "asgi.application_error.exception",
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_dependency_overrides.py",
+      "fixture_id": "fastapi.test.test-dependency-overrides",
+      "workflow_id": "dependency-sync-parent-nested-async",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.dependencies.sync-parent-async-child-override",
+        "fastapi.dependencies.sync-parent-async-child-parent-query-aggregation"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
       ]
     },
     {
@@ -48310,6 +48725,56 @@
         "http.body.bytes",
         "http.headers.ordered",
         "http.status",
+        "openapi.security"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_security_oauth2_authorization_code_bearer.py",
+      "fixture_id": "fastapi.test.test-security-oauth2-authorization-code-bearer",
+      "workflow_id": "security-explicit-reinitialization",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 8 case(s); observes docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.security. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.security.explicit-reinitialization.oauth2-code-auto-error-zero",
+        "fastapi.security.explicit-reinitialization.oauth2-code-bound",
+        "fastapi.security.explicit-reinitialization.oauth2-code-descriptor-subclass",
+        "fastapi.security.explicit-reinitialization.oauth2-code-duplicate-authorization",
+        "fastapi.security.explicit-reinitialization.oauth2-code-missing-token",
+        "fastapi.security.explicit-reinitialization.oauth2-code-too-many-positionals",
+        "fastapi.security.explicit-reinitialization.oauth2-code-unbound",
+        "fastapi.security.explicit-reinitialization.oauth2-code-unexpected-keyword"
+      ],
+      "observation_selectors": [
+        "docs.response.status",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status",
+        "openapi.document",
+        "openapi.security"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_security_openid_connect.py",
+      "fixture_id": "fastapi.test.test-security-openid-connect",
+      "workflow_id": "security-explicit-reinitialization",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 8 case(s); observes docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document, openapi.security. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.security.explicit-reinitialization.openid-auto-error-null",
+        "fastapi.security.explicit-reinitialization.openid-bound",
+        "fastapi.security.explicit-reinitialization.openid-descriptor-subclass",
+        "fastapi.security.explicit-reinitialization.openid-extra-positional-and-url",
+        "fastapi.security.explicit-reinitialization.openid-missing-url",
+        "fastapi.security.explicit-reinitialization.openid-positional-url",
+        "fastapi.security.explicit-reinitialization.openid-unbound",
+        "fastapi.security.explicit-reinitialization.openid-unexpected-keyword"
+      ],
+      "observation_selectors": [
+        "docs.response.status",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status",
+        "openapi.document",
         "openapi.security"
       ]
     },

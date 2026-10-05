@@ -5,7 +5,7 @@ use crate::awaitable::{
 };
 use base64::Engine;
 use base64::engine::general_purpose::{GeneralPurpose, GeneralPurposeConfig};
-use pyo3::exceptions::PyRuntimeError;
+use pyo3::exceptions::{PyRuntimeError, PyTypeError};
 use pyo3::types::{PyBool, PyDict, PyList, PyString, PyTuple, PyType};
 use pyo3::{PyClassInitializer, prelude::*};
 
@@ -32,7 +32,7 @@ struct PySecurityBase;
 struct PyOpenIdConnect {
     model: Py<PyAny>,
     scheme_name: Py<PyAny>,
-    auto_error: bool,
+    auto_error: Py<PyAny>,
 }
 
 #[pymethods]
@@ -51,25 +51,21 @@ impl PyOpenIdConnect {
         non_snake_case,
         reason = "preserve FastAPI's documented camelCase openIdConnectUrl keyword"
     )]
-    #[pyo3(signature = (*, openIdConnectUrl, scheme_name=None, description=None, auto_error=true))]
+    #[pyo3(signature = (*, openIdConnectUrl, scheme_name=None, description=None, auto_error=constructor_auto_error_default()))]
     fn new(
         py: Python<'_>,
         openIdConnectUrl: Py<PyAny>,
         scheme_name: Option<Py<PyAny>>,
         description: Option<Py<PyAny>>,
-        auto_error: bool,
+        auto_error: Py<PyAny>,
     ) -> PyResult<PyClassInitializer<Self>> {
-        let module = py.import("fastapi_rs._core")?;
-        let model_type = module.getattr("_OpenIdConnectModel")?;
-        let model_arguments = PyDict::new(py);
-        model_arguments.set_item("openIdConnectUrl", openIdConnectUrl)?;
-        model_arguments.set_item("description", description.unwrap_or_else(|| py.None()))?;
-        let model = model_type.call((), Some(&model_arguments))?.unbind();
-
+        // Python calls the native __init__ descriptor after allocation. Deferring
+        // model creation preserves a single validation pass for ordinary calls.
+        let _ = (openIdConnectUrl, scheme_name, description, auto_error);
         Ok(PyClassInitializer::from(PySecurityBase).add_subclass(Self {
-            model,
-            scheme_name: scheme_name.unwrap_or_else(|| py.None()),
-            auto_error,
+            model: py.None(),
+            scheme_name: py.None(),
+            auto_error: py.None(),
         }))
     }
 
@@ -100,12 +96,12 @@ impl PyOpenIdConnect {
     }
 
     #[getter]
-    fn auto_error(&self) -> bool {
-        self.auto_error
+    fn auto_error(&self, py: Python<'_>) -> Py<PyAny> {
+        self.auto_error.clone_ref(py)
     }
 
     #[setter]
-    fn set_auto_error(&mut self, auto_error: bool) {
+    fn set_auto_error(&mut self, auto_error: Py<PyAny>) {
         self.auto_error = auto_error;
     }
 
@@ -848,7 +844,7 @@ impl PyHttpDigest {
 struct PyOAuth2 {
     model: Py<PyAny>,
     scheme_name: Py<PyAny>,
-    auto_error: bool,
+    auto_error: Py<PyAny>,
 }
 
 #[pymethods]
@@ -875,7 +871,7 @@ impl PyOAuth2 {
         Ok(Self {
             model,
             scheme_name: scheme_name.unwrap_or_else(|| py.None()),
-            auto_error,
+            auto_error: PyBool::new(py, auto_error).to_owned().unbind().into_any(),
         })
     }
 
@@ -906,12 +902,12 @@ impl PyOAuth2 {
     }
 
     #[getter]
-    fn auto_error(&self) -> bool {
-        self.auto_error
+    fn auto_error(&self, py: Python<'_>) -> Py<PyAny> {
+        self.auto_error.clone_ref(py)
     }
 
     #[setter]
-    fn set_auto_error(&mut self, auto_error: bool) {
+    fn set_auto_error(&mut self, auto_error: Py<PyAny>) {
         self.auto_error = auto_error;
     }
 
@@ -961,19 +957,271 @@ struct PyOAuth2PasswordBearer {
 )]
 struct PyOAuth2AuthorizationCodeBearer;
 
+#[derive(Clone, Copy)]
+enum ConstructorInitKind {
+    AuthorizationCode,
+    OpenIdConnect,
+}
+
 #[pyclass(name = "_ConstructorInit", module = "fastapi_rs._core", dict)]
-struct ConstructorInit;
+struct ConstructorInit {
+    kind: ConstructorInitKind,
+    signature: Py<PyAny>,
+}
 
 #[pymethods]
 impl ConstructorInit {
-    #[pyo3(signature = (*_args, **_kwargs))]
+    #[getter]
+    fn __signature__(&self, py: Python<'_>) -> Py<PyAny> {
+        self.signature.clone_ref(py)
+    }
+
+    fn __get__(
+        slf: Py<Self>,
+        py: Python<'_>,
+        instance: Option<Bound<'_, PyAny>>,
+        owner: Option<Bound<'_, PyAny>>,
+    ) -> PyResult<Py<PyAny>> {
+        match instance {
+            Some(instance) => py
+                .import("types")?
+                .getattr("MethodType")?
+                .call1((slf, instance))
+                .map(Bound::unbind),
+            None if owner.is_some() => Ok(slf.into_any()),
+            None => Err(PyTypeError::new_err("__get__(None, None) is invalid")),
+        }
+    }
+
+    #[pyo3(signature = (*args, **kwargs))]
     fn __call__(
         &self,
-        _args: &Bound<'_, PyTuple>,
-        _kwargs: Option<&Bound<'_, PyDict>>,
+        py: Python<'_>,
+        args: &Bound<'_, PyTuple>,
+        kwargs: Option<&Bound<'_, PyDict>>,
     ) -> PyResult<()> {
-        Ok(())
+        let arguments = bind_constructor_arguments(py, self, args, kwargs)?;
+        match self.kind {
+            ConstructorInitKind::AuthorizationCode => initialize_authorization_code(py, &arguments),
+            ConstructorInitKind::OpenIdConnect => initialize_openid_connect(py, &arguments),
+        }
     }
+}
+
+fn constructor_auto_error_default() -> Py<PyAny> {
+    Python::attach(|py| PyBool::new(py, true).to_owned().unbind().into_any())
+}
+
+fn bind_constructor_arguments<'py>(
+    py: Python<'py>,
+    initializer: &ConstructorInit,
+    args: &Bound<'py, PyTuple>,
+    kwargs: Option<&Bound<'py, PyDict>>,
+) -> PyResult<Bound<'py, PyDict>> {
+    let signature = initializer.signature.bind(py);
+    let parameter_type = py.import("inspect")?.getattr("Parameter")?;
+    let positional_kind = parameter_type.getattr("POSITIONAL_OR_KEYWORD")?;
+    let empty = parameter_type.getattr("empty")?;
+    let mut positional = Vec::new();
+    let mut keyword_only = Vec::new();
+    for parameter in signature
+        .getattr("parameters")?
+        .call_method0("values")?
+        .try_iter()?
+    {
+        let parameter = parameter?;
+        let name = parameter.getattr("name")?.extract::<String>()?;
+        let required = parameter.getattr("default")?.is(&empty);
+        if parameter.getattr("kind")?.eq(&positional_kind)? {
+            positional.push((name, required));
+        } else {
+            keyword_only.push((name, required));
+        }
+    }
+
+    let callable_name = match initializer.kind {
+        ConstructorInitKind::AuthorizationCode => "OAuth2AuthorizationCodeBearer.__init__",
+        ConstructorInitKind::OpenIdConnect => "OpenIdConnect.__init__",
+    };
+    let kwargs = kwargs.cloned().unwrap_or_else(|| PyDict::new(py));
+    for (keyword, _) in kwargs.iter() {
+        let name = keyword.extract::<String>()?;
+        if let Some(position) = positional
+            .iter()
+            .position(|(parameter, _)| parameter == &name)
+        {
+            if position < args.len() {
+                return Err(PyTypeError::new_err(format!(
+                    "{callable_name}() got multiple values for argument '{name}'"
+                )));
+            }
+        } else if !keyword_only.iter().any(|(parameter, _)| parameter == &name) {
+            return Err(PyTypeError::new_err(format!(
+                "{callable_name}() got an unexpected keyword argument '{name}'"
+            )));
+        }
+    }
+    if args.len() > positional.len() {
+        let required_count = positional.iter().filter(|(_, required)| *required).count();
+        let accepted = if required_count == positional.len() {
+            format!(
+                "{} positional argument{}",
+                positional.len(),
+                if positional.len() == 1 { "" } else { "s" }
+            )
+        } else {
+            format!(
+                "from {required_count} to {} positional arguments",
+                positional.len()
+            )
+        };
+        let mut supplied_keyword_only = 0;
+        for (name, _) in &keyword_only {
+            if kwargs.contains(name)? {
+                supplied_keyword_only += 1;
+            }
+        }
+        let supplied = if supplied_keyword_only == 0 {
+            args.len().to_string()
+        } else {
+            format!(
+                "{} positional argument{} (and {supplied_keyword_only} keyword-only argument{})",
+                args.len(),
+                if args.len() == 1 { "" } else { "s" },
+                if supplied_keyword_only == 1 { "" } else { "s" }
+            )
+        };
+        let verb = if args.len() == 1 && supplied_keyword_only == 0 {
+            "was"
+        } else {
+            "were"
+        };
+        return Err(PyTypeError::new_err(format!(
+            "{callable_name}() takes {accepted} but {supplied} {verb} given"
+        )));
+    }
+    let mut missing_positional = Vec::new();
+    for (position, (name, required)) in positional.iter().enumerate() {
+        if *required && position >= args.len() && !kwargs.contains(name)? {
+            missing_positional.push(name.as_str());
+        }
+    }
+    if !missing_positional.is_empty() {
+        return Err(missing_constructor_arguments(
+            callable_name,
+            &missing_positional,
+            "positional",
+        ));
+    }
+    let mut missing_keyword_only = Vec::new();
+    for (name, required) in &keyword_only {
+        if *required && !kwargs.contains(name)? {
+            missing_keyword_only.push(name.as_str());
+        }
+    }
+    if !missing_keyword_only.is_empty() {
+        return Err(missing_constructor_arguments(
+            callable_name,
+            &missing_keyword_only,
+            "keyword-only",
+        ));
+    }
+
+    let bound = signature.call_method("bind", args, Some(&kwargs))?;
+    bound.call_method0("apply_defaults")?;
+    bound
+        .getattr("arguments")?
+        .cast_into::<PyDict>()
+        .map_err(Into::into)
+}
+
+fn missing_constructor_arguments(callable_name: &str, names: &[&str], kind: &str) -> PyErr {
+    let quoted: Vec<_> = names.iter().map(|name| format!("'{name}'")).collect();
+    let description = match quoted.as_slice() {
+        [] => String::new(),
+        [name] => name.clone(),
+        [first, second] => format!("{first} and {second}"),
+        names => match names.split_last() {
+            Some((last, preceding)) => format!("{}, and {last}", preceding.join(", ")),
+            None => String::new(),
+        },
+    };
+    PyTypeError::new_err(format!(
+        "{callable_name}() missing {} required {kind} argument{}: {description}",
+        names.len(),
+        if names.len() == 1 { "" } else { "s" }
+    ))
+}
+
+fn initialize_openid_connect(py: Python<'_>, arguments: &Bound<'_, PyDict>) -> PyResult<()> {
+    let instance = arguments.get_item("self")?.ok_or_else(|| {
+        PyRuntimeError::new_err("bound OpenIdConnect initializer has no receiver")
+    })?;
+    let model_arguments = PyDict::new(py);
+    model_arguments.set_item("openIdConnectUrl", arguments.get_item("openIdConnectUrl")?)?;
+    model_arguments.set_item("description", arguments.get_item("description")?)?;
+    let model = py
+        .import("fastapi_rs._core")?
+        .getattr("_OpenIdConnectModel")?
+        .call((), Some(&model_arguments))?;
+    instance.setattr("model", model)?;
+    initialize_security_attributes(&instance, arguments)
+}
+
+fn initialize_authorization_code(py: Python<'_>, arguments: &Bound<'_, PyDict>) -> PyResult<()> {
+    let instance = arguments.get_item("self")?.ok_or_else(|| {
+        PyRuntimeError::new_err("bound OAuth2AuthorizationCodeBearer initializer has no receiver")
+    })?;
+    let scopes = arguments.get_item("scopes")?.ok_or_else(|| {
+        PyRuntimeError::new_err("bound OAuth2AuthorizationCodeBearer initializer has no scopes")
+    })?;
+    let flow_arguments = PyDict::new(py);
+    flow_arguments.set_item("authorizationUrl", arguments.get_item("authorizationUrl")?)?;
+    flow_arguments.set_item("tokenUrl", arguments.get_item("tokenUrl")?)?;
+    flow_arguments.set_item("refreshUrl", arguments.get_item("refreshUrl")?)?;
+    flow_arguments.set_item(
+        "scopes",
+        if scopes.is_truthy()? {
+            scopes
+        } else {
+            PyDict::new(py).into_any()
+        },
+    )?;
+    let flows_arguments = PyDict::new(py);
+    flows_arguments.set_item("authorizationCode", flow_arguments)?;
+    let module = py.import("fastapi_rs._core")?;
+    let flows = module
+        .getattr("_OAuth2FlowsModel")?
+        .call((), Some(&flows_arguments))?;
+
+    // The source builds the flow before super() checks the supplied receiver.
+    py.import("builtins")?
+        .getattr("super")?
+        .call1((py.get_type::<PyOAuth2AuthorizationCodeBearer>(), &instance))?;
+    let model_arguments = PyDict::new(py);
+    model_arguments.set_item("flows", flows)?;
+    model_arguments.set_item("description", arguments.get_item("description")?)?;
+    let model = module
+        .getattr("_OAuth2Model")?
+        .call((), Some(&model_arguments))?;
+    instance.setattr("model", model)?;
+    initialize_security_attributes(&instance, arguments)
+}
+
+fn initialize_security_attributes(
+    instance: &Bound<'_, PyAny>,
+    arguments: &Bound<'_, PyDict>,
+) -> PyResult<()> {
+    let scheme_name = arguments
+        .get_item("scheme_name")?
+        .ok_or_else(|| PyRuntimeError::new_err("bound security initializer has no scheme name"))?;
+    let scheme_name = if scheme_name.is_truthy()? {
+        scheme_name
+    } else {
+        instance.getattr("__class__")?.getattr("__name__")?
+    };
+    instance.setattr("scheme_name", scheme_name)?;
+    instance.setattr("auto_error", arguments.get_item("auto_error")?)
 }
 
 #[pyclass]
@@ -1111,7 +1359,7 @@ impl PyOAuth2AuthorizationCodeBearer {
         reason = "mirror FastAPI's positional constructor parameters and camelCase keywords"
     )]
     #[new]
-    #[pyo3(signature = (authorizationUrl, tokenUrl, refreshUrl=None, scheme_name=None, scopes=None, description=None, auto_error=true))]
+    #[pyo3(signature = (authorizationUrl, tokenUrl, refreshUrl=None, scheme_name=None, scopes=None, description=None, auto_error=constructor_auto_error_default()))]
     fn new(
         py: Python<'_>,
         authorizationUrl: Py<PyAny>,
@@ -1120,38 +1368,23 @@ impl PyOAuth2AuthorizationCodeBearer {
         scheme_name: Option<Py<PyAny>>,
         scopes: Option<Py<PyAny>>,
         description: Option<Py<PyAny>>,
-        auto_error: bool,
+        auto_error: Py<PyAny>,
     ) -> PyResult<PyClassInitializer<Self>> {
-        let module = py.import("fastapi_rs._core")?;
-        let authorization_flow_type = module.getattr("_OAuth2AuthorizationCodeFlowModel")?;
-        let scopes = match scopes {
-            Some(scopes) if scopes.bind(py).is_truthy()? => scopes,
-            _ => PyDict::new(py).unbind().into_any(),
-        };
-        let flow_arguments = PyDict::new(py);
-        flow_arguments.set_item("authorizationUrl", authorizationUrl)?;
-        flow_arguments.set_item("tokenUrl", tokenUrl)?;
-        flow_arguments.set_item("refreshUrl", refreshUrl.unwrap_or_else(|| py.None()))?;
-        flow_arguments.set_item("scopes", scopes)?;
-        let authorization_flow = authorization_flow_type
-            .call((), Some(&flow_arguments))?
-            .unbind();
-
-        let flows_type = module.getattr("_OAuth2FlowsModel")?;
-        let flows_arguments = PyDict::new(py);
-        flows_arguments.set_item("authorizationCode", authorization_flow)?;
-        let flows = flows_type.call((), Some(&flows_arguments))?.unbind();
-
-        let model_type = module.getattr("_OAuth2Model")?;
-        let model_arguments = PyDict::new(py);
-        model_arguments.set_item("flows", flows)?;
-        model_arguments.set_item("description", description.unwrap_or_else(|| py.None()))?;
-        let model = model_type.call((), Some(&model_arguments))?.unbind();
-
-        Ok(PyClassInitializer::from(PyOAuth2 {
-            model,
-            scheme_name: scheme_name.unwrap_or_else(|| py.None()),
+        // Keep allocation separate from the Python initialization protocol so
+        // model validation runs once, including subclass super().__init__ calls.
+        let _ = (
+            authorizationUrl,
+            tokenUrl,
+            refreshUrl,
+            scheme_name,
+            scopes,
+            description,
             auto_error,
+        );
+        Ok(PyClassInitializer::from(PyOAuth2 {
+            model: py.None(),
+            scheme_name: py.None(),
+            auto_error: py.None(),
         })
         .add_subclass(Self))
     }
@@ -1596,6 +1829,7 @@ fn attach_constructor_introspection(
     py: Python<'_>,
     class: &Bound<'_, PyType>,
     parameters: Vec<Bound<'_, PyAny>>,
+    kind: ConstructorInitKind,
 ) -> PyResult<()> {
     let inspect = py.import("inspect")?;
     let class_parameters = PyList::empty(py);
@@ -1614,10 +1848,20 @@ fn attach_constructor_introspection(
     }
     let init_signature = inspect.getattr("Signature")?.call1((init_parameters,))?;
 
-    let init_callable = Py::new(py, ConstructorInit)?;
+    let init_callable = Py::new(
+        py,
+        ConstructorInit {
+            kind,
+            signature: init_signature.unbind(),
+        },
+    )?;
+    init_callable.bind(py).setattr("__name__", "__init__")?;
     init_callable
         .bind(py)
-        .setattr("__signature__", init_signature)?;
+        .setattr("__qualname__", format!("{}.__init__", class.name()?))?;
+    init_callable
+        .bind(py)
+        .setattr("__module__", class.getattr("__module__")?)?;
     class.setattr(
         "__signature__",
         Py::new(
@@ -1948,6 +2192,15 @@ fn create_oauth2_models(py: Python<'_>) -> PyResult<OAuth2ModelTypes> {
         .getattr("__getitem__")?
         .call1(((string_type.as_any(), string_type.as_any()),))?;
 
+    let implicit_flow_fields = PyDict::new(py);
+    implicit_flow_fields.set_item("__module__", "fastapi.openapi.models")?;
+    implicit_flow_fields.set_item("refreshUrl", (optional_string.clone(), py.None()))?;
+    implicit_flow_fields.set_item("scopes", (string_mapping.clone(), PyDict::new(py)))?;
+    implicit_flow_fields.set_item("authorizationUrl", string_type.as_any())?;
+    let implicit_flow_model = pydantic
+        .getattr("create_model")?
+        .call(("OAuthFlowImplicit",), Some(&implicit_flow_fields))?;
+
     let password_flow_fields = PyDict::new(py);
     password_flow_fields.set_item("__module__", "fastapi.openapi.models")?;
     password_flow_fields.set_item("refreshUrl", (optional_string.clone(), py.None()))?;
@@ -1956,6 +2209,16 @@ fn create_oauth2_models(py: Python<'_>) -> PyResult<OAuth2ModelTypes> {
     let password_flow_model = pydantic
         .getattr("create_model")?
         .call(("OAuthFlowPassword",), Some(&password_flow_fields))?;
+
+    let client_credentials_flow_fields = PyDict::new(py);
+    client_credentials_flow_fields.set_item("__module__", "fastapi.openapi.models")?;
+    client_credentials_flow_fields.set_item("refreshUrl", (optional_string.clone(), py.None()))?;
+    client_credentials_flow_fields.set_item("scopes", (string_mapping.clone(), PyDict::new(py)))?;
+    client_credentials_flow_fields.set_item("tokenUrl", string_type.as_any())?;
+    let client_credentials_flow_model = pydantic.getattr("create_model")?.call(
+        ("OAuthFlowClientCredentials",),
+        Some(&client_credentials_flow_fields),
+    )?;
 
     let authorization_flow_fields = PyDict::new(py);
     authorization_flow_fields.set_item("__module__", "fastapi.openapi.models")?;
@@ -1968,11 +2231,19 @@ fn create_oauth2_models(py: Python<'_>) -> PyResult<OAuth2ModelTypes> {
         Some(&authorization_flow_fields),
     )?;
 
+    let optional_implicit_flow = optional_type(py, implicit_flow_model.as_any())?;
     let optional_password_flow = optional_type(py, password_flow_model.as_any())?;
+    let optional_client_credentials_flow =
+        optional_type(py, client_credentials_flow_model.as_any())?;
     let optional_authorization_flow = optional_type(py, authorization_flow_model.as_any())?;
     let flows_fields = PyDict::new(py);
     flows_fields.set_item("__module__", "fastapi.openapi.models")?;
+    flows_fields.set_item("implicit", (optional_implicit_flow, py.None()))?;
     flows_fields.set_item("password", (optional_password_flow, py.None()))?;
+    flows_fields.set_item(
+        "clientCredentials",
+        (optional_client_credentials_flow, py.None()),
+    )?;
     flows_fields.set_item(
         "authorizationCode",
         (optional_authorization_flow, py.None()),
@@ -2287,7 +2558,12 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     module.add_class::<PyOpenIdConnect>()?;
     let openid_type = py.get_type::<PyOpenIdConnect>();
     attach_dependency_introspection(py, &openid_type)?;
-    attach_constructor_introspection(py, &openid_type, openid_constructor_parameters(py)?)?;
+    attach_constructor_introspection(
+        py,
+        &openid_type,
+        openid_constructor_parameters(py)?,
+        ConstructorInitKind::OpenIdConnect,
+    )?;
     openid_type.setattr(
         "_fastapi_rs_http_exception_type",
         starlette_http_exception_type.clone(),
@@ -2360,6 +2636,7 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
         py,
         &authorization_code_bearer_type,
         oauth2_authorization_code_constructor_parameters(py)?,
+        ConstructorInitKind::AuthorizationCode,
     )?;
     authorization_code_bearer_type.setattr("_fastapi_rs_http_exception_type", exception_type)?;
     Ok(())

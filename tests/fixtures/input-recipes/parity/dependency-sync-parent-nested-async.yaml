@@ -1,0 +1,477 @@
+# Pinned FastAPI 0.141.1 source evidence (tag commit
+# 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f):
+# fastapi/dependencies/utils.py:294-332 recursively builds dependency edges;
+# :623-654 re-analyzes overrides and awaits recursive child resolution before
+# :660-676 enters generators, awaits coroutine callables, or invokes sync
+# parents through the thread pool. Query validation occurs at :684-686.
+# tests/test_dependency_contextmanager.py:23-24 and :45-48 already place an
+# async child beneath a sync generator; :73-87 and :124-133 exercise nested
+# yielded cleanup after normal completion and endpoint errors.
+# tests/test_dependency_models.py:22-35 distinguish the callable categories;
+# tests/test_dependency_overrides.py:39-48 declare async replacements.
+# tests/test_dependency_cache.py:30-35 and :75-82 combine repeated dependency
+# edges with use_cache=False and sequential requests. utils.py:640-661 solves
+# children before looking up a cached parent; :681-697 validates a parent's own
+# query fields even when :652-654 has already collected child errors. The
+# uncached-child and query-aggregation cases observe these rules independently.
+# The aggregation route adds an endpoint query field so the root also validates
+# its own input after recursive dependency errors have been collected.
+# These independent arithmetic graphs combine those source-backed rules with
+# ordinary sync parents, deeper alternation, a replaced nested sync child, and
+# an async yielded child. Actual resolved numbers and ordered state are public
+# response observations, so returning a coroutine cannot satisfy the workflow.
+# The final case reuses the reviewed target-only cleanup fault contract; the
+# fault is never sent to the oracle. No expected outputs are stored here.
+schema: fastapi-rs/python-asgi-workflow@9
+workload:
+  file: tests/fixtures/workloads/dependency_sync_parent_nested_async.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.dependencies.sync-parent-nested-async-query
+  verification: parity
+  factory_input: {}
+  construction_observation: &construction
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: first-resolved-child-value
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /nested
+      query_string: seed=7
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: &empty-request
+    - {type: http.request, body: '', more_body: false}
+    observations: &response-value
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: invalid-child-query
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /nested
+      query_string: seed=not-an-integer
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: missing-child-query
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /nested
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: changed-query-resolves-a-fresh-value
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /nested
+      query_string: seed=4
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence:
+  - {path: tests/test_dependency_models.py, kind: upstream_test}
+  - {path: tests/test_dependency_contextmanager.py, kind: upstream_test}
+- case_id: fastapi.dependencies.sync-async-deeper-alternation
+  verification: parity
+  factory_input: {}
+  construction_observation: *construction
+  actions:
+  - action_id: missing-deep-leaf-query
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /alternating
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: nonpositive-deep-leaf-query
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /alternating
+      query_string: seed=0
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: alternating-parents-use-resolved-values
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /alternating
+      query_string: seed=5
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence:
+  - {path: tests/test_dependency_models.py, kind: upstream_test}
+  - {path: tests/test_dependency_contextmanager.py, kind: upstream_test}
+- case_id: fastapi.dependencies.sync-parent-async-child-override
+  verification: parity
+  factory_input: {}
+  construction_observation: *construction
+  actions:
+  - action_id: async-override-resolves-beneath-sync-parent
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /override
+      query_string: seed=9
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: invalid-override-child-query
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /override
+      query_string: seed=not-an-integer
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: changed-query-resolves-a-fresh-override-value
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /override
+      query_string: seed=6
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence:
+  - {path: tests/test_dependency_models.py, kind: upstream_test}
+  - {path: tests/test_dependency_overrides.py, kind: upstream_test}
+- case_id: fastapi.dependencies.sync-parent-async-uncached-child
+  verification: parity
+  factory_input: {}
+  construction_observation: *construction
+  actions:
+  - action_id: child-resolves-before-repeated-parent-cache-reuse
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /uncached-child
+      query_string: seed=4
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: next-request-repeats-uncached-child-and-fresh-parent
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /uncached-child
+      query_string: seed=8
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence:
+  - {path: tests/test_dependency_cache.py, kind: upstream_test}
+  - {path: tests/test_dependency_models.py, kind: upstream_test}
+- case_id: fastapi.dependencies.sync-parent-async-child-parent-query-aggregation
+  verification: parity
+  factory_input: {}
+  construction_observation: *construction
+  actions:
+  - action_id: child-parent-and-endpoint-query-values-missing
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /query-aggregation
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: child-parent-and-endpoint-query-values-invalid
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /query-aggregation
+      query_string: child_seed=not-an-integer&parent_seed=also-not-an-integer&limit=invalid
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: child-query-invalid-and-parent-endpoint-query-missing
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /query-aggregation
+      query_string: child_seed=0
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: valid-values-after-aggregated-query-errors
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /query-aggregation
+      query_string: child_seed=5&parent_seed=7&limit=3
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence:
+  - {path: tests/test_dependency_overrides.py, kind: upstream_test}
+  - {path: tests/test_dependency_models.py, kind: upstream_test}
+- case_id: fastapi.dependencies.sync-parent-async-yield-cleanup
+  verification: parity
+  factory_input: {}
+  construction_observation: *construction
+  actions:
+  - action_id: resolved-yielded-resource-value
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /resource
+      query_string: seed=7
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: completed-request-resource-state
+    kind: http_request
+    scope: &state-scope
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: invalid-yielded-resource-query
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /resource
+      query_string: seed=not-an-integer
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: validation-failure-resource-state
+    kind: http_request
+    scope: *state-scope
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: next-request-resolves-a-fresh-yielded-value
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /resource
+      query_string: seed=5
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: repeated-request-resource-state
+    kind: http_request
+    scope: *state-scope
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence:
+  - {path: tests/test_dependency_contextmanager.py, kind: upstream_test}
+- case_id: fastapi.dependencies.sync-parent-async-yield-endpoint-error-cleanup
+  verification: parity
+  factory_input: {}
+  construction_observation: *construction
+  actions:
+  - action_id: endpoint-raises-after-resolved-yielded-value
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /resource-error
+      query_string: seed=3
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations:
+    - {kind: application_error, selector: exception, comparison: exact}
+    - {kind: asgi_send, selector: message_types, comparison: ordered}
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: endpoint-error-resource-state
+    kind: http_request
+    scope: *state-scope
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence:
+  - {path: tests/test_dependency_contextmanager.py, kind: upstream_test}
+- case_id: fastapi.fault-contract.sync-parent-async-yield-dependency-cleanup
+  verification: fault-contract
+  fault:
+    point: http.route.invoke.after_dependencies.before
+    contract: http-route-invocation-error-cleans-dependencies
+  factory_input: {}
+  construction_observation: *construction
+  actions:
+  - action_id: injected-error-after-nested-async-yield-resolution
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /resource
+      query_string: seed=8
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations:
+    - {kind: application_error, selector: exception, comparison: exact}
+    - {kind: asgi_send, selector: message_types, comparison: ordered}
+    - {kind: http_response, selectors: [status], comparison: exact}
+  - action_id: nested-resource-cleanup-observed
+    kind: http_request
+    scope: *state-scope
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence:
+  - {path: tests/test_dependency_contextmanager.py, kind: upstream_test}

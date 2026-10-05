@@ -3832,6 +3832,22 @@ reviewed_api_contract_overlay:
           case_id: fastapi.dependency-overrides.async-nested-two-required-query
         - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-async-nested-two-required-query-wave.yaml
           case_id: fastapi.dependency-overrides.async-nested-two-distinct-query-aliases
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-sync-parent-nested-async.yaml
+          case_id: fastapi.dependencies.sync-parent-nested-async-query
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-sync-parent-nested-async.yaml
+          case_id: fastapi.dependencies.sync-async-deeper-alternation
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-sync-parent-nested-async.yaml
+          case_id: fastapi.dependencies.sync-parent-async-child-override
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-sync-parent-nested-async.yaml
+          case_id: fastapi.dependencies.sync-parent-async-uncached-child
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-sync-parent-nested-async.yaml
+          case_id: fastapi.dependencies.sync-parent-async-child-parent-query-aggregation
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-sync-parent-nested-async.yaml
+          case_id: fastapi.dependencies.sync-parent-async-yield-cleanup
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-sync-parent-nested-async.yaml
+          case_id: fastapi.dependencies.sync-parent-async-yield-endpoint-error-cleanup
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-sync-parent-nested-async.yaml
+          case_id: fastapi.fault-contract.sync-parent-async-yield-dependency-cleanup
         - recipe_path: tests/fixtures/input-recipes/parity/dependency-yield-tutorials-upstream.yaml
           case_id: fastapi.dependencies.tutorial008e.function-scope-yield-rick
         - recipe_path: tests/fixtures/input-recipes/parity/dependency-yield-tutorials-upstream.yaml
@@ -3869,7 +3885,23 @@ reviewed_api_contract_overlay:
         child with no inputs or only required scalar query inputs; the child is
         resolved before the parent. The independent dependency-wave workflow
         exercises this child-first path. Other request-derived child inputs and
-        deeper coroutine graphs remain outside this slice.
+        deeper coroutine graphs remain outside that initial sample.
+        The separate dependency-sync-parent-nested-async workflow declares
+        synchronous parents with async scalar-query children, four alternating
+        sync/async dependency levels, a nested sync child replaced by an async
+        callable, and an async yielded child beneath a synchronous parent.
+        It observes resolved values, missing/invalid/constraint query failures,
+        request-local execution order, and cleanup after success or endpoint
+        failure through public HTTP responses. Repeated cached parent edges
+        still resolve an uncached async child, and parent/endpoint query
+        validation aggregates with invalid child query fields before invocation.
+        Its target-only fault case
+        checks cleanup once and recovery after injected post-resolution failure.
+        This independent sample composes the source solver's recursive rules;
+        arbitrary graphs and all cache/scope combinations are not claimed.
+        Post-registration signature mutation with a nonempty, unrelated
+        override mapping remains unreviewed; source reanalyzes unchanged edges
+        in that configuration while the target retains their registered plans.
         Partial native slice: synchronous callable dependencies with one nested
         dependency level share cached results for repeated dependencies during a
         request. For unoverridden dependency edges, use_cache=False bypasses
@@ -3979,7 +4011,7 @@ reviewed_api_contract_overlay:
         coroutine-override slices are mixed-edge arrangements other than the
         reviewed unoverridden-sync-then-coroutine shape, uncached-edge layouts
         other than the reviewed repeated-callable cache-fill and cache-retention
-        orderings, nested dependencies of coroutine overrides, async endpoints
+        orderings, nested override graphs beyond the reviewed samples, async endpoints
         outside the reviewed one-edge optional-query sample, and async callable-
         instance endpoints and overrides.
         Direct sync-generator and async-generator dependencies are supported as
@@ -3999,8 +4031,10 @@ reviewed_api_contract_overlay:
         workflow covers function- and request-scope WebSocket cleanup; the
         independent `dependency-scope-construction-errors` workflow covers
         invalid HTTP and WebSocket graphs. A yielded dependency may have nested ordinary
-        synchronous dependencies, but nested coroutine or yielded dependency
-        graphs remain unsupported. Injected `BackgroundTasks`, generator
+        synchronous dependencies. Selected nested async and yielded graphs are
+        linked above and in the OAuth2 dependency-cleanup workflow; unreviewed
+        coroutine/yield graph and scope combinations remain open.
+        Injected `BackgroundTasks`, generator
         overrides, None-based dependency inference, Security/OAuth scope
         injection and OpenAPI integration,
         invalid scope values, cleanup suppression semantics, and constructor
@@ -5478,6 +5512,14 @@ reviewed_api_contract_overlay:
           case_id: fastapi.security.public-api.oauth2-authorization-code-bearer-target
         - recipe_path: tests/fixtures/input-recipes/parity/security_oauth_openapi_upstream.yaml
           case_id: fastapi.security.oauth2-authorization-code-bearer.test-openapi-schema
+        - recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
+          case_id: fastapi.security.explicit-reinitialization.oauth2-code-bound
+        - recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
+          case_id: fastapi.security.explicit-reinitialization.oauth2-code-unbound
+        - recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
+          case_id: fastapi.security.explicit-reinitialization.oauth2-code-descriptor-subclass
+        - recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
+          case_id: fastapi.security.explicit-reinitialization.oauth2-code-auto-error-zero
       feature_ids: [dependency-security, openapi-docs, public-api-errors]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.security, python.signature]
       supported_slice: >-
@@ -5493,7 +5535,7 @@ reviewed_api_contract_overlay:
         status: partial-contract
         known_gaps:
           - other OAuth2 flow models and the complete public OpenAPI model namespace remain incomplete.
-          - subclass overrides, mutation behavior, and every Authorization header edge are not covered by these workflows.
+          - custom subclass overrides, mutation beyond explicit reinitialization, and every Authorization header edge are not covered by these workflows.
         rust_binding: fastapi-rs/src/security.rs::PyOAuth2AuthorizationCodeBearer
     fastapi.security.oauth2.OAuth2AuthorizationCodeBearer:
       rust_binding: fastapi-rs/src/security.rs::PyOAuth2AuthorizationCodeBearer
@@ -5510,6 +5552,14 @@ reviewed_api_contract_overlay:
           case_id: fastapi.security.public-api.oauth2-authorization-code-bearer-target
         - recipe_path: tests/fixtures/input-recipes/parity/security_oauth_openapi_upstream.yaml
           case_id: fastapi.security.oauth2-authorization-code-bearer.test-openapi-schema
+        - recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
+          case_id: fastapi.security.explicit-reinitialization.oauth2-code-bound
+        - recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
+          case_id: fastapi.security.explicit-reinitialization.oauth2-code-unbound
+        - recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
+          case_id: fastapi.security.explicit-reinitialization.oauth2-code-descriptor-subclass
+        - recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
+          case_id: fastapi.security.explicit-reinitialization.oauth2-code-auto-error-zero
       feature_ids: [dependency-security, openapi-docs, public-api-errors]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.security, python.signature]
       supported_slice: >-
@@ -5522,10 +5572,10 @@ reviewed_api_contract_overlay:
         status: partial-contract
         known_gaps:
           - other OAuth2 flow models and the complete public OpenAPI model namespace remain incomplete.
-          - subclass overrides, mutation behavior, and every Authorization header edge are not covered by these workflows.
+          - custom subclass overrides, mutation beyond explicit reinitialization, and every Authorization header edge are not covered by these workflows.
         rust_binding: fastapi-rs/src/security.rs::PyOAuth2AuthorizationCodeBearer
     fastapi.security.oauth2.OAuth2AuthorizationCodeBearer.__init__:
-      rust_binding: fastapi-rs/src/security.rs::PyOAuth2AuthorizationCodeBearer::new
+      rust_binding: fastapi-rs/src/security.rs::ConstructorInit::__call__
       source_evidence:
         - path: fastapi/security/oauth2.py
           symbol: __init__
@@ -5540,6 +5590,24 @@ reviewed_api_contract_overlay:
           case_id: fastapi.security.public-api.oauth2-authorization-code-bearer-target
         - recipe_path: tests/fixtures/input-recipes/parity/security_oauth_openapi_upstream.yaml
           case_id: fastapi.security.oauth2-authorization-code-bearer.test-openapi-schema
+        - recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
+          case_id: fastapi.security.explicit-reinitialization.oauth2-code-bound
+        - recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
+          case_id: fastapi.security.explicit-reinitialization.oauth2-code-unbound
+        - recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
+          case_id: fastapi.security.explicit-reinitialization.oauth2-code-descriptor-subclass
+        - recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
+          case_id: fastapi.security.explicit-reinitialization.oauth2-code-auto-error-zero
+        - recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
+          case_id: fastapi.security.explicit-reinitialization.oauth2-code-missing-token
+        - recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
+          case_id: fastapi.security.explicit-reinitialization.oauth2-code-duplicate-authorization
+        - recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
+          case_id: fastapi.security.explicit-reinitialization.oauth2-code-unexpected-keyword
+        - recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
+          case_id: fastapi.security.explicit-reinitialization.oauth2-code-too-many-positionals
+        - recipe_path: tests/fixtures/input-recipes/parity/security-explicit-initializer-api.yaml
+          case_id: fastapi.security.explicit-initializer-api.oauth2-code
       feature_ids: [dependency-security, openapi-docs]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.security, python.signature]
       supported_slice: >-
@@ -5547,12 +5615,18 @@ reviewed_api_contract_overlay:
         required authorizationUrl/tokenUrl and optional refreshUrl, scheme
         name, scopes, description, and auto_error. Pydantic validation errors
         for invalid argument values remain unverified.
+        The explicit-reinitialization sample observes bound, unbound and
+        descriptor-bound calls, inherited subclass scheme naming, replacement
+        model/state, optional authentication and selected exact argument errors.
+        OAuth2 scopes truthiness exposes one initialization pass. Custom
+        subclass initializers and direct __new__ behavior remain unverified.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Pydantic validation details and every constructor error case remain outside this partial contract.
-        rust_binding: fastapi-rs/src/security.rs::PyOAuth2AuthorizationCodeBearer::new
+          - Pydantic invalid-value validation details and unselected argument errors remain outside this partial contract.
+          - Direct __new__, custom subclass constructor shapes, Python function implementation identity, and monkeypatched OAuth2.__init__ dispatch remain unverified.
+        rust_binding: fastapi-rs/src/security.rs::ConstructorInit::__call__
     fastapi.security.oauth2.OAuth2AuthorizationCodeBearer.__call__:
       rust_binding: fastapi-rs/src/security.rs::PyOAuth2AuthorizationCodeBearer::__call__
       source_evidence:
@@ -5820,6 +5894,14 @@ reviewed_api_contract_overlay:
           case_id: fastapi.security.openid-connect.test-openapi-schema
         - recipe_path: tests/fixtures/input-recipes/parity/security_oauth_openapi_upstream.yaml
           case_id: fastapi.security.openid-connect-optional.test-openapi-schema
+        - recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
+          case_id: fastapi.security.explicit-reinitialization.openid-bound
+        - recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
+          case_id: fastapi.security.explicit-reinitialization.openid-unbound
+        - recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
+          case_id: fastapi.security.explicit-reinitialization.openid-descriptor-subclass
+        - recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
+          case_id: fastapi.security.explicit-reinitialization.openid-auto-error-null
       feature_ids: [dependency-security, openapi-docs, public-api-errors]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.security, python.signature]
       supported_slice: >-
@@ -5853,6 +5935,14 @@ reviewed_api_contract_overlay:
           case_id: fastapi.security.openid-connect.test-openapi-schema
         - recipe_path: tests/fixtures/input-recipes/parity/security_oauth_openapi_upstream.yaml
           case_id: fastapi.security.openid-connect-optional.test-openapi-schema
+        - recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
+          case_id: fastapi.security.explicit-reinitialization.openid-bound
+        - recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
+          case_id: fastapi.security.explicit-reinitialization.openid-unbound
+        - recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
+          case_id: fastapi.security.explicit-reinitialization.openid-descriptor-subclass
+        - recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
+          case_id: fastapi.security.explicit-reinitialization.openid-auto-error-null
       feature_ids: [dependency-security, openapi-docs, public-api-errors]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.security, python.signature]
       supported_slice: >-
@@ -5868,7 +5958,7 @@ reviewed_api_contract_overlay:
           - subclass overrides and complete Pydantic OpenID model behavior remain unverified.
         rust_binding: fastapi-rs/src/security.rs::PyOpenIdConnect
     fastapi.security.open_id_connect_url.OpenIdConnect.__init__:
-      rust_binding: fastapi-rs/src/security.rs::PyOpenIdConnect::new
+      rust_binding: fastapi-rs/src/security.rs::ConstructorInit::__call__
       source_evidence:
         - path: fastapi/security/open_id_connect_url.py
           symbol: __init__
@@ -5883,18 +5973,42 @@ reviewed_api_contract_overlay:
           case_id: fastapi.security.public-api.open-id-connect-target
         - recipe_path: tests/fixtures/input-recipes/parity/security_oauth_openapi_upstream.yaml
           case_id: fastapi.security.openid-connect.test-openapi-schema
+        - recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
+          case_id: fastapi.security.explicit-reinitialization.openid-bound
+        - recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
+          case_id: fastapi.security.explicit-reinitialization.openid-unbound
+        - recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
+          case_id: fastapi.security.explicit-reinitialization.openid-descriptor-subclass
+        - recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
+          case_id: fastapi.security.explicit-reinitialization.openid-auto-error-null
+        - recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
+          case_id: fastapi.security.explicit-reinitialization.openid-missing-url
+        - recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
+          case_id: fastapi.security.explicit-reinitialization.openid-positional-url
+        - recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
+          case_id: fastapi.security.explicit-reinitialization.openid-extra-positional-and-url
+        - recipe_path: tests/fixtures/input-recipes/parity/security-explicit-reinitialization.yaml
+          case_id: fastapi.security.explicit-reinitialization.openid-unexpected-keyword
+        - recipe_path: tests/fixtures/input-recipes/parity/security-explicit-initializer-api.yaml
+          case_id: fastapi.security.explicit-initializer-api.openid
       feature_ids: [dependency-security, openapi-docs]
       observation_selectors: [openapi.security, python.signature]
       supported_slice: >-
         Exact signature and selected OpenAPI cases cover required
         openIdConnectUrl plus optional scheme name, description, and auto_error.
         Pydantic validation details for invalid values remain unverified.
+        The explicit-reinitialization sample observes bound, unbound and
+        descriptor-bound calls, inherited subclass scheme naming, replacement
+        model/state, optional authentication and selected exact argument errors.
+        OAuth2 scopes truthiness exposes one initialization pass. Custom
+        subclass initializers and direct __new__ behavior remain unverified.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - constructor validation details and all error cases remain outside this partial contract.
-        rust_binding: fastapi-rs/src/security.rs::PyOpenIdConnect::new
+          - Pydantic invalid-value validation details and unselected argument errors remain outside this partial contract.
+          - Direct __new__, custom subclass constructor shapes, and Python function implementation identity remain unverified.
+        rust_binding: fastapi-rs/src/security.rs::ConstructorInit::__call__
     fastapi.security.open_id_connect_url.OpenIdConnect.__call__:
       rust_binding: fastapi-rs/src/security.rs::PyOpenIdConnect::__call__
       source_evidence:

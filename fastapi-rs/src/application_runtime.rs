@@ -410,13 +410,6 @@ impl DependencyExecutionNode {
         if let Some(result) = self.result.as_ref() {
             return Ok(DependencyGraphStep::Ready(result.clone_ref(context.py)));
         }
-        if self.use_cache {
-            if let Some(result) = context.dependency_cache.get(&self.cache_key) {
-                self.result = Some(result.clone_ref(context.py));
-                return Ok(DependencyGraphStep::Ready(result.clone_ref(context.py)));
-            }
-        }
-
         let mut child_failed = false;
         for (index, child) in self.children.iter_mut().enumerate() {
             path.push(index);
@@ -430,17 +423,15 @@ impl DependencyExecutionNode {
                 }
             }
         }
-        if child_failed {
-            self.failed = true;
-            return Ok(DependencyGraphStep::Invalid);
-        }
-
         let mut prepared_dependencies = HashMap::with_capacity(self.children.len());
         for child in &self.children {
-            let value = child.result.as_ref().ok_or_else(|| {
-                PyRuntimeError::new_err("resolved dependency graph omitted a child value")
-            })?;
-            prepared_dependencies.insert(child.binding_index, value.clone_ref(context.py));
+            if let Some(value) = child.result.as_ref() {
+                prepared_dependencies.insert(child.binding_index, value.clone_ref(context.py));
+            } else if !child.failed {
+                return Err(PyRuntimeError::new_err(
+                    "resolved dependency graph omitted a child value",
+                ));
+            }
         }
         let invoke_plan = if let Some(generator_kind) = self.generator_kind {
             let decorator = context
@@ -460,17 +451,24 @@ impl DependencyExecutionNode {
         };
         let use_threadpool =
             self.generator_kind.is_none() && self.callable_kind == DependencyOverrideCallable::Sync;
-        let Some(value) = invoke_plan.invoke_with_threadpool(
-            context,
-            None,
-            None,
-            use_threadpool,
-            Some(&prepared_dependencies),
-        )?
-        else {
+        // The source resolves children and validates the parent's own inputs
+        // before its caller consults the parent cache, even when a child failed.
+        let arguments = invoke_plan.prepare_arguments(context, Some(&prepared_dependencies))?;
+        if child_failed || arguments.is_none() {
             self.failed = true;
             return Ok(DependencyGraphStep::Invalid);
-        };
+        }
+        if self.use_cache {
+            if let Some(result) = context.dependency_cache.get(&self.cache_key) {
+                self.result = Some(result.clone_ref(context.py));
+                return Ok(DependencyGraphStep::Ready(result.clone_ref(context.py)));
+            }
+        }
+        let arguments = arguments.ok_or_else(|| {
+            PyRuntimeError::new_err("validated dependency graph omitted callable arguments")
+        })?;
+        let value =
+            invoke_plan.call_with_arguments(context, arguments.bind(context.py), use_threadpool)?;
 
         let awaitable = if let Some(generator_kind) = self.generator_kind {
             let context_manager = match generator_kind {
@@ -5080,22 +5078,27 @@ impl CallablePlan {
             };
             let original_callable = plan.callable.bind(context.py);
             let replacement = context.dependency_overrides.get_item(original_callable)?;
-            let callable = match replacement {
-                Some(replacement) if !replacement.is(original_callable) => replacement.unbind(),
-                _ => plan.callable.clone_ref(context.py),
+            let replacement_plan = match replacement {
+                Some(replacement) if !replacement.is(original_callable) => {
+                    Some(CallablePlan::build(
+                        context.py,
+                        replacement.unbind(),
+                        &plan.path_parameters,
+                        plan.computed_scope.clone(),
+                    )?)
+                }
+                _ => None,
             };
-            if dependency_override_callable(context.py, callable.bind(context.py))?
+            // Retain registered plans for unchanged edges so this async-presence
+            // check does not repeatedly rebuild their validators.
+            let dependency_plan = replacement_plan.as_ref().unwrap_or(plan.as_ref());
+            let callable = dependency_plan.callable.bind(context.py);
+            if dependency_override_callable(context.py, callable)?
                 != DependencyOverrideCallable::Sync
-                || dependency_callable_is_generator(context.py, callable.bind(context.py))?
+                || dependency_callable_is_generator(context.py, callable)?
             {
                 return Ok(false);
             }
-            let dependency_plan = CallablePlan::build(
-                context.py,
-                callable,
-                &plan.path_parameters,
-                plan.computed_scope.clone(),
-            )?;
             if !dependency_plan.has_only_synchronous_dependencies(context)? {
                 return Ok(false);
             }
@@ -5695,7 +5698,10 @@ impl CallablePlan {
             ));
         }
 
-        if !has_async_dependency {
+        // A synchronous parent can depend on a coroutine or yield dependency,
+        // including one introduced by an override below the direct edge.
+        // Check the effective subtree before selecting synchronous invocation.
+        if !has_async_dependency && self.has_only_synchronous_dependencies(context)? {
             return Ok(OverridePreparation::Ready);
         }
 
@@ -6044,6 +6050,49 @@ impl CallablePlan {
         use_threadpool: bool,
         prepared_dependencies: Option<&HashMap<usize, Py<PyAny>>>,
     ) -> PyResult<Option<Py<PyAny>>> {
+        let Some(arguments) = self.prepare_arguments(context, prepared_dependencies)? else {
+            return Ok(None);
+        };
+        let cache_key = cache_key_override
+            .unwrap_or_else(|| (self.callable.as_ptr() as usize, self.computed_scope.clone()));
+        if cache_result == Some(true) {
+            if let Some(value) = context.dependency_cache.get(&cache_key) {
+                return Ok(Some(value.clone_ref(context.py)));
+            }
+        }
+        let result =
+            self.call_with_arguments(context, arguments.bind(context.py), use_threadpool)?;
+        if cache_result.is_some() && !context.dependency_cache.contains_key(&cache_key) {
+            context
+                .dependency_cache
+                .insert(cache_key, result.clone_ref(context.py));
+        }
+        Ok(Some(result))
+    }
+
+    fn call_with_arguments(
+        &self,
+        context: &InvocationContext<'_, '_>,
+        arguments: &Bound<'_, PyDict>,
+        use_threadpool: bool,
+    ) -> PyResult<Py<PyAny>> {
+        if use_threadpool {
+            context
+                .py
+                .import("starlette.concurrency")?
+                .getattr("run_in_threadpool")?
+                .call((self.callable.bind(context.py),), Some(arguments))
+        } else {
+            self.callable.bind(context.py).call((), Some(arguments))
+        }
+        .map(Bound::unbind)
+    }
+
+    fn prepare_arguments(
+        &self,
+        context: &mut InvocationContext<'_, '_>,
+        prepared_dependencies: Option<&HashMap<usize, Py<PyAny>>>,
+    ) -> PyResult<Option<Py<PyDict>>> {
         let initial_failure_count = context.failures.len();
         let kwargs = PyDict::new(context.py);
         let aggregate_body = context.body_fields_embedded;
@@ -6103,13 +6152,20 @@ impl CallablePlan {
             {
                 let edge_index = dependency_edge_index;
                 dependency_edge_index += 1;
-                let prepared_value = prepared_dependencies
-                    .and_then(|values| values.get(&edge_index))
-                    .or_else(|| context.prepared_dependency_values.get(&edge_index));
+                let prepared_value = match prepared_dependencies {
+                    Some(values) => values.get(&edge_index),
+                    None => context.prepared_dependency_values.get(&edge_index),
+                };
                 if let Some(value) = prepared_value {
                     if *bind_value {
                         kwargs.set_item(&parameter.name, value.bind(context.py))?;
                     }
+                    continue;
+                }
+                // An explicit map belongs to an already advanced graph. A
+                // missing child failed validation and must not be reinvoked or
+                // replaced by an unrelated endpoint-level prepared value.
+                if prepared_dependencies.is_some() {
                     continue;
                 }
                 let original_cache_key =
@@ -6333,29 +6389,7 @@ impl CallablePlan {
         if context.failures.len() != initial_failure_count {
             return Ok(None);
         }
-        let cache_key = cache_key_override
-            .unwrap_or_else(|| (self.callable.as_ptr() as usize, self.computed_scope.clone()));
-        if cache_result == Some(true) {
-            if let Some(value) = context.dependency_cache.get(&cache_key) {
-                return Ok(Some(value.clone_ref(context.py)));
-            }
-        }
-        let result = if use_threadpool {
-            context
-                .py
-                .import("starlette.concurrency")?
-                .getattr("run_in_threadpool")?
-                .call((self.callable.bind(context.py),), Some(&kwargs))?
-        } else {
-            self.callable.bind(context.py).call((), Some(&kwargs))?
-        }
-        .unbind();
-        if cache_result.is_some() && !context.dependency_cache.contains_key(&cache_key) {
-            context
-                .dependency_cache
-                .insert(cache_key, result.clone_ref(context.py));
-        }
-        Ok(Some(result))
+        Ok(Some(kwargs.unbind()))
     }
 }
 
@@ -10623,7 +10657,13 @@ impl FastApiCall {
                     cache_key,
                     edge_index,
                 },
-                OverridePreparation::Invalid => RouteInvocation::Ready(None),
+                OverridePreparation::Invalid => {
+                    // Recursive dependency errors do not prevent the source
+                    // solver from collecting the endpoint's own input errors.
+                    // The empty explicit map prevents failed child reinvocation.
+                    plan.prepare_arguments(&mut context, Some(&HashMap::new()))?;
+                    RouteInvocation::Ready(None)
+                }
                 OverridePreparation::Ready => {
                     #[cfg(feature = "fault-injection")]
                     if self.route_index.is_some()

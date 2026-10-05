@@ -138,6 +138,10 @@ target internals to manufacture compatibility.
 
 ## Benchmark plan
 
+Revision-specific observations are recorded in
+[the 2026-10-05 measurements at 76dedd6](benchmarks/2026-10-05-76dedd6.md).
+These include the slower workloads and apply only to the measured revision.
+
 ### First executable lane
 
 `benchmarks/workloads/first-slice-valid-asgi.yaml` defines the first runnable

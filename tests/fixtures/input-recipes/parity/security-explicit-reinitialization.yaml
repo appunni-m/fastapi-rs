@@ -1,0 +1,4812 @@
+schema: fastapi-rs/python-asgi-workflow@9
+workload:
+  file: tests/fixtures/workloads/security_explicit_reinitialization.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.security.explicit-reinitialization.oauth2-code-bound
+  verification: parity
+  factory_input:
+    scheme: oauth2-code
+    call_style: bound
+    initial:
+      authorizationUrl: /initial-authorize
+      tokenUrl: /initial-token
+      refreshUrl: /initial-refresh
+      scheme_name: InitialCode
+      scopes:
+        initial: Initial access
+      description: Initial code scheme
+      auto_error: true
+    reinitialize:
+      args:
+      - /replacement-authorize
+      - /replacement-token
+      - /replacement-refresh
+      - ReplacementCode
+      - replacement: Replacement access
+      - Replacement code scheme
+      - false
+      kwargs: {}
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: state-before-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: missing-header-before-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: explicit-initializer-call
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /reinitialize
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: state-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: missing-header-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: bearer-header-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Bearer replacement-token
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: non-bearer-header-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Basic replacement-token
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: openapi-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /components/securitySchemes
+      - /paths/~1protected/get/security
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_oauth2_authorization_code_bearer.py
+    kind: upstream_test
+- case_id: fastapi.security.explicit-reinitialization.oauth2-code-unbound
+  verification: parity
+  factory_input:
+    scheme: oauth2-code
+    call_style: unbound
+    initial:
+      authorizationUrl: /initial-authorize
+      tokenUrl: /initial-token
+      refreshUrl: /initial-refresh
+      scheme_name: InitialCode
+      scopes:
+        initial: Initial access
+      description: Initial code scheme
+      auto_error: false
+    reinitialize:
+      args: []
+      kwargs:
+        authorizationUrl: /replacement-authorize
+        tokenUrl: /replacement-token
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: state-before-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: missing-header-before-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: explicit-initializer-call
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /reinitialize
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: state-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: missing-header-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: bearer-header-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Bearer replacement-token
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: non-bearer-header-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Basic replacement-token
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: openapi-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /components/securitySchemes
+      - /paths/~1protected/get/security
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_oauth2_authorization_code_bearer.py
+    kind: upstream_test
+- case_id: fastapi.security.explicit-reinitialization.oauth2-code-descriptor-subclass
+  verification: parity
+  factory_input:
+    scheme: oauth2-code
+    call_style: descriptor
+    initial:
+      authorizationUrl: /initial-authorize
+      tokenUrl: /initial-token
+      refreshUrl: /initial-refresh
+      scheme_name: InitialCode
+      scopes:
+        initial: Initial access
+      description: Initial code scheme
+      auto_error: true
+    reinitialize:
+      args: []
+      kwargs:
+        authorizationUrl: /replacement-authorize
+        tokenUrl: /replacement-token
+        scopes:
+          replacement: Replacement access
+        description: Replacement subclass code scheme
+        auto_error: false
+    subclass: true
+    trace_scopes: true
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: state-before-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: missing-header-before-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: explicit-initializer-call
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /reinitialize
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: state-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: missing-header-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: bearer-header-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Bearer replacement-token
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: non-bearer-header-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Basic replacement-token
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: openapi-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /components/securitySchemes
+      - /paths/~1protected/get/security
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_oauth2_authorization_code_bearer.py
+    kind: upstream_test
+- case_id: fastapi.security.explicit-reinitialization.openid-bound
+  verification: parity
+  factory_input:
+    scheme: openid
+    call_style: bound
+    initial:
+      openIdConnectUrl: /initial-openid
+      scheme_name: InitialOpenId
+      description: Initial OIDC scheme
+      auto_error: true
+    reinitialize:
+      args: []
+      kwargs:
+        openIdConnectUrl: /replacement-openid
+        scheme_name: ReplacementOpenId
+        description: Replacement OIDC scheme
+        auto_error: false
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: state-before-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: missing-header-before-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: explicit-initializer-call
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /reinitialize
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: state-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: missing-header-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: bearer-header-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Bearer replacement-token
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: non-bearer-header-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Basic replacement-token
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: openapi-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /components/securitySchemes
+      - /paths/~1protected/get/security
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_openid_connect.py
+    kind: upstream_test
+- case_id: fastapi.security.explicit-reinitialization.openid-unbound
+  verification: parity
+  factory_input:
+    scheme: openid
+    call_style: unbound
+    initial:
+      openIdConnectUrl: /initial-openid
+      scheme_name: InitialOpenId
+      description: Initial OIDC scheme
+      auto_error: false
+    reinitialize:
+      args: []
+      kwargs:
+        openIdConnectUrl: /replacement-openid
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: state-before-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: missing-header-before-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: explicit-initializer-call
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /reinitialize
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: state-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: missing-header-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: bearer-header-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Bearer replacement-token
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: non-bearer-header-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Basic replacement-token
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: openapi-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /components/securitySchemes
+      - /paths/~1protected/get/security
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_openid_connect.py
+    kind: upstream_test
+- case_id: fastapi.security.explicit-reinitialization.openid-descriptor-subclass
+  verification: parity
+  factory_input:
+    scheme: openid
+    call_style: descriptor
+    initial:
+      openIdConnectUrl: /initial-openid
+      scheme_name: InitialOpenId
+      description: Initial OIDC scheme
+      auto_error: true
+    reinitialize:
+      args: []
+      kwargs:
+        openIdConnectUrl: /replacement-openid
+        description: Replacement subclass OIDC scheme
+        auto_error: false
+    subclass: true
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: state-before-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: missing-header-before-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: explicit-initializer-call
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /reinitialize
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: state-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: missing-header-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: bearer-header-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Bearer replacement-token
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: non-bearer-header-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Basic replacement-token
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: openapi-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /components/securitySchemes
+      - /paths/~1protected/get/security
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_openid_connect.py
+    kind: upstream_test
+- case_id: fastapi.security.explicit-reinitialization.oauth2-code-auto-error-zero
+  verification: parity
+  factory_input:
+    scheme: oauth2-code
+    call_style: bound
+    initial:
+      authorizationUrl: /initial-authorize
+      tokenUrl: /initial-token
+      refreshUrl: /initial-refresh
+      scheme_name: InitialCode
+      scopes:
+        initial: Initial access
+      description: Initial code scheme
+      auto_error: true
+    reinitialize:
+      args: []
+      kwargs:
+        authorizationUrl: /replacement-authorize
+        tokenUrl: /replacement-token
+        scheme_name: ''
+        scopes: []
+        auto_error: 0
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: state-before-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: missing-header-before-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: explicit-initializer-call
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /reinitialize
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: state-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: missing-header-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: bearer-header-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Bearer replacement-token
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: non-bearer-header-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Basic replacement-token
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: openapi-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /components/securitySchemes
+      - /paths/~1protected/get/security
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_oauth2_authorization_code_bearer.py
+    kind: upstream_test
+- case_id: fastapi.security.explicit-reinitialization.openid-auto-error-null
+  verification: parity
+  factory_input:
+    scheme: openid
+    call_style: bound
+    initial:
+      openIdConnectUrl: /initial-openid
+      scheme_name: InitialOpenId
+      description: Initial OIDC scheme
+      auto_error: true
+    reinitialize:
+      args: []
+      kwargs:
+        openIdConnectUrl: /replacement-openid
+        scheme_name: ''
+        auto_error: null
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: state-before-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: missing-header-before-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: explicit-initializer-call
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /reinitialize
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: state-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: missing-header-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: bearer-header-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Bearer replacement-token
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: non-bearer-header-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Basic replacement-token
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: openapi-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /components/securitySchemes
+      - /paths/~1protected/get/security
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_openid_connect.py
+    kind: upstream_test
+- case_id: fastapi.security.explicit-reinitialization.oauth2-code-missing-token
+  verification: parity
+  factory_input:
+    scheme: oauth2-code
+    call_style: bound
+    initial:
+      authorizationUrl: /initial-authorize
+      tokenUrl: /initial-token
+      refreshUrl: /initial-refresh
+      scheme_name: InitialCode
+      scopes:
+        initial: Initial access
+      description: Initial code scheme
+      auto_error: true
+    reinitialize:
+      args:
+      - /replacement-authorize
+      kwargs: {}
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: state-before-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: missing-header-before-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: explicit-initializer-call
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /reinitialize
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: state-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: missing-header-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: bearer-header-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Bearer replacement-token
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: non-bearer-header-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Basic replacement-token
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: openapi-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /components/securitySchemes
+      - /paths/~1protected/get/security
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_oauth2_authorization_code_bearer.py
+    kind: upstream_test
+- case_id: fastapi.security.explicit-reinitialization.oauth2-code-duplicate-authorization
+  verification: parity
+  factory_input:
+    scheme: oauth2-code
+    call_style: bound
+    initial:
+      authorizationUrl: /initial-authorize
+      tokenUrl: /initial-token
+      refreshUrl: /initial-refresh
+      scheme_name: InitialCode
+      scopes:
+        initial: Initial access
+      description: Initial code scheme
+      auto_error: true
+    reinitialize:
+      args:
+      - /replacement-authorize
+      - /replacement-token
+      kwargs:
+        authorizationUrl: /duplicate-authorize
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: state-before-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: missing-header-before-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: explicit-initializer-call
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /reinitialize
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: state-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: missing-header-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: bearer-header-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Bearer replacement-token
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: non-bearer-header-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Basic replacement-token
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: openapi-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /components/securitySchemes
+      - /paths/~1protected/get/security
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_oauth2_authorization_code_bearer.py
+    kind: upstream_test
+- case_id: fastapi.security.explicit-reinitialization.oauth2-code-unexpected-keyword
+  verification: parity
+  factory_input:
+    scheme: oauth2-code
+    call_style: unbound
+    initial:
+      authorizationUrl: /initial-authorize
+      tokenUrl: /initial-token
+      refreshUrl: /initial-refresh
+      scheme_name: InitialCode
+      scopes:
+        initial: Initial access
+      description: Initial code scheme
+      auto_error: true
+    reinitialize:
+      args:
+      - /replacement-authorize
+      - /replacement-token
+      kwargs:
+        unknown: value
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: state-before-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: missing-header-before-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: explicit-initializer-call
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /reinitialize
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: state-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: missing-header-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: bearer-header-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Bearer replacement-token
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: non-bearer-header-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Basic replacement-token
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: openapi-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /components/securitySchemes
+      - /paths/~1protected/get/security
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_oauth2_authorization_code_bearer.py
+    kind: upstream_test
+- case_id: fastapi.security.explicit-reinitialization.oauth2-code-too-many-positionals
+  verification: parity
+  factory_input:
+    scheme: oauth2-code
+    call_style: unbound
+    initial:
+      authorizationUrl: /initial-authorize
+      tokenUrl: /initial-token
+      refreshUrl: /initial-refresh
+      scheme_name: InitialCode
+      scopes:
+        initial: Initial access
+      description: Initial code scheme
+      auto_error: true
+    reinitialize:
+      args:
+      - /authorize
+      - /token
+      - null
+      - null
+      - null
+      - null
+      - true
+      - extra
+      kwargs: {}
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: state-before-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: missing-header-before-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: explicit-initializer-call
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /reinitialize
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: state-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: missing-header-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: bearer-header-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Bearer replacement-token
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: non-bearer-header-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Basic replacement-token
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: openapi-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /components/securitySchemes
+      - /paths/~1protected/get/security
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_oauth2_authorization_code_bearer.py
+    kind: upstream_test
+- case_id: fastapi.security.explicit-reinitialization.openid-missing-url
+  verification: parity
+  factory_input:
+    scheme: openid
+    call_style: bound
+    initial:
+      openIdConnectUrl: /initial-openid
+      scheme_name: InitialOpenId
+      description: Initial OIDC scheme
+      auto_error: true
+    reinitialize:
+      args: []
+      kwargs: {}
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: state-before-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: missing-header-before-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: explicit-initializer-call
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /reinitialize
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: state-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: missing-header-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: bearer-header-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Bearer replacement-token
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: non-bearer-header-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Basic replacement-token
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: openapi-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /components/securitySchemes
+      - /paths/~1protected/get/security
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_openid_connect.py
+    kind: upstream_test
+- case_id: fastapi.security.explicit-reinitialization.openid-positional-url
+  verification: parity
+  factory_input:
+    scheme: openid
+    call_style: bound
+    initial:
+      openIdConnectUrl: /initial-openid
+      scheme_name: InitialOpenId
+      description: Initial OIDC scheme
+      auto_error: true
+    reinitialize:
+      args:
+      - /replacement-openid
+      kwargs: {}
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: state-before-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: missing-header-before-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: explicit-initializer-call
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /reinitialize
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: state-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: missing-header-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: bearer-header-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Bearer replacement-token
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: non-bearer-header-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Basic replacement-token
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: openapi-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /components/securitySchemes
+      - /paths/~1protected/get/security
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_openid_connect.py
+    kind: upstream_test
+- case_id: fastapi.security.explicit-reinitialization.openid-extra-positional-and-url
+  verification: parity
+  factory_input:
+    scheme: openid
+    call_style: descriptor
+    initial:
+      openIdConnectUrl: /initial-openid
+      scheme_name: InitialOpenId
+      description: Initial OIDC scheme
+      auto_error: true
+    reinitialize:
+      args:
+      - extra
+      kwargs:
+        openIdConnectUrl: /replacement-openid
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: state-before-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: missing-header-before-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: explicit-initializer-call
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /reinitialize
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: state-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: missing-header-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: bearer-header-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Bearer replacement-token
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: non-bearer-header-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Basic replacement-token
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: openapi-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /components/securitySchemes
+      - /paths/~1protected/get/security
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_openid_connect.py
+    kind: upstream_test
+- case_id: fastapi.security.explicit-reinitialization.openid-unexpected-keyword
+  verification: parity
+  factory_input:
+    scheme: openid
+    call_style: unbound
+    initial:
+      openIdConnectUrl: /initial-openid
+      scheme_name: InitialOpenId
+      description: Initial OIDC scheme
+      auto_error: true
+    reinitialize:
+      args: []
+      kwargs:
+        openIdConnectUrl: /replacement-openid
+        unknown: value
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: state-before-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: missing-header-before-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: explicit-initializer-call
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /reinitialize
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: state-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: missing-header-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: bearer-header-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Bearer replacement-token
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: non-bearer-header-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Basic replacement-token
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+  - action_id: openapi-after-reinitialization
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /components/securitySchemes
+      - /paths/~1protected/get/security
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_openid_connect.py
+    kind: upstream_test
