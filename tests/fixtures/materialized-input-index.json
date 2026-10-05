@@ -10755,6 +10755,53 @@
       ]
     },
     {
+      "id": "next-openapi-response-fields",
+      "input_path": "tests/fixtures/inputs/parity/next-openapi-response-fields.json",
+      "input_sha256": "558a3d9cde89de0fd8342fe9a04deaef08a3caac836f5afd3a1b16d0c6829767",
+      "recipe_path": "tests/fixtures/input-recipes/parity/next-openapi-response-fields.yaml",
+      "recipe_sha256": "e1243762e877e182bffadeb4eed6668d852bfb4d1bc31f8c98a7cceb9f8ce132",
+      "workload_path": "tests/fixtures/workloads/next_openapi_response_fields.py",
+      "workload_sha256": "d1c2824c616533127910a459075af4b020e6e97a8d9f260dd838d3b0ef7733bf",
+      "case_ids": [
+        "fastapi.next-openapi-response-fields.annotated-metadata-outer-titles-retained-hooks",
+        "fastapi.next-openapi-response-fields.shared-primitive-definition",
+        "fastapi.next-openapi-response-fields.late-json-hook-error-public-retry-cache"
+      ],
+      "case_contracts": [
+        {
+          "case_id": "fastapi.next-openapi-response-fields.annotated-metadata-outer-titles-retained-hooks",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/additional-responses.md",
+            "source:documented-page:how-to/extending-openapi.md",
+            "source:documented-page:tutorial/response-model.md",
+            "source:upstream-test:tests/test_additional_responses_router.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.next-openapi-response-fields.shared-primitive-definition",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/additional-responses.md",
+            "source:documented-page:how-to/extending-openapi.md",
+            "source:documented-page:tutorial/response-model.md",
+            "source:upstream-test:tests/test_additional_responses_router.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.next-openapi-response-fields.late-json-hook-error-public-retry-cache",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/additional-responses.md",
+            "source:documented-page:how-to/extending-openapi.md",
+            "source:documented-page:tutorial/handling-errors.md",
+            "source:documented-page:tutorial/response-model.md",
+            "source:upstream-test:tests/test_additional_responses_router.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "numeric-path-query-forms-upstream",
       "input_path": "tests/fixtures/inputs/parity/numeric-path-query-forms-upstream.json",
       "input_sha256": "def99757822b91215f044e5cb409d7552e4b78fb9de226a7604d3001e309477c",
@@ -40108,6 +40155,102 @@
       "observation_selectors": [
         "http.body.bytes",
         "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:advanced/additional-responses.md",
+      "fixture_id": "fastapi.docs.advanced-additional-responses",
+      "workflow_id": "next-openapi-response-fields",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes asgi.send.message_types, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.next-openapi-response-fields.annotated-metadata-outer-titles-retained-hooks",
+        "fastapi.next-openapi-response-fields.late-json-hook-error-public-retry-cache",
+        "fastapi.next-openapi-response-fields.shared-primitive-definition"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "docs.response.headers",
+        "docs.response.status",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status",
+        "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:how-to/extending-openapi.md",
+      "fixture_id": "fastapi.docs.how-to-extending-openapi",
+      "workflow_id": "next-openapi-response-fields",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes asgi.send.message_types, docs.response.status, http.body.bytes, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.next-openapi-response-fields.annotated-metadata-outer-titles-retained-hooks",
+        "fastapi.next-openapi-response-fields.late-json-hook-error-public-retry-cache",
+        "fastapi.next-openapi-response-fields.shared-primitive-definition"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "docs.response.status",
+        "http.body.bytes",
+        "http.status",
+        "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/handling-errors.md",
+      "fixture_id": "fastapi.docs.tutorial-handling-errors",
+      "workflow_id": "next-openapi-response-fields",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.next-openapi-response-fields.late-json-hook-error-public-retry-cache"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/response-model.md",
+      "fixture_id": "fastapi.docs.tutorial-response-model",
+      "workflow_id": "next-openapi-response-fields",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.next-openapi-response-fields.annotated-metadata-outer-titles-retained-hooks",
+        "fastapi.next-openapi-response-fields.late-json-hook-error-public-retry-cache",
+        "fastapi.next-openapi-response-fields.shared-primitive-definition"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_additional_responses_router.py",
+      "fixture_id": "fastapi.test.test-additional-responses-router",
+      "workflow_id": "next-openapi-response-fields",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes asgi.send.message_types, docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.next-openapi-response-fields.annotated-metadata-outer-titles-retained-hooks",
+        "fastapi.next-openapi-response-fields.late-json-hook-error-public-retry-cache",
+        "fastapi.next-openapi-response-fields.shared-primitive-definition"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "docs.response.body.bytes",
+        "docs.response.headers",
+        "docs.response.status",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status",
+        "openapi.document"
       ]
     },
     {

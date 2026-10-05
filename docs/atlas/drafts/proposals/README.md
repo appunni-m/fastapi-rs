@@ -87,11 +87,25 @@ Full FastAPI compatibility remains unfinished.
   and full branch retry. Active copies are byte-identical; reviewed metadata adds
   26 precise links to ten existing operations, including public Request injection.
   Registration of the handler is exercised in all three cases; only retry invokes
-  it. The isolated pinned source and unchanged-target diagnosis remain required
-  before the owned Rust field-bundle repair. Defined JSON hooks expose premature
-  calls only; positive OpenAPI phases/shared definitions and included dependency
-  plan timing remain separate gates. Independent input, source/native design and
-  orchestration reviews are preserved here.
+  it. The isolated pinned source completed; the unchanged target failed all three
+  comparisons. The owned Rust field-bundle repair at `827612f` then passed these
+  three within 203 selected normal cases. Fresh instrumentation added 105 regions;
+  the separate six fault contracts and all seven benchmark workloads also passed
+  their gates. See `../additional-response-field-native-contract-review-2026-10-05.md`
+  for the mixed timing results and exact identities. Defined JSON hooks expose
+  premature calls only; positive OpenAPI phases/shared definitions and included
+  dependency-plan timing remain separate gates. Independent input, source/native
+  design and orchestration reviews are preserved here.
+
+- `next-openapi-response-fields/`: independently authored and reviewed three-case /
+  19-HTTP-action inputs are admitted with 19 links across seven existing operations.
+  They retain exact body bytes, complete documents, raw sends, warnings and errors
+  for retained hooks/shared definitions, Annotated metadata versus generated outer
+  titles, and ordinary JSON-hook refusal/public retry/cache. Request invocation is
+  mapped only to retry; all three register handlers. Inner Annotated Field metadata
+  does not establish nondefault outer FieldInfo title/alias branches. Fresh pinned
+  oracle and unchanged-target receipts remain required before native implementation.
+  No expected outputs, private field mutation or comparator normalization is used.
 
 Both historical proposals passed recipe-loader/Ruff admission and independent
 static review; their authored copies remain outside active inputs with no
@@ -99,6 +113,7 @@ expected outputs. Awaitable and response-field lifecycle active copies are
 admitted and measured. The traversal follow-on has its own independent static
 review. Historical authored copies remain outside active inputs; active traversal
 copies now have fresh live receipts. The recovery follow-on still requires its
-own reviewed mappings and live observations. Additional response-field lifecycle
-and OpenAPI timing are the next concrete native implementation gap; see
-`../response-field-next-control-priority-review-2026-10-05.md`.
+own reviewed mappings and live observations. Positive OpenAPI retained-hook,
+shared-definition, generated outer-title and cache retry behavior is the next
+source-backed gate. Additional response-field attachment/included lifecycle now
+has the bounded live evidence recorded in the native contract report.

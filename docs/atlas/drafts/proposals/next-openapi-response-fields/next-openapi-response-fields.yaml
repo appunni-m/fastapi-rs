@@ -1,0 +1,597 @@
+# Inactive independent public inputs. No prescribed or stored outcomes.
+schema: fastapi-rs/python-asgi-workflow@9
+workload:
+  file: tests/fixtures/workloads/next_openapi_response_fields.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.next-openapi-response-fields.annotated-metadata-outer-titles-retained-hooks
+  verification: parity
+  factory_input:
+    models:
+      primary:
+        label: primary
+      explicit_title:
+        label: explicit-title
+        field:
+          title: Independent explicit title
+          alias: unused_input
+          serialization_alias: unused_output
+      serialization_alias:
+        label: serialization-alias
+        field:
+          alias: incoming_label
+          serialization_alias: wire_label
+      empty_alias:
+        label: empty-alias
+        field:
+          alias: ''
+          serialization_alias: ''
+      alias_fallback:
+        label: alias-fallback
+        field:
+          title: ''
+          alias: incoming_fallback
+          serialization_alias: ''
+    primary: primary
+    responses:
+    - status: 409
+      description: Independent explicit-title response
+      model: explicit_title
+    - status: 202
+      description: Independent serialization-alias response
+      model: serialization_alias
+    - status: 206
+      description: Independent empty-alias response
+      model: empty_alias
+    - status: 207
+      description: Independent alias-fallback response
+      model: alias_fallback
+  construction_observation: &id007
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: state-before-document
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events: &id001
+    - type: http.request
+      body: ''
+      more_body: false
+    observations: &id005
+    - &id002
+      kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - &id003
+      kind: asgi_send
+      selector: message_types
+      comparison: ordered
+    - &id004
+      kind: application_error
+      selector: exception
+      comparison: exact
+  - action_id: docs-first-document
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events: *id001
+    observations: &id006
+    - *id002
+    - *id003
+    - *id004
+    - kind: openapi
+      json_pointers:
+      - ''
+      comparison: exact
+  - action_id: state-after-first-document
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events: *id001
+    observations: *id005
+  - action_id: docs-cached-document
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events: *id001
+    observations: *id006
+  - action_id: state-after-cached-document
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events: *id001
+    observations: *id005
+  source_evidence: &id008
+  - &id009
+    path: docs/en/docs/advanced/additional-responses.md
+    kind: upstream_documentation
+  - &id010
+    path: docs/en/docs/how-to/extending-openapi.md
+    kind: upstream_documentation
+  - &id011
+    path: docs/en/docs/tutorial/response-model.md
+    kind: upstream_documentation
+  - &id012
+    path: tests/test_additional_responses_router.py
+    kind: upstream_test
+- case_id: fastapi.next-openapi-response-fields.shared-primitive-definition
+  verification: parity
+  factory_input:
+    models:
+      shared:
+        label: shared
+        schema_ref: independent_openapi.SharedReading
+    primary: shared
+    responses:
+    - status: 409
+      description: Independent shared conflict response
+      model: shared
+    - status: 202
+      description: Independent shared accepted response
+      model: shared
+  construction_observation: *id007
+  actions:
+  - action_id: state-before-document
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events: *id001
+    observations: *id005
+  - action_id: docs-first-document
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events: *id001
+    observations: *id006
+  - action_id: state-after-first-document
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events: *id001
+    observations: *id005
+  - action_id: docs-cached-document
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events: *id001
+    observations: *id006
+  - action_id: state-after-cached-document
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events: *id001
+    observations: *id005
+  source_evidence: *id008
+- case_id: fastapi.next-openapi-response-fields.late-json-hook-error-public-retry-cache
+  verification: parity
+  factory_input:
+    models:
+      primary:
+        label: primary
+      first_extra:
+        label: first-extra
+      late_extra:
+        label: late-extra
+    primary: primary
+    responses:
+    - status: 409
+      description: Independent earlier extra response
+      model: first_extra
+    - status: 202
+      description: Independent later extra response
+      model: late_extra
+    refuse_once: late-extra
+  construction_observation: *id007
+  actions:
+  - action_id: state-before-failing-document
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events: *id001
+    observations: *id005
+  - action_id: docs-json-hook-refusal
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events: *id001
+    observations: *id005
+  - action_id: state-after-json-hook-refusal
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events: *id001
+    observations: *id005
+  - action_id: public-openapi-retry
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /document
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events: *id001
+    observations: *id006
+  - action_id: state-after-public-retry
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events: *id001
+    observations: *id005
+  - action_id: public-openapi-cache-hit
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /document
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events: *id001
+    observations: *id006
+  - action_id: state-after-public-cache-hit
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events: *id001
+    observations: *id005
+  - action_id: docs-cache-after-public-success
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events: *id001
+    observations: *id006
+  - action_id: state-after-docs-cache
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events: *id001
+    observations: *id005
+  source_evidence:
+  - *id009
+  - *id010
+  - *id011
+  - *id012
+  - path: docs/en/docs/tutorial/handling-errors.md
+    kind: upstream_documentation

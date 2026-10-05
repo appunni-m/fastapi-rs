@@ -415,7 +415,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@5
-    sha256: 086963d655e1e458c79d6b4744c04e88c3bfb02020b82d430d41addad6339ecc
+    sha256: 51046e82a98daa711e8fdffa5d4c187e348ed4622abf6c93cc103d386baee767
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -451,7 +451,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 96aed343f8b6f022cd18d62991d62875007cc90651c9d452e175a0a85a8de0f8
+    sha256: e9a0ed26585c6f8dd7c996a32352dd687eda0fc3d8c436ecff7166b3a0ebbfc9
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -488,14 +488,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@5
-    sha256: 517719a589e8199d64fdf5f99aabe864f8a0e954e22540bc6f40b2e4581c631f
+    sha256: 239cc81b7d8fec4b8d5995f6bbbd786dc3bfe4ccf25a8855b0887850922092a6
     schema_path: tests/fixtures/schemas/materialized-input-index-v5.schema.json
     schema_sha256: 13dd4cf1032a4ad9161712364d94b9f91834afee380e1f8eee6f4f05c123261d
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 553
-      cases: 2297
-      partial_source_mappings: 1571
+      workflows: 554
+      cases: 2300
+      partial_source_mappings: 1576
 
 contract_metadata:
   aliases:
@@ -878,7 +878,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 101
     symbols_with_operation_fixture_refs: 152
-    operation_fixture_refs: 1326
+    operation_fixture_refs: 1345
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -5966,6 +5966,27 @@ api_surface_contract:
       - http.body.bytes
     input_workflow_refs: []
     operation_fixture_refs:
+    - workflow_id: next-openapi-response-fields
+      input_path: tests/fixtures/inputs/parity/next-openapi-response-fields.json
+      input_sha256: 558a3d9cde89de0fd8342fe9a04deaef08a3caac836f5afd3a1b16d0c6829767
+      recipe_path: tests/fixtures/input-recipes/parity/next-openapi-response-fields.yaml
+      recipe_sha256: e1243762e877e182bffadeb4eed6668d852bfb4d1bc31f8c98a7cceb9f8ce132
+      workload_path: tests/fixtures/workloads/next_openapi_response_fields.py
+      workload_sha256: d1c2824c616533127910a459075af4b020e6e97a8d9f260dd838d3b0ef7733bf
+      case_id: fastapi.next-openapi-response-fields.late-json-hook-error-public-retry-cache
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
     - workflow_id: additional-response-field-lifecycle
       input_path: tests/fixtures/inputs/parity/additional-response-field-lifecycle.json
       input_sha256: 8ec188213588f06c8a107941f442f8f9bf69020828ae42626238f247c4944190
@@ -7176,6 +7197,69 @@ api_surface_contract:
       observation_selectors: []
     input_workflow_refs: []
     operation_fixture_refs:
+    - workflow_id: next-openapi-response-fields
+      input_path: tests/fixtures/inputs/parity/next-openapi-response-fields.json
+      input_sha256: 558a3d9cde89de0fd8342fe9a04deaef08a3caac836f5afd3a1b16d0c6829767
+      recipe_path: tests/fixtures/input-recipes/parity/next-openapi-response-fields.yaml
+      recipe_sha256: e1243762e877e182bffadeb4eed6668d852bfb4d1bc31f8c98a7cceb9f8ce132
+      workload_path: tests/fixtures/workloads/next_openapi_response_fields.py
+      workload_sha256: d1c2824c616533127910a459075af4b020e6e97a8d9f260dd838d3b0ef7733bf
+      case_id: fastapi.next-openapi-response-fields.annotated-metadata-outer-titles-retained-hooks
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+    - workflow_id: next-openapi-response-fields
+      input_path: tests/fixtures/inputs/parity/next-openapi-response-fields.json
+      input_sha256: 558a3d9cde89de0fd8342fe9a04deaef08a3caac836f5afd3a1b16d0c6829767
+      recipe_path: tests/fixtures/input-recipes/parity/next-openapi-response-fields.yaml
+      recipe_sha256: e1243762e877e182bffadeb4eed6668d852bfb4d1bc31f8c98a7cceb9f8ce132
+      workload_path: tests/fixtures/workloads/next_openapi_response_fields.py
+      workload_sha256: d1c2824c616533127910a459075af4b020e6e97a8d9f260dd838d3b0ef7733bf
+      case_id: fastapi.next-openapi-response-fields.shared-primitive-definition
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+    - workflow_id: next-openapi-response-fields
+      input_path: tests/fixtures/inputs/parity/next-openapi-response-fields.json
+      input_sha256: 558a3d9cde89de0fd8342fe9a04deaef08a3caac836f5afd3a1b16d0c6829767
+      recipe_path: tests/fixtures/input-recipes/parity/next-openapi-response-fields.yaml
+      recipe_sha256: e1243762e877e182bffadeb4eed6668d852bfb4d1bc31f8c98a7cceb9f8ce132
+      workload_path: tests/fixtures/workloads/next_openapi_response_fields.py
+      workload_sha256: d1c2824c616533127910a459075af4b020e6e97a8d9f260dd838d3b0ef7733bf
+      case_id: fastapi.next-openapi-response-fields.late-json-hook-error-public-retry-cache
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
     - workflow_id: response-field-lifecycle
       input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
       input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
@@ -8013,6 +8097,69 @@ api_surface_contract:
       observation_selectors: *id006
     input_workflow_refs: []
     operation_fixture_refs:
+    - workflow_id: next-openapi-response-fields
+      input_path: tests/fixtures/inputs/parity/next-openapi-response-fields.json
+      input_sha256: 558a3d9cde89de0fd8342fe9a04deaef08a3caac836f5afd3a1b16d0c6829767
+      recipe_path: tests/fixtures/input-recipes/parity/next-openapi-response-fields.yaml
+      recipe_sha256: e1243762e877e182bffadeb4eed6668d852bfb4d1bc31f8c98a7cceb9f8ce132
+      workload_path: tests/fixtures/workloads/next_openapi_response_fields.py
+      workload_sha256: d1c2824c616533127910a459075af4b020e6e97a8d9f260dd838d3b0ef7733bf
+      case_id: fastapi.next-openapi-response-fields.annotated-metadata-outer-titles-retained-hooks
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+    - workflow_id: next-openapi-response-fields
+      input_path: tests/fixtures/inputs/parity/next-openapi-response-fields.json
+      input_sha256: 558a3d9cde89de0fd8342fe9a04deaef08a3caac836f5afd3a1b16d0c6829767
+      recipe_path: tests/fixtures/input-recipes/parity/next-openapi-response-fields.yaml
+      recipe_sha256: e1243762e877e182bffadeb4eed6668d852bfb4d1bc31f8c98a7cceb9f8ce132
+      workload_path: tests/fixtures/workloads/next_openapi_response_fields.py
+      workload_sha256: d1c2824c616533127910a459075af4b020e6e97a8d9f260dd838d3b0ef7733bf
+      case_id: fastapi.next-openapi-response-fields.shared-primitive-definition
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+    - workflow_id: next-openapi-response-fields
+      input_path: tests/fixtures/inputs/parity/next-openapi-response-fields.json
+      input_sha256: 558a3d9cde89de0fd8342fe9a04deaef08a3caac836f5afd3a1b16d0c6829767
+      recipe_path: tests/fixtures/input-recipes/parity/next-openapi-response-fields.yaml
+      recipe_sha256: e1243762e877e182bffadeb4eed6668d852bfb4d1bc31f8c98a7cceb9f8ce132
+      workload_path: tests/fixtures/workloads/next_openapi_response_fields.py
+      workload_sha256: d1c2824c616533127910a459075af4b020e6e97a8d9f260dd838d3b0ef7733bf
+      case_id: fastapi.next-openapi-response-fields.late-json-hook-error-public-retry-cache
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
     - workflow_id: response-field-lifecycle
       input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
       input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
@@ -9787,6 +9934,69 @@ api_surface_contract:
       observation_selectors: *id006
     input_workflow_refs: []
     operation_fixture_refs:
+    - workflow_id: next-openapi-response-fields
+      input_path: tests/fixtures/inputs/parity/next-openapi-response-fields.json
+      input_sha256: 558a3d9cde89de0fd8342fe9a04deaef08a3caac836f5afd3a1b16d0c6829767
+      recipe_path: tests/fixtures/input-recipes/parity/next-openapi-response-fields.yaml
+      recipe_sha256: e1243762e877e182bffadeb4eed6668d852bfb4d1bc31f8c98a7cceb9f8ce132
+      workload_path: tests/fixtures/workloads/next_openapi_response_fields.py
+      workload_sha256: d1c2824c616533127910a459075af4b020e6e97a8d9f260dd838d3b0ef7733bf
+      case_id: fastapi.next-openapi-response-fields.annotated-metadata-outer-titles-retained-hooks
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+    - workflow_id: next-openapi-response-fields
+      input_path: tests/fixtures/inputs/parity/next-openapi-response-fields.json
+      input_sha256: 558a3d9cde89de0fd8342fe9a04deaef08a3caac836f5afd3a1b16d0c6829767
+      recipe_path: tests/fixtures/input-recipes/parity/next-openapi-response-fields.yaml
+      recipe_sha256: e1243762e877e182bffadeb4eed6668d852bfb4d1bc31f8c98a7cceb9f8ce132
+      workload_path: tests/fixtures/workloads/next_openapi_response_fields.py
+      workload_sha256: d1c2824c616533127910a459075af4b020e6e97a8d9f260dd838d3b0ef7733bf
+      case_id: fastapi.next-openapi-response-fields.shared-primitive-definition
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+    - workflow_id: next-openapi-response-fields
+      input_path: tests/fixtures/inputs/parity/next-openapi-response-fields.json
+      input_sha256: 558a3d9cde89de0fd8342fe9a04deaef08a3caac836f5afd3a1b16d0c6829767
+      recipe_path: tests/fixtures/input-recipes/parity/next-openapi-response-fields.yaml
+      recipe_sha256: e1243762e877e182bffadeb4eed6668d852bfb4d1bc31f8c98a7cceb9f8ce132
+      workload_path: tests/fixtures/workloads/next_openapi_response_fields.py
+      workload_sha256: d1c2824c616533127910a459075af4b020e6e97a8d9f260dd838d3b0ef7733bf
+      case_id: fastapi.next-openapi-response-fields.late-json-hook-error-public-retry-cache
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
     - workflow_id: worker-dispatch
       input_path: tests/fixtures/inputs/parity/worker-dispatch.json
       input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
@@ -10384,6 +10594,69 @@ api_surface_contract:
       observation_selectors:
       - python.signature
     operation_fixture_refs:
+    - workflow_id: next-openapi-response-fields
+      input_path: tests/fixtures/inputs/parity/next-openapi-response-fields.json
+      input_sha256: 558a3d9cde89de0fd8342fe9a04deaef08a3caac836f5afd3a1b16d0c6829767
+      recipe_path: tests/fixtures/input-recipes/parity/next-openapi-response-fields.yaml
+      recipe_sha256: e1243762e877e182bffadeb4eed6668d852bfb4d1bc31f8c98a7cceb9f8ce132
+      workload_path: tests/fixtures/workloads/next_openapi_response_fields.py
+      workload_sha256: d1c2824c616533127910a459075af4b020e6e97a8d9f260dd838d3b0ef7733bf
+      case_id: fastapi.next-openapi-response-fields.annotated-metadata-outer-titles-retained-hooks
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+    - workflow_id: next-openapi-response-fields
+      input_path: tests/fixtures/inputs/parity/next-openapi-response-fields.json
+      input_sha256: 558a3d9cde89de0fd8342fe9a04deaef08a3caac836f5afd3a1b16d0c6829767
+      recipe_path: tests/fixtures/input-recipes/parity/next-openapi-response-fields.yaml
+      recipe_sha256: e1243762e877e182bffadeb4eed6668d852bfb4d1bc31f8c98a7cceb9f8ce132
+      workload_path: tests/fixtures/workloads/next_openapi_response_fields.py
+      workload_sha256: d1c2824c616533127910a459075af4b020e6e97a8d9f260dd838d3b0ef7733bf
+      case_id: fastapi.next-openapi-response-fields.shared-primitive-definition
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+    - workflow_id: next-openapi-response-fields
+      input_path: tests/fixtures/inputs/parity/next-openapi-response-fields.json
+      input_sha256: 558a3d9cde89de0fd8342fe9a04deaef08a3caac836f5afd3a1b16d0c6829767
+      recipe_path: tests/fixtures/input-recipes/parity/next-openapi-response-fields.yaml
+      recipe_sha256: e1243762e877e182bffadeb4eed6668d852bfb4d1bc31f8c98a7cceb9f8ce132
+      workload_path: tests/fixtures/workloads/next_openapi_response_fields.py
+      workload_sha256: d1c2824c616533127910a459075af4b020e6e97a8d9f260dd838d3b0ef7733bf
+      case_id: fastapi.next-openapi-response-fields.late-json-hook-error-public-retry-cache
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
     - workflow_id: response-field-lifecycle
       input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
       input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
@@ -12477,6 +12750,69 @@ api_surface_contract:
       observation_selectors: *id006
     input_workflow_refs: []
     operation_fixture_refs:
+    - workflow_id: next-openapi-response-fields
+      input_path: tests/fixtures/inputs/parity/next-openapi-response-fields.json
+      input_sha256: 558a3d9cde89de0fd8342fe9a04deaef08a3caac836f5afd3a1b16d0c6829767
+      recipe_path: tests/fixtures/input-recipes/parity/next-openapi-response-fields.yaml
+      recipe_sha256: e1243762e877e182bffadeb4eed6668d852bfb4d1bc31f8c98a7cceb9f8ce132
+      workload_path: tests/fixtures/workloads/next_openapi_response_fields.py
+      workload_sha256: d1c2824c616533127910a459075af4b020e6e97a8d9f260dd838d3b0ef7733bf
+      case_id: fastapi.next-openapi-response-fields.annotated-metadata-outer-titles-retained-hooks
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+    - workflow_id: next-openapi-response-fields
+      input_path: tests/fixtures/inputs/parity/next-openapi-response-fields.json
+      input_sha256: 558a3d9cde89de0fd8342fe9a04deaef08a3caac836f5afd3a1b16d0c6829767
+      recipe_path: tests/fixtures/input-recipes/parity/next-openapi-response-fields.yaml
+      recipe_sha256: e1243762e877e182bffadeb4eed6668d852bfb4d1bc31f8c98a7cceb9f8ce132
+      workload_path: tests/fixtures/workloads/next_openapi_response_fields.py
+      workload_sha256: d1c2824c616533127910a459075af4b020e6e97a8d9f260dd838d3b0ef7733bf
+      case_id: fastapi.next-openapi-response-fields.shared-primitive-definition
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+    - workflow_id: next-openapi-response-fields
+      input_path: tests/fixtures/inputs/parity/next-openapi-response-fields.json
+      input_sha256: 558a3d9cde89de0fd8342fe9a04deaef08a3caac836f5afd3a1b16d0c6829767
+      recipe_path: tests/fixtures/input-recipes/parity/next-openapi-response-fields.yaml
+      recipe_sha256: e1243762e877e182bffadeb4eed6668d852bfb4d1bc31f8c98a7cceb9f8ce132
+      workload_path: tests/fixtures/workloads/next_openapi_response_fields.py
+      workload_sha256: d1c2824c616533127910a459075af4b020e6e97a8d9f260dd838d3b0ef7733bf
+      case_id: fastapi.next-openapi-response-fields.late-json-hook-error-public-retry-cache
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
     - workflow_id: dependency-required-parameter-once-upstream
       input_path: tests/fixtures/inputs/parity/dependency-required-parameter-once-upstream.json
       input_sha256: dc837536c5413f08715730d834e4963b5fa9e59a417730222851661e8cf5bd0c
@@ -36164,6 +36500,69 @@ api_surface_contract:
       observation_selectors: *id014
     input_workflow_refs: []
     operation_fixture_refs:
+    - workflow_id: next-openapi-response-fields
+      input_path: tests/fixtures/inputs/parity/next-openapi-response-fields.json
+      input_sha256: 558a3d9cde89de0fd8342fe9a04deaef08a3caac836f5afd3a1b16d0c6829767
+      recipe_path: tests/fixtures/input-recipes/parity/next-openapi-response-fields.yaml
+      recipe_sha256: e1243762e877e182bffadeb4eed6668d852bfb4d1bc31f8c98a7cceb9f8ce132
+      workload_path: tests/fixtures/workloads/next_openapi_response_fields.py
+      workload_sha256: d1c2824c616533127910a459075af4b020e6e97a8d9f260dd838d3b0ef7733bf
+      case_id: fastapi.next-openapi-response-fields.annotated-metadata-outer-titles-retained-hooks
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+    - workflow_id: next-openapi-response-fields
+      input_path: tests/fixtures/inputs/parity/next-openapi-response-fields.json
+      input_sha256: 558a3d9cde89de0fd8342fe9a04deaef08a3caac836f5afd3a1b16d0c6829767
+      recipe_path: tests/fixtures/input-recipes/parity/next-openapi-response-fields.yaml
+      recipe_sha256: e1243762e877e182bffadeb4eed6668d852bfb4d1bc31f8c98a7cceb9f8ce132
+      workload_path: tests/fixtures/workloads/next_openapi_response_fields.py
+      workload_sha256: d1c2824c616533127910a459075af4b020e6e97a8d9f260dd838d3b0ef7733bf
+      case_id: fastapi.next-openapi-response-fields.shared-primitive-definition
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+    - workflow_id: next-openapi-response-fields
+      input_path: tests/fixtures/inputs/parity/next-openapi-response-fields.json
+      input_sha256: 558a3d9cde89de0fd8342fe9a04deaef08a3caac836f5afd3a1b16d0c6829767
+      recipe_path: tests/fixtures/input-recipes/parity/next-openapi-response-fields.yaml
+      recipe_sha256: e1243762e877e182bffadeb4eed6668d852bfb4d1bc31f8c98a7cceb9f8ce132
+      workload_path: tests/fixtures/workloads/next_openapi_response_fields.py
+      workload_sha256: d1c2824c616533127910a459075af4b020e6e97a8d9f260dd838d3b0ef7733bf
+      case_id: fastapi.next-openapi-response-fields.late-json-hook-error-public-retry-cache
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
     - workflow_id: response-field-lifecycle
       input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
       input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
