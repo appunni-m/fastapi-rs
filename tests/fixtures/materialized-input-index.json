@@ -22783,7 +22783,7 @@
       "recipe_path": "tests/fixtures/input-recipes/parity/security_oauth_openapi_upstream.yaml",
       "recipe_sha256": "2ee90c593c350d13a2802be41a79ef4f60e354c6a3aeb1cb0642d0cef3cc1cef",
       "workload_path": "tests/fixtures/workloads/security_oauth_openapi_upstream.py",
-      "workload_sha256": "a2926ae66cac0838a32daaa2389d538042039c79b8a2eeee2b05dca324d2c1e4",
+      "workload_sha256": "d70e858a3ffd1c95f4da71090a4e052e6f0d3b3b92cc7fbd217ccb184c6f57be",
       "case_ids": [
         "fastapi.security.oauth2-authorization-code-bearer.test-no-token",
         "fastapi.security.oauth2-authorization-code-bearer.test-incorrect-token",
@@ -23902,6 +23902,168 @@
         },
         {
           "case_id": "fastapi.security.public-api.open-id-connect",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.security.OpenIdConnect",
+            "api:fastapi.security.open_id_connect_url.OpenIdConnect",
+            "api:fastapi.security.open_id_connect_url.OpenIdConnect.__init__"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "security-oauth2-authcode-fault-contract",
+      "input_path": "tests/fixtures/inputs/parity/security-oauth2-authcode-fault-contract.json",
+      "input_sha256": "edf341ce49a873d150ee5d5c43fe1a93508fcfe720eae7b5c56bb83603a9ceb7",
+      "recipe_path": "tests/fixtures/input-recipes/parity/security-oauth2-authcode-fault-contract.yaml",
+      "recipe_sha256": "7ff1f5c5e4a3e3b8cd7b814816a1f03ae603519618099ff5df4b1d31edddfbfc",
+      "workload_path": "tests/fixtures/workloads/security_oauth_fault_contract.py",
+      "workload_sha256": "a7637ce3cfa3bbdc0bce4c06fb7e8070a18e8de222fe413dca053d837acd89fe",
+      "case_ids": [
+        "fastapi.security.oauth2-authorization-code-bearer.yield-dependency-cleanup",
+        "fastapi.fault-contract.security.oauth2-authorization-code-dependency-cleanup"
+      ],
+      "case_contracts": [
+        {
+          "case_id": "fastapi.security.oauth2-authorization-code-bearer.yield-dependency-cleanup",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_dependency_contextmanager.py",
+            "source:upstream-test:tests/test_security_oauth2_authorization_code_bearer.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.fault-contract.security.oauth2-authorization-code-dependency-cleanup",
+          "verification": "fault-contract",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_dependency_contextmanager.py",
+            "source:upstream-test:tests/test_security_oauth2_authorization_code_bearer.py"
+          ],
+          "fault": {
+            "point": "http.route.invoke.after_dependencies.before",
+            "contract": "http-route-invocation-error-cleans-dependencies"
+          }
+        }
+      ]
+    },
+    {
+      "id": "security-oauth2-authcode-openid-public-api",
+      "input_path": "tests/fixtures/inputs/parity/security-oauth2-authcode-openid-public-api.json",
+      "input_sha256": "eb34031e5952deac50a76aab5350a67299a799d23abda685ee4b9483b1dd678a",
+      "recipe_path": "tests/fixtures/input-recipes/parity/security-oauth2-authcode-openid-public-api.yaml",
+      "recipe_sha256": "5361e2cb8987805bc8b7caafb091f6faf7c7784977b606cad4d233a2e4870bae",
+      "workload_path": "tests/fixtures/workloads/direct_api_reference_wave.py",
+      "workload_sha256": "57939adf1241c1ca02e0a66059384ce8d9d098cd11591bae02bc5f381db68741",
+      "case_ids": [
+        "fastapi.security.public-api.oauth2-authorization-code-bearer-target",
+        "fastapi.security.public-api.open-id-connect-target"
+      ],
+      "api_definitions": [
+        {
+          "case_id": "fastapi.security.public-api.oauth2-authorization-code-bearer-target",
+          "symbol_id": "fastapi.security.OAuth2AuthorizationCodeBearer",
+          "path": "fastapi/security/__init__.py",
+          "sha256": "6cef29366c6a5515d48df97698e2a25592e7d05a4143ad555185639a9a676c9c"
+        },
+        {
+          "case_id": "fastapi.security.public-api.oauth2-authorization-code-bearer-target",
+          "symbol_id": "fastapi.security.oauth2.OAuth2AuthorizationCodeBearer",
+          "path": "fastapi/security/oauth2.py",
+          "sha256": "b12a96e2d6efa07696365778e9361ab6d6b9ae015f8e87782e1c6679d5f3908f"
+        },
+        {
+          "case_id": "fastapi.security.public-api.oauth2-authorization-code-bearer-target",
+          "symbol_id": "fastapi.security.oauth2.OAuth2AuthorizationCodeBearer.__init__",
+          "path": "fastapi/security/oauth2.py",
+          "sha256": "b12a96e2d6efa07696365778e9361ab6d6b9ae015f8e87782e1c6679d5f3908f"
+        },
+        {
+          "case_id": "fastapi.security.public-api.open-id-connect-target",
+          "symbol_id": "fastapi.security.OpenIdConnect",
+          "path": "fastapi/security/__init__.py",
+          "sha256": "6cef29366c6a5515d48df97698e2a25592e7d05a4143ad555185639a9a676c9c"
+        },
+        {
+          "case_id": "fastapi.security.public-api.open-id-connect-target",
+          "symbol_id": "fastapi.security.open_id_connect_url.OpenIdConnect",
+          "path": "fastapi/security/open_id_connect_url.py",
+          "sha256": "57c58b3c4b04abf5899488cfc093b6bc2a095862eef954edd7e3761fb695f83e"
+        },
+        {
+          "case_id": "fastapi.security.public-api.open-id-connect-target",
+          "symbol_id": "fastapi.security.open_id_connect_url.OpenIdConnect.__init__",
+          "path": "fastapi/security/open_id_connect_url.py",
+          "sha256": "57c58b3c4b04abf5899488cfc093b6bc2a095862eef954edd7e3761fb695f83e"
+        }
+      ],
+      "api_probes": [
+        {
+          "case_id": "fastapi.security.public-api.oauth2-authorization-code-bearer-target",
+          "probe_id": "module-oauth2-authorization-code-bearer-init-signature",
+          "symbol_id": "fastapi.security.oauth2.OAuth2AuthorizationCodeBearer.__init__",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.public-api.oauth2-authorization-code-bearer-target",
+          "probe_id": "module-oauth2-authorization-code-bearer-signature",
+          "symbol_id": "fastapi.security.oauth2.OAuth2AuthorizationCodeBearer",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.public-api.oauth2-authorization-code-bearer-target",
+          "probe_id": "root-oauth2-authorization-code-bearer-signature",
+          "symbol_id": "fastapi.security.OAuth2AuthorizationCodeBearer",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.public-api.open-id-connect-target",
+          "probe_id": "module-open-id-connect-init-signature",
+          "symbol_id": "fastapi.security.open_id_connect_url.OpenIdConnect.__init__",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.public-api.open-id-connect-target",
+          "probe_id": "module-open-id-connect-signature",
+          "symbol_id": "fastapi.security.open_id_connect_url.OpenIdConnect",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.public-api.open-id-connect-target",
+          "probe_id": "root-open-id-connect-signature",
+          "symbol_id": "fastapi.security.OpenIdConnect",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        }
+      ],
+      "case_contracts": [
+        {
+          "case_id": "fastapi.security.public-api.oauth2-authorization-code-bearer-target",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.security.OAuth2AuthorizationCodeBearer",
+            "api:fastapi.security.oauth2.OAuth2AuthorizationCodeBearer",
+            "api:fastapi.security.oauth2.OAuth2AuthorizationCodeBearer.__init__"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.public-api.open-id-connect-target",
           "verification": "parity",
           "requirement_refs": [
             "api:fastapi.security.OpenIdConnect",
@@ -48520,6 +48682,41 @@
         "http.headers.ordered",
         "http.status",
         "openapi.security"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_dependency_contextmanager.py",
+      "fixture_id": "fastapi.test.test-dependency-contextmanager",
+      "workflow_id": "security-oauth2-authcode-fault-contract",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.application_error.exception, asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.fault-contract.security.oauth2-authorization-code-dependency-cleanup",
+        "fastapi.security.oauth2-authorization-code-bearer.yield-dependency-cleanup"
+      ],
+      "observation_selectors": [
+        "asgi.application_error.exception",
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_security_oauth2_authorization_code_bearer.py",
+      "fixture_id": "fastapi.test.test-security-oauth2-authorization-code-bearer",
+      "workflow_id": "security-oauth2-authcode-fault-contract",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.fault-contract.security.oauth2-authorization-code-dependency-cleanup",
+        "fastapi.security.oauth2-authorization-code-bearer.yield-dependency-cleanup"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
       ]
     },
     {

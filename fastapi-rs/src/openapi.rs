@@ -39,7 +39,7 @@ pub(crate) struct OpenApiOperation {
     /// The OpenAPI response key derived from an explicit status or response-class default.
     pub(crate) response_status_key: Option<String>,
     pub(crate) parameters: Vec<OpenApiParameter>,
-    pub(crate) security_schemes: BTreeMap<String, Py<PyAny>>,
+    pub(crate) security_schemes: Vec<(String, Py<PyAny>)>,
     pub(crate) security_requirements: Vec<(String, Vec<String>)>,
     pub(crate) validation_parameters_present: bool,
     pub(crate) request_model_name: Option<String>,
@@ -82,10 +82,10 @@ pub(crate) fn openapi_document(
     root_path: Option<&str>,
 ) -> PyResult<Py<PyAny>> {
     let mut schemas = BTreeMap::<String, Py<PyAny>>::new();
-    let mut security_schemes = BTreeMap::<String, Py<PyAny>>::new();
+    let mut security_schemes = Vec::new();
     for operation in operations {
         for (name, scheme) in &operation.security_schemes {
-            security_schemes.insert(name.clone(), scheme.clone_ref(py));
+            register_security_scheme(&mut security_schemes, name.clone(), scheme.clone_ref(py));
         }
         for parameter in &operation.parameters {
             collect_schema_definitions(py, &mut schemas, &parameter.schema, false)?;
@@ -166,7 +166,7 @@ pub(crate) fn openapi_document(
                 if parameter.deprecated {
                     parameter_document.set_item("deprecated", true)?;
                 }
-                let mut schema = normalize_schema(py, parameter.schema.bind(py), false, false)?;
+                let mut schema = normalize_schema(py, parameter.schema.bind(py), false)?;
                 if let Some(default) = parameter.default.as_ref() {
                     if let Ok(schema) = schema.cast::<PyDict>() {
                         schema.set_item("default", default.bind(py))?;
@@ -184,20 +184,6 @@ pub(crate) fn openapi_document(
             }
             operation_document.set_item("parameters", parameters)?;
         }
-        if !operation.security_requirements.is_empty() {
-            let security = PyList::empty(py);
-            for (scheme_name, scopes) in &operation.security_requirements {
-                let requirement = PyDict::new(py);
-                let required_scopes = PyList::empty(py);
-                for scope in scopes {
-                    required_scopes.append(scope)?;
-                }
-                requirement.set_item(scheme_name, required_scopes)?;
-                security.append(requirement)?;
-            }
-            operation_document.set_item("security", security)?;
-        }
-
         if operation.request_body_present {
             let request_body = PyDict::new(py);
             if operation.request_required && !operation.request_body_content_before_required {
@@ -210,7 +196,7 @@ pub(crate) fn openapi_document(
                 operation.request_schema.as_ref(),
             ) {
                 (Some(model_name), Some(_)) => reference_schema(py, model_name)?.into_any(),
-                (None, Some(schema)) => normalize_schema(py, schema.bind(py), false, true)?,
+                (None, Some(schema)) => normalize_schema(py, schema.bind(py), true)?,
                 _ => PyDict::new(py).into_any(),
             };
             media_type.set_item("schema", schema)?;
@@ -232,7 +218,7 @@ pub(crate) fn openapi_document(
                     operation.stream_item_schema.as_ref(),
                 ) {
                     (Some(model_name), Some(_)) => reference_schema(py, model_name)?.into_any(),
-                    (None, Some(schema)) => normalize_schema(py, schema.bind(py), false, true)?,
+                    (None, Some(schema)) => normalize_schema(py, schema.bind(py), true)?,
                     _ => PyDict::new(py).into_any(),
                 };
                 let media_type = PyDict::new(py);
@@ -266,7 +252,7 @@ pub(crate) fn openapi_document(
                     } else {
                         data_schema.set_item(
                             "contentSchema",
-                            normalize_schema(py, schema.bind(py), false, true)?,
+                            normalize_schema(py, schema.bind(py), true)?,
                         )?;
                     }
                     let required = PyList::empty(py);
@@ -289,7 +275,7 @@ pub(crate) fn openapi_document(
                                 reference_schema(py, model_name)?.into_any()
                             }
                             (None, Some(schema)) => {
-                                let schema = normalize_schema(py, schema.bind(py), false, true)?;
+                                let schema = normalize_schema(py, schema.bind(py), true)?;
                                 if let Ok(schema_dict) = schema.cast::<PyDict>() {
                                     if schema_dict.get_item("$ref")?.is_none() {
                                         schema_dict
@@ -376,7 +362,7 @@ pub(crate) fn openapi_document(
                 };
                 let schema = match additional_response.response_model_name.as_deref() {
                     Some(model_name) => reference_schema(py, model_name)?.into_any(),
-                    None => normalize_schema(py, schema.bind(py), false, true)?,
+                    None => normalize_schema(py, schema.bind(py), true)?,
                 };
                 if additional_response.response_model_name.is_none() {
                     if let Ok(schema_dict) = schema.cast::<PyDict>() {
@@ -397,6 +383,19 @@ pub(crate) fn openapi_document(
         }
 
         operation_document.set_item("responses", responses)?;
+        if !operation.security_requirements.is_empty() {
+            let security = PyList::empty(py);
+            for (scheme_name, scopes) in &operation.security_requirements {
+                let requirement = PyDict::new(py);
+                let required_scopes = PyList::empty(py);
+                for scope in scopes {
+                    required_scopes.append(scope)?;
+                }
+                requirement.set_item(scheme_name, required_scopes)?;
+                security.append(requirement)?;
+            }
+            operation_document.set_item("security", security)?;
+        }
         path_item.set_item(operation.method.to_ascii_lowercase(), operation_document)?;
     }
 
@@ -737,7 +736,7 @@ fn collect_model_schema(
         }
     }
 
-    let normalized = normalize_schema(py, schema.bind(py), true, preserve_defaults)?;
+    let normalized = normalize_schema(py, schema.bind(py), preserve_defaults)?;
     schemas
         .entry(name.to_owned())
         .or_insert(normalized.unbind().into_any());
@@ -756,8 +755,7 @@ fn collect_schema_definitions(
             if let Ok(definitions) = definitions.cast::<PyDict>() {
                 for (definition_name, definition_schema) in definitions.iter() {
                     let definition_name: String = definition_name.extract()?;
-                    let normalized =
-                        normalize_schema(py, &definition_schema, true, preserve_defaults)?;
+                    let normalized = normalize_schema(py, &definition_schema, preserve_defaults)?;
                     schemas
                         .entry(definition_name)
                         .or_insert(normalized.unbind().into_any());
@@ -771,7 +769,6 @@ fn collect_schema_definitions(
 fn normalize_schema<'py>(
     py: Python<'py>,
     value: &Bound<'py, PyAny>,
-    top_level_model: bool,
     preserve_defaults: bool,
 ) -> PyResult<Bound<'py, PyAny>> {
     if let Ok(source) = value.cast::<PyDict>() {
@@ -795,7 +792,7 @@ fn normalize_schema<'py>(
             }
             entries.push((key, item));
         }
-        entries.sort_by_key(|(key, _)| schema_key_rank(key, top_level_model));
+        entries.sort_by_key(|(key, _)| schema_key_rank(key));
 
         let result = PyDict::new(py);
         for (key, item) in entries {
@@ -834,10 +831,7 @@ fn normalize_schema_value<'py>(
         if let Ok(source) = value.cast::<PyDict>() {
             let result = PyDict::new(py);
             for (name, schema) in source.iter() {
-                result.set_item(
-                    name,
-                    normalize_schema(py, &schema, false, preserve_defaults)?,
-                )?;
+                result.set_item(name, normalize_schema(py, &schema, preserve_defaults)?)?;
             }
             return Ok(result.into_any());
         }
@@ -847,7 +841,7 @@ fn normalize_schema_value<'py>(
         if let Ok(source) = value.cast::<PyList>() {
             let result = PyList::empty(py);
             for schema in source.iter() {
-                result.append(normalize_schema(py, &schema, false, preserve_defaults)?)?;
+                result.append(normalize_schema(py, &schema, preserve_defaults)?)?;
             }
             return Ok(result.into_any());
         }
@@ -867,13 +861,13 @@ fn normalize_schema_value<'py>(
             | "contentSchema"
     ) {
         if value.cast::<PyDict>().is_ok() {
-            return normalize_schema(py, value, false, preserve_defaults);
+            return normalize_schema(py, value, preserve_defaults);
         }
         if key == "items" {
             if let Ok(source) = value.cast::<PyList>() {
                 let result = PyList::empty(py);
                 for schema in source.iter() {
-                    result.append(normalize_schema(py, &schema, false, preserve_defaults)?)?;
+                    result.append(normalize_schema(py, &schema, preserve_defaults)?)?;
                 }
                 return Ok(result.into_any());
             }
@@ -883,54 +877,88 @@ fn normalize_schema_value<'py>(
     Ok(value.clone())
 }
 
-fn schema_key_rank(key: &str, top_level_model: bool) -> (usize, usize) {
-    let model_order = [
+fn schema_key_rank(key: &str) -> (usize, usize) {
+    // FastAPI 0.141.1 serializes every Schema through its declared field order.
+    // Unknown extension keys retain their input order after the known fields.
+    let order = [
+        "$schema",
+        "$vocabulary",
+        "$id",
+        "$anchor",
+        "$dynamicAnchor",
         "$ref",
-        "properties",
-        "additionalProperties",
-        "type",
-        "contentMediaType",
-        "required",
-        "title",
-    ];
-    let field_order = [
-        "$ref",
+        "$dynamicRef",
+        "$defs",
+        "$comment",
+        "allOf",
         "anyOf",
         "oneOf",
-        "allOf",
+        "not",
+        "if",
+        "then",
+        "else",
+        "dependentSchemas",
+        "prefixItems",
         "items",
-        "type",
+        "contains",
+        "properties",
+        "patternProperties",
         "additionalProperties",
-        "contentMediaType",
-        "format",
-        "const",
+        "propertyNames",
+        "unevaluatedItems",
+        "unevaluatedProperties",
+        "type",
         "enum",
-        "minimum",
-        "exclusiveMinimum",
+        "const",
+        "multipleOf",
         "maximum",
         "exclusiveMaximum",
-        "multipleOf",
-        "minLength",
+        "minimum",
+        "exclusiveMinimum",
         "maxLength",
+        "minLength",
         "pattern",
-        "minItems",
         "maxItems",
+        "minItems",
         "uniqueItems",
-        "properties",
-        "additionalProperties",
+        "maxContains",
+        "minContains",
+        "maxProperties",
+        "minProperties",
         "required",
+        "dependentRequired",
+        "format",
+        "contentEncoding",
+        "contentMediaType",
+        "contentSchema",
         "title",
         "description",
+        "default",
+        "deprecated",
+        "readOnly",
+        "writeOnly",
+        "examples",
+        "discriminator",
+        "xml",
+        "externalDocs",
+        "example",
     ];
-    let order = if top_level_model {
-        &model_order[..]
-    } else {
-        &field_order[..]
-    };
     order
         .iter()
         .position(|candidate| *candidate == key)
         .map_or((1, 0), |index| (0, index))
+}
+
+pub(crate) fn register_security_scheme(
+    schemes: &mut Vec<(String, Py<PyAny>)>,
+    name: String,
+    model: Py<PyAny>,
+) {
+    if let Some((_, existing)) = schemes.iter_mut().find(|(candidate, _)| candidate == &name) {
+        *existing = model;
+    } else {
+        schemes.push((name, model));
+    }
 }
 
 fn reference_schema<'py>(py: Python<'py>, model_name: &str) -> PyResult<Bound<'py, PyDict>> {

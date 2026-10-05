@@ -1131,7 +1131,7 @@ _MODULE_LEVEL_SECURITY_REVIEWS = {
         ["dependency-security", "public-api-errors", "response-serialization", "openapi-docs"],
         ["http.status", "http.body.json", "openapi.security"],
         "Required OAuth2 authorization-code bearer extraction, errors, whitespace handling, and flow metadata.",
-        "test_no_token/test_incorrect_token/test_token/test_token_with_whitespaces -> `fastapi.security.oauth2-authorization-code-bearer.test-no-token`, `fastapi.security.oauth2-authorization-code-bearer.test-incorrect-token`, `fastapi.security.oauth2-authorization-code-bearer.test-token`, `fastapi.security.oauth2-authorization-code-bearer.test-token-with-whitespaces`; test_openapi_schema -> `fastapi.security.oauth2-authorization-code-bearer.test-openapi-schema`.",
+        "test_no_token/test_incorrect_token/test_token/test_token_with_whitespaces -> `fastapi.security.oauth2-authorization-code-bearer.test-no-token`, `fastapi.security.oauth2-authorization-code-bearer.test-incorrect-token`, `fastapi.security.oauth2-authorization-code-bearer.test-token`, `fastapi.security.oauth2-authorization-code-bearer.test-token-with-whitespaces`; test_openapi_schema -> `fastapi.security.oauth2-authorization-code-bearer.test-openapi-schema`. A separate target-only fault contract injects after the authorization-code dependency resolves and asserts request-dependency cleanup plus a successful follow-up request.",
         _OAUTH2_SOURCES,
         contract_gate="The independent request workload declares scopes while the source has an empty scope map; selected OpenAPI pointers cover flow URLs/type and operation security, not the scope map or full snapshot.",
     ),

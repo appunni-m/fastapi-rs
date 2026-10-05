@@ -8,7 +8,9 @@ from fastapi_rs._core import (
     HTTPBearer,
     HTTPDigest,
     OAuth2,
+    OAuth2AuthorizationCodeBearer,
     OAuth2PasswordBearer,
+    OpenIdConnect,
 )
 
 __all__ = [
@@ -21,5 +23,7 @@ __all__ = [
     "HTTPBearer",
     "HTTPDigest",
     "OAuth2",
+    "OAuth2AuthorizationCodeBearer",
     "OAuth2PasswordBearer",
+    "OpenIdConnect",
 ]

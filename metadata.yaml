@@ -5454,7 +5454,7 @@ reviewed_api_contract_overlay:
         `scheme_name` annotations. Direct base-class identity and MRO parity
         remain unverified by a dedicated input workflow.
     fastapi.security.OAuth2AuthorizationCodeBearer:
-      rust_binding: null
+      rust_binding: fastapi-rs/src/security.rs::PyOAuth2AuthorizationCodeBearer
       source_evidence:
         - path: fastapi/security/__init__.py
           symbol: OAuth2AuthorizationCodeBearer
@@ -5474,16 +5474,29 @@ reviewed_api_contract_overlay:
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
           case_id: fastapi.security.public-api.oauth2-authorization-code-bearer
-      feature_ids: [dependency-security, openapi-docs]
-      observation_selectors: [python.signature]
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth2-authcode-openid-public-api.yaml
+          case_id: fastapi.security.public-api.oauth2-authorization-code-bearer-target
+        - recipe_path: tests/fixtures/input-recipes/parity/security_oauth_openapi_upstream.yaml
+          case_id: fastapi.security.oauth2-authorization-code-bearer.test-openapi-schema
+      feature_ids: [dependency-security, openapi-docs, public-api-errors]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.security, python.signature]
+      supported_slice: >-
+        Native public aliases construct an authorizationCode flow with its
+        authorization URL, token URL, optional refresh URL, scopes, description,
+        scheme name, and auto_error setting. Identity-checked requests cover
+        required Bearer extraction, wrong schemes, whitespace normalization,
+        optional behavior, and selected OpenAPI flow and operation-security
+        fields. Full OAuthFlows/Pydantic model behavior and every parser edge
+        remain outside this partial target contract.
       target_binding:
         implementation_owner: fastapi-rs
-        status: unimplemented
+        status: partial-contract
         known_gaps:
-          - no OAuth2 authorization-code bearer class export or implementation is present in the FastAPI-RS security facades or Rust security module.
-        rust_binding: null
+          - other OAuth2 flow models and the complete public OpenAPI model namespace remain incomplete.
+          - subclass overrides, mutation behavior, and every Authorization header edge are not covered by these workflows.
+        rust_binding: fastapi-rs/src/security.rs::PyOAuth2AuthorizationCodeBearer
     fastapi.security.oauth2.OAuth2AuthorizationCodeBearer:
-      rust_binding: null
+      rust_binding: fastapi-rs/src/security.rs::PyOAuth2AuthorizationCodeBearer
       source_evidence:
         - path: fastapi/security/oauth2.py
           symbol: OAuth2AuthorizationCodeBearer
@@ -5493,16 +5506,26 @@ reviewed_api_contract_overlay:
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
           case_id: fastapi.security.public-api.oauth2-authorization-code-bearer
-      feature_ids: [dependency-security, openapi-docs]
-      observation_selectors: [python.signature]
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth2-authcode-openid-public-api.yaml
+          case_id: fastapi.security.public-api.oauth2-authorization-code-bearer-target
+        - recipe_path: tests/fixtures/input-recipes/parity/security_oauth_openapi_upstream.yaml
+          case_id: fastapi.security.oauth2-authorization-code-bearer.test-openapi-schema
+      feature_ids: [dependency-security, openapi-docs, public-api-errors]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.security, python.signature]
+      supported_slice: >-
+        The native subclass inherits the OAuth2 security model, scheme-name,
+        and auto_error state, and exposes its required/optional Bearer token
+        dependency plus selected authorizationCode OpenAPI projection. Other
+        flow types and inherited mutation/subclass edge behavior remain open.
       target_binding:
         implementation_owner: fastapi-rs
-        status: unimplemented
+        status: partial-contract
         known_gaps:
-          - no OAuth2 authorization-code bearer class export or implementation is present in the FastAPI-RS security facades or Rust security module.
-        rust_binding: null
+          - other OAuth2 flow models and the complete public OpenAPI model namespace remain incomplete.
+          - subclass overrides, mutation behavior, and every Authorization header edge are not covered by these workflows.
+        rust_binding: fastapi-rs/src/security.rs::PyOAuth2AuthorizationCodeBearer
     fastapi.security.oauth2.OAuth2AuthorizationCodeBearer.__init__:
-      rust_binding: null
+      rust_binding: fastapi-rs/src/security.rs::PyOAuth2AuthorizationCodeBearer::new
       source_evidence:
         - path: fastapi/security/oauth2.py
           symbol: __init__
@@ -5513,14 +5536,59 @@ reviewed_api_contract_overlay:
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
           case_id: fastapi.security.public-api.oauth2-authorization-code-bearer
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth2-authcode-openid-public-api.yaml
+          case_id: fastapi.security.public-api.oauth2-authorization-code-bearer-target
+        - recipe_path: tests/fixtures/input-recipes/parity/security_oauth_openapi_upstream.yaml
+          case_id: fastapi.security.oauth2-authorization-code-bearer.test-openapi-schema
       feature_ids: [dependency-security, openapi-docs]
-      observation_selectors: [python.signature]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.security, python.signature]
+      supported_slice: >-
+        Exact constructor signature and selected construction outputs cover
+        required authorizationUrl/tokenUrl and optional refreshUrl, scheme
+        name, scopes, description, and auto_error. Pydantic validation errors
+        for invalid argument values remain unverified.
       target_binding:
         implementation_owner: fastapi-rs
-        status: unimplemented
+        status: partial-contract
         known_gaps:
-          - no OAuth2 authorization-code bearer class export or implementation is present in the FastAPI-RS security facades or Rust security module.
-        rust_binding: null
+          - Pydantic validation details and every constructor error case remain outside this partial contract.
+        rust_binding: fastapi-rs/src/security.rs::PyOAuth2AuthorizationCodeBearer::new
+    fastapi.security.oauth2.OAuth2AuthorizationCodeBearer.__call__:
+      rust_binding: fastapi-rs/src/security.rs::PyOAuth2AuthorizationCodeBearer::__call__
+      source_evidence:
+        - path: fastapi/security/oauth2.py
+          symbol: __call__
+          kind: source-definition
+          owner: OAuth2AuthorizationCodeBearer
+          start_line: 642
+          end_line: 650
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/security_oauth_openapi_upstream.yaml
+          case_id: fastapi.security.oauth2-authorization-code-bearer.test-no-token
+        - recipe_path: tests/fixtures/input-recipes/parity/security_oauth_openapi_upstream.yaml
+          case_id: fastapi.security.oauth2-authorization-code-bearer.test-incorrect-token
+        - recipe_path: tests/fixtures/input-recipes/parity/security_oauth_openapi_upstream.yaml
+          case_id: fastapi.security.oauth2-authorization-code-bearer.test-token
+        - recipe_path: tests/fixtures/input-recipes/parity/security_oauth_openapi_upstream.yaml
+          case_id: fastapi.security.oauth2-authorization-code-bearer.test-token-with-whitespaces
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth2-authcode-fault-contract.yaml
+          case_id: fastapi.security.oauth2-authorization-code-bearer.yield-dependency-cleanup
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth2-authcode-fault-contract.yaml
+          case_id: fastapi.fault-contract.security.oauth2-authorization-code-dependency-cleanup
+      feature_ids: [dependency-security, public-api-errors]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      supported_slice: >-
+        The native awaitable accepts a case-insensitive Bearer scheme, returns
+        the stripped token parameter (including an empty parameter), returns
+        None when optional authentication has no Bearer header, and otherwise
+        raises the 401 Bearer challenge. The selected requests compare exact
+        response status, headers, and body.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - malformed header and subclass override behavior beyond the selected cases remain unverified.
+        rust_binding: fastapi-rs/src/security.rs::PyOAuth2AuthorizationCodeBearer::__call__
     fastapi.security.OAuth2PasswordRequestForm:
       rust_binding: null
       source_evidence:
@@ -5726,7 +5794,7 @@ reviewed_api_contract_overlay:
           - the FastAPI-RS security facades do not export SecurityScopes or implement its FastAPI scope-injection contract.
         rust_binding: null
     fastapi.security.OpenIdConnect:
-      rust_binding: null
+      rust_binding: fastapi-rs/src/security.rs::PyOpenIdConnect
       source_evidence:
         - path: fastapi/security/__init__.py
           symbol: OpenIdConnect
@@ -5746,16 +5814,30 @@ reviewed_api_contract_overlay:
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
           case_id: fastapi.security.public-api.open-id-connect
-      feature_ids: [dependency-security, openapi-docs]
-      observation_selectors: [python.signature]
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth2-authcode-openid-public-api.yaml
+          case_id: fastapi.security.public-api.open-id-connect-target
+        - recipe_path: tests/fixtures/input-recipes/parity/security_oauth_openapi_upstream.yaml
+          case_id: fastapi.security.openid-connect.test-openapi-schema
+        - recipe_path: tests/fixtures/input-recipes/parity/security_oauth_openapi_upstream.yaml
+          case_id: fastapi.security.openid-connect-optional.test-openapi-schema
+      feature_ids: [dependency-security, openapi-docs, public-api-errors]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.security, python.signature]
+      supported_slice: >-
+        The public root alias constructs the source OpenID Connect stub model,
+        preserves the class-name or configured scheme name, and exposes
+        required/optional raw Authorization-header behavior and selected
+        OpenAPI fields. The source itself does not validate or resolve tokens;
+        subclass customization and full OpenAPI model behavior remain outside
+        this partial contract.
       target_binding:
         implementation_owner: fastapi-rs
-        status: unimplemented
+        status: partial-contract
         known_gaps:
-          - the FastAPI-RS security facades do not export OpenIdConnect or implement its dependency and OpenAPI behavior.
-        rust_binding: null
+          - token verification and OpenID provider discovery are not provided by the source class or target.
+          - subclass overrides and complete model validation behavior remain unverified.
+        rust_binding: fastapi-rs/src/security.rs::PyOpenIdConnect
     fastapi.security.open_id_connect_url.OpenIdConnect:
-      rust_binding: null
+      rust_binding: fastapi-rs/src/security.rs::PyOpenIdConnect
       source_evidence:
         - path: fastapi/security/open_id_connect_url.py
           symbol: OpenIdConnect
@@ -5765,16 +5847,28 @@ reviewed_api_contract_overlay:
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
           case_id: fastapi.security.public-api.open-id-connect
-      feature_ids: [dependency-security, openapi-docs]
-      observation_selectors: [python.signature]
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth2-authcode-openid-public-api.yaml
+          case_id: fastapi.security.public-api.open-id-connect-target
+        - recipe_path: tests/fixtures/input-recipes/parity/security_oauth_openapi_upstream.yaml
+          case_id: fastapi.security.openid-connect.test-openapi-schema
+        - recipe_path: tests/fixtures/input-recipes/parity/security_oauth_openapi_upstream.yaml
+          case_id: fastapi.security.openid-connect-optional.test-openapi-schema
+      feature_ids: [dependency-security, openapi-docs, public-api-errors]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.security, python.signature]
+      supported_slice: >-
+        The native class occupies the FastAPI SecurityBase inheritance path,
+        builds the OpenID Connect model, and implements the source stub's
+        authorization-header behavior. Selected live cases cover required,
+        optional, described, and OpenAPI projections; broader subclass
+        behavior is not established.
       target_binding:
         implementation_owner: fastapi-rs
-        status: unimplemented
+        status: partial-contract
         known_gaps:
-          - the FastAPI-RS security facades do not export OpenIdConnect or implement its dependency and OpenAPI behavior.
-        rust_binding: null
+          - subclass overrides and complete Pydantic OpenID model behavior remain unverified.
+        rust_binding: fastapi-rs/src/security.rs::PyOpenIdConnect
     fastapi.security.open_id_connect_url.OpenIdConnect.__init__:
-      rust_binding: null
+      rust_binding: fastapi-rs/src/security.rs::PyOpenIdConnect::new
       source_evidence:
         - path: fastapi/security/open_id_connect_url.py
           symbol: __init__
@@ -5785,14 +5879,51 @@ reviewed_api_contract_overlay:
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
           case_id: fastapi.security.public-api.open-id-connect
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth2-authcode-openid-public-api.yaml
+          case_id: fastapi.security.public-api.open-id-connect-target
+        - recipe_path: tests/fixtures/input-recipes/parity/security_oauth_openapi_upstream.yaml
+          case_id: fastapi.security.openid-connect.test-openapi-schema
       feature_ids: [dependency-security, openapi-docs]
-      observation_selectors: [python.signature]
+      observation_selectors: [openapi.security, python.signature]
+      supported_slice: >-
+        Exact signature and selected OpenAPI cases cover required
+        openIdConnectUrl plus optional scheme name, description, and auto_error.
+        Pydantic validation details for invalid values remain unverified.
       target_binding:
         implementation_owner: fastapi-rs
-        status: unimplemented
+        status: partial-contract
         known_gaps:
-          - the FastAPI-RS security facades do not export OpenIdConnect or implement its dependency and OpenAPI behavior.
-        rust_binding: null
+          - constructor validation details and all error cases remain outside this partial contract.
+        rust_binding: fastapi-rs/src/security.rs::PyOpenIdConnect::new
+    fastapi.security.open_id_connect_url.OpenIdConnect.__call__:
+      rust_binding: fastapi-rs/src/security.rs::PyOpenIdConnect::__call__
+      source_evidence:
+        - path: fastapi/security/open_id_connect_url.py
+          symbol: __call__
+          kind: source-definition
+          owner: OpenIdConnect
+          start_line: 87
+          end_line: 94
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/security_oauth_openapi_upstream.yaml
+          case_id: fastapi.security.openid-connect.test-security-oauth2
+        - recipe_path: tests/fixtures/input-recipes/parity/security_oauth_openapi_upstream.yaml
+          case_id: fastapi.security.openid-connect.test-security-oauth2-password-other-header
+        - recipe_path: tests/fixtures/input-recipes/parity/security_oauth_openapi_upstream.yaml
+          case_id: fastapi.security.openid-connect-optional.test-security-oauth2-password-bearer-no-header
+      feature_ids: [dependency-security, public-api-errors]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      supported_slice: >-
+        Returns any present Authorization header unchanged; on a missing header
+        it returns None when auto_error is false or raises the 401 Bearer
+        challenge when auto_error is true. This intentionally mirrors the
+        upstream OpenID Connect stub, which does not validate bearer tokens.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - behavior of empty and non-string Authorization values is not exhaustively observed.
+        rust_binding: fastapi-rs/src/security.rs::PyOpenIdConnect::__call__
     fastapi.openapi.models.APIKey:
       rust_binding: fastapi-rs/src/security.rs::create_api_key_models
       source_evidence:

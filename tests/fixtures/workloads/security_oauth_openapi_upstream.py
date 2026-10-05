@@ -1,7 +1,5 @@
 """Independently authored OAuth2/OpenID Connect security workload."""
 
-from __future__ import annotations
-
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, FastAPI, Security

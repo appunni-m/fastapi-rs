@@ -6,7 +6,7 @@ use crate::awaitable::{
 use base64::Engine;
 use base64::engine::general_purpose::{GeneralPurpose, GeneralPurposeConfig};
 use pyo3::exceptions::PyRuntimeError;
-use pyo3::types::{PyBool, PyDict, PyList, PyString, PyType};
+use pyo3::types::{PyBool, PyDict, PyList, PyString, PyTuple, PyType};
 use pyo3::{PyClassInitializer, prelude::*};
 
 static PYTHON_COMPATIBLE_STANDARD_BASE64: GeneralPurpose = GeneralPurpose::new(
@@ -22,11 +22,115 @@ static PYTHON_COMPATIBLE_STANDARD_BASE64: GeneralPurpose = GeneralPurpose::new(
 )]
 struct PySecurityBase;
 
+#[pyclass(
+    name = "OpenIdConnect",
+    module = "fastapi.security.open_id_connect_url",
+    extends = PySecurityBase,
+    subclass,
+    dict
+)]
+struct PyOpenIdConnect {
+    model: Py<PyAny>,
+    scheme_name: Py<PyAny>,
+    auto_error: bool,
+}
+
 #[pymethods]
 impl PySecurityBase {
     #[new]
     fn new() -> Self {
         Self
+    }
+}
+
+#[pymethods]
+impl PyOpenIdConnect {
+    #[new]
+    // lint-exception: preserve FastAPI's documented camelCase constructor keyword.
+    #[allow(
+        non_snake_case,
+        reason = "preserve FastAPI's documented camelCase openIdConnectUrl keyword"
+    )]
+    #[pyo3(signature = (*, openIdConnectUrl, scheme_name=None, description=None, auto_error=true))]
+    fn new(
+        py: Python<'_>,
+        openIdConnectUrl: Py<PyAny>,
+        scheme_name: Option<Py<PyAny>>,
+        description: Option<Py<PyAny>>,
+        auto_error: bool,
+    ) -> PyResult<PyClassInitializer<Self>> {
+        let module = py.import("fastapi_rs._core")?;
+        let model_type = module.getattr("_OpenIdConnectModel")?;
+        let model_arguments = PyDict::new(py);
+        model_arguments.set_item("openIdConnectUrl", openIdConnectUrl)?;
+        model_arguments.set_item("description", description.unwrap_or_else(|| py.None()))?;
+        let model = model_type.call((), Some(&model_arguments))?.unbind();
+
+        Ok(PyClassInitializer::from(PySecurityBase).add_subclass(Self {
+            model,
+            scheme_name: scheme_name.unwrap_or_else(|| py.None()),
+            auto_error,
+        }))
+    }
+
+    #[getter]
+    fn model(&self, py: Python<'_>) -> Py<PyAny> {
+        self.model.clone_ref(py)
+    }
+
+    #[setter]
+    fn set_model(&mut self, model: Py<PyAny>) {
+        self.model = model;
+    }
+
+    #[getter]
+    fn scheme_name(slf: Py<Self>, py: Python<'_>) -> PyResult<Py<PyAny>> {
+        let instance = slf.bind(py);
+        let stored = instance.borrow().scheme_name.clone_ref(py);
+        if stored.bind(py).is_truthy()? {
+            return Ok(stored);
+        }
+        let class_name = instance.get_type().name()?.to_string();
+        Ok(PyString::new(py, &class_name).unbind().into_any())
+    }
+
+    #[setter]
+    fn set_scheme_name(&mut self, scheme_name: Py<PyAny>) {
+        self.scheme_name = scheme_name;
+    }
+
+    #[getter]
+    fn auto_error(&self) -> bool {
+        self.auto_error
+    }
+
+    #[setter]
+    fn set_auto_error(&mut self, auto_error: bool) {
+        self.auto_error = auto_error;
+    }
+
+    fn make_not_authenticated_error(slf: Py<Self>, py: Python<'_>) -> PyResult<Py<PyAny>> {
+        let exception_type = slf
+            .bind(py)
+            .get_type()
+            .getattr("_fastapi_rs_http_exception_type")?;
+        let headers = PyDict::new(py);
+        headers.set_item("WWW-Authenticate", "Bearer")?;
+        let arguments = PyDict::new(py);
+        arguments.set_item("status_code", 401)?;
+        arguments.set_item("detail", "Not authenticated")?;
+        arguments.set_item("headers", headers)?;
+        exception_type.call((), Some(&arguments)).map(Bound::unbind)
+    }
+
+    fn __call__(slf: Py<Self>, py: Python<'_>, request: Py<PyAny>) -> PyResult<Py<PyAny>> {
+        into_python_awaitable(
+            py,
+            OpenIdConnectCall {
+                security: slf.into_any(),
+                request,
+            },
+        )
     }
 }
 
@@ -848,6 +952,50 @@ struct PyOAuth2PasswordBearer {
     auto_error: bool,
 }
 
+#[pyclass(
+    name = "OAuth2AuthorizationCodeBearer",
+    module = "fastapi.security.oauth2",
+    extends = PyOAuth2,
+    subclass,
+    dict
+)]
+struct PyOAuth2AuthorizationCodeBearer;
+
+#[pyclass(name = "_ConstructorInit", module = "fastapi_rs._core", dict)]
+struct ConstructorInit;
+
+#[pymethods]
+impl ConstructorInit {
+    #[pyo3(signature = (*_args, **_kwargs))]
+    fn __call__(
+        &self,
+        _args: &Bound<'_, PyTuple>,
+        _kwargs: Option<&Bound<'_, PyDict>>,
+    ) -> PyResult<()> {
+        Ok(())
+    }
+}
+
+#[pyclass]
+struct ConstructorSignatureDescriptor {
+    class_signature: Py<PyAny>,
+}
+
+#[pymethods]
+impl ConstructorSignatureDescriptor {
+    fn __get__(
+        &self,
+        py: Python<'_>,
+        instance: Option<Bound<'_, PyAny>>,
+        _owner: Bound<'_, PyAny>,
+    ) -> PyResult<Py<PyAny>> {
+        if instance.is_none() {
+            return Ok(self.class_signature.clone_ref(py));
+        }
+        dependency_signature(py)
+    }
+}
+
 #[pymethods]
 impl PyOAuth2PasswordBearer {
     // lint-exception: preserve FastAPI's documented camelCase constructor keywords.
@@ -947,6 +1095,71 @@ impl PyOAuth2PasswordBearer {
         into_python_awaitable(
             py,
             OAuth2PasswordBearerCall {
+                security: slf.into_any(),
+                request,
+            },
+        )
+    }
+}
+
+#[pymethods]
+impl PyOAuth2AuthorizationCodeBearer {
+    // lint-exception: preserve FastAPI's documented constructor signature and camelCase keywords.
+    #[allow(
+        non_snake_case,
+        clippy::too_many_arguments,
+        reason = "mirror FastAPI's positional constructor parameters and camelCase keywords"
+    )]
+    #[new]
+    #[pyo3(signature = (authorizationUrl, tokenUrl, refreshUrl=None, scheme_name=None, scopes=None, description=None, auto_error=true))]
+    fn new(
+        py: Python<'_>,
+        authorizationUrl: Py<PyAny>,
+        tokenUrl: Py<PyAny>,
+        refreshUrl: Option<Py<PyAny>>,
+        scheme_name: Option<Py<PyAny>>,
+        scopes: Option<Py<PyAny>>,
+        description: Option<Py<PyAny>>,
+        auto_error: bool,
+    ) -> PyResult<PyClassInitializer<Self>> {
+        let module = py.import("fastapi_rs._core")?;
+        let authorization_flow_type = module.getattr("_OAuth2AuthorizationCodeFlowModel")?;
+        let scopes = match scopes {
+            Some(scopes) if scopes.bind(py).is_truthy()? => scopes,
+            _ => PyDict::new(py).unbind().into_any(),
+        };
+        let flow_arguments = PyDict::new(py);
+        flow_arguments.set_item("authorizationUrl", authorizationUrl)?;
+        flow_arguments.set_item("tokenUrl", tokenUrl)?;
+        flow_arguments.set_item("refreshUrl", refreshUrl.unwrap_or_else(|| py.None()))?;
+        flow_arguments.set_item("scopes", scopes)?;
+        let authorization_flow = authorization_flow_type
+            .call((), Some(&flow_arguments))?
+            .unbind();
+
+        let flows_type = module.getattr("_OAuth2FlowsModel")?;
+        let flows_arguments = PyDict::new(py);
+        flows_arguments.set_item("authorizationCode", authorization_flow)?;
+        let flows = flows_type.call((), Some(&flows_arguments))?.unbind();
+
+        let model_type = module.getattr("_OAuth2Model")?;
+        let model_arguments = PyDict::new(py);
+        model_arguments.set_item("flows", flows)?;
+        model_arguments.set_item("description", description.unwrap_or_else(|| py.None()))?;
+        let model = model_type.call((), Some(&model_arguments))?.unbind();
+
+        Ok(PyClassInitializer::from(PyOAuth2 {
+            model,
+            scheme_name: scheme_name.unwrap_or_else(|| py.None()),
+            auto_error,
+        })
+        .add_subclass(Self))
+    }
+
+    fn __call__(slf: Py<Self>, py: Python<'_>, request: Py<PyAny>) -> PyResult<Py<PyAny>> {
+        into_python_awaitable(
+            py,
+            OAuth2AuthorizationCodeBearerCall {
                 security: slf.into_any(),
                 request,
             },
@@ -1158,6 +1371,16 @@ struct OAuth2PasswordBearerCall {
     request: Py<PyAny>,
 }
 
+struct OAuth2AuthorizationCodeBearerCall {
+    security: Py<PyAny>,
+    request: Py<PyAny>,
+}
+
+struct OpenIdConnectCall {
+    security: Py<PyAny>,
+    request: Py<PyAny>,
+}
+
 struct ApiKeyCall {
     security: Py<PyAny>,
     request: Py<PyAny>,
@@ -1212,6 +1435,56 @@ impl AwaitableStateMachine for OAuth2PasswordBearerCall {
         Ok(MachineAction::Complete(
             PyString::new(py, &token).unbind().into_any(),
         ))
+    }
+}
+
+impl AwaitableStateMachine for OAuth2AuthorizationCodeBearerCall {
+    fn resume(&mut self, py: Python<'_>, input: MachineResume) -> PyResult<MachineAction> {
+        if !matches!(input, MachineResume::Start) {
+            return Err(PyRuntimeError::new_err(
+                "OAuth2AuthorizationCodeBearer dependency resumed more than once",
+            ));
+        }
+
+        let security = self.security.bind(py);
+        let headers = self.request.bind(py).getattr("headers")?;
+        let authorization = headers.call_method1("get", ("Authorization",))?;
+        let authorization_is_present = authorization.is_truthy()?;
+        let (scheme, token) = authorization_parts(&authorization)?;
+        if !authorization_is_present || scheme.to_lowercase() != "bearer" {
+            if security.getattr("auto_error")?.is_truthy()? {
+                let exception = security.call_method0("make_not_authenticated_error")?;
+                return Err(PyErr::from_value(exception));
+            }
+            return Ok(MachineAction::Complete(py.None()));
+        }
+
+        Ok(MachineAction::Complete(
+            PyString::new(py, &token).unbind().into_any(),
+        ))
+    }
+}
+
+impl AwaitableStateMachine for OpenIdConnectCall {
+    fn resume(&mut self, py: Python<'_>, input: MachineResume) -> PyResult<MachineAction> {
+        if !matches!(input, MachineResume::Start) {
+            return Err(PyRuntimeError::new_err(
+                "OpenIdConnect dependency resumed more than once",
+            ));
+        }
+
+        let security = self.security.bind(py);
+        let headers = self.request.bind(py).getattr("headers")?;
+        let authorization = headers.call_method1("get", ("Authorization",))?;
+        if !authorization.is_truthy()? {
+            if security.getattr("auto_error")?.is_truthy()? {
+                let exception = security.call_method0("make_not_authenticated_error")?;
+                return Err(PyErr::from_value(exception));
+            }
+            return Ok(MachineAction::Complete(py.None()));
+        }
+
+        Ok(MachineAction::Complete(authorization.unbind()))
     }
 }
 
@@ -1285,6 +1558,234 @@ fn dependency_signature(py: Python<'_>) -> PyResult<Py<PyAny>> {
         .getattr("Signature")?
         .call1((parameters,))
         .map(Bound::unbind)
+}
+
+fn documented_annotation<'py>(
+    py: Python<'py>,
+    value: &Bound<'py, PyAny>,
+    documentation: &str,
+) -> PyResult<Bound<'py, PyAny>> {
+    let doc = py
+        .import("annotated_doc")?
+        .getattr("Doc")?
+        .call1((documentation,))?;
+    let annotated = py.import("typing")?.getattr("Annotated")?;
+    annotated
+        .getattr("__class_getitem__")?
+        .call1((PyTuple::new(py, [value.clone(), doc])?,))
+}
+
+fn constructor_parameter<'py>(
+    py: Python<'py>,
+    name: &str,
+    kind: &Bound<'py, PyAny>,
+    annotation: &Bound<'py, PyAny>,
+    default: Option<&Bound<'py, PyAny>>,
+) -> PyResult<Bound<'py, PyAny>> {
+    let parameter_arguments = PyDict::new(py);
+    parameter_arguments.set_item("annotation", annotation)?;
+    if let Some(default) = default {
+        parameter_arguments.set_item("default", default)?;
+    }
+    py.import("inspect")?
+        .getattr("Parameter")?
+        .call((name, kind.clone()), Some(&parameter_arguments))
+}
+
+fn attach_constructor_introspection(
+    py: Python<'_>,
+    class: &Bound<'_, PyType>,
+    parameters: Vec<Bound<'_, PyAny>>,
+) -> PyResult<()> {
+    let inspect = py.import("inspect")?;
+    let class_parameters = PyList::empty(py);
+    for parameter in &parameters {
+        class_parameters.append(parameter)?;
+    }
+    let class_signature = inspect.getattr("Signature")?.call1((class_parameters,))?;
+
+    let parameter_type = inspect.getattr("Parameter")?;
+    let self_kind = parameter_type.getattr("POSITIONAL_OR_KEYWORD")?;
+    let self_parameter = parameter_type.call(("self", self_kind), None)?;
+    let init_parameters = PyList::empty(py);
+    init_parameters.append(self_parameter)?;
+    for parameter in &parameters {
+        init_parameters.append(parameter)?;
+    }
+    let init_signature = inspect.getattr("Signature")?.call1((init_parameters,))?;
+
+    let init_callable = Py::new(py, ConstructorInit)?;
+    init_callable
+        .bind(py)
+        .setattr("__signature__", init_signature)?;
+    class.setattr(
+        "__signature__",
+        Py::new(
+            py,
+            ConstructorSignatureDescriptor {
+                class_signature: class_signature.unbind(),
+            },
+        )?,
+    )?;
+    class.setattr("__init__", init_callable)?;
+    Ok(())
+}
+
+fn oauth2_authorization_code_constructor_parameters(
+    py: Python<'_>,
+) -> PyResult<Vec<Bound<'_, PyAny>>> {
+    let inspect = py.import("inspect")?;
+    let parameter_type = inspect.getattr("Parameter")?;
+    let positional = parameter_type.getattr("POSITIONAL_OR_KEYWORD")?;
+    let string_type = py.get_type::<PyString>();
+    let bool_type = py.get_type::<PyBool>();
+    let none_type = py.None().bind(py).get_type();
+    let none = py.None();
+    let operator = py.import("operator")?;
+    let optional_string = operator
+        .getattr("or_")?
+        .call1((string_type.as_any(), none_type.clone()))?;
+    let string_dictionary = py
+        .import("builtins")?
+        .getattr("dict")?
+        .getattr("__class_getitem__")?
+        .call1((PyTuple::new(
+            py,
+            [string_type.as_any(), string_type.as_any()],
+        )?,))?;
+    let optional_scopes = operator
+        .getattr("or_")?
+        .call1((string_dictionary, none_type))?;
+    let authorization_url = string_type.as_any().clone();
+    let token_url = documented_annotation(
+        py,
+        string_type.as_any(),
+        "\n                The URL to obtain the OAuth2 token.\n                ",
+    )?;
+    let refresh_url = documented_annotation(
+        py,
+        &optional_string,
+        "\n                The URL to refresh the token and obtain a new one.\n                ",
+    )?;
+    let scheme_name = documented_annotation(
+        py,
+        &optional_string,
+        "\n                Security scheme name.\n\n                It will be included in the generated OpenAPI (e.g. visible at `/docs`).\n                ",
+    )?;
+    let scopes = documented_annotation(
+        py,
+        &optional_scopes,
+        "\n                The OAuth2 scopes that would be required by the *path operations* that\n                use this dependency.\n                ",
+    )?;
+    let description = documented_annotation(
+        py,
+        &optional_string,
+        "\n                Security scheme description.\n\n                It will be included in the generated OpenAPI (e.g. visible at `/docs`).\n                ",
+    )?;
+    let auto_error = documented_annotation(
+        py,
+        bool_type.as_any(),
+        "\n                By default, if no HTTP Authorization header is provided, required for\n                OAuth2 authentication, it will automatically cancel the request and\n                send the client an error.\n\n                If `auto_error` is set to `False`, when the HTTP Authorization header\n                is not available, instead of erroring out, the dependency result will\n                be `None`.\n\n                This is useful when you want to have optional authentication.\n\n                It is also useful when you want to have authentication that can be\n                provided in one of multiple optional ways (for example, with OAuth2\n                or in a cookie).\n                ",
+    )?;
+    let true_value = PyBool::new(py, true);
+    Ok(vec![
+        constructor_parameter(
+            py,
+            "authorizationUrl",
+            &positional,
+            &authorization_url,
+            None,
+        )?,
+        constructor_parameter(py, "tokenUrl", &positional, &token_url, None)?,
+        constructor_parameter(
+            py,
+            "refreshUrl",
+            &positional,
+            &refresh_url,
+            Some(none.bind(py)),
+        )?,
+        constructor_parameter(
+            py,
+            "scheme_name",
+            &positional,
+            &scheme_name,
+            Some(none.bind(py)),
+        )?,
+        constructor_parameter(py, "scopes", &positional, &scopes, Some(none.bind(py)))?,
+        constructor_parameter(
+            py,
+            "description",
+            &positional,
+            &description,
+            Some(none.bind(py)),
+        )?,
+        constructor_parameter(
+            py,
+            "auto_error",
+            &positional,
+            &auto_error,
+            Some(true_value.as_any()),
+        )?,
+    ])
+}
+
+fn openid_constructor_parameters(py: Python<'_>) -> PyResult<Vec<Bound<'_, PyAny>>> {
+    let inspect = py.import("inspect")?;
+    let parameter_type = inspect.getattr("Parameter")?;
+    let keyword_only = parameter_type.getattr("KEYWORD_ONLY")?;
+    let string_type = py.get_type::<PyString>();
+    let bool_type = py.get_type::<PyBool>();
+    let none_type = py.None().bind(py).get_type();
+    let none = py.None();
+    let optional_string = py
+        .import("operator")?
+        .getattr("or_")?
+        .call1((string_type.as_any(), none_type))?;
+    let openid_url = documented_annotation(
+        py,
+        string_type.as_any(),
+        "\n            The OpenID Connect URL.\n            ",
+    )?;
+    let scheme_name = documented_annotation(
+        py,
+        &optional_string,
+        "\n                Security scheme name.\n\n                It will be included in the generated OpenAPI (e.g. visible at `/docs`).\n                ",
+    )?;
+    let description = documented_annotation(
+        py,
+        &optional_string,
+        "\n                Security scheme description.\n\n                It will be included in the generated OpenAPI (e.g. visible at `/docs`).\n                ",
+    )?;
+    let auto_error = documented_annotation(
+        py,
+        bool_type.as_any(),
+        "\n                By default, if no HTTP Authorization header is provided, required for\n                OpenID Connect authentication, it will automatically cancel the request\n                and send the client an error.\n\n                If `auto_error` is set to `False`, when the HTTP Authorization header\n                is not available, instead of erroring out, the dependency result will\n                be `None`.\n\n                This is useful when you want to have optional authentication.\n\n                It is also useful when you want to have authentication that can be\n                provided in one of multiple optional ways (for example, with OpenID\n                Connect or in a cookie).\n                ",
+    )?;
+    let true_value = PyBool::new(py, true);
+    Ok(vec![
+        constructor_parameter(py, "openIdConnectUrl", &keyword_only, &openid_url, None)?,
+        constructor_parameter(
+            py,
+            "scheme_name",
+            &keyword_only,
+            &scheme_name,
+            Some(none.bind(py)),
+        )?,
+        constructor_parameter(
+            py,
+            "description",
+            &keyword_only,
+            &description,
+            Some(none.bind(py)),
+        )?,
+        constructor_parameter(
+            py,
+            "auto_error",
+            &keyword_only,
+            &auto_error,
+            Some(true_value.as_any()),
+        )?,
+    ])
 }
 
 fn api_key_dependency_annotations(py: Python<'_>) -> PyResult<Py<PyAny>> {
@@ -1429,7 +1930,15 @@ fn create_http_basic_model(py: Python<'_>) -> PyResult<Py<PyAny>> {
         .map(Bound::unbind)
 }
 
-fn create_oauth2_password_models(py: Python<'_>) -> PyResult<(Py<PyAny>, Py<PyAny>, Py<PyAny>)> {
+struct OAuth2ModelTypes {
+    password_flow: Py<PyAny>,
+    authorization_code_flow: Py<PyAny>,
+    flows: Py<PyAny>,
+    oauth2: Py<PyAny>,
+    openid_connect: Py<PyAny>,
+}
+
+fn create_oauth2_models(py: Python<'_>) -> PyResult<OAuth2ModelTypes> {
     let pydantic = py.import("pydantic")?;
     let typing = py.import("typing")?;
     let string_type = py.get_type::<PyString>();
@@ -1442,16 +1951,32 @@ fn create_oauth2_password_models(py: Python<'_>) -> PyResult<(Py<PyAny>, Py<PyAn
     let password_flow_fields = PyDict::new(py);
     password_flow_fields.set_item("__module__", "fastapi.openapi.models")?;
     password_flow_fields.set_item("refreshUrl", (optional_string.clone(), py.None()))?;
-    password_flow_fields.set_item("scopes", (string_mapping, PyDict::new(py)))?;
+    password_flow_fields.set_item("scopes", (string_mapping.clone(), PyDict::new(py)))?;
     password_flow_fields.set_item("tokenUrl", string_type.as_any())?;
     let password_flow_model = pydantic
         .getattr("create_model")?
         .call(("OAuthFlowPassword",), Some(&password_flow_fields))?;
 
+    let authorization_flow_fields = PyDict::new(py);
+    authorization_flow_fields.set_item("__module__", "fastapi.openapi.models")?;
+    authorization_flow_fields.set_item("refreshUrl", (optional_string.clone(), py.None()))?;
+    authorization_flow_fields.set_item("scopes", (string_mapping.clone(), PyDict::new(py)))?;
+    authorization_flow_fields.set_item("authorizationUrl", string_type.as_any())?;
+    authorization_flow_fields.set_item("tokenUrl", string_type.as_any())?;
+    let authorization_flow_model = pydantic.getattr("create_model")?.call(
+        ("OAuthFlowAuthorizationCode",),
+        Some(&authorization_flow_fields),
+    )?;
+
     let optional_password_flow = optional_type(py, password_flow_model.as_any())?;
+    let optional_authorization_flow = optional_type(py, authorization_flow_model.as_any())?;
     let flows_fields = PyDict::new(py);
     flows_fields.set_item("__module__", "fastapi.openapi.models")?;
     flows_fields.set_item("password", (optional_password_flow, py.None()))?;
+    flows_fields.set_item(
+        "authorizationCode",
+        (optional_authorization_flow, py.None()),
+    )?;
     let flows_model = pydantic
         .getattr("create_model")?
         .call(("OAuthFlows",), Some(&flows_fields))?;
@@ -1472,11 +1997,28 @@ fn create_oauth2_password_models(py: Python<'_>) -> PyResult<(Py<PyAny>, Py<PyAn
         .getattr("create_model")?
         .call(("OAuth2",), Some(&oauth2_fields))?;
 
-    Ok((
-        password_flow_model.unbind(),
-        flows_model.unbind(),
-        oauth2_model.unbind(),
-    ))
+    let type_field_arguments = PyDict::new(py);
+    type_field_arguments.set_item("default", "openIdConnect")?;
+    type_field_arguments.set_item("alias", "type")?;
+    let type_field = pydantic
+        .getattr("Field")?
+        .call((), Some(&type_field_arguments))?;
+    let openid_fields = PyDict::new(py);
+    openid_fields.set_item("__module__", "fastapi.openapi.models")?;
+    openid_fields.set_item("type_", (string_type.as_any(), type_field))?;
+    openid_fields.set_item("description", (optional_string, py.None()))?;
+    openid_fields.set_item("openIdConnectUrl", string_type.as_any())?;
+    let openid_model = pydantic
+        .getattr("create_model")?
+        .call(("OpenIdConnect",), Some(&openid_fields))?;
+
+    Ok(OAuth2ModelTypes {
+        password_flow: password_flow_model.unbind(),
+        authorization_code_flow: authorization_flow_model.unbind(),
+        flows: flows_model.unbind(),
+        oauth2: oauth2_model.unbind(),
+        openid_connect: openid_model.unbind(),
+    })
 }
 
 fn create_credentials_model(py: Python<'_>) -> PyResult<Py<PyAny>> {
@@ -1688,6 +2230,8 @@ fn make_not_authenticated_error(instance: &Bound<'_, PyAny>) -> PyResult<Py<PyAn
 /// Register the reviewed native HTTP bearer authentication surface.
 pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     let py = module.py();
+    module.add_class::<ConstructorInit>()?;
+    module.add_class::<ConstructorSignatureDescriptor>()?;
     let api_key_models = create_api_key_models(py)?;
     module.add(
         "SecuritySchemeType",
@@ -1718,10 +2262,15 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     module.add("HTTPBasicCredentials", basic_credentials_type.bind(py))?;
     let basic_model_type = create_http_basic_model(py)?;
     module.add("_HTTPBasicModel", basic_model_type.bind(py))?;
-    let (password_flow_model, flows_model, oauth2_model) = create_oauth2_password_models(py)?;
-    module.add("_OAuth2PasswordFlowModel", password_flow_model.bind(py))?;
-    module.add("_OAuth2FlowsModel", flows_model.bind(py))?;
-    module.add("_OAuth2Model", oauth2_model.bind(py))?;
+    let models = create_oauth2_models(py)?;
+    module.add("_OAuth2PasswordFlowModel", models.password_flow.bind(py))?;
+    module.add(
+        "_OAuth2AuthorizationCodeFlowModel",
+        models.authorization_code_flow.bind(py),
+    )?;
+    module.add("_OAuth2FlowsModel", models.flows.bind(py))?;
+    module.add("_OAuth2Model", models.oauth2.bind(py))?;
+    module.add("_OpenIdConnectModel", models.openid_connect.bind(py))?;
     let exception_type = module.getattr("HTTPException")?;
     let starlette_http_exception_type = py
         .import("starlette.exceptions")?
@@ -1735,6 +2284,15 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     security_base_annotations.set_item("scheme_name", py.get_type::<PyString>())?;
     security_base_type.setattr("__annotations__", security_base_annotations)?;
 
+    module.add_class::<PyOpenIdConnect>()?;
+    let openid_type = py.get_type::<PyOpenIdConnect>();
+    attach_dependency_introspection(py, &openid_type)?;
+    attach_constructor_introspection(py, &openid_type, openid_constructor_parameters(py)?)?;
+    openid_type.setattr(
+        "_fastapi_rs_http_exception_type",
+        starlette_http_exception_type.clone(),
+    )?;
+
     module.add_class::<PyApiKeyBase>()?;
     let api_key_base_type = py.get_type::<PyApiKeyBase>();
     let api_key_base_annotations = PyDict::new(py);
@@ -1742,7 +2300,7 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     api_key_base_type.setattr("__annotations__", api_key_base_annotations)?;
     api_key_base_type.setattr(
         "_fastapi_rs_http_exception_type",
-        starlette_http_exception_type,
+        starlette_http_exception_type.clone(),
     )?;
 
     module.add_class::<PyApiKeyHeader>()?;
@@ -1792,7 +2350,18 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     module.add_class::<PyOAuth2PasswordBearer>()?;
     let oauth2_password_bearer_type = py.get_type::<PyOAuth2PasswordBearer>();
     attach_dependency_introspection(py, &oauth2_password_bearer_type)?;
-    oauth2_password_bearer_type.setattr("_fastapi_rs_http_exception_type", exception_type)?;
+    oauth2_password_bearer_type
+        .setattr("_fastapi_rs_http_exception_type", exception_type.clone())?;
+
+    module.add_class::<PyOAuth2AuthorizationCodeBearer>()?;
+    let authorization_code_bearer_type = py.get_type::<PyOAuth2AuthorizationCodeBearer>();
+    attach_dependency_introspection(py, &authorization_code_bearer_type)?;
+    attach_constructor_introspection(
+        py,
+        &authorization_code_bearer_type,
+        oauth2_authorization_code_constructor_parameters(py)?,
+    )?;
+    authorization_code_bearer_type.setattr("_fastapi_rs_http_exception_type", exception_type)?;
     Ok(())
 }
 
@@ -1838,6 +2407,12 @@ pub(crate) fn is_native_async_callable(py: Python<'_>, value: &Bound<'_, PyAny>)
         .get_type::<PyOAuth2PasswordBearer>()
         .getattr("__dict__")?;
     let oauth2_call = oauth2_namespace.get_item("__call__")?;
+    let authorization_code_namespace = py
+        .get_type::<PyOAuth2AuthorizationCodeBearer>()
+        .getattr("__dict__")?;
+    let authorization_code_call = authorization_code_namespace.get_item("__call__")?;
+    let openid_namespace = py.get_type::<PyOpenIdConnect>().getattr("__dict__")?;
+    let openid_call = openid_namespace.get_item("__call__")?;
     let mro = value.get_type().getattr("__mro__")?;
     for owner in mro.try_iter()? {
         let owner = owner?;
@@ -1852,7 +2427,9 @@ pub(crate) fn is_native_async_callable(py: Python<'_>, value: &Bound<'_, PyAny>)
                 || call.is(&api_key_query_call)
                 || call.is(&api_key_cookie_call)
                 || call.is(&oauth2_base_call)
-                || call.is(&oauth2_call));
+                || call.is(&oauth2_call)
+                || call.is(&authorization_code_call)
+                || call.is(&openid_call));
         }
     }
     Ok(false)

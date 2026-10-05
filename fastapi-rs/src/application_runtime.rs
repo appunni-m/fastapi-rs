@@ -1,7 +1,7 @@
 //! Rust-owned FastAPI application registration and ASGI request flow.
 
 use std::cell::RefCell;
-use std::collections::{BTreeMap, BTreeSet, HashMap, VecDeque};
+use std::collections::{BTreeSet, HashMap, VecDeque};
 use std::path::Path;
 use std::rc::Rc;
 use std::sync::Mutex;
@@ -399,12 +399,6 @@ impl DependencyExecutionNode {
         })
     }
 
-    fn has_nested_generator(&self) -> bool {
-        self.children
-            .iter()
-            .any(|child| child.generator_kind.is_some() || child.has_nested_generator())
-    }
-
     fn advance(
         &mut self,
         context: &mut InvocationContext<'_, '_>,
@@ -579,10 +573,8 @@ impl DependencyExecutionGraph {
         })
     }
 
-    fn has_nested_generator(&self) -> bool {
-        self.roots
-            .iter()
-            .any(DependencyExecutionNode::has_nested_generator)
+    fn has_nested_dependencies(&self) -> bool {
+        self.roots.iter().any(|root| !root.children.is_empty())
     }
 
     fn advance(
@@ -1056,7 +1048,7 @@ pub(crate) fn direct_route_openapi_operation(
         status: None,
         response_status_key: Some("200".to_owned()),
         parameters: Vec::new(),
-        security_schemes: BTreeMap::new(),
+        security_schemes: Vec::new(),
         security_requirements: Vec::new(),
         validation_parameters_present: false,
         request_model_name: None,
@@ -3498,7 +3490,7 @@ impl PyFastApi {
             })
             .collect::<PyResult<Vec<_>>>()?;
         let validation_parameters_present = route.plan.has_openapi_parameter_inputs();
-        let mut security_schemes = BTreeMap::new();
+        let mut security_schemes = Vec::new();
         let mut security_requirements = Vec::new();
         route.plan.collect_openapi_security(
             py,
@@ -5492,7 +5484,7 @@ impl CallablePlan {
     fn collect_openapi_security(
         &self,
         py: Python<'_>,
-        security_schemes: &mut BTreeMap<String, Py<PyAny>>,
+        security_schemes: &mut Vec<(String, Py<PyAny>)>,
         security_requirements: &mut Vec<(String, Vec<String>)>,
         inherited_scopes: &[String],
         visited: &mut Vec<OpenApiSecurityVisitKey>,
@@ -5527,7 +5519,11 @@ impl CallablePlan {
             if let Some((scheme_name, model)) =
                 crate::security::openapi_security_metadata(callable)?
             {
-                security_schemes.insert(scheme_name.clone(), model);
+                crate::openapi::register_security_scheme(
+                    security_schemes,
+                    scheme_name.clone(),
+                    model,
+                );
                 if let Some((_, required_scopes)) = security_requirements
                     .iter_mut()
                     .find(|(name, _)| name == &scheme_name)
@@ -5715,7 +5711,7 @@ impl CallablePlan {
         }
 
         let mut dependency_graph = DependencyExecutionGraph::build(self, context)?;
-        if dependency_graph.has_nested_generator() {
+        if dependency_graph.has_nested_dependencies() {
             return match dependency_graph.advance(context)? {
                 DependencyGraphAdvance::Ready => Ok(OverridePreparation::Ready),
                 DependencyGraphAdvance::Invalid => Ok(OverridePreparation::Invalid),
