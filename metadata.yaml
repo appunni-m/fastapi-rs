@@ -841,6 +841,88 @@ reviewed_api_contract_overlay:
         - {path: tests/test_router_events.py, symbol: test_startup_shutdown_handlers_as_parameters}
         - {path: docs/en/docs/advanced/events.md}
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.sync-wrap-coroutine-function
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.sync-wrap-coroutine-instance
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.sync-wrap-coroutine-call-method
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.partial-coroutine-instance
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.partial-wrapped-coroutine-nested
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.plain-partial-function-method-controls
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.unmarked-sync-awaitable-control
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.async-wrapped-scalar-error-cleanup-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.public-marked-scalar-error-cleanup-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.sync-wrap-sync-generator-function
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.sync-wrap-async-generator-function
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.sync-wrap-sync-generator-instance
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.sync-wrap-async-generator-instance
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.sync-wrap-async-generator-call-method
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.partial-sync-generator-instance
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.partial-async-generator-instance
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.async-generator-adapter-over-sync-generator
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.partial-wrapped-sync-generator-function
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.partial-wrapped-async-generator-function
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.partial-generator-function-method-controls
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.wrapped-partial-yield-scope-construction
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.wrapped-yield-error-cleanup-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.public-endpoint-role-classification
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-endpoint-without-response-model
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.async-endpoint-without-response-model
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-endpoint-async-dependency-response-validation
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.async-endpoint-sync-dependency-response-validation
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-endpoint-two-yield-scopes-background
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.async-endpoint-two-yield-scopes-background
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-endpoint-error-cleanup-and-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-dependency-error-cleanup-and-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-response-validation-error-cleanup-and-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.async-response-validation-error-cleanup-and-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.input-validation-on-loop-before-endpoint
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.serialization-error-stays-on-loop
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.returned-response-bypasses-response-validation
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-endpoint-worker-to-loop-handoff
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-dependency-worker-to-loop-handoff
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-response-validator-worker-to-loop-handoff
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-endpoint-returned-awaitable-is-a-value
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.async-endpoint-returned-awaitable-is-a-value
         - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
           case_id: fastapi.dependencies.override-policy-mutation.sync-provider-replacement
         - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
@@ -950,6 +1032,18 @@ reviewed_api_contract_overlay:
           required_text:
             - "You could add a custom exception handler with `@app.exception_handler()`:"
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-endpoint-error-cleanup-and-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-dependency-error-cleanup-and-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-response-validation-error-cleanup-and-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.async-response-validation-error-cleanup-and-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.input-validation-on-loop-before-endpoint
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.serialization-error-stays-on-loop
         - recipe_path: tests/fixtures/input-recipes/parity/inherited-exception-handler-registration.yaml
           case_id: fastapi.applications.exception-handler.decorator
         - recipe_path: tests/fixtures/input-recipes/parity/exception-handler-after-stack-cache.yaml
@@ -1778,6 +1872,49 @@ reviewed_api_contract_overlay:
       rust_binding: fastapi-rs/src/application_runtime.rs::register
       source_evidence:
         - {path: fastapi/responses.py}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-endpoint-without-response-model
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.async-endpoint-without-response-model
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-endpoint-async-dependency-response-validation
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.async-endpoint-sync-dependency-response-validation
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-endpoint-two-yield-scopes-background
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.async-endpoint-two-yield-scopes-background
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-endpoint-error-cleanup-and-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-dependency-error-cleanup-and-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-response-validation-error-cleanup-and-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.async-response-validation-error-cleanup-and-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.input-validation-on-loop-before-endpoint
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.serialization-error-stays-on-loop
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.returned-response-bypasses-response-validation
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-endpoint-worker-to-loop-handoff
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-dependency-worker-to-loop-handoff
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-response-validator-worker-to-loop-handoff
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-endpoint-returned-awaitable-is-a-value
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.async-endpoint-returned-awaitable-is-a-value
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.async-wrapped-scalar-error-cleanup-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.public-marked-scalar-error-cleanup-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.wrapped-yield-error-cleanup-recovery
       observation_selectors: [http.status, http.body.bytes]
       supported_slice: >-
         FastAPI directly re-exports Starlette's JSONResponse under
@@ -2364,6 +2501,43 @@ reviewed_api_contract_overlay:
         - {path: tests/test_strict_content_type_nested.py}
         - {path: docs/en/docs/advanced/strict-content-type.md}
       feature_ids: [request-validation, response-serialization]
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-endpoint-without-response-model
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.async-endpoint-without-response-model
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-endpoint-async-dependency-response-validation
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.async-endpoint-sync-dependency-response-validation
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-endpoint-two-yield-scopes-background
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.async-endpoint-two-yield-scopes-background
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-endpoint-error-cleanup-and-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-dependency-error-cleanup-and-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-response-validation-error-cleanup-and-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.async-response-validation-error-cleanup-and-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.input-validation-on-loop-before-endpoint
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.serialization-error-stays-on-loop
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.returned-response-bypasses-response-validation
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-endpoint-worker-to-loop-handoff
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-dependency-worker-to-loop-handoff
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-response-validator-worker-to-loop-handoff
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-endpoint-returned-awaitable-is-a-value
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.async-endpoint-returned-awaitable-is-a-value
       observation_selectors:
         - http.status
         - http.body.bytes
@@ -3341,11 +3515,97 @@ reviewed_api_contract_overlay:
         - {path: tests/test_tutorial/test_additional_responses/test_tutorial004.py}
         - {path: tests/test_extra_routes.py}
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.sync-wrap-coroutine-function
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.sync-wrap-coroutine-instance
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.sync-wrap-coroutine-call-method
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.partial-coroutine-instance
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.partial-wrapped-coroutine-nested
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.plain-partial-function-method-controls
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.unmarked-sync-awaitable-control
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.async-wrapped-scalar-error-cleanup-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.public-marked-scalar-error-cleanup-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.sync-wrap-sync-generator-function
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.sync-wrap-async-generator-function
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.sync-wrap-sync-generator-instance
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.sync-wrap-async-generator-instance
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.sync-wrap-async-generator-call-method
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.partial-sync-generator-instance
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.partial-async-generator-instance
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.async-generator-adapter-over-sync-generator
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.partial-wrapped-sync-generator-function
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.partial-wrapped-async-generator-function
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.partial-generator-function-method-controls
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.wrapped-partial-yield-scope-construction
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.wrapped-yield-error-cleanup-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.public-endpoint-role-classification
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-endpoint-without-response-model
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.async-endpoint-without-response-model
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-endpoint-async-dependency-response-validation
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.async-endpoint-sync-dependency-response-validation
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-endpoint-two-yield-scopes-background
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.async-endpoint-two-yield-scopes-background
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-endpoint-error-cleanup-and-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-dependency-error-cleanup-and-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-response-validation-error-cleanup-and-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.async-response-validation-error-cleanup-and-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.input-validation-on-loop-before-endpoint
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.serialization-error-stays-on-loop
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.returned-response-bypasses-response-validation
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-endpoint-worker-to-loop-handoff
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-dependency-worker-to-loop-handoff
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-response-validator-worker-to-loop-handoff
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-endpoint-returned-awaitable-is-a-value
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.async-endpoint-returned-awaitable-is-a-value
         - recipe_path: tests/fixtures/input-recipes/parity/operation-signatures-upstream.yaml
           case_id: fastapi.test.test-operations-signatures.test-signatures-consistency
       feature_ids: [app-routing, request-validation, response-serialization, openapi-docs]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document]
       supported_slice: >-
+        The callable-classification and worker-dispatch inputs declare original
+        endpoint classification, worker/context placement, validation and serialization
+        callbacks, cleanup/recovery, and lossless raw ASGI sends. Fresh live receipts
+        are required; mutable classification history and generic cancellation remain gaps.
         Partial native slice: GET routes can be registered with
         include_in_schema=False, remain callable over HTTP, and be omitted from
         OpenAPI paths. The same behavior is source-backed for the other direct
@@ -3423,6 +3683,18 @@ reviewed_api_contract_overlay:
         - {path: tests/test_tutorial/test_additional_responses/test_tutorial004.py}
         - {path: tests/test_extra_routes.py}
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-endpoint-error-cleanup-and-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-dependency-error-cleanup-and-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-response-validation-error-cleanup-and-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.async-response-validation-error-cleanup-and-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.input-validation-on-loop-before-endpoint
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.serialization-error-stays-on-loop
         - recipe_path: tests/fixtures/input-recipes/parity/operation-signatures-upstream.yaml
           case_id: fastapi.test.test-operations-signatures.test-signatures-consistency
       feature_ids: [app-routing, openapi-docs, response-serialization]
@@ -3833,6 +4105,80 @@ reviewed_api_contract_overlay:
           start_line: 10
           end_line: 29
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.sync-wrap-coroutine-function
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.sync-wrap-coroutine-instance
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.sync-wrap-coroutine-call-method
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.partial-coroutine-instance
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.partial-wrapped-coroutine-nested
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.plain-partial-function-method-controls
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.unmarked-sync-awaitable-control
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.async-wrapped-scalar-error-cleanup-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.public-marked-scalar-error-cleanup-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.sync-wrap-sync-generator-function
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.sync-wrap-async-generator-function
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.sync-wrap-sync-generator-instance
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.sync-wrap-async-generator-instance
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.sync-wrap-async-generator-call-method
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.partial-sync-generator-instance
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.partial-async-generator-instance
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.async-generator-adapter-over-sync-generator
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.partial-wrapped-sync-generator-function
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.partial-wrapped-async-generator-function
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.partial-generator-function-method-controls
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.wrapped-partial-yield-scope-construction
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.wrapped-yield-error-cleanup-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-endpoint-async-dependency-response-validation
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.async-endpoint-sync-dependency-response-validation
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-endpoint-two-yield-scopes-background
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.async-endpoint-two-yield-scopes-background
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-endpoint-error-cleanup-and-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-dependency-error-cleanup-and-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-response-validation-error-cleanup-and-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.async-response-validation-error-cleanup-and-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.input-validation-on-loop-before-endpoint
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.serialization-error-stays-on-loop
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.returned-response-bypasses-response-validation
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-dependency-worker-to-loop-handoff
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-response-validator-worker-to-loop-handoff
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-endpoint-returned-awaitable-is-a-value
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.async-endpoint-returned-awaitable-is-a-value
         - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
           case_id: fastapi.dependencies.override-policy-mutation.sync-own-selected-call-and-cache
         - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
@@ -4042,6 +4388,12 @@ reviewed_api_contract_overlay:
         - construction.exception_class
         - construction.exception_message
       supported_slice: >-
+        The callable-classification inputs declare immutable partial/wrapped
+        function, method and instance classification, original invocation, generator
+        scopes/cleanup, unmarked returned-coroutine values, and scalar-await errors.
+        The worker-dispatch inputs observe sync/async dependency context boundaries.
+        Fresh receipts are required; classification LRU history, descriptors, native
+        bound methods and generator-based awaitable adapters remain separate gaps.
         The override-policy-mutation inputs declare selection at each reached
         edge from the current provider dictionary, including whole-map
         replacement after awaits. Selected parent plans retain captured child
@@ -4340,6 +4692,80 @@ reviewed_api_contract_overlay:
       source_evidence:
         - {path: fastapi/param_functions.py, symbol: Depends}
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.sync-wrap-coroutine-function
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.sync-wrap-coroutine-instance
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.sync-wrap-coroutine-call-method
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.partial-coroutine-instance
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.partial-wrapped-coroutine-nested
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.plain-partial-function-method-controls
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.unmarked-sync-awaitable-control
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.async-wrapped-scalar-error-cleanup-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.public-marked-scalar-error-cleanup-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.sync-wrap-sync-generator-function
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.sync-wrap-async-generator-function
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.sync-wrap-sync-generator-instance
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.sync-wrap-async-generator-instance
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.sync-wrap-async-generator-call-method
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.partial-sync-generator-instance
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.partial-async-generator-instance
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.async-generator-adapter-over-sync-generator
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.partial-wrapped-sync-generator-function
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.partial-wrapped-async-generator-function
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.partial-generator-function-method-controls
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.wrapped-partial-yield-scope-construction
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.wrapped-yield-error-cleanup-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-endpoint-async-dependency-response-validation
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.async-endpoint-sync-dependency-response-validation
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-endpoint-two-yield-scopes-background
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.async-endpoint-two-yield-scopes-background
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-endpoint-error-cleanup-and-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-dependency-error-cleanup-and-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-response-validation-error-cleanup-and-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.async-response-validation-error-cleanup-and-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.input-validation-on-loop-before-endpoint
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.serialization-error-stays-on-loop
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.returned-response-bypasses-response-validation
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-dependency-worker-to-loop-handoff
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-response-validator-worker-to-loop-handoff
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-endpoint-returned-awaitable-is-a-value
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.async-endpoint-returned-awaitable-is-a-value
         - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
           case_id: fastapi.dependencies.override-policy-mutation.sync-own-selected-call-and-cache
         - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
@@ -4449,6 +4875,12 @@ reviewed_api_contract_overlay:
       feature_ids: [dependency-security]
       observation_selectors: [http.status, http.body.bytes, python.signature, construction.outcome, asgi.application_error.exception]
       supported_slice: >-
+        The callable-classification inputs declare immutable partial/wrapped
+        function, method and instance classification, original invocation, generator
+        scopes/cleanup, unmarked returned-coroutine values, and scalar-await errors.
+        The worker-dispatch inputs observe sync/async dependency context boundaries.
+        Fresh receipts are required; classification LRU history, descriptors, native
+        bound methods and generator-based awaitable adapters remain separate gaps.
         The override-policy-mutation inputs declare selection at each reached
         edge from the current provider dictionary, including whole-map
         replacement after awaits. Selected parent plans retain captured child
@@ -5393,6 +5825,9 @@ reviewed_api_contract_overlay:
         - {path: tests/test_validation_error_context.py, symbol: test_validation_error_with_only_path}
         - {path: tests/test_validation_error_context.py, symbol: test_validation_error_with_no_context}
       feature_ids: [public-api-errors, request-validation]
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.input-validation-on-loop-before-endpoint
       observation_selectors: [http.status, http.body.bytes]
       error_contract_ids: [fastapi.exceptions.RequestValidationError]
       supported_slice: >-
@@ -5410,6 +5845,12 @@ reviewed_api_contract_overlay:
         - {path: tests/test_validation_error_context.py, symbol: test_validation_error_with_only_path}
         - {path: tests/test_validation_error_context.py, symbol: test_validation_error_with_no_context}
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.input-validation-on-loop-before-endpoint
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-response-validation-error-cleanup-and-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.async-response-validation-error-cleanup-and-recovery
         - recipe_path: tests/fixtures/input-recipes/parity/request-validation-error-object.yaml
           case_id: fastapi.validation-error-object.path-context
         - recipe_path: tests/fixtures/input-recipes/parity/request-validation-error-object.yaml
@@ -6735,6 +7176,31 @@ reviewed_api_contract_overlay:
       supported_slice: >-
         The selected APIKey OpenAPI cases serialize this enum member as the
         scheme type value `apiKey`.
+    fastapi.background.BackgroundTasks.add_task:
+      rust_binding: fastapi-rs/src/datastructures.rs::register
+      source_evidence:
+        - {path: fastapi/background.py, symbol: BackgroundTasks}
+        - {path: fastapi/background.py, symbol: add_task}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.sync-endpoint-two-yield-scopes-background
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.async-endpoint-two-yield-scopes-background
+        - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+          case_id: fastapi.worker-dispatch.returned-response-bypasses-response-validation
+      feature_ids: [dependency-security]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - Only asynchronous task integration with FastAPI yield scopes is declared here; standalone generic behavior remains sibling owned.
+          - The pinned sibling's unsendable background data crashes sync worker add_task; the full worker-dispatch gate requires a corrected sibling revision.
+      supported_slice: >-
+        The worker-dispatch inputs declare injection and one public async
+        background callback, its context, and function/request scope ordering.
+        Fresh receipts are required. Standalone task behavior, sync callbacks,
+        reflection and generic scheduling remain in the sibling contract.
   inherited_candidate_reviews:
     fastapi.routing.APIRouter.host:
       kind: inherited_method
@@ -7060,6 +7526,12 @@ reviewed_api_contract_overlay:
           fixture_id: fastapi.docs.tutorial-handling-errors
           observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.async-wrapped-scalar-error-cleanup-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.public-marked-scalar-error-cleanup-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+          case_id: fastapi.dependencies.callable-classification.wrapped-yield-error-cleanup-recovery
         - recipe_path: tests/fixtures/input-recipes/parity/inherited-exception-handler-registration.yaml
           case_id: fastapi.applications.add-exception-handler.custom-exception
         - recipe_path: tests/fixtures/input-recipes/parity/inherited-exception-handler-registration.yaml

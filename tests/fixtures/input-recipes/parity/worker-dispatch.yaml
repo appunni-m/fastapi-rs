@@ -1,0 +1,200 @@
+# Unexecuted input-only proposal for ordinary worker-dispatch parity.
+# Intended repository workload path after review; no active input is changed.
+# Source pin: FastAPI 0.141.1 / 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f.
+# Starlette 1.6.0 / 4f250d6b814587e20c5365f0a5f0c4d42bcb929f.
+# Source routing.py:316-338 validates according to original endpoint coroutine
+# classification, then serializes on the caller loop. :342-354 dispatches sync
+# endpoints to workers. dependencies/utils.py:676 dispatches sync dependencies;
+# :681 onward validates own inputs on the caller loop. :566-579 wraps generators.
+# Public source tests/docs below corroborate contexts, yielded scopes and output
+# validation. Raw callback/send traces are user observations, never stored outputs.
+schema: fastapi-rs/python-asgi-workflow@9
+workload:
+  file: tests/fixtures/workloads/worker_dispatch.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.worker-dispatch.sync-endpoint-without-response-model
+  verification: parity
+  factory_input: {endpoint_kind: sync, dependency_kind: none, response_mode: none}
+  construction_observation: &construction
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - &probe-action
+    action_id: invoke-user-endpoint
+    kind: http_request
+    scope: &probe-scope
+      type: http
+      asgi: &asgi {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /probe
+      query_string: 'number=7&seed=5'
+      root_path: ''
+      headers: &headers [[host, testserver]]
+      client: &client [127.0.0.1, 123]
+      server: &server [testserver, 80]
+    receive_events: &empty-request
+    - {type: http.request, body: '', more_body: false}
+    observations: &http-observations
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+    - {kind: asgi_send, selector: message_types, comparison: ordered}
+  - &state-action
+    action_id: read-completed-callback-and-raw-send-traces
+    kind: http_request
+    scope: &state-scope {type: http, asgi: *asgi, http_version: '1.1', method: GET,
+      scheme: http, path: /state, query_string: '', root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *http-observations
+  source_evidence: &worker-source
+  - {path: docs/en/docs/async.md, kind: upstream_documentation}
+  - {path: tests/test_dependency_contextvars.py, kind: upstream_test}
+- case_id: fastapi.worker-dispatch.async-endpoint-without-response-model
+  verification: parity
+  factory_input: {endpoint_kind: async, dependency_kind: none, response_mode: none}
+  construction_observation: *construction
+  actions: [*probe-action, *state-action]
+  source_evidence: *worker-source
+- case_id: fastapi.worker-dispatch.sync-endpoint-async-dependency-response-validation
+  verification: parity
+  factory_input: {endpoint_kind: sync, dependency_kind: async, response_mode: model}
+  construction_observation: *construction
+  actions: [*probe-action, *state-action]
+  source_evidence: &model-source
+  - {path: docs/en/docs/async.md, kind: upstream_documentation}
+  - {path: tests/test_dependency_contextvars.py, kind: upstream_test}
+  - {path: tests/test_response_model_invalid.py, kind: upstream_test}
+  - {path: tests/test_serialize_response_model.py, kind: upstream_test}
+- case_id: fastapi.worker-dispatch.async-endpoint-sync-dependency-response-validation
+  verification: parity
+  factory_input: {endpoint_kind: async, dependency_kind: sync, response_mode: model}
+  construction_observation: *construction
+  actions: [*probe-action, *state-action]
+  source_evidence: *model-source
+- case_id: fastapi.worker-dispatch.sync-endpoint-two-yield-scopes-background
+  verification: parity
+  factory_input: {endpoint_kind: sync, dependency_kind: async, response_mode: model,
+    function_resource_kind: async, request_resource_kind: sync, background: true}
+  construction_observation: *construction
+  actions: [*probe-action, *state-action]
+  source_evidence: &yield-source
+  - {path: docs/en/docs/async.md, kind: upstream_documentation}
+  - {path: tests/test_dependency_contextvars.py, kind: upstream_test}
+  - {path: tests/test_dependency_yield_scope.py, kind: upstream_test}
+  - {path: tests/test_dependency_after_yield_raise.py, kind: upstream_test}
+  - {path: docs/en/docs/tutorial/dependencies/dependencies-with-yield.md, kind: upstream_documentation}
+- case_id: fastapi.worker-dispatch.async-endpoint-two-yield-scopes-background
+  verification: parity
+  factory_input: {endpoint_kind: async, dependency_kind: sync, response_mode: model,
+    function_resource_kind: sync, request_resource_kind: async, background: true}
+  construction_observation: *construction
+  actions: [*probe-action, *state-action]
+  source_evidence: *yield-source
+- case_id: fastapi.worker-dispatch.sync-endpoint-error-cleanup-and-recovery
+  verification: parity
+  factory_input: {endpoint_kind: sync, dependency_kind: async, response_mode: model,
+    function_resource_kind: async, request_resource_kind: sync, failure_phase: endpoint}
+  construction_observation: *construction
+  actions: &error-recovery-actions
+  - *probe-action
+  - *state-action
+  - &clear-action
+    action_id: clear-user-callback-error
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: POST,
+      scheme: http, path: /configure/clear, query_string: '', root_path: '',
+      headers: *headers, client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *http-observations
+  - action_id: invoke-user-endpoint-after-clearing-error
+    kind: http_request
+    scope: *probe-scope
+    receive_events: *empty-request
+    observations: *http-observations
+  - action_id: read-completed-recovery-and-raw-send-traces
+    kind: http_request
+    scope: *state-scope
+    receive_events: *empty-request
+    observations: *http-observations
+  source_evidence: *yield-source
+- case_id: fastapi.worker-dispatch.sync-dependency-error-cleanup-and-recovery
+  verification: parity
+  factory_input: {endpoint_kind: async, dependency_kind: sync, response_mode: model,
+    function_resource_kind: async, request_resource_kind: sync, failure_phase: dependency}
+  construction_observation: *construction
+  actions: *error-recovery-actions
+  source_evidence: *yield-source
+- case_id: fastapi.worker-dispatch.sync-response-validation-error-cleanup-and-recovery
+  verification: parity
+  factory_input: {endpoint_kind: sync, dependency_kind: async, response_mode: model,
+    function_resource_kind: async, request_resource_kind: sync, failure_phase: response-validation}
+  construction_observation: *construction
+  actions: *error-recovery-actions
+  source_evidence: *model-source
+- case_id: fastapi.worker-dispatch.async-response-validation-error-cleanup-and-recovery
+  verification: parity
+  factory_input: {endpoint_kind: async, dependency_kind: sync, response_mode: model,
+    function_resource_kind: sync, request_resource_kind: async, failure_phase: response-validation}
+  construction_observation: *construction
+  actions: *error-recovery-actions
+  source_evidence: *model-source
+- case_id: fastapi.worker-dispatch.input-validation-on-loop-before-endpoint
+  verification: parity
+  factory_input: {endpoint_kind: sync, dependency_kind: sync, response_mode: model,
+    function_resource_kind: async, request_resource_kind: sync, failure_phase: input}
+  construction_observation: *construction
+  actions: *error-recovery-actions
+  source_evidence: *yield-source
+- case_id: fastapi.worker-dispatch.serialization-error-stays-on-loop
+  verification: parity
+  factory_input: {endpoint_kind: sync, dependency_kind: async, response_mode: model,
+    function_resource_kind: async, request_resource_kind: sync, failure_phase: serialization}
+  construction_observation: *construction
+  actions: *error-recovery-actions
+  source_evidence: *model-source
+- case_id: fastapi.worker-dispatch.returned-response-bypasses-response-validation
+  verification: parity
+  factory_input: {endpoint_kind: sync, dependency_kind: async, response_mode: response,
+    function_resource_kind: async, request_resource_kind: sync, background: true}
+  construction_observation: *construction
+  actions: [*probe-action, *state-action]
+  source_evidence:
+  - {path: docs/en/docs/advanced/response-directly.md, kind: upstream_documentation}
+  - {path: tests/test_dependency_yield_scope.py, kind: upstream_test}
+- case_id: fastapi.worker-dispatch.sync-endpoint-worker-to-loop-handoff
+  verification: parity
+  factory_input: {endpoint_kind: sync, dependency_kind: none, response_mode: none,
+    handoff_phase: endpoint}
+  construction_observation: *construction
+  actions: [*probe-action, *state-action]
+  source_evidence: *worker-source
+- case_id: fastapi.worker-dispatch.sync-dependency-worker-to-loop-handoff
+  verification: parity
+  factory_input: {endpoint_kind: async, dependency_kind: sync, response_mode: model,
+    handoff_phase: dependency}
+  construction_observation: *construction
+  actions: [*probe-action, *state-action]
+  source_evidence: *worker-source
+- case_id: fastapi.worker-dispatch.sync-response-validator-worker-to-loop-handoff
+  verification: parity
+  factory_input: {endpoint_kind: sync, dependency_kind: async, response_mode: model,
+    handoff_phase: response-validation}
+  construction_observation: *construction
+  actions: [*probe-action, *state-action]
+  source_evidence: *model-source
+- case_id: fastapi.worker-dispatch.sync-endpoint-returned-awaitable-is-a-value
+  verification: parity
+  factory_input: {endpoint_kind: sync, dependency_kind: async, response_mode: awaitable}
+  construction_observation: *construction
+  actions: [*probe-action, *state-action]
+  source_evidence: *model-source
+- case_id: fastapi.worker-dispatch.async-endpoint-returned-awaitable-is-a-value
+  verification: parity
+  factory_input: {endpoint_kind: async, dependency_kind: sync, response_mode: awaitable}
+  construction_observation: *construction
+  actions: [*probe-action, *state-action]
+  source_evidence: *model-source

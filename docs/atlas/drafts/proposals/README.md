@@ -1,40 +1,49 @@
-# Next native compatibility goal
+# Worker dispatch and callable classification
 
-Implement source-matching worker dispatch and immutable dependency callable
-classification, with exact public outcomes, before new performance rankings.
+The independent proposals now have active copies under
+`tests/fixtures/input-recipes/parity/` and `tests/fixtures/workloads/`:
 
-These reviewed proposals are inactive. They have no expected outputs and are
-outside the generated input tree. Parent checks use the repository recipe schema
-loader and Ruff; no source/target execution is claimed. Recipe workload paths
-describe future activation destinations.
+- `dependency-callable-classification`: 23 parity cases / 54 actions.
+- `worker-dispatch`: 18 parity cases / 54 actions.
 
-- `worker-dispatch/`: 18 parity cases and 54 actions cover relative loop/worker
-  execution, ContextVar propagation, original endpoint-kind response validation,
-  loop serialization, sync/async dependencies, yield cleanup, errors/recovery,
-  background work, returned Response and awaitable values, and worker-to-loop
-  handoffs. Preserve complete raw sends: the current omitted-versus-false
-  `more_body` difference must be exposed and resolved. Cancellation is unproven.
-- `dependency-callable-classification/`: 23 parity cases and 54 actions cover
-  immutable wrappers/partials around functions, methods, and instances,
-  generator scopes/cleanup, endpoint controls, unmarked sync coroutine values,
-  and scalar-return errors for wrapped or publicly marked coroutine routines. Classification-cache history and mutable descriptors remain separate.
-  `native-classifier.patch` is a reviewed prospective helper/executor change
-  based on `db8118a`; it remains unapplied and uncompiled. It routes classified
-  coroutine scalars through the existing await error/cleanup adapter and retains
-  raw worker return values. Generator-based awaitable adapters remain a gap.
+The authored copies here preserve proposal history. During admission, the active
+classifier recipe added handling-errors source evidence and ordered HTTP headers
+so its inherited handler links satisfy the reviewed contract. Neither copy has
+expected outputs or copied upstream tests.
 
-## Completion evidence
+The native classifier, once-await behavior, ordinary endpoint worker dispatch,
+response validation context, loop serialization, and ordinary ASGI body field
+shape are integrated. Formatting, strict Clippy, and the Python facade check pass.
+Fresh fixed-source comparisons are required before claiming this slice complete.
+Classification history, mutable descriptors, generator-based await adapters,
+response adapter construction/reuse, and explicit placeholder provenance remain
+separate boundaries.
 
-1. Activate each independent recipe/workload with reviewed metadata references;
-   regenerate atlas, manifest and input index and run static contract checks.
-2. Observe the pinned live oracle; resolve input defects without weakening
-   observations. Review Rust changes independently and run formatting/Clippy.
-3. Run exact isolated source/target comparisons, existing regression selections,
-   and cleanup fault contracts on fixed source/builds. Keep failures and gaps.
-4. Remeasure accepted coverage on the new revision before any incremental union.
-   Keep source, inputs, and extension binaries fixed; match build flags/features.
-   Normal and fault-enabled instrumentation are separate verification lanes.
-5. Benchmark equivalent direct-ASGI workloads only after dispatch, validation,
-   serialization, cleanup, and raw-message behavior meet their declared gates.
+## Confirmed sibling blocker
 
-This goal is one bounded slice. Full FastAPI compatibility remains unfinished.
+The worker workflow's target process panics when a sync endpoint adds a background
+task to the loop-created pinned Starlette-RS collector. The latest committed
+sibling also retains the same thread-bound task classes. The entire 18-case worker
+gate remains unpassed; a crashed process is not partial passing evidence.
+
+A minimal sibling patch and safety review are in
+`../sibling-background-cross-thread/`. Strict Clippy accepted the proposal in an
+isolated checkout. The configured pin and installed sibling remain unchanged;
+live parity and an approved new dependency revision are still required.
+
+## Completion gates
+
+1. Regenerate atlas, manifest and index; run metadata, fixture and static checks.
+2. Observe the pinned oracle and compare every declared observation in isolated
+   identity-checked processes, retaining failures and unsupported cases.
+3. Run existing regression selections and the separate target-only cleanup fault
+   contracts on fixed inputs, source and binaries. Ordinary input-triggered worker
+   errors are parity evidence, not injected-fault coverage.
+4. Remeasure accepted coverage on this revision with matching flags/features.
+   Normal and fault-enabled instrumentation remain separate lanes; do not union
+   old revisions or infer per-case region attribution.
+5. Benchmark equivalent workloads after their callback, validation, serialization,
+   cleanup and raw-message gates pass. Keep adapter/lifecycle and sibling gaps
+   explicit when interpreting results.
+
+Full FastAPI compatibility remains unfinished.

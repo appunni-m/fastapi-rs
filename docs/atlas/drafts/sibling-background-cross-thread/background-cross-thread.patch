@@ -1,0 +1,20 @@
+--- a/starlette-rs-py/src/background.rs
++++ b/starlette-rs-py/src/background.rs
+@@ -19,7 +19,7 @@
+     into_python_awaitable_with_reuse_error, normalize_throw,
+ };
+ 
+-#[pyclass(name = "BackgroundTask", unsendable)]
++#[pyclass(name = "BackgroundTask")]
+ struct PyBackgroundTask {
+     func: Py<PyAny>,
+     args: Py<PyAny>,
+@@ -111,7 +111,7 @@
+     }
+ }
+ 
+-#[pyclass(name = "BackgroundTasks", unsendable)]
++#[pyclass(name = "BackgroundTasks")]
+ struct PyBackgroundTasks {
+     tasks: Py<PyAny>,
+ }

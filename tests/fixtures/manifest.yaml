@@ -415,7 +415,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@5
-    sha256: 576b001a08ee510e75b9182e6ffa4616a4f43211a9c46b0b4a3a490ffb0921d7
+    sha256: 17b718654b898555e3a473af3c990f8134e8e9e6dd80bbfd22083e88130ab6c7
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -451,7 +451,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: c9d2dcfaaa7d13b1dab23851c902447a72520e17af9afcf99b8a2d98e5adcbb0
+    sha256: f36148096c7b25b715de75697c3e93ca7e81ab3ace417422223931ea4e2e91df
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -488,14 +488,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@5
-    sha256: a10dec42b1301b31f2cf64bfdd0e89ba12f14b069b4559cf2e6c4e5be479a3d0
+    sha256: 8740b6c5f6676dbecaa710652a5f96d6e16accff603b0b089c843480aabedc4f
     schema_path: tests/fixtures/schemas/materialized-input-index-v5.schema.json
     schema_sha256: 13dd4cf1032a4ad9161712364d94b9f91834afee380e1f8eee6f4f05c123261d
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 547
-      cases: 2215
-      partial_source_mappings: 1529
+      workflows: 549
+      cases: 2256
+      partial_source_mappings: 1543
 
 contract_metadata:
   aliases:
@@ -864,8 +864,8 @@ api_surface_contract:
     symbols_with_constructor_definition_refs: 37
     unique_source_constructor_definitions: 20
     operation_scope_statuses:
-      scope-review-pending: 291
-      slice-described: 169
+      scope-review-pending: 290
+      slice-described: 170
     implementation_owner_plans:
       fastapi-rs: 429
       starlette-rs: 31
@@ -877,8 +877,8 @@ api_surface_contract:
     symbols_with_deprecation_refs: 15
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 101
-    symbols_with_operation_fixture_refs: 143
-    operation_fixture_refs: 844
+    symbols_with_operation_fixture_refs: 147
+    operation_fixture_refs: 1058
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -1913,6 +1913,576 @@ api_surface_contract:
       observation_selectors:
       - python.signature
     operation_fixture_refs:
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.sync-wrap-coroutine-function
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.sync-wrap-coroutine-instance
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.sync-wrap-coroutine-call-method
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.partial-coroutine-instance
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.partial-wrapped-coroutine-nested
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.plain-partial-function-method-controls
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.unmarked-sync-awaitable-control
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.async-wrapped-scalar-error-cleanup-recovery
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.public-marked-scalar-error-cleanup-recovery
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.sync-wrap-sync-generator-function
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.sync-wrap-async-generator-function
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.sync-wrap-sync-generator-instance
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.sync-wrap-async-generator-instance
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.sync-wrap-async-generator-call-method
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.partial-sync-generator-instance
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.partial-async-generator-instance
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.async-generator-adapter-over-sync-generator
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.partial-wrapped-sync-generator-function
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.partial-wrapped-async-generator-function
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.partial-generator-function-method-controls
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.wrapped-partial-yield-scope-construction
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.wrapped-yield-error-cleanup-recovery
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-endpoint-async-dependency-response-validation
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.async-endpoint-sync-dependency-response-validation
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-endpoint-two-yield-scopes-background
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.async-endpoint-two-yield-scopes-background
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-endpoint-error-cleanup-and-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-dependency-error-cleanup-and-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-response-validation-error-cleanup-and-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.async-response-validation-error-cleanup-and-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.input-validation-on-loop-before-endpoint
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.serialization-error-stays-on-loop
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.returned-response-bypasses-response-validation
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-dependency-worker-to-loop-handoff
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-response-validator-worker-to-loop-handoff
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-endpoint-returned-awaitable-is-a-value
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.async-endpoint-returned-awaitable-is-a-value
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     - workflow_id: dependency-override-cache-policy-mutation
       input_path: tests/fixtures/inputs/parity/dependency-override-cache-policy-mutation.json
       input_sha256: 02e33fa12e4b7bf4a2b189fb7029ba1e7d9c89c16f043f7546c6fd394b608859
@@ -6154,6 +6724,639 @@ api_surface_contract:
       observation_selectors: *id006
     input_workflow_refs: []
     operation_fixture_refs:
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.sync-wrap-coroutine-function
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.sync-wrap-coroutine-instance
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.sync-wrap-coroutine-call-method
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.partial-coroutine-instance
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.partial-wrapped-coroutine-nested
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.plain-partial-function-method-controls
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.unmarked-sync-awaitable-control
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.async-wrapped-scalar-error-cleanup-recovery
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.public-marked-scalar-error-cleanup-recovery
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.sync-wrap-sync-generator-function
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.sync-wrap-async-generator-function
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.sync-wrap-sync-generator-instance
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.sync-wrap-async-generator-instance
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.sync-wrap-async-generator-call-method
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.partial-sync-generator-instance
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.partial-async-generator-instance
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.async-generator-adapter-over-sync-generator
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.partial-wrapped-sync-generator-function
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.partial-wrapped-async-generator-function
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.partial-generator-function-method-controls
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.wrapped-partial-yield-scope-construction
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.wrapped-yield-error-cleanup-recovery
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.public-endpoint-role-classification
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-endpoint-without-response-model
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.async-endpoint-without-response-model
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-endpoint-async-dependency-response-validation
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.async-endpoint-sync-dependency-response-validation
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-endpoint-two-yield-scopes-background
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.async-endpoint-two-yield-scopes-background
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-endpoint-error-cleanup-and-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-dependency-error-cleanup-and-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-response-validation-error-cleanup-and-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.async-response-validation-error-cleanup-and-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.input-validation-on-loop-before-endpoint
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.serialization-error-stays-on-loop
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.returned-response-bypasses-response-validation
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-endpoint-worker-to-loop-handoff
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-dependency-worker-to-loop-handoff
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-response-validator-worker-to-loop-handoff
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-endpoint-returned-awaitable-is-a-value
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.async-endpoint-returned-awaitable-is-a-value
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     - workflow_id: dependency-override-cache-policy-mutation
       input_path: tests/fixtures/inputs/parity/dependency-override-cache-policy-mutation.json
       input_sha256: 02e33fa12e4b7bf4a2b189fb7029ba1e7d9c89c16f043f7546c6fd394b608859
@@ -6583,6 +7786,102 @@ api_surface_contract:
       observation_selectors: *id006
     input_workflow_refs: []
     operation_fixture_refs:
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-endpoint-error-cleanup-and-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-dependency-error-cleanup-and-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-response-validation-error-cleanup-and-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.async-response-validation-error-cleanup-and-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.input-validation-on-loop-before-endpoint
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.serialization-error-stays-on-loop
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     - workflow_id: inherited-exception-handler-registration
       input_path: tests/fixtures/inputs/parity/inherited-exception-handler-registration.json
       input_sha256: b915d72ad08dee529905c6826730b4d0578e08765874aff08afdb50d003b69eb
@@ -6900,6 +8199,639 @@ api_surface_contract:
       observation_selectors:
       - python.signature
     operation_fixture_refs:
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.sync-wrap-coroutine-function
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.sync-wrap-coroutine-instance
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.sync-wrap-coroutine-call-method
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.partial-coroutine-instance
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.partial-wrapped-coroutine-nested
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.plain-partial-function-method-controls
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.unmarked-sync-awaitable-control
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.async-wrapped-scalar-error-cleanup-recovery
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.public-marked-scalar-error-cleanup-recovery
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.sync-wrap-sync-generator-function
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.sync-wrap-async-generator-function
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.sync-wrap-sync-generator-instance
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.sync-wrap-async-generator-instance
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.sync-wrap-async-generator-call-method
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.partial-sync-generator-instance
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.partial-async-generator-instance
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.async-generator-adapter-over-sync-generator
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.partial-wrapped-sync-generator-function
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.partial-wrapped-async-generator-function
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.partial-generator-function-method-controls
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.wrapped-partial-yield-scope-construction
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.wrapped-yield-error-cleanup-recovery
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.public-endpoint-role-classification
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-endpoint-without-response-model
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.async-endpoint-without-response-model
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-endpoint-async-dependency-response-validation
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.async-endpoint-sync-dependency-response-validation
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-endpoint-two-yield-scopes-background
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.async-endpoint-two-yield-scopes-background
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-endpoint-error-cleanup-and-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-dependency-error-cleanup-and-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-response-validation-error-cleanup-and-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.async-response-validation-error-cleanup-and-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.input-validation-on-loop-before-endpoint
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.serialization-error-stays-on-loop
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.returned-response-bypasses-response-validation
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-endpoint-worker-to-loop-handoff
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-dependency-worker-to-loop-handoff
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-response-validator-worker-to-loop-handoff
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-endpoint-returned-awaitable-is-a-value
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.async-endpoint-returned-awaitable-is-a-value
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     - workflow_id: operation-signatures-upstream
       input_path: tests/fixtures/inputs/parity/operation-signatures-upstream.json
       input_sha256: f443a7d99f2daa521bdd36f34377497c06dc4a5618da74d286815a19858cc930
@@ -7710,6 +9642,102 @@ api_surface_contract:
       observation_selectors:
       - python.signature
     operation_fixture_refs:
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-endpoint-error-cleanup-and-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-dependency-error-cleanup-and-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-response-validation-error-cleanup-and-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.async-response-validation-error-cleanup-and-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.input-validation-on-loop-before-endpoint
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.serialization-error-stays-on-loop
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     - workflow_id: operation-signatures-upstream
       input_path: tests/fixtures/inputs/parity/operation-signatures-upstream.json
       input_sha256: f443a7d99f2daa521bdd36f34377497c06dc4a5618da74d286815a19858cc930
@@ -8284,6 +10312,55 @@ api_surface_contract:
       - python.import_path
       - python.signature
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-endpoint-two-yield-scopes-background
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.async-endpoint-two-yield-scopes-background
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.returned-response-bypasses-response-validation
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -8302,8 +10379,9 @@ api_surface_contract:
     - response.background_effects
     - route.match
     operation_scope:
-      status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+      status: slice-described
+      metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.background.BackgroundTasks.add_task/supported_slice
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.background.BackgroundTasks.add_task
@@ -8312,8 +10390,13 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/244
-      status: full-contract-not-established
-      rust_binding: null
+      status: partial-contract
+      rust_binding: fastapi-rs/src/datastructures.rs::register
+      known_gaps:
+      - Only asynchronous task integration with FastAPI yield scopes is declared here; standalone generic
+        behavior remains sibling owned.
+      - The pinned sibling's unsendable background data crashes sync worker add_task; the full worker-dispatch
+        gate requires a corrected sibling revision.
   - id: fastapi.datastructures.Address
     kind: import_binding
     source_candidate_ref: /api_candidates/262
@@ -10581,6 +12664,23 @@ api_surface_contract:
     - /errors/19
     documentation_contract_refs: []
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.input-validation-on-loop-before-endpoint
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - public-api-errors
@@ -10648,6 +12748,54 @@ api_surface_contract:
       observation_selectors: *id009
     input_workflow_refs: []
     operation_fixture_refs:
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.input-validation-on-loop-before-endpoint
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-response-validation-error-cleanup-and-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.async-response-validation-error-cleanup-and-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     - workflow_id: request-validation-error-object
       input_path: tests/fixtures/inputs/parity/request-validation-error-object.json
       input_sha256: 10b9cd2cc10d478573bfe85dd7e3fd82e8ed86b183ad701436964c75f83b09e8
@@ -27404,6 +29552,576 @@ api_surface_contract:
       observation_selectors:
       - python.signature
     operation_fixture_refs:
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.sync-wrap-coroutine-function
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.sync-wrap-coroutine-instance
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.sync-wrap-coroutine-call-method
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.partial-coroutine-instance
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.partial-wrapped-coroutine-nested
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.plain-partial-function-method-controls
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.unmarked-sync-awaitable-control
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.async-wrapped-scalar-error-cleanup-recovery
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.public-marked-scalar-error-cleanup-recovery
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.sync-wrap-sync-generator-function
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.sync-wrap-async-generator-function
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.sync-wrap-sync-generator-instance
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.sync-wrap-async-generator-instance
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.sync-wrap-async-generator-call-method
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.partial-sync-generator-instance
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.partial-async-generator-instance
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.async-generator-adapter-over-sync-generator
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.partial-wrapped-sync-generator-function
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.partial-wrapped-async-generator-function
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.partial-generator-function-method-controls
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.wrapped-partial-yield-scope-construction
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.wrapped-yield-error-cleanup-recovery
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-endpoint-async-dependency-response-validation
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.async-endpoint-sync-dependency-response-validation
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-endpoint-two-yield-scopes-background
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.async-endpoint-two-yield-scopes-background
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-endpoint-error-cleanup-and-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-dependency-error-cleanup-and-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-response-validation-error-cleanup-and-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.async-response-validation-error-cleanup-and-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.input-validation-on-loop-before-endpoint
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.serialization-error-stays-on-loop
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.returned-response-bypasses-response-validation
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-dependency-worker-to-loop-handoff
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-response-validator-worker-to-loop-handoff
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-endpoint-returned-awaitable-is-a-value
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.async-endpoint-returned-awaitable-is-a-value
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     - workflow_id: dependency-override-cache-policy-mutation
       input_path: tests/fixtures/inputs/parity/dependency-override-cache-policy-mutation.json
       input_sha256: 02e33fa12e4b7bf4a2b189fb7029ba1e7d9c89c16f043f7546c6fd394b608859
@@ -29909,6 +32627,340 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/383
       observation_selectors: *id014
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-endpoint-without-response-model
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.async-endpoint-without-response-model
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-endpoint-async-dependency-response-validation
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.async-endpoint-sync-dependency-response-validation
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-endpoint-two-yield-scopes-background
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.async-endpoint-two-yield-scopes-background
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-endpoint-error-cleanup-and-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-dependency-error-cleanup-and-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-response-validation-error-cleanup-and-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.async-response-validation-error-cleanup-and-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.input-validation-on-loop-before-endpoint
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.serialization-error-stays-on-loop
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.returned-response-bypasses-response-validation
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-endpoint-worker-to-loop-handoff
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-dependency-worker-to-loop-handoff
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-response-validator-worker-to-loop-handoff
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-endpoint-returned-awaitable-is-a-value
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.async-endpoint-returned-awaitable-is-a-value
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.async-wrapped-scalar-error-cleanup-recovery
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.public-marked-scalar-error-cleanup-recovery
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: dependency-callable-classification
+      input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
+      input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      recipe_sha256: 61b273e365800d7e508c90f33b9290cc788e643c6a16780ffdb88aa2b1c8392f
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      workload_sha256: a19e8499e8edf653baedbd422db0dd7fa2e8a085944145e50f62978ebe6db47f
+      case_id: fastapi.dependencies.callable-classification.wrapped-yield-error-cleanup-recovery
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     identity_workflow_refs:
     - workflow_id: root-alias-identity
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
@@ -30614,6 +33666,295 @@ api_surface_contract:
       - http.headers.ordered
       - http.status
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-endpoint-without-response-model
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.async-endpoint-without-response-model
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-endpoint-async-dependency-response-validation
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.async-endpoint-sync-dependency-response-validation
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-endpoint-two-yield-scopes-background
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.async-endpoint-two-yield-scopes-background
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-endpoint-error-cleanup-and-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-dependency-error-cleanup-and-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-response-validation-error-cleanup-and-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.async-response-validation-error-cleanup-and-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.input-validation-on-loop-before-endpoint
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.serialization-error-stays-on-loop
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.returned-response-bypasses-response-validation
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-endpoint-worker-to-loop-handoff
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-dependency-worker-to-loop-handoff
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-response-validator-worker-to-loop-handoff
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.sync-endpoint-returned-awaitable-is-a-value
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: worker-dispatch
+      input_path: tests/fixtures/inputs/parity/worker-dispatch.json
+      input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
+      recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
+      recipe_sha256: 9302375465dfde354867f8efea2bf78a76dd18bcc074769b799d3fe38737277d
+      workload_path: tests/fixtures/workloads/worker_dispatch.py
+      workload_sha256: bc4ff49e8b58e9196bb8dc14649730af08372b2a6fb821844cb4e9f390de6463
+      case_id: fastapi.worker-dispatch.async-endpoint-returned-awaitable-is-a-value
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -42918,6 +46259,27 @@ api_surface_contract:
       - http.headers.ordered
       - http.status
     fixture_refs:
+    - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      case_id: fastapi.dependencies.callable-classification.async-wrapped-scalar-error-cleanup-recovery
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      case_id: fastapi.dependencies.callable-classification.public-marked-scalar-error-cleanup-recovery
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
+      case_id: fastapi.dependencies.callable-classification.wrapped-yield-error-cleanup-recovery
+      workload_path: tests/fixtures/workloads/dependency_callable_classification.py
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     - recipe_path: tests/fixtures/input-recipes/parity/inherited-exception-handler-registration.yaml
       case_id: fastapi.applications.add-exception-handler.custom-exception
       workload_path: tests/fixtures/workloads/inherited_exception_handler_registration.py

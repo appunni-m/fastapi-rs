@@ -14,7 +14,8 @@ use pyo3::exceptions::{
 use pyo3::prelude::*;
 use pyo3::sync::PyOnceLock;
 use pyo3::types::{
-    PyBool, PyBytes, PyDict, PyInt, PyIterator, PyList, PyModule, PySet, PyString, PyTuple, PyType,
+    PyBool, PyBytes, PyDict, PyInt, PyIterator, PyList, PyMapping, PyModule, PySet, PyString,
+    PyTuple, PyType,
 };
 use starlette_rs::{DetailedRouteMatch, NamedRouteError, NamedRouteTable, QueryParams, RouteTable};
 
@@ -578,21 +579,15 @@ impl DependencyExecutionNode {
             } else {
                 context.dependency_exit_stack
             };
-            Some(
-                exit_stack
-                    .call_method1("enter_async_context", (context_manager.bind(context.py),))?
-                    .unbind(),
-            )
-        } else if is_awaitable(context.py, value.bind(context.py))? {
-            Some(value)
+            exit_stack
+                .call_method1("enter_async_context", (context_manager.bind(context.py),))?
+                .unbind()
         } else {
-            self.store_result(context, value.clone_ref(context.py));
-            return Ok(DependencyGraphStep::Ready(value));
+            // Source awaits the classified coroutine's result or the sync
+            // worker once. A worker's returned value is stored on resume.
+            value
         };
 
-        let awaitable = awaitable.ok_or_else(|| {
-            PyRuntimeError::new_err("dependency graph entered a context without an awaitable")
-        })?;
         self.awaiting = true;
         Ok(DependencyGraphStep::Await {
             awaitable,
@@ -895,6 +890,7 @@ struct FastApiRoute {
     generator_kind: FastApiGeneratorKind,
     stream_item_type: Option<Py<PyAny>>,
     endpoint: Py<PyAny>,
+    endpoint_is_coroutine: bool,
     original_route: Py<PyAny>,
     public_route: Py<PyAny>,
     effective_route_context: Option<Py<PyAny>>,
@@ -907,6 +903,85 @@ struct FastApiRoute {
     response_model_exclude_none: bool,
     router_dependencies: Vec<Py<PyAny>>,
     plan: CallablePlan,
+}
+
+struct ResponseModelConfig {
+    model: Py<PyAny>,
+    include: Option<Py<PyAny>>,
+    exclude: Option<Py<PyAny>>,
+    by_alias: bool,
+    exclude_unset: bool,
+    exclude_defaults: bool,
+    exclude_none: bool,
+    endpoint_is_coroutine: bool,
+    endpoint: Py<PyAny>,
+    method: String,
+    path: String,
+}
+
+struct ResponseValidationState {
+    adapter: Py<PyAny>,
+    original_content: Py<PyAny>,
+    serialization_kwargs: Py<PyDict>,
+    response_class: Option<Py<PyAny>>,
+    status_code: Option<u16>,
+    endpoint: Py<PyAny>,
+    method: String,
+    path: String,
+}
+
+#[pyclass]
+struct ResponseModelValidator {
+    adapter: Py<PyAny>,
+}
+
+impl ResponseModelValidator {
+    fn validate(
+        &self,
+        py: Python<'_>,
+        content: &Bound<'_, PyAny>,
+    ) -> PyResult<(Py<PyAny>, Py<PyList>)> {
+        let kwargs = PyDict::new(py);
+        kwargs.set_item("from_attributes", true)?;
+        match self
+            .adapter
+            .bind(py)
+            .call_method("validate_python", (content,), Some(&kwargs))
+        {
+            Ok(value) => Ok((value.unbind(), PyList::empty(py).unbind())),
+            Err(error) if is_pydantic_validation_error(py, &error) => {
+                // This entire ModelField.validate stage runs in the same
+                // context as the validator, including extracting error details.
+                let kwargs = PyDict::new(py);
+                kwargs.set_item("include_url", false)?;
+                let details = error.value(py).call_method("errors", (), Some(&kwargs))?;
+                let response_details = PyList::empty(py);
+                let prefix = PyTuple::new(py, ["response"])?;
+                let add = py.import("operator")?.getattr("add")?;
+                for detail in details.try_iter()? {
+                    let detail = detail?;
+                    let updated = PyDict::new(py);
+                    updated.update(detail.cast::<PyMapping>()?)?;
+                    let location = detail.call_method1("get", ("loc", PyTuple::empty(py)))?;
+                    updated.set_item("loc", add.call1((&prefix, location))?)?;
+                    response_details.append(updated)?;
+                }
+                Ok((py.None(), response_details.unbind()))
+            }
+            Err(error) => Err(error),
+        }
+    }
+}
+
+#[pymethods]
+impl ResponseModelValidator {
+    fn __call__(
+        &self,
+        py: Python<'_>,
+        content: &Bound<'_, PyAny>,
+    ) -> PyResult<(Py<PyAny>, Py<PyList>)> {
+        self.validate(py, content)
+    }
 }
 
 #[pyclass(name = "APIRoute", module = "fastapi.routing")]
@@ -4536,6 +4611,7 @@ fn merge_router_routes(
                 .as_ref()
                 .map(|value| value.clone_ref(py)),
             endpoint: source_route.endpoint.clone_ref(py),
+            endpoint_is_coroutine: source_route.endpoint_is_coroutine,
             original_route,
             public_route: effective_route_context.clone_ref(py),
             effective_route_context: Some(effective_route_context),
@@ -4923,6 +4999,10 @@ impl PyOperationDecorator {
         let mut plan = CallablePlan::build(py, endpoint.clone_ref(py), &path_parameters, None)?;
         plan.prepend_dependencies(py, &route_dependencies)?;
         let generator_kind = generator_kind(py, endpoint.bind(py))?;
+        // Source captures this once when building the request handler, then
+        // uses it for endpoint dispatch and response model validation.
+        let endpoint_is_coroutine = dependency_override_callable(py, endpoint.bind(py))?
+            != DependencyOverrideCallable::Sync;
         let (inferred_name, param_convertors) =
             route_reverse_metadata(py, &self.path, endpoint.bind(py))?;
         let name = self.name.clone().unwrap_or(inferred_name);
@@ -5061,6 +5141,7 @@ impl PyOperationDecorator {
             generator_kind,
             stream_item_type,
             endpoint: endpoint.clone_ref(py),
+            endpoint_is_coroutine,
             original_route: public_route.clone_ref(py),
             public_route,
             effective_route_context: None,
@@ -6203,80 +6284,159 @@ fn dependency_is_security_scheme(py: Python<'_>, callable: &Bound<'_, PyAny>) ->
     Ok(false)
 }
 
+fn dependency_callable_without_partials<'py>(
+    py: Python<'py>,
+    value: &Bound<'py, PyAny>,
+) -> PyResult<Bound<'py, PyAny>> {
+    let partial = py.import("functools")?.getattr("partial")?;
+    let mut value = value.clone();
+    while value.is_instance(&partial)? {
+        value = value.getattr("func")?;
+    }
+    Ok(value)
+}
+
+fn dependency_callable_unwrapped<'py>(
+    py: Python<'py>,
+    value: &Bound<'py, PyAny>,
+) -> PyResult<Bound<'py, PyAny>> {
+    py.import("inspect")?
+        .getattr("unwrap")?
+        .call1((dependency_callable_without_partials(py, value)?,))
+}
+
+fn dependency_callable_call_method<'py>(
+    py: Python<'py>,
+    value: &Bound<'py, PyAny>,
+) -> PyResult<Option<Bound<'py, PyAny>>> {
+    match value.getattr("__call__") {
+        Ok(method) if method.is_none() => Ok(None),
+        Ok(method) => Ok(Some(method)),
+        Err(error) if error.is_instance_of::<PyAttributeError>(py) => Ok(None),
+        Err(error) => Err(error),
+    }
+}
+
 fn dependency_override_callable(
     py: Python<'_>,
     value: &Bound<'_, PyAny>,
 ) -> PyResult<DependencyOverrideCallable> {
     let inspect = py.import("inspect")?;
+    // FastAPI uses asyncio's predicate on pinned CPython 3.12, including its
+    // legacy marker. Classification does not change the callable we invoke.
+    let coroutine_predicate = py.import("asyncio")?.getattr("iscoroutinefunction")?;
+    let is_coroutine = |callable: &Bound<'_, PyAny>| -> PyResult<bool> {
+        coroutine_predicate.call1((callable,))?.extract()
+    };
+    let is_routine = |callable: &Bound<'_, PyAny>| -> PyResult<bool> {
+        inspect.getattr("isroutine")?.call1((callable,))?.extract()
+    };
+    if is_routine(&dependency_callable_without_partials(py, value)?)?
+        && is_coroutine(&dependency_callable_without_partials(py, value)?)?
+    {
+        return Ok(DependencyOverrideCallable::CoroutineFunction);
+    }
+    if is_routine(&dependency_callable_unwrapped(py, value)?)?
+        && is_coroutine(&dependency_callable_unwrapped(py, value)?)?
+    {
+        return Ok(DependencyOverrideCallable::CoroutineFunction);
+    }
     if inspect
         .getattr("isclass")?
-        .call1((value,))?
+        .call1((dependency_callable_unwrapped(py, value)?,))?
         .extract::<bool>()?
     {
         return Ok(DependencyOverrideCallable::Sync);
     }
-    if inspect
-        .getattr("iscoroutinefunction")?
-        .call1((value,))?
-        .extract::<bool>()?
-    {
-        return Ok(DependencyOverrideCallable::CoroutineFunction);
-    }
-    let call_method = value.getattr("__call__")?;
-    if inspect
-        .getattr("iscoroutinefunction")?
-        .call1((call_method,))?
-        .extract::<bool>()?
+    let impartial = dependency_callable_without_partials(py, value)?;
+    let Some(call_method) = dependency_callable_call_method(py, &impartial)? else {
+        return Ok(DependencyOverrideCallable::Sync);
+    };
+    if is_coroutine(&dependency_callable_without_partials(py, &call_method)?)?
+        || is_coroutine(&dependency_callable_unwrapped(py, &call_method)?)?
+        // Native async descriptors do not carry Python coroutine flags. Retain
+        // the owned native bridge at this instance's method-classification step.
+        || crate::security::is_native_async_callable(py, &impartial)?
     {
         return Ok(DependencyOverrideCallable::AsyncCallableInstance);
     }
-    if crate::security::is_native_async_callable(py, value)? {
-        return Ok(DependencyOverrideCallable::CoroutineFunction);
+    let unwrapped = dependency_callable_unwrapped(py, value)?;
+    let Some(call_method) = dependency_callable_call_method(py, &unwrapped)? else {
+        return Ok(DependencyOverrideCallable::Sync);
+    };
+    if is_coroutine(&dependency_callable_without_partials(py, &call_method)?)?
+        || is_coroutine(&dependency_callable_unwrapped(py, &call_method)?)?
+        || crate::security::is_native_async_callable(py, &unwrapped)?
+    {
+        return Ok(DependencyOverrideCallable::AsyncCallableInstance);
     }
     Ok(DependencyOverrideCallable::Sync)
 }
 
+fn dependency_callable_matches_generator_predicate(
+    py: Python<'_>,
+    value: &Bound<'_, PyAny>,
+    predicate_name: &str,
+) -> PyResult<bool> {
+    let inspect = py.import("inspect")?;
+    let predicate = inspect.getattr(predicate_name)?;
+    let matches =
+        |callable: &Bound<'_, PyAny>| -> PyResult<bool> { predicate.call1((callable,))?.extract() };
+    if matches(&dependency_callable_without_partials(py, value)?)?
+        || matches(&dependency_callable_unwrapped(py, value)?)?
+    {
+        return Ok(true);
+    }
+    if inspect
+        .getattr("isclass")?
+        .call1((dependency_callable_unwrapped(py, value)?,))?
+        .extract::<bool>()?
+    {
+        return Ok(false);
+    }
+    let impartial = dependency_callable_without_partials(py, value)?;
+    let Some(call_method) = dependency_callable_call_method(py, &impartial)? else {
+        return Ok(false);
+    };
+    if matches(&dependency_callable_without_partials(py, &call_method)?)?
+        || matches(&dependency_callable_unwrapped(py, &call_method)?)?
+    {
+        return Ok(true);
+    }
+    let unwrapped = dependency_callable_unwrapped(py, value)?;
+    let Some(call_method) = dependency_callable_call_method(py, &unwrapped)? else {
+        return Ok(false);
+    };
+    Ok(
+        matches(&dependency_callable_without_partials(py, &call_method)?)?
+            || matches(&dependency_callable_unwrapped(py, &call_method)?)?,
+    )
+}
+
 fn dependency_callable_is_generator(py: Python<'_>, value: &Bound<'_, PyAny>) -> PyResult<bool> {
-    Ok(dependency_callable_generator_kind(py, value)?.is_some())
+    // Source scope analysis and the miss branch test sync before async.
+    Ok(
+        dependency_callable_matches_generator_predicate(py, value, "isgeneratorfunction")?
+            || dependency_callable_matches_generator_predicate(py, value, "isasyncgenfunction")?,
+    )
 }
 
 fn dependency_callable_generator_kind(
     py: Python<'_>,
     value: &Bound<'_, PyAny>,
 ) -> PyResult<Option<DependencyGeneratorKind>> {
-    let inspect = py.import("inspect")?;
-    let is_class = inspect
-        .getattr("isclass")?
-        .call1((value,))?
-        .extract::<bool>()?;
-    if is_class {
+    if !dependency_callable_is_generator(py, value)? {
         return Ok(None);
     }
-    let kind_for = |callable: &Bound<'_, PyAny>| -> PyResult<Option<DependencyGeneratorKind>> {
-        if inspect
-            .getattr("isasyncgenfunction")?
-            .call1((callable,))?
-            .extract::<bool>()?
-        {
-            return Ok(Some(DependencyGeneratorKind::Async));
-        }
-        if inspect
-            .getattr("isgeneratorfunction")?
-            .call1((callable,))?
-            .extract::<bool>()?
-        {
-            return Ok(Some(DependencyGeneratorKind::Sync));
-        }
-        Ok(None)
-    };
-    if let Some(kind) = kind_for(value)? {
-        return Ok(Some(kind));
+    // Once source enters _solve_generator, an async generator wins even when
+    // unwrapping also identifies an underlying sync generator.
+    if dependency_callable_matches_generator_predicate(py, value, "isasyncgenfunction")? {
+        return Ok(Some(DependencyGeneratorKind::Async));
     }
-    match value.getattr("__call__") {
-        Ok(callable) => kind_for(&callable),
-        Err(error) if error.is_instance_of::<PyAttributeError>(py) => Ok(None),
-        Err(error) => Err(error),
+    if dependency_callable_matches_generator_predicate(py, value, "isgeneratorfunction")? {
+        return Ok(Some(DependencyGeneratorKind::Sync));
     }
+    Ok(None)
 }
 
 fn parameter_marker_kind(py: Python<'_>, marker: &Bound<'_, PyAny>) -> PyResult<Option<String>> {
@@ -8647,7 +8807,6 @@ fn response_body(py: Python<'_>, send: &Bound<'_, PyAny>, body: &[u8]) -> PyResu
     let message = PyDict::new(py);
     message.set_item("type", "http.response.body")?;
     message.set_item("body", PyBytes::new(py, body))?;
-    message.set_item("more_body", false)?;
     send.call1((message,)).map(Bound::unbind)
 }
 
@@ -8710,6 +8869,7 @@ enum PendingAction {
     FrontendAsgiResponse,
     RouteInvocation,
     Endpoint,
+    ResponseValidation(Box<ResponseValidationState>),
     DependencyGraph(Box<DependencyExecutionGraph>),
     ReturnedResponse,
     FunctionDependencyCloseBeforeResponse,
@@ -10436,32 +10596,43 @@ impl FastApiCall {
             .invocation
             .as_mut()
             .ok_or_else(|| PyRuntimeError::new_err("request invocation state was lost"))?;
-        let plan = {
+        let (plan, ordinary_http_endpoint, use_endpoint_threadpool) = {
             let app = self.app.bind(py).borrow();
-            let plan = if let Some(route_index) = self.frontend_route_index {
-                &app.frontend_routes
+            if let Some(route_index) = self.frontend_route_index {
+                let plan = &app
+                    .frontend_routes
                     .get(route_index)
                     .ok_or_else(|| PyRuntimeError::new_err("selected FastAPI frontend was lost"))?
-                    .dependency_plan
+                    .dependency_plan;
+                (plan.clone_ref(py), false, false)
             } else if let Some(route_index) = self.websocket_route_index {
-                app.websocket_routes
+                let plan = app
+                    .websocket_routes
                     .get(route_index)
                     .ok_or_else(|| {
                         PyRuntimeError::new_err("selected FastAPI WebSocket route was lost")
                     })?
                     .plan
                     .as_ref()
-                    .ok_or_else(|| PyRuntimeError::new_err("raw WebSocket route entered FastAPI"))?
+                    .ok_or_else(|| {
+                        PyRuntimeError::new_err("raw WebSocket route entered FastAPI")
+                    })?;
+                (plan.clone_ref(py), false, false)
             } else {
                 let route_index = self.route_index.ok_or_else(|| {
                     PyRuntimeError::new_err("ASGI dispatch has no selected HTTP route")
                 })?;
-                &app.routes
+                let route = app
+                    .routes
                     .get(route_index)
-                    .ok_or_else(|| PyRuntimeError::new_err("selected FastAPI route was lost"))?
-                    .plan
-            };
-            plan.clone_ref(py)
+                    .ok_or_else(|| PyRuntimeError::new_err("selected FastAPI route was lost"))?;
+                let ordinary = !route.generator_kind.is_generator();
+                (
+                    route.plan.clone_ref(py),
+                    ordinary,
+                    ordinary && !route.endpoint_is_coroutine,
+                )
+            }
         };
         let route_invocation = {
             let mut context = InvocationContext {
@@ -10505,7 +10676,21 @@ impl FastApiCall {
                             "Fault injected at http.route.invoke.after_dependencies.before",
                         ));
                     }
-                    RouteInvocation::Ready(plan.invoke(&mut context, None, None)?)
+                    let result = if ordinary_http_endpoint {
+                        // Argument validation remains on the caller loop. Only
+                        // the prepared ordinary sync callable enters a worker.
+                        match plan.prepare_arguments(&mut context, None)? {
+                            Some(arguments) => Some(plan.call_with_arguments(
+                                &context,
+                                arguments.bind(py),
+                                use_endpoint_threadpool,
+                            )?),
+                            None => None,
+                        }
+                    } else {
+                        plan.invoke(&mut context, None, None)?
+                    };
+                    RouteInvocation::Ready(result)
                 }
             }
         };
@@ -10526,7 +10711,7 @@ impl FastApiCall {
                     }
                 } else {
                     self.pending = Some(PendingAction::Endpoint);
-                    if is_awaitable(py, endpoint_result.bind(py))? {
+                    if ordinary_http_endpoint || is_awaitable(py, endpoint_result.bind(py))? {
                         Ok(MachineAction::Await(endpoint_result))
                     } else {
                         self.finish_endpoint(py, endpoint_result)
@@ -10788,67 +10973,162 @@ impl FastApiCall {
             return self.start_returned_response(py, &response);
         }
 
-        let app = self.app.bind(py).borrow();
-        let route = app
-            .routes
-            .get(self.route_index.unwrap_or_default())
-            .ok_or_else(|| PyRuntimeError::new_err("selected FastAPI route was lost"))?;
-        let response_value = if let Some(response_model) = route.response_model.as_ref() {
-            let adapter = py
-                .import("pydantic")?
-                .getattr("TypeAdapter")?
-                .call1((response_model.bind(py),))?;
-            let validation_kwargs = PyDict::new(py);
-            validation_kwargs.set_item("from_attributes", true)?;
-            let validated = match adapter.call_method(
-                "validate_python",
-                (result.bind(py),),
-                Some(&validation_kwargs),
-            ) {
-                Ok(validated) => validated,
-                Err(error) if is_pydantic_validation_error(py, &error) => {
-                    let root_path = parse_scope_string(self.scope.bind(py), "root_path", "")?;
-                    let endpoint_ctx = response_endpoint_context(
-                        py,
-                        route.endpoint.bind(py),
-                        &route.method,
-                        &route.path,
-                        &root_path,
-                    )?;
-                    return Err(crate::errors::response_validation_error(
-                        py,
-                        &error,
-                        result.bind(py),
-                        &endpoint_ctx,
-                    )?);
-                }
-                Err(error) => return Err(error),
-            };
-            let kwargs = PyDict::new(py);
-            kwargs.set_item("mode", "json")?;
-            kwargs.set_item("by_alias", route.response_model_by_alias)?;
-            kwargs.set_item("exclude_unset", route.response_model_exclude_unset)?;
-            kwargs.set_item("exclude_defaults", route.response_model_exclude_defaults)?;
-            kwargs.set_item("exclude_none", route.response_model_exclude_none)?;
-            if let Some(include) = route.response_model_include.as_ref() {
-                kwargs.set_item("include", include.bind(py))?;
-            } else {
-                kwargs.set_item("include", py.None())?;
-            }
-            if let Some(exclude) = route.response_model_exclude.as_ref() {
-                kwargs.set_item("exclude", exclude.bind(py))?;
-            } else {
-                kwargs.set_item("exclude", py.None())?;
-            }
-            adapter.call_method("dump_python", (validated,), Some(&kwargs))?
-        } else {
-            jsonable_encoder_default(py, result.bind(py))?
+        let response_model = {
+            let app = self.app.bind(py).borrow();
+            let route = app
+                .routes
+                .get(self.route_index.unwrap_or_default())
+                .ok_or_else(|| PyRuntimeError::new_err("selected FastAPI route was lost"))?;
+            route
+                .response_model
+                .as_ref()
+                .map(|model| ResponseModelConfig {
+                    model: model.clone_ref(py),
+                    include: route
+                        .response_model_include
+                        .as_ref()
+                        .map(|value| value.clone_ref(py)),
+                    exclude: route
+                        .response_model_exclude
+                        .as_ref()
+                        .map(|value| value.clone_ref(py)),
+                    by_alias: route.response_model_by_alias,
+                    exclude_unset: route.response_model_exclude_unset,
+                    exclude_defaults: route.response_model_exclude_defaults,
+                    exclude_none: route.response_model_exclude_none,
+                    endpoint_is_coroutine: route.endpoint_is_coroutine,
+                    endpoint: route.endpoint.clone_ref(py),
+                    method: route.method.clone(),
+                    path: route.path.clone(),
+                })
         };
-        let response_class = route
-            .response_class
+        let Some(response_model) = response_model else {
+            let response_value = jsonable_encoder_default(py, result.bind(py))?.unbind();
+            return self.finish_serialized_response(
+                py,
+                response_value,
+                response_class,
+                status_code,
+            );
+        };
+        // Release the app borrow before adapter construction or user validation
+        // and serializer callbacks. The original endpoint kind survives awaits.
+        let adapter = py
+            .import("pydantic")?
+            .getattr("TypeAdapter")?
+            .call1((response_model.model.bind(py),))?
+            .unbind();
+        let kwargs = PyDict::new(py);
+        kwargs.set_item("by_alias", response_model.by_alias)?;
+        kwargs.set_item("exclude_unset", response_model.exclude_unset)?;
+        kwargs.set_item("exclude_defaults", response_model.exclude_defaults)?;
+        kwargs.set_item("exclude_none", response_model.exclude_none)?;
+        kwargs.set_item(
+            "include",
+            response_model.include.as_ref().map(|value| value.bind(py)),
+        )?;
+        kwargs.set_item(
+            "exclude",
+            response_model.exclude.as_ref().map(|value| value.bind(py)),
+        )?;
+        let state = ResponseValidationState {
+            adapter,
+            original_content: result,
+            serialization_kwargs: kwargs.unbind(),
+            response_class,
+            status_code,
+            endpoint: response_model.endpoint,
+            method: response_model.method,
+            path: response_model.path,
+        };
+        let validator = ResponseModelValidator {
+            adapter: state.adapter.clone_ref(py),
+        };
+        if response_model.endpoint_is_coroutine {
+            let (validated, errors) = validator.validate(py, state.original_content.bind(py))?;
+            return self.finish_response_validation(py, state, validated, errors);
+        }
+        let validator = Py::new(py, validator)?;
+        let awaitable = py
+            .import("starlette.concurrency")?
+            .getattr("run_in_threadpool")?
+            .call1((validator, state.original_content.bind(py)))?
+            .unbind();
+        self.pending = Some(PendingAction::ResponseValidation(Box::new(state)));
+        Ok(MachineAction::Await(awaitable))
+    }
+
+    fn finish_response_validation(
+        &mut self,
+        py: Python<'_>,
+        state: ResponseValidationState,
+        validated: Py<PyAny>,
+        errors: Py<PyList>,
+    ) -> PyResult<MachineAction> {
+        if !errors.bind(py).is_empty() {
+            let root_path = parse_scope_string(self.scope.bind(py), "root_path", "")?;
+            let endpoint_ctx = response_endpoint_context(
+                py,
+                state.endpoint.bind(py),
+                &state.method,
+                &state.path,
+                &root_path,
+            )?;
+            let kwargs = PyDict::new(py);
+            kwargs.set_item("body", state.original_content.bind(py))?;
+            kwargs.set_item("endpoint_ctx", endpoint_ctx)?;
+            let exception = py
+                .get_type::<crate::errors::ResponseValidationError>()
+                .call((errors.bind(py),), Some(&kwargs))?;
+            return Err(PyErr::from_value(exception));
+        }
+        // The native absent response class represents the default placeholder.
+        // Source serializes an eligible model straight to bytes on the loop.
+        if state.response_class.is_none() {
+            let body = state
+                .adapter
+                .bind(py)
+                .call_method(
+                    "dump_json",
+                    (validated.bind(py),),
+                    Some(state.serialization_kwargs.bind(py)),
+                )?
+                .extract::<Vec<u8>>()?;
+            self.response_status = state.status_code.unwrap_or(200);
+            self.response_body = if state.status_code == Some(204) {
+                Vec::new()
+            } else {
+                body
+            };
+            return self.send_start_with_injected_response_headers(py);
+        }
+        state
+            .serialization_kwargs
+            .bind(py)
+            .set_item("mode", "json")?;
+        let response_value = state
+            .adapter
+            .bind(py)
+            .call_method(
+                "dump_python",
+                (validated.bind(py),),
+                Some(state.serialization_kwargs.bind(py)),
+            )?
+            .unbind();
+        self.finish_serialized_response(py, response_value, state.response_class, state.status_code)
+    }
+
+    fn finish_serialized_response(
+        &mut self,
+        py: Python<'_>,
+        response_value: Py<PyAny>,
+        response_class: Option<Py<PyAny>>,
+        status_code: Option<u16>,
+    ) -> PyResult<MachineAction> {
+        let injected_response = self
+            .injected_response
             .as_ref()
-            .map(|response_class| response_class.clone_ref(py));
-        drop(app);
+            .map(|response| response.bind(py));
         if let Some(response_class) = response_class {
             let kwargs = PyDict::new(py);
             if let Some(status_code) = status_code {
@@ -10862,8 +11142,8 @@ impl FastApiCall {
             }
             let response = response_class
                 .bind(py)
-                .call((response_value,), Some(&kwargs))?;
-            merge_injected_response_state(py, &response, injected_response_bound)?;
+                .call((response_value.bind(py),), Some(&kwargs))?;
+            merge_injected_response_state(py, &response, injected_response)?;
             let response_status_code = response.getattr("status_code")?.extract::<i64>()?;
             if response_status_code < 200 || matches!(response_status_code, 204 | 205 | 304) {
                 response.setattr("body", PyBytes::new(py, b""))?;
@@ -10874,7 +11154,7 @@ impl FastApiCall {
         self.response_body = if status_code == Some(204) {
             Vec::new()
         } else {
-            json_bytes(py, &response_value)?
+            json_bytes(py, response_value.bind(py))?
         };
         self.send_start_with_injected_response_headers(py)
     }
@@ -11150,6 +11430,12 @@ impl FastApiCall {
                 Some(PendingAction::FrontendResponse) => self.finish_frontend_response(py, value),
                 Some(PendingAction::FrontendAsgiResponse) => self.close_form_after_response(py),
                 Some(PendingAction::Endpoint) => self.finish_endpoint(py, value),
+                Some(PendingAction::ResponseValidation(state)) => {
+                    let outcome = value.bind(py).cast::<PyTuple>()?;
+                    let validated = outcome.get_item(0)?.unbind();
+                    let errors = outcome.get_item(1)?.cast_into::<PyList>()?.unbind();
+                    self.finish_response_validation(py, *state, validated, errors)
+                }
                 Some(PendingAction::DependencyGraph(graph)) => {
                     self.dependency_graph_resumed(py, *graph, value)
                 }
@@ -11224,6 +11510,7 @@ impl FastApiCall {
                     | PendingAction::WebSocketClose
                     | PendingAction::RouteInvocation
                     | PendingAction::Endpoint
+                    | PendingAction::ResponseValidation(_)
                     | PendingAction::ReturnedResponse
                     | PendingAction::FrontendConfig
                     | PendingAction::FrontendAsgiResponse
