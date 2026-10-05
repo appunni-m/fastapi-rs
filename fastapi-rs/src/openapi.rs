@@ -124,6 +124,16 @@ pub(crate) fn openapi_document(
     root_path: Option<&str>,
     shared_definitions: Option<&Py<PyDict>>,
 ) -> PyResult<Py<PyAny>> {
+    let encoder_options = JsonableEncoderOptions::new(JsonableEncoderInput {
+        include: None,
+        exclude: None,
+        by_alias: true,
+        exclude_unset: false,
+        exclude_defaults: false,
+        exclude_none: true,
+        custom_encoder: None,
+        sqlalchemy_safe: true,
+    });
     let mut schemas = BTreeMap::<String, Py<PyAny>>::new();
     if let Some(definitions) = shared_definitions {
         for (name, schema) in definitions.bind(py).iter() {
@@ -136,7 +146,10 @@ pub(crate) fn openapi_document(
     let mut security_schemes = Vec::new();
     for operation in operations {
         for (name, scheme) in &operation.security_schemes {
-            register_security_scheme(&mut security_schemes, name.clone(), scheme.clone_ref(py));
+            // Source encodes each operation's scheme before insertion/dedup.
+            // The private graph receives the ordinary definition dictionary.
+            let definition = jsonable_encoder(py, scheme.bind(py), &encoder_options)?;
+            register_security_scheme(&mut security_schemes, name.clone(), definition.unbind());
         }
         for parameter in &operation.parameters {
             collect_schema_definitions(py, &mut schemas, &parameter.schema, false)?;
@@ -517,21 +530,9 @@ pub(crate) fn openapi_document(
         document.set_item("components", components)?;
     }
 
-    let document = ordered_openapi_wire_value(
-        py,
-        document.as_any(),
-        OpenApiWireShape::Object(OpenApiWireNode::Document),
-    )?;
-    let encoder_options = JsonableEncoderOptions::new(JsonableEncoderInput {
-        include: None,
-        exclude: None,
-        by_alias: true,
-        exclude_unset: false,
-        exclude_defaults: false,
-        exclude_none: true,
-        custom_encoder: None,
-        sqlalchemy_safe: true,
-    });
+    // FastAPI finalizes the complete graph through OpenAPI(**output). Let
+    // Pydantic choose model/Any union branches before the existing encoder.
+    let document = crate::openapi_models::finalize_document(py, &document)?;
     jsonable_encoder(py, &document, &encoder_options).map(Bound::unbind)
 }
 
@@ -595,7 +596,7 @@ impl GetOpenApiCallable {
         let servers = servers.map(Bound::unbind);
         let external_docs = external_docs.map(Bound::unbind);
         let tags = tags.map(Bound::unbind);
-        let output = openapi_document(
+        openapi_document(
             py,
             OpenApiInfo {
                 openapi_version,
@@ -613,24 +614,7 @@ impl GetOpenApiCallable {
             &operations,
             None,
             None,
-        )?;
-        {
-            let output_dict = output.bind(py).cast::<PyDict>()?;
-            if let Some(external_docs) = output_dict.get_item("externalDocs")? {
-                if let Ok(external_docs) = external_docs.cast::<PyDict>() {
-                    if let Some(url) = external_docs.get_item("url")? {
-                        let pydantic = py.import("pydantic")?;
-                        let adapter = pydantic
-                            .getattr("TypeAdapter")?
-                            .call1((pydantic.getattr("AnyUrl")?,))?;
-                        let normalized_url =
-                            adapter.call_method1("validate_python", (url,))?.str()?;
-                        external_docs.set_item("url", normalized_url)?;
-                    }
-                }
-            }
-        }
-        Ok(output)
+        )
     }
 }
 
@@ -923,305 +907,6 @@ fn normalize_schema_value<'py>(
     }
 
     Ok(value.clone())
-}
-
-// FastAPI validates its assembled dictionaries through OpenAPI models before
-// encoding. These contexts preserve the declared order for native dictionaries;
-// validation and smart-union selection remain separate compatibility work.
-#[derive(Clone, Copy)]
-enum OpenApiWireNode {
-    Document,
-    Info,
-    Contact,
-    License,
-    Server,
-    ServerVariable,
-    PathItem,
-    Operation,
-    Response,
-    Components,
-    MediaType,
-    Parameter,
-    Header,
-    RequestBody,
-    Schema,
-    Example,
-    Encoding,
-    Link,
-    Discriminator,
-    Xml,
-    ExternalDocumentation,
-    Tag,
-}
-
-#[derive(Clone, Copy)]
-enum OpenApiWireShape {
-    Any,
-    Object(OpenApiWireNode),
-    List(OpenApiWireNode),
-    NamedMap(OpenApiWireNode),
-    NestedNamedMap(OpenApiWireNode),
-}
-
-fn ordered_openapi_wire_value<'py>(
-    py: Python<'py>,
-    value: &Bound<'py, PyAny>,
-    shape: OpenApiWireShape,
-) -> PyResult<Bound<'py, PyAny>> {
-    match shape {
-        OpenApiWireShape::Any => Ok(value.clone()),
-        OpenApiWireShape::Object(node) => ordered_openapi_wire_object(py, value, node),
-        OpenApiWireShape::List(node) => {
-            if value.cast::<PyList>().is_err() && value.cast::<PyTuple>().is_err() {
-                return Ok(value.clone());
-            }
-            let result = PyList::empty(py);
-            for item in value.try_iter()? {
-                result.append(ordered_openapi_wire_object(py, &item?, node)?)?;
-            }
-            Ok(result.into_any())
-        }
-        OpenApiWireShape::NamedMap(node) => {
-            ordered_openapi_wire_map(py, value, OpenApiWireShape::Object(node))
-        }
-        OpenApiWireShape::NestedNamedMap(node) => {
-            ordered_openapi_wire_map(py, value, OpenApiWireShape::NamedMap(node))
-        }
-    }
-}
-
-fn ordered_openapi_wire_map<'py>(
-    py: Python<'py>,
-    value: &Bound<'py, PyAny>,
-    child_shape: OpenApiWireShape,
-) -> PyResult<Bound<'py, PyAny>> {
-    let Ok(source) = value.cast::<PyDict>() else {
-        return Ok(value.clone());
-    };
-    let result = PyDict::new(py);
-    for (name, item) in source.iter() {
-        result.set_item(name, ordered_openapi_wire_value(py, &item, child_shape)?)?;
-    }
-    Ok(result.into_any())
-}
-
-fn ordered_openapi_wire_object<'py>(
-    py: Python<'py>,
-    value: &Bound<'py, PyAny>,
-    node: OpenApiWireNode,
-) -> PyResult<Bound<'py, PyAny>> {
-    let Ok(source) = value.cast::<PyDict>() else {
-        return Ok(value.clone());
-    };
-    let fields = openapi_wire_field_order(node);
-    let result = PyDict::new(py);
-    for field in fields {
-        if let Some(item) = source.get_item(*field)? {
-            result.set_item(
-                *field,
-                ordered_openapi_wire_value(py, &item, openapi_wire_child_shape(node, field))?,
-            )?;
-        }
-    }
-    // Extension values have Any semantics. Keep their original key order and
-    // data; the ordinary jsonable encoder performs its existing conversions.
-    for (key, item) in source.iter() {
-        let declared = key
-            .cast::<PyString>()
-            .ok()
-            .and_then(|key| key.to_str().ok())
-            .is_some_and(|key| fields.contains(&key));
-        if !declared {
-            result.set_item(key, item)?;
-        }
-    }
-    Ok(result.into_any())
-}
-
-fn openapi_wire_field_order(node: OpenApiWireNode) -> &'static [&'static str] {
-    use OpenApiWireNode as Node;
-    match node {
-        Node::Document => &[
-            "openapi",
-            "info",
-            "jsonSchemaDialect",
-            "servers",
-            "paths",
-            "webhooks",
-            "components",
-            "security",
-            "tags",
-            "externalDocs",
-        ],
-        Node::Info => &[
-            "title",
-            "summary",
-            "description",
-            "termsOfService",
-            "contact",
-            "license",
-            "version",
-        ],
-        Node::Contact => &["name", "url", "email"],
-        Node::License => &["name", "identifier", "url"],
-        Node::Server => &["url", "description", "variables"],
-        Node::ServerVariable => &["enum", "default", "description"],
-        Node::PathItem => &[
-            "$ref",
-            "summary",
-            "description",
-            "get",
-            "put",
-            "post",
-            "delete",
-            "options",
-            "head",
-            "patch",
-            "trace",
-            "servers",
-            "parameters",
-        ],
-        Node::Operation => &[
-            "tags",
-            "summary",
-            "description",
-            "externalDocs",
-            "operationId",
-            "parameters",
-            "requestBody",
-            "responses",
-            "callbacks",
-            "deprecated",
-            "security",
-            "servers",
-        ],
-        Node::Response => &["description", "headers", "content", "links"],
-        Node::Components => &[
-            "schemas",
-            "responses",
-            "parameters",
-            "examples",
-            "requestBodies",
-            "headers",
-            "securitySchemes",
-            "links",
-            "callbacks",
-            "pathItems",
-        ],
-        Node::MediaType => &["schema", "example", "examples", "encoding"],
-        Node::Parameter => &[
-            "description",
-            "required",
-            "deprecated",
-            "style",
-            "explode",
-            "allowReserved",
-            "schema",
-            "example",
-            "examples",
-            "content",
-            "name",
-            "in",
-        ],
-        Node::Header => &[
-            "description",
-            "required",
-            "deprecated",
-            "style",
-            "explode",
-            "allowReserved",
-            "schema",
-            "example",
-            "examples",
-            "content",
-        ],
-        Node::RequestBody => &["description", "content", "required"],
-        Node::Schema => SCHEMA_WIRE_FIELD_ORDER,
-        Node::Example => &["summary", "description", "value", "externalValue"],
-        Node::Encoding => &[
-            "contentType",
-            "headers",
-            "style",
-            "explode",
-            "allowReserved",
-        ],
-        Node::Link => &[
-            "operationRef",
-            "operationId",
-            "parameters",
-            "requestBody",
-            "description",
-            "server",
-        ],
-        Node::Discriminator => &["propertyName", "mapping"],
-        Node::Xml => &["name", "namespace", "prefix", "attribute", "wrapped"],
-        Node::ExternalDocumentation => &["description", "url"],
-        Node::Tag => &["name", "description", "externalDocs"],
-    }
-}
-
-fn openapi_wire_child_shape(node: OpenApiWireNode, field: &str) -> OpenApiWireShape {
-    use OpenApiWireNode as Node;
-    use OpenApiWireShape as Shape;
-    match (node, field) {
-        (Node::Document, "info") => Shape::Object(Node::Info),
-        (Node::Document | Node::PathItem | Node::Operation, "servers") => Shape::List(Node::Server),
-        (Node::Document, "paths" | "webhooks") => Shape::NamedMap(Node::PathItem),
-        (Node::Document, "components") => Shape::Object(Node::Components),
-        (Node::Document, "tags") => Shape::List(Node::Tag),
-        (Node::Document | Node::Operation | Node::Schema | Node::Tag, "externalDocs") => {
-            Shape::Object(Node::ExternalDocumentation)
-        }
-        (Node::Info, "contact") => Shape::Object(Node::Contact),
-        (Node::Info, "license") => Shape::Object(Node::License),
-        (Node::Server, "variables") => Shape::NamedMap(Node::ServerVariable),
-        (
-            Node::PathItem,
-            "get" | "put" | "post" | "delete" | "options" | "head" | "patch" | "trace",
-        ) => Shape::Object(Node::Operation),
-        (Node::PathItem | Node::Operation, "parameters") => Shape::List(Node::Parameter),
-        (Node::Operation, "requestBody") => Shape::Object(Node::RequestBody),
-        (Node::Operation | Node::Components, "responses") => Shape::NamedMap(Node::Response),
-        (Node::Operation | Node::Components, "callbacks") => Shape::NestedNamedMap(Node::PathItem),
-        (Node::Components, "schemas") => Shape::NamedMap(Node::Schema),
-        (Node::Components, "parameters") => Shape::NamedMap(Node::Parameter),
-        (Node::Components | Node::MediaType | Node::Parameter | Node::Header, "examples") => {
-            Shape::NamedMap(Node::Example)
-        }
-        (Node::Components, "requestBodies") => Shape::NamedMap(Node::RequestBody),
-        (Node::Components | Node::Response | Node::Encoding, "headers") => {
-            Shape::NamedMap(Node::Header)
-        }
-        (Node::Components | Node::Response, "links") => Shape::NamedMap(Node::Link),
-        (Node::Components, "pathItems") => Shape::NamedMap(Node::PathItem),
-        (Node::Response | Node::Parameter | Node::Header | Node::RequestBody, "content") => {
-            Shape::NamedMap(Node::MediaType)
-        }
-        (Node::MediaType | Node::Parameter | Node::Header, "schema") => Shape::Object(Node::Schema),
-        (Node::MediaType, "encoding") => Shape::NamedMap(Node::Encoding),
-        (Node::Link, "server") => Shape::Object(Node::Server),
-        (Node::Schema, "$defs" | "properties" | "patternProperties" | "dependentSchemas") => {
-            Shape::NamedMap(Node::Schema)
-        }
-        (Node::Schema, "allOf" | "anyOf" | "oneOf" | "prefixItems") => Shape::List(Node::Schema),
-        (
-            Node::Schema,
-            "not"
-            | "if"
-            | "then"
-            | "else"
-            | "items"
-            | "contains"
-            | "additionalProperties"
-            | "propertyNames"
-            | "unevaluatedItems"
-            | "unevaluatedProperties"
-            | "contentSchema",
-        ) => Shape::Object(Node::Schema),
-        (Node::Schema, "discriminator") => Shape::Object(Node::Discriminator),
-        (Node::Schema, "xml") => Shape::Object(Node::Xml),
-        _ => Shape::Any,
-    }
 }
 
 const SCHEMA_WIRE_FIELD_ORDER: &[&str] = &[

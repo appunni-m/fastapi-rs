@@ -24,6 +24,19 @@ DYNAMIC_PYTHON_EXECUTION = re.compile(
     r"\b(?:py|python)\s*\.\s*(?:run|eval)\s*\(|"
     r"\bPyModule\s*::\s*from_code(?:_bound)?\s*\("
 )
+FASTAPI_MODULE_METADATA_ASSIGNMENT = re.compile(
+    r"\.\s*(?:setattr|set_item)\s*\(\s*['\"](?:__module__|module)['\"]\s*,\s*"
+    r"(?P<value>['\"]fastapi(?:\.[A-Za-z_]\w*)*['\"]|[A-Za-z_]\w*)\s*,?\s*\)"
+)
+FASTAPI_MODULE_METADATA_CONST = re.compile(
+    r"\bconst\s+(?P<name>[A-Za-z_]\w*)\s*:\s*&\s*(?:'static\s+)?str\s*=\s*"
+    r"(?P<value>['\"]fastapi(?:\.[A-Za-z_]\w*)*['\"])\s*;"
+)
+FASTAPI_LOGGER_NAME = re.compile(
+    r"\b(?:py|python)\s*\.\s*import\(\s*['\"]logging['\"]\s*\)\s*\?\s*"
+    r"\.\s*getattr\(\s*['\"]getLogger['\"]\s*\)\s*\?\s*"
+    r"\.\s*call1\(\s*\(\s*(?P<value>['\"]fastapi['\"])\s*,\s*\)\s*\)"
+)
 PUBLIC_FASTAPI_EXPORTS = [
     "APIRouter",
     "BackgroundTasks",
@@ -404,8 +417,13 @@ def check_rust_binding_import_boundary() -> None:
     rust_files = sorted(path for root in RUST_SOURCE_ROOTS for path in root.rglob("*.rs"))
     for path in rust_files:
         source = path.read_text(encoding="utf-8")
-        match = UPSTREAM_FASTAPI_MODULE_LITERAL.search(source)
-        if match and not _is_fastapi_module_metadata(source, match.start()):
+        for match in UPSTREAM_FASTAPI_MODULE_LITERAL.finditer(source):
+            if (
+                _is_fastapi_module_metadata(source, match.start())
+                or _is_fastapi_module_metadata_const(source, match.start())
+                or _is_fastapi_logger_name(source, match.start())
+            ):
+                continue
             line = source.count("\n", 0, match.start()) + 1
             violations.append(
                 f"{path.relative_to(PROJECT_ROOT)}:{line}: native bindings cannot import "
@@ -429,19 +447,43 @@ def _is_fastapi_module_metadata(source: str, offset: int) -> bool:
         attribute_end = source.find("]", attribute_start)
         if attribute_end >= offset:
             attribute = source[attribute_start : attribute_end + 1]
-            if re.search(r"\bmodule\s*=\s*['\"]fastapi(?:\.[A-Za-z_]\w*)*['\"]", attribute):
-                return True
-    line_start = source.rfind("\n", 0, offset) + 1
-    line_end = source.find("\n", offset)
-    line = source[line_start : len(source) if line_end < 0 else line_end]
-    return (
-        re.search(
-            r"\.(?:setattr|set_item)\(\s*['\"]__module__['\"]\s*,\s*"
-            r"['\"]fastapi(?:\.[A-Za-z_]\w*)*['\"]\s*\)",
-            line,
-        )
-        is not None
+            for match in re.finditer(
+                r"\bmodule\s*=\s*(?P<value>['\"]fastapi(?:\.[A-Za-z_]\w*)*['\"])",
+                attribute,
+            ):
+                if attribute_start + match.start("value") == offset:
+                    return True
+    return any(
+        match.start("value") == offset
+        for match in FASTAPI_MODULE_METADATA_ASSIGNMENT.finditer(source)
     )
+
+
+def _is_fastapi_module_metadata_const(source: str, offset: int) -> bool:
+    """Allow a fixed module-name const only when all its uses set metadata."""
+    declaration = next(
+        (
+            match
+            for match in FASTAPI_MODULE_METADATA_CONST.finditer(source)
+            if match.start("value") == offset
+        ),
+        None,
+    )
+    if declaration is None:
+        return False
+    metadata_values = {
+        match.start("value") for match in FASTAPI_MODULE_METADATA_ASSIGNMENT.finditer(source)
+    }
+    identifier = re.compile(rf"\b{re.escape(declaration.group('name'))}\b")
+    return all(
+        match.start() == declaration.start("name") or match.start() in metadata_values
+        for match in identifier.finditer(source)
+    )
+
+
+def _is_fastapi_logger_name(source: str, offset: int) -> bool:
+    """Allow only the direct logging.getLogger('fastapi') name-data chain."""
+    return any(match.start("value") == offset for match in FASTAPI_LOGGER_NAME.finditer(source))
 
 
 def main() -> int:

@@ -16,6 +16,9 @@ mod errors;
 mod fault_injection;
 mod lifespan;
 mod openapi;
+mod openapi_model_email;
+mod openapi_model_schema;
+mod openapi_models;
 mod operation;
 mod parameters;
 mod response_field;
@@ -56,6 +59,7 @@ pub fn register_python_api(module: &Bound<'_, PyModule>) -> PyResult<()> {
     docs::register(module)?;
     security::register(module)?;
     sse::register(module)?;
+    openapi_models::register(module.py(), module)?;
     application_runtime::register(module)?;
     openapi::register(module)
 }
