@@ -81,6 +81,18 @@ Full FastAPI compatibility remains unfinished.
   without changing the active loader. The fault companion is a feasibility note
   for the existing RuntimeError/500/later200 contract; it makes no cache assertion.
 
+- `additional-response-field-lifecycle/`: historical independently authored
+  three-case / 15-GET-action inputs observe saved-decorator attachment, separate
+  original/left/right field construction, second-extra ordinary hook refusal
+  and full branch retry. Active copies are byte-identical; reviewed metadata adds
+  26 precise links to ten existing operations, including public Request injection.
+  Registration of the handler is exercised in all three cases; only retry invokes
+  it. The isolated pinned source and unchanged-target diagnosis remain required
+  before the owned Rust field-bundle repair. Defined JSON hooks expose premature
+  calls only; positive OpenAPI phases/shared definitions and included dependency
+  plan timing remain separate gates. Independent input, source/native design and
+  orchestration reviews are preserved here.
+
 Both historical proposals passed recipe-loader/Ruff admission and independent
 static review; their authored copies remain outside active inputs with no
 expected outputs. Awaitable and response-field lifecycle active copies are

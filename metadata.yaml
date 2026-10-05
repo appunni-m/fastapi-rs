@@ -1208,6 +1208,21 @@ reviewed_api_contract_overlay:
           case_id: fastapi.response-field-traversal.returned-response-still-constructs-included-field
           workload_path: tests/fixtures/workloads/response_field_traversal.py
           observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
+        - &additional_field_saved
+          recipe_path: tests/fixtures/input-recipes/parity/additional-response-field-lifecycle.yaml
+          case_id: fastapi.additional-response-field-lifecycle.saved-decorator-attachment
+          workload_path: tests/fixtures/workloads/additional_response_field_lifecycle.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
+        - &additional_field_two_contexts
+          recipe_path: tests/fixtures/input-recipes/parity/additional-response-field-lifecycle.yaml
+          case_id: fastapi.additional-response-field-lifecycle.shared-router-two-contexts
+          workload_path: tests/fixtures/workloads/additional_response_field_lifecycle.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
+        - &additional_field_retry
+          recipe_path: tests/fixtures/input-recipes/parity/additional-response-field-lifecycle.yaml
+          case_id: fastapi.additional-response-field-lifecycle.second-additional-hook-retry
+          workload_path: tests/fixtures/workloads/additional_response_field_lifecycle.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
       feature_ids: [public-api-errors, app-routing, dependency-security, request-validation, websocket-lifecycle, openapi-docs, response-serialization]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes, websocket.close_code, websocket.close_reason, websocket.event_order, websocket.messages, construction.outcome, construction.exception_class, construction.exception_message, openapi.document, asgi.lifespan.event_order, asgi.lifespan.startup, asgi.lifespan.shutdown, asgi.lifespan.application_errors, asgi.lifespan.workload_trace, warnings.category_message, asgi.send.message_types, asgi.application_error.exception, validation.error_details, error.public_attributes]
       supported_slice: >-
@@ -1285,6 +1300,15 @@ reviewed_api_contract_overlay:
         branch publication and traversal contracts require fresh identity-checked
         source/target receipts; these mappings do not establish complete target
         support, mutable router-version history or generic sibling behavior.
+        Three additional-response-field lifecycle inputs observe saved-decorator
+        attachment, original and two effective-context extra/primary core hooks,
+        and second-extra ordinary user refusal/retry. They select the full warning,
+        public error and raw-send journals through an earlier state route. Defined
+        JSON hooks expose premature invocation only; no OpenAPI request is made.
+        These are reviewed input mappings requiring fresh live receipts. Positive
+        OpenAPI/shared-definition phases, falsy models, forbidden-body statuses,
+        include-level responses, dependency schema timing and mutable history
+        remain separate compatibility gates.
     fastapi.applications.FastAPI.exception_handler:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::exception_handler
       source_evidence:
@@ -1329,6 +1353,9 @@ reviewed_api_contract_overlay:
         - *response_traversal_missing
         - *response_traversal_redirect
         - *response_traversal_returned_response
+        - *additional_field_saved
+        - *additional_field_two_contexts
+        - *additional_field_retry
       feature_ids: [public-api-errors]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.lifespan.workload_trace, construction.outcome, construction.exception_class, construction.exception_message, websocket.close_code, websocket.close_reason, websocket.event_order, websocket.messages, websocket.workload_trace, asgi.send.message_types, asgi.application_error.exception]
       supported_slice: >-
@@ -1923,6 +1950,19 @@ reviewed_api_contract_overlay:
         - {path: fastapi/dependencies/utils.py, symbol: add_non_field_param_to_dependency}
         - {path: docs/en/docs/advanced/using-request-directly.md}
         - {path: tests/test_tutorial/test_using_request_directly/test_tutorial001.py}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/additional-response-field-lifecycle.yaml
+          case_id: fastapi.additional-response-field-lifecycle.saved-decorator-attachment
+          workload_path: tests/fixtures/workloads/additional_response_field_lifecycle.py
+          observation_selectors: [http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/additional-response-field-lifecycle.yaml
+          case_id: fastapi.additional-response-field-lifecycle.shared-router-two-contexts
+          workload_path: tests/fixtures/workloads/additional_response_field_lifecycle.py
+          observation_selectors: [http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/additional-response-field-lifecycle.yaml
+          case_id: fastapi.additional-response-field-lifecycle.second-additional-hook-retry
+          workload_path: tests/fixtures/workloads/additional_response_field_lifecycle.py
+          observation_selectors: [http.status, http.body.bytes]
       feature_ids: [app-routing, request-validation]
       observation_selectors: [http.status, http.body.bytes, openapi.document]
       supported_slice: >-
@@ -2243,6 +2283,9 @@ reviewed_api_contract_overlay:
         - *response_traversal_missing
         - *response_traversal_redirect
         - *response_traversal_returned_response
+        - *additional_field_saved
+        - *additional_field_two_contexts
+        - *additional_field_retry
       feature_ids: [response-serialization]
       observation_selectors: [http.status, http.body.bytes, http.headers.ordered, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message, validation.error_details, error.public_attributes]
       supported_slice: >-
@@ -3202,6 +3245,9 @@ reviewed_api_contract_overlay:
         - *response_traversal_missing
         - *response_traversal_redirect
         - *response_traversal_returned_response
+        - *additional_field_saved
+        - *additional_field_two_contexts
+        - *additional_field_retry
       feature_ids: [app-routing, dependency-security, response-serialization, python-data-encoding]
       observation_selectors:
         - http.status
@@ -3333,6 +3379,8 @@ reviewed_api_contract_overlay:
         - *response_traversal_missing
         - *response_traversal_redirect
         - *response_traversal_returned_response
+        - *additional_field_two_contexts
+        - *additional_field_retry
       feature_ids: [app-routing, request-validation, openapi-docs, websocket-lifecycle, response-serialization]
       observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths, http.headers.ordered, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
       supported_slice: >-
@@ -3434,6 +3482,8 @@ reviewed_api_contract_overlay:
         - *response_traversal_missing
         - *response_traversal_redirect
         - *response_traversal_returned_response
+        - *additional_field_two_contexts
+        - *additional_field_retry
       feature_ids: [app-routing, request-validation, websocket-lifecycle, openapi-docs, response-serialization]
       observation_selectors: [http.status, http.body.bytes, websocket.event_order, websocket.messages, openapi.document, openapi.paths, asgi.lifespan.event_order, asgi.lifespan.startup, asgi.lifespan.shutdown, asgi.lifespan.application_errors, asgi.lifespan.workload_trace, warnings.category_message, http.headers.ordered, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
       supported_slice: >-
@@ -3772,6 +3822,8 @@ reviewed_api_contract_overlay:
         - *response_traversal_missing
         - *response_traversal_redirect
         - *response_traversal_returned_response
+        - *additional_field_two_contexts
+        - *additional_field_retry
       feature_ids: [app-routing, request-validation, openapi-docs, websocket-lifecycle, response-serialization]
       observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths, asgi.lifespan.event_order, asgi.lifespan.startup, asgi.lifespan.shutdown, asgi.lifespan.application_errors, asgi.lifespan.workload_trace, http.headers.ordered, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
       supported_slice: >-
@@ -3901,6 +3953,8 @@ reviewed_api_contract_overlay:
         - *response_traversal_missing
         - *response_traversal_redirect
         - *response_traversal_returned_response
+        - *additional_field_two_contexts
+        - *additional_field_retry
       feature_ids: [app-routing, request-validation, openapi-docs, response-serialization]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.paths, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
       supported_slice: >-
@@ -4355,6 +4409,9 @@ reviewed_api_contract_overlay:
         - *response_traversal_missing
         - *response_traversal_redirect
         - *response_traversal_returned_response
+        - *additional_field_saved
+        - *additional_field_two_contexts
+        - *additional_field_retry
       feature_ids: [app-routing, request-validation, response-serialization, openapi-docs]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message, validation.error_details, error.public_attributes]
       supported_slice: >-

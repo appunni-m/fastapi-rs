@@ -6,6 +6,53 @@
   },
   "workflows": [
     {
+      "id": "additional-response-field-lifecycle",
+      "input_path": "tests/fixtures/inputs/parity/additional-response-field-lifecycle.json",
+      "input_sha256": "8ec188213588f06c8a107941f442f8f9bf69020828ae42626238f247c4944190",
+      "recipe_path": "tests/fixtures/input-recipes/parity/additional-response-field-lifecycle.yaml",
+      "recipe_sha256": "199ab0b81d4b1e923933a13f076c49bb89229add1e0c90ce441902c0c5db7ae1",
+      "workload_path": "tests/fixtures/workloads/additional_response_field_lifecycle.py",
+      "workload_sha256": "ef756492903a719a8b3522bc1971794663083bcbb55ed20076b74f988d0e8025",
+      "case_ids": [
+        "fastapi.additional-response-field-lifecycle.saved-decorator-attachment",
+        "fastapi.additional-response-field-lifecycle.shared-router-two-contexts",
+        "fastapi.additional-response-field-lifecycle.second-additional-hook-retry"
+      ],
+      "case_contracts": [
+        {
+          "case_id": "fastapi.additional-response-field-lifecycle.saved-decorator-attachment",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/additional-responses.md",
+            "source:documented-page:tutorial/response-model.md",
+            "source:upstream-test:tests/test_additional_responses_router.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.additional-response-field-lifecycle.shared-router-two-contexts",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/additional-responses.md",
+            "source:documented-page:tutorial/bigger-applications.md",
+            "source:upstream-test:tests/test_additional_responses_response_class.py",
+            "source:upstream-test:tests/test_additional_responses_router.py",
+            "source:upstream-test:tests/test_router_include_context.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.additional-response-field-lifecycle.second-additional-hook-retry",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/additional-responses.md",
+            "source:documented-page:tutorial/handling-errors.md",
+            "source:upstream-test:tests/test_additional_responses_bad.py",
+            "source:upstream-test:tests/test_additional_responses_router.py",
+            "source:upstream-test:tests/test_router_include_context.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "additional-response-model-openapi",
       "input_path": "tests/fixtures/inputs/parity/additional-response-model-openapi.json",
       "input_sha256": "30d3d259ac3bf008ac54f9789b54a9eeb98b9c2fb0afe11181fde9830c3385eb",
@@ -29430,6 +29477,137 @@
     }
   ],
   "mappings": [
+    {
+      "source_item_id": "documented-page:advanced/additional-responses.md",
+      "fixture_id": "fastapi.docs.advanced-additional-responses",
+      "workflow_id": "additional-response-field-lifecycle",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.additional-response-field-lifecycle.saved-decorator-attachment",
+        "fastapi.additional-response-field-lifecycle.second-additional-hook-retry",
+        "fastapi.additional-response-field-lifecycle.shared-router-two-contexts"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/bigger-applications.md",
+      "fixture_id": "fastapi.docs.tutorial-bigger-applications",
+      "workflow_id": "additional-response-field-lifecycle",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.additional-response-field-lifecycle.shared-router-two-contexts"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/handling-errors.md",
+      "fixture_id": "fastapi.docs.tutorial-handling-errors",
+      "workflow_id": "additional-response-field-lifecycle",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.additional-response-field-lifecycle.second-additional-hook-retry"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/response-model.md",
+      "fixture_id": "fastapi.docs.tutorial-response-model",
+      "workflow_id": "additional-response-field-lifecycle",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.additional-response-field-lifecycle.saved-decorator-attachment"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_additional_responses_bad.py",
+      "fixture_id": "fastapi.test.test-additional-responses-bad",
+      "workflow_id": "additional-response-field-lifecycle",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.additional-response-field-lifecycle.second-additional-hook-retry"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "http.body.bytes"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_additional_responses_response_class.py",
+      "fixture_id": "fastapi.test.test-additional-responses-response-class",
+      "workflow_id": "additional-response-field-lifecycle",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.additional-response-field-lifecycle.shared-router-two-contexts"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_additional_responses_router.py",
+      "fixture_id": "fastapi.test.test-additional-responses-router",
+      "workflow_id": "additional-response-field-lifecycle",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.additional-response-field-lifecycle.saved-decorator-attachment",
+        "fastapi.additional-response-field-lifecycle.second-additional-hook-retry",
+        "fastapi.additional-response-field-lifecycle.shared-router-two-contexts"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_router_include_context.py",
+      "fixture_id": "fastapi.test.test-router-include-context",
+      "workflow_id": "additional-response-field-lifecycle",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.additional-response-field-lifecycle.second-additional-hook-retry",
+        "fastapi.additional-response-field-lifecycle.shared-router-two-contexts"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
     {
       "source_item_id": "documented-page:advanced/additional-responses.md",
       "fixture_id": "fastapi.docs.advanced-additional-responses",

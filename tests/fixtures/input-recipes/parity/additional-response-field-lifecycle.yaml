@@ -1,0 +1,495 @@
+# Inactive independent public inputs. No prescribed or stored outcomes.
+schema: fastapi-rs/python-asgi-workflow@9
+workload:
+  file: tests/fixtures/workloads/additional_response_field_lifecycle.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.additional-response-field-lifecycle.saved-decorator-attachment
+  verification: parity
+  factory_input:
+    routes:
+    - kind: route
+      path: /probe
+      label: direct
+      value: 17
+      primary:
+        label: primary
+      responses:
+      - status: 409
+        description: Independent conflict response
+        model:
+          label: extra
+          core_warning: independent extra core schema warning
+  construction_observation: &id003
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: read-state-after-attachment
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events: &id001
+    - type: http.request
+      body: ''
+      more_body: false
+    observations: &id002
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+    - kind: application_error
+      selector: exception
+      comparison: exact
+  - action_id: request-primary-value
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /probe
+      query_string: value=19
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events: *id001
+    observations: *id002
+  - action_id: read-state-after-primary-value
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events: *id001
+    observations: *id002
+  source_evidence:
+  - path: tests/test_additional_responses_router.py
+    kind: upstream_test
+  - path: docs/en/docs/advanced/additional-responses.md
+    kind: upstream_documentation
+  - path: docs/en/docs/tutorial/response-model.md
+    kind: upstream_documentation
+- case_id: fastapi.additional-response-field-lifecycle.shared-router-two-contexts
+  verification: parity
+  factory_input:
+    routers:
+      shared:
+        routes:
+        - kind: route
+          path: /item
+          label: shared
+          value: 23
+          primary:
+            label: primary
+          responses:
+          - status: 409
+            description: Independent shared conflict response
+            model:
+              label: extra
+          returned_response:
+            status: 409
+            headers:
+              x-lifecycle-stimulus: shared
+    routes:
+    - kind: include
+      router: shared
+      prefix: /left
+    - kind: include
+      router: shared
+      prefix: /right
+  construction_observation: *id003
+  actions:
+  - action_id: read-state-before-visiting-contexts
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events: *id001
+    observations: *id002
+  - action_id: request-left-context
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /left/item
+      query_string: value=29
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events: *id001
+    observations: *id002
+  - action_id: read-state-after-left-context
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events: *id001
+    observations: *id002
+  - action_id: request-right-context
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /right/item
+      query_string: value=31
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events: *id001
+    observations: *id002
+  - action_id: read-state-after-right-context
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events: *id001
+    observations: *id002
+  source_evidence:
+  - path: tests/test_additional_responses_router.py
+    kind: upstream_test
+  - path: tests/test_additional_responses_response_class.py
+    kind: upstream_test
+  - path: tests/test_router_include_context.py
+    kind: upstream_test
+  - path: docs/en/docs/advanced/additional-responses.md
+    kind: upstream_documentation
+  - path: docs/en/docs/tutorial/bigger-applications.md
+    kind: upstream_documentation
+- case_id: fastapi.additional-response-field-lifecycle.second-additional-hook-retry
+  verification: parity
+  factory_input:
+    routers:
+      branch:
+        routes:
+        - kind: route
+          path: /item
+          label: branch
+          value: 37
+          primary:
+            label: primary
+          responses:
+          - status: 409
+            description: Independent first additional response
+            model:
+              label: first
+              core_warning: independent first core schema warning
+          - status: 202
+            description: Independent second additional response
+            model:
+              label: second
+              core_warning: independent second core schema warning
+    routes:
+    - kind: include
+      router: branch
+      prefix: /branch
+    refuse_once: second
+  construction_observation: *id003
+  actions:
+  - action_id: read-state-after-arming-hook
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events: *id001
+    observations: *id002
+  - action_id: request-branch-with-armed-hook
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /branch/item
+      query_string: value=41
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events: *id001
+    observations: *id002
+  - action_id: read-state-after-hook-request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events: *id001
+    observations: *id002
+  - action_id: retry-branch-request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /branch/item
+      query_string: value=41
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events: *id001
+    observations: *id002
+  - action_id: read-state-after-branch-retry
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events: *id001
+    observations: *id002
+  - action_id: repeat-branch-request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /branch/item
+      query_string: value=41
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events: *id001
+    observations: *id002
+  - action_id: read-state-after-retained-repeat
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events: *id001
+    observations: *id002
+  source_evidence:
+  - path: tests/test_additional_responses_router.py
+    kind: upstream_test
+  - path: tests/test_additional_responses_bad.py
+    kind: upstream_test
+  - path: tests/test_router_include_context.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/handling-errors.md
+    kind: upstream_documentation
+  - path: docs/en/docs/advanced/additional-responses.md
+    kind: upstream_documentation
