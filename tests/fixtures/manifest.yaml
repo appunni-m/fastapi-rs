@@ -415,7 +415,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@5
-    sha256: 9484773feb832f1298346c22be11b67fda16a4d8d4d009b0fc92b3876bd0661a
+    sha256: 1ed1a10dd73eb8767a59ae8829e10e5224367015db62707baa9a8bfb94d526b1
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -451,7 +451,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 93643b00a2a225f0cfcacffa85451656bf0721209d818a7f7b17b56bb429a8a6
+    sha256: 8b580a06320b110029c4fdf3801cf5ef3eda387a83567abb4bd093135b90cffd
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -488,14 +488,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@5
-    sha256: 9ed571072fcb1070c0c77579e7ec4fa644228737c89e4f7a3712ade64bf0d908
+    sha256: 79454bd19334bd6462211c2e128b3ad860684efc1891aeac0cd80fe905432d78
     schema_path: tests/fixtures/schemas/materialized-input-index-v5.schema.json
     schema_sha256: 13dd4cf1032a4ad9161712364d94b9f91834afee380e1f8eee6f4f05c123261d
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 545
-      cases: 2182
-      partial_source_mappings: 1520
+      workflows: 546
+      cases: 2196
+      partial_source_mappings: 1525
 
 contract_metadata:
   aliases:
@@ -878,7 +878,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 101
     symbols_with_operation_fixture_refs: 143
-    operation_fixture_refs: 772
+    operation_fixture_refs: 802
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -1913,6 +1913,205 @@ api_surface_contract:
       observation_selectors:
       - python.signature
     operation_fixture_refs:
+    - workflow_id: dependency-dynamic-cache-policy
+      input_path: tests/fixtures/inputs/parity/dependency-dynamic-cache-policy.json
+      input_sha256: 277b9e95d04670da0ab86c5142df8dbcdc9f7b15a3d4af6efc3071ca52d76ba0
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-dynamic-cache-policy.yaml
+      recipe_sha256: 22f117448cf5cda48360a860c75f86dbc4aac54b13eddebaecf915dbce32a8fe
+      workload_path: tests/fixtures/workloads/dependency_dynamic_cache_policy.py
+      workload_sha256: 8cc667f521b2e10e99e65cf593330aad0f4b8715c6d77a6b3f070f8afb0533fc
+      case_id: fastapi.dependencies.dynamic-cache-policy.raw-capture
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.status
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-dynamic-cache-policy
+      input_path: tests/fixtures/inputs/parity/dependency-dynamic-cache-policy.json
+      input_sha256: 277b9e95d04670da0ab86c5142df8dbcdc9f7b15a3d4af6efc3071ca52d76ba0
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-dynamic-cache-policy.yaml
+      recipe_sha256: 22f117448cf5cda48360a860c75f86dbc4aac54b13eddebaecf915dbce32a8fe
+      workload_path: tests/fixtures/workloads/dependency_dynamic_cache_policy.py
+      workload_sha256: 8cc667f521b2e10e99e65cf593330aad0f4b8715c6d77a6b3f070f8afb0533fc
+      case_id: fastapi.dependencies.dynamic-cache-policy.sync-false-first-insertion
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-dynamic-cache-policy
+      input_path: tests/fixtures/inputs/parity/dependency-dynamic-cache-policy.json
+      input_sha256: 277b9e95d04670da0ab86c5142df8dbcdc9f7b15a3d4af6efc3071ca52d76ba0
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-dynamic-cache-policy.yaml
+      recipe_sha256: 22f117448cf5cda48360a860c75f86dbc4aac54b13eddebaecf915dbce32a8fe
+      workload_path: tests/fixtures/workloads/dependency_dynamic_cache_policy.py
+      workload_sha256: 8cc667f521b2e10e99e65cf593330aad0f4b8715c6d77a6b3f070f8afb0533fc
+      case_id: fastapi.dependencies.dynamic-cache-policy.flat-async-validation
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-dynamic-cache-policy
+      input_path: tests/fixtures/inputs/parity/dependency-dynamic-cache-policy.json
+      input_sha256: 277b9e95d04670da0ab86c5142df8dbcdc9f7b15a3d4af6efc3071ca52d76ba0
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-dynamic-cache-policy.yaml
+      recipe_sha256: 22f117448cf5cda48360a860c75f86dbc4aac54b13eddebaecf915dbce32a8fe
+      workload_path: tests/fixtures/workloads/dependency_dynamic_cache_policy.py
+      workload_sha256: 8cc667f521b2e10e99e65cf593330aad0f4b8715c6d77a6b3f070f8afb0533fc
+      case_id: fastapi.dependencies.dynamic-cache-policy.flat-async-cache-hit-validation
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-dynamic-cache-policy
+      input_path: tests/fixtures/inputs/parity/dependency-dynamic-cache-policy.json
+      input_sha256: 277b9e95d04670da0ab86c5142df8dbcdc9f7b15a3d4af6efc3071ca52d76ba0
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-dynamic-cache-policy.yaml
+      recipe_sha256: 22f117448cf5cda48360a860c75f86dbc4aac54b13eddebaecf915dbce32a8fe
+      workload_path: tests/fixtures/workloads/dependency_dynamic_cache_policy.py
+      workload_sha256: 8cc667f521b2e10e99e65cf593330aad0f4b8715c6d77a6b3f070f8afb0533fc
+      case_id: fastapi.dependencies.dynamic-cache-policy.nested-sync-parent-async-child
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-dynamic-cache-policy
+      input_path: tests/fixtures/inputs/parity/dependency-dynamic-cache-policy.json
+      input_sha256: 277b9e95d04670da0ab86c5142df8dbcdc9f7b15a3d4af6efc3071ca52d76ba0
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-dynamic-cache-policy.yaml
+      recipe_sha256: 22f117448cf5cda48360a860c75f86dbc4aac54b13eddebaecf915dbce32a8fe
+      workload_path: tests/fixtures/workloads/dependency_dynamic_cache_policy.py
+      workload_sha256: 8cc667f521b2e10e99e65cf593330aad0f4b8715c6d77a6b3f070f8afb0533fc
+      case_id: fastapi.dependencies.dynamic-cache-policy.nested-async-parent-sync-child
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-dynamic-cache-policy
+      input_path: tests/fixtures/inputs/parity/dependency-dynamic-cache-policy.json
+      input_sha256: 277b9e95d04670da0ab86c5142df8dbcdc9f7b15a3d4af6efc3071ca52d76ba0
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-dynamic-cache-policy.yaml
+      recipe_sha256: 22f117448cf5cda48360a860c75f86dbc4aac54b13eddebaecf915dbce32a8fe
+      workload_path: tests/fixtures/workloads/dependency_dynamic_cache_policy.py
+      workload_sha256: 8cc667f521b2e10e99e65cf593330aad0f4b8715c6d77a6b3f070f8afb0533fc
+      case_id: fastapi.dependencies.dynamic-cache-policy.override-outer-and-rebuilt-children
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-dynamic-cache-policy
+      input_path: tests/fixtures/inputs/parity/dependency-dynamic-cache-policy.json
+      input_sha256: 277b9e95d04670da0ab86c5142df8dbcdc9f7b15a3d4af6efc3071ca52d76ba0
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-dynamic-cache-policy.yaml
+      recipe_sha256: 22f117448cf5cda48360a860c75f86dbc4aac54b13eddebaecf915dbce32a8fe
+      workload_path: tests/fixtures/workloads/dependency_dynamic_cache_policy.py
+      workload_sha256: 8cc667f521b2e10e99e65cf593330aad0f4b8715c6d77a6b3f070f8afb0533fc
+      case_id: fastapi.dependencies.dynamic-cache-policy.failed-edge-later-sibling
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-dynamic-cache-policy
+      input_path: tests/fixtures/inputs/parity/dependency-dynamic-cache-policy.json
+      input_sha256: 277b9e95d04670da0ab86c5142df8dbcdc9f7b15a3d4af6efc3071ca52d76ba0
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-dynamic-cache-policy.yaml
+      recipe_sha256: 22f117448cf5cda48360a860c75f86dbc4aac54b13eddebaecf915dbce32a8fe
+      workload_path: tests/fixtures/workloads/dependency_dynamic_cache_policy.py
+      workload_sha256: 8cc667f521b2e10e99e65cf593330aad0f4b8715c6d77a6b3f070f8afb0533fc
+      case_id: fastapi.dependencies.dynamic-cache-policy.bool-error-yield-cleanup
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-dynamic-cache-policy
+      input_path: tests/fixtures/inputs/parity/dependency-dynamic-cache-policy.json
+      input_sha256: 277b9e95d04670da0ab86c5142df8dbcdc9f7b15a3d4af6efc3071ca52d76ba0
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-dynamic-cache-policy.yaml
+      recipe_sha256: 22f117448cf5cda48360a860c75f86dbc4aac54b13eddebaecf915dbce32a8fe
+      workload_path: tests/fixtures/workloads/dependency_dynamic_cache_policy.py
+      workload_sha256: 8cc667f521b2e10e99e65cf593330aad0f4b8715c6d77a6b3f070f8afb0533fc
+      case_id: fastapi.dependencies.dynamic-cache-policy.len-error-yield-cleanup
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-dynamic-cache-policy
+      input_path: tests/fixtures/inputs/parity/dependency-dynamic-cache-policy.json
+      input_sha256: 277b9e95d04670da0ab86c5142df8dbcdc9f7b15a3d4af6efc3071ca52d76ba0
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-dynamic-cache-policy.yaml
+      recipe_sha256: 22f117448cf5cda48360a860c75f86dbc4aac54b13eddebaecf915dbce32a8fe
+      workload_path: tests/fixtures/workloads/dependency_dynamic_cache_policy.py
+      workload_sha256: 8cc667f521b2e10e99e65cf593330aad0f4b8715c6d77a6b3f070f8afb0533fc
+      case_id: fastapi.dependencies.dynamic-cache-policy.parameterless-app-policy-ignored
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-dynamic-cache-policy
+      input_path: tests/fixtures/inputs/parity/dependency-dynamic-cache-policy.json
+      input_sha256: 277b9e95d04670da0ab86c5142df8dbcdc9f7b15a3d4af6efc3071ca52d76ba0
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-dynamic-cache-policy.yaml
+      recipe_sha256: 22f117448cf5cda48360a860c75f86dbc4aac54b13eddebaecf915dbce32a8fe
+      workload_path: tests/fixtures/workloads/dependency_dynamic_cache_policy.py
+      workload_sha256: 8cc667f521b2e10e99e65cf593330aad0f4b8715c6d77a6b3f070f8afb0533fc
+      case_id: fastapi.dependencies.dynamic-cache-policy.parameterless-router-policy-ignored
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-dynamic-cache-policy
+      input_path: tests/fixtures/inputs/parity/dependency-dynamic-cache-policy.json
+      input_sha256: 277b9e95d04670da0ab86c5142df8dbcdc9f7b15a3d4af6efc3071ca52d76ba0
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-dynamic-cache-policy.yaml
+      recipe_sha256: 22f117448cf5cda48360a860c75f86dbc4aac54b13eddebaecf915dbce32a8fe
+      workload_path: tests/fixtures/workloads/dependency_dynamic_cache_policy.py
+      workload_sha256: 8cc667f521b2e10e99e65cf593330aad0f4b8715c6d77a6b3f070f8afb0533fc
+      case_id: fastapi.dependencies.dynamic-cache-policy.parameterless-route-policy-ignored
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-dynamic-cache-policy
+      input_path: tests/fixtures/inputs/parity/dependency-dynamic-cache-policy.json
+      input_sha256: 277b9e95d04670da0ab86c5142df8dbcdc9f7b15a3d4af6efc3071ca52d76ba0
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-dynamic-cache-policy.yaml
+      recipe_sha256: 22f117448cf5cda48360a860c75f86dbc4aac54b13eddebaecf915dbce32a8fe
+      workload_path: tests/fixtures/workloads/dependency_dynamic_cache_policy.py
+      workload_sha256: 8cc667f521b2e10e99e65cf593330aad0f4b8715c6d77a6b3f070f8afb0533fc
+      case_id: fastapi.fault-contract.dependencies.dynamic-cache-policy.yield-cleanup
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
     - workflow_id: dependency-record-public-protocol
       input_path: tests/fixtures/inputs/parity/dependency-record-public-protocol.json
       input_sha256: eb003b417684932152cda185535d879e13e8a62c257ae9c37d2af0b84343bb49
@@ -2785,6 +2984,7 @@ api_surface_contract:
     - openapi-docs
     - request-validation
     observation_selectors:
+    - asgi.application_error.exception
     - construction.exception_class
     - construction.exception_message
     - construction.outcome
@@ -4675,6 +4875,21 @@ api_surface_contract:
       observation_selectors:
       - python.call_outcome
     operation_fixture_refs:
+    - workflow_id: dependency-dynamic-cache-policy
+      input_path: tests/fixtures/inputs/parity/dependency-dynamic-cache-policy.json
+      input_sha256: 277b9e95d04670da0ab86c5142df8dbcdc9f7b15a3d4af6efc3071ca52d76ba0
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-dynamic-cache-policy.yaml
+      recipe_sha256: 22f117448cf5cda48360a860c75f86dbc4aac54b13eddebaecf915dbce32a8fe
+      workload_path: tests/fixtures/workloads/dependency_dynamic_cache_policy.py
+      workload_sha256: 8cc667f521b2e10e99e65cf593330aad0f4b8715c6d77a6b3f070f8afb0533fc
+      case_id: fastapi.dependencies.dynamic-cache-policy.raw-capture
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.status
+      - http.body.bytes
+      - http.status
     - workflow_id: dependency-record-public-protocol
       input_path: tests/fixtures/inputs/parity/dependency-record-public-protocol.json
       input_sha256: eb003b417684932152cda185535d879e13e8a62c257ae9c37d2af0b84343bb49
@@ -26865,6 +27080,205 @@ api_surface_contract:
       observation_selectors:
       - python.signature
     operation_fixture_refs:
+    - workflow_id: dependency-dynamic-cache-policy
+      input_path: tests/fixtures/inputs/parity/dependency-dynamic-cache-policy.json
+      input_sha256: 277b9e95d04670da0ab86c5142df8dbcdc9f7b15a3d4af6efc3071ca52d76ba0
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-dynamic-cache-policy.yaml
+      recipe_sha256: 22f117448cf5cda48360a860c75f86dbc4aac54b13eddebaecf915dbce32a8fe
+      workload_path: tests/fixtures/workloads/dependency_dynamic_cache_policy.py
+      workload_sha256: 8cc667f521b2e10e99e65cf593330aad0f4b8715c6d77a6b3f070f8afb0533fc
+      case_id: fastapi.dependencies.dynamic-cache-policy.raw-capture
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.status
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-dynamic-cache-policy
+      input_path: tests/fixtures/inputs/parity/dependency-dynamic-cache-policy.json
+      input_sha256: 277b9e95d04670da0ab86c5142df8dbcdc9f7b15a3d4af6efc3071ca52d76ba0
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-dynamic-cache-policy.yaml
+      recipe_sha256: 22f117448cf5cda48360a860c75f86dbc4aac54b13eddebaecf915dbce32a8fe
+      workload_path: tests/fixtures/workloads/dependency_dynamic_cache_policy.py
+      workload_sha256: 8cc667f521b2e10e99e65cf593330aad0f4b8715c6d77a6b3f070f8afb0533fc
+      case_id: fastapi.dependencies.dynamic-cache-policy.sync-false-first-insertion
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-dynamic-cache-policy
+      input_path: tests/fixtures/inputs/parity/dependency-dynamic-cache-policy.json
+      input_sha256: 277b9e95d04670da0ab86c5142df8dbcdc9f7b15a3d4af6efc3071ca52d76ba0
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-dynamic-cache-policy.yaml
+      recipe_sha256: 22f117448cf5cda48360a860c75f86dbc4aac54b13eddebaecf915dbce32a8fe
+      workload_path: tests/fixtures/workloads/dependency_dynamic_cache_policy.py
+      workload_sha256: 8cc667f521b2e10e99e65cf593330aad0f4b8715c6d77a6b3f070f8afb0533fc
+      case_id: fastapi.dependencies.dynamic-cache-policy.flat-async-validation
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-dynamic-cache-policy
+      input_path: tests/fixtures/inputs/parity/dependency-dynamic-cache-policy.json
+      input_sha256: 277b9e95d04670da0ab86c5142df8dbcdc9f7b15a3d4af6efc3071ca52d76ba0
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-dynamic-cache-policy.yaml
+      recipe_sha256: 22f117448cf5cda48360a860c75f86dbc4aac54b13eddebaecf915dbce32a8fe
+      workload_path: tests/fixtures/workloads/dependency_dynamic_cache_policy.py
+      workload_sha256: 8cc667f521b2e10e99e65cf593330aad0f4b8715c6d77a6b3f070f8afb0533fc
+      case_id: fastapi.dependencies.dynamic-cache-policy.flat-async-cache-hit-validation
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-dynamic-cache-policy
+      input_path: tests/fixtures/inputs/parity/dependency-dynamic-cache-policy.json
+      input_sha256: 277b9e95d04670da0ab86c5142df8dbcdc9f7b15a3d4af6efc3071ca52d76ba0
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-dynamic-cache-policy.yaml
+      recipe_sha256: 22f117448cf5cda48360a860c75f86dbc4aac54b13eddebaecf915dbce32a8fe
+      workload_path: tests/fixtures/workloads/dependency_dynamic_cache_policy.py
+      workload_sha256: 8cc667f521b2e10e99e65cf593330aad0f4b8715c6d77a6b3f070f8afb0533fc
+      case_id: fastapi.dependencies.dynamic-cache-policy.nested-sync-parent-async-child
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-dynamic-cache-policy
+      input_path: tests/fixtures/inputs/parity/dependency-dynamic-cache-policy.json
+      input_sha256: 277b9e95d04670da0ab86c5142df8dbcdc9f7b15a3d4af6efc3071ca52d76ba0
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-dynamic-cache-policy.yaml
+      recipe_sha256: 22f117448cf5cda48360a860c75f86dbc4aac54b13eddebaecf915dbce32a8fe
+      workload_path: tests/fixtures/workloads/dependency_dynamic_cache_policy.py
+      workload_sha256: 8cc667f521b2e10e99e65cf593330aad0f4b8715c6d77a6b3f070f8afb0533fc
+      case_id: fastapi.dependencies.dynamic-cache-policy.nested-async-parent-sync-child
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-dynamic-cache-policy
+      input_path: tests/fixtures/inputs/parity/dependency-dynamic-cache-policy.json
+      input_sha256: 277b9e95d04670da0ab86c5142df8dbcdc9f7b15a3d4af6efc3071ca52d76ba0
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-dynamic-cache-policy.yaml
+      recipe_sha256: 22f117448cf5cda48360a860c75f86dbc4aac54b13eddebaecf915dbce32a8fe
+      workload_path: tests/fixtures/workloads/dependency_dynamic_cache_policy.py
+      workload_sha256: 8cc667f521b2e10e99e65cf593330aad0f4b8715c6d77a6b3f070f8afb0533fc
+      case_id: fastapi.dependencies.dynamic-cache-policy.override-outer-and-rebuilt-children
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-dynamic-cache-policy
+      input_path: tests/fixtures/inputs/parity/dependency-dynamic-cache-policy.json
+      input_sha256: 277b9e95d04670da0ab86c5142df8dbcdc9f7b15a3d4af6efc3071ca52d76ba0
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-dynamic-cache-policy.yaml
+      recipe_sha256: 22f117448cf5cda48360a860c75f86dbc4aac54b13eddebaecf915dbce32a8fe
+      workload_path: tests/fixtures/workloads/dependency_dynamic_cache_policy.py
+      workload_sha256: 8cc667f521b2e10e99e65cf593330aad0f4b8715c6d77a6b3f070f8afb0533fc
+      case_id: fastapi.dependencies.dynamic-cache-policy.failed-edge-later-sibling
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-dynamic-cache-policy
+      input_path: tests/fixtures/inputs/parity/dependency-dynamic-cache-policy.json
+      input_sha256: 277b9e95d04670da0ab86c5142df8dbcdc9f7b15a3d4af6efc3071ca52d76ba0
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-dynamic-cache-policy.yaml
+      recipe_sha256: 22f117448cf5cda48360a860c75f86dbc4aac54b13eddebaecf915dbce32a8fe
+      workload_path: tests/fixtures/workloads/dependency_dynamic_cache_policy.py
+      workload_sha256: 8cc667f521b2e10e99e65cf593330aad0f4b8715c6d77a6b3f070f8afb0533fc
+      case_id: fastapi.dependencies.dynamic-cache-policy.bool-error-yield-cleanup
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-dynamic-cache-policy
+      input_path: tests/fixtures/inputs/parity/dependency-dynamic-cache-policy.json
+      input_sha256: 277b9e95d04670da0ab86c5142df8dbcdc9f7b15a3d4af6efc3071ca52d76ba0
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-dynamic-cache-policy.yaml
+      recipe_sha256: 22f117448cf5cda48360a860c75f86dbc4aac54b13eddebaecf915dbce32a8fe
+      workload_path: tests/fixtures/workloads/dependency_dynamic_cache_policy.py
+      workload_sha256: 8cc667f521b2e10e99e65cf593330aad0f4b8715c6d77a6b3f070f8afb0533fc
+      case_id: fastapi.dependencies.dynamic-cache-policy.len-error-yield-cleanup
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-dynamic-cache-policy
+      input_path: tests/fixtures/inputs/parity/dependency-dynamic-cache-policy.json
+      input_sha256: 277b9e95d04670da0ab86c5142df8dbcdc9f7b15a3d4af6efc3071ca52d76ba0
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-dynamic-cache-policy.yaml
+      recipe_sha256: 22f117448cf5cda48360a860c75f86dbc4aac54b13eddebaecf915dbce32a8fe
+      workload_path: tests/fixtures/workloads/dependency_dynamic_cache_policy.py
+      workload_sha256: 8cc667f521b2e10e99e65cf593330aad0f4b8715c6d77a6b3f070f8afb0533fc
+      case_id: fastapi.dependencies.dynamic-cache-policy.parameterless-app-policy-ignored
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-dynamic-cache-policy
+      input_path: tests/fixtures/inputs/parity/dependency-dynamic-cache-policy.json
+      input_sha256: 277b9e95d04670da0ab86c5142df8dbcdc9f7b15a3d4af6efc3071ca52d76ba0
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-dynamic-cache-policy.yaml
+      recipe_sha256: 22f117448cf5cda48360a860c75f86dbc4aac54b13eddebaecf915dbce32a8fe
+      workload_path: tests/fixtures/workloads/dependency_dynamic_cache_policy.py
+      workload_sha256: 8cc667f521b2e10e99e65cf593330aad0f4b8715c6d77a6b3f070f8afb0533fc
+      case_id: fastapi.dependencies.dynamic-cache-policy.parameterless-router-policy-ignored
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-dynamic-cache-policy
+      input_path: tests/fixtures/inputs/parity/dependency-dynamic-cache-policy.json
+      input_sha256: 277b9e95d04670da0ab86c5142df8dbcdc9f7b15a3d4af6efc3071ca52d76ba0
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-dynamic-cache-policy.yaml
+      recipe_sha256: 22f117448cf5cda48360a860c75f86dbc4aac54b13eddebaecf915dbce32a8fe
+      workload_path: tests/fixtures/workloads/dependency_dynamic_cache_policy.py
+      workload_sha256: 8cc667f521b2e10e99e65cf593330aad0f4b8715c6d77a6b3f070f8afb0533fc
+      case_id: fastapi.dependencies.dynamic-cache-policy.parameterless-route-policy-ignored
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-dynamic-cache-policy
+      input_path: tests/fixtures/inputs/parity/dependency-dynamic-cache-policy.json
+      input_sha256: 277b9e95d04670da0ab86c5142df8dbcdc9f7b15a3d4af6efc3071ca52d76ba0
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-dynamic-cache-policy.yaml
+      recipe_sha256: 22f117448cf5cda48360a860c75f86dbc4aac54b13eddebaecf915dbce32a8fe
+      workload_path: tests/fixtures/workloads/dependency_dynamic_cache_policy.py
+      workload_sha256: 8cc667f521b2e10e99e65cf593330aad0f4b8715c6d77a6b3f070f8afb0533fc
+      case_id: fastapi.fault-contract.dependencies.dynamic-cache-policy.yield-cleanup
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
     - workflow_id: dependency-record-public-protocol
       input_path: tests/fixtures/inputs/parity/dependency-record-public-protocol.json
       input_sha256: eb003b417684932152cda185535d879e13e8a62c257ae9c37d2af0b84343bb49
@@ -27146,6 +27560,8 @@ api_surface_contract:
     - dependency-security
     - openapi-docs
     observation_selectors:
+    - asgi.application_error.exception
+    - construction.outcome
     - http.body.bytes
     - http.headers.ordered
     - http.status
@@ -27707,6 +28123,21 @@ api_surface_contract:
       observation_selectors:
       - python.signature
     operation_fixture_refs:
+    - workflow_id: dependency-dynamic-cache-policy
+      input_path: tests/fixtures/inputs/parity/dependency-dynamic-cache-policy.json
+      input_sha256: 277b9e95d04670da0ab86c5142df8dbcdc9f7b15a3d4af6efc3071ca52d76ba0
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-dynamic-cache-policy.yaml
+      recipe_sha256: 22f117448cf5cda48360a860c75f86dbc4aac54b13eddebaecf915dbce32a8fe
+      workload_path: tests/fixtures/workloads/dependency_dynamic_cache_policy.py
+      workload_sha256: 8cc667f521b2e10e99e65cf593330aad0f4b8715c6d77a6b3f070f8afb0533fc
+      case_id: fastapi.dependencies.dynamic-cache-policy.raw-capture
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.status
+      - http.body.bytes
+      - http.status
     - workflow_id: dependency-record-public-protocol
       input_path: tests/fixtures/inputs/parity/dependency-record-public-protocol.json
       input_sha256: eb003b417684932152cda185535d879e13e8a62c257ae9c37d2af0b84343bb49

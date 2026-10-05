@@ -1,0 +1,440 @@
+# Independent public inputs for raw dependency cache policies and their timing.
+# Pinned FastAPI 0.141.1, commit 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f:
+# params.py:745-754 and param_functions.py:2369,2460 retain arbitrary use_cache
+# objects. dependencies/utils.py:285,328 copies those objects into each analyzed
+# edge; :132-145 omits the supplied policy for parameterless declarations.
+# :625-654 reanalyzes override edges, recursively solves children, and skips
+# cache decisions for validation failures. :656-680 computes the original edge
+# key, evaluates its raw policy before membership, then keeps the first cache
+# insertion even when the policy is false. :681 onward validates parent inputs.
+# routing.py:140-146 closes yielded scopes when policy evaluation raises.
+# The workloads observe user callback traces, JSON values, object relationships,
+# ordinary validation errors, and registered public exception responses. They
+# neither import private source implementations nor store oracle results.
+# BeforeValidator is a public user validation callback, recording whether
+# repeated async edges validate inputs before consulting an existing cache.
+# All error policies construct successfully; later route actions arm failures.
+# One target-only case reuses the existing dependency cleanup fault contract.
+schema: fastapi-rs/python-asgi-workflow@9
+workload:
+  file: tests/fixtures/workloads/dependency_dynamic_cache_policy.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.dependencies.dynamic-cache-policy.raw-capture
+  verification: parity
+  factory_input: {}
+  construction_observation: &construction
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: registered-raw-policies-before-solving
+    kind: http_request
+    scope: &state-scope
+      type: http
+      asgi: &asgi {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers: &headers [[host, testserver]]
+      client: &client [127.0.0.1, 123]
+      server: &server [testserver, 80]
+    receive_events: &empty-request
+    - {type: http.request, body: '', more_body: false}
+    observations: &response-value
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: build-public-openapi-document
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /openapi.json, query_string: '', root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *empty-request
+    observations:
+    - {kind: http_response, selectors: [status], comparison: exact}
+  - action_id: inspect-policy-traces-after-openapi
+    kind: http_request
+    scope: *state-scope
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: replace-marker-field-and-mutate-captured-object
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: POST, scheme: http,
+      path: /capture/rebind, query_string: '', root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: default-annotated-inferred-and-security-policy-use
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /capture, query_string: '', root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence: &cache-reference
+  - {path: docs/en/docs/reference/dependencies.md, kind: upstream_documentation}
+  - {path: docs/en/docs/tutorial/dependencies/sub-dependencies.md, kind: upstream_documentation}
+  - {path: tests/test_dependency_cache.py, kind: upstream_test}
+- case_id: fastapi.dependencies.dynamic-cache-policy.sync-false-first-insertion
+  verification: parity
+  factory_input:
+    sync_decisions: [false, true, false, true]
+  construction_observation: *construction
+  actions:
+  - action_id: changing-policy-on-four-shared-callable-edges
+    kind: http_request
+    scope: &sync-scope {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /sync-sequence, query_string: '', root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: new-request-with-same-changing-policy-object
+    kind: http_request
+    scope: *sync-scope
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: literal-none-policy-and-later-cached-consumer
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /none-policy, query_string: '', root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence: *cache-reference
+- case_id: fastapi.dependencies.dynamic-cache-policy.flat-async-validation
+  verification: parity
+  factory_input: {}
+  construction_observation: *construction
+  actions:
+  - action_id: missing-input-on-both-async-edges
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /flat-validation, query_string: '', root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: malformed-input-on-both-async-edges
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /flat-validation, query_string: number=river, root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: successful-async-edges-after-validation-errors
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /flat-validation, query_string: number=23, root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: valid-dependencies-before-endpoint-validation-error
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /flat-validation, query_string: 'number=29&endpoint_number=river', root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: observe-all-policy-and-call-traces
+    kind: http_request
+    scope: *state-scope
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence: *cache-reference
+- case_id: fastapi.dependencies.dynamic-cache-policy.flat-async-cache-hit-validation
+  verification: parity
+  factory_input: {}
+  construction_observation: *construction
+  actions:
+  - action_id: trace-validation-on-async-miss-and-hit
+    kind: http_request
+    scope: &flat-cache-scope {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /flat-cache-hit, query_string: number=31, root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: repeat-validation-with-a-new-request-cache
+    kind: http_request
+    scope: *flat-cache-scope
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence: *cache-reference
+- case_id: fastapi.dependencies.dynamic-cache-policy.nested-sync-parent-async-child
+  verification: parity
+  factory_input: {}
+  construction_observation: *construction
+  actions:
+  - action_id: async-child-mutates-synchronous-parent-policy
+    kind: http_request
+    scope: &sync-parent-scope {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /nested/sync-parent, query_string: leaf_value=37, root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: resolve-children-again-in-next-request
+    kind: http_request
+    scope: *sync-parent-scope
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence: *cache-reference
+- case_id: fastapi.dependencies.dynamic-cache-policy.nested-async-parent-sync-child
+  verification: parity
+  factory_input: {}
+  construction_observation: *construction
+  actions:
+  - action_id: synchronous-child-mutates-coroutine-parent-policy
+    kind: http_request
+    scope: &async-parent-scope {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /nested/async-parent, query_string: leaf_value=43, root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: repeat-mutation-before-new-parent-cache-decisions
+    kind: http_request
+    scope: *async-parent-scope
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence: *cache-reference
+- case_id: fastapi.dependencies.dynamic-cache-policy.override-outer-and-rebuilt-children
+  verification: parity
+  factory_input: {}
+  construction_observation: *construction
+  actions:
+  - action_id: replace-declaration-fields-and-mutate-original-outer-policy
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: POST, scheme: http,
+      path: /overrides/rebind, query_string: '', root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: captured-policies-with-empty-map
+    kind: http_request
+    scope: &override-scope {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /override, query_string: '', root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: assign-unrelated-override-map
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: POST, scheme: http,
+      path: /overrides/unrelated, query_string: '', root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: original-outer-policy-with-rebuilt-child-policy
+    kind: http_request
+    scope: *override-scope
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: assign-self-mapped-overrides
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: POST, scheme: http,
+      path: /overrides/self, query_string: '', root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: self-maps-with-current-child-declaration
+    kind: http_request
+    scope: *override-scope
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: assign-coroutine-parent-replacement
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: POST, scheme: http,
+      path: /overrides/replacement, query_string: '', root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: replacement-callable-with-original-outer-cache-policy
+    kind: http_request
+    scope: *override-scope
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: clear-override-map
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: POST, scheme: http,
+      path: /overrides/clear, query_string: '', root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: original-registered-child-policy-after-clearing
+    kind: http_request
+    scope: *override-scope
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence:
+  - {path: docs/en/docs/advanced/testing-dependencies.md, kind: upstream_documentation}
+  - {path: tests/test_dependency_cache.py, kind: upstream_test}
+- case_id: fastapi.dependencies.dynamic-cache-policy.failed-edge-later-sibling
+  verification: parity
+  factory_input: {}
+  construction_observation: *construction
+  actions:
+  - action_id: invalid-child-parent-endpoint-with-valid-later-siblings
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /failed-edge, query_string: 'child_number=river&parent_number=river&endpoint_number=river&later_number=47',
+      root_path: '', headers: *headers, client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: valid-child-invalid-parent-and-endpoint
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /failed-edge, query_string: 'child_number=53&parent_number=river&endpoint_number=river&later_number=59',
+      root_path: '', headers: *headers, client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: successful-request-exposes-prior-policy-order
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /failed-edge, query_string: 'child_number=61&parent_number=67&endpoint_number=71&later_number=73',
+      root_path: '', headers: *headers, client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence: *cache-reference
+- case_id: fastapi.dependencies.dynamic-cache-policy.bool-error-yield-cleanup
+  verification: parity
+  factory_input: {}
+  construction_observation: *construction
+  actions:
+  - action_id: arm-user-bool-error-after-registration
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: POST, scheme: http,
+      path: /policies/bool/raise, query_string: '', root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: evaluate-parent-policy-after-yielded-child-entered
+    kind: http_request
+    scope: &bool-yield-scope {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /yield/bool, query_string: '', root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: arm-nonboolean-user-return
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: POST, scheme: http,
+      path: /policies/bool/invalid, query_string: '', root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: project-public-type-error-after-child-cleanup
+    kind: http_request
+    scope: *bool-yield-scope
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: restore-normal-policy
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: POST, scheme: http,
+      path: /policies/bool/normal, query_string: '', root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: successful-yielded-request-after-policy-errors
+    kind: http_request
+    scope: *bool-yield-scope
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: observe-final-cleanup-and-policy-trace
+    kind: http_request
+    scope: *state-scope
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence: &yield-reference
+  - {path: docs/en/docs/reference/dependencies.md, kind: upstream_documentation}
+  - {path: docs/en/docs/tutorial/dependencies/dependencies-with-yield.md, kind: upstream_documentation}
+- case_id: fastapi.dependencies.dynamic-cache-policy.len-error-yield-cleanup
+  verification: parity
+  factory_input: {}
+  construction_observation: *construction
+  actions:
+  - action_id: arm-user-length-error-after-registration
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: POST, scheme: http,
+      path: /policies/length/raise, query_string: '', root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: parent-truthiness-via-length-after-yielded-child
+    kind: http_request
+    scope: &length-yield-scope {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /yield/length, query_string: '', root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: restore-successful-length-policy
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: POST, scheme: http,
+      path: /policies/length/normal, query_string: '', root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: successful-yielded-request-after-length-error
+    kind: http_request
+    scope: *length-yield-scope
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: observe-final-length-policy-cleanup
+    kind: http_request
+    scope: *state-scope
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence: *yield-reference
+- case_id: fastapi.dependencies.dynamic-cache-policy.parameterless-app-policy-ignored
+  verification: parity
+  factory_input: {parameterless_placement: app}
+  construction_observation: *construction
+  actions: &parameterless-actions
+  - action_id: parameterless-raising-policies-and-bound-cache-consumers
+    kind: http_request
+    scope: &parameterless-scope {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /parameterless, query_string: seed=79, root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: parameterless-policies-in-a-new-request-cache
+    kind: http_request
+    scope: *parameterless-scope
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence: *cache-reference
+- case_id: fastapi.dependencies.dynamic-cache-policy.parameterless-router-policy-ignored
+  verification: parity
+  factory_input: {parameterless_placement: router}
+  construction_observation: *construction
+  actions: *parameterless-actions
+  source_evidence: *cache-reference
+- case_id: fastapi.dependencies.dynamic-cache-policy.parameterless-route-policy-ignored
+  verification: parity
+  factory_input: {parameterless_placement: route}
+  construction_observation: *construction
+  actions: *parameterless-actions
+  source_evidence: *cache-reference
+- case_id: fastapi.fault-contract.dependencies.dynamic-cache-policy.yield-cleanup
+  verification: fault-contract
+  fault:
+    point: http.route.invoke.after_dependencies.before
+    contract: http-route-invocation-error-cleans-dependencies
+  factory_input: {}
+  construction_observation: *construction
+  actions:
+  - action_id: invocation-error-after-dynamic-policy-and-yielded-child
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /yield/fault, query_string: '', root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *empty-request
+    observations:
+    - {kind: application_error, selector: exception, comparison: exact}
+    - {kind: asgi_send, selector: message_types, comparison: ordered}
+    - {kind: http_response, selectors: [status], comparison: exact}
+  - action_id: dependency-cleanup-and-recovery
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /cleanup-state, query_string: '', root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence: *yield-reference

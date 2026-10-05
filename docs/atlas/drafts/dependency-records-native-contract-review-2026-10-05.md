@@ -55,13 +55,16 @@ classes, SecurityScopes injection, custom callable hash/equality, dynamic
 wrapper changes, and unexercised dependency graphs remain incomplete. Execution claims
 belong in fresh identity-checked result artifacts, not this contract review.
 
-The runtime currently snapshots `use_cache` truthiness during route analysis.
+At commit `3ad2066`, the runtime snapshots `use_cache` truthiness during route analysis.
 Source `dependencies/utils.py:640-680` stores the raw policy and evaluates it
 after child solving and input validation on each successful request edge.
 Mutable policies and side-effectful or failing `__bool__` remain a separate
 execution gap; constructor raw-value observations and ordinary boolean cache
 inputs do not prove those behaviors. Parameterless lists skip the supplied
 policy in both implementations.
+The following dynamic cache policy slice tracks this repair separately in
+`dependency-dynamic-cache-policy-native-contract-review-2026-10-05.md`; its
+implementation and inputs require new execution receipts.
 
 ## Broader regression follow-up
 
@@ -95,4 +98,27 @@ wrapped functions, a dependency-bearing alias, and string annotations.
 Complex wrapped/partial callable-instance classification and mutable callable
 classification caches remain unverified. Native direct registration uses one
 route row per normalized method, so grouped route introspection, shared
-generated operation IDs, and analysis side-effect counts remain gaps.
+generated operation IDs, analysis side-effect counts, and the complete 405
+Allow value for a multi-method route remain gaps. Empty methods are rejected
+before path compilation in the target, whereas the source compiles the path
+first; a combined invalid-convertor/empty-method declaration therefore has
+different assertion precedence.
+
+## Recorded execution evidence
+
+At commit `3ad2066c65cf636fdd063aa6816c5408ac119d10`, the repaired normal
+target passed all 137 selected parity cases across 36 unchanged workflows.
+The new dependency-record workflow passed 17 live oracle parity cases and
+one target-only cleanup fault. Fresh instrumented baseline and previous
+workflows passed seven additional parity cases and three cleanup faults.
+These selections establish their observed contracts, not full-suite parity.
+
+Coverage MCP compared all three instrumented selections with matching
+source/build receipts and passing results: the new workflow added 725 Rust
+regions to the accepted 9,482-region union, producing 10,207 of 30,430 regions
+(2.3825 percentage points of gain). The normal source tree hash was
+`780a8c9395e8897b944dce4104c2721c5eb9603db490ef1702f1904392b22c91`.
+Ignored evidence is retained under
+`parity-results/dependency-records-wave/final-normal-repaired/` and
+`parity-results/coverage/dependency-records-incremental/3ad2066-dependency-records-first/`.
+Changing Rust sources requires remeasurement before combining future batches.
