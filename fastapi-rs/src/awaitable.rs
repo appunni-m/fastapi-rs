@@ -33,6 +33,7 @@ pub(crate) enum MachineAction {
     /// Await this Python awaitable, yielding its Futures to the caller's event loop.
     Await(Py<PyAny>),
     /// Deliver this exception back to the active state machine as an await failure.
+    #[cfg(feature = "fault-injection")]
     Raise(PyErr),
     /// Finish the outer awaitable with this value.
     Complete(Py<PyAny>),
@@ -212,6 +213,7 @@ impl NativeAwaitable {
                     }
                     Err(error) => input = DriveInput::Machine(MachineResume::Error(error)),
                 },
+                #[cfg(feature = "fault-injection")]
                 MachineAction::Raise(error) => {
                     input = DriveInput::Machine(MachineResume::Error(error));
                 }
