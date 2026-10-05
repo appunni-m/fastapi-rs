@@ -1,0 +1,388 @@
+# Independent public inputs for same-request override changes.
+# FastAPI 0.141.1, source commit 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f:
+# applications.py:967-987 stores a public dependency_overrides dictionary and
+# supplies the application as provider. dependencies/utils.py:625-639 rereads
+# that provider before selecting each edge; replacing the dictionary and
+# clearing it therefore affect subsequent edges during the same request.
+# get_dependant at :271-331 captures a selected parent's child callable, raw
+# policy, and signature metadata before any child policy runs. :640-654 solves
+# those children and validates inputs before :660 evaluates the outer policy.
+# Updating an already-selected edge's override leaves that call/kwargs selected;
+# a later edge observes the new mapping. :679-680 keeps the first cache result,
+# but :640-654 still validates new replacement inputs before a cache hit.
+# Signature mutation with a nonempty unrelated map reanalyzes a later edge;
+# clearing the map instead uses its registration snapshot. An invalid override
+# removed/repaired before its edge is reached is never analyzed by source.
+# routing.py:140-146 unwinds entered yield scopes after a user policy error or
+# after reaching a malformed replacement installed by an earlier policy.
+# All observations are live user traces, values, identities, public errors, and
+# ASGI outcomes. There are no expected results or private FastAPI imports.
+schema: fastapi-rs/python-asgi-workflow@9
+workload:
+  file: tests/fixtures/workloads/dependency_override_cache_policy_mutation.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.dependencies.override-policy-mutation.sync-own-selected-call-and-cache
+  verification: parity
+  factory_input: {operation: self, policy_result: false}
+  construction_observation: &construction
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: current-call-retained-later-call-replaced-first-result-cached
+    kind: http_request
+    scope:
+      type: http
+      asgi: &asgi {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /selected-call
+      query_string: 'trigger_value=43&replacement_trigger_value=47'
+      root_path: ''
+      headers: &headers [[host, testserver]]
+      client: &client [127.0.0.1, 123]
+      server: &server [testserver, 80]
+    receive_events: &empty-request
+    - {type: http.request, body: '', more_body: false}
+    observations: &response-value
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence: &override-reference
+  - {path: docs/en/docs/advanced/testing-dependencies.md, kind: upstream_documentation}
+  - {path: docs/en/docs/tutorial/dependencies/sub-dependencies.md, kind: upstream_documentation}
+  - {path: tests/test_dependency_cache.py, kind: upstream_test}
+- case_id: fastapi.dependencies.override-policy-mutation.sync-provider-replacement
+  verification: parity
+  factory_input: {operation: assign, replacement_kind: sync}
+  construction_observation: *construction
+  actions:
+  - action_id: callback-replaces-whole-provider-dictionary-before-later-edge
+    kind: http_request
+    scope: &root-scope {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /root, query_string: 'original_value=53&replacement_value=59', root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: next-request-with-persisted-dictionary
+    kind: http_request
+    scope: *root-scope
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence: *override-reference
+- case_id: fastapi.dependencies.override-policy-mutation.sync-provider-removal
+  verification: parity
+  factory_input: {operation: clear, replacement_kind: sync, initial_overrides: mapped}
+  construction_observation: *construction
+  actions:
+  - action_id: callback-replaces-mapped-provider-with-empty-dictionary
+    kind: http_request
+    scope: *root-scope
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: next-request-keeps-cleared-provider
+    kind: http_request
+    scope: *root-scope
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence: *override-reference
+- case_id: fastapi.dependencies.override-policy-mutation.sync-to-coroutine
+  verification: parity
+  factory_input: {operation: insert, replacement_kind: async}
+  construction_observation: *construction
+  actions:
+  - action_id: initially-synchronous-graph-gains-coroutine-at-later-edge
+    kind: http_request
+    scope: *root-scope
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: observe-completed-coroutine-and-mutation-traces
+    kind: http_request
+    scope: &state-scope {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /state, query_string: '', root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence: *override-reference
+- case_id: fastapi.dependencies.override-policy-mutation.awaited-provider-replacement
+  verification: parity
+  factory_input: {operation: assign, replacement_kind: async, policy_method: length}
+  construction_observation: *construction
+  actions:
+  - action_id: length-callback-replaces-provider-after-earlier-await
+    kind: http_request
+    scope: &await-scope {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /root-await, query_string: 'original_value=61&replacement_value=67', root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: observe-provider-and-callback-after-resumed-request
+    kind: http_request
+    scope: *state-scope
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence: *override-reference
+- case_id: fastapi.dependencies.override-policy-mutation.awaited-provider-removal
+  verification: parity
+  factory_input: {operation: clear, replacement_kind: sync, initial_overrides: mapped}
+  construction_observation: *construction
+  actions:
+  - action_id: bool-callback-clears-provider-after-earlier-await
+    kind: http_request
+    scope: *await-scope
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: observe-cleared-provider-and-original-call
+    kind: http_request
+    scope: *state-scope
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence: *override-reference
+- case_id: fastapi.dependencies.override-policy-mutation.late-yield-replacement
+  verification: parity
+  factory_input: &yield-input {operation: assign, replacement_kind: yield}
+  construction_observation: *construction
+  actions:
+  - action_id: callback-installs-yield-callable-before-later-edge
+    kind: http_request
+    scope: *await-scope
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: observe-yield-exit-after-response
+    kind: http_request
+    scope: *state-scope
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence: &yield-reference
+  - {path: docs/en/docs/advanced/testing-dependencies.md, kind: upstream_documentation}
+  - {path: docs/en/docs/tutorial/dependencies/dependencies-with-yield.md, kind: upstream_documentation}
+- case_id: fastapi.dependencies.override-policy-mutation.nested-parent-and-later-child
+  verification: parity
+  factory_input: {operation: parent-and-child, replacement_kind: async}
+  construction_observation: *construction
+  actions:
+  - action_id: retained-selected-parent-and-current-map-for-next-child-parent
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /nested, query_string: 'original_value=71&replacement_value=73', root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence: *override-reference
+- case_id: fastapi.dependencies.override-policy-mutation.captured-child-declarations
+  verification: parity
+  factory_input: {operation: captured-markers, initial_overrides: unrelated}
+  construction_observation: *construction
+  actions:
+  - action_id: parent-captures-child-fields-before-awaited-policy-mutates-marker
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /captured-markers, query_string: 'old_child_value=79&new_child_value=83', root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence: *override-reference
+- case_id: fastapi.dependencies.override-policy-mutation.cache-hit-policy-mutation
+  verification: parity
+  factory_input: {operation: insert, replacement_kind: async, policy_method: length}
+  construction_observation: *construction
+  actions:
+  - action_id: cache-hit-length-callback-changes-later-callable
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /cached-policy, query_string: replacement_value=89, root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence: *override-reference
+- case_id: fastapi.dependencies.override-policy-mutation.cached-later-validation
+  verification: parity
+  factory_input: {operation: assign, replacement_kind: required}
+  construction_observation: *construction
+  actions:
+  - action_id: new-replacement-input-required-before-existing-cache-hit
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /cached-later, query_string: '', root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: valid-new-input-on-new-request-with-miss-and-hit
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /cached-later, query_string: required_value=97, root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence: *override-reference
+- case_id: fastapi.dependencies.override-policy-mutation.failed-mutator-valid-later
+  verification: parity
+  factory_input: {operation: assign, replacement_kind: async}
+  construction_observation: *construction
+  actions:
+  - action_id: failed-own-input-suppresses-policy-mutation
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /required-trigger, query_string: trigger_required=river, root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: valid-own-input-allows-mutation-on-followup
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /required-trigger, query_string: trigger_required=101, root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence: *override-reference
+- case_id: fastapi.dependencies.override-policy-mutation.earlier-failure-later-mutator
+  verification: parity
+  factory_input: {operation: assign, replacement_kind: sync}
+  construction_observation: *construction
+  actions:
+  - action_id: earlier-validation-error-does-not-suppress-valid-later-policy
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /failure-before-mutation, query_string: failed_value=river, root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: inspect-later-replacement-call-and-persisted-map-after-error
+    kind: http_request
+    scope: *state-scope
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence: *override-reference
+- case_id: fastapi.dependencies.override-policy-mutation.invalid-later-override-repaired
+  verification: parity
+  factory_input: {operation: repair, replacement_kind: sync, initial_overrides: invalid}
+  construction_observation: *construction
+  actions:
+  - action_id: earlier-callback-fixes-unreached-invalid-signature
+    kind: http_request
+    scope: *root-scope
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: publicly-reset-invalid-later-override-for-removal
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: POST, scheme: http,
+      path: /reset-invalid-removal, query_string: '', root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: earlier-callback-removes-invalid-signature-before-reached
+    kind: http_request
+    scope: *root-scope
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence: *override-reference
+- case_id: fastapi.dependencies.override-policy-mutation.signature-unrelated-reanalysis
+  verification: parity
+  factory_input: {operation: signature-unrelated}
+  construction_observation: *construction
+  actions:
+  - action_id: unrelated-entry-forces-new-required-signature-during-request
+    kind: http_request
+    scope: &dynamic-scope {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /dynamic-signature, query_string: '', root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: provide-new-signature-input-on-followup
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /dynamic-signature, query_string: changed=103, root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence: *override-reference
+- case_id: fastapi.dependencies.override-policy-mutation.signature-clear-retains-registration
+  verification: parity
+  factory_input: {operation: signature-clear, initial_overrides: unrelated}
+  construction_observation: *construction
+  actions:
+  - action_id: clearing-map-keeps-old-registered-arguments-despite-signature-change
+    kind: http_request
+    scope: *dynamic-scope
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: cleared-map-still-uses-captured-signature-in-next-request
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /dynamic-signature, query_string: changed=107, root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence: *override-reference
+- case_id: fastapi.dependencies.override-policy-mutation.mutation-error-cleanup-and-recovery
+  verification: parity
+  factory_input: {operation: assign, replacement_kind: async, raise_after_mutation: true}
+  construction_observation: *construction
+  actions:
+  - action_id: mutation-then-error-after-yielded-child-entered
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /mutation-error, query_string: '', root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: recovery-uses-mutation-that-preceded-error
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /later-only, query_string: replacement_value=109, root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence: *yield-reference
+- case_id: fastapi.dependencies.override-policy-mutation.reached-invalid-override-cleanup
+  verification: parity
+  factory_input: {operation: install-invalid}
+  construction_observation: *construction
+  actions:
+  - action_id: guarded-policy-installs-malformed-later-override-after-yield-entry
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /mutation-error, query_string: '', root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: inspect-cleanup-state-and-clear-malformed-map-for-recovery
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: POST, scheme: http,
+      path: /clear-overrides, query_string: '', root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: later-dependency-succeeds-after-plan-error-and-cleanup
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /later-only, query_string: original_value=113, root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence: *yield-reference
+- case_id: fastapi.fault-contract.dependencies.override-policy-mutation.yield-cleanup
+  verification: fault-contract
+  fault:
+    point: http.route.invoke.after_dependencies.before
+    contract: http-route-invocation-error-cleans-dependencies
+  factory_input: *yield-input
+  construction_observation: *construction
+  actions:
+  - action_id: injected-error-after-policy-installs-yielded-later-edge
+    kind: http_request
+    scope: *await-scope
+    receive_events: *empty-request
+    observations:
+    - {kind: application_error, selector: exception, comparison: exact}
+    - {kind: asgi_send, selector: message_types, comparison: ordered}
+    - {kind: http_response, selectors: [status], comparison: exact}
+  - action_id: exact-existing-cleanup-contract-public-recovery
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /cleanup-state, query_string: '', root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence: *yield-reference

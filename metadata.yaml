@@ -841,6 +841,14 @@ reviewed_api_contract_overlay:
         - {path: tests/test_router_events.py, symbol: test_startup_shutdown_handlers_as_parameters}
         - {path: docs/en/docs/advanced/events.md}
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+          case_id: fastapi.dependencies.override-policy-mutation.sync-provider-replacement
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+          case_id: fastapi.dependencies.override-policy-mutation.awaited-provider-replacement
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+          case_id: fastapi.dependencies.override-policy-mutation.awaited-provider-removal
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+          case_id: fastapi.dependencies.override-policy-mutation.reached-invalid-override-cleanup
         - recipe_path: tests/fixtures/input-recipes/parity/constructor-middleware-order.yaml
           case_id: fastapi.applications.constructor-middleware-order
         - recipe_path: tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml
@@ -3825,6 +3833,44 @@ reviewed_api_contract_overlay:
           start_line: 10
           end_line: 29
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+          case_id: fastapi.dependencies.override-policy-mutation.sync-own-selected-call-and-cache
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+          case_id: fastapi.dependencies.override-policy-mutation.sync-provider-replacement
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+          case_id: fastapi.dependencies.override-policy-mutation.sync-provider-removal
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+          case_id: fastapi.dependencies.override-policy-mutation.sync-to-coroutine
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+          case_id: fastapi.dependencies.override-policy-mutation.awaited-provider-replacement
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+          case_id: fastapi.dependencies.override-policy-mutation.awaited-provider-removal
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+          case_id: fastapi.dependencies.override-policy-mutation.late-yield-replacement
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+          case_id: fastapi.dependencies.override-policy-mutation.nested-parent-and-later-child
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+          case_id: fastapi.dependencies.override-policy-mutation.captured-child-declarations
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+          case_id: fastapi.dependencies.override-policy-mutation.cache-hit-policy-mutation
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+          case_id: fastapi.dependencies.override-policy-mutation.cached-later-validation
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+          case_id: fastapi.dependencies.override-policy-mutation.failed-mutator-valid-later
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+          case_id: fastapi.dependencies.override-policy-mutation.earlier-failure-later-mutator
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+          case_id: fastapi.dependencies.override-policy-mutation.invalid-later-override-repaired
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+          case_id: fastapi.dependencies.override-policy-mutation.signature-unrelated-reanalysis
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+          case_id: fastapi.dependencies.override-policy-mutation.signature-clear-retains-registration
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+          case_id: fastapi.dependencies.override-policy-mutation.mutation-error-cleanup-and-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+          case_id: fastapi.dependencies.override-policy-mutation.reached-invalid-override-cleanup
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+          case_id: fastapi.fault-contract.dependencies.override-policy-mutation.yield-cleanup
         - recipe_path: tests/fixtures/input-recipes/parity/dependency-dynamic-cache-policy.yaml
           case_id: fastapi.dependencies.dynamic-cache-policy.raw-capture
         - recipe_path: tests/fixtures/input-recipes/parity/dependency-dynamic-cache-policy.yaml
@@ -3996,12 +4042,19 @@ reviewed_api_contract_overlay:
         - construction.exception_class
         - construction.exception_message
       supported_slice: >-
+        The override-policy-mutation inputs declare selection at each reached
+        edge from the current provider dictionary, including whole-map
+        replacement after awaits. Selected parent plans retain captured child
+        declarations; policies and cache hits follow child/input solving.
+        Later malformed overrides, yielded cleanup, and recovery are observed.
+        Classification-cache mutation, custom providers/dict subclasses,
+        and dynamic cache-key protocols remain gaps. Fresh receipts are
+        required; see the same-request lazy override contract review.
         The dynamic-cache-policy inputs declare raw policy capture, one
         truthiness decision after successful child/input solving, cache
         population even for a false policy, original outer policies across
         overrides, and error/cleanup/recovery observations. Parameterless
-        declarations ignore their supplied policy. Same-request override-map
-        mutation remains outside this bounded slice. These inputs require
+        declarations ignore their supplied policy. These inputs require
         fresh execution evidence; see the dynamic cache policy contract review.
         The dependency-record-public-protocol recipe declares source-backed
         factory return identity, frozen dataclass methods, field metadata, raw
@@ -4287,6 +4340,44 @@ reviewed_api_contract_overlay:
       source_evidence:
         - {path: fastapi/param_functions.py, symbol: Depends}
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+          case_id: fastapi.dependencies.override-policy-mutation.sync-own-selected-call-and-cache
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+          case_id: fastapi.dependencies.override-policy-mutation.sync-provider-replacement
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+          case_id: fastapi.dependencies.override-policy-mutation.sync-provider-removal
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+          case_id: fastapi.dependencies.override-policy-mutation.sync-to-coroutine
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+          case_id: fastapi.dependencies.override-policy-mutation.awaited-provider-replacement
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+          case_id: fastapi.dependencies.override-policy-mutation.awaited-provider-removal
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+          case_id: fastapi.dependencies.override-policy-mutation.late-yield-replacement
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+          case_id: fastapi.dependencies.override-policy-mutation.nested-parent-and-later-child
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+          case_id: fastapi.dependencies.override-policy-mutation.captured-child-declarations
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+          case_id: fastapi.dependencies.override-policy-mutation.cache-hit-policy-mutation
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+          case_id: fastapi.dependencies.override-policy-mutation.cached-later-validation
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+          case_id: fastapi.dependencies.override-policy-mutation.failed-mutator-valid-later
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+          case_id: fastapi.dependencies.override-policy-mutation.earlier-failure-later-mutator
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+          case_id: fastapi.dependencies.override-policy-mutation.invalid-later-override-repaired
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+          case_id: fastapi.dependencies.override-policy-mutation.signature-unrelated-reanalysis
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+          case_id: fastapi.dependencies.override-policy-mutation.signature-clear-retains-registration
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+          case_id: fastapi.dependencies.override-policy-mutation.mutation-error-cleanup-and-recovery
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+          case_id: fastapi.dependencies.override-policy-mutation.reached-invalid-override-cleanup
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+          case_id: fastapi.fault-contract.dependencies.override-policy-mutation.yield-cleanup
         - recipe_path: tests/fixtures/input-recipes/parity/dependency-dynamic-cache-policy.yaml
           case_id: fastapi.dependencies.dynamic-cache-policy.raw-capture
         - recipe_path: tests/fixtures/input-recipes/parity/dependency-dynamic-cache-policy.yaml
@@ -4358,12 +4449,19 @@ reviewed_api_contract_overlay:
       feature_ids: [dependency-security]
       observation_selectors: [http.status, http.body.bytes, python.signature, construction.outcome, asgi.application_error.exception]
       supported_slice: >-
+        The override-policy-mutation inputs declare selection at each reached
+        edge from the current provider dictionary, including whole-map
+        replacement after awaits. Selected parent plans retain captured child
+        declarations; policies and cache hits follow child/input solving.
+        Later malformed overrides, yielded cleanup, and recovery are observed.
+        Classification-cache mutation, custom providers/dict subclasses,
+        and dynamic cache-key protocols remain gaps. Fresh receipts are
+        required; see the same-request lazy override contract review.
         The dynamic-cache-policy inputs declare raw policy capture, one
         truthiness decision after successful child/input solving, cache
         population even for a false policy, original outer policies across
         overrides, and error/cleanup/recovery observations. Parameterless
-        declarations ignore their supplied policy. Same-request override-map
-        mutation remains outside this bounded slice. These inputs require
+        declarations ignore their supplied policy. These inputs require
         fresh execution evidence; see the dynamic cache policy contract review.
         Module-callable review: the root-alias identity workflow observes
         `fastapi.Depends` and `fastapi.param_functions.Depends` as the same

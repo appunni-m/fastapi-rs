@@ -415,7 +415,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@5
-    sha256: 1ed1a10dd73eb8767a59ae8829e10e5224367015db62707baa9a8bfb94d526b1
+    sha256: 576b001a08ee510e75b9182e6ffa4616a4f43211a9c46b0b4a3a490ffb0921d7
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -451,7 +451,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 8b580a06320b110029c4fdf3801cf5ef3eda387a83567abb4bd093135b90cffd
+    sha256: c9d2dcfaaa7d13b1dab23851c902447a72520e17af9afcf99b8a2d98e5adcbb0
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -488,14 +488,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@5
-    sha256: 79454bd19334bd6462211c2e128b3ad860684efc1891aeac0cd80fe905432d78
+    sha256: a10dec42b1301b31f2cf64bfdd0e89ba12f14b069b4559cf2e6c4e5be479a3d0
     schema_path: tests/fixtures/schemas/materialized-input-index-v5.schema.json
     schema_sha256: 13dd4cf1032a4ad9161712364d94b9f91834afee380e1f8eee6f4f05c123261d
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 546
-      cases: 2196
-      partial_source_mappings: 1525
+      workflows: 547
+      cases: 2215
+      partial_source_mappings: 1529
 
 contract_metadata:
   aliases:
@@ -878,7 +878,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 101
     symbols_with_operation_fixture_refs: 143
-    operation_fixture_refs: 802
+    operation_fixture_refs: 844
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -1913,6 +1913,274 @@ api_surface_contract:
       observation_selectors:
       - python.signature
     operation_fixture_refs:
+    - workflow_id: dependency-override-cache-policy-mutation
+      input_path: tests/fixtures/inputs/parity/dependency-override-cache-policy-mutation.json
+      input_sha256: 02e33fa12e4b7bf4a2b189fb7029ba1e7d9c89c16f043f7546c6fd394b608859
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+      recipe_sha256: 8be9eafabf14c3b670ba487d71dc88786e12eb43162aaec5d03c1a88c1578fba
+      workload_path: tests/fixtures/workloads/dependency_override_cache_policy_mutation.py
+      workload_sha256: 4519e36f23e1f3142cb1103a2b9368272f449a3b830ce8d9dbea1f32d4525323
+      case_id: fastapi.dependencies.override-policy-mutation.sync-own-selected-call-and-cache
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-cache-policy-mutation
+      input_path: tests/fixtures/inputs/parity/dependency-override-cache-policy-mutation.json
+      input_sha256: 02e33fa12e4b7bf4a2b189fb7029ba1e7d9c89c16f043f7546c6fd394b608859
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+      recipe_sha256: 8be9eafabf14c3b670ba487d71dc88786e12eb43162aaec5d03c1a88c1578fba
+      workload_path: tests/fixtures/workloads/dependency_override_cache_policy_mutation.py
+      workload_sha256: 4519e36f23e1f3142cb1103a2b9368272f449a3b830ce8d9dbea1f32d4525323
+      case_id: fastapi.dependencies.override-policy-mutation.sync-provider-replacement
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-cache-policy-mutation
+      input_path: tests/fixtures/inputs/parity/dependency-override-cache-policy-mutation.json
+      input_sha256: 02e33fa12e4b7bf4a2b189fb7029ba1e7d9c89c16f043f7546c6fd394b608859
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+      recipe_sha256: 8be9eafabf14c3b670ba487d71dc88786e12eb43162aaec5d03c1a88c1578fba
+      workload_path: tests/fixtures/workloads/dependency_override_cache_policy_mutation.py
+      workload_sha256: 4519e36f23e1f3142cb1103a2b9368272f449a3b830ce8d9dbea1f32d4525323
+      case_id: fastapi.dependencies.override-policy-mutation.sync-provider-removal
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-cache-policy-mutation
+      input_path: tests/fixtures/inputs/parity/dependency-override-cache-policy-mutation.json
+      input_sha256: 02e33fa12e4b7bf4a2b189fb7029ba1e7d9c89c16f043f7546c6fd394b608859
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+      recipe_sha256: 8be9eafabf14c3b670ba487d71dc88786e12eb43162aaec5d03c1a88c1578fba
+      workload_path: tests/fixtures/workloads/dependency_override_cache_policy_mutation.py
+      workload_sha256: 4519e36f23e1f3142cb1103a2b9368272f449a3b830ce8d9dbea1f32d4525323
+      case_id: fastapi.dependencies.override-policy-mutation.sync-to-coroutine
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-cache-policy-mutation
+      input_path: tests/fixtures/inputs/parity/dependency-override-cache-policy-mutation.json
+      input_sha256: 02e33fa12e4b7bf4a2b189fb7029ba1e7d9c89c16f043f7546c6fd394b608859
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+      recipe_sha256: 8be9eafabf14c3b670ba487d71dc88786e12eb43162aaec5d03c1a88c1578fba
+      workload_path: tests/fixtures/workloads/dependency_override_cache_policy_mutation.py
+      workload_sha256: 4519e36f23e1f3142cb1103a2b9368272f449a3b830ce8d9dbea1f32d4525323
+      case_id: fastapi.dependencies.override-policy-mutation.awaited-provider-replacement
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-cache-policy-mutation
+      input_path: tests/fixtures/inputs/parity/dependency-override-cache-policy-mutation.json
+      input_sha256: 02e33fa12e4b7bf4a2b189fb7029ba1e7d9c89c16f043f7546c6fd394b608859
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+      recipe_sha256: 8be9eafabf14c3b670ba487d71dc88786e12eb43162aaec5d03c1a88c1578fba
+      workload_path: tests/fixtures/workloads/dependency_override_cache_policy_mutation.py
+      workload_sha256: 4519e36f23e1f3142cb1103a2b9368272f449a3b830ce8d9dbea1f32d4525323
+      case_id: fastapi.dependencies.override-policy-mutation.awaited-provider-removal
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-cache-policy-mutation
+      input_path: tests/fixtures/inputs/parity/dependency-override-cache-policy-mutation.json
+      input_sha256: 02e33fa12e4b7bf4a2b189fb7029ba1e7d9c89c16f043f7546c6fd394b608859
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+      recipe_sha256: 8be9eafabf14c3b670ba487d71dc88786e12eb43162aaec5d03c1a88c1578fba
+      workload_path: tests/fixtures/workloads/dependency_override_cache_policy_mutation.py
+      workload_sha256: 4519e36f23e1f3142cb1103a2b9368272f449a3b830ce8d9dbea1f32d4525323
+      case_id: fastapi.dependencies.override-policy-mutation.late-yield-replacement
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-cache-policy-mutation
+      input_path: tests/fixtures/inputs/parity/dependency-override-cache-policy-mutation.json
+      input_sha256: 02e33fa12e4b7bf4a2b189fb7029ba1e7d9c89c16f043f7546c6fd394b608859
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+      recipe_sha256: 8be9eafabf14c3b670ba487d71dc88786e12eb43162aaec5d03c1a88c1578fba
+      workload_path: tests/fixtures/workloads/dependency_override_cache_policy_mutation.py
+      workload_sha256: 4519e36f23e1f3142cb1103a2b9368272f449a3b830ce8d9dbea1f32d4525323
+      case_id: fastapi.dependencies.override-policy-mutation.nested-parent-and-later-child
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-cache-policy-mutation
+      input_path: tests/fixtures/inputs/parity/dependency-override-cache-policy-mutation.json
+      input_sha256: 02e33fa12e4b7bf4a2b189fb7029ba1e7d9c89c16f043f7546c6fd394b608859
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+      recipe_sha256: 8be9eafabf14c3b670ba487d71dc88786e12eb43162aaec5d03c1a88c1578fba
+      workload_path: tests/fixtures/workloads/dependency_override_cache_policy_mutation.py
+      workload_sha256: 4519e36f23e1f3142cb1103a2b9368272f449a3b830ce8d9dbea1f32d4525323
+      case_id: fastapi.dependencies.override-policy-mutation.captured-child-declarations
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-cache-policy-mutation
+      input_path: tests/fixtures/inputs/parity/dependency-override-cache-policy-mutation.json
+      input_sha256: 02e33fa12e4b7bf4a2b189fb7029ba1e7d9c89c16f043f7546c6fd394b608859
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+      recipe_sha256: 8be9eafabf14c3b670ba487d71dc88786e12eb43162aaec5d03c1a88c1578fba
+      workload_path: tests/fixtures/workloads/dependency_override_cache_policy_mutation.py
+      workload_sha256: 4519e36f23e1f3142cb1103a2b9368272f449a3b830ce8d9dbea1f32d4525323
+      case_id: fastapi.dependencies.override-policy-mutation.cache-hit-policy-mutation
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-cache-policy-mutation
+      input_path: tests/fixtures/inputs/parity/dependency-override-cache-policy-mutation.json
+      input_sha256: 02e33fa12e4b7bf4a2b189fb7029ba1e7d9c89c16f043f7546c6fd394b608859
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+      recipe_sha256: 8be9eafabf14c3b670ba487d71dc88786e12eb43162aaec5d03c1a88c1578fba
+      workload_path: tests/fixtures/workloads/dependency_override_cache_policy_mutation.py
+      workload_sha256: 4519e36f23e1f3142cb1103a2b9368272f449a3b830ce8d9dbea1f32d4525323
+      case_id: fastapi.dependencies.override-policy-mutation.cached-later-validation
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-cache-policy-mutation
+      input_path: tests/fixtures/inputs/parity/dependency-override-cache-policy-mutation.json
+      input_sha256: 02e33fa12e4b7bf4a2b189fb7029ba1e7d9c89c16f043f7546c6fd394b608859
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+      recipe_sha256: 8be9eafabf14c3b670ba487d71dc88786e12eb43162aaec5d03c1a88c1578fba
+      workload_path: tests/fixtures/workloads/dependency_override_cache_policy_mutation.py
+      workload_sha256: 4519e36f23e1f3142cb1103a2b9368272f449a3b830ce8d9dbea1f32d4525323
+      case_id: fastapi.dependencies.override-policy-mutation.failed-mutator-valid-later
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-cache-policy-mutation
+      input_path: tests/fixtures/inputs/parity/dependency-override-cache-policy-mutation.json
+      input_sha256: 02e33fa12e4b7bf4a2b189fb7029ba1e7d9c89c16f043f7546c6fd394b608859
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+      recipe_sha256: 8be9eafabf14c3b670ba487d71dc88786e12eb43162aaec5d03c1a88c1578fba
+      workload_path: tests/fixtures/workloads/dependency_override_cache_policy_mutation.py
+      workload_sha256: 4519e36f23e1f3142cb1103a2b9368272f449a3b830ce8d9dbea1f32d4525323
+      case_id: fastapi.dependencies.override-policy-mutation.earlier-failure-later-mutator
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-cache-policy-mutation
+      input_path: tests/fixtures/inputs/parity/dependency-override-cache-policy-mutation.json
+      input_sha256: 02e33fa12e4b7bf4a2b189fb7029ba1e7d9c89c16f043f7546c6fd394b608859
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+      recipe_sha256: 8be9eafabf14c3b670ba487d71dc88786e12eb43162aaec5d03c1a88c1578fba
+      workload_path: tests/fixtures/workloads/dependency_override_cache_policy_mutation.py
+      workload_sha256: 4519e36f23e1f3142cb1103a2b9368272f449a3b830ce8d9dbea1f32d4525323
+      case_id: fastapi.dependencies.override-policy-mutation.invalid-later-override-repaired
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-cache-policy-mutation
+      input_path: tests/fixtures/inputs/parity/dependency-override-cache-policy-mutation.json
+      input_sha256: 02e33fa12e4b7bf4a2b189fb7029ba1e7d9c89c16f043f7546c6fd394b608859
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+      recipe_sha256: 8be9eafabf14c3b670ba487d71dc88786e12eb43162aaec5d03c1a88c1578fba
+      workload_path: tests/fixtures/workloads/dependency_override_cache_policy_mutation.py
+      workload_sha256: 4519e36f23e1f3142cb1103a2b9368272f449a3b830ce8d9dbea1f32d4525323
+      case_id: fastapi.dependencies.override-policy-mutation.signature-unrelated-reanalysis
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-cache-policy-mutation
+      input_path: tests/fixtures/inputs/parity/dependency-override-cache-policy-mutation.json
+      input_sha256: 02e33fa12e4b7bf4a2b189fb7029ba1e7d9c89c16f043f7546c6fd394b608859
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+      recipe_sha256: 8be9eafabf14c3b670ba487d71dc88786e12eb43162aaec5d03c1a88c1578fba
+      workload_path: tests/fixtures/workloads/dependency_override_cache_policy_mutation.py
+      workload_sha256: 4519e36f23e1f3142cb1103a2b9368272f449a3b830ce8d9dbea1f32d4525323
+      case_id: fastapi.dependencies.override-policy-mutation.signature-clear-retains-registration
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-cache-policy-mutation
+      input_path: tests/fixtures/inputs/parity/dependency-override-cache-policy-mutation.json
+      input_sha256: 02e33fa12e4b7bf4a2b189fb7029ba1e7d9c89c16f043f7546c6fd394b608859
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+      recipe_sha256: 8be9eafabf14c3b670ba487d71dc88786e12eb43162aaec5d03c1a88c1578fba
+      workload_path: tests/fixtures/workloads/dependency_override_cache_policy_mutation.py
+      workload_sha256: 4519e36f23e1f3142cb1103a2b9368272f449a3b830ce8d9dbea1f32d4525323
+      case_id: fastapi.dependencies.override-policy-mutation.mutation-error-cleanup-and-recovery
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-cache-policy-mutation
+      input_path: tests/fixtures/inputs/parity/dependency-override-cache-policy-mutation.json
+      input_sha256: 02e33fa12e4b7bf4a2b189fb7029ba1e7d9c89c16f043f7546c6fd394b608859
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+      recipe_sha256: 8be9eafabf14c3b670ba487d71dc88786e12eb43162aaec5d03c1a88c1578fba
+      workload_path: tests/fixtures/workloads/dependency_override_cache_policy_mutation.py
+      workload_sha256: 4519e36f23e1f3142cb1103a2b9368272f449a3b830ce8d9dbea1f32d4525323
+      case_id: fastapi.dependencies.override-policy-mutation.reached-invalid-override-cleanup
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-cache-policy-mutation
+      input_path: tests/fixtures/inputs/parity/dependency-override-cache-policy-mutation.json
+      input_sha256: 02e33fa12e4b7bf4a2b189fb7029ba1e7d9c89c16f043f7546c6fd394b608859
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+      recipe_sha256: 8be9eafabf14c3b670ba487d71dc88786e12eb43162aaec5d03c1a88c1578fba
+      workload_path: tests/fixtures/workloads/dependency_override_cache_policy_mutation.py
+      workload_sha256: 4519e36f23e1f3142cb1103a2b9368272f449a3b830ce8d9dbea1f32d4525323
+      case_id: fastapi.fault-contract.dependencies.override-policy-mutation.yield-cleanup
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
     - workflow_id: dependency-dynamic-cache-policy
       input_path: tests/fixtures/inputs/parity/dependency-dynamic-cache-policy.json
       input_sha256: 277b9e95d04670da0ab86c5142df8dbcdc9f7b15a3d4af6efc3071ca52d76ba0
@@ -5886,6 +6154,62 @@ api_surface_contract:
       observation_selectors: *id006
     input_workflow_refs: []
     operation_fixture_refs:
+    - workflow_id: dependency-override-cache-policy-mutation
+      input_path: tests/fixtures/inputs/parity/dependency-override-cache-policy-mutation.json
+      input_sha256: 02e33fa12e4b7bf4a2b189fb7029ba1e7d9c89c16f043f7546c6fd394b608859
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+      recipe_sha256: 8be9eafabf14c3b670ba487d71dc88786e12eb43162aaec5d03c1a88c1578fba
+      workload_path: tests/fixtures/workloads/dependency_override_cache_policy_mutation.py
+      workload_sha256: 4519e36f23e1f3142cb1103a2b9368272f449a3b830ce8d9dbea1f32d4525323
+      case_id: fastapi.dependencies.override-policy-mutation.sync-provider-replacement
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-cache-policy-mutation
+      input_path: tests/fixtures/inputs/parity/dependency-override-cache-policy-mutation.json
+      input_sha256: 02e33fa12e4b7bf4a2b189fb7029ba1e7d9c89c16f043f7546c6fd394b608859
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+      recipe_sha256: 8be9eafabf14c3b670ba487d71dc88786e12eb43162aaec5d03c1a88c1578fba
+      workload_path: tests/fixtures/workloads/dependency_override_cache_policy_mutation.py
+      workload_sha256: 4519e36f23e1f3142cb1103a2b9368272f449a3b830ce8d9dbea1f32d4525323
+      case_id: fastapi.dependencies.override-policy-mutation.awaited-provider-replacement
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-cache-policy-mutation
+      input_path: tests/fixtures/inputs/parity/dependency-override-cache-policy-mutation.json
+      input_sha256: 02e33fa12e4b7bf4a2b189fb7029ba1e7d9c89c16f043f7546c6fd394b608859
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+      recipe_sha256: 8be9eafabf14c3b670ba487d71dc88786e12eb43162aaec5d03c1a88c1578fba
+      workload_path: tests/fixtures/workloads/dependency_override_cache_policy_mutation.py
+      workload_sha256: 4519e36f23e1f3142cb1103a2b9368272f449a3b830ce8d9dbea1f32d4525323
+      case_id: fastapi.dependencies.override-policy-mutation.awaited-provider-removal
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-cache-policy-mutation
+      input_path: tests/fixtures/inputs/parity/dependency-override-cache-policy-mutation.json
+      input_sha256: 02e33fa12e4b7bf4a2b189fb7029ba1e7d9c89c16f043f7546c6fd394b608859
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+      recipe_sha256: 8be9eafabf14c3b670ba487d71dc88786e12eb43162aaec5d03c1a88c1578fba
+      workload_path: tests/fixtures/workloads/dependency_override_cache_policy_mutation.py
+      workload_sha256: 4519e36f23e1f3142cb1103a2b9368272f449a3b830ce8d9dbea1f32d4525323
+      case_id: fastapi.dependencies.override-policy-mutation.reached-invalid-override-cleanup
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
     - workflow_id: constructor-middleware-order
       input_path: tests/fixtures/inputs/parity/constructor-middleware-order.json
       input_sha256: cad4c3f5bc87c5d1b009080b024eaf61af10c2e75da044a5020b870123281083
@@ -27080,6 +27404,274 @@ api_surface_contract:
       observation_selectors:
       - python.signature
     operation_fixture_refs:
+    - workflow_id: dependency-override-cache-policy-mutation
+      input_path: tests/fixtures/inputs/parity/dependency-override-cache-policy-mutation.json
+      input_sha256: 02e33fa12e4b7bf4a2b189fb7029ba1e7d9c89c16f043f7546c6fd394b608859
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+      recipe_sha256: 8be9eafabf14c3b670ba487d71dc88786e12eb43162aaec5d03c1a88c1578fba
+      workload_path: tests/fixtures/workloads/dependency_override_cache_policy_mutation.py
+      workload_sha256: 4519e36f23e1f3142cb1103a2b9368272f449a3b830ce8d9dbea1f32d4525323
+      case_id: fastapi.dependencies.override-policy-mutation.sync-own-selected-call-and-cache
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-cache-policy-mutation
+      input_path: tests/fixtures/inputs/parity/dependency-override-cache-policy-mutation.json
+      input_sha256: 02e33fa12e4b7bf4a2b189fb7029ba1e7d9c89c16f043f7546c6fd394b608859
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+      recipe_sha256: 8be9eafabf14c3b670ba487d71dc88786e12eb43162aaec5d03c1a88c1578fba
+      workload_path: tests/fixtures/workloads/dependency_override_cache_policy_mutation.py
+      workload_sha256: 4519e36f23e1f3142cb1103a2b9368272f449a3b830ce8d9dbea1f32d4525323
+      case_id: fastapi.dependencies.override-policy-mutation.sync-provider-replacement
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-cache-policy-mutation
+      input_path: tests/fixtures/inputs/parity/dependency-override-cache-policy-mutation.json
+      input_sha256: 02e33fa12e4b7bf4a2b189fb7029ba1e7d9c89c16f043f7546c6fd394b608859
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+      recipe_sha256: 8be9eafabf14c3b670ba487d71dc88786e12eb43162aaec5d03c1a88c1578fba
+      workload_path: tests/fixtures/workloads/dependency_override_cache_policy_mutation.py
+      workload_sha256: 4519e36f23e1f3142cb1103a2b9368272f449a3b830ce8d9dbea1f32d4525323
+      case_id: fastapi.dependencies.override-policy-mutation.sync-provider-removal
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-cache-policy-mutation
+      input_path: tests/fixtures/inputs/parity/dependency-override-cache-policy-mutation.json
+      input_sha256: 02e33fa12e4b7bf4a2b189fb7029ba1e7d9c89c16f043f7546c6fd394b608859
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+      recipe_sha256: 8be9eafabf14c3b670ba487d71dc88786e12eb43162aaec5d03c1a88c1578fba
+      workload_path: tests/fixtures/workloads/dependency_override_cache_policy_mutation.py
+      workload_sha256: 4519e36f23e1f3142cb1103a2b9368272f449a3b830ce8d9dbea1f32d4525323
+      case_id: fastapi.dependencies.override-policy-mutation.sync-to-coroutine
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-cache-policy-mutation
+      input_path: tests/fixtures/inputs/parity/dependency-override-cache-policy-mutation.json
+      input_sha256: 02e33fa12e4b7bf4a2b189fb7029ba1e7d9c89c16f043f7546c6fd394b608859
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+      recipe_sha256: 8be9eafabf14c3b670ba487d71dc88786e12eb43162aaec5d03c1a88c1578fba
+      workload_path: tests/fixtures/workloads/dependency_override_cache_policy_mutation.py
+      workload_sha256: 4519e36f23e1f3142cb1103a2b9368272f449a3b830ce8d9dbea1f32d4525323
+      case_id: fastapi.dependencies.override-policy-mutation.awaited-provider-replacement
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-cache-policy-mutation
+      input_path: tests/fixtures/inputs/parity/dependency-override-cache-policy-mutation.json
+      input_sha256: 02e33fa12e4b7bf4a2b189fb7029ba1e7d9c89c16f043f7546c6fd394b608859
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+      recipe_sha256: 8be9eafabf14c3b670ba487d71dc88786e12eb43162aaec5d03c1a88c1578fba
+      workload_path: tests/fixtures/workloads/dependency_override_cache_policy_mutation.py
+      workload_sha256: 4519e36f23e1f3142cb1103a2b9368272f449a3b830ce8d9dbea1f32d4525323
+      case_id: fastapi.dependencies.override-policy-mutation.awaited-provider-removal
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-cache-policy-mutation
+      input_path: tests/fixtures/inputs/parity/dependency-override-cache-policy-mutation.json
+      input_sha256: 02e33fa12e4b7bf4a2b189fb7029ba1e7d9c89c16f043f7546c6fd394b608859
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+      recipe_sha256: 8be9eafabf14c3b670ba487d71dc88786e12eb43162aaec5d03c1a88c1578fba
+      workload_path: tests/fixtures/workloads/dependency_override_cache_policy_mutation.py
+      workload_sha256: 4519e36f23e1f3142cb1103a2b9368272f449a3b830ce8d9dbea1f32d4525323
+      case_id: fastapi.dependencies.override-policy-mutation.late-yield-replacement
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-cache-policy-mutation
+      input_path: tests/fixtures/inputs/parity/dependency-override-cache-policy-mutation.json
+      input_sha256: 02e33fa12e4b7bf4a2b189fb7029ba1e7d9c89c16f043f7546c6fd394b608859
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+      recipe_sha256: 8be9eafabf14c3b670ba487d71dc88786e12eb43162aaec5d03c1a88c1578fba
+      workload_path: tests/fixtures/workloads/dependency_override_cache_policy_mutation.py
+      workload_sha256: 4519e36f23e1f3142cb1103a2b9368272f449a3b830ce8d9dbea1f32d4525323
+      case_id: fastapi.dependencies.override-policy-mutation.nested-parent-and-later-child
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-cache-policy-mutation
+      input_path: tests/fixtures/inputs/parity/dependency-override-cache-policy-mutation.json
+      input_sha256: 02e33fa12e4b7bf4a2b189fb7029ba1e7d9c89c16f043f7546c6fd394b608859
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+      recipe_sha256: 8be9eafabf14c3b670ba487d71dc88786e12eb43162aaec5d03c1a88c1578fba
+      workload_path: tests/fixtures/workloads/dependency_override_cache_policy_mutation.py
+      workload_sha256: 4519e36f23e1f3142cb1103a2b9368272f449a3b830ce8d9dbea1f32d4525323
+      case_id: fastapi.dependencies.override-policy-mutation.captured-child-declarations
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-cache-policy-mutation
+      input_path: tests/fixtures/inputs/parity/dependency-override-cache-policy-mutation.json
+      input_sha256: 02e33fa12e4b7bf4a2b189fb7029ba1e7d9c89c16f043f7546c6fd394b608859
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+      recipe_sha256: 8be9eafabf14c3b670ba487d71dc88786e12eb43162aaec5d03c1a88c1578fba
+      workload_path: tests/fixtures/workloads/dependency_override_cache_policy_mutation.py
+      workload_sha256: 4519e36f23e1f3142cb1103a2b9368272f449a3b830ce8d9dbea1f32d4525323
+      case_id: fastapi.dependencies.override-policy-mutation.cache-hit-policy-mutation
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-cache-policy-mutation
+      input_path: tests/fixtures/inputs/parity/dependency-override-cache-policy-mutation.json
+      input_sha256: 02e33fa12e4b7bf4a2b189fb7029ba1e7d9c89c16f043f7546c6fd394b608859
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+      recipe_sha256: 8be9eafabf14c3b670ba487d71dc88786e12eb43162aaec5d03c1a88c1578fba
+      workload_path: tests/fixtures/workloads/dependency_override_cache_policy_mutation.py
+      workload_sha256: 4519e36f23e1f3142cb1103a2b9368272f449a3b830ce8d9dbea1f32d4525323
+      case_id: fastapi.dependencies.override-policy-mutation.cached-later-validation
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-cache-policy-mutation
+      input_path: tests/fixtures/inputs/parity/dependency-override-cache-policy-mutation.json
+      input_sha256: 02e33fa12e4b7bf4a2b189fb7029ba1e7d9c89c16f043f7546c6fd394b608859
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+      recipe_sha256: 8be9eafabf14c3b670ba487d71dc88786e12eb43162aaec5d03c1a88c1578fba
+      workload_path: tests/fixtures/workloads/dependency_override_cache_policy_mutation.py
+      workload_sha256: 4519e36f23e1f3142cb1103a2b9368272f449a3b830ce8d9dbea1f32d4525323
+      case_id: fastapi.dependencies.override-policy-mutation.failed-mutator-valid-later
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-cache-policy-mutation
+      input_path: tests/fixtures/inputs/parity/dependency-override-cache-policy-mutation.json
+      input_sha256: 02e33fa12e4b7bf4a2b189fb7029ba1e7d9c89c16f043f7546c6fd394b608859
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+      recipe_sha256: 8be9eafabf14c3b670ba487d71dc88786e12eb43162aaec5d03c1a88c1578fba
+      workload_path: tests/fixtures/workloads/dependency_override_cache_policy_mutation.py
+      workload_sha256: 4519e36f23e1f3142cb1103a2b9368272f449a3b830ce8d9dbea1f32d4525323
+      case_id: fastapi.dependencies.override-policy-mutation.earlier-failure-later-mutator
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-cache-policy-mutation
+      input_path: tests/fixtures/inputs/parity/dependency-override-cache-policy-mutation.json
+      input_sha256: 02e33fa12e4b7bf4a2b189fb7029ba1e7d9c89c16f043f7546c6fd394b608859
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+      recipe_sha256: 8be9eafabf14c3b670ba487d71dc88786e12eb43162aaec5d03c1a88c1578fba
+      workload_path: tests/fixtures/workloads/dependency_override_cache_policy_mutation.py
+      workload_sha256: 4519e36f23e1f3142cb1103a2b9368272f449a3b830ce8d9dbea1f32d4525323
+      case_id: fastapi.dependencies.override-policy-mutation.invalid-later-override-repaired
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-cache-policy-mutation
+      input_path: tests/fixtures/inputs/parity/dependency-override-cache-policy-mutation.json
+      input_sha256: 02e33fa12e4b7bf4a2b189fb7029ba1e7d9c89c16f043f7546c6fd394b608859
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+      recipe_sha256: 8be9eafabf14c3b670ba487d71dc88786e12eb43162aaec5d03c1a88c1578fba
+      workload_path: tests/fixtures/workloads/dependency_override_cache_policy_mutation.py
+      workload_sha256: 4519e36f23e1f3142cb1103a2b9368272f449a3b830ce8d9dbea1f32d4525323
+      case_id: fastapi.dependencies.override-policy-mutation.signature-unrelated-reanalysis
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-cache-policy-mutation
+      input_path: tests/fixtures/inputs/parity/dependency-override-cache-policy-mutation.json
+      input_sha256: 02e33fa12e4b7bf4a2b189fb7029ba1e7d9c89c16f043f7546c6fd394b608859
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+      recipe_sha256: 8be9eafabf14c3b670ba487d71dc88786e12eb43162aaec5d03c1a88c1578fba
+      workload_path: tests/fixtures/workloads/dependency_override_cache_policy_mutation.py
+      workload_sha256: 4519e36f23e1f3142cb1103a2b9368272f449a3b830ce8d9dbea1f32d4525323
+      case_id: fastapi.dependencies.override-policy-mutation.signature-clear-retains-registration
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-cache-policy-mutation
+      input_path: tests/fixtures/inputs/parity/dependency-override-cache-policy-mutation.json
+      input_sha256: 02e33fa12e4b7bf4a2b189fb7029ba1e7d9c89c16f043f7546c6fd394b608859
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+      recipe_sha256: 8be9eafabf14c3b670ba487d71dc88786e12eb43162aaec5d03c1a88c1578fba
+      workload_path: tests/fixtures/workloads/dependency_override_cache_policy_mutation.py
+      workload_sha256: 4519e36f23e1f3142cb1103a2b9368272f449a3b830ce8d9dbea1f32d4525323
+      case_id: fastapi.dependencies.override-policy-mutation.mutation-error-cleanup-and-recovery
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-cache-policy-mutation
+      input_path: tests/fixtures/inputs/parity/dependency-override-cache-policy-mutation.json
+      input_sha256: 02e33fa12e4b7bf4a2b189fb7029ba1e7d9c89c16f043f7546c6fd394b608859
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+      recipe_sha256: 8be9eafabf14c3b670ba487d71dc88786e12eb43162aaec5d03c1a88c1578fba
+      workload_path: tests/fixtures/workloads/dependency_override_cache_policy_mutation.py
+      workload_sha256: 4519e36f23e1f3142cb1103a2b9368272f449a3b830ce8d9dbea1f32d4525323
+      case_id: fastapi.dependencies.override-policy-mutation.reached-invalid-override-cleanup
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: dependency-override-cache-policy-mutation
+      input_path: tests/fixtures/inputs/parity/dependency-override-cache-policy-mutation.json
+      input_sha256: 02e33fa12e4b7bf4a2b189fb7029ba1e7d9c89c16f043f7546c6fd394b608859
+      recipe_path: tests/fixtures/input-recipes/parity/dependency-override-cache-policy-mutation.yaml
+      recipe_sha256: 8be9eafabf14c3b670ba487d71dc88786e12eb43162aaec5d03c1a88c1578fba
+      workload_path: tests/fixtures/workloads/dependency_override_cache_policy_mutation.py
+      workload_sha256: 4519e36f23e1f3142cb1103a2b9368272f449a3b830ce8d9dbea1f32d4525323
+      case_id: fastapi.fault-contract.dependencies.override-policy-mutation.yield-cleanup
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
     - workflow_id: dependency-dynamic-cache-policy
       input_path: tests/fixtures/inputs/parity/dependency-dynamic-cache-policy.json
       input_sha256: 277b9e95d04670da0ab86c5142df8dbcdc9f7b15a3d4af6efc3071ca52d76ba0

@@ -392,14 +392,23 @@ impl CallablePlan {
         context: &InvocationContext<'_, '_>,
         declared_scope: Option<&str>,
     ) -> PyResult<Option<Self>> {
-        if context.dependency_overrides.is_empty() {
+        // Each reached edge reads the current provider dictionary. Release the
+        // app borrow before lookup, signature analysis, or any Python hooks.
+        let dependency_overrides = {
+            let app = context
+                .dependency_overrides_provider
+                .bind(context.py)
+                .borrow();
+            app.dependency_overrides.clone_ref(context.py)
+        };
+        let dependency_overrides = dependency_overrides.bind(context.py);
+        if dependency_overrides.is_empty() {
             return Ok(None);
         }
         // FastAPI rebuilds every edge for a nonempty override map, including
         // unchanged callables. The caller retains the original edge's cache
         // identity and raw use_cache policy while solving the rebuilt signature.
-        let callable = context
-            .dependency_overrides
+        let callable = dependency_overrides
             .get_item(self.callable.bind(context.py))?
             .unwrap_or_else(|| self.callable.bind(context.py).clone())
             .unbind();
@@ -417,21 +426,38 @@ impl CallablePlan {
 }
 
 impl DependencyExecutionNode {
-    fn build(
+    fn new(
         original_plan: &CallablePlan,
         use_cache: &Py<PyAny>,
         scope: Option<String>,
         binding_index: usize,
-        context: &InvocationContext<'_, '_>,
-    ) -> PyResult<Self> {
-        let plan = original_plan
-            .reanalyze_dependency(context, scope.as_deref())?
-            .unwrap_or_else(|| original_plan.clone_ref(context.py));
-        let callable_kind =
-            dependency_override_callable(context.py, plan.callable.bind(context.py))?;
-        let generator_kind =
-            dependency_callable_generator_kind(context.py, plan.callable.bind(context.py))?;
-        let cache_key = original_plan.dependency_cache_key();
+        py: Python<'_>,
+    ) -> Self {
+        Self {
+            original_plan: original_plan.clone_ref(py),
+            plan: None,
+            cache_key: original_plan.dependency_cache_key(),
+            use_cache: use_cache.clone_ref(py),
+            scope,
+            binding_index,
+            children: Vec::new(),
+            result: None,
+            awaiting: false,
+            failed: false,
+        }
+    }
+
+    fn initialize(&mut self, context: &InvocationContext<'_, '_>) -> PyResult<()> {
+        if self.plan.is_some() {
+            return Ok(());
+        }
+        // Source selects this edge once before solving children. Building the
+        // chosen parent captures its full child declarations; their own override
+        // selection waits until traversal reaches each child.
+        let plan = self
+            .original_plan
+            .reanalyze_dependency(context, self.scope.as_deref())?
+            .unwrap_or_else(|| self.original_plan.clone_ref(context.py));
         let mut children = Vec::new();
         let mut dependency_edge_index = 0;
         for parameter in &plan.parameters {
@@ -444,27 +470,18 @@ impl DependencyExecutionNode {
             else {
                 continue;
             };
-            children.push(Self::build(
+            children.push(Self::new(
                 child_plan,
                 child_use_cache,
                 child_scope.clone(),
                 dependency_edge_index,
-                context,
-            )?);
+                context.py,
+            ));
             dependency_edge_index += 1;
         }
-        Ok(Self {
-            plan,
-            cache_key,
-            use_cache: use_cache.clone_ref(context.py),
-            binding_index,
-            callable_kind,
-            generator_kind,
-            children,
-            result: None,
-            awaiting: false,
-            failed: false,
-        })
+        self.plan = Some(plan);
+        self.children = children;
+        Ok(())
     }
 
     fn advance(
@@ -478,6 +495,7 @@ impl DependencyExecutionNode {
         if let Some(result) = self.result.as_ref() {
             return Ok(DependencyGraphStep::Ready(result.clone_ref(context.py)));
         }
+        self.initialize(context)?;
         let mut child_failed = false;
         for (index, child) in self.children.iter_mut().enumerate() {
             path.push(index);
@@ -503,9 +521,10 @@ impl DependencyExecutionNode {
         }
         // The source resolves children and validates the parent's own inputs
         // before its caller consults the parent cache, even when a child failed.
-        let arguments = self
-            .plan
-            .prepare_arguments(context, Some(&prepared_dependencies))?;
+        let plan = self.plan.as_ref().ok_or_else(|| {
+            PyRuntimeError::new_err("initialized dependency graph omitted its selected plan")
+        })?;
+        let arguments = plan.prepare_arguments(context, Some(&prepared_dependencies))?;
         if child_failed || arguments.is_none() {
             self.failed = true;
             return Ok(DependencyGraphStep::Invalid);
@@ -519,9 +538,11 @@ impl DependencyExecutionNode {
         let arguments = arguments.ok_or_else(|| {
             PyRuntimeError::new_err("validated dependency graph omitted callable arguments")
         })?;
+        let generator_kind =
+            dependency_callable_generator_kind(context.py, plan.callable.bind(context.py))?;
         // Source generator wrapping occurs only after successful solving and a
         // cache miss, so invalid or cached edges do not invoke wrapper hooks.
-        let invoke_plan = if let Some(generator_kind) = self.generator_kind {
+        let invoke_plan = if let Some(generator_kind) = generator_kind {
             let decorator = context
                 .py
                 .import("contextlib")?
@@ -529,20 +550,19 @@ impl DependencyExecutionNode {
                     DependencyGeneratorKind::Sync => "contextmanager",
                     DependencyGeneratorKind::Async => "asynccontextmanager",
                 })?;
-            let mut plan = self.plan.clone_ref(context.py);
-            plan.callable = decorator
-                .call1((self.plan.callable.bind(context.py),))?
-                .unbind();
-            plan
+            let mut invoke_plan = plan.clone_ref(context.py);
+            invoke_plan.callable = decorator.call1((plan.callable.bind(context.py),))?.unbind();
+            invoke_plan
         } else {
-            self.plan.clone_ref(context.py)
+            plan.clone_ref(context.py)
         };
-        let use_threadpool =
-            self.generator_kind.is_none() && self.callable_kind == DependencyOverrideCallable::Sync;
+        let use_threadpool = generator_kind.is_none()
+            && dependency_override_callable(context.py, plan.callable.bind(context.py))?
+                == DependencyOverrideCallable::Sync;
         let value =
             invoke_plan.call_with_arguments(context, arguments.bind(context.py), use_threadpool)?;
 
-        let awaitable = if let Some(generator_kind) = self.generator_kind {
+        let awaitable = if let Some(generator_kind) = generator_kind {
             let context_manager = match generator_kind {
                 DependencyGeneratorKind::Async => value,
                 DependencyGeneratorKind::Sync => Py::new(
@@ -553,7 +573,7 @@ impl DependencyExecutionNode {
                 )?
                 .into_any(),
             };
-            let exit_stack = if self.plan.computed_scope.as_deref() == Some("function") {
+            let exit_stack = if self.scope.as_deref() == Some("function") {
                 context.function_dependency_exit_stack
             } else {
                 context.dependency_exit_stack
@@ -613,7 +633,7 @@ impl DependencyExecutionNode {
 }
 
 impl DependencyExecutionGraph {
-    fn build(plan: &CallablePlan, context: &InvocationContext<'_, '_>) -> PyResult<Self> {
+    fn new(plan: &CallablePlan, py: Python<'_>) -> Self {
         let mut roots = Vec::new();
         let mut dependency_edge_index = 0;
         for parameter in &plan.parameters {
@@ -626,21 +646,21 @@ impl DependencyExecutionGraph {
             else {
                 continue;
             };
-            roots.push(DependencyExecutionNode::build(
+            roots.push(DependencyExecutionNode::new(
                 dependency_plan,
                 use_cache,
                 scope.clone(),
                 dependency_edge_index,
-                context,
-            )?);
+                py,
+            ));
             dependency_edge_index += 1;
         }
-        Ok(Self {
+        Self {
             roots,
             next_root: 0,
             in_progress_root: None,
             pending_path: None,
-        })
+        }
     }
 
     fn advance(
@@ -713,7 +733,7 @@ struct InvocationContext<'context, 'py> {
     body_fields_embedded: bool,
     form_body_embedded: bool,
     failures: &'context mut Vec<ValidationIssue>,
-    dependency_overrides: &'context Bound<'py, PyDict>,
+    dependency_overrides_provider: &'context Py<PyFastApi>,
     dependency_cache: &'context mut HashMap<DependencyCacheKey, Py<PyAny>>,
     prepared_dependency_values: &'context mut HashMap<usize, Py<PyAny>>,
     dependency_override_cursor: &'context mut usize,
@@ -777,12 +797,12 @@ enum DependencyGeneratorKind {
 }
 
 struct DependencyExecutionNode {
-    plan: CallablePlan,
+    original_plan: CallablePlan,
+    plan: Option<CallablePlan>,
     cache_key: DependencyCacheKey,
     use_cache: Py<PyAny>,
+    scope: Option<String>,
     binding_index: usize,
-    callable_kind: DependencyOverrideCallable,
-    generator_kind: Option<DependencyGeneratorKind>,
     children: Vec<Self>,
     result: Option<Py<PyAny>>,
     awaiting: bool,
@@ -5134,30 +5154,6 @@ impl PyRawWebSocketDecorator {
 }
 
 impl CallablePlan {
-    fn has_only_synchronous_dependencies(
-        &self,
-        context: &InvocationContext<'_, '_>,
-    ) -> PyResult<bool> {
-        for parameter in &self.parameters {
-            let ParameterSource::Dependency { plan, scope, .. } = &parameter.source else {
-                continue;
-            };
-            let reanalyzed_plan = plan.reanalyze_dependency(context, scope.as_deref())?;
-            let dependency_plan = reanalyzed_plan.as_ref().unwrap_or(plan.as_ref());
-            let callable = dependency_plan.callable.bind(context.py);
-            if dependency_override_callable(context.py, callable)?
-                != DependencyOverrideCallable::Sync
-                || dependency_callable_is_generator(context.py, callable)?
-            {
-                return Ok(false);
-            }
-            if !dependency_plan.has_only_synchronous_dependencies(context)? {
-                return Ok(false);
-            }
-        }
-        Ok(true)
-    }
-
     fn build(
         py: Python<'_>,
         callable: Py<PyAny>,
@@ -5798,11 +5794,7 @@ impl CallablePlan {
                 Ok(DependencyPreparation::Invalid)
             };
         }
-        if self.has_only_synchronous_dependencies(context)? {
-            return Ok(DependencyPreparation::Ready);
-        }
-
-        let mut graph = DependencyExecutionGraph::build(self, context)?;
+        let mut graph = DependencyExecutionGraph::new(self, context.py);
         match graph.advance(context)? {
             DependencyGraphAdvance::Ready => Ok(DependencyPreparation::Ready),
             DependencyGraphAdvance::Invalid => Ok(DependencyPreparation::Invalid),
@@ -10444,7 +10436,7 @@ impl FastApiCall {
             .invocation
             .as_mut()
             .ok_or_else(|| PyRuntimeError::new_err("request invocation state was lost"))?;
-        let (plan, dependency_overrides) = {
+        let plan = {
             let app = self.app.bind(py).borrow();
             let plan = if let Some(route_index) = self.frontend_route_index {
                 &app.frontend_routes
@@ -10469,7 +10461,7 @@ impl FastApiCall {
                     .ok_or_else(|| PyRuntimeError::new_err("selected FastAPI route was lost"))?
                     .plan
             };
-            (plan.clone_ref(py), app.dependency_overrides.clone_ref(py))
+            plan.clone_ref(py)
         };
         let route_invocation = {
             let mut context = InvocationContext {
@@ -10482,7 +10474,7 @@ impl FastApiCall {
                 body_fields_embedded: invocation.form_body_embedded || route_body_fields_embedded,
                 form_body_embedded: invocation.form_body_embedded,
                 failures: &mut invocation.failures,
-                dependency_overrides: dependency_overrides.bind(py),
+                dependency_overrides_provider: &self.app,
                 dependency_cache: &mut invocation.dependency_cache,
                 prepared_dependency_values: &mut invocation.prepared_dependency_values,
                 dependency_override_cursor: &mut invocation.dependency_override_cursor,
@@ -10611,7 +10603,6 @@ impl FastApiCall {
                 .invocation
                 .as_mut()
                 .ok_or_else(|| PyRuntimeError::new_err("request invocation state was lost"))?;
-            let app = self.app.bind(py).borrow();
             let mut context = InvocationContext {
                 py,
                 inputs: invocation.inputs.bind(py),
@@ -10622,7 +10613,7 @@ impl FastApiCall {
                 body_fields_embedded: invocation.form_body_embedded || route_body_fields_embedded,
                 form_body_embedded: invocation.form_body_embedded,
                 failures: &mut invocation.failures,
-                dependency_overrides: app.dependency_overrides.bind(py),
+                dependency_overrides_provider: &self.app,
                 dependency_cache: &mut invocation.dependency_cache,
                 prepared_dependency_values: &mut invocation.prepared_dependency_values,
                 dependency_override_cursor: &mut invocation.dependency_override_cursor,
