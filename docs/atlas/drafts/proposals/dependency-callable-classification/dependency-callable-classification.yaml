@@ -1,0 +1,479 @@
+# Proposed independent inputs for immutable callable classification only.
+# FastAPI 0.141.1 source commit 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f,
+# Python 3.12.13. models.py:18-27 removes partials before inspect.unwrap;
+# :138-220 inspect both callable and underlying __call__ chains, with a class
+# guard and coroutine routine checks. utils.py:566-576 selects async-generator
+# context management before sync-generator context management. :655-680 keeps
+# the original edge cache key and invokes the original wrapper/partial.
+# :673-674 unconditionally awaits a coroutine-classified callable's result,
+# even when a sync wrapper or publicly marked sync routine returns a scalar.
+# utils.py:300-315 rejects a request-scoped generator parent with a function-
+# scoped child; routing.py:140-146 gives function/request cleanup boundaries.
+# The pinned partial/wrapped tests are evidence of public reachability only;
+# this workload uses independent values, signatures, traces, and projections.
+# No input changes classification metadata after registration, and no results
+# establish classification-cache history, eviction, or descriptor side effects.
+schema: fastapi-rs/python-asgi-workflow@9
+workload:
+  file: tests/fixtures/workloads/dependency_callable_classification.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.dependencies.callable-classification.sync-wrap-coroutine-function
+  verification: parity
+  factory_input: {kind: coroutine, form: wrapped-function}
+  construction_observation: &construction
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: invalid-query-before-any-forwarding-or-awaiting
+    kind: http_request
+    scope:
+      type: http
+      asgi: &asgi {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /pair
+      query_string: 'seed=bad&scale=5'
+      root_path: ''
+      headers: &headers [[host, testserver]]
+      client: &client [127.0.0.1, 123]
+      server: &server [testserver, 80]
+    receive_events: &request [{type: http.request, body: '', more_body: false}]
+    observations: &response
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: inspect-validation-suppression-trace
+    kind: http_request
+    scope: &state-scope {type: http, asgi: *asgi, http_version: '1.1', method: GET,
+      scheme: http, path: /state, query_string: '', root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *request
+    observations: *response
+  - action_id: original-forwarder-runs-with-cache-hit-and-uncached-repeat
+    kind: http_request
+    scope: &pair-scope {type: http, asgi: *asgi, http_version: '1.1', method: GET,
+      scheme: http, path: /pair, query_string: 'seed=7&scale=5', root_path: '',
+      headers: *headers, client: *client, server: *server}
+    receive_events: *request
+    observations: *response
+  - action_id: observe-completed-forwarding-and-coroutine-traces
+    kind: http_request
+    scope: *state-scope
+    receive_events: *request
+    observations: *response
+  source_evidence: &classification-reference
+  - {kind: upstream_test, path: tests/test_dependency_wrapped.py}
+  - {kind: upstream_test, path: tests/test_dependency_partial.py}
+  - {kind: upstream_documentation, path: docs/en/docs/tutorial/dependencies/sub-dependencies.md}
+- case_id: fastapi.dependencies.callable-classification.sync-wrap-coroutine-instance
+  verification: parity
+  factory_input: {kind: coroutine, form: wrapped-instance}
+  construction_observation: *construction
+  actions:
+  - action_id: sync-forwarder-retains-underlying-instance-call-and-inputs
+    kind: http_request
+    scope: &single-scope {type: http, asgi: *asgi, http_version: '1.1', method: GET,
+      scheme: http, path: /single, query_string: 'seed=11&scale=7', root_path: '',
+      headers: *headers, client: *client, server: *server}
+    receive_events: *request
+    observations: *response
+  - action_id: observe-instance-coroutine-completion
+    kind: http_request
+    scope: *state-scope
+    receive_events: *request
+    observations: *response
+  source_evidence: *classification-reference
+- case_id: fastapi.dependencies.callable-classification.sync-wrap-coroutine-call-method
+  verification: parity
+  factory_input: {kind: coroutine, form: wrapped-call-method}
+  construction_observation: *construction
+  actions:
+  - action_id: instance-method-forwarder-preserves-self-and-awaits-underlying-method
+    kind: http_request
+    scope: *single-scope
+    receive_events: *request
+    observations: *response
+  - action_id: observe-method-forwarding-and-call-result
+    kind: http_request
+    scope: *state-scope
+    receive_events: *request
+    observations: *response
+  source_evidence: *classification-reference
+- case_id: fastapi.dependencies.callable-classification.partial-coroutine-instance
+  verification: parity
+  factory_input: {kind: coroutine, form: partial-instance}
+  construction_observation: *construction
+  actions:
+  - action_id: bound-instance-seed-retained-with-cached-and-uncached-invocations
+    kind: http_request
+    scope: *pair-scope
+    receive_events: *request
+    observations: *response
+  - action_id: observe-partial-instance-coroutine-result
+    kind: http_request
+    scope: *state-scope
+    receive_events: *request
+    observations: *response
+  source_evidence: *classification-reference
+- case_id: fastapi.dependencies.callable-classification.partial-wrapped-coroutine-nested
+  verification: parity
+  factory_input: {kind: coroutine, form: partial-wrapped-function}
+  construction_observation: *construction
+  actions:
+  - action_id: partial-removal-then-unwrapping-retains-nested-bound-call
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /nested, query_string: 'seed=991&scale=11', root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *request
+    observations: *response
+  - action_id: observe-nested-parent-and-shared-child-trace
+    kind: http_request
+    scope: *state-scope
+    receive_events: *request
+    observations: *response
+  source_evidence: *classification-reference
+- case_id: fastapi.dependencies.callable-classification.plain-partial-function-method-controls
+  verification: parity
+  factory_input: {kind: coroutine, form: function}
+  construction_observation: *construction
+  actions:
+  - action_id: plain-function-and-distinct-partial-function-method-arguments
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /controls, query_string: 'seed=13&scale=17', root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *request
+    observations: *response
+  - action_id: observe-distinct-control-callable-results
+    kind: http_request
+    scope: *state-scope
+    receive_events: *request
+    observations: *response
+  source_evidence: *classification-reference
+- case_id: fastapi.dependencies.callable-classification.unmarked-sync-awaitable-control
+  verification: parity
+  factory_input: {form: unmarked}
+  construction_observation: *construction
+  actions:
+  - action_id: project-and-close-coroutine-returned-by-unmarked-sync-callable
+    kind: http_request
+    scope: *single-scope
+    receive_events: *request
+    observations: *response
+  - action_id: observe-actual-coroutine-state-and-body-execution-trace
+    kind: http_request
+    scope: *state-scope
+    receive_events: *request
+    observations: *response
+  source_evidence: *classification-reference
+- case_id: fastapi.dependencies.callable-classification.async-wrapped-scalar-error-cleanup-recovery
+  verification: parity
+  factory_input: {form: scalar-forwarder}
+  construction_observation: *construction
+  actions:
+  - action_id: sync-wrapper-copies-async-metadata-and-returns-scalar-after-guard-entry
+    kind: http_request
+    scope: &scalar-scope {type: http, asgi: *asgi, http_version: '1.1', method: GET,
+      scheme: http, path: /classified-scalar, query_string: 'seed=89&scale=97', root_path: '',
+      headers: *headers, client: *client, server: *server}
+    receive_events: *request
+    observations: *response
+  - action_id: inspect-exact-error-original-wrapper-trace-and-yielded-cleanup
+    kind: http_request
+    scope: *state-scope
+    receive_events: *request
+    observations: *response
+  - action_id: normal-coroutine-dependency-and-fresh-guard-after-classified-await-error
+    kind: http_request
+    scope: &classifier-recovery-scope {type: http, asgi: *asgi, http_version: '1.1', method: GET,
+      scheme: http, path: /classifier-recovery, query_string: 'seed=101&scale=103', root_path: '',
+      headers: *headers, client: *client, server: *server}
+    receive_events: *request
+    observations: *response
+  - action_id: inspect-completed-recovery-resource-cleanup-and-response-boundaries
+    kind: http_request
+    scope: *state-scope
+    receive_events: *request
+    observations: *response
+  source_evidence: &scalar-await-reference
+  - {kind: upstream_test, path: tests/test_dependency_wrapped.py}
+  - {kind: upstream_documentation, path: docs/en/docs/async.md}
+  - {kind: upstream_documentation, path: docs/en/docs/tutorial/dependencies/dependencies-with-yield.md}
+- case_id: fastapi.dependencies.callable-classification.public-marked-scalar-error-cleanup-recovery
+  verification: parity
+  factory_input: {form: marked-scalar}
+  construction_observation: *construction
+  actions:
+  - action_id: public-coroutine-marker-on-sync-routine-returning-scalar-after-guard-entry
+    kind: http_request
+    scope: *scalar-scope
+    receive_events: *request
+    observations: *response
+  - action_id: inspect-exact-error-original-marked-routine-trace-and-yielded-cleanup
+    kind: http_request
+    scope: *state-scope
+    receive_events: *request
+    observations: *response
+  - action_id: normal-coroutine-dependency-and-fresh-guard-after-marked-await-error
+    kind: http_request
+    scope: *classifier-recovery-scope
+    receive_events: *request
+    observations: *response
+  - action_id: inspect-completed-marked-case-recovery-and-resource-cleanup
+    kind: http_request
+    scope: *state-scope
+    receive_events: *request
+    observations: *response
+  source_evidence: *scalar-await-reference
+- case_id: fastapi.dependencies.callable-classification.sync-wrap-sync-generator-function
+  verification: parity
+  factory_input: {kind: sync-generator, form: wrapped-function}
+  construction_observation: *construction
+  actions:
+  - action_id: original-sync-forwarder-enters-wrapped-generator
+    kind: http_request
+    scope: *single-scope
+    receive_events: *request
+    observations: *response
+  - action_id: observe-default-request-cleanup-after-response-send
+    kind: http_request
+    scope: *state-scope
+    receive_events: *request
+    observations: *response
+  source_evidence: &yield-reference
+  - {kind: upstream_test, path: tests/test_dependency_wrapped.py}
+  - {kind: upstream_test, path: tests/test_dependency_partial.py}
+  - {kind: upstream_documentation, path: docs/en/docs/tutorial/dependencies/dependencies-with-yield.md}
+- case_id: fastapi.dependencies.callable-classification.sync-wrap-async-generator-function
+  verification: parity
+  factory_input: {kind: async-generator, form: wrapped-function, scope: function}
+  construction_observation: *construction
+  actions:
+  - action_id: sync-forwarder-enters-wrapped-async-generator
+    kind: http_request
+    scope: *single-scope
+    receive_events: *request
+    observations: *response
+  - action_id: observe-function-cleanup-before-response-send
+    kind: http_request
+    scope: *state-scope
+    receive_events: *request
+    observations: *response
+  source_evidence: *yield-reference
+- case_id: fastapi.dependencies.callable-classification.sync-wrap-sync-generator-instance
+  verification: parity
+  factory_input: {kind: sync-generator, form: wrapped-instance, scope: function}
+  construction_observation: *construction
+  actions:
+  - action_id: forwarded-generator-instance-with-one-cached-and-two-entered-values
+    kind: http_request
+    scope: *pair-scope
+    receive_events: *request
+    observations: *response
+  - action_id: observe-two-function-scope-exits-and-response-order
+    kind: http_request
+    scope: *state-scope
+    receive_events: *request
+    observations: *response
+  source_evidence: *yield-reference
+- case_id: fastapi.dependencies.callable-classification.sync-wrap-async-generator-instance
+  verification: parity
+  factory_input: {kind: async-generator, form: wrapped-instance}
+  construction_observation: *construction
+  actions:
+  - action_id: unwrapped-instance-dunder-call-identifies-async-generator
+    kind: http_request
+    scope: *single-scope
+    receive_events: *request
+    observations: *response
+  - action_id: observe-async-instance-request-scope-exit
+    kind: http_request
+    scope: *state-scope
+    receive_events: *request
+    observations: *response
+  source_evidence: *yield-reference
+- case_id: fastapi.dependencies.callable-classification.sync-wrap-async-generator-call-method
+  verification: parity
+  factory_input: {kind: async-generator, form: wrapped-call-method, scope: function}
+  construction_observation: *construction
+  actions:
+  - action_id: sync-decorated-dunder-call-enters-underlying-async-generator
+    kind: http_request
+    scope: *single-scope
+    receive_events: *request
+    observations: *response
+  - action_id: observe-decorated-method-function-scope-exit
+    kind: http_request
+    scope: *state-scope
+    receive_events: *request
+    observations: *response
+  source_evidence: *yield-reference
+- case_id: fastapi.dependencies.callable-classification.partial-sync-generator-instance
+  verification: parity
+  factory_input: {kind: sync-generator, form: partial-instance, scope: function}
+  construction_observation: *construction
+  actions:
+  - action_id: partial-keeps-bound-seed-and-enters-instance-generator
+    kind: http_request
+    scope: *single-scope
+    receive_events: *request
+    observations: *response
+  - action_id: observe-partial-sync-resource-cleanup
+    kind: http_request
+    scope: *state-scope
+    receive_events: *request
+    observations: *response
+  source_evidence: *yield-reference
+- case_id: fastapi.dependencies.callable-classification.partial-async-generator-instance
+  verification: parity
+  factory_input: {kind: async-generator, form: partial-instance}
+  construction_observation: *construction
+  actions:
+  - action_id: partial-keeps-bound-seed-and-enters-instance-async-generator
+    kind: http_request
+    scope: *single-scope
+    receive_events: *request
+    observations: *response
+  - action_id: observe-partial-async-request-scope-cleanup
+    kind: http_request
+    scope: *state-scope
+    receive_events: *request
+    observations: *response
+  source_evidence: *yield-reference
+- case_id: fastapi.dependencies.callable-classification.async-generator-adapter-over-sync-generator
+  verification: parity
+  factory_input: {form: async-generator-adapter}
+  construction_observation: *construction
+  actions:
+  - action_id: original-async-adapter-selected-when-both-generator-kinds-identify
+    kind: http_request
+    scope: *single-scope
+    receive_events: *request
+    observations: *response
+  - action_id: observe-adapter-and-underlying-generator-cleanup
+    kind: http_request
+    scope: *state-scope
+    receive_events: *request
+    observations: *response
+  source_evidence: *yield-reference
+- case_id: fastapi.dependencies.callable-classification.partial-wrapped-sync-generator-function
+  verification: parity
+  factory_input: {kind: sync-generator, form: partial-wrapped-function, scope: function}
+  construction_observation: *construction
+  actions:
+  - action_id: partial-removal-then-unwrapping-enters-sync-generator-function
+    kind: http_request
+    scope: *single-scope
+    receive_events: *request
+    observations: *response
+  - action_id: observe-original-partial-forwarding-bound-seed-and-function-cleanup
+    kind: http_request
+    scope: *state-scope
+    receive_events: *request
+    observations: *response
+  source_evidence: *yield-reference
+- case_id: fastapi.dependencies.callable-classification.partial-wrapped-async-generator-function
+  verification: parity
+  factory_input: {kind: async-generator, form: partial-wrapped-function}
+  construction_observation: *construction
+  actions:
+  - action_id: partial-removal-then-unwrapping-enters-async-generator-function
+    kind: http_request
+    scope: *single-scope
+    receive_events: *request
+    observations: *response
+  - action_id: observe-original-partial-forwarding-bound-seed-and-request-cleanup
+    kind: http_request
+    scope: *state-scope
+    receive_events: *request
+    observations: *response
+  source_evidence: *yield-reference
+- case_id: fastapi.dependencies.callable-classification.partial-generator-function-method-controls
+  verification: parity
+  factory_input: {kind: coroutine, form: function}
+  construction_observation: *construction
+  actions:
+  - action_id: raw-partial-sync-async-generator-functions-and-bound-methods
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /yield-controls, query_string: 'seed=999&scale=83', root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *request
+    observations: *response
+  - action_id: observe-distinct-bound-inputs-and-all-request-resource-exits
+    kind: http_request
+    scope: *state-scope
+    receive_events: *request
+    observations: *response
+  source_evidence: *yield-reference
+- case_id: fastapi.dependencies.callable-classification.wrapped-partial-yield-scope-construction
+  verification: parity
+  factory_input: {kind: coroutine, form: function}
+  construction_observation: *construction
+  actions:
+  - action_id: public-registration-of-wrapped-partial-generator-parents-in-both-scopes
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /scope-construction, query_string: '', root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *request
+    observations: *response
+  source_evidence: *yield-reference
+- case_id: fastapi.dependencies.callable-classification.wrapped-yield-error-cleanup-recovery
+  verification: parity
+  factory_input: {kind: async-generator, form: wrapped-instance}
+  construction_observation: *construction
+  actions:
+  - action_id: public-endpoint-error-after-forwarded-yield-resource-entry
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /raise, query_string: 'seed=19&scale=23', root_path: '', headers: *headers,
+      client: *client, server: *server}
+    receive_events: *request
+    observations: *response
+  - action_id: observe-error-propagation-and-cleanup-before-handler-response
+    kind: http_request
+    scope: *state-scope
+    receive_events: *request
+    observations: *response
+  - action_id: fresh-yield-resource-and-normal-response-after-error
+    kind: http_request
+    scope: *single-scope
+    receive_events: *request
+    observations: *response
+  source_evidence: *yield-reference
+- case_id: fastapi.dependencies.callable-classification.public-endpoint-role-classification
+  verification: parity
+  factory_input: {kind: coroutine, form: function}
+  construction_observation: *construction
+  actions:
+  - action_id: public-route-invokes-sync-wrapper-around-coroutine-function
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /endpoint-wrapped-function, query_string: 'seed=29&scale=31', root_path: '',
+      headers: *headers, client: *client, server: *server}
+    receive_events: *request
+    observations: *response
+  - action_id: public-route-invokes-sync-wrapper-around-coroutine-instance
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /endpoint-wrapped-instance, query_string: 'seed=37&scale=41', root_path: '',
+      headers: *headers, client: *client, server: *server}
+    receive_events: *request
+    observations: *response
+  - action_id: public-route-preserves-partial-instance-bound-argument
+    kind: http_request
+    scope: {type: http, asgi: *asgi, http_version: '1.1', method: GET, scheme: http,
+      path: /endpoint-partial-instance, query_string: 'seed=997&scale=43', root_path: '',
+      headers: *headers, client: *client, server: *server}
+    receive_events: *request
+    observations: *response
+  - action_id: observe-original-endpoint-forwarding-and-bound-invocation-traces
+    kind: http_request
+    scope: *state-scope
+    receive_events: *request
+    observations: *response
+  source_evidence: *classification-reference

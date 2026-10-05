@@ -1,0 +1,231 @@
+--- a/fastapi-rs/src/application_runtime.rs
++++ b/fastapi-rs/src/application_runtime.rs
+@@ -578,21 +578,15 @@
+             } else {
+                 context.dependency_exit_stack
+             };
+-            Some(
+-                exit_stack
+-                    .call_method1("enter_async_context", (context_manager.bind(context.py),))?
+-                    .unbind(),
+-            )
+-        } else if is_awaitable(context.py, value.bind(context.py))? {
+-            Some(value)
++            exit_stack
++                .call_method1("enter_async_context", (context_manager.bind(context.py),))?
++                .unbind()
+         } else {
+-            self.store_result(context, value.clone_ref(context.py));
+-            return Ok(DependencyGraphStep::Ready(value));
++            // Source awaits the classified coroutine's result or the sync
++            // worker once. A worker's returned value is stored on resume.
++            value
+         };
+ 
+-        let awaitable = awaitable.ok_or_else(|| {
+-            PyRuntimeError::new_err("dependency graph entered a context without an awaitable")
+-        })?;
+         self.awaiting = true;
+         Ok(DependencyGraphStep::Await {
+             awaitable,
+@@ -6203,80 +6197,156 @@
+     Ok(false)
+ }
+ 
++fn dependency_callable_without_partials<'py>(
++    py: Python<'py>,
++    value: &Bound<'py, PyAny>,
++) -> PyResult<Bound<'py, PyAny>> {
++    let partial = py.import("functools")?.getattr("partial")?;
++    let mut value = value.clone();
++    while value.is_instance(&partial)? {
++        value = value.getattr("func")?;
++    }
++    Ok(value)
++}
++
++fn dependency_callable_unwrapped<'py>(
++    py: Python<'py>,
++    value: &Bound<'py, PyAny>,
++) -> PyResult<Bound<'py, PyAny>> {
++    py.import("inspect")?
++        .getattr("unwrap")?
++        .call1((dependency_callable_without_partials(py, value)?,))
++}
++
++fn dependency_callable_call_method<'py>(
++    py: Python<'py>,
++    value: &Bound<'py, PyAny>,
++) -> PyResult<Option<Bound<'py, PyAny>>> {
++    match value.getattr("__call__") {
++        Ok(method) if method.is_none() => Ok(None),
++        Ok(method) => Ok(Some(method)),
++        Err(error) if error.is_instance_of::<PyAttributeError>(py) => Ok(None),
++        Err(error) => Err(error),
++    }
++}
++
+ fn dependency_override_callable(
+     py: Python<'_>,
+     value: &Bound<'_, PyAny>,
+ ) -> PyResult<DependencyOverrideCallable> {
+     let inspect = py.import("inspect")?;
+-    if inspect
+-        .getattr("isclass")?
+-        .call1((value,))?
+-        .extract::<bool>()?
++    // FastAPI uses asyncio's predicate on pinned CPython 3.12, including its
++    // legacy marker. Classification does not change the callable we invoke.
++    let coroutine_predicate = py.import("asyncio")?.getattr("iscoroutinefunction")?;
++    let is_coroutine = |callable: &Bound<'_, PyAny>| -> PyResult<bool> {
++        coroutine_predicate.call1((callable,))?.extract()
++    };
++    let is_routine = |callable: &Bound<'_, PyAny>| -> PyResult<bool> {
++        inspect.getattr("isroutine")?.call1((callable,))?.extract()
++    };
++    if is_routine(&dependency_callable_without_partials(py, value)?)?
++        && is_coroutine(&dependency_callable_without_partials(py, value)?)?
+     {
+-        return Ok(DependencyOverrideCallable::Sync);
++        return Ok(DependencyOverrideCallable::CoroutineFunction);
+     }
+-    if inspect
+-        .getattr("iscoroutinefunction")?
+-        .call1((value,))?
+-        .extract::<bool>()?
++    if is_routine(&dependency_callable_unwrapped(py, value)?)?
++        && is_coroutine(&dependency_callable_unwrapped(py, value)?)?
+     {
+         return Ok(DependencyOverrideCallable::CoroutineFunction);
+     }
+-    let call_method = value.getattr("__call__")?;
+     if inspect
+-        .getattr("iscoroutinefunction")?
+-        .call1((call_method,))?
++        .getattr("isclass")?
++        .call1((dependency_callable_unwrapped(py, value)?,))?
+         .extract::<bool>()?
+     {
++        return Ok(DependencyOverrideCallable::Sync);
++    }
++    let impartial = dependency_callable_without_partials(py, value)?;
++    let Some(call_method) = dependency_callable_call_method(py, &impartial)? else {
++        return Ok(DependencyOverrideCallable::Sync);
++    };
++    if is_coroutine(&dependency_callable_without_partials(py, &call_method)?)?
++        || is_coroutine(&dependency_callable_unwrapped(py, &call_method)?)?
++        // Native async descriptors do not carry Python coroutine flags. Retain
++        // the owned native bridge at this instance's method-classification step.
++        || crate::security::is_native_async_callable(py, &impartial)?
++    {
+         return Ok(DependencyOverrideCallable::AsyncCallableInstance);
+     }
+-    if crate::security::is_native_async_callable(py, value)? {
+-        return Ok(DependencyOverrideCallable::CoroutineFunction);
++    let unwrapped = dependency_callable_unwrapped(py, value)?;
++    let Some(call_method) = dependency_callable_call_method(py, &unwrapped)? else {
++        return Ok(DependencyOverrideCallable::Sync);
++    };
++    if is_coroutine(&dependency_callable_without_partials(py, &call_method)?)?
++        || is_coroutine(&dependency_callable_unwrapped(py, &call_method)?)?
++        || crate::security::is_native_async_callable(py, &unwrapped)?
++    {
++        return Ok(DependencyOverrideCallable::AsyncCallableInstance);
+     }
+     Ok(DependencyOverrideCallable::Sync)
++}
++
++fn dependency_callable_matches_generator_predicate(
++    py: Python<'_>,
++    value: &Bound<'_, PyAny>,
++    predicate_name: &str,
++) -> PyResult<bool> {
++    let inspect = py.import("inspect")?;
++    let predicate = inspect.getattr(predicate_name)?;
++    let matches = |callable: &Bound<'_, PyAny>| -> PyResult<bool> {
++        predicate.call1((callable,))?.extract()
++    };
++    if matches(&dependency_callable_without_partials(py, value)?)?
++        || matches(&dependency_callable_unwrapped(py, value)?)?
++    {
++        return Ok(true);
++    }
++    if inspect
++        .getattr("isclass")?
++        .call1((dependency_callable_unwrapped(py, value)?,))?
++        .extract::<bool>()?
++    {
++        return Ok(false);
++    }
++    let impartial = dependency_callable_without_partials(py, value)?;
++    let Some(call_method) = dependency_callable_call_method(py, &impartial)? else {
++        return Ok(false);
++    };
++    if matches(&dependency_callable_without_partials(py, &call_method)?)?
++        || matches(&dependency_callable_unwrapped(py, &call_method)?)?
++    {
++        return Ok(true);
++    }
++    let unwrapped = dependency_callable_unwrapped(py, value)?;
++    let Some(call_method) = dependency_callable_call_method(py, &unwrapped)? else {
++        return Ok(false);
++    };
++    Ok(matches(&dependency_callable_without_partials(py, &call_method)?)?
++        || matches(&dependency_callable_unwrapped(py, &call_method)?)?)
+ }
+ 
+ fn dependency_callable_is_generator(py: Python<'_>, value: &Bound<'_, PyAny>) -> PyResult<bool> {
+-    Ok(dependency_callable_generator_kind(py, value)?.is_some())
++    // Source scope analysis and the miss branch test sync before async.
++    Ok(dependency_callable_matches_generator_predicate(py, value, "isgeneratorfunction")?
++        || dependency_callable_matches_generator_predicate(py, value, "isasyncgenfunction")?)
+ }
+ 
+ fn dependency_callable_generator_kind(
+     py: Python<'_>,
+     value: &Bound<'_, PyAny>,
+ ) -> PyResult<Option<DependencyGeneratorKind>> {
+-    let inspect = py.import("inspect")?;
+-    let is_class = inspect
+-        .getattr("isclass")?
+-        .call1((value,))?
+-        .extract::<bool>()?;
+-    if is_class {
++    if !dependency_callable_is_generator(py, value)? {
+         return Ok(None);
+     }
+-    let kind_for = |callable: &Bound<'_, PyAny>| -> PyResult<Option<DependencyGeneratorKind>> {
+-        if inspect
+-            .getattr("isasyncgenfunction")?
+-            .call1((callable,))?
+-            .extract::<bool>()?
+-        {
+-            return Ok(Some(DependencyGeneratorKind::Async));
+-        }
+-        if inspect
+-            .getattr("isgeneratorfunction")?
+-            .call1((callable,))?
+-            .extract::<bool>()?
+-        {
+-            return Ok(Some(DependencyGeneratorKind::Sync));
+-        }
+-        Ok(None)
+-    };
+-    if let Some(kind) = kind_for(value)? {
+-        return Ok(Some(kind));
++    // Once source enters _solve_generator, an async generator wins even when
++    // unwrapping also identifies an underlying sync generator.
++    if dependency_callable_matches_generator_predicate(py, value, "isasyncgenfunction")? {
++        return Ok(Some(DependencyGeneratorKind::Async));
+     }
+-    match value.getattr("__call__") {
+-        Ok(callable) => kind_for(&callable),
+-        Err(error) if error.is_instance_of::<PyAttributeError>(py) => Ok(None),
+-        Err(error) => Err(error),
++    if dependency_callable_matches_generator_predicate(py, value, "isgeneratorfunction")? {
++        return Ok(Some(DependencyGeneratorKind::Sync));
+     }
++    Ok(None)
+ }
+ 
+ fn parameter_marker_kind(py: Python<'_>, marker: &Bound<'_, PyAny>) -> PyResult<Option<String>> {
