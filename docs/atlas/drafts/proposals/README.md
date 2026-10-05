@@ -119,7 +119,12 @@ Full FastAPI compatibility remains unfinished.
   remain in the historical proposal folder. Reviewed copies are now admitted to active
   inputs with 24 fixture links across six public APIs. Canonical regeneration and
   the four-source-construction / 24-action gate precede unchanged-target diagnosis;
-  no implementation or parity success is claimed by admission.
+  the unchanged target failed all four cases. The native correction now passes
+  all four within 214 distinct normal cases, with separate fault, coverage and
+  benchmark evidence. See the
+  [measured report](../openapi-validation-response-native-contract-review-2026-10-05.md).
+  This covers the selected description-only declarations, not modeled ranges,
+  arbitrary key callbacks, full response deep merge or schema-name collisions.
 
 Both historical proposals passed recipe-loader/Ruff admission and independent
 static review; their authored copies remain outside active inputs with no
@@ -129,6 +134,7 @@ review. Historical authored copies remain outside active inputs; active traversa
 copies now have fresh live receipts. The recovery follow-on still requires its
 own reviewed mappings and live observations. Positive OpenAPI retained-hook,
 shared-definition, generated outer-title and cache retry behavior now has bounded
-live evidence. Automatic validation-response/status-key behavior is the next
-source-first gate. A separate raw HTTP gate is proposed for the remaining legacy
-inline-schema order gap; its structural selector remains unchanged.
+live evidence. Selected automatic validation-response/status-key behavior now
+has fresh live evidence. A separate independently reviewed two-case raw HTTP
+gate is proposed for default-bearing direct/dependency query schemas; it awaits
+source-first admission. Existing structural selectors remain unchanged.

@@ -74,14 +74,14 @@ Recipes contain stimuli only, never expected output. Oracle artifacts under
 `parity-results/` are per-run evidence; the atlas and manifest record fixture
 scope and runner capability, not pass/fail results.
 
-The latest measured checkpoint retains response fields through shared schema
-generation and validates OpenAPI with a private Rust-authored model graph. Its
-selected gates passed 210 declared normal cases and six separate fault contracts.
-Fresh normal incremental coverage added 121 Rust regions; all seven benchmark
-workloads completed with mixed latency results. See the [measured contract and timings](docs/atlas/drafts/openapi-final-model-native-contract-review-2026-10-05.md)
-for identities, scopes and remaining gaps, including a legacy structural selector
-that leaves 11 schema key-order differences unguarded. These selected results do
-not establish full API parity.
+The latest measured checkpoint handles declared response keys and inserts
+automatic validation responses after declared responses. Its selected gates
+passed 214 distinct normal cases and six separate fault contracts. Fresh normal
+incremental coverage added 42 Rust regions; all seven benchmark workloads
+completed, with two faster and five slower target medians. See the
+[measured contract and timings](docs/atlas/drafts/openapi-validation-response-native-contract-review-2026-10-05.md)
+for identities, scopes and remaining schema-order gaps in structural selectors.
+These selected results do not establish full API parity.
 
 Use `make parity-prepare-oracle` for the core environment and
 `make parity-validate` to check source evidence and workflow links. The
