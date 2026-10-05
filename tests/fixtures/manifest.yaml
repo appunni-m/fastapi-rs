@@ -415,7 +415,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@5
-    sha256: 17b718654b898555e3a473af3c990f8134e8e9e6dd80bbfd22083e88130ab6c7
+    sha256: 0a7e48fa53485bbf5e62fc39bbe7cb8a0ea56784f4acfd9744f11061475e8bd4
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -451,7 +451,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: f36148096c7b25b715de75697c3e93ca7e81ab3ace417422223931ea4e2e91df
+    sha256: 519fb0cf45efe67e3d39f79061984eed32dbfe43b8fa4aff2c519694bdc063c4
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -488,14 +488,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@5
-    sha256: 8740b6c5f6676dbecaa710652a5f96d6e16accff603b0b089c843480aabedc4f
+    sha256: 78cb01d603b1bfe10d80d36d3807c51685583709f85c9ad44554bb6c4dacd892
     schema_path: tests/fixtures/schemas/materialized-input-index-v5.schema.json
     schema_sha256: 13dd4cf1032a4ad9161712364d94b9f91834afee380e1f8eee6f4f05c123261d
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 549
-      cases: 2256
-      partial_source_mappings: 1543
+      workflows: 550
+      cases: 2271
+      partial_source_mappings: 1547
 
 contract_metadata:
   aliases:
@@ -878,7 +878,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 101
     symbols_with_operation_fixture_refs: 147
-    operation_fixture_refs: 1058
+    operation_fixture_refs: 1153
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -1913,6 +1913,246 @@ api_surface_contract:
       observation_selectors:
       - python.signature
     operation_fixture_refs:
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.marked-immediate-validation-cache
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.marked-checkpoint
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.marked-future-nested-cache
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.caught-future-error
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.propagated-future-error-cleanup-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.marked-endpoint-future
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.genuine-async-bridge-control
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.unmarked-returned-generator-is-a-value
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.unflagged-generator-error-cleanup-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.ordinary-await-iterator-control
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.direct-generator-declaration-is-a-yield-role
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.await-method-generator-error-cleanup-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.await-method-noniterator-error-cleanup-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.genuine-async-bridge-future-error-cleanup-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.ordinary-await-iterator-caught-future-error
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     - workflow_id: dependency-callable-classification
       input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
       input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
@@ -3848,8 +4088,18 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/4
         - /api_candidates/929
-      status: full-contract-not-established
+      status: partial-contract
       rust_binding: fastapi-rs/src/parameters.rs::depends
+      known_gaps:
+      - Safe gi_code property lookup can emit extra audit events or invoke rejecting audit hooks compared
+        with CPython native field access; audit-event parity is not exercised by these inputs.
+      - Generic iterator throw argument arity and user-returned coroutine_wrapper provenance remain unproven;
+        the existing generic three-argument throw path does not establish source parity for every iterator.
+      - Instance-versus-type await-slot lookup, ABC-only awaitable registration, coroutine reuse/already-awaited
+        checks, cancellation, GeneratorExit, and arbitrary send/throw/close protocols remain gaps.
+      - The selected immutable generator roles do not establish mutable classification-cache history,
+        descriptor hooks, arbitrary awaitable concurrency, or exact traceback parity. Static admission
+        is not live source/target execution evidence.
   - id: fastapi.FastAPI
     kind: import_binding
     source_candidate_ref: /api_candidates/5
@@ -6602,6 +6852,246 @@ api_surface_contract:
       observation_selectors: []
     input_workflow_refs: []
     operation_fixture_refs:
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.marked-immediate-validation-cache
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.marked-checkpoint
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.marked-future-nested-cache
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.caught-future-error
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.propagated-future-error-cleanup-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.marked-endpoint-future
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.genuine-async-bridge-control
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.unmarked-returned-generator-is-a-value
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.unflagged-generator-error-cleanup-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.ordinary-await-iterator-control
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.direct-generator-declaration-is-a-yield-role
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.await-method-generator-error-cleanup-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.await-method-noniterator-error-cleanup-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.genuine-async-bridge-future-error-cleanup-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.ordinary-await-iterator-caught-future-error
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     - workflow_id: response-model-return-annotation-focused-upstream
       input_path: tests/fixtures/inputs/parity/response-model-return-annotation-focused-upstream.json
       input_sha256: 2697a146aded1173ea51dd6c2c150650e0a57e7adaec88331de72ebba79a1ffd
@@ -6670,6 +7160,8 @@ api_surface_contract:
       - validation.error_details
     identity_workflow_refs: []
     feature_ids:
+    - app-routing
+    - dependency-security
     - python-data-encoding
     - response-serialization
     observation_selectors:
@@ -6689,8 +7181,18 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/187
-      status: full-contract-not-established
+      status: partial-contract
       rust_binding: fastapi-rs/src/application_runtime.rs::FastApiCall::finish_endpoint
+      known_gaps:
+      - Safe gi_code property lookup can emit extra audit events or invoke rejecting audit hooks compared
+        with CPython native field access; audit-event parity is not exercised by these inputs.
+      - Generic iterator throw argument arity and user-returned coroutine_wrapper provenance remain unproven;
+        the existing generic three-argument throw path does not establish source parity for every iterator.
+      - Instance-versus-type await-slot lookup, ABC-only awaitable registration, coroutine reuse/already-awaited
+        checks, cancellation, GeneratorExit, and arbitrary send/throw/close protocols remain gaps.
+      - The selected immutable generator roles do not establish mutable classification-cache history,
+        descriptor hooks, arbitrary awaitable concurrency, or exact traceback parity. Static admission
+        is not live source/target execution evidence.
   - id: fastapi.applications.FastAPI.__init__
     kind: protocol_method
     source_candidate_ref: /api_candidates/188
@@ -6724,6 +7226,246 @@ api_surface_contract:
       observation_selectors: *id006
     input_workflow_refs: []
     operation_fixture_refs:
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.marked-immediate-validation-cache
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.marked-checkpoint
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.marked-future-nested-cache
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.caught-future-error
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.propagated-future-error-cleanup-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.marked-endpoint-future
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.genuine-async-bridge-control
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.unmarked-returned-generator-is-a-value
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.unflagged-generator-error-cleanup-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.ordinary-await-iterator-control
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.direct-generator-declaration-is-a-yield-role
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.await-method-generator-error-cleanup-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.await-method-noniterator-error-cleanup-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.genuine-async-bridge-future-error-cleanup-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.ordinary-await-iterator-caught-future-error
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     - workflow_id: dependency-callable-classification
       input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
       input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
@@ -8199,6 +8941,246 @@ api_surface_contract:
       observation_selectors:
       - python.signature
     operation_fixture_refs:
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.marked-immediate-validation-cache
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.marked-checkpoint
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.marked-future-nested-cache
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.caught-future-error
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.propagated-future-error-cleanup-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.marked-endpoint-future
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.genuine-async-bridge-control
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.unmarked-returned-generator-is-a-value
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.unflagged-generator-error-cleanup-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.ordinary-await-iterator-control
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.direct-generator-declaration-is-a-yield-role
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.await-method-generator-error-cleanup-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.await-method-noniterator-error-cleanup-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.genuine-async-bridge-future-error-cleanup-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.ordinary-await-iterator-caught-future-error
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     - workflow_id: dependency-callable-classification
       input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
       input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
@@ -9642,6 +10624,86 @@ api_surface_contract:
       observation_selectors:
       - python.signature
     operation_fixture_refs:
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.propagated-future-error-cleanup-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.unflagged-generator-error-cleanup-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.await-method-generator-error-cleanup-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.await-method-noniterator-error-cleanup-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.genuine-async-bridge-future-error-cleanup-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     - workflow_id: worker-dispatch
       input_path: tests/fixtures/inputs/parity/worker-dispatch.json
       input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
@@ -29552,6 +30614,246 @@ api_surface_contract:
       observation_selectors:
       - python.signature
     operation_fixture_refs:
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.marked-immediate-validation-cache
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.marked-checkpoint
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.marked-future-nested-cache
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.caught-future-error
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.propagated-future-error-cleanup-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.marked-endpoint-future
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.genuine-async-bridge-control
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.unmarked-returned-generator-is-a-value
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.unflagged-generator-error-cleanup-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.ordinary-await-iterator-control
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.direct-generator-declaration-is-a-yield-role
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.await-method-generator-error-cleanup-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.await-method-noniterator-error-cleanup-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.genuine-async-bridge-future-error-cleanup-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.ordinary-await-iterator-caught-future-error
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     - workflow_id: dependency-callable-classification
       input_path: tests/fixtures/inputs/parity/dependency-callable-classification.json
       input_sha256: 6c083096d5453812bcb2b4b024f575c22c2b86b9e28576735fa78b7a7ada2328
@@ -30894,6 +32196,15 @@ api_surface_contract:
       status: partial-contract
       rust_binding: fastapi-rs/src/parameters.rs::depends
       known_gaps:
+      - Safe gi_code property lookup can emit extra audit events or invoke rejecting audit hooks compared
+        with CPython native field access; audit-event parity is not exercised by these inputs.
+      - Generic iterator throw argument arity and user-returned coroutine_wrapper provenance remain unproven;
+        the existing generic three-argument throw path does not establish source parity for every iterator.
+      - Instance-versus-type await-slot lookup, ABC-only awaitable registration, coroutine reuse/already-awaited
+        checks, cancellation, GeneratorExit, and arbitrary send/throw/close protocols remain gaps.
+      - The selected immutable generator roles do not establish mutable classification-cache history,
+        descriptor hooks, arbitrary awaitable concurrency, or exact traceback parity. Static admission
+        is not live source/target execution evidence.
       - Native descriptor function-type/code/globals/closure and mutable function-default introspection
         remain different; unexercised dependency graphs and arbitrary nonstring scopes remain incomplete.
   - id: fastapi.param_functions.File
@@ -32628,6 +33939,246 @@ api_surface_contract:
       observation_selectors: *id014
     input_workflow_refs: []
     operation_fixture_refs:
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.marked-immediate-validation-cache
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.marked-checkpoint
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.marked-future-nested-cache
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.caught-future-error
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.propagated-future-error-cleanup-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.marked-endpoint-future
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.genuine-async-bridge-control
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.unmarked-returned-generator-is-a-value
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.unflagged-generator-error-cleanup-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.ordinary-await-iterator-control
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.direct-generator-declaration-is-a-yield-role
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.await-method-generator-error-cleanup-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.await-method-noniterator-error-cleanup-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.genuine-async-bridge-future-error-cleanup-recovery
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: generator-awaitable-protocol
+      input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
+      input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
+      recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      recipe_sha256: 25ec7b17fca058944654ca98e7331601a441bc3c25bff0f97b796d26ee903256
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      workload_sha256: 41f6ad6e99746620627947d93a71f8390857ccf6b0e5ba8f5f8b151c3daff356
+      case_id: fastapi.awaitables.generator-protocol.ordinary-await-iterator-caught-future-error
+      observation_selectors:
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     - workflow_id: worker-dispatch
       input_path: tests/fixtures/inputs/parity/worker-dispatch.json
       input_sha256: 164b6a317a799d04909877155576731e725e321828e1b26017e0d7d0e5830b40
@@ -46259,6 +47810,41 @@ api_surface_contract:
       - http.headers.ordered
       - http.status
     fixture_refs:
+    - recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      case_id: fastapi.awaitables.generator-protocol.propagated-future-error-cleanup-recovery
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      case_id: fastapi.awaitables.generator-protocol.unflagged-generator-error-cleanup-recovery
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      case_id: fastapi.awaitables.generator-protocol.await-method-generator-error-cleanup-recovery
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      case_id: fastapi.awaitables.generator-protocol.await-method-noniterator-error-cleanup-recovery
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+      case_id: fastapi.awaitables.generator-protocol.genuine-async-bridge-future-error-cleanup-recovery
+      workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
       case_id: fastapi.dependencies.callable-classification.async-wrapped-scalar-error-cleanup-recovery
       workload_path: tests/fixtures/workloads/dependency_callable_classification.py

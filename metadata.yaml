@@ -841,6 +841,81 @@ reviewed_api_contract_overlay:
         - {path: tests/test_router_events.py, symbol: test_startup_shutdown_handlers_as_parameters}
         - {path: docs/en/docs/advanced/events.md}
       fixture_refs:
+        - &generator_await_marked_immediate
+          recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+          case_id: fastapi.awaitables.generator-protocol.marked-immediate-validation-cache
+          workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, construction.outcome, construction.exception_class, construction.exception_message]
+        - &generator_await_marked_checkpoint
+          recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+          case_id: fastapi.awaitables.generator-protocol.marked-checkpoint
+          workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, construction.outcome, construction.exception_class, construction.exception_message]
+        - &generator_await_marked_nested
+          recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+          case_id: fastapi.awaitables.generator-protocol.marked-future-nested-cache
+          workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, construction.outcome, construction.exception_class, construction.exception_message]
+        - &generator_await_caught_future
+          recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+          case_id: fastapi.awaitables.generator-protocol.caught-future-error
+          workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, construction.outcome, construction.exception_class, construction.exception_message]
+        - &generator_await_propagated_future
+          recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+          case_id: fastapi.awaitables.generator-protocol.propagated-future-error-cleanup-recovery
+          workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, construction.outcome, construction.exception_class, construction.exception_message]
+        - &generator_await_marked_endpoint
+          recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+          case_id: fastapi.awaitables.generator-protocol.marked-endpoint-future
+          workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, construction.outcome, construction.exception_class, construction.exception_message]
+        - &generator_await_async_bridge
+          recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+          case_id: fastapi.awaitables.generator-protocol.genuine-async-bridge-control
+          workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, construction.outcome, construction.exception_class, construction.exception_message]
+        - &generator_await_unmarked_value
+          recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+          case_id: fastapi.awaitables.generator-protocol.unmarked-returned-generator-is-a-value
+          workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, construction.outcome, construction.exception_class, construction.exception_message]
+        - &generator_await_unflagged_error
+          recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+          case_id: fastapi.awaitables.generator-protocol.unflagged-generator-error-cleanup-recovery
+          workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, construction.outcome, construction.exception_class, construction.exception_message]
+        - &generator_await_ordinary_iterator
+          recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+          case_id: fastapi.awaitables.generator-protocol.ordinary-await-iterator-control
+          workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, construction.outcome, construction.exception_class, construction.exception_message]
+        - &generator_await_yield_declaration
+          recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+          case_id: fastapi.awaitables.generator-protocol.direct-generator-declaration-is-a-yield-role
+          workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, construction.outcome, construction.exception_class, construction.exception_message]
+        - &generator_await_await_generator_error
+          recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+          case_id: fastapi.awaitables.generator-protocol.await-method-generator-error-cleanup-recovery
+          workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, construction.outcome, construction.exception_class, construction.exception_message]
+        - &generator_await_await_noniterator_error
+          recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+          case_id: fastapi.awaitables.generator-protocol.await-method-noniterator-error-cleanup-recovery
+          workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, construction.outcome, construction.exception_class, construction.exception_message]
+        - &generator_await_async_bridge_error
+          recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+          case_id: fastapi.awaitables.generator-protocol.genuine-async-bridge-future-error-cleanup-recovery
+          workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, construction.outcome, construction.exception_class, construction.exception_message]
+        - &generator_await_ordinary_iterator_error
+          recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
+          case_id: fastapi.awaitables.generator-protocol.ordinary-await-iterator-caught-future-error
+          workload_path: tests/fixtures/workloads/generator_awaitable_protocol.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, construction.outcome, construction.exception_class, construction.exception_message]
         - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
           case_id: fastapi.dependencies.callable-classification.sync-wrap-coroutine-function
         - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
@@ -1873,6 +1948,21 @@ reviewed_api_contract_overlay:
       source_evidence:
         - {path: fastapi/responses.py}
       fixture_refs:
+        - *generator_await_marked_immediate
+        - *generator_await_marked_checkpoint
+        - *generator_await_marked_nested
+        - *generator_await_caught_future
+        - *generator_await_propagated_future
+        - *generator_await_marked_endpoint
+        - *generator_await_async_bridge
+        - *generator_await_unmarked_value
+        - *generator_await_unflagged_error
+        - *generator_await_ordinary_iterator
+        - *generator_await_yield_declaration
+        - *generator_await_await_generator_error
+        - *generator_await_await_noniterator_error
+        - *generator_await_async_bridge_error
+        - *generator_await_ordinary_iterator_error
         - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
           case_id: fastapi.worker-dispatch.sync-endpoint-without-response-model
         - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
@@ -2765,6 +2855,13 @@ reviewed_api_contract_overlay:
     fastapi.applications.FastAPI.__call__:
       rust_binding: fastapi-rs/src/application_runtime.rs::FastApiCall::finish_endpoint
       source_evidence:
+        - {path: fastapi/dependencies/utils.py, symbol: solve_dependencies}
+        - {path: fastapi/dependencies/models.py, symbol: _is_gen_callable}
+        - {path: fastapi/dependencies/models.py, symbol: _is_coroutine_callable}
+        - {path: fastapi/routing.py, symbol: run_endpoint_function}
+        - {path: docs/en/docs/async.md}
+        - {path: docs/en/docs/tutorial/dependencies/sub-dependencies.md}
+        - {path: docs/en/docs/tutorial/dependencies/dependencies-with-yield.md}
         - {path: fastapi/applications.py, symbol: __call__}
         - {path: fastapi/routing.py, symbol: serialize_response}
         - {path: fastapi/utils.py, symbol: is_body_allowed_for_status_code}
@@ -2782,6 +2879,21 @@ reviewed_api_contract_overlay:
           required_text:
             - "But if you return a `Response` directly (or any subclass, like `JSONResponse`), the data won't be automatically converted (even if you declare a `response_model`)"
       fixture_refs:
+        - *generator_await_marked_immediate
+        - *generator_await_marked_checkpoint
+        - *generator_await_marked_nested
+        - *generator_await_caught_future
+        - *generator_await_propagated_future
+        - *generator_await_marked_endpoint
+        - *generator_await_async_bridge
+        - *generator_await_unmarked_value
+        - *generator_await_unflagged_error
+        - *generator_await_ordinary_iterator
+        - *generator_await_yield_declaration
+        - *generator_await_await_generator_error
+        - *generator_await_await_noniterator_error
+        - *generator_await_async_bridge_error
+        - *generator_await_ordinary_iterator_error
         - recipe_path: tests/fixtures/input-recipes/parity/response-model-return-annotation-focused-upstream.yaml
           case_id: fastapi.response-model-return-annotation.explicit-response-model-bypass
           workload_path: tests/fixtures/workloads/response_model_return_annotation_focused_upstream.py
@@ -2798,7 +2910,7 @@ reviewed_api_contract_overlay:
           case_id: fastapi.response.bodyless-status.304-validates-response-model
           workload_path: tests/fixtures/workloads/response_bodyless_status_policy.py
           observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, asgi.application_error.validation_error_class, asgi.application_error.validation_error_details]
-      feature_ids: [response-serialization, python-data-encoding]
+      feature_ids: [app-routing, dependency-security, response-serialization, python-data-encoding]
       observation_selectors:
         - http.status
         - http.headers.ordered
@@ -2818,6 +2930,36 @@ reviewed_api_contract_overlay:
         response model at status 304 still raises response validation before
         the body policy runs. Custom response classes and other status cases
         remain outside this reviewed slice.
+        The generator-awaitable-protocol inputs declare direct flagged
+        generator awaits, checkpoint/Future resume and errors, original native
+        coroutine error propagation, returned ordinary generator iterators,
+        rejected flagged/noniterator __await__ returns, synchronous returned
+        generator values, validation/cache order, cleanup, and recovery. The
+        public state response retains all warning entries and raw ASGI sends.
+        These selected inputs require fresh source/target execution receipts;
+        they do not establish the complete Python await protocol.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - &generator_await_audit_gap >-
+            Safe gi_code property lookup can emit extra audit events or invoke
+            rejecting audit hooks compared with CPython native field access;
+            audit-event parity is not exercised by these inputs.
+          - &generator_await_generic_throw_gap >-
+            Generic iterator throw argument arity and user-returned
+            coroutine_wrapper provenance remain unproven; the existing generic
+            three-argument throw path does not establish source parity for
+            every iterator.
+          - &generator_await_protocol_gap >-
+            Instance-versus-type await-slot lookup, ABC-only awaitable
+            registration, coroutine reuse/already-awaited checks, cancellation,
+            GeneratorExit, and arbitrary send/throw/close protocols remain gaps.
+          - &generator_await_history_gap >-
+            The selected immutable generator roles do not establish mutable
+            classification-cache history, descriptor hooks, arbitrary awaitable
+            concurrency, or exact traceback parity. Static admission is not
+            live source/target execution evidence.
     fastapi.Response:
       rust_binding: fastapi-rs/src/application_runtime.rs::register
       source_evidence:
@@ -3515,6 +3657,21 @@ reviewed_api_contract_overlay:
         - {path: tests/test_tutorial/test_additional_responses/test_tutorial004.py}
         - {path: tests/test_extra_routes.py}
       fixture_refs:
+        - *generator_await_marked_immediate
+        - *generator_await_marked_checkpoint
+        - *generator_await_marked_nested
+        - *generator_await_caught_future
+        - *generator_await_propagated_future
+        - *generator_await_marked_endpoint
+        - *generator_await_async_bridge
+        - *generator_await_unmarked_value
+        - *generator_await_unflagged_error
+        - *generator_await_ordinary_iterator
+        - *generator_await_yield_declaration
+        - *generator_await_await_generator_error
+        - *generator_await_await_noniterator_error
+        - *generator_await_async_bridge_error
+        - *generator_await_ordinary_iterator_error
         - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
           case_id: fastapi.dependencies.callable-classification.sync-wrap-coroutine-function
         - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
@@ -3683,6 +3840,11 @@ reviewed_api_contract_overlay:
         - {path: tests/test_tutorial/test_additional_responses/test_tutorial004.py}
         - {path: tests/test_extra_routes.py}
       fixture_refs:
+        - *generator_await_propagated_future
+        - *generator_await_unflagged_error
+        - *generator_await_await_generator_error
+        - *generator_await_await_noniterator_error
+        - *generator_await_async_bridge_error
         - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
           case_id: fastapi.worker-dispatch.sync-endpoint-error-cleanup-and-recovery
         - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
@@ -3981,6 +4143,11 @@ reviewed_api_contract_overlay:
     fastapi.Depends:
       rust_binding: fastapi-rs/src/parameters.rs::depends
       source_evidence:
+        - {path: fastapi/dependencies/models.py, symbol: _is_gen_callable}
+        - {path: fastapi/dependencies/models.py, symbol: _is_coroutine_callable}
+        - {path: fastapi/routing.py, symbol: run_endpoint_function}
+        - {path: docs/en/docs/async.md}
+        - {path: docs/en/docs/tutorial/dependencies/sub-dependencies.md}
         - {path: fastapi/dependencies/utils.py, symbol: _get_signature}
         - {path: fastapi/dependencies/utils.py, symbol: get_typed_signature}
         - {path: fastapi/dependencies/utils.py, symbol: get_typed_annotation}
@@ -4105,6 +4272,21 @@ reviewed_api_contract_overlay:
           start_line: 10
           end_line: 29
       fixture_refs:
+        - *generator_await_marked_immediate
+        - *generator_await_marked_checkpoint
+        - *generator_await_marked_nested
+        - *generator_await_caught_future
+        - *generator_await_propagated_future
+        - *generator_await_marked_endpoint
+        - *generator_await_async_bridge
+        - *generator_await_unmarked_value
+        - *generator_await_unflagged_error
+        - *generator_await_ordinary_iterator
+        - *generator_await_yield_declaration
+        - *generator_await_await_generator_error
+        - *generator_await_await_noniterator_error
+        - *generator_await_async_bridge_error
+        - *generator_await_ordinary_iterator_error
         - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
           case_id: fastapi.dependencies.callable-classification.sync-wrap-coroutine-function
         - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
@@ -4392,8 +4574,16 @@ reviewed_api_contract_overlay:
         function, method and instance classification, original invocation, generator
         scopes/cleanup, unmarked returned-coroutine values, and scalar-await errors.
         The worker-dispatch inputs observe sync/async dependency context boundaries.
-        Fresh receipts are required; classification LRU history, descriptors, native
-        bound methods and generator-based awaitable adapters remain separate gaps.
+        Fresh receipts are required; classification LRU history, descriptors, and
+        native bound methods remain separate gaps.
+        The generator-awaitable-protocol inputs declare direct flagged
+        generator awaits, checkpoint/Future resume and errors, original native
+        coroutine error propagation, returned ordinary generator iterators,
+        rejected flagged/noniterator __await__ returns, synchronous returned
+        generator values, validation/cache order, cleanup, and recovery. The
+        public state response retains all warning entries and raw ASGI sends.
+        These selected inputs require fresh source/target execution receipts;
+        they do not establish the complete Python await protocol.
         The override-policy-mutation inputs declare selection at each reached
         edge from the current provider dictionary, including whole-map
         replacement after awaits. Selected parent plans retain captured child
@@ -4590,6 +4780,14 @@ reviewed_api_contract_overlay:
         annotated parameter documentation, is covered by the independent
         `tests/fixtures/input-recipes/parity/depends-signature.yaml` case
         `fastapi.dependencies.depends-yield-scope-signature`.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - *generator_await_audit_gap
+          - *generator_await_generic_throw_gap
+          - *generator_await_protocol_gap
+          - *generator_await_history_gap
     fastapi.param_functions.Path:
       rust_binding: fastapi-rs/src/parameters.rs::path
       source_evidence:
@@ -4690,8 +4888,30 @@ reviewed_api_contract_overlay:
     fastapi.param_functions.Depends:
       rust_binding: fastapi-rs/src/parameters.rs::depends
       source_evidence:
+        - {path: fastapi/dependencies/utils.py, symbol: solve_dependencies}
+        - {path: fastapi/dependencies/models.py, symbol: _is_gen_callable}
+        - {path: fastapi/dependencies/models.py, symbol: _is_coroutine_callable}
+        - {path: fastapi/routing.py, symbol: run_endpoint_function}
+        - {path: docs/en/docs/async.md}
+        - {path: docs/en/docs/tutorial/dependencies/sub-dependencies.md}
+        - {path: docs/en/docs/tutorial/dependencies/dependencies-with-yield.md}
         - {path: fastapi/param_functions.py, symbol: Depends}
       fixture_refs:
+        - *generator_await_marked_immediate
+        - *generator_await_marked_checkpoint
+        - *generator_await_marked_nested
+        - *generator_await_caught_future
+        - *generator_await_propagated_future
+        - *generator_await_marked_endpoint
+        - *generator_await_async_bridge
+        - *generator_await_unmarked_value
+        - *generator_await_unflagged_error
+        - *generator_await_ordinary_iterator
+        - *generator_await_yield_declaration
+        - *generator_await_await_generator_error
+        - *generator_await_await_noniterator_error
+        - *generator_await_async_bridge_error
+        - *generator_await_ordinary_iterator_error
         - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
           case_id: fastapi.dependencies.callable-classification.sync-wrap-coroutine-function
         - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
@@ -4879,8 +5099,16 @@ reviewed_api_contract_overlay:
         function, method and instance classification, original invocation, generator
         scopes/cleanup, unmarked returned-coroutine values, and scalar-await errors.
         The worker-dispatch inputs observe sync/async dependency context boundaries.
-        Fresh receipts are required; classification LRU history, descriptors, native
-        bound methods and generator-based awaitable adapters remain separate gaps.
+        Fresh receipts are required; classification LRU history, descriptors, and
+        native bound methods remain separate gaps.
+        The generator-awaitable-protocol inputs declare direct flagged
+        generator awaits, checkpoint/Future resume and errors, original native
+        coroutine error propagation, returned ordinary generator iterators,
+        rejected flagged/noniterator __await__ returns, synchronous returned
+        generator values, validation/cache order, cleanup, and recovery. The
+        public state response retains all warning entries and raw ASGI sends.
+        These selected inputs require fresh source/target execution receipts;
+        they do not establish the complete Python await protocol.
         The override-policy-mutation inputs declare selection at each reached
         edge from the current provider dictionary, including whole-map
         replacement after awaits. Selected parent plans retain captured child
@@ -4903,6 +5131,10 @@ reviewed_api_contract_overlay:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
+          - *generator_await_audit_gap
+          - *generator_await_generic_throw_gap
+          - *generator_await_protocol_gap
+          - *generator_await_history_gap
           - Native descriptor function-type/code/globals/closure and mutable function-default introspection remain different; unexercised dependency graphs and arbitrary nonstring scopes remain incomplete.
     fastapi.param_functions.Cookie:
       rust_binding: fastapi-rs/src/parameters.rs::cookie
@@ -7526,6 +7758,11 @@ reviewed_api_contract_overlay:
           fixture_id: fastapi.docs.tutorial-handling-errors
           observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
       fixture_refs:
+        - *generator_await_propagated_future
+        - *generator_await_unflagged_error
+        - *generator_await_await_generator_error
+        - *generator_await_await_noniterator_error
+        - *generator_await_async_bridge_error
         - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
           case_id: fastapi.dependencies.callable-classification.async-wrapped-scalar-error-cleanup-recovery
         - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml

@@ -2,7 +2,7 @@
 //!
 //! [`AwaitableStateMachine`] keeps framework decisions and sequencing in Rust. When
 //! it returns [`MachineAction::Await`], [`into_python_awaitable`] obtains the
-//! object's `__await__` iterator and forwards each yielded Future unchanged. The
+//! object's await iterator and forwards each yielded Future unchanged. The
 //! task and event loop which awaited the returned object remain responsible for
 //! scheduling those Futures; this module creates no executor or event loop.
 //!
@@ -78,7 +78,7 @@ pub(crate) fn register_coroutine_protocol(py: Python<'_>) -> PyResult<()> {
 #[pyclass(unsendable)]
 struct NativeAwaitable {
     machine: Option<Box<dyn AwaitableStateMachine>>,
-    delegated_iterator: Option<Py<PyAny>>,
+    delegated_iterator: Option<DelegatedIterator>,
     started: bool,
     finished: bool,
 }
@@ -226,16 +226,21 @@ impl NativeAwaitable {
     }
 
     fn resume_delegated_iterator(&self, py: Python<'_>, input: &DriveInput) -> PyResult<Py<PyAny>> {
-        let iterator = self
+        let delegated = self
             .delegated_iterator
             .as_ref()
-            .ok_or_else(|| PyRuntimeError::new_err("await delegation is not active"))?
-            .bind(py);
+            .ok_or_else(|| PyRuntimeError::new_err("await delegation is not active"))?;
+        let iterator = delegated.iterator.bind(py);
 
         match input {
             DriveInput::Start => send_value(iterator, py.None().bind(py)),
             DriveInput::Send(value) => send_value(iterator, value.bind(py)),
-            DriveInput::Throw(error) => throw_into_iterator(iterator, py, error.clone_ref(py)),
+            DriveInput::Throw(error) => throw_into_iterator(
+                iterator,
+                py,
+                error.clone_ref(py),
+                delegated.single_exception_throw,
+            ),
             DriveInput::Close => {
                 close_iterator(iterator)?;
                 Err(PyGeneratorExit::new_err(()))
@@ -250,7 +255,7 @@ impl NativeAwaitable {
         let Some(iterator) = self.delegated_iterator.take() else {
             return Ok(());
         };
-        close_iterator(iterator.bind(py))
+        close_iterator(iterator.iterator.bind(py))
     }
 
     fn finish(&mut self) {
@@ -302,8 +307,27 @@ impl NativeAwaitable {
     }
 }
 
-fn await_iterator(py: Python<'_>, awaitable: Py<PyAny>) -> PyResult<Py<PyAny>> {
+struct DelegatedIterator {
+    iterator: Py<PyAny>,
+    // Exact native generators/coroutines use single-instance throw. The
+    // existing generic three-argument branch remains an unproven arity gap.
+    single_exception_throw: bool,
+}
+
+fn await_iterator(py: Python<'_>, awaitable: Py<PyAny>) -> PyResult<DelegatedIterator> {
     let awaitable = awaitable.bind(py);
+    let types = py.import("types")?;
+    let coroutine_type = types.getattr("CoroutineType")?;
+    let generator_type = types.getattr("GeneratorType")?;
+    if awaitable.get_type().is(&coroutine_type)
+        || is_iterable_coroutine_generator(awaitable, &generator_type)?
+    {
+        return Ok(DelegatedIterator {
+            iterator: awaitable.clone().unbind(),
+            single_exception_throw: true,
+        });
+    }
+
     let is_awaitable = py
         .import("inspect")?
         .getattr("isawaitable")?
@@ -317,13 +341,39 @@ fn await_iterator(py: Python<'_>, awaitable: Py<PyAny>) -> PyResult<Py<PyAny>> {
     }
 
     let iterator = awaitable.call_method0("__await__")?;
+    if iterator.get_type().is(&coroutine_type)
+        || is_iterable_coroutine_generator(&iterator, &generator_type)?
+    {
+        return Err(PyTypeError::new_err("__await__() returned a coroutine"));
+    }
     if !iterator.is_instance_of::<PyIterator>() {
         return Err(PyTypeError::new_err(format!(
-            "__await__() returned a non-iterator of type '{}'",
+            "__await__() returned non-iterator of type '{}'",
             type_name(&iterator)?
         )));
     }
-    Ok(iterator.unbind())
+    let single_exception_throw = iterator.get_type().is(&generator_type);
+    Ok(DelegatedIterator {
+        iterator: iterator.unbind(),
+        single_exception_throw,
+    })
+}
+
+fn is_iterable_coroutine_generator(
+    value: &Bound<'_, PyAny>,
+    generator_type: &Bound<'_, PyAny>,
+) -> PyResult<bool> {
+    // CO_ITERABLE_COROUTINE in the pinned CPython 3.12 code-object protocol.
+    const CO_ITERABLE_COROUTINE: u32 = 0x100;
+    if !value.get_type().is(generator_type) {
+        return Ok(false);
+    }
+    // This public property emits an audit event; audit-hook fidelity is unproven.
+    let flags = value
+        .getattr("gi_code")?
+        .getattr("co_flags")?
+        .extract::<u32>()?;
+    Ok(flags & CO_ITERABLE_COROUTINE != 0)
 }
 
 fn type_name(value: &Bound<'_, PyAny>) -> PyResult<String> {
@@ -341,9 +391,17 @@ fn throw_into_iterator(
     iterator: &Bound<'_, PyAny>,
     py: Python<'_>,
     error: PyErr,
+    single_exception_throw: bool,
 ) -> PyResult<Py<PyAny>> {
     if !iterator.hasattr("throw")? {
         return Err(error);
+    }
+
+    if single_exception_throw {
+        let exception_value = error.into_value(py).into_any();
+        return iterator
+            .call_method1("throw", (exception_value,))
+            .map(Bound::unbind);
     }
 
     let exception_type = error.get_type(py).unbind();
