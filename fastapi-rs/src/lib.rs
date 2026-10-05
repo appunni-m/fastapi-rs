@@ -18,6 +18,7 @@ mod lifespan;
 mod openapi;
 mod operation;
 mod parameters;
+mod response_field;
 mod security;
 mod sse;
 

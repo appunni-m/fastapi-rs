@@ -30,6 +30,7 @@ use crate::lifespan::{FastApiLifespan, warn_on_event};
 use crate::openapi::{
     OpenApiAdditionalResponse, OpenApiInfo, OpenApiOperation, OpenApiParameter, openapi_document,
 };
+use crate::response_field::ResponseField;
 use crate::sse;
 use crate::{
     FastApiInputLocation, FastApiInputParameter, FastApiOperationMatch, FastApiOperationRouter,
@@ -869,6 +870,102 @@ impl FastApiGeneratorKind {
     }
 }
 
+fn default_response_class(py: Python<'_>) -> PyResult<Py<PyAny>> {
+    let value = py
+        .import("starlette.responses")?
+        .getattr("JSONResponse")?
+        .unbind();
+    Py::new(py, PyFastApiDefaultPlaceholder { value }).map(Py::into_any)
+}
+
+// Argument presence is captured before Python None could be conflated with an
+// omitted keyword. Default creation may fail normally and occurs in the method.
+enum ResponseClassArgument {
+    Omitted,
+    Provided(Py<PyAny>),
+}
+
+impl FromPyObject<'_, '_> for ResponseClassArgument {
+    type Error = PyErr;
+
+    fn extract(value: Borrowed<'_, '_, PyAny>) -> Result<Self, Self::Error> {
+        Ok(Self::Provided(value.to_owned().unbind()))
+    }
+}
+
+impl ResponseClassArgument {
+    fn into_choice(self, py: Python<'_>) -> PyResult<ResponseClassChoice> {
+        match self {
+            Self::Omitted => default_response_class(py).map(ResponseClassChoice::Default),
+            Self::Provided(value) => Ok(ResponseClassChoice::from_python(py, value)),
+        }
+    }
+}
+
+enum ResponseClassChoice {
+    Default(Py<PyAny>),
+    Explicit(Py<PyAny>),
+}
+
+impl ResponseClassChoice {
+    fn from_python(py: Python<'_>, value: Py<PyAny>) -> Self {
+        if value
+            .bind(py)
+            .is_instance_of::<PyFastApiDefaultPlaceholder>()
+        {
+            Self::Default(value)
+        } else {
+            Self::Explicit(value)
+        }
+    }
+
+    const fn is_default(&self) -> bool {
+        matches!(self, Self::Default(_))
+    }
+
+    fn clone_ref(&self, py: Python<'_>) -> Self {
+        match self {
+            Self::Default(value) => Self::Default(value.clone_ref(py)),
+            Self::Explicit(value) => Self::Explicit(value.clone_ref(py)),
+        }
+    }
+
+    fn actual(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
+        match self {
+            Self::Default(value) => Ok(value
+                .bind(py)
+                .extract::<PyRef<'_, PyFastApiDefaultPlaceholder>>()?
+                .value
+                .clone_ref(py)),
+            Self::Explicit(value) => Ok(value.clone_ref(py)),
+        }
+    }
+
+    fn first_explicit(py: Python<'_>, values: &[&Self]) -> Self {
+        values
+            .iter()
+            .find(|value| !value.is_default())
+            .unwrap_or(&values[0])
+            .clone_ref(py)
+    }
+}
+
+enum ResponseFieldState {
+    Deferred,
+    Ready(Option<ResponseField>),
+}
+
+impl ResponseFieldState {
+    fn field(&self, py: Python<'_>) -> PyResult<Option<ResponseField>> {
+        match self {
+            Self::Ready(field) => Ok(field.as_ref().map(|field| field.clone_ref(py))),
+            Self::Deferred => Err(PyRuntimeError::new_err(
+                "included response field was not materialized",
+            )),
+        }
+    }
+}
+
 struct FastApiRoute {
     path: String,
     path_format: String,
@@ -884,7 +981,7 @@ struct FastApiRoute {
     tags: Option<Vec<String>>,
     status_code: Option<u16>,
     include_in_schema: bool,
-    response_class: Option<Py<PyAny>>,
+    response_class: ResponseClassChoice,
     strict_content_type: Option<bool>,
     sse_stream: bool,
     generator_kind: FastApiGeneratorKind,
@@ -895,6 +992,7 @@ struct FastApiRoute {
     public_route: Py<PyAny>,
     effective_route_context: Option<Py<PyAny>>,
     response_model: Option<Py<PyAny>>,
+    response_field: ResponseFieldState,
     response_model_include: Option<Py<PyAny>>,
     response_model_exclude: Option<Py<PyAny>>,
     response_model_by_alias: bool,
@@ -906,7 +1004,7 @@ struct FastApiRoute {
 }
 
 struct ResponseModelConfig {
-    model: Py<PyAny>,
+    field: ResponseField,
     include: Option<Py<PyAny>>,
     exclude: Option<Py<PyAny>>,
     by_alias: bool,
@@ -919,11 +1017,24 @@ struct ResponseModelConfig {
     path: String,
 }
 
+struct StreamItemConfig {
+    annotation: Py<PyAny>,
+    include: Option<Py<PyAny>>,
+    exclude: Option<Py<PyAny>>,
+    by_alias: bool,
+    exclude_unset: bool,
+    exclude_defaults: bool,
+    exclude_none: bool,
+    endpoint: Py<PyAny>,
+    method: String,
+    path: String,
+}
+
 struct ResponseValidationState {
     adapter: Py<PyAny>,
     original_content: Py<PyAny>,
     serialization_kwargs: Py<PyDict>,
-    response_class: Option<Py<PyAny>>,
+    response_class: ResponseClassChoice,
     status_code: Option<u16>,
     endpoint: Py<PyAny>,
     method: String,
@@ -1226,6 +1337,205 @@ struct FastApiRouterInclude {
     route_position: usize,
     router: Py<PyAny>,
     prefix: String,
+    fields: IncludedFieldBranch,
+}
+
+#[derive(Clone)]
+struct IncludedFieldBranch {
+    start: usize,
+    end: usize,
+    direct_indexes: Vec<usize>,
+    children: Vec<Self>,
+    ready: bool,
+}
+
+impl IncludedFieldBranch {
+    fn from_router(source: &PyFastApi, offset: usize) -> Self {
+        let direct_indexes = (0..source.routes.len())
+            .filter(|index| {
+                !source
+                    .router_includes
+                    .iter()
+                    .any(|include| include.fields.start <= *index && *index < include.fields.end)
+            })
+            .map(|index| offset + index)
+            .collect();
+        Self {
+            start: offset,
+            end: offset + source.routes.len(),
+            direct_indexes,
+            children: source
+                .router_includes
+                .iter()
+                .map(|include| include.fields.for_new_context(offset))
+                .collect(),
+            ready: false,
+        }
+    }
+
+    fn for_new_context(&self, offset: usize) -> Self {
+        Self {
+            start: offset + self.start,
+            end: offset + self.end,
+            direct_indexes: self
+                .direct_indexes
+                .iter()
+                .map(|index| offset + index)
+                .collect(),
+            children: self
+                .children
+                .iter()
+                .map(|child| child.for_new_context(offset))
+                .collect(),
+            ready: false,
+        }
+    }
+
+    fn collect_visits(
+        &self,
+        full_match: Option<usize>,
+        path: &mut Vec<usize>,
+        visits: &mut Vec<(Vec<usize>, Vec<usize>)>,
+    ) {
+        if full_match.is_some_and(|index| self.start > index) {
+            return;
+        }
+        if !self.ready {
+            visits.push((path.clone(), self.direct_indexes.clone()));
+        }
+        for (index, child) in self.children.iter().enumerate() {
+            path.push(index);
+            child.collect_visits(full_match, path, visits);
+            path.pop();
+        }
+    }
+
+    fn descendant_mut(&mut self, path: &[usize]) -> Option<&mut Self> {
+        match path.split_first() {
+            Some((index, remaining)) => self.children.get_mut(*index)?.descendant_mut(remaining),
+            None => Some(self),
+        }
+    }
+}
+
+fn build_response_field(
+    py: Python<'_>,
+    name: &str,
+    path: &str,
+    method: &str,
+    explicit_operation_id: Option<&str>,
+    model: Option<&Py<PyAny>>,
+) -> PyResult<Option<ResponseField>> {
+    let Some(model) = model else { return Ok(None) };
+    if !model.bind(py).is_truthy()? {
+        return Ok(None);
+    }
+    let unique_id =
+        explicit_operation_id.map_or_else(|| operation_id(name, path, method), str::to_owned);
+    ResponseField::new(py, &format!("Response_{unique_id}"), model.bind(py)).map(Some)
+}
+
+struct ResponseFieldInput {
+    index: usize,
+    name: String,
+    path: String,
+    method: String,
+    operation_id: Option<String>,
+    model: Option<Py<PyAny>>,
+}
+
+fn materialize_included_response_fields(
+    py: Python<'_>,
+    app: &Py<PyFastApi>,
+    full_match: Option<usize>,
+) -> PyResult<()> {
+    // Flat native indexes are retained for immutable route declarations. The
+    // companion branch tree preserves source traversal and whole-branch fields.
+    // Dynamic route/version refresh remains a separate compatibility boundary.
+    let mut visits = Vec::new();
+    {
+        let app = app.bind(py).borrow();
+        for (index, include) in app.router_includes.iter().enumerate() {
+            include
+                .fields
+                .collect_visits(full_match, &mut vec![index], &mut visits);
+        }
+    }
+    for (branch_path, indexes) in visits {
+        let inputs = {
+            let app = app.bind(py).borrow();
+            indexes
+                .iter()
+                .map(|index| {
+                    let route = app.routes.get(*index).ok_or_else(|| {
+                        PyRuntimeError::new_err("included route field input was lost")
+                    })?;
+                    Ok(ResponseFieldInput {
+                        index: *index,
+                        name: route.name.clone(),
+                        path: route.path_format.clone(),
+                        method: route.method.clone(),
+                        operation_id: route.operation_id.clone(),
+                        model: route
+                            .response_model
+                            .as_ref()
+                            .map(|model| model.clone_ref(py)),
+                    })
+                })
+                .collect::<PyResult<Vec<_>>>()?
+        };
+        // Schema hooks, truth testing and destruction on failure are outside
+        // the app borrow. No successful partial branch is published on error.
+        let mut prepared = Vec::with_capacity(inputs.len());
+        for input in inputs {
+            let field = build_response_field(
+                py,
+                &input.name,
+                &input.path,
+                &input.method,
+                input.operation_id.as_deref(),
+                input.model.as_ref(),
+            )?;
+            prepared.push((input.index, ResponseFieldState::Ready(field)));
+        }
+        let retired = {
+            let mut app = app.bind(py).borrow_mut();
+            if prepared.iter().any(|(index, _)| *index >= app.routes.len()) {
+                return Err(PyRuntimeError::new_err(
+                    "included route field destination was lost",
+                ));
+            }
+            let (include_index, descendant) = branch_path
+                .split_first()
+                .ok_or_else(|| PyRuntimeError::new_err("included field branch was lost"))?;
+            if app
+                .router_includes
+                .get_mut(*include_index)
+                .and_then(|include| include.fields.descendant_mut(descendant))
+                .is_none()
+            {
+                return Err(PyRuntimeError::new_err("included field branch was lost"));
+            }
+            let retired = prepared
+                .into_iter()
+                .map(|(index, field)| {
+                    std::mem::replace(&mut app.routes[index].response_field, field)
+                })
+                .collect::<Vec<_>>();
+            if let Some(branch) = app
+                .router_includes
+                .get_mut(*include_index)
+                .and_then(|include| include.fields.descendant_mut(descendant))
+            {
+                branch.ready = true;
+            }
+            retired
+        };
+        // Finalizers can call user code, so drop replaced Python references only
+        // after releasing the mutable app borrow.
+        drop(retired);
+    }
+    Ok(())
 }
 
 #[derive(Clone, Copy)]
@@ -1276,7 +1586,7 @@ struct ResponseModelOptions {
     deprecated: Option<bool>,
     tags: Option<Vec<String>>,
     dependencies: Vec<Py<PyAny>>,
-    response_class: Option<Py<PyAny>>,
+    response_class: ResponseClassChoice,
     name: Option<String>,
 }
 
@@ -1310,7 +1620,7 @@ pub(crate) struct PyFastApi {
     license_info: Option<Py<PyAny>>,
     openapi_external_docs: Option<Py<PyAny>>,
     dependencies: Vec<Py<PyAny>>,
-    default_response_class: Option<Py<PyAny>>,
+    default_response_class: ResponseClassChoice,
     redirect_slashes: bool,
     strict_content_type: Option<bool>,
     exception_handlers: Py<PyAny>,
@@ -1455,6 +1765,7 @@ pub(crate) struct PyApiRouter {
 
 struct RouterIncludePolicy<'policy> {
     prefix: &'policy str,
+    response_class: &'policy ResponseClassChoice,
     tags: &'policy [String],
     dependencies: &'policy [Py<PyAny>],
     deprecated: Option<bool>,
@@ -1723,7 +2034,7 @@ fn generate_unique_id(route: &Bound<'_, PyAny>) -> PyResult<String> {
 #[pymethods]
 impl PyFastApi {
     #[new]
-    #[pyo3(signature = (*, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", servers = None, docs_url = "/docs", redoc_url = "/redoc", swagger_ui_oauth2_redirect_url = "/docs/oauth2-redirect", swagger_ui_init_oauth = None, swagger_ui_parameters = None, terms_of_service = None, contact = None, license_info = None, openapi_external_docs = None, dependencies = None, default_response_class = None, redirect_slashes = true, middleware = None, exception_handlers = None, on_startup = None, on_shutdown = None, lifespan = None, strict_content_type = true))]
+    #[pyo3(signature = (*, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", servers = None, docs_url = "/docs", redoc_url = "/redoc", swagger_ui_oauth2_redirect_url = "/docs/oauth2-redirect", swagger_ui_init_oauth = None, swagger_ui_parameters = None, terms_of_service = None, contact = None, license_info = None, openapi_external_docs = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, redirect_slashes = true, middleware = None, exception_handlers = None, on_startup = None, on_shutdown = None, lifespan = None, strict_content_type = true))]
     // lint-exception: PyO3 needs one Rust argument per Python constructor keyword.
     #[allow(
         clippy::too_many_arguments,
@@ -1747,7 +2058,7 @@ impl PyFastApi {
         license_info: Option<Py<PyAny>>,
         openapi_external_docs: Option<Py<PyAny>>,
         dependencies: Option<Vec<Py<PyAny>>>,
-        default_response_class: Option<Py<PyAny>>,
+        default_response_class: ResponseClassArgument,
         redirect_slashes: bool,
         middleware: Option<Py<PyAny>>,
         exception_handlers: Option<Py<PyAny>>,
@@ -1839,7 +2150,7 @@ impl PyFastApi {
             license_info,
             openapi_external_docs,
             dependencies: dependencies.unwrap_or_default(),
-            default_response_class,
+            default_response_class: default_response_class.into_choice(py)?,
             redirect_slashes,
             strict_content_type: Some(strict_content_type),
             exception_handlers: exception_handlers.unbind().into_any(),
@@ -2003,7 +2314,7 @@ impl PyFastApi {
     )]
     // Distinguish omission (infer from the endpoint return annotation) from explicit None (opt out).
     #[pyo3(
-        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, dependencies = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None, response_class = None, name = None),
+        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, dependencies = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None, response_class = ResponseClassArgument::Omitted, name = None),
         text_signature = "($self, path, *, response_model=None, status_code=None, response_model_include=None, response_model_exclude=None, response_model_by_alias=True, response_model_exclude_unset=False, response_model_exclude_defaults=False, response_model_exclude_none=False, tags=None, dependencies=None, summary=None, response_description=\"Successful Response\", responses=None, include_in_schema=True, deprecated=None, operation_id=None, response_class=None, name=None)"
     )]
     fn post(
@@ -2026,7 +2337,7 @@ impl PyFastApi {
         include_in_schema: bool,
         deprecated: Option<bool>,
         operation_id: Option<String>,
-        response_class: Option<Py<PyAny>>,
+        response_class: ResponseClassArgument,
         name: Option<String>,
     ) -> PyResult<Py<PyOperationDecorator>> {
         operation_decorator(
@@ -2044,7 +2355,7 @@ impl PyFastApi {
                 exclude_defaults: response_model_exclude_defaults,
                 exclude_none: response_model_exclude_none,
                 include_in_schema,
-                response_class,
+                response_class: response_class.into_choice(py)?,
                 response_description: Some(response_description.to_owned()),
                 responses,
                 summary,
@@ -2063,7 +2374,7 @@ impl PyFastApi {
         reason = "preserve the Python route decorator keyword signature"
     )]
     #[pyo3(
-        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, dependencies = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None, response_class = None, name = None),
+        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, dependencies = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None, response_class = ResponseClassArgument::Omitted, name = None),
         text_signature = "($self, path, *, response_model=None, status_code=None, response_model_include=None, response_model_exclude=None, response_model_by_alias=True, response_model_exclude_unset=False, response_model_exclude_defaults=False, response_model_exclude_none=False, tags=None, dependencies=None, summary=None, response_description=\"Successful Response\", responses=None, include_in_schema=True, deprecated=None, operation_id=None, response_class=None, name=None)"
     )]
     fn get(
@@ -2086,7 +2397,7 @@ impl PyFastApi {
         include_in_schema: bool,
         deprecated: Option<bool>,
         operation_id: Option<String>,
-        response_class: Option<Py<PyAny>>,
+        response_class: ResponseClassArgument,
         name: Option<String>,
     ) -> PyResult<Py<PyOperationDecorator>> {
         operation_decorator(
@@ -2104,7 +2415,7 @@ impl PyFastApi {
                 exclude_defaults: response_model_exclude_defaults,
                 exclude_none: response_model_exclude_none,
                 include_in_schema,
-                response_class,
+                response_class: response_class.into_choice(py)?,
                 response_description: Some(response_description.to_owned()),
                 responses,
                 summary,
@@ -2123,7 +2434,7 @@ impl PyFastApi {
         reason = "preserve the Python route decorator keyword signature"
     )]
     #[pyo3(
-        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, dependencies = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None, response_class = None, name = None),
+        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, dependencies = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None, response_class = ResponseClassArgument::Omitted, name = None),
         text_signature = "($self, path, *, response_model=None, status_code=None, response_model_include=None, response_model_exclude=None, response_model_by_alias=True, response_model_exclude_unset=False, response_model_exclude_defaults=False, response_model_exclude_none=False, tags=None, dependencies=None, summary=None, response_description=\"Successful Response\", responses=None, include_in_schema=True, deprecated=None, operation_id=None, response_class=None, name=None)"
     )]
     fn put(
@@ -2146,7 +2457,7 @@ impl PyFastApi {
         include_in_schema: bool,
         deprecated: Option<bool>,
         operation_id: Option<String>,
-        response_class: Option<Py<PyAny>>,
+        response_class: ResponseClassArgument,
         name: Option<String>,
     ) -> PyResult<Py<PyOperationDecorator>> {
         operation_decorator(
@@ -2164,7 +2475,7 @@ impl PyFastApi {
                 exclude_defaults: response_model_exclude_defaults,
                 exclude_none: response_model_exclude_none,
                 include_in_schema,
-                response_class,
+                response_class: response_class.into_choice(py)?,
                 response_description: Some(response_description.to_owned()),
                 responses,
                 summary,
@@ -2183,7 +2494,7 @@ impl PyFastApi {
         reason = "preserve the Python route decorator keyword signature"
     )]
     #[pyo3(
-        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, dependencies = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None, response_class = None, name = None),
+        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, dependencies = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None, response_class = ResponseClassArgument::Omitted, name = None),
         text_signature = "($self, path, *, response_model=None, status_code=None, response_model_include=None, response_model_exclude=None, response_model_by_alias=True, response_model_exclude_unset=False, response_model_exclude_defaults=False, response_model_exclude_none=False, tags=None, dependencies=None, summary=None, response_description=\"Successful Response\", responses=None, include_in_schema=True, deprecated=None, operation_id=None, response_class=None, name=None)"
     )]
     fn delete(
@@ -2206,7 +2517,7 @@ impl PyFastApi {
         include_in_schema: bool,
         deprecated: Option<bool>,
         operation_id: Option<String>,
-        response_class: Option<Py<PyAny>>,
+        response_class: ResponseClassArgument,
         name: Option<String>,
     ) -> PyResult<Py<PyOperationDecorator>> {
         operation_decorator(
@@ -2224,7 +2535,7 @@ impl PyFastApi {
                 exclude_defaults: response_model_exclude_defaults,
                 exclude_none: response_model_exclude_none,
                 include_in_schema,
-                response_class,
+                response_class: response_class.into_choice(py)?,
                 response_description: Some(response_description.to_owned()),
                 responses,
                 summary,
@@ -2243,7 +2554,7 @@ impl PyFastApi {
         reason = "preserve the Python route decorator keyword signature"
     )]
     #[pyo3(
-        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, dependencies = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None, response_class = None, name = None),
+        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, dependencies = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None, response_class = ResponseClassArgument::Omitted, name = None),
         text_signature = "($self, path, *, response_model=None, status_code=None, response_model_include=None, response_model_exclude=None, response_model_by_alias=True, response_model_exclude_unset=False, response_model_exclude_defaults=False, response_model_exclude_none=False, tags=None, dependencies=None, summary=None, response_description=\"Successful Response\", responses=None, include_in_schema=True, deprecated=None, operation_id=None, response_class=None, name=None)"
     )]
     fn patch(
@@ -2266,7 +2577,7 @@ impl PyFastApi {
         include_in_schema: bool,
         deprecated: Option<bool>,
         operation_id: Option<String>,
-        response_class: Option<Py<PyAny>>,
+        response_class: ResponseClassArgument,
         name: Option<String>,
     ) -> PyResult<Py<PyOperationDecorator>> {
         operation_decorator(
@@ -2284,7 +2595,7 @@ impl PyFastApi {
                 exclude_defaults: response_model_exclude_defaults,
                 exclude_none: response_model_exclude_none,
                 include_in_schema,
-                response_class,
+                response_class: response_class.into_choice(py)?,
                 response_description: Some(response_description.to_owned()),
                 responses,
                 summary,
@@ -2303,7 +2614,7 @@ impl PyFastApi {
         reason = "preserve the Python route decorator keyword signature"
     )]
     #[pyo3(
-        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, dependencies = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None, response_class = None, name = None),
+        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, dependencies = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None, response_class = ResponseClassArgument::Omitted, name = None),
         text_signature = "($self, path, *, response_model=None, status_code=None, response_model_include=None, response_model_exclude=None, response_model_by_alias=True, response_model_exclude_unset=False, response_model_exclude_defaults=False, response_model_exclude_none=False, tags=None, dependencies=None, summary=None, response_description=\"Successful Response\", responses=None, include_in_schema=True, deprecated=None, operation_id=None, response_class=None, name=None)"
     )]
     fn head(
@@ -2326,7 +2637,7 @@ impl PyFastApi {
         include_in_schema: bool,
         deprecated: Option<bool>,
         operation_id: Option<String>,
-        response_class: Option<Py<PyAny>>,
+        response_class: ResponseClassArgument,
         name: Option<String>,
     ) -> PyResult<Py<PyOperationDecorator>> {
         operation_decorator(
@@ -2344,7 +2655,7 @@ impl PyFastApi {
                 exclude_defaults: response_model_exclude_defaults,
                 exclude_none: response_model_exclude_none,
                 include_in_schema,
-                response_class,
+                response_class: response_class.into_choice(py)?,
                 response_description: Some(response_description.to_owned()),
                 responses,
                 summary,
@@ -2363,7 +2674,7 @@ impl PyFastApi {
         reason = "preserve the Python route decorator keyword signature"
     )]
     #[pyo3(
-        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, dependencies = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None, response_class = None, name = None),
+        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, dependencies = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None, response_class = ResponseClassArgument::Omitted, name = None),
         text_signature = "($self, path, *, response_model=None, status_code=None, response_model_include=None, response_model_exclude=None, response_model_by_alias=True, response_model_exclude_unset=False, response_model_exclude_defaults=False, response_model_exclude_none=False, tags=None, dependencies=None, summary=None, response_description=\"Successful Response\", responses=None, include_in_schema=True, deprecated=None, operation_id=None, response_class=None, name=None)"
     )]
     fn options(
@@ -2386,7 +2697,7 @@ impl PyFastApi {
         include_in_schema: bool,
         deprecated: Option<bool>,
         operation_id: Option<String>,
-        response_class: Option<Py<PyAny>>,
+        response_class: ResponseClassArgument,
         name: Option<String>,
     ) -> PyResult<Py<PyOperationDecorator>> {
         operation_decorator(
@@ -2404,7 +2715,7 @@ impl PyFastApi {
                 exclude_defaults: response_model_exclude_defaults,
                 exclude_none: response_model_exclude_none,
                 include_in_schema,
-                response_class,
+                response_class: response_class.into_choice(py)?,
                 response_description: Some(response_description.to_owned()),
                 responses,
                 summary,
@@ -2423,7 +2734,7 @@ impl PyFastApi {
         reason = "preserve the Python route decorator keyword signature"
     )]
     #[pyo3(
-        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, dependencies = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None, response_class = None, name = None),
+        signature = (path, *, response_model = omitted_response_model(), status_code = None, response_model_include = None, response_model_exclude = None, response_model_by_alias = true, response_model_exclude_unset = false, response_model_exclude_defaults = false, response_model_exclude_none = false, tags = None, dependencies = None, summary = None, response_description = "Successful Response", responses = None, include_in_schema = true, deprecated = None, operation_id = None, response_class = ResponseClassArgument::Omitted, name = None),
         text_signature = "($self, path, *, response_model=None, status_code=None, response_model_include=None, response_model_exclude=None, response_model_by_alias=True, response_model_exclude_unset=False, response_model_exclude_defaults=False, response_model_exclude_none=False, tags=None, dependencies=None, summary=None, response_description=\"Successful Response\", responses=None, include_in_schema=True, deprecated=None, operation_id=None, response_class=None, name=None)"
     )]
     fn trace(
@@ -2446,7 +2757,7 @@ impl PyFastApi {
         include_in_schema: bool,
         deprecated: Option<bool>,
         operation_id: Option<String>,
-        response_class: Option<Py<PyAny>>,
+        response_class: ResponseClassArgument,
         name: Option<String>,
     ) -> PyResult<Py<PyOperationDecorator>> {
         operation_decorator(
@@ -2464,7 +2775,7 @@ impl PyFastApi {
                 exclude_defaults: response_model_exclude_defaults,
                 exclude_none: response_model_exclude_none,
                 include_in_schema,
-                response_class,
+                response_class: response_class.into_choice(py)?,
                 response_description: Some(response_description.to_owned()),
                 responses,
                 summary,
@@ -2511,7 +2822,7 @@ impl PyFastApi {
                 deprecated: None,
                 tags: None,
                 dependencies: dependencies.unwrap_or_default(),
-                response_class: None,
+                response_class: ResponseClassChoice::from_python(py, default_response_class(py)?),
                 name,
             },
         )
@@ -2701,28 +3012,36 @@ impl PyFastApi {
         Ok(())
     }
 
-    #[pyo3(signature = (router, *, prefix = "", tags = None, dependencies = None, deprecated = None, include_in_schema = true))]
+    #[pyo3(signature = (router, *, prefix = "", tags = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, deprecated = None, include_in_schema = true))]
     // lint-exception: preserve FastAPI's include_router keyword signature.
     #[allow(
         clippy::too_many_arguments,
         reason = "preserve the FastAPI-compatible include_router signature"
     )]
     fn include_router(
-        &mut self,
+        slf: Py<Self>,
         py: Python<'_>,
         router: Py<PyApiRouter>,
         prefix: &str,
         tags: Option<Vec<String>>,
         dependencies: Option<Vec<Py<PyAny>>>,
+        default_response_class: ResponseClassArgument,
         deprecated: Option<bool>,
         include_in_schema: bool,
     ) -> PyResult<()> {
+        let include_response_class = default_response_class.into_choice(py)?;
+        let mut destination = slf.bind(py).borrow_mut();
+        let destination = &mut *destination;
+        let inherited_response_class = ResponseClassChoice::first_explicit(
+            py,
+            &[&include_response_class, &destination.default_response_class],
+        );
         let router_object = router.clone_ref(py).into_any();
         let include_prefix = prefix.to_owned();
         let router = router.bind(py).borrow();
         let prefix = combined_router_prefix(prefix, &router.prefix)?;
         let tags = combined_router_tags(tags.as_deref(), &router.tags);
-        let mut inherited_dependencies = self
+        let mut inherited_dependencies = destination
             .dependencies
             .iter()
             .map(|dependency| dependency.clone_ref(py))
@@ -2737,27 +3056,29 @@ impl PyFastApi {
         let deprecated = combined_deprecated(deprecated, router.deprecated);
         let include_in_schema = include_in_schema && router.include_in_schema;
         let source = router.inner.bind(py).borrow();
-        let route_position = self.routes.len();
+        let route_position = destination.routes.len();
         merge_router_routes(
             py,
-            self,
+            destination,
             &source,
             RouterIncludePolicy {
                 prefix: &prefix,
+                response_class: &inherited_response_class,
                 tags: &tags,
                 dependencies: &inherited_dependencies,
                 deprecated,
                 include_in_schema,
-                strict_content_type: self.strict_content_type,
+                strict_content_type: destination.strict_content_type,
             },
         )?;
-        self.router_includes.push(FastApiRouterInclude {
+        destination.router_includes.push(FastApiRouterInclude {
             route_position,
             router: router_object,
             prefix: include_prefix,
+            fields: IncludedFieldBranch::from_router(&source, route_position),
         });
-        self.lifespan.include_router(py, &source.lifespan)?;
-        self.bump_routes_version();
+        destination.lifespan.include_router(py, &source.lifespan)?;
+        destination.bump_routes_version();
         Ok(())
     }
 
@@ -3749,44 +4070,44 @@ impl PyFastApi {
             }
             None => (None, None),
         };
-        let (response_media_type, response_class_is_json) =
-            if let Some(response_class) = route.response_class.as_ref() {
-                let response_class = response_class.bind(py);
-                let media_type = response_class.getattr("media_type")?;
-                let media_type = if media_type.is_none() {
-                    // Starlette-RS exposes PlainTextResponse's constructor default
-                    // ("text/plain") without the class attribute that upstream
-                    // Starlette exposes. FastAPI's OpenAPI builder reads the class
-                    // attribute, so recover that inherited default for this class
-                    // family while preserving an explicit subclass override to None.
-                    let responses = py.import("starlette.responses")?;
-                    let plain_text_response = responses.getattr("PlainTextResponse")?;
-                    let is_plain_text_response =
-                        annotation_is_subclass(py, response_class, &plain_text_response)?;
-                    let defines_media_type = response_class
-                        .getattr("__dict__")?
-                        .call_method1("__contains__", ("media_type",))?
-                        .extract::<bool>()?;
-                    if is_plain_text_response && !defines_media_type {
-                        Some("text/plain".to_owned())
-                    } else {
-                        None
-                    }
+        let (response_media_type, response_class_is_json) = if !route.response_class.is_default() {
+            let actual_response_class = route.response_class.actual(py)?;
+            let response_class = actual_response_class.bind(py);
+            let media_type = response_class.getattr("media_type")?;
+            let media_type = if media_type.is_none() {
+                // Starlette-RS exposes PlainTextResponse's constructor default
+                // ("text/plain") without the class attribute that upstream
+                // Starlette exposes. FastAPI's OpenAPI builder reads the class
+                // attribute, so recover that inherited default for this class
+                // family while preserving an explicit subclass override to None.
+                let responses = py.import("starlette.responses")?;
+                let plain_text_response = responses.getattr("PlainTextResponse")?;
+                let is_plain_text_response =
+                    annotation_is_subclass(py, response_class, &plain_text_response)?;
+                let defines_media_type = response_class
+                    .getattr("__dict__")?
+                    .call_method1("__contains__", ("media_type",))?
+                    .extract::<bool>()?;
+                if is_plain_text_response && !defines_media_type {
+                    Some("text/plain".to_owned())
                 } else {
-                    Some(media_type.extract::<String>()?)
-                };
-                let json_response = py.import("starlette.responses")?.getattr("JSONResponse")?;
-                (
-                    media_type,
-                    annotation_is_subclass(py, response_class, &json_response)?,
-                )
+                    None
+                }
             } else {
-                // FastAPI's implicit response class is JSONResponse.
-                (Some("application/json".to_owned()), true)
+                Some(media_type.extract::<String>()?)
             };
+            let json_response = py.import("starlette.responses")?.getattr("JSONResponse")?;
+            (
+                media_type,
+                annotation_is_subclass(py, response_class, &json_response)?,
+            )
+        } else {
+            // FastAPI's implicit response class is JSONResponse.
+            (Some("application/json".to_owned()), true)
+        };
         let sse_stream = route.sse_stream;
         let jsonl_stream =
-            route.generator_kind.is_generator() && route.response_class.is_none() && !sse_stream;
+            route.generator_kind.is_generator() && route.response_class.is_default() && !sse_stream;
         let (stream_item_model_name, stream_item_schema) = if jsonl_stream || sse_stream {
             match route.stream_item_type.as_ref() {
                 Some(stream_item_type) => {
@@ -3822,10 +4143,7 @@ impl PyFastApi {
             response_status_key: openapi_response_status_key(
                 py,
                 route.status_code,
-                route
-                    .response_class
-                    .as_ref()
-                    .map(|response_class| response_class.bind(py)),
+                Some(route.response_class.actual(py)?.bind(py)),
             )?,
             parameters,
             security_schemes,
@@ -3859,7 +4177,7 @@ impl PyFastApi {
 #[pymethods]
 impl PyApiRouter {
     #[new]
-    #[pyo3(signature = (*, prefix = "", tags = None, dependencies = None, default_response_class = None, on_startup = None, on_shutdown = None, lifespan = None, deprecated = None, include_in_schema = true, strict_content_type = None))]
+    #[pyo3(signature = (*, prefix = "", tags = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, on_startup = None, on_shutdown = None, lifespan = None, deprecated = None, include_in_schema = true, strict_content_type = None))]
     // lint-exception: preserve the FastAPI-compatible APIRouter constructor keyword signature.
     #[allow(
         clippy::too_many_arguments,
@@ -3870,7 +4188,7 @@ impl PyApiRouter {
         prefix: &str,
         tags: Option<Vec<String>>,
         dependencies: Option<Vec<Py<PyAny>>>,
-        default_response_class: Option<Py<PyAny>>,
+        default_response_class: ResponseClassArgument,
         on_startup: Option<Py<PyAny>>,
         on_shutdown: Option<Py<PyAny>>,
         lifespan: Option<Py<PyAny>>,
@@ -3981,26 +4299,36 @@ impl PyApiRouter {
         add_frontend_route(&mut inner, py, path, directory, fallback, check_dir, &[])
     }
 
-    #[pyo3(signature = (router, *, prefix = "", tags = None, dependencies = None, deprecated = None, include_in_schema = true))]
+    #[pyo3(signature = (router, *, prefix = "", tags = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, deprecated = None, include_in_schema = true))]
     // lint-exception: preserve FastAPI's include_router keyword signature.
     #[allow(
         clippy::too_many_arguments,
         reason = "preserve the FastAPI-compatible include_router signature"
     )]
     fn include_router(
-        &self,
+        slf: Py<Self>,
         py: Python<'_>,
         router: Py<PyApiRouter>,
         prefix: &str,
         tags: Option<Vec<String>>,
         dependencies: Option<Vec<Py<PyAny>>>,
+        default_response_class: ResponseClassArgument,
         deprecated: Option<bool>,
         include_in_schema: bool,
     ) -> PyResult<()> {
+        let inner = slf.bind(py).borrow().inner.clone_ref(py);
+        let include_response_class = default_response_class.into_choice(py)?;
+        let inherited_response_class = {
+            let destination = inner.bind(py).borrow();
+            ResponseClassChoice::first_explicit(
+                py,
+                &[&include_response_class, &destination.default_response_class],
+            )
+        };
         let router_object = router.clone_ref(py).into_any();
         let include_prefix = prefix.to_owned();
         let router = router.bind(py).borrow();
-        if self.inner.as_ptr() == router.inner.as_ptr() {
+        if inner.as_ptr() == router.inner.as_ptr() {
             return Err(PyAssertionError::new_err(
                 "Cannot include the same APIRouter instance into itself. Did you mean to include a different router?",
             ));
@@ -4017,7 +4345,7 @@ impl PyApiRouter {
         let deprecated = combined_deprecated(deprecated, router.deprecated);
         let include_in_schema = include_in_schema && router.include_in_schema;
         let source = router.inner.bind(py).borrow();
-        let mut destination = self.inner.bind(py).borrow_mut();
+        let mut destination = inner.bind(py).borrow_mut();
         if source.lifespan.is_included_by(py, &destination.lifespan)? {
             return Err(PyAssertionError::new_err(
                 "Cannot include an APIRouter instance that already includes this router. Did you mean to include a different router?",
@@ -4031,6 +4359,7 @@ impl PyApiRouter {
             &source,
             RouterIncludePolicy {
                 prefix: &prefix,
+                response_class: &inherited_response_class,
                 tags: &tags,
                 dependencies: &dependencies,
                 deprecated,
@@ -4042,6 +4371,7 @@ impl PyApiRouter {
             route_position,
             router: router_object,
             prefix: include_prefix,
+            fields: IncludedFieldBranch::from_router(&source, route_position),
         });
         destination.lifespan.include_router(py, &source.lifespan)
     }
@@ -4513,6 +4843,7 @@ fn merge_router_routes(
 ) -> PyResult<()> {
     let RouterIncludePolicy {
         prefix,
+        response_class: inherited_response_class,
         tags: inherited_tags,
         dependencies: inherited_dependencies,
         deprecated: inherited_deprecated,
@@ -4539,15 +4870,14 @@ fn merge_router_routes(
         )?;
         plan.prepend_dependencies(py, &route_dependencies)?;
         let param_convertors = route_param_convertors(py, &path)?;
-        let response_class = source_route
-            .response_class
-            .as_ref()
-            .map(|value| value.clone_ref(py))
-            .or_else(|| {
-                app.default_response_class
-                    .as_ref()
-                    .map(|value| value.clone_ref(py))
-            });
+        let response_class = ResponseClassChoice::first_explicit(
+            py,
+            &[
+                &source_route.response_class,
+                &source.default_response_class,
+                inherited_response_class,
+            ],
+        );
         let route_scope = source_route.route_scope.clone_ref(py);
         let path_format = route_path_format(py, &path)?;
         let tags = combined_route_tags(inherited_tags, source_route.tags.as_deref());
@@ -4566,11 +4896,10 @@ fn merge_router_routes(
         )?;
         let effective_route_context =
             new_route_context(py, original_route.clone_ref(py), effective_route)?;
+        let actual_response_class = response_class.actual(py)?;
         let sse_stream = source_route.generator_kind.is_generator()
-            && match response_class.as_ref() {
-                Some(class) => sse::is_event_source_response_class(py, class.bind(py))?,
-                None => false,
-            };
+            && actual_response_class.bind(py).is_instance_of::<PyType>()
+            && sse::is_event_source_response_class(py, actual_response_class.bind(py))?;
         let index = app
             .router
             .add_operation(&path, &source_route.method, source_route.status_code)
@@ -4619,6 +4948,7 @@ fn merge_router_routes(
                 .response_model
                 .as_ref()
                 .map(|model| model.clone_ref(py)),
+            response_field: ResponseFieldState::Deferred,
             response_model_include: source_route
                 .response_model_include
                 .as_ref()
@@ -4739,7 +5069,7 @@ struct PyOperationDecorator {
     response_model_exclude_unset: bool,
     response_model_exclude_defaults: bool,
     response_model_exclude_none: bool,
-    response_class: Option<Py<PyAny>>,
+    response_class: ResponseClassChoice,
     name: Option<String>,
 }
 
@@ -5024,19 +5354,16 @@ impl PyOperationDecorator {
             .bind(py)
             .borrow()
             .default_response_class
-            .as_ref()
-            .map(|value| value.clone_ref(py));
-        let response_class = self
-            .response_class
-            .as_ref()
-            .map(|value| value.clone_ref(py))
-            .or(default_response_class);
+            .clone_ref(py);
+        let response_class = ResponseClassChoice::first_explicit(
+            py,
+            &[&self.response_class, &default_response_class],
+        );
+        let actual_response_class = response_class.actual(py)?;
         let sse_stream = generator_kind.is_generator()
-            && match response_class.as_ref() {
-                Some(class) => sse::is_event_source_response_class(py, class.bind(py))?,
-                None => false,
-            };
-        let stream_item_type = if self.response_class.is_none() || sse_stream {
+            && actual_response_class.bind(py).is_instance_of::<PyType>()
+            && sse::is_event_source_response_class(py, actual_response_class.bind(py))?;
+        let stream_item_type = if response_class.is_default() || sse_stream {
             match inferred_stream_item_type.as_ref() {
                 Some(item_type)
                     if sse_stream && sse::is_server_sent_event_class(py, item_type.bind(py))? =>
@@ -5066,7 +5393,7 @@ impl PyOperationDecorator {
             let app = self.app.bind(py).borrow();
             (
                 !app.dependencies.is_empty(),
-                app.default_response_class.is_some(),
+                !app.default_response_class.is_default(),
             )
         };
         let endpoint_has_docstring = endpoint.bind(py).getattr("__doc__")?.is_truthy()?;
@@ -5080,7 +5407,7 @@ impl PyOperationDecorator {
             && self.include_in_schema
             && self.response_description == DEFAULT_RESPONSE_DESCRIPTION
             && self.additional_responses.is_empty()
-            && self.response_class.is_none()
+            && self.response_class.is_default()
             && !has_default_response_class
             && response_model.is_none()
             && self.response_model_include.is_none()
@@ -5106,6 +5433,14 @@ impl PyOperationDecorator {
                 direct_openapi_supported,
             },
             endpoint.clone_ref(py),
+        )?;
+        let response_field = build_response_field(
+            py,
+            &name,
+            &path_format,
+            &self.method,
+            self.operation_id.as_deref(),
+            response_model.as_ref(),
         )?;
         let inputs = plan.input_parameters();
         let mut app = self.app.bind(py).borrow_mut();
@@ -5146,6 +5481,7 @@ impl PyOperationDecorator {
             public_route,
             effective_route_context: None,
             response_model,
+            response_field: ResponseFieldState::Ready(response_field),
             response_model_include: self
                 .response_model_include
                 .as_ref()
@@ -9927,6 +10263,15 @@ impl FastApiCall {
             .borrow()
             .router
             .matches(&path, &root_path, &method);
+        let full_match = match &match_result {
+            FastApiOperationMatch::Matched {
+                operation_index, ..
+            } => Some(*operation_index),
+            _ => None,
+        };
+        // A partial match does not stop traversal. Misses/405 visit all branches;
+        // a full match still builds every direct field of each visited branch.
+        materialize_included_response_fields(py, &self.app, full_match)?;
         match match_result {
             FastApiOperationMatch::Matched {
                 operation_index,
@@ -10834,66 +11179,83 @@ impl FastApiCall {
             return self.start_returned_response(py, result.bind(py));
         }
 
-        let (generator_kind, response_class, sse_stream, status_code, stream_serializer) = {
+        let (generator_kind, response_class, sse_stream, status_code, stream_item_config) = {
             let app = self.app.bind(py).borrow();
             let route = app
                 .routes
                 .get(self.route_index.unwrap_or_default())
                 .ok_or_else(|| PyRuntimeError::new_err("selected FastAPI route was lost"))?;
-            let stream_serializer = if let Some(stream_item_type) = route.stream_item_type.as_ref()
-            {
-                let adapter = py
-                    .import("pydantic")?
-                    .getattr("TypeAdapter")?
-                    .call1((stream_item_type.bind(py),))?
-                    .unbind();
-                let validation_kwargs = PyDict::new(py);
-                validation_kwargs.set_item("from_attributes", true)?;
-                let serialization_kwargs = PyDict::new(py);
-                serialization_kwargs.set_item("by_alias", route.response_model_by_alias)?;
-                serialization_kwargs
-                    .set_item("exclude_unset", route.response_model_exclude_unset)?;
-                serialization_kwargs
-                    .set_item("exclude_defaults", route.response_model_exclude_defaults)?;
-                serialization_kwargs.set_item("exclude_none", route.response_model_exclude_none)?;
-                if let Some(include) = route.response_model_include.as_ref() {
-                    serialization_kwargs.set_item("include", include.bind(py))?;
-                } else {
-                    serialization_kwargs.set_item("include", py.None())?;
-                }
-                if let Some(exclude) = route.response_model_exclude.as_ref() {
-                    serialization_kwargs.set_item("exclude", exclude.bind(py))?;
-                } else {
-                    serialization_kwargs.set_item("exclude", py.None())?;
-                }
-                let root_path = parse_scope_string(self.scope.bind(py), "root_path", "")?;
-                let endpoint_context = response_endpoint_context(
-                    py,
-                    route.endpoint.bind(py),
-                    &route.method,
-                    &route.path,
-                    &root_path,
-                )?
-                .unbind();
-                Some(StreamItemSerializer {
-                    adapter,
-                    validation_kwargs: validation_kwargs.unbind(),
-                    serialization_kwargs: serialization_kwargs.unbind(),
-                    endpoint_context: endpoint_context.into(),
-                })
-            } else {
-                None
-            };
+            let config = route
+                .stream_item_type
+                .as_ref()
+                .map(|annotation| StreamItemConfig {
+                    annotation: annotation.clone_ref(py),
+                    include: route
+                        .response_model_include
+                        .as_ref()
+                        .map(|value| value.clone_ref(py)),
+                    exclude: route
+                        .response_model_exclude
+                        .as_ref()
+                        .map(|value| value.clone_ref(py)),
+                    by_alias: route.response_model_by_alias,
+                    exclude_unset: route.response_model_exclude_unset,
+                    exclude_defaults: route.response_model_exclude_defaults,
+                    exclude_none: route.response_model_exclude_none,
+                    endpoint: route.endpoint.clone_ref(py),
+                    method: route.method.clone(),
+                    path: route.path.clone(),
+                });
             (
                 route.generator_kind,
-                route
-                    .response_class
-                    .as_ref()
-                    .map(|response_class| response_class.clone_ref(py)),
+                route.response_class.clone_ref(py),
                 route.sse_stream,
                 route.status_code,
-                stream_serializer,
+                config,
             )
+        };
+        // Stream lifetime remains a separate slice, but its schema callbacks
+        // also execute outside application borrows.
+        let stream_serializer = if let Some(stream_item) = stream_item_config {
+            let adapter = py
+                .import("pydantic")?
+                .getattr("TypeAdapter")?
+                .call1((stream_item.annotation.bind(py),))?
+                .unbind();
+            let validation_kwargs = PyDict::new(py);
+            validation_kwargs.set_item("from_attributes", true)?;
+            let serialization_kwargs = PyDict::new(py);
+            serialization_kwargs.set_item("by_alias", stream_item.by_alias)?;
+            serialization_kwargs.set_item("exclude_unset", stream_item.exclude_unset)?;
+            serialization_kwargs.set_item("exclude_defaults", stream_item.exclude_defaults)?;
+            serialization_kwargs.set_item("exclude_none", stream_item.exclude_none)?;
+            if let Some(include) = stream_item.include.as_ref() {
+                serialization_kwargs.set_item("include", include.bind(py))?;
+            } else {
+                serialization_kwargs.set_item("include", py.None())?;
+            }
+            if let Some(exclude) = stream_item.exclude.as_ref() {
+                serialization_kwargs.set_item("exclude", exclude.bind(py))?;
+            } else {
+                serialization_kwargs.set_item("exclude", py.None())?;
+            }
+            let root_path = parse_scope_string(self.scope.bind(py), "root_path", "")?;
+            let endpoint_context = response_endpoint_context(
+                py,
+                stream_item.endpoint.bind(py),
+                &stream_item.method,
+                &stream_item.path,
+                &root_path,
+            )?
+            .unbind();
+            Some(StreamItemSerializer {
+                adapter,
+                validation_kwargs: validation_kwargs.unbind(),
+                serialization_kwargs: serialization_kwargs.unbind(),
+                endpoint_context: endpoint_context.into(),
+            })
+        } else {
+            None
         };
         let injected_response = self
             .injected_response
@@ -10908,7 +11270,7 @@ impl FastApiCall {
             })?
             .or(status_code);
         if generator_kind.is_generator() {
-            let json_lines = response_class.is_none() && !sse_stream;
+            let json_lines = response_class.is_default() && !sse_stream;
             let synchronous = generator_kind == FastApiGeneratorKind::Sync;
             let stream = Py::new(
                 py,
@@ -10926,12 +11288,12 @@ impl FastApiCall {
                     .getattr("StreamingResponse")?
                     .unbind()
             } else {
-                match response_class {
-                    Some(response_class) => response_class,
-                    None => py
-                        .import("starlette.responses")?
+                if response_class.is_default() {
+                    py.import("starlette.responses")?
                         .getattr("StreamingResponse")?
-                        .unbind(),
+                        .unbind()
+                } else {
+                    response_class.actual(py)?
                 }
             };
             let kwargs = PyDict::new(py);
@@ -10953,11 +11315,12 @@ impl FastApiCall {
                 let streaming_response = py
                     .import("starlette.responses")?
                     .getattr("StreamingResponse")?;
-                let is_streaming_response = py
-                    .import("builtins")?
-                    .getattr("issubclass")?
-                    .call1((response_class.bind(py), streaming_response))?
-                    .extract::<bool>()?;
+                let is_streaming_response = response_class.bind(py).is_instance_of::<PyType>()
+                    && py
+                        .import("builtins")?
+                        .getattr("issubclass")?
+                        .call1((response_class.bind(py), streaming_response))?
+                        .extract::<bool>()?;
                 if is_streaming_response {
                     kwargs
                         .set_item("media_type", response_class.bind(py).getattr("media_type")?)?;
@@ -10980,10 +11343,10 @@ impl FastApiCall {
                 .get(self.route_index.unwrap_or_default())
                 .ok_or_else(|| PyRuntimeError::new_err("selected FastAPI route was lost"))?;
             route
-                .response_model
-                .as_ref()
-                .map(|model| ResponseModelConfig {
-                    model: model.clone_ref(py),
+                .response_field
+                .field(py)?
+                .map(|field| ResponseModelConfig {
+                    field,
                     include: route
                         .response_model_include
                         .as_ref()
@@ -11011,13 +11374,9 @@ impl FastApiCall {
                 status_code,
             );
         };
-        // Release the app borrow before adapter construction or user validation
-        // and serializer callbacks. The original endpoint kind survives awaits.
-        let adapter = py
-            .import("pydantic")?
-            .getattr("TypeAdapter")?
-            .call1((response_model.model.bind(py),))?
-            .unbind();
+        // The route owns one retained adapter. No app borrow survives user
+        // validation or serialization; original endpoint scheduling is preserved.
+        let adapter = response_model.field.adapter.clone_ref(py);
         let kwargs = PyDict::new(py);
         kwargs.set_item("by_alias", response_model.by_alias)?;
         kwargs.set_item("exclude_unset", response_model.exclude_unset)?;
@@ -11082,9 +11441,8 @@ impl FastApiCall {
                 .call((errors.bind(py),), Some(&kwargs))?;
             return Err(PyErr::from_value(exception));
         }
-        // The native absent response class represents the default placeholder.
-        // Source serializes an eligible model straight to bytes on the loop.
-        if state.response_class.is_none() {
+        // Only retained placeholder provenance permits direct byte serialization.
+        if state.response_class.is_default() {
             let body = state
                 .adapter
                 .bind(py)
@@ -11122,41 +11480,34 @@ impl FastApiCall {
         &mut self,
         py: Python<'_>,
         response_value: Py<PyAny>,
-        response_class: Option<Py<PyAny>>,
+        response_class: ResponseClassChoice,
         status_code: Option<u16>,
     ) -> PyResult<MachineAction> {
         let injected_response = self
             .injected_response
             .as_ref()
             .map(|response| response.bind(py));
-        if let Some(response_class) = response_class {
-            let kwargs = PyDict::new(py);
-            if let Some(status_code) = status_code {
-                kwargs.set_item("status_code", status_code)?;
-            }
-            let background_tasks = self.request_background_tasks(py);
-            if let Some(background_tasks) = background_tasks.as_ref() {
-                kwargs.set_item("background", background_tasks.bind(py))?;
-            } else {
-                kwargs.set_item("background", py.None())?;
-            }
-            let response = response_class
-                .bind(py)
-                .call((response_value.bind(py),), Some(&kwargs))?;
-            merge_injected_response_state(py, &response, injected_response)?;
-            let response_status_code = response.getattr("status_code")?.extract::<i64>()?;
-            if response_status_code < 200 || matches!(response_status_code, 204 | 205 | 304) {
-                response.setattr("body", PyBytes::new(py, b""))?;
-            }
-            return self.start_returned_response(py, &response);
+        // Without eligible field bytes, source calls the actual selected value,
+        // including explicit None. Placeholder provenance does not skip that call.
+        let response_class = response_class.actual(py)?;
+        let kwargs = PyDict::new(py);
+        if let Some(status_code) = status_code {
+            kwargs.set_item("status_code", status_code)?;
         }
-        self.response_status = status_code.unwrap_or(200);
-        self.response_body = if status_code == Some(204) {
-            Vec::new()
-        } else {
-            json_bytes(py, response_value.bind(py))?
-        };
-        self.send_start_with_injected_response_headers(py)
+        let background_tasks = self.request_background_tasks(py);
+        kwargs.set_item(
+            "background",
+            background_tasks.as_ref().map(|tasks| tasks.bind(py)),
+        )?;
+        let response = response_class
+            .bind(py)
+            .call((response_value.bind(py),), Some(&kwargs))?;
+        merge_injected_response_state(py, &response, injected_response)?;
+        let response_status_code = response.getattr("status_code")?.extract::<i64>()?;
+        if response_status_code < 200 || matches!(response_status_code, 204 | 205 | 304) {
+            response.setattr("body", PyBytes::new(py, b""))?;
+        }
+        self.start_returned_response(py, &response)
     }
 
     fn send_start(&mut self, py: Python<'_>) -> PyResult<MachineAction> {

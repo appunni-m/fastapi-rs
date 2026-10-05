@@ -776,10 +776,51 @@ reviewed_api_contract_overlay:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
+          - &response_field_lifecycle_gap >-
+            Response-field construction must retain source registration and included
+            effective-context timing, schema hooks/errors, and adapter reuse. The
+            selected direct/repeated-inclusion inputs require fresh live receipts;
+            static admission does not establish this lifecycle or sharing across
+            arbitrary routes.
+          - &response_field_metadata_gap >-
+            FieldInfo annotation, metadata, attributes, mode/config, narrow
+            UnsupportedFieldAttributeWarning suppression, and exact schema-generation
+            error mapping are source requirements. Unselected metadata/configurations,
+            callback errors, and warning-filter mutation remain unproven.
+          - &response_class_provenance_gap >-
+            Omitted placeholder provenance differs from explicit None and concrete
+            JSONResponse/custom/inherited classes. Exact first-non-placeholder
+            precedence and field-plus-placeholder byte-serialization eligibility require
+            the selected immutable public gates; mutable placeholders/defaults,
+            descriptors, and custom providers remain gaps.
+          - &response_field_serialization_gap >-
+            Selected validation/serialization callbacks, aliases, include/exclude flags,
+            NaN, errors, warnings, and lossless raw sends require fresh comparison.
+            Arbitrary serializers/types, exotic response classes, and sibling-owned
+            generic response behavior are not established by these inputs.
+          - &response_field_history_gap >-
+            The sixteen cases use fixed declarations and ordinary async endpoints.
+            Mutable model rebuild, route/default changes, endpoint-context/cache
+            history, flattened snapshot route mutation/version refresh, raw proxies
+            for included routes, URL/OpenAPI/WebSocket field-materialization traversal,
+            concurrency/reentrancy, cancellation, dynamic warning filters, and
+            broader sync validation/worker scheduling are outside this response-field
+            gate.
           - Full FastAPI.__init__ parameter and attribute parity remains incomplete;
             FastAPI-RS currently implements a selected subset of the public
             constructor contract.
       source_evidence:
+        - {path: fastapi/routing.py, symbol: _populate_api_route_state}
+        - {path: fastapi/utils.py, symbol: create_model_field}
+        - {path: fastapi/_compat/v2.py, symbol: asdict}
+        - {path: fastapi/_compat/v2.py, symbol: ModelField}
+        - {path: fastapi/routing.py, symbol: serialize_response}
+        - {path: fastapi/datastructures.py, symbol: DefaultPlaceholder}
+        - {path: fastapi/utils.py, symbol: get_value_or_default}
+        - {path: docs/en/docs/tutorial/response-model.md}
+        - {path: docs/en/docs/advanced/custom-response.md}
+        - {path: fastapi/routing.py, symbol: _EffectiveRouteContext}
+        - {path: fastapi/routing.py, symbol: _RouterIncludeContext}
         - path: fastapi/applications.py
           symbol: __init__
           kind: source-definition
@@ -841,6 +882,86 @@ reviewed_api_contract_overlay:
         - {path: tests/test_router_events.py, symbol: test_startup_shutdown_handlers_as_parameters}
         - {path: docs/en/docs/advanced/events.md}
       fixture_refs:
+        - &response_field_direct_reuse
+          recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+          case_id: fastapi.response-field-lifecycle.direct-annotated-reuse
+          workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
+        - &response_field_included_reuse
+          recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+          case_id: fastapi.response-field-lifecycle.included-annotated-reuse
+          workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
+        - &response_field_metadata_recovery
+          recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+          case_id: fastapi.response-field-lifecycle.field-metadata-warning-error-recovery
+          workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message, validation.error_details, error.public_attributes]
+        - &response_field_alias_flags
+          recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+          case_id: fastapi.response-field-lifecycle.model-field-aliases-output-flags
+          workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
+        - &response_field_schema_error
+          recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+          case_id: fastapi.response-field-lifecycle.schema-hook-registration-error
+          workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
+        - &response_field_unsupported_error
+          recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+          case_id: fastapi.response-field-lifecycle.unsupported-model-construction-error
+          workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message]
+        - &response_class_omitted_nan
+          recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+          case_id: fastapi.response-class-provenance.omitted-model-nan
+          workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
+        - &response_class_explicit_json_nan
+          recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+          case_id: fastapi.response-class-provenance.explicit-jsonresponse-model-nan
+          workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
+        - &response_class_explicit_custom
+          recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+          case_id: fastapi.response-class-provenance.explicit-custom-class-model
+          workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
+        - &response_class_app_json_nan
+          recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+          case_id: fastapi.response-class-provenance.application-explicit-json-default-model-nan
+          workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
+        - &response_class_router_custom
+          recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+          case_id: fastapi.response-class-provenance.router-custom-default-model
+          workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
+        - &response_class_include_custom
+          recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+          case_id: fastapi.response-class-provenance.include-custom-default-model
+          workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
+        - &response_class_route_over_inherited
+          recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+          case_id: fastapi.response-class-provenance.route-explicit-over-inherited-model
+          workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
+        - &response_class_inherited_omitted
+          recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+          case_id: fastapi.response-class-provenance.inherited-omitted-defaults-model-nan
+          workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
+        - &response_class_explicit_none
+          recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+          case_id: fastapi.response-class-provenance.explicit-none-over-default-model
+          workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
+        - &response_class_returned_bypass
+          recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+          case_id: fastapi.response-class-provenance.returned-response-bypasses-model-and-none
+          workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
         - &generator_await_marked_immediate
           recipe_path: tests/fixtures/input-recipes/parity/generator-awaitable-protocol.yaml
           case_id: fastapi.awaitables.generator-protocol.marked-immediate-validation-cache
@@ -1032,8 +1153,8 @@ reviewed_api_contract_overlay:
           case_id: fastapi.dependency-overrides.signature-reanalysis.sync-unrelated-map
         - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-signature-reanalysis.yaml
           case_id: fastapi.dependency-overrides.signature-reanalysis.sync-self-map
-      feature_ids: [public-api-errors, app-routing, dependency-security, request-validation, websocket-lifecycle, openapi-docs]
-      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, websocket.close_code, websocket.close_reason, websocket.event_order, websocket.messages, construction.outcome, construction.exception_class, construction.exception_message, openapi.document, asgi.lifespan.event_order, asgi.lifespan.startup, asgi.lifespan.shutdown, asgi.lifespan.application_errors, asgi.lifespan.workload_trace, warnings.category_message]
+      feature_ids: [public-api-errors, app-routing, dependency-security, request-validation, websocket-lifecycle, openapi-docs, response-serialization]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, websocket.close_code, websocket.close_reason, websocket.event_order, websocket.messages, construction.outcome, construction.exception_class, construction.exception_message, openapi.document, asgi.lifespan.event_order, asgi.lifespan.startup, asgi.lifespan.shutdown, asgi.lifespan.application_errors, asgi.lifespan.workload_trace, warnings.category_message, asgi.send.message_types, asgi.application_error.exception, validation.error_details, error.public_attributes]
       supported_slice: >-
         Partial native constructor slice: the exception_handlers argument
         accepts a mapping keyed by exception class or HTTP status code, and
@@ -1090,6 +1211,16 @@ reviewed_api_contract_overlay:
         two user middleware entries over HTTP. FastAPI's additional
         AsyncExitStackMiddleware behavior and other constructor options remain
         outside this slice.
+        The response-field-lifecycle inputs declare sixteen immutable response-field and
+        response-class cases: direct registration and repeated inclusion,
+        Annotated/Field metadata with schema hooks and exact warnings/errors, retained
+        validation/serialization callbacks, aliases and output flags, omitted versus
+        concrete/inherited/None response classes, NaN, and returned-Response bypass.
+        Registration and each included effective context have distinct source
+        field-construction/reuse boundaries. The public state body preserves ordered
+        unfiltered warning entries and all prior probe send fields. These are input
+        mappings requiring fresh live receipts, not target-complete support;
+        DefaultPlaceholder and ModelField remain internal source evidence.
     fastapi.applications.FastAPI.exception_handler:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::exception_handler
       source_evidence:
@@ -1946,8 +2077,32 @@ reviewed_api_contract_overlay:
     fastapi.responses.JSONResponse:
       rust_binding: fastapi-rs/src/application_runtime.rs::register
       source_evidence:
+        - {path: fastapi/routing.py, symbol: _populate_api_route_state}
+        - {path: fastapi/utils.py, symbol: create_model_field}
+        - {path: fastapi/_compat/v2.py, symbol: asdict}
+        - {path: fastapi/_compat/v2.py, symbol: ModelField}
+        - {path: fastapi/routing.py, symbol: serialize_response}
+        - {path: fastapi/datastructures.py, symbol: DefaultPlaceholder}
+        - {path: fastapi/utils.py, symbol: get_value_or_default}
+        - {path: docs/en/docs/tutorial/response-model.md}
+        - {path: docs/en/docs/advanced/custom-response.md}
         - {path: fastapi/responses.py}
       fixture_refs:
+        - *response_field_direct_reuse
+        - *response_field_included_reuse
+        - *response_field_metadata_recovery
+        - *response_field_alias_flags
+        - *response_field_schema_error
+        - *response_class_omitted_nan
+        - *response_class_explicit_json_nan
+        - *response_class_explicit_custom
+        - *response_class_app_json_nan
+        - *response_class_router_custom
+        - *response_class_include_custom
+        - *response_class_route_over_inherited
+        - *response_class_inherited_omitted
+        - *response_class_explicit_none
+        - *response_class_returned_bypass
         - *generator_await_marked_immediate
         - *generator_await_marked_checkpoint
         - *generator_await_marked_nested
@@ -2005,7 +2160,8 @@ reviewed_api_contract_overlay:
           case_id: fastapi.dependencies.callable-classification.public-marked-scalar-error-cleanup-recovery
         - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
           case_id: fastapi.dependencies.callable-classification.wrapped-yield-error-cleanup-recovery
-      observation_selectors: [http.status, http.body.bytes]
+      feature_ids: [response-serialization]
+      observation_selectors: [http.status, http.body.bytes, http.headers.ordered, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message, validation.error_details, error.public_attributes]
       supported_slice: >-
         FastAPI directly re-exports Starlette's JSONResponse under
         fastapi.responses. FastAPI-RS registers the canonical
@@ -2014,6 +2170,14 @@ reviewed_api_contract_overlay:
         object identity. This scope covers alias exposure and identity;
         response behavior remains in the pinned Starlette-RS API contract and
         is not claimed here.
+        The fifteen HTTP response-field-lifecycle cases use this public canonical alias
+        for state responses and selected explicit, inherited, custom-subclass or
+        returned responses. They map FastAPI-owned field/provenance decisions and exact
+        bodies, headers, errors, warnings and lossless prior probe sends. Sibling-owned
+        generic response construction/execution retains its separate contract. Omitted
+        placeholder provenance cannot be inferred from JSONResponse class identity;
+        broader class descriptors and arbitrary serializers remain unproven. Static
+        admission is not a passing source/target execution receipt.
     fastapi.responses.PlainTextResponse:
       rust_binding: fastapi-rs/src/application_runtime.rs::register
       source_evidence:
@@ -2855,6 +3019,16 @@ reviewed_api_contract_overlay:
     fastapi.applications.FastAPI.__call__:
       rust_binding: fastapi-rs/src/application_runtime.rs::FastApiCall::finish_endpoint
       source_evidence:
+        - {path: fastapi/routing.py, symbol: _populate_api_route_state}
+        - {path: fastapi/utils.py, symbol: create_model_field}
+        - {path: fastapi/_compat/v2.py, symbol: asdict}
+        - {path: fastapi/_compat/v2.py, symbol: ModelField}
+        - {path: fastapi/datastructures.py, symbol: DefaultPlaceholder}
+        - {path: fastapi/utils.py, symbol: get_value_or_default}
+        - {path: docs/en/docs/tutorial/response-model.md}
+        - {path: docs/en/docs/advanced/custom-response.md}
+        - {path: fastapi/routing.py, symbol: _EffectiveRouteContext}
+        - {path: fastapi/routing.py, symbol: _RouterIncludeContext}
         - {path: fastapi/dependencies/utils.py, symbol: solve_dependencies}
         - {path: fastapi/dependencies/models.py, symbol: _is_gen_callable}
         - {path: fastapi/dependencies/models.py, symbol: _is_coroutine_callable}
@@ -2879,6 +3053,21 @@ reviewed_api_contract_overlay:
           required_text:
             - "But if you return a `Response` directly (or any subclass, like `JSONResponse`), the data won't be automatically converted (even if you declare a `response_model`)"
       fixture_refs:
+        - *response_field_direct_reuse
+        - *response_field_included_reuse
+        - *response_field_metadata_recovery
+        - *response_field_alias_flags
+        - *response_field_schema_error
+        - *response_class_omitted_nan
+        - *response_class_explicit_json_nan
+        - *response_class_explicit_custom
+        - *response_class_app_json_nan
+        - *response_class_router_custom
+        - *response_class_include_custom
+        - *response_class_route_over_inherited
+        - *response_class_inherited_omitted
+        - *response_class_explicit_none
+        - *response_class_returned_bypass
         - *generator_await_marked_immediate
         - *generator_await_marked_checkpoint
         - *generator_await_marked_nested
@@ -2916,6 +3105,12 @@ reviewed_api_contract_overlay:
         - http.headers.ordered
         - http.body.bytes
         - asgi.send.message_types
+        - asgi.application_error.exception
+        - construction.outcome
+        - construction.exception_class
+        - construction.exception_message
+        - validation.error_details
+        - error.public_attributes
       supported_slice: >-
         Partial native slice: when a path operation declares response_model
         and returns a prebuilt Starlette Response, including JSONResponse,
@@ -2938,10 +3133,25 @@ reviewed_api_contract_overlay:
         public state response retains all warning entries and raw ASGI sends.
         These selected inputs require fresh source/target execution receipts;
         they do not establish the complete Python await protocol.
+        Fifteen response-field-lifecycle cases dispatch HTTP through fixed async
+        endpoints. They require source field-plus-placeholder dump_json eligibility,
+        concrete/inherited class dump_python invocation, explicit None failure after
+        validation/serialization, returned-Response bypass, adapter retention after
+        errors and recovery, exact warning and callback order, aliases/exclusion flags,
+        NaN bytes/errors, ordered headers, and lossless prior probe sends via the public
+        state response. Construction-only unsupported-model failure is linked to
+        registration rather than HTTP execution. Fresh unchanged-input source/target
+        receipts are required; these inputs do not extend sync worker, mutable
+        cache-history, cancellation, or generic sibling claims.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
+          - *response_field_lifecycle_gap
+          - *response_field_metadata_gap
+          - *response_class_provenance_gap
+          - *response_field_serialization_gap
+          - *response_field_history_gap
           - &generator_await_audit_gap >-
             Safe gi_code property lookup can emit extra audit events or invoke
             rejecting audit hooks compared with CPython native field access;
@@ -2973,6 +3183,15 @@ reviewed_api_contract_overlay:
     fastapi.APIRouter:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::new
       source_evidence:
+        - {path: fastapi/routing.py, symbol: _EffectiveRouteContext}
+        - {path: fastapi/routing.py, symbol: _RouterIncludeContext}
+        - {path: fastapi/utils.py, symbol: get_value_or_default}
+        - {path: fastapi/datastructures.py, symbol: DefaultPlaceholder}
+        - {path: fastapi/_compat/v2.py, symbol: ModelField}
+        - {path: docs/en/docs/tutorial/response-model.md}
+        - {path: docs/en/docs/advanced/custom-response.md}
+        - {path: fastapi/routing.py, symbol: _populate_api_route_state}
+        - {path: fastapi/utils.py, symbol: create_model_field}
         - {path: fastapi/__init__.py}
         - {path: fastapi/routing.py, symbol: APIRouter}
         - {path: docs/en/docs/reference/apirouter.md}
@@ -2983,8 +3202,14 @@ reviewed_api_contract_overlay:
         - {path: tests/test_router_include_context.py, symbol: test_router_include_context_matches_flattened_include_metadata}
         - {path: tests/test_additional_responses_router.py}
         - {path: docs/en/docs/advanced/additional-responses.md}
-      feature_ids: [app-routing, request-validation, openapi-docs, websocket-lifecycle]
-      observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths]
+      fixture_refs:
+        - *response_field_included_reuse
+        - *response_class_router_custom
+        - *response_class_include_custom
+        - *response_class_route_over_inherited
+        - *response_class_inherited_omitted
+      feature_ids: [app-routing, request-validation, openapi-docs, websocket-lifecycle, response-serialization]
+      observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths, http.headers.ordered, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
       supported_slice: >-
         Partial native router: default and non-empty path prefixes, GET route
         decorators, nested inclusion with repeated prefixes, and ordered string
@@ -3002,9 +3227,36 @@ reviewed_api_contract_overlay:
         other constructor or inclusion options remain outside the reviewed
         slice. Lifecycle callbacks and lifespan contexts are sampled by the
         dedicated direct-ASGI workflow, including nested router state merging.
+        Five response-field-lifecycle inputs reach router construction/GET and
+        application inclusion with fixed response models and omitted or concrete
+        router/include/route response classes. They observe original versus
+        effective-context construction hooks, repeated-request retention, repeated
+        prefixes, inherited precedence, NaN/errors, callbacks, exact bodies/headers and
+        lossless probe sends in the public state body. The declared
+        include_router(default_response_class=...) option remains a required public
+        gate, including currently unsupported target behavior; the fixtures contain no
+        workaround. Static mappings do not establish lifecycle or immutable provenance
+        parity, mutable history, or broader custom response support.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - *response_field_lifecycle_gap
+          - *response_class_provenance_gap
+          - *response_field_serialization_gap
+          - *response_field_history_gap
     fastapi.applications.FastAPI.include_router:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::include_router
       source_evidence:
+        - {path: fastapi/routing.py, symbol: _EffectiveRouteContext}
+        - {path: fastapi/routing.py, symbol: _RouterIncludeContext}
+        - {path: fastapi/utils.py, symbol: get_value_or_default}
+        - {path: fastapi/datastructures.py, symbol: DefaultPlaceholder}
+        - {path: fastapi/_compat/v2.py, symbol: ModelField}
+        - {path: docs/en/docs/tutorial/response-model.md}
+        - {path: docs/en/docs/advanced/custom-response.md}
+        - {path: fastapi/routing.py, symbol: _populate_api_route_state}
+        - {path: fastapi/utils.py, symbol: create_model_field}
         - {path: fastapi/applications.py, symbol: include_router}
         - {path: fastapi/routing.py, symbol: include_router}
         - {path: tests/test_strict_content_type_router_level.py}
@@ -3028,8 +3280,14 @@ reviewed_api_contract_overlay:
         - {path: tests/test_router_events.py, symbol: test_router_nested_lifespan_state_overriding_by_parent}
         - {path: tests/test_router_events.py, symbol: test_startup_shutdown_handlers_as_parameters}
         - {path: docs/en/docs/advanced/events.md}
-      feature_ids: [app-routing, request-validation, websocket-lifecycle, openapi-docs]
-      observation_selectors: [http.status, http.body.bytes, websocket.event_order, websocket.messages, openapi.document, openapi.paths, asgi.lifespan.event_order, asgi.lifespan.startup, asgi.lifespan.shutdown, asgi.lifespan.application_errors, asgi.lifespan.workload_trace, warnings.category_message]
+      fixture_refs:
+        - *response_field_included_reuse
+        - *response_class_router_custom
+        - *response_class_include_custom
+        - *response_class_route_over_inherited
+        - *response_class_inherited_omitted
+      feature_ids: [app-routing, request-validation, websocket-lifecycle, openapi-docs, response-serialization]
+      observation_selectors: [http.status, http.body.bytes, websocket.event_order, websocket.messages, openapi.document, openapi.paths, asgi.lifespan.event_order, asgi.lifespan.startup, asgi.lifespan.shutdown, asgi.lifespan.application_errors, asgi.lifespan.workload_trace, warnings.category_message, http.headers.ordered, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
       supported_slice: >-
         Includes routes registered on APIRouter, combines route, nested-router,
         and inclusion prefixes, and preserves endpoint dependency plans. The
@@ -3057,6 +3315,24 @@ reviewed_api_contract_overlay:
         The app's `strict_content_type` value is the root context for included
         routers; `strict-content-type-router-level-upstream` observes
         absent-header rejection or JSON parsing under app and router overrides.
+        Five response-field-lifecycle inputs reach router construction/GET and
+        application inclusion with fixed response models and omitted or concrete
+        router/include/route response classes. They observe original versus
+        effective-context construction hooks, repeated-request retention, repeated
+        prefixes, inherited precedence, NaN/errors, callbacks, exact bodies/headers and
+        lossless probe sends in the public state body. The declared
+        include_router(default_response_class=...) option remains a required public
+        gate, including currently unsupported target behavior; the fixtures contain no
+        workaround. Static mappings do not establish lifecycle or immutable provenance
+        parity, mutable history, or broader custom response support.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - *response_field_lifecycle_gap
+          - *response_class_provenance_gap
+          - *response_field_serialization_gap
+          - *response_field_history_gap
     fastapi.applications.FastAPI.on_event:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::on_event
       source_evidence:
@@ -3279,6 +3555,15 @@ reviewed_api_contract_overlay:
     fastapi.routing.APIRouter.__init__:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::new
       source_evidence:
+        - {path: fastapi/routing.py, symbol: _EffectiveRouteContext}
+        - {path: fastapi/routing.py, symbol: _RouterIncludeContext}
+        - {path: fastapi/utils.py, symbol: get_value_or_default}
+        - {path: fastapi/datastructures.py, symbol: DefaultPlaceholder}
+        - {path: fastapi/_compat/v2.py, symbol: ModelField}
+        - {path: docs/en/docs/tutorial/response-model.md}
+        - {path: docs/en/docs/advanced/custom-response.md}
+        - {path: fastapi/routing.py, symbol: _populate_api_route_state}
+        - {path: fastapi/utils.py, symbol: create_model_field}
         - {path: fastapi/routing.py, symbol: APIRouter}
         - {path: tests/test_strict_content_type_router_level.py}
         - {path: tests/test_strict_content_type_nested.py}
@@ -3293,8 +3578,14 @@ reviewed_api_contract_overlay:
         - {path: tests/test_router_events.py, symbol: test_router_sync_generator_lifespan}
         - {path: tests/test_router_events.py, symbol: test_router_async_generator_lifespan}
         - {path: tests/test_router_events.py, symbol: test_startup_shutdown_handlers_as_parameters}
-      feature_ids: [app-routing, request-validation, openapi-docs, websocket-lifecycle]
-      observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths, asgi.lifespan.event_order, asgi.lifespan.startup, asgi.lifespan.shutdown, asgi.lifespan.application_errors, asgi.lifespan.workload_trace]
+      fixture_refs:
+        - *response_field_included_reuse
+        - *response_class_router_custom
+        - *response_class_include_custom
+        - *response_class_route_over_inherited
+        - *response_class_inherited_omitted
+      feature_ids: [app-routing, request-validation, openapi-docs, websocket-lifecycle, response-serialization]
+      observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths, asgi.lifespan.event_order, asgi.lifespan.startup, asgi.lifespan.shutdown, asgi.lifespan.application_errors, asgi.lifespan.workload_trace, http.headers.ordered, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
       supported_slice: >-
         The native constructor accepts the default or a keyword-only prefix.
         A non-empty `/tenants/{tenant_id}` prefix combines with an app-level
@@ -3322,6 +3613,24 @@ reviewed_api_contract_overlay:
         through `routes` are not represented or dispatched; mixed declaration
         order and the documented include-prefix rules remain an open
         compatibility requirement.
+        Five response-field-lifecycle inputs reach router construction/GET and
+        application inclusion with fixed response models and omitted or concrete
+        router/include/route response classes. They observe original versus
+        effective-context construction hooks, repeated-request retention, repeated
+        prefixes, inherited precedence, NaN/errors, callbacks, exact bodies/headers and
+        lossless probe sends in the public state body. The declared
+        include_router(default_response_class=...) option remains a required public
+        gate, including currently unsupported target behavior; the fixtures contain no
+        workaround. Static mappings do not establish lifecycle or immutable provenance
+        parity, mutable history, or broader custom response support.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - *response_field_lifecycle_gap
+          - *response_class_provenance_gap
+          - *response_field_serialization_gap
+          - *response_field_history_gap
     fastapi.routing.APIRouter.add_event_handler:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::add_event_handler
       source_evidence:
@@ -3357,6 +3666,15 @@ reviewed_api_contract_overlay:
     fastapi.routing.APIRouter.get:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyOperationRouteDescriptor::__get__
       source_evidence:
+        - {path: fastapi/routing.py, symbol: _EffectiveRouteContext}
+        - {path: fastapi/routing.py, symbol: _RouterIncludeContext}
+        - {path: fastapi/utils.py, symbol: get_value_or_default}
+        - {path: fastapi/datastructures.py, symbol: DefaultPlaceholder}
+        - {path: fastapi/_compat/v2.py, symbol: ModelField}
+        - {path: docs/en/docs/tutorial/response-model.md}
+        - {path: docs/en/docs/advanced/custom-response.md}
+        - {path: fastapi/routing.py, symbol: _populate_api_route_state}
+        - {path: fastapi/utils.py, symbol: create_model_field}
         - {path: fastapi/routing.py, symbol: APIRouter}
         - {path: fastapi/routing.py, symbol: get}
         - {path: fastapi/openapi/utils.py, symbol: get_openapi_path}
@@ -3368,10 +3686,15 @@ reviewed_api_contract_overlay:
         - {path: docs/en/docs/advanced/additional-responses.md}
         - {path: tests/test_router_include_context.py}
       fixture_refs:
+        - *response_field_included_reuse
+        - *response_class_router_custom
+        - *response_class_include_custom
+        - *response_class_route_over_inherited
+        - *response_class_inherited_omitted
         - recipe_path: tests/fixtures/input-recipes/parity/operation-signatures-upstream.yaml
           case_id: fastapi.test.test-operations-signatures.test-signatures-consistency
-      feature_ids: [app-routing, request-validation, openapi-docs]
-      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.paths]
+      feature_ids: [app-routing, request-validation, openapi-docs, response-serialization]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.paths, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
       supported_slice: >-
         Registers a GET endpoint on a router for inclusion, including the
         sampled scalar query dependency, path parameters contributed by router
@@ -3393,6 +3716,24 @@ reviewed_api_contract_overlay:
         `callbacks` route option is not accepted or emitted into OpenAPI yet;
         callback routes and callback operation objects remain outside this
         reviewed slice.
+        Five response-field-lifecycle inputs reach router construction/GET and
+        application inclusion with fixed response models and omitted or concrete
+        router/include/route response classes. They observe original versus
+        effective-context construction hooks, repeated-request retention, repeated
+        prefixes, inherited precedence, NaN/errors, callbacks, exact bodies/headers and
+        lossless probe sends in the public state body. The declared
+        include_router(default_response_class=...) option remains a required public
+        gate, including currently unsupported target behavior; the fixtures contain no
+        workaround. Static mappings do not establish lifecycle or immutable provenance
+        parity, mutable history, or broader custom response support.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - *response_field_lifecycle_gap
+          - *response_class_provenance_gap
+          - *response_field_serialization_gap
+          - *response_field_history_gap
     fastapi.routing.APIRouter.post:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyOperationRouteDescriptor::__get__
       source_evidence:
@@ -3630,6 +3971,16 @@ reviewed_api_contract_overlay:
     fastapi.applications.FastAPI.get:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::get
       source_evidence:
+        - {path: fastapi/routing.py, symbol: _populate_api_route_state}
+        - {path: fastapi/utils.py, symbol: create_model_field}
+        - {path: fastapi/_compat/v2.py, symbol: asdict}
+        - {path: fastapi/_compat/v2.py, symbol: ModelField}
+        - {path: fastapi/datastructures.py, symbol: DefaultPlaceholder}
+        - {path: fastapi/utils.py, symbol: get_value_or_default}
+        - {path: docs/en/docs/tutorial/response-model.md}
+        - {path: docs/en/docs/advanced/custom-response.md}
+        - {path: fastapi/routing.py, symbol: _EffectiveRouteContext}
+        - {path: fastapi/routing.py, symbol: _RouterIncludeContext}
         - {path: fastapi/applications.py, symbol: get}
         - {path: fastapi/routing.py, symbol: serialize_response}
         - {path: fastapi/_compat/v2.py, symbol: serialize}
@@ -3657,6 +4008,22 @@ reviewed_api_contract_overlay:
         - {path: tests/test_tutorial/test_additional_responses/test_tutorial004.py}
         - {path: tests/test_extra_routes.py}
       fixture_refs:
+        - *response_field_direct_reuse
+        - *response_field_included_reuse
+        - *response_field_metadata_recovery
+        - *response_field_alias_flags
+        - *response_field_schema_error
+        - *response_field_unsupported_error
+        - *response_class_omitted_nan
+        - *response_class_explicit_json_nan
+        - *response_class_explicit_custom
+        - *response_class_app_json_nan
+        - *response_class_router_custom
+        - *response_class_include_custom
+        - *response_class_route_over_inherited
+        - *response_class_inherited_omitted
+        - *response_class_explicit_none
+        - *response_class_returned_bypass
         - *generator_await_marked_immediate
         - *generator_await_marked_checkpoint
         - *generator_await_marked_nested
@@ -3757,7 +4124,7 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/operation-signatures-upstream.yaml
           case_id: fastapi.test.test-operations-signatures.test-signatures-consistency
       feature_ids: [app-routing, request-validation, response-serialization, openapi-docs]
-      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message, validation.error_details, error.public_attributes]
       supported_slice: >-
         The callable-classification and worker-dispatch inputs declare original
         endpoint classification, worker/context placement, validation and serialization
@@ -3810,6 +4177,25 @@ reviewed_api_contract_overlay:
         JSONResponse class: HTTP status and OpenAPI use 200 in
         path-operation-status-code-none-isolated. Custom response-class
         defaults remain unresolved and outside this slice.
+        The response-field-lifecycle inputs declare sixteen immutable response-field and
+        response-class cases: direct registration and repeated inclusion,
+        Annotated/Field metadata with schema hooks and exact warnings/errors, retained
+        validation/serialization callbacks, aliases and output flags, omitted versus
+        concrete/inherited/None response classes, NaN, and returned-Response bypass.
+        Registration and each included effective context have distinct source
+        field-construction/reuse boundaries. The public state body preserves ordered
+        unfiltered warning entries and all prior probe send fields. These are input
+        mappings requiring fresh live receipts, not target-complete support;
+        DefaultPlaceholder and ModelField remain internal source evidence.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - *response_field_lifecycle_gap
+          - *response_field_metadata_gap
+          - *response_class_provenance_gap
+          - *response_field_serialization_gap
+          - *response_field_history_gap
     fastapi.applications.FastAPI.post:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::post
       source_evidence:

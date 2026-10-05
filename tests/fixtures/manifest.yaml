@@ -415,7 +415,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@5
-    sha256: 0a7e48fa53485bbf5e62fc39bbe7cb8a0ea56784f4acfd9744f11061475e8bd4
+    sha256: 6ca1d6f285a3b0c96387afd7906f1b270866dd880b86716607f0ca63ff977f37
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -451,7 +451,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 519fb0cf45efe67e3d39f79061984eed32dbfe43b8fa4aff2c519694bdc063c4
+    sha256: f51bc66cdd9666195092196491b6fce33ec0a128f340f017f7bb14712ee201a7
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -488,14 +488,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@5
-    sha256: 78cb01d603b1bfe10d80d36d3807c51685583709f85c9ad44554bb6c4dacd892
+    sha256: 29bca17097d92cfba9266b8c4ad35c8e12fd6c787efe6b256aa336be95f507b1
     schema_path: tests/fixtures/schemas/materialized-input-index-v5.schema.json
     schema_sha256: 13dd4cf1032a4ad9161712364d94b9f91834afee380e1f8eee6f4f05c123261d
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 550
-      cases: 2271
-      partial_source_mappings: 1547
+      workflows: 551
+      cases: 2287
+      partial_source_mappings: 1557
 
 contract_metadata:
   aliases:
@@ -877,8 +877,8 @@ api_surface_contract:
     symbols_with_deprecation_refs: 15
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 101
-    symbols_with_operation_fixture_refs: 147
-    operation_fixture_refs: 1153
+    symbols_with_operation_fixture_refs: 150
+    operation_fixture_refs: 1235
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -936,6 +936,92 @@ api_surface_contract:
       fixture_design_ref: null
       observation_selectors: &id002 []
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-field-lifecycle.included-annotated-reuse
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.router-custom-default-model
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.include-custom-default-model
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.route-explicit-over-inherited-model
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.inherited-omitted-defaults-model-nan
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     identity_workflow_refs:
     - workflow_id: root-alias-identity
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
@@ -963,6 +1049,11 @@ api_surface_contract:
     - response-serialization
     - websocket-lifecycle
     observation_selectors:
+    - asgi.application_error.exception
+    - asgi.send.message_types
+    - construction.exception_class
+    - construction.exception_message
+    - construction.outcome
     - dependency.call_order
     - http.body.bytes
     - http.body.json
@@ -990,8 +1081,25 @@ api_surface_contract:
         source_candidate_refs:
         - /api_candidates/0
         - /api_candidates/1058
-      status: full-contract-not-established
+      status: partial-contract
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::new
+      known_gaps:
+      - Response-field construction must retain source registration and included effective-context timing,
+        schema hooks/errors, and adapter reuse. The selected direct/repeated-inclusion inputs require
+        fresh live receipts; static admission does not establish this lifecycle or sharing across arbitrary
+        routes.
+      - Omitted placeholder provenance differs from explicit None and concrete JSONResponse/custom/inherited
+        classes. Exact first-non-placeholder precedence and field-plus-placeholder byte-serialization
+        eligibility require the selected immutable public gates; mutable placeholders/defaults, descriptors,
+        and custom providers remain gaps.
+      - Selected validation/serialization callbacks, aliases, include/exclude flags, NaN, errors, warnings,
+        and lossless raw sends require fresh comparison. Arbitrary serializers/types, exotic response
+        classes, and sibling-owned generic response behavior are not established by these inputs.
+      - The sixteen cases use fixed declarations and ordinary async endpoints. Mutable model rebuild,
+        route/default changes, endpoint-context/cache history, flattened snapshot route mutation/version
+        refresh, raw proxies for included routes, URL/OpenAPI/WebSocket field-materialization traversal,
+        concurrency/reentrancy, cancellation, dynamic warning filters, and broader sync validation/worker
+        scheduling are outside this response-field gate.
   - id: fastapi.BackgroundTasks
     kind: import_binding
     source_candidate_ref: /api_candidates/1
@@ -6852,6 +6960,263 @@ api_surface_contract:
       observation_selectors: []
     input_workflow_refs: []
     operation_fixture_refs:
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-field-lifecycle.direct-annotated-reuse
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-field-lifecycle.included-annotated-reuse
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-field-lifecycle.field-metadata-warning-error-recovery
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - error.public_attributes
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - validation.error_details
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-field-lifecycle.model-field-aliases-output-flags
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-field-lifecycle.schema-hook-registration-error
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.omitted-model-nan
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.explicit-jsonresponse-model-nan
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.explicit-custom-class-model
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.application-explicit-json-default-model-nan
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.router-custom-default-model
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.include-custom-default-model
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.route-explicit-over-inherited-model
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.inherited-omitted-defaults-model-nan
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.explicit-none-over-default-model
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.returned-response-bypasses-model-and-none
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     - workflow_id: generator-awaitable-protocol
       input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
       input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
@@ -7165,10 +7530,16 @@ api_surface_contract:
     - python-data-encoding
     - response-serialization
     observation_selectors:
+    - asgi.application_error.exception
     - asgi.send.message_types
+    - construction.exception_class
+    - construction.exception_message
+    - construction.outcome
+    - error.public_attributes
     - http.body.bytes
     - http.headers.ordered
     - http.status
+    - validation.error_details
     operation_scope:
       status: slice-described
       metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.applications.FastAPI.__call__/supported_slice
@@ -7184,6 +7555,25 @@ api_surface_contract:
       status: partial-contract
       rust_binding: fastapi-rs/src/application_runtime.rs::FastApiCall::finish_endpoint
       known_gaps:
+      - Response-field construction must retain source registration and included effective-context timing,
+        schema hooks/errors, and adapter reuse. The selected direct/repeated-inclusion inputs require
+        fresh live receipts; static admission does not establish this lifecycle or sharing across arbitrary
+        routes.
+      - FieldInfo annotation, metadata, attributes, mode/config, narrow UnsupportedFieldAttributeWarning
+        suppression, and exact schema-generation error mapping are source requirements. Unselected metadata/configurations,
+        callback errors, and warning-filter mutation remain unproven.
+      - Omitted placeholder provenance differs from explicit None and concrete JSONResponse/custom/inherited
+        classes. Exact first-non-placeholder precedence and field-plus-placeholder byte-serialization
+        eligibility require the selected immutable public gates; mutable placeholders/defaults, descriptors,
+        and custom providers remain gaps.
+      - Selected validation/serialization callbacks, aliases, include/exclude flags, NaN, errors, warnings,
+        and lossless raw sends require fresh comparison. Arbitrary serializers/types, exotic response
+        classes, and sibling-owned generic response behavior are not established by these inputs.
+      - The sixteen cases use fixed declarations and ordinary async endpoints. Mutable model rebuild,
+        route/default changes, endpoint-context/cache history, flattened snapshot route mutation/version
+        refresh, raw proxies for included routes, URL/OpenAPI/WebSocket field-materialization traversal,
+        concurrency/reentrancy, cancellation, dynamic warning filters, and broader sync validation/worker
+        scheduling are outside this response-field gate.
       - Safe gi_code property lookup can emit extra audit events or invoke rejecting audit hooks compared
         with CPython native field access; audit-event parity is not exercised by these inputs.
       - Generic iterator throw argument arity and user-returned coroutine_wrapper provenance remain unproven;
@@ -7226,6 +7616,275 @@ api_surface_contract:
       observation_selectors: *id006
     input_workflow_refs: []
     operation_fixture_refs:
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-field-lifecycle.direct-annotated-reuse
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-field-lifecycle.included-annotated-reuse
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-field-lifecycle.field-metadata-warning-error-recovery
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - error.public_attributes
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - validation.error_details
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-field-lifecycle.model-field-aliases-output-flags
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-field-lifecycle.schema-hook-registration-error
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-field-lifecycle.unsupported-model-construction-error
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.omitted-model-nan
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.explicit-jsonresponse-model-nan
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.explicit-custom-class-model
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.application-explicit-json-default-model-nan
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.router-custom-default-model
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.include-custom-default-model
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.route-explicit-over-inherited-model
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.inherited-omitted-defaults-model-nan
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.explicit-none-over-default-model
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.returned-response-bypasses-model-and-none
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     - workflow_id: generator-awaitable-protocol
       input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
       input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
@@ -8342,17 +9001,20 @@ api_surface_contract:
     - response-serialization
     - websocket-lifecycle
     observation_selectors:
+    - asgi.application_error.exception
     - asgi.lifespan.application_errors
     - asgi.lifespan.event_order
     - asgi.lifespan.shutdown
     - asgi.lifespan.startup
     - asgi.lifespan.workload_trace
+    - asgi.send.message_types
     - construction.exception_class
     - construction.exception_message
     - construction.outcome
     - dependency.call_order
     - docs.response.body.bytes
     - docs.response.status
+    - error.public_attributes
     - http.body.bytes
     - http.body.json
     - http.headers.ordered
@@ -8390,6 +9052,25 @@ api_surface_contract:
       status: partial-contract
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::new
       known_gaps:
+      - Response-field construction must retain source registration and included effective-context timing,
+        schema hooks/errors, and adapter reuse. The selected direct/repeated-inclusion inputs require
+        fresh live receipts; static admission does not establish this lifecycle or sharing across arbitrary
+        routes.
+      - FieldInfo annotation, metadata, attributes, mode/config, narrow UnsupportedFieldAttributeWarning
+        suppression, and exact schema-generation error mapping are source requirements. Unselected metadata/configurations,
+        callback errors, and warning-filter mutation remain unproven.
+      - Omitted placeholder provenance differs from explicit None and concrete JSONResponse/custom/inherited
+        classes. Exact first-non-placeholder precedence and field-plus-placeholder byte-serialization
+        eligibility require the selected immutable public gates; mutable placeholders/defaults, descriptors,
+        and custom providers remain gaps.
+      - Selected validation/serialization callbacks, aliases, include/exclude flags, NaN, errors, warnings,
+        and lossless raw sends require fresh comparison. Arbitrary serializers/types, exotic response
+        classes, and sibling-owned generic response behavior are not established by these inputs.
+      - The sixteen cases use fixed declarations and ordinary async endpoints. Mutable model rebuild,
+        route/default changes, endpoint-context/cache history, flattened snapshot route mutation/version
+        refresh, raw proxies for included routes, URL/OpenAPI/WebSocket field-materialization traversal,
+        concurrency/reentrancy, cancellation, dynamic warning filters, and broader sync validation/worker
+        scheduling are outside this response-field gate.
       - Full FastAPI.__init__ parameter and attribute parity remains incomplete; FastAPI-RS currently
         implements a selected subset of the public constructor contract.
   - id: fastapi.applications.FastAPI.delete
@@ -8941,6 +9622,275 @@ api_surface_contract:
       observation_selectors:
       - python.signature
     operation_fixture_refs:
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-field-lifecycle.direct-annotated-reuse
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-field-lifecycle.included-annotated-reuse
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-field-lifecycle.field-metadata-warning-error-recovery
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - error.public_attributes
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - validation.error_details
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-field-lifecycle.model-field-aliases-output-flags
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-field-lifecycle.schema-hook-registration-error
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-field-lifecycle.unsupported-model-construction-error
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.omitted-model-nan
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.explicit-jsonresponse-model-nan
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.explicit-custom-class-model
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.application-explicit-json-default-model-nan
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.router-custom-default-model
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.include-custom-default-model
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.route-explicit-over-inherited-model
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.inherited-omitted-defaults-model-nan
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.explicit-none-over-default-model
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.returned-response-bypasses-model-and-none
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     - workflow_id: generator-awaitable-protocol
       input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
       input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
@@ -9835,9 +10785,15 @@ api_surface_contract:
     - response-serialization
     - websocket-lifecycle
     observation_selectors:
+    - asgi.application_error.exception
+    - asgi.send.message_types
+    - construction.exception_class
+    - construction.exception_message
+    - construction.outcome
     - dependency.call_order
     - docs.response.body.bytes
     - docs.response.status
+    - error.public_attributes
     - http.body.bytes
     - http.body.json
     - http.headers.ordered
@@ -9870,8 +10826,28 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/196
-      status: full-contract-not-established
+      status: partial-contract
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::get
+      known_gaps:
+      - Response-field construction must retain source registration and included effective-context timing,
+        schema hooks/errors, and adapter reuse. The selected direct/repeated-inclusion inputs require
+        fresh live receipts; static admission does not establish this lifecycle or sharing across arbitrary
+        routes.
+      - FieldInfo annotation, metadata, attributes, mode/config, narrow UnsupportedFieldAttributeWarning
+        suppression, and exact schema-generation error mapping are source requirements. Unselected metadata/configurations,
+        callback errors, and warning-filter mutation remain unproven.
+      - Omitted placeholder provenance differs from explicit None and concrete JSONResponse/custom/inherited
+        classes. Exact first-non-placeholder precedence and field-plus-placeholder byte-serialization
+        eligibility require the selected immutable public gates; mutable placeholders/defaults, descriptors,
+        and custom providers remain gaps.
+      - Selected validation/serialization callbacks, aliases, include/exclude flags, NaN, errors, warnings,
+        and lossless raw sends require fresh comparison. Arbitrary serializers/types, exotic response
+        classes, and sibling-owned generic response behavior are not established by these inputs.
+      - The sixteen cases use fixed declarations and ordinary async endpoints. Mutable model rebuild,
+        route/default changes, endpoint-context/cache history, flattened snapshot route mutation/version
+        refresh, raw proxies for included routes, URL/OpenAPI/WebSocket field-materialization traversal,
+        concurrency/reentrancy, cancellation, dynamic warning filters, and broader sync validation/worker
+        scheduling are outside this response-field gate.
   - id: fastapi.applications.FastAPI.head
     kind: method
     source_candidate_ref: /api_candidates/197
@@ -10007,6 +10983,92 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/376
       observation_selectors: *id006
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-field-lifecycle.included-annotated-reuse
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.router-custom-default-model
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.include-custom-default-model
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.route-explicit-over-inherited-model
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.inherited-omitted-defaults-model-nan
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -10018,11 +11080,16 @@ api_surface_contract:
     - response-serialization
     - websocket-lifecycle
     observation_selectors:
+    - asgi.application_error.exception
     - asgi.lifespan.application_errors
     - asgi.lifespan.event_order
     - asgi.lifespan.shutdown
     - asgi.lifespan.startup
     - asgi.lifespan.workload_trace
+    - asgi.send.message_types
+    - construction.exception_class
+    - construction.exception_message
+    - construction.outcome
     - dependency.call_order
     - docs.response.body.bytes
     - docs.response.status
@@ -10058,8 +11125,25 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/198
-      status: full-contract-not-established
+      status: partial-contract
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::include_router
+      known_gaps:
+      - Response-field construction must retain source registration and included effective-context timing,
+        schema hooks/errors, and adapter reuse. The selected direct/repeated-inclusion inputs require
+        fresh live receipts; static admission does not establish this lifecycle or sharing across arbitrary
+        routes.
+      - Omitted placeholder provenance differs from explicit None and concrete JSONResponse/custom/inherited
+        classes. Exact first-non-placeholder precedence and field-plus-placeholder byte-serialization
+        eligibility require the selected immutable public gates; mutable placeholders/defaults, descriptors,
+        and custom providers remain gaps.
+      - Selected validation/serialization callbacks, aliases, include/exclude flags, NaN, errors, warnings,
+        and lossless raw sends require fresh comparison. Arbitrary serializers/types, exotic response
+        classes, and sibling-owned generic response behavior are not established by these inputs.
+      - The sixteen cases use fixed declarations and ordinary async endpoints. Mutable model rebuild,
+        route/default changes, endpoint-context/cache history, flattened snapshot route mutation/version
+        refresh, raw proxies for included routes, URL/OpenAPI/WebSocket field-materialization traversal,
+        concurrency/reentrancy, cancellation, dynamic warning filters, and broader sync validation/worker
+        scheduling are outside this response-field gate.
   - id: fastapi.applications.FastAPI.middleware
     kind: method
     source_candidate_ref: /api_candidates/199
@@ -33939,6 +35023,263 @@ api_surface_contract:
       observation_selectors: *id014
     input_workflow_refs: []
     operation_fixture_refs:
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-field-lifecycle.direct-annotated-reuse
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-field-lifecycle.included-annotated-reuse
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-field-lifecycle.field-metadata-warning-error-recovery
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - error.public_attributes
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - validation.error_details
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-field-lifecycle.model-field-aliases-output-flags
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-field-lifecycle.schema-hook-registration-error
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.omitted-model-nan
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.explicit-jsonresponse-model-nan
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.explicit-custom-class-model
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.application-explicit-json-default-model-nan
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.router-custom-default-model
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.include-custom-default-model
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.route-explicit-over-inherited-model
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.inherited-omitted-defaults-model-nan
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.explicit-none-over-default-model
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.returned-response-bypasses-model-and-none
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     - workflow_id: generator-awaitable-protocol
       input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
       input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
@@ -34534,6 +35875,12 @@ api_surface_contract:
     - public-api-errors
     - response-serialization
     observation_selectors:
+    - asgi.application_error.exception
+    - asgi.send.message_types
+    - construction.exception_class
+    - construction.exception_message
+    - construction.outcome
+    - error.public_attributes
     - http.body.bytes
     - http.body.json
     - http.cookies
@@ -34541,6 +35888,7 @@ api_surface_contract:
     - http.status
     - python.import_path
     - python.object_identity
+    - validation.error_details
     - warnings.category_message
     operation_scope:
       status: slice-described
@@ -35743,6 +37091,92 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/371
       observation_selectors: *id016
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-field-lifecycle.included-annotated-reuse
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.router-custom-default-model
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.include-custom-default-model
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.route-explicit-over-inherited-model
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.inherited-omitted-defaults-model-nan
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -35752,11 +37186,16 @@ api_surface_contract:
     - response-serialization
     - websocket-lifecycle
     observation_selectors:
+    - asgi.application_error.exception
     - asgi.lifespan.application_errors
     - asgi.lifespan.event_order
     - asgi.lifespan.shutdown
     - asgi.lifespan.startup
     - asgi.lifespan.workload_trace
+    - asgi.send.message_types
+    - construction.exception_class
+    - construction.exception_message
+    - construction.outcome
     - dependency.call_order
     - http.body.bytes
     - http.body.json
@@ -35783,8 +37222,25 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1059
-      status: full-contract-not-established
+      status: partial-contract
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::new
+      known_gaps:
+      - Response-field construction must retain source registration and included effective-context timing,
+        schema hooks/errors, and adapter reuse. The selected direct/repeated-inclusion inputs require
+        fresh live receipts; static admission does not establish this lifecycle or sharing across arbitrary
+        routes.
+      - Omitted placeholder provenance differs from explicit None and concrete JSONResponse/custom/inherited
+        classes. Exact first-non-placeholder precedence and field-plus-placeholder byte-serialization
+        eligibility require the selected immutable public gates; mutable placeholders/defaults, descriptors,
+        and custom providers remain gaps.
+      - Selected validation/serialization callbacks, aliases, include/exclude flags, NaN, errors, warnings,
+        and lossless raw sends require fresh comparison. Arbitrary serializers/types, exotic response
+        classes, and sibling-owned generic response behavior are not established by these inputs.
+      - The sixteen cases use fixed declarations and ordinary async endpoints. Mutable model rebuild,
+        route/default changes, endpoint-context/cache history, flattened snapshot route mutation/version
+        refresh, raw proxies for included routes, URL/OpenAPI/WebSocket field-materialization traversal,
+        concurrency/reentrancy, cancellation, dynamic warning filters, and broader sync validation/worker
+        scheduling are outside this response-field gate.
   - id: fastapi.routing.APIRouter.add_event_handler
     kind: method
     source_candidate_ref: /api_candidates/1070
@@ -36074,6 +37530,91 @@ api_surface_contract:
       observation_selectors:
       - python.signature
     operation_fixture_refs:
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-field-lifecycle.included-annotated-reuse
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.router-custom-default-model
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.include-custom-default-model
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.route-explicit-over-inherited-model
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-lifecycle
+      input_path: tests/fixtures/inputs/parity/response-field-lifecycle.json
+      input_sha256: e38e3111c17c140732368053bcebff60b7fd65538ff98154d65c4562c0e5d92c
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
+      recipe_sha256: 2213314fc5a3bbc6100ad791e61bbe2c0bfd61deb11ee25358392e12a6b1cd6a
+      workload_path: tests/fixtures/workloads/response_field_lifecycle.py
+      workload_sha256: a763538464f0e3a8809daa5fb55ba123a78b852d546170165a370e4f30682d68
+      case_id: fastapi.response-class-provenance.inherited-omitted-defaults-model-nan
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     - workflow_id: operation-signatures-upstream
       input_path: tests/fixtures/inputs/parity/operation-signatures-upstream.json
       input_sha256: f443a7d99f2daa521bdd36f34377497c06dc4a5618da74d286815a19858cc930
@@ -36093,6 +37634,11 @@ api_surface_contract:
     - response-serialization
     - websocket-lifecycle
     observation_selectors:
+    - asgi.application_error.exception
+    - asgi.send.message_types
+    - construction.exception_class
+    - construction.exception_message
+    - construction.outcome
     - dependency.call_order
     - http.body.bytes
     - http.body.json
@@ -36120,8 +37666,25 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1077
-      status: full-contract-not-established
+      status: partial-contract
       rust_binding: fastapi-rs/src/application_runtime.rs::PyOperationRouteDescriptor::__get__
+      known_gaps:
+      - Response-field construction must retain source registration and included effective-context timing,
+        schema hooks/errors, and adapter reuse. The selected direct/repeated-inclusion inputs require
+        fresh live receipts; static admission does not establish this lifecycle or sharing across arbitrary
+        routes.
+      - Omitted placeholder provenance differs from explicit None and concrete JSONResponse/custom/inherited
+        classes. Exact first-non-placeholder precedence and field-plus-placeholder byte-serialization
+        eligibility require the selected immutable public gates; mutable placeholders/defaults, descriptors,
+        and custom providers remain gaps.
+      - Selected validation/serialization callbacks, aliases, include/exclude flags, NaN, errors, warnings,
+        and lossless raw sends require fresh comparison. Arbitrary serializers/types, exotic response
+        classes, and sibling-owned generic response behavior are not established by these inputs.
+      - The sixteen cases use fixed declarations and ordinary async endpoints. Mutable model rebuild,
+        route/default changes, endpoint-context/cache history, flattened snapshot route mutation/version
+        refresh, raw proxies for included routes, URL/OpenAPI/WebSocket field-materialization traversal,
+        concurrency/reentrancy, cancellation, dynamic warning filters, and broader sync validation/worker
+        scheduling are outside this response-field gate.
   - id: fastapi.routing.APIRouter.head
     kind: method
     source_candidate_ref: /api_candidates/1079
