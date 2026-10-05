@@ -271,85 +271,22 @@ fn normalized_example(example: Py<PyAny>, py: Python<'_>) -> Option<Py<PyAny>> {
     }
 }
 
-#[pyfunction(name = "Depends", signature = (dependency = None, *, use_cache = true, scope = None))]
+#[pyfunction(name = "Depends", signature = (*args, **kwargs))]
 fn depends(
     py: Python<'_>,
-    dependency: Option<Py<PyAny>>,
-    use_cache: bool,
-    scope: Option<String>,
-) -> PyResult<Py<ParameterMetadata>> {
-    Py::new(
-        py,
-        ParameterMetadata {
-            kind: "depends".to_owned(),
-            alias: None,
-            validation_alias: None,
-            embed: None,
-            dependency,
-            scope,
-            scopes: None,
-            default: None,
-            media_type: None,
-            title: None,
-            description: None,
-            pattern: None,
-            example: None,
-            examples: None,
-            deprecated: None,
-            include_in_schema: true,
-            gt: None,
-            ge: None,
-            lt: None,
-            le: None,
-            allow_inf_nan: None,
-            min_length: None,
-            max_length: None,
-            convert_underscores: true,
-            use_cache,
-        },
-    )
+    args: &Bound<'_, PyTuple>,
+    kwargs: Option<&Bound<'_, PyDict>>,
+) -> PyResult<Py<PyAny>> {
+    crate::dependency_records::depends_factory(py, args, kwargs)
 }
 
-#[pyfunction(
-    name = "Security",
-    signature = (dependency = None, *, scopes = None, use_cache = true)
-)]
+#[pyfunction(name = "Security", signature = (*args, **kwargs))]
 fn security(
     py: Python<'_>,
-    dependency: Option<Py<PyAny>>,
-    scopes: Option<Py<PyAny>>,
-    use_cache: bool,
-) -> PyResult<Py<ParameterMetadata>> {
-    Py::new(
-        py,
-        ParameterMetadata {
-            kind: "depends".to_owned(),
-            alias: None,
-            validation_alias: None,
-            embed: None,
-            dependency,
-            scope: None,
-            scopes,
-            default: None,
-            media_type: None,
-            title: None,
-            description: None,
-            pattern: None,
-            example: None,
-            examples: None,
-            deprecated: None,
-            include_in_schema: true,
-            gt: None,
-            ge: None,
-            lt: None,
-            le: None,
-            allow_inf_nan: None,
-            min_length: None,
-            max_length: None,
-            convert_underscores: true,
-            use_cache,
-        },
-    )
+    args: &Bound<'_, PyTuple>,
+    kwargs: Option<&Bound<'_, PyDict>>,
+) -> PyResult<Py<PyAny>> {
+    crate::dependency_records::security_factory(py, args, kwargs)
 }
 
 #[pyfunction(

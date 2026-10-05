@@ -7,6 +7,7 @@
 mod application_runtime;
 mod awaitable;
 mod datastructures;
+mod dependency_records;
 mod deprecated_api;
 mod docs;
 mod encoding;
@@ -47,6 +48,7 @@ pub fn clear_fault_injection() {
 pub fn register_python_api(module: &Bound<'_, PyModule>) -> PyResult<()> {
     awaitable::register_coroutine_protocol(module.py())?;
     errors::register(module)?;
+    dependency_records::register(module)?;
     parameters::register(module)?;
     datastructures::register(module)?;
     deprecated_api::register(module)?;

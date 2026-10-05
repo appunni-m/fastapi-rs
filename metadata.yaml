@@ -1410,6 +1410,8 @@ reviewed_api_contract_overlay:
         - {path: docs_src/query_params_str_validations/tutorial015_an_py310.py}
         - {path: tests/test_tutorial/test_query_params_str_validations/test_tutorial015.py}
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.annotation-selection-and-conflicts
         - recipe_path: tests/fixtures/input-recipes/parity/query-gt-zero.yaml
           case_id: fastapi.query.gt-zero.positive-value
         - recipe_path: tests/fixtures/input-recipes/parity/query-gt-zero.yaml
@@ -3806,6 +3808,42 @@ reviewed_api_contract_overlay:
           start_line: 10
           end_line: 29
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.exports-identities
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.signatures-and-annotations
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.constructor-binding
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.arbitrary-field-values
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.repr-and-equality
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.hash-and-shallow-scopes
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.frozen-assignment-and-deletion
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.explicit-dictionary-bypass
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.inherited-subclasses
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.dataclass-fields
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.dataclass-asdict-replace
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.dataclass-json-encoding
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.default-and-annotated-injection
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.inferred-and-parameterless-injection
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.cache-use-cache
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.scoped-yield-cleanup
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.annotation-selection-and-conflicts
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.fault-contract.dependency-records.public-protocol.scoped-yield-cleanup
         - recipe_path: tests/fixtures/input-recipes/parity/dependency-wave.yaml
           case_id: fastapi.dependency-wave.generic-parameterless.test-generic-parameterless-depends
         - recipe_path: tests/fixtures/input-recipes/parity/dependency-wave.yaml
@@ -3912,6 +3950,14 @@ reviewed_api_contract_overlay:
         - construction.exception_class
         - construction.exception_message
       supported_slice: >-
+        The dependency-record-public-protocol recipe declares source-backed
+        factory return identity, frozen dataclass methods, field metadata, raw
+        constructor values, and selected runtime/cache/cleanup observations.
+        Class import classification remains private/internal; these inputs map
+        the public factory return contract and do not establish full parity.
+        Native function-type/code/globals/closure and mutable function-default
+        introspection remain gaps. See
+        docs/atlas/drafts/dependency-records-native-contract-review-2026-10-05.md.
         When Depends() omits its callable, FastAPI infers the dependency from
         the annotated type. Zero-argument dependency classes are instantiated
         and injected; the independent generic-parameterless-depends workflow
@@ -4114,6 +4160,8 @@ reviewed_api_contract_overlay:
       source_evidence:
         - {path: fastapi/param_functions.py, symbol: Query}
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.annotation-selection-and-conflicts
         - recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
           case_id: fastapi.root-alias-identity.http-reexports
         - recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
@@ -4183,6 +4231,42 @@ reviewed_api_contract_overlay:
       source_evidence:
         - {path: fastapi/param_functions.py, symbol: Depends}
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.exports-identities
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.signatures-and-annotations
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.constructor-binding
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.arbitrary-field-values
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.repr-and-equality
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.hash-and-shallow-scopes
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.frozen-assignment-and-deletion
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.explicit-dictionary-bypass
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.inherited-subclasses
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.dataclass-fields
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.dataclass-asdict-replace
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.dataclass-json-encoding
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.default-and-annotated-injection
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.inferred-and-parameterless-injection
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.cache-use-cache
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.scoped-yield-cleanup
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.annotation-selection-and-conflicts
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.fault-contract.dependency-records.public-protocol.scoped-yield-cleanup
         - recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
           case_id: fastapi.root-alias-identity.http-reexports
         - recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
@@ -4190,15 +4274,15 @@ reviewed_api_contract_overlay:
       feature_ids: [dependency-security]
       observation_selectors: [http.body.bytes, python.signature]
       supported_slice: >-
-        Module-callable review only: the root-alias identity workflow observes
+        Module-callable review: the root-alias identity workflow observes
         `fastapi.Depends` and `fastapi.param_functions.Depends` as the same
         object, and the direct signature input probes the module path itself.
-        This does not establish full dependency-marker or scope semantics.
+        The additional dependency-record inputs declare the returned frozen dataclass protocol, source argument binding, raw values, and selected default/Annotated/inferred/parameterless cache and cleanup workflows. Their presence is not an execution result. Native descriptor function-type/code/globals/closure introspection and mutable function-default protocols remain gaps; full dependency graphs and arbitrary nonstring scope execution remain outside this slice.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Full FastAPI dependency marker and yielded-scope semantics remain outside this direct signature slice.
+          - Native descriptor function-type/code/globals/closure and mutable function-default introspection remain different; unexercised dependency graphs and arbitrary nonstring scopes remain incomplete.
     fastapi.param_functions.Cookie:
       rust_binding: fastapi-rs/src/parameters.rs::cookie
       source_evidence:
@@ -4466,13 +4550,54 @@ reviewed_api_contract_overlay:
           kind: source-definition
           start_line: 2372
           end_line: 2460
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.exports-identities
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.signatures-and-annotations
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.constructor-binding
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.arbitrary-field-values
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.repr-and-equality
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.hash-and-shallow-scopes
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.frozen-assignment-and-deletion
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.inherited-subclasses
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.dataclass-fields
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.dataclass-asdict-replace
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.dataclass-json-encoding
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.default-and-annotated-injection
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.inferred-and-parameterless-injection
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.cache-use-cache
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.scoped-yield-cleanup
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.annotation-selection-and-conflicts
       feature_ids: [dependency-security, openapi-docs]
-      observation_selectors: [python.signature, python.call_outcome]
+      observation_selectors: [python.signature, python.call_outcome, http.status, http.body.bytes]
       supported_slice: >-
+        The dependency-record-public-protocol recipe declares source-backed
+        factory return identity, frozen dataclass methods, field metadata, raw
+        constructor values, and selected runtime/cache/cleanup observations.
+        Class import classification remains private/internal; these inputs map
+        the public factory return contract and do not establish full parity.
+        Native function-type/code/globals/closure and mutable function-default
+        introspection remain gaps. See
+        docs/atlas/drafts/dependency-records-native-contract-review-2026-10-05.md.
         Partial declaration slice: the root `fastapi.Security` export and
         `fastapi.param_functions.Security` share the Rust callable, preserve
         the pinned keyword-only signature, and store the supplied dependency,
-        scopes, and cache policy in the Rust parameter marker. A regular
+        scopes, and cache policy in the native dependency record. A regular
         dependency callable can be declared with Security and invoked through
         the Rust dependency graph. Scope-aware SecurityScopes injection,
         scope-sensitive dependency caching, SecurityBase behavior, and
@@ -4485,11 +4610,52 @@ reviewed_api_contract_overlay:
           kind: source-definition
           start_line: 2372
           end_line: 2460
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.exports-identities
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.signatures-and-annotations
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.constructor-binding
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.arbitrary-field-values
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.repr-and-equality
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.hash-and-shallow-scopes
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.frozen-assignment-and-deletion
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.inherited-subclasses
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.dataclass-fields
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.dataclass-asdict-replace
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.dataclass-json-encoding
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.default-and-annotated-injection
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.inferred-and-parameterless-injection
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.cache-use-cache
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.scoped-yield-cleanup
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-record-public-protocol.yaml
+          case_id: fastapi.dependency-records.public-protocol.annotation-selection-and-conflicts
       feature_ids: [dependency-security, openapi-docs]
-      observation_selectors: [python.signature, python.call_outcome]
+      observation_selectors: [python.signature, python.call_outcome, http.status, http.body.bytes]
       supported_slice: >-
+        The dependency-record-public-protocol recipe declares source-backed
+        factory return identity, frozen dataclass methods, field metadata, raw
+        constructor values, and selected runtime/cache/cleanup observations.
+        Class import classification remains private/internal; these inputs map
+        the public factory return contract and do not establish full parity.
+        Native function-type/code/globals/closure and mutable function-default
+        introspection remain gaps. See
+        docs/atlas/drafts/dependency-records-native-contract-review-2026-10-05.md.
         Partial declaration slice: preserves the pinned keyword-only helper
-        signature and builds a Rust dependency marker with the supplied
+        signature and builds a native dependency record with the supplied
         dependency, scopes, and cache policy. Scope propagation, security
         scheme execution, and OpenAPI security output remain unsupported.
     fastapi.security.HTTPBearer:

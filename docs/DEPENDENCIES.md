@@ -30,6 +30,14 @@ bridge. Rust selects the signature, handles fallback and constructs dependency
 plans; Pydantic owns Python typing evaluation. This private interface is tied
 to the exact Pydantic pin and needs review before a version change.
 
+Native dependency records expose CPython 3.12.13 dataclass metadata through
+stdlib `dataclasses.field`, `_FIELD`, and `_DataclassParams`. Rust constructs
+the record classes, performs argument binding, and implements repr, equality,
+hashing, initialization, and frozen attribute control. The stdlib provides
+metadata values and public `fields`/`asdict`/`replace` consumers; the target does
+not call `dataclasses.dataclass` to generate Python methods. The two private
+metadata interfaces require review before changing the Python pin.
+
 Generated dependency records are refreshed from pinned source and lockfiles;
 do not edit generated tables by hand. Review their evidence in
 `docs/audit-locks/fastapi-0.141.1-source-use.yaml` and

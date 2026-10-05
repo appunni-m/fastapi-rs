@@ -21,6 +21,7 @@ use starlette_rs::{DetailedRouteMatch, NamedRouteError, NamedRouteTable, QueryPa
 use crate::awaitable::{
     AwaitableStateMachine, MachineAction, MachineResume, into_python_awaitable,
 };
+use crate::dependency_records::{is_dependency_record, is_security_record};
 use crate::docs;
 use crate::encoding::jsonable_encoder_default;
 use crate::errors::fastapi_error;
@@ -199,7 +200,7 @@ enum ParameterSource {
     },
 }
 
-type DependencyCacheKey = (usize, Option<String>);
+type DependencyCacheKey = (usize, Vec<String>, String);
 type OpenApiSecurityVisitKey = (usize, Option<String>, Vec<String>);
 
 struct CallableParameter {
@@ -235,6 +236,9 @@ struct CallablePlan {
     path_parameters: Vec<String>,
     return_annotation: Option<Py<PyAny>>,
     computed_scope: Option<String>,
+    own_oauth_scopes: Vec<String>,
+    oauth_scopes: Vec<String>,
+    is_security_scheme: bool,
 }
 
 impl ParameterSource {
@@ -328,7 +332,59 @@ impl CallablePlan {
                 .as_ref()
                 .map(|annotation| annotation.clone_ref(py)),
             computed_scope: self.computed_scope.clone(),
+            own_oauth_scopes: self.own_oauth_scopes.clone(),
+            oauth_scopes: self.oauth_scopes.clone(),
+            is_security_scheme: self.is_security_scheme,
         }
+    }
+
+    fn inherit_oauth_scopes(&mut self, parent_scopes: &[String], own_scopes: &[String]) {
+        self.own_oauth_scopes = own_scopes.to_vec();
+        self.oauth_scopes = parent_scopes.to_vec();
+        for scope in own_scopes {
+            if !self.oauth_scopes.contains(scope) {
+                self.oauth_scopes.push(scope.clone());
+            }
+        }
+        for parameter in &mut self.parameters {
+            if let ParameterSource::Dependency {
+                plan,
+                security_scopes,
+                ..
+            } = &mut parameter.source
+            {
+                plan.inherit_oauth_scopes(&self.oauth_scopes, security_scopes);
+            }
+        }
+    }
+
+    fn uses_oauth_scopes(&self) -> bool {
+        !self.own_oauth_scopes.is_empty()
+            || self.is_security_scheme
+            || self.parameters.iter().any(|parameter| {
+                matches!(
+                    &parameter.source,
+                    ParameterSource::Dependency { plan, .. } if plan.uses_oauth_scopes()
+                )
+            })
+    }
+
+    fn dependency_cache_key(&self) -> DependencyCacheKey {
+        let scopes = if self.uses_oauth_scopes() {
+            self.oauth_scopes
+                .iter()
+                .cloned()
+                .collect::<BTreeSet<_>>()
+                .into_iter()
+                .collect()
+        } else {
+            Vec::new()
+        };
+        (
+            self.callable.as_ptr() as usize,
+            scopes,
+            self.computed_scope.clone().unwrap_or_default(),
+        )
     }
 
     fn reanalyze_dependency(
@@ -347,13 +403,16 @@ impl CallablePlan {
             .get_item(self.callable.bind(context.py))?
             .unwrap_or_else(|| self.callable.bind(context.py).clone())
             .unbind();
-        Self::build(
+        let mut plan = Self::build(
             context.py,
             callable,
             &self.path_parameters,
             declared_scope.map(str::to_owned),
-        )
-        .map(Some)
+        )?;
+        // The replacement receives the original edge's effective scopes as
+        // inherited scopes; its outer cache identity still belongs to that edge.
+        plan.inherit_oauth_scopes(&self.oauth_scopes, &[]);
+        Ok(Some(plan))
     }
 }
 
@@ -377,10 +436,7 @@ impl DependencyExecutionNode {
         }
         let generator_kind =
             dependency_callable_generator_kind(context.py, plan.callable.bind(context.py))?;
-        let cache_key = (
-            original_plan.callable.as_ptr() as usize,
-            original_plan.computed_scope.clone(),
-        );
+        let cache_key = original_plan.dependency_cache_key();
         let mut children = Vec::new();
         let mut dependency_edge_index = 0;
         for parameter in &plan.parameters {
@@ -5155,20 +5211,98 @@ impl CallablePlan {
                 };
                 let raw_default = item.getattr("default")?;
                 let (annotation, mut metadata) = annotation_parts(py, annotation)?;
-                let raw_default_marker_kind =
-                    if !raw_default.is(&empty) && raw_default.hasattr("kind")? {
-                        Some(raw_default.getattr("kind")?.extract::<String>()?)
+                let annotated_marker = annotated_parameter_marker(py, &metadata)?;
+                let annotated_dependency_index = match annotated_marker {
+                    Some(AnnotatedParameterMarker::Dependency(index)) => Some(index),
+                    _ => None,
+                };
+                let has_annotated_field_marker =
+                    matches!(annotated_marker, Some(AnnotatedParameterMarker::Field(_)));
+                if let Some(AnnotatedParameterMarker::Field(index)) = annotated_marker {
+                    let field_marker = &metadata[index];
+                    if marker_default(py, std::slice::from_ref(field_marker))?.is_some() {
+                        let field_name = match parameter_marker_kind(py, field_marker.bind(py))?
+                            .as_deref()
+                        {
+                            Some("body") => "Body",
+                            Some("path") => "Path",
+                            Some("query") => "Query",
+                            Some("header") => "Header",
+                            Some("cookie") => "Cookie",
+                            Some("form") => "Form",
+                            Some("file") => "File",
+                            _ => {
+                                return Err(PyRuntimeError::new_err(
+                                    "selected FastAPI field marker has no field kind",
+                                ));
+                            }
+                        };
+                        let parameter_name = PyString::new(py, &name).repr()?;
+                        return Err(PyAssertionError::new_err(format!(
+                            "`{field_name}` default value cannot be set in `Annotated` for {}. Set the default value with `=` instead.",
+                            parameter_name.to_string_lossy()
+                        )));
+                    }
+                    if !raw_default.is(&empty) && path_parameters.contains(&name) {
+                        return Err(PyAssertionError::new_err(
+                            "Path parameters cannot have default values",
+                        ));
+                    }
+                }
+                let default_is_dependency_record =
+                    !raw_default.is(&empty) && is_dependency_record(py, &raw_default)?;
+                let raw_default_marker_kind = if raw_default.is(&empty) {
+                    None
+                } else {
+                    parameter_marker_kind(py, &raw_default)?
+                };
+                let default_is_field_marker = matches!(
+                    raw_default_marker_kind.as_deref(),
+                    Some("body" | "path" | "query" | "header" | "cookie" | "form" | "file")
+                );
+                let conflict = if default_is_dependency_record {
+                    if annotated_dependency_index.is_some() {
+                        Some(
+                            "Cannot specify `Depends` in `Annotated` and default value together for",
+                        )
+                    } else if has_annotated_field_marker {
+                        Some(
+                            "Cannot specify a FastAPI annotation in `Annotated` and `Depends` as a default value together for",
+                        )
                     } else {
                         None
-                    };
-                let default_is_parameter_marker = matches!(
-                    raw_default_marker_kind.as_deref(),
-                    Some("body" | "depends" | "query" | "header" | "cookie" | "form" | "file")
-                );
+                    }
+                } else if default_is_field_marker && has_annotated_field_marker {
+                    Some(
+                        "Cannot specify FastAPI annotations in `Annotated` and default value together for",
+                    )
+                } else {
+                    None
+                };
+                if let Some(conflict) = conflict {
+                    let parameter_name = PyString::new(py, &name).repr()?;
+                    return Err(PyAssertionError::new_err(format!(
+                        "{conflict} {}",
+                        parameter_name.to_string_lossy()
+                    )));
+                }
+                let mut selected_metadata = Vec::with_capacity(metadata.len() + 1);
+                for (index, marker) in metadata.into_iter().enumerate() {
+                    if !is_dependency_record(py, marker.bind(py))?
+                        || Some(index) == annotated_dependency_index
+                    {
+                        selected_metadata.push(marker);
+                    }
+                }
+                metadata = selected_metadata;
+                let default_is_parameter_marker =
+                    default_is_dependency_record || default_is_field_marker;
                 if default_is_parameter_marker {
                     metadata.push(raw_default.clone().unbind());
                 }
-                let default = if raw_default.is(&empty) || default_is_parameter_marker {
+                let default = if raw_default.is(&empty) && has_annotated_field_marker {
+                    None
+                } else if raw_default.is(&empty) || default_is_parameter_marker {
                     marker_default(py, &metadata)?
                 } else {
                     Some(raw_default.unbind())
@@ -5180,8 +5314,14 @@ impl CallablePlan {
                     default.as_ref().map(|value| value.bind(py)),
                 )?;
                 let is_sequence = field_annotation_is_sequence(py, validated_annotation.bind(py))?;
-                let source =
-                    parameter_source(py, &name, annotation.bind(py), &metadata, path_parameters)?;
+                let source = parameter_source(
+                    py,
+                    &name,
+                    annotation.bind(py),
+                    &metadata,
+                    path_parameters,
+                    true,
+                )?;
                 let (parameter_model_fields, parameter_model_config, model_convert_underscores) =
                     match &source {
                         ParameterSource::Input {
@@ -5255,18 +5395,30 @@ impl CallablePlan {
                 }
             }
         }
-        Ok(Self {
+        let is_security_scheme = dependency_is_security_scheme(py, callable.bind(py))?;
+        let mut plan = Self {
             callable,
             parameters,
             path_parameters: path_parameters.to_vec(),
             return_annotation,
             computed_scope,
-        })
+            own_oauth_scopes: Vec::new(),
+            oauth_scopes: Vec::new(),
+            is_security_scheme,
+        };
+        plan.inherit_oauth_scopes(&[], &[]);
+        Ok(plan)
     }
 
     fn prepend_dependencies(&mut self, py: Python<'_>, dependencies: &[Py<PyAny>]) -> PyResult<()> {
         let mut parameters = Vec::with_capacity(dependencies.len() + self.parameters.len());
         for dependency in dependencies {
+            let marker = dependency.bind(py);
+            if is_dependency_record(py, marker)? && !marker.getattr("dependency")?.is_callable() {
+                return Err(PyAssertionError::new_err(
+                    "A parameter-less dependency must have a callable dependency",
+                ));
+            }
             let annotation = py.None();
             let source = parameter_source(
                 py,
@@ -5274,9 +5426,10 @@ impl CallablePlan {
                 annotation.bind(py),
                 std::slice::from_ref(dependency),
                 &self.path_parameters,
+                false,
             )?;
             let ParameterSource::Dependency {
-                plan,
+                mut plan,
                 use_cache,
                 scope,
                 security_scopes,
@@ -5287,6 +5440,7 @@ impl CallablePlan {
                     "router dependencies must be Depends declarations",
                 ));
             };
+            plan.inherit_oauth_scopes(&self.oauth_scopes, &security_scopes);
             parameters.push(CallableParameter {
                 name: String::new(),
                 annotation,
@@ -5369,7 +5523,7 @@ impl CallablePlan {
             let ParameterSource::Dependency { plan, .. } = &parameter.source else {
                 continue;
             };
-            let key = (plan.callable.as_ptr() as usize, plan.computed_scope.clone());
+            let key = plan.dependency_cache_key();
             if visited.contains(&key) {
                 continue;
             }
@@ -5656,7 +5810,7 @@ impl CallablePlan {
             dependency_edge_index += 1;
             has_direct_dependency = true;
 
-            let cache_key = (plan.callable.as_ptr() as usize, plan.computed_scope.clone());
+            let cache_key = plan.dependency_cache_key();
             let original_callable = plan.callable.bind(context.py);
             let replacement = context.dependency_overrides.get_item(original_callable)?;
             let (callable, callable_kind) = match replacement {
@@ -6040,8 +6194,7 @@ impl CallablePlan {
         let Some(arguments) = self.prepare_arguments(context, prepared_dependencies)? else {
             return Ok(None);
         };
-        let cache_key = cache_key_override
-            .unwrap_or_else(|| (self.callable.as_ptr() as usize, self.computed_scope.clone()));
+        let cache_key = cache_key_override.unwrap_or_else(|| self.dependency_cache_key());
         if cache_result == Some(true) {
             if let Some(value) = context.dependency_cache.get(&cache_key) {
                 return Ok(Some(value.clone_ref(context.py)));
@@ -6155,8 +6308,7 @@ impl CallablePlan {
                 if prepared_dependencies.is_some() {
                     continue;
                 }
-                let original_cache_key =
-                    (plan.callable.as_ptr() as usize, plan.computed_scope.clone());
+                let original_cache_key = plan.dependency_cache_key();
                 let reanalyzed_plan = plan.reanalyze_dependency(context, scope.as_deref())?;
                 let dependency_plan = reanalyzed_plan.as_ref().unwrap_or(plan.as_ref());
                 let value =
@@ -6397,6 +6549,35 @@ fn dependency_exit_with_error(
         .map(Bound::unbind)
 }
 
+fn dependency_is_security_scheme(py: Python<'_>, callable: &Bound<'_, PyAny>) -> PyResult<bool> {
+    let partial_type = py.import("functools")?.getattr("partial")?;
+    let mut callable = callable.clone();
+    while callable.is_instance(&partial_type)? {
+        callable = callable.getattr("func")?;
+    }
+    let callable = py
+        .import("inspect")?
+        .getattr("unwrap")?
+        .call1((callable,))?;
+    let core = py.import("fastapi_rs._core")?;
+    // Several native security classes have independent PyO3 bases. Their
+    // exported identities still represent the source's SecurityBase hierarchy.
+    for name in [
+        "SecurityBase",
+        "HTTPBase",
+        "HTTPBasic",
+        "HTTPBearer",
+        "HTTPDigest",
+        "OAuth2",
+        "OAuth2PasswordBearer",
+    ] {
+        if callable.is_instance(&core.getattr(name)?)? {
+            return Ok(true);
+        }
+    }
+    Ok(false)
+}
+
 fn dependency_override_callable(
     py: Python<'_>,
     value: &Bound<'_, PyAny>,
@@ -6466,16 +6647,51 @@ fn dependency_callable_generator_kind(
     if let Some(kind) = kind_for(value)? {
         return Ok(Some(kind));
     }
-    kind_for(&value.getattr("__call__")?)
+    match value.getattr("__call__") {
+        Ok(callable) => kind_for(&callable),
+        Err(error) if error.is_instance_of::<PyAttributeError>(py) => Ok(None),
+        Err(error) => Err(error),
+    }
+}
+
+fn parameter_marker_kind(py: Python<'_>, marker: &Bound<'_, PyAny>) -> PyResult<Option<String>> {
+    if is_dependency_record(py, marker)? || !marker.hasattr("kind")? {
+        return Ok(None);
+    }
+    marker.getattr("kind")?.extract().map(Some)
+}
+
+#[derive(Clone, Copy)]
+enum AnnotatedParameterMarker {
+    Dependency(usize),
+    Field(usize),
+}
+
+fn annotated_parameter_marker(
+    py: Python<'_>,
+    metadata: &[Py<PyAny>],
+) -> PyResult<Option<AnnotatedParameterMarker>> {
+    for (index, marker) in metadata.iter().enumerate().rev() {
+        let marker = marker.bind(py);
+        if is_dependency_record(py, marker)? {
+            return Ok(Some(AnnotatedParameterMarker::Dependency(index)));
+        }
+        if matches!(
+            parameter_marker_kind(py, marker)?.as_deref(),
+            Some("body" | "path" | "query" | "header" | "cookie" | "form" | "file")
+        ) {
+            return Ok(Some(AnnotatedParameterMarker::Field(index)));
+        }
+    }
+    Ok(None)
 }
 
 fn marker_default(py: Python<'_>, metadata: &[Py<PyAny>]) -> PyResult<Option<Py<PyAny>>> {
-    for marker in metadata {
+    for marker in metadata.iter().rev() {
         let marker = marker.bind(py);
-        if !marker.hasattr("kind")? {
+        let Some(kind) = parameter_marker_kind(py, marker)? else {
             continue;
-        }
-        let kind = marker.getattr("kind")?.extract::<String>()?;
+        };
         if kind == "header"
             || kind == "query"
             || kind == "cookie"
@@ -6645,30 +6861,40 @@ fn parameter_source(
     annotation: &Bound<'_, PyAny>,
     metadata: &[Py<PyAny>],
     path_parameters: &[String],
+    bind_value: bool,
 ) -> PyResult<ParameterSource> {
     // Explicit Depends takes precedence over framework-managed parameter injection.
     for marker in metadata {
         let marker = marker.bind(py);
-        if !marker.hasattr("kind")? || marker.getattr("kind")?.extract::<String>()? != "depends" {
+        if !is_dependency_record(py, marker)? {
             continue;
         }
         let dependency = marker.getattr("dependency")?;
         let dependency = if dependency.is_none() {
+            // Inference belongs to the analyzed plan; the frozen source record can be reused.
             annotation.clone().unbind()
         } else {
             dependency.unbind()
         };
-        let use_cache = marker.getattr("use_cache")?.extract::<bool>()?;
-        let scope = marker.getattr("scope")?.extract::<Option<String>>()?;
-        let marker_scopes = marker.getattr("scopes")?;
-        let security_scopes = if marker_scopes.is_none() {
-            Vec::new()
+        if bind_value && !dependency.bind(py).is_truthy()? {
+            return Err(PyAssertionError::new_err(""));
+        }
+        let use_cache = if bind_value {
+            marker.getattr("use_cache")?.is_truthy()?
         } else {
-            marker_scopes
-                .try_iter()?
-                .map(|scope| scope?.extract::<String>())
-                .collect::<PyResult<Vec<_>>>()?
+            true
         };
+        let scope = marker.getattr("scope")?.extract::<Option<String>>()?;
+        let mut security_scopes = Vec::new();
+        if is_security_record(py, marker)? {
+            let marker_scopes = marker.getattr("scopes")?;
+            if marker_scopes.is_truthy()? {
+                security_scopes = marker_scopes
+                    .try_iter()?
+                    .map(|scope| scope?.extract::<String>())
+                    .collect::<PyResult<Vec<_>>>()?;
+            }
+        }
         let path_names = path_parameters.to_vec();
         return CallablePlan::build(py, dependency, &path_names, scope.clone()).map(|plan| {
             ParameterSource::Dependency {
@@ -6676,7 +6902,7 @@ fn parameter_source(
                 use_cache,
                 scope,
                 security_scopes,
-                bind_value: true,
+                bind_value,
             }
         });
     }
@@ -6702,12 +6928,11 @@ fn parameter_source(
     if annotation_is_subclass(py, annotation, &background_tasks_type)? {
         return Ok(ParameterSource::BackgroundTasks);
     }
-    for marker in metadata {
+    for marker in metadata.iter().rev() {
         let marker = marker.bind(py);
-        if !marker.hasattr("kind")? {
+        let Some(kind) = parameter_marker_kind(py, marker)? else {
             continue;
-        }
-        let kind = marker.getattr("kind")?.extract::<String>()?;
+        };
         if kind == "body" {
             let declared_alias = marker.getattr("alias")?.extract::<Option<String>>()?;
             let validation_alias = marker.getattr("validation_alias")?;
@@ -6923,10 +7148,9 @@ fn parameter_media_type(
         } => "file",
         _ => return Ok(None),
     };
-    for marker in metadata {
+    for marker in metadata.iter().rev() {
         let marker = marker.bind(py);
-        if marker.hasattr("kind")? && marker.getattr("kind")?.extract::<String>()? == expected_kind
-        {
+        if parameter_marker_kind(py, marker)?.as_deref() == Some(expected_kind) {
             if let Some(media_type) = marker.getattr("media_type")?.extract::<Option<String>>()? {
                 return Ok(Some(media_type));
             }
@@ -6961,10 +7185,9 @@ fn parameter_description(
         } => "file",
         _ => return Ok(None),
     };
-    for marker in metadata {
+    for marker in metadata.iter().rev() {
         let marker = marker.bind(py);
-        if marker.hasattr("kind")? && marker.getattr("kind")?.extract::<String>()? == expected_kind
-        {
+        if parameter_marker_kind(py, marker)?.as_deref() == Some(expected_kind) {
             return marker.getattr("description")?.extract::<Option<String>>();
         }
     }
@@ -6985,9 +7208,9 @@ fn parameter_title(
     ) {
         return Ok(None);
     }
-    for marker in metadata {
+    for marker in metadata.iter().rev() {
         let marker = marker.bind(py);
-        if marker.hasattr("kind")? && marker.getattr("kind")?.extract::<String>()? == "query" {
+        if parameter_marker_kind(py, marker)?.as_deref() == Some("query") {
             return marker.getattr("title")?.extract::<Option<String>>();
         }
     }
@@ -7008,9 +7231,9 @@ fn parameter_deprecated(
     ) {
         return Ok(false);
     }
-    for marker in metadata {
+    for marker in metadata.iter().rev() {
         let marker = marker.bind(py);
-        if marker.hasattr("kind")? && marker.getattr("kind")?.extract::<String>()? == "query" {
+        if parameter_marker_kind(py, marker)?.as_deref() == Some("query") {
             let deprecated = marker.getattr("deprecated")?;
             return Ok(!deprecated.is_none() && deprecated.is_truthy()?);
         }
@@ -7032,9 +7255,9 @@ fn parameter_include_in_schema(
     ) {
         return Ok(true);
     }
-    for marker in metadata {
+    for marker in metadata.iter().rev() {
         let marker = marker.bind(py);
-        if marker.hasattr("kind")? && marker.getattr("kind")?.extract::<String>()? == "query" {
+        if parameter_marker_kind(py, marker)?.as_deref() == Some("query") {
             return marker.getattr("include_in_schema")?.extract::<bool>();
         }
     }
@@ -7055,9 +7278,9 @@ fn parameter_body_embed(
     ) {
         return Ok(false);
     }
-    for marker in metadata {
+    for marker in metadata.iter().rev() {
         let marker = marker.bind(py);
-        if marker.hasattr("kind")? && marker.getattr("kind")?.extract::<String>()? == "body" {
+        if parameter_marker_kind(py, marker)?.as_deref() == Some("body") {
             let embed = marker.getattr("embed")?;
             return Ok(!embed.is_none() && embed.is_truthy()?);
         }
@@ -7307,11 +7530,13 @@ fn constrained_parameter_annotation(
     let mut annotated_arguments = vec![annotation.clone().unbind()];
     for marker in metadata {
         let marker = marker.bind(py);
-        if !marker.hasattr("kind")? {
-            annotated_arguments.push(marker.clone().unbind());
+        if is_dependency_record(py, marker)? {
             continue;
         }
-        let kind = marker.getattr("kind")?.extract::<String>()?;
+        let Some(kind) = parameter_marker_kind(py, marker)? else {
+            annotated_arguments.push(marker.clone().unbind());
+            continue;
+        };
         if kind != "body" && kind != "query" && kind != "path" {
             continue;
         }
@@ -8093,9 +8318,9 @@ fn copied_pydantic_field_default<'py>(
 }
 
 fn header_model_convert_underscores(py: Python<'_>, metadata: &[Py<PyAny>]) -> PyResult<bool> {
-    for item in metadata {
+    for item in metadata.iter().rev() {
         let marker = item.bind(py);
-        if marker.hasattr("kind")? && marker.getattr("kind")?.extract::<String>()? == "header" {
+        if parameter_marker_kind(py, marker)?.as_deref() == Some("header") {
             return marker.getattr("convert_underscores")?.extract::<bool>();
         }
     }

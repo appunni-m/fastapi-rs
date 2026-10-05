@@ -1,0 +1,858 @@
+# Independent public inputs for records returned by Depends and Security.
+# Pinned FastAPI 0.141.1, commit 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f:
+# params.py:745-754 declares frozen dataclasses, with Security inheriting
+# Depends. param_functions.py:2283-2460 exposes keyword-only public factories
+# that return those classes. Protocol observations below start from the types
+# returned by those public factories; params aliases remain discovery evidence.
+# CPython 3.12.13 dataclasses.py:629-681 derives repr, runtime-class equality,
+# frozen assignment/deletion, and tuple hash from declared fields. :1278-1360
+# supplies fields/is_dataclass/asdict and :1540-1582 implements replace.
+# Generated initializers use CPython's Python-function keyword binding. The
+# binding workload supplies str subclasses whose rich equality matches a
+# parameter name or raises a user comparison error, and records the live
+# comparison order, including the initializer's self parameter. Literal
+# keyword spellings, accepted fields, and errors are never stored as results.
+# dependencies/utils.py:120-142 builds parameterless dependencies with default
+# caching, :391-475 selects the final Annotated FastAPI marker and infers a
+# missing callable through dataclasses.replace, and :623-681 resolves/cache
+# dependencies and enters yielded scopes. encoders.py's dataclass branch
+# encodes through dataclasses.asdict. These independent workloads combine the
+# source rules; reference docs and neighboring upstream tests do not contain
+# these exact protocol scenarios. No expected outputs or oracle snapshots are
+# stored here. Hash values use integer/bool-only tuples; other hash projections
+# expose relationships or error classes, avoiding randomized None/callable
+# hashes. All repr inputs are scalar records or deliberate self references.
+# The last case reuses one target-only cleanup contract; the oracle never
+# receives the injected fault.
+schema: fastapi-rs/python-asgi-workflow@9
+workload:
+  file: tests/fixtures/workloads/dependency_record_public_protocol.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.dependency-records.public-protocol.exports-identities
+  verification: parity
+  factory_input: {}
+  construction_observation: &construction
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: public-factory-return-types-and-aliases
+    kind: http_request
+    scope:
+      type: http
+      asgi: &asgi {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /identity
+      query_string: ''
+      root_path: ''
+      headers: &headers [[host, testserver]]
+      client: &client [127.0.0.1, 123]
+      server: &server [testserver, 80]
+    receive_events: &empty-request
+    - {type: http.request, body: '', more_body: false}
+    observations: &response-value
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence: &record-reference
+  - {path: docs/en/docs/reference/dependencies.md, kind: upstream_documentation}
+- case_id: fastapi.dependency-records.public-protocol.signatures-and-annotations
+  verification: parity
+  factory_input: {}
+  construction_observation: *construction
+  actions:
+  - action_id: returned-class-and-initializer-reflection
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /signatures
+      query_string: ''
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence: *record-reference
+- case_id: fastapi.dependency-records.public-protocol.constructor-binding
+  verification: parity
+  factory_input: {}
+  construction_observation: *construction
+  actions:
+  - action_id: positional-class-binding-and-factory-keyword-boundaries
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /binding
+      query_string: ''
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence: *record-reference
+- case_id: fastapi.dependency-records.public-protocol.arbitrary-field-values
+  verification: parity
+  factory_input:
+    raw_cache: {policy: manual}
+    raw_scope: [independent, scope-value]
+    raw_scopes: 19
+  construction_observation: *construction
+  actions:
+  - action_id: arbitrary-fields-and-object-alias-preservation
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /raw-values
+      query_string: ''
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence: *record-reference
+- case_id: fastapi.dependency-records.public-protocol.repr-and-equality
+  verification: parity
+  factory_input: {}
+  construction_observation: *construction
+  actions:
+  - action_id: scalar-subclass-and-recursive-representation-with-equality
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /repr-equality
+      query_string: ''
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence: *record-reference
+- case_id: fastapi.dependency-records.public-protocol.hash-and-shallow-scopes
+  verification: parity
+  factory_input: {}
+  construction_observation: *construction
+  actions:
+  - action_id: deterministic-tuple-hashes-and-unhashable-fields
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /hash
+      query_string: ''
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: original-shallow-scopes-list
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /scopes
+      query_string: ''
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: mutate-contained-list-and-attempt-frozen-field-replacement
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /scopes/append/record-write
+      query_string: ''
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: subsequent-request-observes-mutated-contained-list
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /scopes
+      query_string: ''
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence: *record-reference
+- case_id: fastapi.dependency-records.public-protocol.frozen-assignment-and-deletion
+  verification: parity
+  factory_input: {}
+  construction_observation: *construction
+  actions:
+  - action_id: defining-record-classes-reject-declared-new-and-missing-field-writes
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /frozen
+      query_string: ''
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence: *record-reference
+- case_id: fastapi.dependency-records.public-protocol.explicit-dictionary-bypass
+  verification: parity
+  factory_input: {}
+  construction_observation: *construction
+  actions:
+  - action_id: original-record-instance-dictionary
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /bypass
+      query_string: ''
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: mutate-declared-and-new-values-through-instance-dictionary
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /bypass/dictionary
+      query_string: ''
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: object-level-write-and-delete-bypass
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /bypass/object
+      query_string: ''
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: subsequent-request-observes-explicit-bypasses
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /bypass
+      query_string: ''
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence: *record-reference
+- case_id: fastapi.dependency-records.public-protocol.inherited-subclasses
+  verification: parity
+  factory_input: {}
+  construction_observation: *construction
+  actions:
+  - action_id: inherited-frozen-fields-and-ordinary-new-subclass-attributes
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /subclasses
+      query_string: ''
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence: *record-reference
+- case_id: fastapi.dependency-records.public-protocol.dataclass-fields
+  verification: parity
+  factory_input: {}
+  construction_observation: *construction
+  actions:
+  - action_id: dataclass-class-instance-field-and-inheritance-reflection
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /dataclass-fields
+      query_string: ''
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence: *record-reference
+- case_id: fastapi.dependency-records.public-protocol.dataclass-asdict-replace
+  verification: parity
+  factory_input: {}
+  construction_observation: *construction
+  actions:
+  - action_id: dataclass-copy-replace-nested-records-and-public-errors
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /dataclass-operations
+      query_string: ''
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence: *record-reference
+- case_id: fastapi.dependency-records.public-protocol.dataclass-json-encoding
+  verification: parity
+  factory_input: {}
+  construction_observation: *construction
+  actions:
+  - action_id: nested-returned-record-serialization-and-encoder-projections
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /encoding
+      query_string: ''
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence:
+  - {path: docs/en/docs/reference/dependencies.md, kind: upstream_documentation}
+  - {path: tests/test_jsonable_encoder.py, kind: upstream_test}
+- case_id: fastapi.dependency-records.public-protocol.default-and-annotated-injection
+  verification: parity
+  factory_input: {}
+  construction_observation: *construction
+  actions:
+  - action_id: native-record-defaults-and-annotated-records-use-query-default
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /injection
+      query_string: ''
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: explicit-query-reaches-default-annotated-and-factory-records
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /injection
+      query_string: seed=7
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: invalid-query-is-reported-through-dependency-validation
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /injection
+      query_string: seed=river
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence:
+  - {path: docs/en/docs/tutorial/dependencies/index.md, kind: upstream_documentation}
+  - {path: tests/test_dependency_models.py, kind: upstream_test}
+- case_id: fastapi.dependency-records.public-protocol.inferred-and-parameterless-injection
+  verification: parity
+  factory_input: {}
+  construction_observation: *construction
+  actions:
+  - action_id: annotation-infers-class-callable-without-mutating-declaration
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /inferred
+      query_string: ''
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: inferred-constructor-query-and-parameterless-side-effect-repeat
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /inferred
+      query_string: seed=11
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: independent-class-constructor-validation
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /inferred
+      query_string: seed=invalid
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence:
+  - {path: docs/en/docs/tutorial/dependencies/classes-as-dependencies.md, kind: upstream_documentation}
+  - {path: docs/en/docs/tutorial/dependencies/dependencies-in-path-operation-decorators.md, kind: upstream_documentation}
+  - {path: tests/test_dependency_paramless.py, kind: upstream_test}
+- case_id: fastapi.dependency-records.public-protocol.cache-use-cache
+  verification: parity
+  factory_input: {}
+  construction_observation: *construction
+  actions:
+  - action_id: parameterless-false-record-and-cached-plus-uncached-parameter-edges
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /cache
+      query_string: seed=13
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: next-request-has-an-independent-dependency-cache
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /cache
+      query_string: seed=17
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: invalid-input-is-validated-even-with-repeated-cached-edges
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /cache
+      query_string: seed=invalid
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence:
+  - {path: docs/en/docs/tutorial/dependencies/sub-dependencies.md, kind: upstream_documentation}
+  - {path: tests/test_dependency_cache.py, kind: upstream_test}
+- case_id: fastapi.dependency-records.public-protocol.scoped-yield-cleanup
+  verification: parity
+  factory_input: {}
+  construction_observation: *construction
+  actions:
+  - action_id: security-record-declares-function-scoped-yield
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /yield/function
+      query_string: ''
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: function-cleanup-order-at-response-boundary
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /timeline
+      query_string: ''
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: depends-record-declares-request-scoped-yield
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /yield/request
+      query_string: ''
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: request-cleanup-order-at-response-boundary
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /timeline
+      query_string: ''
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence:
+  - {path: docs/en/docs/tutorial/dependencies/dependencies-with-yield.md, kind: upstream_documentation}
+  - {path: tests/test_dependency_yield_scope.py, kind: upstream_test}
+- case_id: fastapi.dependency-records.public-protocol.annotation-selection-and-conflicts
+  verification: parity
+  factory_input: {}
+  construction_observation: *construction
+  actions:
+  - action_id: register-last-dependency-marker-endpoint
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /registration/last-dependency
+      query_string: ''
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: last-dependency-marker-selects-live-callable
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /registered/last-dependency
+      query_string: seed=5
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: register-field-before-dependency-marker
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /registration/field-then-dependency
+      query_string: ''
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: selected-dependency-ignores-earlier-field-marker
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /registered/field-then-dependency
+      query_string: seed=6&selected=not-an-integer
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: register-dependency-before-field-marker
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /registration/dependency-then-field
+      query_string: ''
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: selected-field-ignores-earlier-dependency-marker
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /registered/dependency-then-field
+      query_string: selected=7&seed=9
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: selected-field-remains-required
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /registered/dependency-then-field
+      query_string: seed=9
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: annotated-dependency-and-default-dependency-conflict
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /registration/annotated-dependency-default
+      query_string: ''
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: annotated-field-and-default-dependency-conflict
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /registration/annotated-field-default
+      query_string: ''
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *response-value
+  - action_id: parameterless-record-with-noncallable-dependency
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /registration/parameterless-noncallable
+      query_string: ''
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence:
+  - {path: docs/en/docs/reference/dependencies.md, kind: upstream_documentation}
+  - {path: tests/test_annotated.py, kind: upstream_test}
+- case_id: fastapi.fault-contract.dependency-records.public-protocol.scoped-yield-cleanup
+  verification: fault-contract
+  fault:
+    point: http.route.invoke.after_dependencies.before
+    contract: http-route-invocation-error-cleans-dependencies
+  factory_input: {}
+  construction_observation: *construction
+  actions:
+  - action_id: injected-invocation-error-after-native-record-yield
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /yield/request
+      query_string: ''
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations:
+    - {kind: application_error, selector: exception, comparison: exact}
+    - {kind: asgi_send, selector: message_types, comparison: ordered}
+    - {kind: http_response, selectors: [status], comparison: exact}
+  - action_id: yielded-record-cleanup-and-recovery-state
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *response-value
+  source_evidence:
+  - {path: docs/en/docs/reference/dependencies.md, kind: upstream_documentation}
+  - {path: tests/test_dependency_contextmanager.py, kind: upstream_test}
