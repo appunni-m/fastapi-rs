@@ -85,6 +85,14 @@ fault_contract_policy:
           status: 400
           body: {detail: There was an error parsing the body}
       excludes: [exception_message, stack_trace, source_line, private_state]
+    - point: http.request.form_parse.before
+      contract: http-body-form-parse-error-returns-400
+      assertion:
+        first_response:
+          kind: http_response
+          status: 400
+          body: {detail: There was an error parsing the body}
+      excludes: [exception_message, stack_trace, source_line, private_state]
 
 manifest:
   path: tests/fixtures/manifest.yaml

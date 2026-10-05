@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://fastapi-rs.dev/schemas/python-asgi-workflow/8",
   "title": "FastAPI-RS Python/ASGI workflow input v8",
-  "description": "Version 8 adds target-only dependency cleanup and JSON body decode fault contracts, while retaining v7 verification and v6 deterministic multi-client WebSocket conversations.",
+  "description": "Version 8 adds target-only dependency cleanup, JSON decode, and form parse fault contracts, while retaining v7 verification and v6 deterministic multi-client WebSocket conversations.",
   "type": "object",
   "required": [
     "schema",
@@ -532,7 +532,8 @@
               "enum": [
                 "http.route.invoke.before",
                 "http.route.invoke.after_dependencies.before",
-                "http.request.json_decode.before"
+                "http.request.json_decode.before",
+                "http.request.form_parse.before"
               ]
             },
             "contract": {
@@ -540,7 +541,8 @@
                 "http-route-invocation-error-and-recovery",
                 "http-route-invocation-error-cleans-dependencies",
                 "http-route-invocation-error-orders-function-and-request-dependency-cleanup",
-                "http-body-json-decode-error-returns-400"
+                "http-body-json-decode-error-returns-400",
+                "http-body-form-parse-error-returns-400"
               ]
             }
           },
@@ -583,6 +585,16 @@
                 },
                 "contract": {
                   "const": "http-body-json-decode-error-returns-400"
+                }
+              }
+            },
+            {
+              "properties": {
+                "point": {
+                  "const": "http.request.form_parse.before"
+                },
+                "contract": {
+                  "const": "http-body-form-parse-error-returns-400"
                 }
               }
             }

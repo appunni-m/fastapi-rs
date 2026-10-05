@@ -24,6 +24,8 @@ HTTP_ROUTE_DEPENDENCY_CLEANUP_FAULT_POINT = "http.route.invoke.after_dependencie
 HTTP_ROUTE_DEPENDENCY_CLEANUP_CONTRACT = "http-route-invocation-error-cleans-dependencies"
 HTTP_REQUEST_JSON_DECODE_FAULT_POINT = "http.request.json_decode.before"
 HTTP_REQUEST_JSON_DECODE_CONTRACT = "http-body-json-decode-error-returns-400"
+HTTP_REQUEST_FORM_PARSE_FAULT_POINT = "http.request.form_parse.before"
+HTTP_REQUEST_FORM_PARSE_CONTRACT = "http-body-form-parse-error-returns-400"
 HTTP_ROUTE_SCOPED_DEPENDENCY_CLEANUP_CONTRACT = (
     "http-route-invocation-error-orders-function-and-request-dependency-cleanup"
 )
@@ -47,6 +49,7 @@ FAULT_POINT_CONTRACTS: dict[str, frozenset[str]] = {
         }
     ),
     HTTP_REQUEST_JSON_DECODE_FAULT_POINT: frozenset({HTTP_REQUEST_JSON_DECODE_CONTRACT}),
+    HTTP_REQUEST_FORM_PARSE_FAULT_POINT: frozenset({HTTP_REQUEST_FORM_PARSE_CONTRACT}),
 }
 
 
@@ -238,37 +241,41 @@ def _assert_http_route_invocation_error_orders_scoped_dependency_cleanup(
         )
 
 
-def _assert_http_body_json_decode_error_returns_400(
-    case_result: Mapping[str, Any],
-) -> None:
+def _assert_http_400_error_response(case_result: Mapping[str, Any], context: str) -> None:
     if case_result.get("status") != "completed":
-        raise FaultContractError("JSON body decode fault case did not complete")
+        raise FaultContractError(f"{context} case did not complete")
     responses = [
         observation
         for _, observation in _observation_rows(case_result)
         if observation.get("kind") == "http_response"
     ]
     if len(responses) != 1:
-        raise FaultContractError("JSON body decode fault must expose exactly one HTTP response")
+        raise FaultContractError(f"{context} must expose exactly one HTTP response")
     values = responses[0].get("values")
     if not isinstance(values, Mapping) or type(values.get("status")) is not int:
-        raise FaultContractError("JSON body decode fault response must expose an integer status")
+        raise FaultContractError(f"{context} response must expose an integer status")
     if values["status"] != 400:
-        raise FaultContractError("arbitrary JSON body decode failure must expose HTTP 400")
+        raise FaultContractError(f"{context} must expose HTTP 400")
     body = values.get("body")
     if not isinstance(body, Mapping) or body.get("encoding") != "base64":
-        raise FaultContractError("JSON body decode fault response body must use base64 encoding")
+        raise FaultContractError(f"{context} response body must use base64 encoding")
     encoded_body = body.get("data")
     if not isinstance(encoded_body, str):
-        raise FaultContractError("JSON body decode fault response body must contain base64 data")
+        raise FaultContractError(f"{context} response body must contain base64 data")
     try:
         observed_body = json.loads(base64.b64decode(encoded_body, validate=True))
     except (ValueError, json.JSONDecodeError) as exc:
-        raise FaultContractError("JSON body decode fault response body must be JSON") from exc
+        raise FaultContractError(f"{context} response body must be JSON") from exc
     if observed_body != {"detail": "There was an error parsing the body"}:
-        raise FaultContractError(
-            "arbitrary JSON body decode failure must expose FastAPI's 400 detail"
-        )
+        raise FaultContractError(f"{context} must expose FastAPI's 400 detail")
+
+
+def _assert_http_body_json_decode_error_returns_400(case_result: Mapping[str, Any]) -> None:
+    _assert_http_400_error_response(case_result, "JSON body decode fault")
+
+
+def _assert_http_body_form_parse_error_returns_400(case_result: Mapping[str, Any]) -> None:
+    _assert_http_400_error_response(case_result, "Form parse fault")
 
 
 CONTRACT_ASSERTIONS: dict[str, Callable[[Mapping[str, Any]], None]] = {
@@ -278,6 +285,7 @@ CONTRACT_ASSERTIONS: dict[str, Callable[[Mapping[str, Any]], None]] = {
         _assert_http_route_invocation_error_orders_scoped_dependency_cleanup
     ),
     HTTP_REQUEST_JSON_DECODE_CONTRACT: _assert_http_body_json_decode_error_returns_400,
+    HTTP_REQUEST_FORM_PARSE_CONTRACT: _assert_http_body_form_parse_error_returns_400,
 }
 
 

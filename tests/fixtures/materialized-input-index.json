@@ -1439,6 +1439,31 @@
       ]
     },
     {
+      "id": "body-form-parse-fault-contract",
+      "input_path": "tests/fixtures/inputs/parity/body-form-parse-fault-contract.json",
+      "input_sha256": "ac08216a0b3a4bad3a2e5ae41aef8dbe51c8131fa896e1c35d4b19d8884d4eb5",
+      "recipe_path": "tests/fixtures/input-recipes/parity/body-form-parse-fault-contract.yaml",
+      "recipe_sha256": "07f6939dd7a3c2873fdbb80d0920f880613ddeeafa6157f99b119afa7d3ce46d",
+      "workload_path": "tests/fixtures/workloads/body_form_parse_fault_contract.py",
+      "workload_sha256": "a3d363334eee22f8367e552f09e5faadc504a58bf39d35933394eced51d8e653",
+      "case_ids": [
+        "fastapi.fault-contract.body-form-parse.arbitrary-error-400"
+      ],
+      "case_contracts": [
+        {
+          "case_id": "fastapi.fault-contract.body-form-parse.arbitrary-error-400",
+          "verification": "fault-contract",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_tutorial/test_request_forms/test_tutorial001.py"
+          ],
+          "fault": {
+            "point": "http.request.form_parse.before",
+            "contract": "http-body-form-parse-error-returns-400"
+          }
+        }
+      ]
+    },
+    {
       "id": "body-gt-zero",
       "input_path": "tests/fixtures/inputs/parity/body-gt-zero.json",
       "input_sha256": "c15cd163be9410058e1dd934c8090fc5aa5363627879c203356ee0eeaecb1f89",
@@ -28884,6 +28909,20 @@
         "http.body.bytes",
         "http.status",
         "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_request_forms/test_tutorial001.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-request-forms-test-tutorial001",
+      "workflow_id": "body-form-parse-fault-contract",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.fault-contract.body-form-parse.arbitrary-error-400"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
       ]
     },
     {

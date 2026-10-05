@@ -32,6 +32,8 @@ pub(crate) enum MachineResume {
 pub(crate) enum MachineAction {
     /// Await this Python awaitable, yielding its Futures to the caller's event loop.
     Await(Py<PyAny>),
+    /// Deliver this exception back to the active state machine as an await failure.
+    Raise(PyErr),
     /// Finish the outer awaitable with this value.
     Complete(Py<PyAny>),
 }
@@ -210,6 +212,9 @@ impl NativeAwaitable {
                     }
                     Err(error) => input = DriveInput::Machine(MachineResume::Error(error)),
                 },
+                MachineAction::Raise(error) => {
+                    input = DriveInput::Machine(MachineResume::Error(error));
+                }
                 MachineAction::Complete(value) => {
                     self.finish();
                     return Err(PyStopIteration::new_err((value,)));

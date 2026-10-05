@@ -13,6 +13,7 @@ from jsonschema import Draft202012Validator
 from yaml import SafeLoader
 
 from scripts.parity.fault_contracts import (
+    HTTP_REQUEST_FORM_PARSE_CONTRACT,
     HTTP_REQUEST_JSON_DECODE_CONTRACT,
     FaultContractError,
     verification_mode,
@@ -792,7 +793,10 @@ def load_workflow(
                 ) from exc
             if mode == "fault-contract":
                 actions = case["actions"]
-                if case["fault"]["contract"] == HTTP_REQUEST_JSON_DECODE_CONTRACT:
+                if case["fault"]["contract"] in {
+                    HTTP_REQUEST_FORM_PARSE_CONTRACT,
+                    HTTP_REQUEST_JSON_DECODE_CONTRACT,
+                }:
                     if (
                         len(actions) != 1
                         or actions[0]["kind"] != "http_request"

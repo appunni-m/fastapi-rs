@@ -1,0 +1,37 @@
+schema: fastapi-rs/python-asgi-workflow@8
+workload:
+  file: tests/fixtures/workloads/body_form_parse_fault_contract.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.fault-contract.body-form-parse.arbitrary-error-400
+  verification: fault-contract
+  fault:
+    point: http.request.form_parse.before
+    contract: http-body-form-parse-error-returns-400
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: arbitrary-form-parser-error-response
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /form
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver], [content-type, application/x-www-form-urlencoded]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: 'name=Ada', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_tutorial/test_request_forms/test_tutorial001.py, kind: upstream_test}

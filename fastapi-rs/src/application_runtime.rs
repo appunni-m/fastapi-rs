@@ -10211,9 +10211,15 @@ impl FastApiCall {
             .as_ref()
             .ok_or_else(|| PyRuntimeError::new_err("HTTP request was not initialized"))?
             .bind(py);
-        let form_awaitable = request.call_method0("form")?;
         self.form_request = Some(request.clone().unbind());
         self.pending = Some(PendingAction::FormParse);
+        #[cfg(feature = "fault-injection")]
+        if crate::fault_injection::take_http_request_form_parse_before() {
+            return Ok(MachineAction::Raise(PyRuntimeError::new_err(
+                "Fault injected at http.request.form_parse.before",
+            )));
+        }
+        let form_awaitable = request.call_method0("form")?;
         Ok(MachineAction::Await(form_awaitable.unbind()))
     }
 
@@ -11144,13 +11150,17 @@ impl FastApiCall {
         let multipart_exception = py
             .import("starlette.formparsers")?
             .getattr("MultiPartException")?;
-        if !error.matches(py, &multipart_exception)? {
-            return Err(error);
+        let body = PyDict::new(py);
+        if error.matches(py, &multipart_exception)? {
+            body.set_item("detail", value.getattr("message")?)?;
+        } else {
+            let exception = py.import("builtins")?.getattr("Exception")?;
+            if !error.matches(py, &exception)? {
+                return Err(error);
+            }
+            body.set_item("detail", "There was an error parsing the body")?;
         }
         self.response_status = 400;
-        let detail = value.getattr("message")?;
-        let body = PyDict::new(py);
-        body.set_item("detail", detail)?;
         self.response_body = json_bytes(py, &body)?;
         self.send_start(py)
     }

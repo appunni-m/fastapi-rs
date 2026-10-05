@@ -390,6 +390,13 @@ def validate_fault_contract_policy(metadata: dict[str, Any], manifest: dict[str,
                     "body": {"detail": "There was an error parsing the body"},
                 },
             },
+            "http-body-form-parse-error-returns-400": {
+                "first_response": {
+                    "kind": "http_response",
+                    "status": 400,
+                    "body": {"detail": "There was an error parsing the body"},
+                },
+            },
         },
     )
     excluded_observations = {row["contract"]: row.get("excludes") for row in contracts}
