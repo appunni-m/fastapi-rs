@@ -20817,6 +20817,89 @@
       ]
     },
     {
+      "id": "response-field-traversal",
+      "input_path": "tests/fixtures/inputs/parity/response-field-traversal.json",
+      "input_sha256": "2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655",
+      "recipe_path": "tests/fixtures/input-recipes/parity/response-field-traversal.yaml",
+      "recipe_sha256": "3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66",
+      "workload_path": "tests/fixtures/workloads/response_field_traversal.py",
+      "workload_sha256": "35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9",
+      "case_ids": [
+        "fastapi.response-field-traversal.branch-second-construction-error-retry",
+        "fastapi.response-field-traversal.parent-own-fields-before-child-traversal",
+        "fastapi.response-field-traversal.earlier-full-direct-match-skips-later-include",
+        "fastapi.response-field-traversal.earlier-partial-direct-match-reaches-later-full-include",
+        "fastapi.response-field-traversal.unmatched-request-visits-both-includes",
+        "fastapi.response-field-traversal.redirect-search-follows-initial-branch-traversal",
+        "fastapi.response-field-traversal.returned-response-still-constructs-included-field"
+      ],
+      "case_contracts": [
+        {
+          "case_id": "fastapi.response-field-traversal.branch-second-construction-error-retry",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/bigger-applications.md",
+            "source:documented-page:tutorial/response-model.md",
+            "source:upstream-test:tests/test_router_include_context.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.response-field-traversal.parent-own-fields-before-child-traversal",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/bigger-applications.md",
+            "source:documented-page:tutorial/response-model.md",
+            "source:upstream-test:tests/test_router_include_context.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.response-field-traversal.earlier-full-direct-match-skips-later-include",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/bigger-applications.md",
+            "source:documented-page:tutorial/response-model.md",
+            "source:upstream-test:tests/test_router_include_context.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.response-field-traversal.earlier-partial-direct-match-reaches-later-full-include",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/bigger-applications.md",
+            "source:documented-page:tutorial/response-model.md",
+            "source:upstream-test:tests/test_router_include_context.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.response-field-traversal.unmatched-request-visits-both-includes",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/bigger-applications.md",
+            "source:documented-page:tutorial/response-model.md",
+            "source:upstream-test:tests/test_router_include_context.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.response-field-traversal.redirect-search-follows-initial-branch-traversal",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/bigger-applications.md",
+            "source:upstream-test:tests/test_router_include_context.py",
+            "source:upstream-test:tests/test_router_redirect_slashes.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.response-field-traversal.returned-response-still-constructs-included-field",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/response-directly.md",
+            "source:upstream-test:tests/test_response_model_as_return_annotation.py",
+            "source:upstream-test:tests/test_router_include_context.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "response-model-data-filter-exclude-unset-none-review",
       "input_path": "tests/fixtures/inputs/parity/response-model-data-filter-exclude-unset-none-review.json",
       "input_sha256": "e8df817a4df31b3f2f646068c8a9286416ff13577822d1fc572bbc5d8eb34a17",
@@ -47501,6 +47584,121 @@
         "fastapi.response-class-provenance.router-custom-default-model",
         "fastapi.response-field-lifecycle.direct-annotated-reuse",
         "fastapi.response-field-lifecycle.field-metadata-warning-error-recovery"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:advanced/response-directly.md",
+      "fixture_id": "fastapi.docs.advanced-response-directly",
+      "workflow_id": "response-field-traversal",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.response-field-traversal.returned-response-still-constructs-included-field"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/bigger-applications.md",
+      "fixture_id": "fastapi.docs.tutorial-bigger-applications",
+      "workflow_id": "response-field-traversal",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 6 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.response-field-traversal.branch-second-construction-error-retry",
+        "fastapi.response-field-traversal.earlier-full-direct-match-skips-later-include",
+        "fastapi.response-field-traversal.earlier-partial-direct-match-reaches-later-full-include",
+        "fastapi.response-field-traversal.parent-own-fields-before-child-traversal",
+        "fastapi.response-field-traversal.redirect-search-follows-initial-branch-traversal",
+        "fastapi.response-field-traversal.unmatched-request-visits-both-includes"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/response-model.md",
+      "fixture_id": "fastapi.docs.tutorial-response-model",
+      "workflow_id": "response-field-traversal",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 5 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.response-field-traversal.branch-second-construction-error-retry",
+        "fastapi.response-field-traversal.earlier-full-direct-match-skips-later-include",
+        "fastapi.response-field-traversal.earlier-partial-direct-match-reaches-later-full-include",
+        "fastapi.response-field-traversal.parent-own-fields-before-child-traversal",
+        "fastapi.response-field-traversal.unmatched-request-visits-both-includes"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_response_model_as_return_annotation.py",
+      "fixture_id": "fastapi.test.test-response-model-as-return-annotation",
+      "workflow_id": "response-field-traversal",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.application_error.exception, asgi.send.message_types, construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.response-field-traversal.returned-response-still-constructs-included-field"
+      ],
+      "observation_selectors": [
+        "asgi.application_error.exception",
+        "asgi.send.message_types",
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_router_include_context.py",
+      "fixture_id": "fastapi.test.test-router-include-context",
+      "workflow_id": "response-field-traversal",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 7 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.response-field-traversal.branch-second-construction-error-retry",
+        "fastapi.response-field-traversal.earlier-full-direct-match-skips-later-include",
+        "fastapi.response-field-traversal.earlier-partial-direct-match-reaches-later-full-include",
+        "fastapi.response-field-traversal.parent-own-fields-before-child-traversal",
+        "fastapi.response-field-traversal.redirect-search-follows-initial-branch-traversal",
+        "fastapi.response-field-traversal.returned-response-still-constructs-included-field",
+        "fastapi.response-field-traversal.unmatched-request-visits-both-includes"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_router_redirect_slashes.py",
+      "fixture_id": "fastapi.test.test-router-redirect-slashes",
+      "workflow_id": "response-field-traversal",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.response-field-traversal.redirect-search-follows-initial-branch-traversal"
       ],
       "observation_selectors": [
         "asgi.send.message_types",

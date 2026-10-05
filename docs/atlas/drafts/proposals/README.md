@@ -64,15 +64,17 @@ Full FastAPI compatibility remains unfinished.
   response-class precedence. Native implementation passed all 16 comparisons
   within 191 selected normal cases at `ebcdf2d`. Dynamic refresh, concurrency,
   raw proxies and wider field traversal remain separate gaps.
-- `response-field-traversal/`: independently reviewed inactive seven-case /
+- `response-field-traversal/`: historical independently reviewed seven-case /
   42-action inputs cover whole-branch failure/retry, parent/child field order,
   full/partial matches, misses, redirects and returned-Response setup. Normal
   user exceptions provide the failure stimulus; no fault hook or expected outputs
-  are present. Admission and fresh live observations remain required. Terminal
+  are present. Active copies and 65 precise links to 11 existing public
+  operations are admitted; fresh live observations remain required. Terminal
   405, dynamic refresh and workers are outside this backlog.
 
 Both historical proposals passed recipe-loader/Ruff admission and independent
 static review; their authored copies remain outside active inputs with no
 expected outputs. Awaitable and response-field lifecycle active copies are
 admitted and measured. The traversal follow-on has its own independent static
-review and remains outside active inputs.
+review. Historical authored copies remain outside active inputs; active traversal
+copies require their own fresh live receipts.

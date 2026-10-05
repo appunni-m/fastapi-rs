@@ -809,6 +809,22 @@ reviewed_api_contract_overlay:
           - Full FastAPI.__init__ parameter and attribute parity remains incomplete;
             FastAPI-RS currently implements a selected subset of the public
             constructor contract.
+          - &response_field_traversal_gap >-
+            Visited included branches must prepare all own effective fields before
+            publishing the vector, retry the whole unpublished branch after a later
+            own constructor fails, descend into child branches only when matching
+            reaches them, and retain successful fields across miss/redirect/handle
+            paths. The seven response-field-traversal inputs are a required fresh
+            parity gate; static admission is not execution evidence.
+          - &response_field_traversal_history_gap >-
+            Route-version refresh/live additions, raw included-route proxies,
+            URL/OpenAPI/WebSocket field traversal, empty-prefix validation traversal,
+            reentrancy/concurrency, mutable model/default/metadata history, arbitrary
+            schemas, terminal405, cancellation, streaming and worker scheduling remain
+            outside traversal7. The one-use user hook is not a native fault injection
+            or proof of resource finalizer timing, yield cleanup or private cache
+            identity. Internal DefaultPlaceholder and ModelField remain source
+            evidence with private/internal classification.
       source_evidence:
         - {path: fastapi/routing.py, symbol: _populate_api_route_state}
         - {path: fastapi/utils.py, symbol: create_model_field}
@@ -881,6 +897,10 @@ reviewed_api_contract_overlay:
         - {path: tests/test_router_events.py, symbol: test_router_async_generator_lifespan}
         - {path: tests/test_router_events.py, symbol: test_startup_shutdown_handlers_as_parameters}
         - {path: docs/en/docs/advanced/events.md}
+        - {path: fastapi/routing.py, symbol: _IncludedRouter}
+        - {path: fastapi/routing.py, symbol: APIRouter}
+        - {path: tests/test_router_include_context.py}
+        - {path: docs/en/docs/tutorial/bigger-applications.md}
       fixture_refs:
         - &response_field_direct_reuse
           recipe_path: tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml
@@ -1153,6 +1173,41 @@ reviewed_api_contract_overlay:
           case_id: fastapi.dependency-overrides.signature-reanalysis.sync-unrelated-map
         - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-signature-reanalysis.yaml
           case_id: fastapi.dependency-overrides.signature-reanalysis.sync-self-map
+        - &response_traversal_branch_retry
+          recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+          case_id: fastapi.response-field-traversal.branch-second-construction-error-retry
+          workload_path: tests/fixtures/workloads/response_field_traversal.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
+        - &response_traversal_parent_child
+          recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+          case_id: fastapi.response-field-traversal.parent-own-fields-before-child-traversal
+          workload_path: tests/fixtures/workloads/response_field_traversal.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
+        - &response_traversal_early_full
+          recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+          case_id: fastapi.response-field-traversal.earlier-full-direct-match-skips-later-include
+          workload_path: tests/fixtures/workloads/response_field_traversal.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
+        - &response_traversal_early_partial
+          recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+          case_id: fastapi.response-field-traversal.earlier-partial-direct-match-reaches-later-full-include
+          workload_path: tests/fixtures/workloads/response_field_traversal.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
+        - &response_traversal_missing
+          recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+          case_id: fastapi.response-field-traversal.unmatched-request-visits-both-includes
+          workload_path: tests/fixtures/workloads/response_field_traversal.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
+        - &response_traversal_redirect
+          recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+          case_id: fastapi.response-field-traversal.redirect-search-follows-initial-branch-traversal
+          workload_path: tests/fixtures/workloads/response_field_traversal.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
+        - &response_traversal_returned_response
+          recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+          case_id: fastapi.response-field-traversal.returned-response-still-constructs-included-field
+          workload_path: tests/fixtures/workloads/response_field_traversal.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
       feature_ids: [public-api-errors, app-routing, dependency-security, request-validation, websocket-lifecycle, openapi-docs, response-serialization]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes, websocket.close_code, websocket.close_reason, websocket.event_order, websocket.messages, construction.outcome, construction.exception_class, construction.exception_message, openapi.document, asgi.lifespan.event_order, asgi.lifespan.startup, asgi.lifespan.shutdown, asgi.lifespan.application_errors, asgi.lifespan.workload_trace, warnings.category_message, asgi.send.message_types, asgi.application_error.exception, validation.error_details, error.public_attributes]
       supported_slice: >-
@@ -1221,6 +1276,15 @@ reviewed_api_contract_overlay:
         unfiltered warning entries and all prior probe send fields. These are input
         mappings requiring fresh live receipts, not target-complete support;
         DefaultPlaceholder and ModelField remain internal source evidence.
+        Seven response-field-traversal normal inputs map fixed public route trees, a
+        one-use user schema-hook refusal and retry, parent own-field preparation
+        before child traversal, earlier full versus partial matches, misses, slash
+        search and returned-Response field setup. They retain actual construction,
+        callbacks, warnings/errors, exact status/ordered headers/body and full prior
+        non-state send fields through an early public state route. Source-derived
+        branch publication and traversal contracts require fresh identity-checked
+        source/target receipts; these mappings do not establish complete target
+        support, mutable router-version history or generic sibling behavior.
     fastapi.applications.FastAPI.exception_handler:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::exception_handler
       source_evidence:
@@ -1258,20 +1322,15 @@ reviewed_api_contract_overlay:
           case_id: fastapi.websocket-validation.custom-handler-close
         - recipe_path: tests/fixtures/input-recipes/parity/websocket-exception-handler.yaml
           case_id: fastapi.websocket-exception.custom-handler-close
+        - *response_traversal_branch_retry
+        - *response_traversal_parent_child
+        - *response_traversal_early_full
+        - *response_traversal_early_partial
+        - *response_traversal_missing
+        - *response_traversal_redirect
+        - *response_traversal_returned_response
       feature_ids: [public-api-errors]
-      observation_selectors:
-        - http.status
-        - http.headers.ordered
-        - http.body.bytes
-        - asgi.lifespan.workload_trace
-        - construction.outcome
-        - construction.exception_class
-        - construction.exception_message
-        - websocket.close_code
-        - websocket.close_reason
-        - websocket.event_order
-        - websocket.messages
-        - websocket.workload_trace
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.lifespan.workload_trace, construction.outcome, construction.exception_class, construction.exception_message, websocket.close_code, websocket.close_reason, websocket.event_order, websocket.messages, websocket.workload_trace, asgi.send.message_types, asgi.application_error.exception]
       supported_slice: >-
         Partial native slice: registers custom HTTP exception handlers through
         the decorator and returns the original handler object. A custom class
@@ -1289,6 +1348,20 @@ reviewed_api_contract_overlay:
         WebSocketException handlers; the latter records the endpoint socket,
         handler socket, exception fields, state, and close event for direct
         oracle comparison.
+        All seven response-field-traversal cases register the decorator through the
+        public API. Only branch-second-construction-error-retry invokes the handler: a
+        user ValueError subclass raised by included-field construction is observed
+        through actual exception class/message/path, a custom response and the
+        following public state journal. The other six links establish registration
+        only. Exact handler recovery and traversal outcomes require fresh live
+        receipts; arbitrary handlers, post-stack mutation and generic sibling dispatch
+        remain outside this gate.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - *response_field_traversal_gap
+          - *response_field_traversal_history_gap
     fastapi.applications.FastAPI.frontend:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::frontend
       source_evidence:
@@ -2087,6 +2160,9 @@ reviewed_api_contract_overlay:
         - {path: docs/en/docs/tutorial/response-model.md}
         - {path: docs/en/docs/advanced/custom-response.md}
         - {path: fastapi/responses.py}
+        - {path: tests/test_response_model_as_return_annotation.py}
+        - {path: docs/en/docs/advanced/response-directly.md}
+        - {path: tests/test_router_include_context.py}
       fixture_refs:
         - *response_field_direct_reuse
         - *response_field_included_reuse
@@ -2160,6 +2236,13 @@ reviewed_api_contract_overlay:
           case_id: fastapi.dependencies.callable-classification.public-marked-scalar-error-cleanup-recovery
         - recipe_path: tests/fixtures/input-recipes/parity/dependency-callable-classification.yaml
           case_id: fastapi.dependencies.callable-classification.wrapped-yield-error-cleanup-recovery
+        - *response_traversal_branch_retry
+        - *response_traversal_parent_child
+        - *response_traversal_early_full
+        - *response_traversal_early_partial
+        - *response_traversal_missing
+        - *response_traversal_redirect
+        - *response_traversal_returned_response
       feature_ids: [response-serialization]
       observation_selectors: [http.status, http.body.bytes, http.headers.ordered, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message, validation.error_details, error.public_attributes]
       supported_slice: >-
@@ -2178,6 +2261,13 @@ reviewed_api_contract_overlay:
         placeholder provenance cannot be inferred from JSONResponse class identity;
         broader class descriptors and arbitrary serializers remain unproven. Static
         admission is not a passing source/target execution receipt.
+        All seven response-field-traversal inputs return the pinned sibling
+        JSONResponse from an early public state route, retaining warnings/errors,
+        callbacks and every prior non-state raw send field. Selected user error and
+        returned-Response controls expose FastAPI field setup versus
+        validation/serialization bypass. This alias remains sibling-owned; static
+        links and the FastAPI field observations do not establish generic response
+        parity or target support without fresh comparisons.
     fastapi.responses.PlainTextResponse:
       rust_binding: fastapi-rs/src/application_runtime.rs::register
       source_evidence:
@@ -3052,6 +3142,12 @@ reviewed_api_contract_overlay:
           end_line: 7
           required_text:
             - "But if you return a `Response` directly (or any subclass, like `JSONResponse`), the data won't be automatically converted (even if you declare a `response_model`)"
+        - {path: fastapi/routing.py, symbol: _IncludedRouter}
+        - {path: fastapi/routing.py, symbol: APIRouter}
+        - {path: tests/test_router_include_context.py}
+        - {path: docs/en/docs/tutorial/bigger-applications.md}
+        - {path: tests/test_router_redirect_slashes.py}
+        - {path: docs/en/docs/advanced/response-directly.md}
       fixture_refs:
         - *response_field_direct_reuse
         - *response_field_included_reuse
@@ -3099,6 +3195,13 @@ reviewed_api_contract_overlay:
           case_id: fastapi.response.bodyless-status.304-validates-response-model
           workload_path: tests/fixtures/workloads/response_bodyless_status_policy.py
           observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types, asgi.application_error.validation_error_class, asgi.application_error.validation_error_details]
+        - *response_traversal_branch_retry
+        - *response_traversal_parent_child
+        - *response_traversal_early_full
+        - *response_traversal_early_partial
+        - *response_traversal_missing
+        - *response_traversal_redirect
+        - *response_traversal_returned_response
       feature_ids: [app-routing, dependency-security, response-serialization, python-data-encoding]
       observation_selectors:
         - http.status
@@ -3143,6 +3246,15 @@ reviewed_api_contract_overlay:
         registration rather than HTTP execution. Fresh unchanged-input source/target
         receipts are required; these inputs do not extend sync worker, mutable
         cache-history, cancellation, or generic sibling claims.
+        Seven response-field-traversal normal inputs map fixed public route trees, a
+        one-use user schema-hook refusal and retry, parent own-field preparation
+        before child traversal, earlier full versus partial matches, misses, slash
+        search and returned-Response field setup. They retain actual construction,
+        callbacks, warnings/errors, exact status/ordered headers/body and full prior
+        non-state send fields through an early public state route. Source-derived
+        branch publication and traversal contracts require fresh identity-checked
+        source/target receipts; these mappings do not establish complete target
+        support, mutable router-version history or generic sibling behavior.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
@@ -3170,6 +3282,8 @@ reviewed_api_contract_overlay:
             classification-cache history, descriptor hooks, arbitrary awaitable
             concurrency, or exact traceback parity. Static admission is not
             live source/target execution evidence.
+          - *response_field_traversal_gap
+          - *response_field_traversal_history_gap
     fastapi.Response:
       rust_binding: fastapi-rs/src/application_runtime.rs::register
       source_evidence:
@@ -3202,12 +3316,23 @@ reviewed_api_contract_overlay:
         - {path: tests/test_router_include_context.py, symbol: test_router_include_context_matches_flattened_include_metadata}
         - {path: tests/test_additional_responses_router.py}
         - {path: docs/en/docs/advanced/additional-responses.md}
+        - {path: fastapi/routing.py, symbol: _IncludedRouter}
+        - {path: tests/test_router_redirect_slashes.py}
+        - {path: tests/test_response_model_as_return_annotation.py}
+        - {path: docs/en/docs/advanced/response-directly.md}
       fixture_refs:
         - *response_field_included_reuse
         - *response_class_router_custom
         - *response_class_include_custom
         - *response_class_route_over_inherited
         - *response_class_inherited_omitted
+        - *response_traversal_branch_retry
+        - *response_traversal_parent_child
+        - *response_traversal_early_full
+        - *response_traversal_early_partial
+        - *response_traversal_missing
+        - *response_traversal_redirect
+        - *response_traversal_returned_response
       feature_ids: [app-routing, request-validation, openapi-docs, websocket-lifecycle, response-serialization]
       observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths, http.headers.ordered, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
       supported_slice: >-
@@ -3237,6 +3362,15 @@ reviewed_api_contract_overlay:
         gate, including currently unsupported target behavior; the fixtures contain no
         workaround. Static mappings do not establish lifecycle or immutable provenance
         parity, mutable history, or broader custom response support.
+        Seven response-field-traversal normal inputs map fixed public route trees, a
+        one-use user schema-hook refusal and retry, parent own-field preparation
+        before child traversal, earlier full versus partial matches, misses, slash
+        search and returned-Response field setup. They retain actual construction,
+        callbacks, warnings/errors, exact status/ordered headers/body and full prior
+        non-state send fields through an early public state route. Source-derived
+        branch publication and traversal contracts require fresh identity-checked
+        source/target receipts; these mappings do not establish complete target
+        support, mutable router-version history or generic sibling behavior.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
@@ -3245,6 +3379,8 @@ reviewed_api_contract_overlay:
           - *response_class_provenance_gap
           - *response_field_serialization_gap
           - *response_field_history_gap
+          - *response_field_traversal_gap
+          - *response_field_traversal_history_gap
     fastapi.applications.FastAPI.include_router:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::include_router
       source_evidence:
@@ -3280,12 +3416,24 @@ reviewed_api_contract_overlay:
         - {path: tests/test_router_events.py, symbol: test_router_nested_lifespan_state_overriding_by_parent}
         - {path: tests/test_router_events.py, symbol: test_startup_shutdown_handlers_as_parameters}
         - {path: docs/en/docs/advanced/events.md}
+        - {path: fastapi/routing.py, symbol: _IncludedRouter}
+        - {path: fastapi/routing.py, symbol: APIRouter}
+        - {path: tests/test_router_redirect_slashes.py}
+        - {path: tests/test_response_model_as_return_annotation.py}
+        - {path: docs/en/docs/advanced/response-directly.md}
       fixture_refs:
         - *response_field_included_reuse
         - *response_class_router_custom
         - *response_class_include_custom
         - *response_class_route_over_inherited
         - *response_class_inherited_omitted
+        - *response_traversal_branch_retry
+        - *response_traversal_parent_child
+        - *response_traversal_early_full
+        - *response_traversal_early_partial
+        - *response_traversal_missing
+        - *response_traversal_redirect
+        - *response_traversal_returned_response
       feature_ids: [app-routing, request-validation, websocket-lifecycle, openapi-docs, response-serialization]
       observation_selectors: [http.status, http.body.bytes, websocket.event_order, websocket.messages, openapi.document, openapi.paths, asgi.lifespan.event_order, asgi.lifespan.startup, asgi.lifespan.shutdown, asgi.lifespan.application_errors, asgi.lifespan.workload_trace, warnings.category_message, http.headers.ordered, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
       supported_slice: >-
@@ -3325,6 +3473,15 @@ reviewed_api_contract_overlay:
         gate, including currently unsupported target behavior; the fixtures contain no
         workaround. Static mappings do not establish lifecycle or immutable provenance
         parity, mutable history, or broader custom response support.
+        Seven response-field-traversal normal inputs map fixed public route trees, a
+        one-use user schema-hook refusal and retry, parent own-field preparation
+        before child traversal, earlier full versus partial matches, misses, slash
+        search and returned-Response field setup. They retain actual construction,
+        callbacks, warnings/errors, exact status/ordered headers/body and full prior
+        non-state send fields through an early public state route. Source-derived
+        branch publication and traversal contracts require fresh identity-checked
+        source/target receipts; these mappings do not establish complete target
+        support, mutable router-version history or generic sibling behavior.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
@@ -3333,6 +3490,8 @@ reviewed_api_contract_overlay:
           - *response_class_provenance_gap
           - *response_field_serialization_gap
           - *response_field_history_gap
+          - *response_field_traversal_gap
+          - *response_field_traversal_history_gap
     fastapi.applications.FastAPI.on_event:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::on_event
       source_evidence:
@@ -3509,8 +3668,14 @@ reviewed_api_contract_overlay:
         - {path: tests/test_router_events.py, symbol: test_startup_shutdown_handlers_as_parameters}
         - {path: tests/test_router_circular_import.py, symbol: test_router_circular_import}
         - {path: docs/en/docs/advanced/events.md}
-      feature_ids: [app-routing, request-validation, openapi-docs, websocket-lifecycle, public-api-errors]
-      observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths, asgi.lifespan.event_order, asgi.lifespan.startup, asgi.lifespan.shutdown, asgi.lifespan.application_errors, asgi.lifespan.workload_trace, construction.outcome, construction.exception_class, construction.exception_message]
+        - {path: fastapi/routing.py, symbol: _IncludedRouter}
+        - {path: fastapi/routing.py, symbol: _populate_api_route_state}
+        - {path: fastapi/utils.py, symbol: create_model_field}
+        - {path: fastapi/_compat/v2.py, symbol: ModelField}
+        - {path: docs/en/docs/tutorial/bigger-applications.md}
+        - {path: docs/en/docs/tutorial/response-model.md}
+      feature_ids: [app-routing, request-validation, openapi-docs, websocket-lifecycle, public-api-errors, response-serialization]
+      observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths, asgi.lifespan.event_order, asgi.lifespan.startup, asgi.lifespan.shutdown, asgi.lifespan.application_errors, asgi.lifespan.workload_trace, construction.outcome, construction.exception_class, construction.exception_message, http.headers.ordered, asgi.send.message_types, asgi.application_error.exception]
       supported_slice: >-
         Nested route sets can be included repeatedly with distinct prefixes and
         string tags. The reviewed inputs observe four concrete routes after two
@@ -3526,6 +3691,20 @@ reviewed_api_contract_overlay:
         values inherit the parent/include context, including across nested
         inclusions. `strict-content-type-router-level-upstream` covers lax
         outer and strict inner routers and defaults under a lax app.
+        The response-field-traversal parent-own-fields-before-child-traversal input
+        declares own A, nested included B and own C before app inclusion with nonempty
+        prefixes. The public journal observes parent own-field preparation, later
+        child visitation, retained fields and exact responses/sends. Source-defined
+        eager parent-own preparation and lazy child traversal require fresh receipts;
+        dynamic branch/version/proxy history and concurrency remain unproven.
+      fixture_refs:
+        - *response_traversal_parent_child
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - *response_field_traversal_gap
+          - *response_field_traversal_history_gap
     fastapi.routing.APIRouter.frontend:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::frontend
       source_evidence:
@@ -3578,12 +3757,21 @@ reviewed_api_contract_overlay:
         - {path: tests/test_router_events.py, symbol: test_router_sync_generator_lifespan}
         - {path: tests/test_router_events.py, symbol: test_router_async_generator_lifespan}
         - {path: tests/test_router_events.py, symbol: test_startup_shutdown_handlers_as_parameters}
+        - {path: fastapi/routing.py, symbol: _IncludedRouter}
+        - {path: docs/en/docs/tutorial/bigger-applications.md}
       fixture_refs:
         - *response_field_included_reuse
         - *response_class_router_custom
         - *response_class_include_custom
         - *response_class_route_over_inherited
         - *response_class_inherited_omitted
+        - *response_traversal_branch_retry
+        - *response_traversal_parent_child
+        - *response_traversal_early_full
+        - *response_traversal_early_partial
+        - *response_traversal_missing
+        - *response_traversal_redirect
+        - *response_traversal_returned_response
       feature_ids: [app-routing, request-validation, openapi-docs, websocket-lifecycle, response-serialization]
       observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths, asgi.lifespan.event_order, asgi.lifespan.startup, asgi.lifespan.shutdown, asgi.lifespan.application_errors, asgi.lifespan.workload_trace, http.headers.ordered, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
       supported_slice: >-
@@ -3623,6 +3811,15 @@ reviewed_api_contract_overlay:
         gate, including currently unsupported target behavior; the fixtures contain no
         workaround. Static mappings do not establish lifecycle or immutable provenance
         parity, mutable history, or broader custom response support.
+        Seven response-field-traversal normal inputs map fixed public route trees, a
+        one-use user schema-hook refusal and retry, parent own-field preparation
+        before child traversal, earlier full versus partial matches, misses, slash
+        search and returned-Response field setup. They retain actual construction,
+        callbacks, warnings/errors, exact status/ordered headers/body and full prior
+        non-state send fields through an early public state route. Source-derived
+        branch publication and traversal contracts require fresh identity-checked
+        source/target receipts; these mappings do not establish complete target
+        support, mutable router-version history or generic sibling behavior.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
@@ -3631,6 +3828,8 @@ reviewed_api_contract_overlay:
           - *response_class_provenance_gap
           - *response_field_serialization_gap
           - *response_field_history_gap
+          - *response_field_traversal_gap
+          - *response_field_traversal_history_gap
     fastapi.routing.APIRouter.add_event_handler:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::add_event_handler
       source_evidence:
@@ -3685,6 +3884,8 @@ reviewed_api_contract_overlay:
         - {path: tests/test_additional_responses_router.py}
         - {path: docs/en/docs/advanced/additional-responses.md}
         - {path: tests/test_router_include_context.py}
+        - {path: fastapi/routing.py, symbol: _IncludedRouter}
+        - {path: docs/en/docs/tutorial/bigger-applications.md}
       fixture_refs:
         - *response_field_included_reuse
         - *response_class_router_custom
@@ -3693,6 +3894,13 @@ reviewed_api_contract_overlay:
         - *response_class_inherited_omitted
         - recipe_path: tests/fixtures/input-recipes/parity/operation-signatures-upstream.yaml
           case_id: fastapi.test.test-operations-signatures.test-signatures-consistency
+        - *response_traversal_branch_retry
+        - *response_traversal_parent_child
+        - *response_traversal_early_full
+        - *response_traversal_early_partial
+        - *response_traversal_missing
+        - *response_traversal_redirect
+        - *response_traversal_returned_response
       feature_ids: [app-routing, request-validation, openapi-docs, response-serialization]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.paths, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
       supported_slice: >-
@@ -3726,6 +3934,15 @@ reviewed_api_contract_overlay:
         gate, including currently unsupported target behavior; the fixtures contain no
         workaround. Static mappings do not establish lifecycle or immutable provenance
         parity, mutable history, or broader custom response support.
+        Seven response-field-traversal normal inputs map fixed public route trees, a
+        one-use user schema-hook refusal and retry, parent own-field preparation
+        before child traversal, earlier full versus partial matches, misses, slash
+        search and returned-Response field setup. They retain actual construction,
+        callbacks, warnings/errors, exact status/ordered headers/body and full prior
+        non-state send fields through an early public state route. Source-derived
+        branch publication and traversal contracts require fresh identity-checked
+        source/target receipts; these mappings do not establish complete target
+        support, mutable router-version history or generic sibling behavior.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
@@ -3734,6 +3951,8 @@ reviewed_api_contract_overlay:
           - *response_class_provenance_gap
           - *response_field_serialization_gap
           - *response_field_history_gap
+          - *response_field_traversal_gap
+          - *response_field_traversal_history_gap
     fastapi.routing.APIRouter.post:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyOperationRouteDescriptor::__get__
       source_evidence:
@@ -4007,6 +4226,12 @@ reviewed_api_contract_overlay:
         - {path: docs/en/docs/advanced/additional-responses.md}
         - {path: tests/test_tutorial/test_additional_responses/test_tutorial004.py}
         - {path: tests/test_extra_routes.py}
+        - {path: fastapi/routing.py, symbol: _IncludedRouter}
+        - {path: fastapi/routing.py, symbol: APIRouter}
+        - {path: tests/test_router_include_context.py}
+        - {path: docs/en/docs/tutorial/bigger-applications.md}
+        - {path: tests/test_router_redirect_slashes.py}
+        - {path: docs/en/docs/advanced/response-directly.md}
       fixture_refs:
         - *response_field_direct_reuse
         - *response_field_included_reuse
@@ -4123,6 +4348,13 @@ reviewed_api_contract_overlay:
           case_id: fastapi.worker-dispatch.async-endpoint-returned-awaitable-is-a-value
         - recipe_path: tests/fixtures/input-recipes/parity/operation-signatures-upstream.yaml
           case_id: fastapi.test.test-operations-signatures.test-signatures-consistency
+        - *response_traversal_branch_retry
+        - *response_traversal_parent_child
+        - *response_traversal_early_full
+        - *response_traversal_early_partial
+        - *response_traversal_missing
+        - *response_traversal_redirect
+        - *response_traversal_returned_response
       feature_ids: [app-routing, request-validation, response-serialization, openapi-docs]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message, validation.error_details, error.public_attributes]
       supported_slice: >-
@@ -4187,6 +4419,15 @@ reviewed_api_contract_overlay:
         unfiltered warning entries and all prior probe send fields. These are input
         mappings requiring fresh live receipts, not target-complete support;
         DefaultPlaceholder and ModelField remain internal source evidence.
+        Seven response-field-traversal normal inputs map fixed public route trees, a
+        one-use user schema-hook refusal and retry, parent own-field preparation
+        before child traversal, earlier full versus partial matches, misses, slash
+        search and returned-Response field setup. They retain actual construction,
+        callbacks, warnings/errors, exact status/ordered headers/body and full prior
+        non-state send fields through an early public state route. Source-derived
+        branch publication and traversal contracts require fresh identity-checked
+        source/target receipts; these mappings do not establish complete target
+        support, mutable router-version history or generic sibling behavior.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
@@ -4196,6 +4437,8 @@ reviewed_api_contract_overlay:
           - *response_class_provenance_gap
           - *response_field_serialization_gap
           - *response_field_history_gap
+          - *response_field_traversal_gap
+          - *response_field_traversal_history_gap
     fastapi.applications.FastAPI.post:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::post
       source_evidence:
@@ -4225,6 +4468,14 @@ reviewed_api_contract_overlay:
         - {path: docs/en/docs/advanced/additional-responses.md}
         - {path: tests/test_tutorial/test_additional_responses/test_tutorial004.py}
         - {path: tests/test_extra_routes.py}
+        - {path: fastapi/routing.py, symbol: _IncludedRouter}
+        - {path: fastapi/routing.py, symbol: APIRouter}
+        - {path: fastapi/routing.py, symbol: _populate_api_route_state}
+        - {path: fastapi/utils.py, symbol: create_model_field}
+        - {path: fastapi/_compat/v2.py, symbol: ModelField}
+        - {path: tests/test_router_include_context.py}
+        - {path: docs/en/docs/tutorial/bigger-applications.md}
+        - {path: docs/en/docs/tutorial/response-model.md}
       fixture_refs:
         - *generator_await_propagated_future
         - *generator_await_unflagged_error
@@ -4245,8 +4496,9 @@ reviewed_api_contract_overlay:
           case_id: fastapi.worker-dispatch.serialization-error-stays-on-loop
         - recipe_path: tests/fixtures/input-recipes/parity/operation-signatures-upstream.yaml
           case_id: fastapi.test.test-operations-signatures.test-signatures-consistency
+        - *response_traversal_early_partial
       feature_ids: [app-routing, openapi-docs, response-serialization]
-      observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths]
+      observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths, http.headers.ordered, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
       supported_slice: >-
         Partial native slice: registers a POST operation using the shared FastAPI
         response pipeline. include_in_schema=False keeps the route dispatchable
@@ -4280,6 +4532,19 @@ reviewed_api_contract_overlay:
         JSONResponse class: HTTP status and OpenAPI use 200 in
         path-operation-status-code-none-isolated. Custom response-class
         defaults remain unresolved and outside this slice.
+        The response-field-traversal
+        earlier-partial-direct-match-reaches-later-full-include input registers an
+        earlier direct POST with a fixed traced response model and a later included
+        GET at the same URL. GET and POST requests observe actual selection, field
+        construction/reuse and exact response/state/send records. This source-derived
+        partial-versus-full boundary requires fresh identity-checked receipts; pure
+        terminal405 and broader method/route mutation remain outside this input.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - *response_field_traversal_gap
+          - *response_field_traversal_history_gap
     fastapi.applications.FastAPI.put:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::put
       source_evidence:

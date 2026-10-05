@@ -415,7 +415,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@5
-    sha256: 6ca1d6f285a3b0c96387afd7906f1b270866dd880b86716607f0ca63ff977f37
+    sha256: 632e16de8764fa99ef9ce19164ca2ae7095f0ef391796f9d9d44a871294bbb8a
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -451,7 +451,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: f51bc66cdd9666195092196491b6fce33ec0a128f340f017f7bb14712ee201a7
+    sha256: 318c4a189fa53e36f7148940336f69168172c366781a6e453e6649489b28d74f
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -488,14 +488,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@5
-    sha256: 29bca17097d92cfba9266b8c4ad35c8e12fd6c787efe6b256aa336be95f507b1
+    sha256: c52f827d1a91192a57d523d8a6747d9604b6757c67d3911b25fe3f384785434c
     schema_path: tests/fixtures/schemas/materialized-input-index-v5.schema.json
     schema_sha256: 13dd4cf1032a4ad9161712364d94b9f91834afee380e1f8eee6f4f05c123261d
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 551
-      cases: 2287
-      partial_source_mappings: 1557
+      workflows: 552
+      cases: 2294
+      partial_source_mappings: 1563
 
 contract_metadata:
   aliases:
@@ -877,8 +877,8 @@ api_surface_contract:
     symbols_with_deprecation_refs: 15
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 101
-    symbols_with_operation_fixture_refs: 150
-    operation_fixture_refs: 1235
+    symbols_with_operation_fixture_refs: 151
+    operation_fixture_refs: 1300
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -1022,6 +1022,125 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.branch-second-construction-error-retry
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.parent-own-fields-before-child-traversal
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.earlier-full-direct-match-skips-later-include
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.earlier-partial-direct-match-reaches-later-full-include
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.unmatched-request-visits-both-includes
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.redirect-search-follows-initial-branch-traversal
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.returned-response-still-constructs-included-field
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     identity_workflow_refs:
     - workflow_id: root-alias-identity
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
@@ -1100,6 +1219,17 @@ api_surface_contract:
         refresh, raw proxies for included routes, URL/OpenAPI/WebSocket field-materialization traversal,
         concurrency/reentrancy, cancellation, dynamic warning filters, and broader sync validation/worker
         scheduling are outside this response-field gate.
+      - Visited included branches must prepare all own effective fields before publishing the vector,
+        retry the whole unpublished branch after a later own constructor fails, descend into child branches
+        only when matching reaches them, and retain successful fields across miss/redirect/handle paths.
+        The seven response-field-traversal inputs are a required fresh parity gate; static admission is
+        not execution evidence.
+      - Route-version refresh/live additions, raw included-route proxies, URL/OpenAPI/WebSocket field
+        traversal, empty-prefix validation traversal, reentrancy/concurrency, mutable model/default/metadata
+        history, arbitrary schemas, terminal405, cancellation, streaming and worker scheduling remain
+        outside traversal7. The one-use user hook is not a native fault injection or proof of resource
+        finalizer timing, yield cleanup or private cache identity. Internal DefaultPlaceholder and ModelField
+        remain source evidence with private/internal classification.
   - id: fastapi.BackgroundTasks
     kind: import_binding
     source_candidate_ref: /api_candidates/1
@@ -7523,6 +7653,125 @@ api_surface_contract:
       - http.status
       - validation.error_class
       - validation.error_details
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.branch-second-construction-error-retry
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.parent-own-fields-before-child-traversal
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.earlier-full-direct-match-skips-later-include
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.earlier-partial-direct-match-reaches-later-full-include
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.unmatched-request-visits-both-includes
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.redirect-search-follows-initial-branch-traversal
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.returned-response-still-constructs-included-field
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -7583,6 +7832,17 @@ api_surface_contract:
       - The selected immutable generator roles do not establish mutable classification-cache history,
         descriptor hooks, arbitrary awaitable concurrency, or exact traceback parity. Static admission
         is not live source/target execution evidence.
+      - Visited included branches must prepare all own effective fields before publishing the vector,
+        retry the whole unpublished branch after a later own constructor fails, descend into child branches
+        only when matching reaches them, and retain successful fields across miss/redirect/handle paths.
+        The seven response-field-traversal inputs are a required fresh parity gate; static admission is
+        not execution evidence.
+      - Route-version refresh/live additions, raw included-route proxies, URL/OpenAPI/WebSocket field
+        traversal, empty-prefix validation traversal, reentrancy/concurrency, mutable model/default/metadata
+        history, arbitrary schemas, terminal405, cancellation, streaming and worker scheduling remain
+        outside traversal7. The one-use user hook is not a native fault injection or proof of resource
+        finalizer timing, yield cleanup or private cache identity. Internal DefaultPlaceholder and ModelField
+        remain source evidence with private/internal classification.
   - id: fastapi.applications.FastAPI.__init__
     kind: protocol_method
     source_candidate_ref: /api_candidates/188
@@ -8990,6 +9250,125 @@ api_surface_contract:
       - construction.outcome
       - http.body.bytes
       - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.branch-second-construction-error-retry
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.parent-own-fields-before-child-traversal
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.earlier-full-direct-match-skips-later-include
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.earlier-partial-direct-match-reaches-later-full-include
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.unmatched-request-visits-both-includes
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.redirect-search-follows-initial-branch-traversal
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.returned-response-still-constructs-included-field
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -9073,6 +9452,17 @@ api_surface_contract:
         scheduling are outside this response-field gate.
       - Full FastAPI.__init__ parameter and attribute parity remains incomplete; FastAPI-RS currently
         implements a selected subset of the public constructor contract.
+      - Visited included branches must prepare all own effective fields before publishing the vector,
+        retry the whole unpublished branch after a later own constructor fails, descend into child branches
+        only when matching reaches them, and retain successful fields across miss/redirect/handle paths.
+        The seven response-field-traversal inputs are a required fresh parity gate; static admission is
+        not execution evidence.
+      - Route-version refresh/live additions, raw included-route proxies, URL/OpenAPI/WebSocket field
+        traversal, empty-prefix validation traversal, reentrancy/concurrency, mutable model/default/metadata
+        history, arbitrary schemas, terminal405, cancellation, streaming and worker scheduling remain
+        outside traversal7. The one-use user hook is not a native fault injection or proof of resource
+        finalizer timing, yield cleanup or private cache identity. Internal DefaultPlaceholder and ModelField
+        remain source evidence with private/internal classification.
   - id: fastapi.applications.FastAPI.delete
     kind: method
     source_candidate_ref: /api_candidates/193
@@ -9379,6 +9769,125 @@ api_surface_contract:
       - websocket.event_order
       - websocket.messages
       - websocket.workload_trace
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.branch-second-construction-error-retry
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.parent-own-fields-before-child-traversal
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.earlier-full-direct-match-skips-later-include
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.earlier-partial-direct-match-reaches-later-full-include
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.unmatched-request-visits-both-includes
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.redirect-search-follows-initial-branch-traversal
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.returned-response-still-constructs-included-field
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -9390,7 +9899,9 @@ api_surface_contract:
     - response-serialization
     - websocket-lifecycle
     observation_selectors:
+    - asgi.application_error.exception
     - asgi.lifespan.workload_trace
+    - asgi.send.message_types
     - construction.exception_class
     - construction.exception_message
     - construction.outcome
@@ -9432,8 +9943,20 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/194
-      status: full-contract-not-established
+      status: partial-contract
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::exception_handler
+      known_gaps:
+      - Visited included branches must prepare all own effective fields before publishing the vector,
+        retry the whole unpublished branch after a later own constructor fails, descend into child branches
+        only when matching reaches them, and retain successful fields across miss/redirect/handle paths.
+        The seven response-field-traversal inputs are a required fresh parity gate; static admission is
+        not execution evidence.
+      - Route-version refresh/live additions, raw included-route proxies, URL/OpenAPI/WebSocket field
+        traversal, empty-prefix validation traversal, reentrancy/concurrency, mutable model/default/metadata
+        history, arbitrary schemas, terminal405, cancellation, streaming and worker scheduling remain
+        outside traversal7. The one-use user hook is not a native fault injection or proof of resource
+        finalizer timing, yield cleanup or private cache identity. Internal DefaultPlaceholder and ModelField
+        remain source evidence with private/internal classification.
   - id: fastapi.applications.FastAPI.frontend
     kind: method
     source_candidate_ref: /api_candidates/195
@@ -10774,6 +11297,125 @@ api_surface_contract:
       case_id: fastapi.test.test-operations-signatures.test-signatures-consistency
       observation_selectors:
       - python.signature
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.branch-second-construction-error-retry
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.parent-own-fields-before-child-traversal
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.earlier-full-direct-match-skips-later-include
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.earlier-partial-direct-match-reaches-later-full-include
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.unmatched-request-visits-both-includes
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.redirect-search-follows-initial-branch-traversal
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.returned-response-still-constructs-included-field
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -10848,6 +11490,17 @@ api_surface_contract:
         refresh, raw proxies for included routes, URL/OpenAPI/WebSocket field-materialization traversal,
         concurrency/reentrancy, cancellation, dynamic warning filters, and broader sync validation/worker
         scheduling are outside this response-field gate.
+      - Visited included branches must prepare all own effective fields before publishing the vector,
+        retry the whole unpublished branch after a later own constructor fails, descend into child branches
+        only when matching reaches them, and retain successful fields across miss/redirect/handle paths.
+        The seven response-field-traversal inputs are a required fresh parity gate; static admission is
+        not execution evidence.
+      - Route-version refresh/live additions, raw included-route proxies, URL/OpenAPI/WebSocket field
+        traversal, empty-prefix validation traversal, reentrancy/concurrency, mutable model/default/metadata
+        history, arbitrary schemas, terminal405, cancellation, streaming and worker scheduling remain
+        outside traversal7. The one-use user hook is not a native fault injection or proof of resource
+        finalizer timing, yield cleanup or private cache identity. Internal DefaultPlaceholder and ModelField
+        remain source evidence with private/internal classification.
   - id: fastapi.applications.FastAPI.head
     kind: method
     source_candidate_ref: /api_candidates/197
@@ -11069,6 +11722,125 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.branch-second-construction-error-retry
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.parent-own-fields-before-child-traversal
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.earlier-full-direct-match-skips-later-include
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.earlier-partial-direct-match-reaches-later-full-include
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.unmatched-request-visits-both-includes
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.redirect-search-follows-initial-branch-traversal
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.returned-response-still-constructs-included-field
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -11144,6 +11916,17 @@ api_surface_contract:
         refresh, raw proxies for included routes, URL/OpenAPI/WebSocket field-materialization traversal,
         concurrency/reentrancy, cancellation, dynamic warning filters, and broader sync validation/worker
         scheduling are outside this response-field gate.
+      - Visited included branches must prepare all own effective fields before publishing the vector,
+        retry the whole unpublished branch after a later own constructor fails, descend into child branches
+        only when matching reaches them, and retain successful fields across miss/redirect/handle paths.
+        The seven response-field-traversal inputs are a required fresh parity gate; static admission is
+        not execution evidence.
+      - Route-version refresh/live additions, raw included-route proxies, URL/OpenAPI/WebSocket field
+        traversal, empty-prefix validation traversal, reentrancy/concurrency, mutable model/default/metadata
+        history, arbitrary schemas, terminal405, cancellation, streaming and worker scheduling remain
+        outside traversal7. The one-use user hook is not a native fault injection or proof of resource
+        finalizer timing, yield cleanup or private cache identity. Internal DefaultPlaceholder and ModelField
+        remain source evidence with private/internal classification.
   - id: fastapi.applications.FastAPI.middleware
     kind: method
     source_candidate_ref: /api_candidates/199
@@ -11894,6 +12677,23 @@ api_surface_contract:
       case_id: fastapi.test.test-operations-signatures.test-signatures-consistency
       observation_selectors:
       - python.signature
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.earlier-partial-direct-match-reaches-later-full-include
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -11905,6 +12705,11 @@ api_surface_contract:
     - response-serialization
     - websocket-lifecycle
     observation_selectors:
+    - asgi.application_error.exception
+    - asgi.send.message_types
+    - construction.exception_class
+    - construction.exception_message
+    - construction.outcome
     - dependency.call_order
     - docs.response.body.bytes
     - docs.response.status
@@ -11940,8 +12745,20 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/204
-      status: full-contract-not-established
+      status: partial-contract
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::post
+      known_gaps:
+      - Visited included branches must prepare all own effective fields before publishing the vector,
+        retry the whole unpublished branch after a later own constructor fails, descend into child branches
+        only when matching reaches them, and retain successful fields across miss/redirect/handle paths.
+        The seven response-field-traversal inputs are a required fresh parity gate; static admission is
+        not execution evidence.
+      - Route-version refresh/live additions, raw included-route proxies, URL/OpenAPI/WebSocket field
+        traversal, empty-prefix validation traversal, reentrancy/concurrency, mutable model/default/metadata
+        history, arbitrary schemas, terminal405, cancellation, streaming and worker scheduling remain
+        outside traversal7. The one-use user hook is not a native fault injection or proof of resource
+        finalizer timing, yield cleanup or private cache identity. Internal DefaultPlaceholder and ModelField
+        remain source evidence with private/internal classification.
   - id: fastapi.applications.FastAPI.put
     kind: method
     source_candidate_ref: /api_candidates/205
@@ -35853,6 +36670,125 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.branch-second-construction-error-retry
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.parent-own-fields-before-child-traversal
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.earlier-full-direct-match-skips-later-include
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.earlier-partial-direct-match-reaches-later-full-include
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.unmatched-request-visits-both-includes
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.redirect-search-follows-initial-branch-traversal
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.returned-response-still-constructs-included-field
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     identity_workflow_refs:
     - workflow_id: root-alias-identity
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
@@ -37177,6 +38113,125 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.branch-second-construction-error-retry
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.parent-own-fields-before-child-traversal
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.earlier-full-direct-match-skips-later-include
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.earlier-partial-direct-match-reaches-later-full-include
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.unmatched-request-visits-both-includes
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.redirect-search-follows-initial-branch-traversal
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.returned-response-still-constructs-included-field
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -37241,6 +38296,17 @@ api_surface_contract:
         refresh, raw proxies for included routes, URL/OpenAPI/WebSocket field-materialization traversal,
         concurrency/reentrancy, cancellation, dynamic warning filters, and broader sync validation/worker
         scheduling are outside this response-field gate.
+      - Visited included branches must prepare all own effective fields before publishing the vector,
+        retry the whole unpublished branch after a later own constructor fails, descend into child branches
+        only when matching reaches them, and retain successful fields across miss/redirect/handle paths.
+        The seven response-field-traversal inputs are a required fresh parity gate; static admission is
+        not execution evidence.
+      - Route-version refresh/live additions, raw included-route proxies, URL/OpenAPI/WebSocket field
+        traversal, empty-prefix validation traversal, reentrancy/concurrency, mutable model/default/metadata
+        history, arbitrary schemas, terminal405, cancellation, streaming and worker scheduling remain
+        outside traversal7. The one-use user hook is not a native fault injection or proof of resource
+        finalizer timing, yield cleanup or private cache identity. Internal DefaultPlaceholder and ModelField
+        remain source evidence with private/internal classification.
   - id: fastapi.routing.APIRouter.add_event_handler
     kind: method
     source_candidate_ref: /api_candidates/1070
@@ -37625,6 +38691,125 @@ api_surface_contract:
       case_id: fastapi.test.test-operations-signatures.test-signatures-consistency
       observation_selectors:
       - python.signature
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.branch-second-construction-error-retry
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.parent-own-fields-before-child-traversal
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.earlier-full-direct-match-skips-later-include
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.earlier-partial-direct-match-reaches-later-full-include
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.unmatched-request-visits-both-includes
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.redirect-search-follows-initial-branch-traversal
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.returned-response-still-constructs-included-field
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -37685,6 +38870,17 @@ api_surface_contract:
         refresh, raw proxies for included routes, URL/OpenAPI/WebSocket field-materialization traversal,
         concurrency/reentrancy, cancellation, dynamic warning filters, and broader sync validation/worker
         scheduling are outside this response-field gate.
+      - Visited included branches must prepare all own effective fields before publishing the vector,
+        retry the whole unpublished branch after a later own constructor fails, descend into child branches
+        only when matching reaches them, and retain successful fields across miss/redirect/handle paths.
+        The seven response-field-traversal inputs are a required fresh parity gate; static admission is
+        not execution evidence.
+      - Route-version refresh/live additions, raw included-route proxies, URL/OpenAPI/WebSocket field
+        traversal, empty-prefix validation traversal, reentrancy/concurrency, mutable model/default/metadata
+        history, arbitrary schemas, terminal405, cancellation, streaming and worker scheduling remain
+        outside traversal7. The one-use user hook is not a native fault injection or proof of resource
+        finalizer timing, yield cleanup or private cache identity. Internal DefaultPlaceholder and ModelField
+        remain source evidence with private/internal classification.
   - id: fastapi.routing.APIRouter.head
     kind: method
     source_candidate_ref: /api_candidates/1079
@@ -37810,6 +39006,24 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/371
       observation_selectors: *id016
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: response-field-traversal
+      input_path: tests/fixtures/inputs/parity/response-field-traversal.json
+      input_sha256: 2b1c485e4e34b30a9c4d9d524036d3b709d3e8dcf514116a76fdd9b6cbfd6655
+      recipe_path: tests/fixtures/input-recipes/parity/response-field-traversal.yaml
+      recipe_sha256: 3dfd1caa6573faa55edaef83e1eb166e4279a97542bda323a4ea8ab2de929c66
+      workload_path: tests/fixtures/workloads/response_field_traversal.py
+      workload_sha256: 35aa2d46026953a69ac6284f6a0215c62df22e19ddac0018c9d31336224de4d9
+      case_id: fastapi.response-field-traversal.parent-own-fields-before-child-traversal
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -37820,11 +39034,13 @@ api_surface_contract:
     - response-serialization
     - websocket-lifecycle
     observation_selectors:
+    - asgi.application_error.exception
     - asgi.lifespan.application_errors
     - asgi.lifespan.event_order
     - asgi.lifespan.shutdown
     - asgi.lifespan.startup
     - asgi.lifespan.workload_trace
+    - asgi.send.message_types
     - construction.exception_class
     - construction.exception_message
     - construction.outcome
@@ -37854,8 +39070,20 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1080
-      status: full-contract-not-established
+      status: partial-contract
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::include_router
+      known_gaps:
+      - Visited included branches must prepare all own effective fields before publishing the vector,
+        retry the whole unpublished branch after a later own constructor fails, descend into child branches
+        only when matching reaches them, and retain successful fields across miss/redirect/handle paths.
+        The seven response-field-traversal inputs are a required fresh parity gate; static admission is
+        not execution evidence.
+      - Route-version refresh/live additions, raw included-route proxies, URL/OpenAPI/WebSocket field
+        traversal, empty-prefix validation traversal, reentrancy/concurrency, mutable model/default/metadata
+        history, arbitrary schemas, terminal405, cancellation, streaming and worker scheduling remain
+        outside traversal7. The one-use user hook is not a native fault injection or proof of resource
+        finalizer timing, yield cleanup or private cache identity. Internal DefaultPlaceholder and ModelField
+        remain source evidence with private/internal classification.
   - id: fastapi.routing.APIRouter.on_event
     kind: method
     source_candidate_ref: /api_candidates/1082

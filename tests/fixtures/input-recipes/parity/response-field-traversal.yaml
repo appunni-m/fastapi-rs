@@ -1,0 +1,453 @@
+# Inactive independent public inputs. No stored or prescribed outcomes.
+schema: fastapi-rs/python-asgi-workflow@9
+workload:
+  file: tests/fixtures/workloads/response_field_traversal.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.response-field-traversal.branch-second-construction-error-retry
+  verification: parity
+  factory_input:
+    reject_once: second
+    routes:
+    - kind: include
+      prefix: /branch
+      routes:
+      - {kind: route, path: /one, label: first, value: 17}
+      - {kind: route, path: /two, label: second, value: 19}
+  construction_observation: &construction
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - &state-before
+    action_id: read-state-before
+    kind: http_request
+    scope: &state-scope
+      type: http
+      asgi: &asgi {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers: &headers [[host, testserver]]
+      client: &client [127.0.0.1, 123]
+      server: &server [testserver, 80]
+    receive_events: &empty-request
+    - {type: http.request, body: '', more_body: false}
+    observations: &http-observations
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+    - {kind: asgi_send, selector: message_types, comparison: ordered}
+    - {kind: application_error, selector: exception, comparison: exact}
+  - action_id: first-branch-request
+    kind: http_request
+    scope: &one-scope
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /branch/one
+      query_string: 'value=23'
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *http-observations
+  - action_id: read-state-after-first-branch-request
+    kind: http_request
+    scope: *state-scope
+    receive_events: *empty-request
+    observations: *http-observations
+  - action_id: repeat-branch-request
+    kind: http_request
+    scope: *one-scope
+    receive_events: *empty-request
+    observations: *http-observations
+  - action_id: read-state-after-repeat
+    kind: http_request
+    scope: *state-scope
+    receive_events: *empty-request
+    observations: *http-observations
+  - action_id: request-second-own-route
+    kind: http_request
+    scope: &second-scope
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /branch/two
+      query_string: 'value=29'
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *http-observations
+  - &state-after
+    action_id: read-state-after
+    kind: http_request
+    scope: *state-scope
+    receive_events: *empty-request
+    observations: *http-observations
+  source_evidence: &include-evidence
+  - {path: tests/test_router_include_context.py, kind: upstream_test}
+  - {path: docs/en/docs/tutorial/bigger-applications.md, kind: upstream_documentation}
+  - {path: docs/en/docs/tutorial/response-model.md, kind: upstream_documentation}
+
+- case_id: fastapi.response-field-traversal.parent-own-fields-before-child-traversal
+  verification: parity
+  factory_input:
+    routes:
+    - kind: include
+      prefix: /tree
+      routes:
+      - {kind: route, path: /a, label: A, value: 31}
+      - kind: include
+        prefix: /child
+        routes:
+        - {kind: route, path: /b, label: B, value: 37}
+      - {kind: route, path: /c, label: C, value: 41}
+  construction_observation: *construction
+  actions:
+  - *state-before
+  - action_id: request-earliest-parent-route
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /tree/a
+      query_string: ''
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *http-observations
+  - action_id: read-state-after-earliest-parent-route
+    kind: http_request
+    scope: *state-scope
+    receive_events: *empty-request
+    observations: *http-observations
+  - action_id: request-parent-route-after-child-branch
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /tree/c
+      query_string: ''
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *http-observations
+  - action_id: read-state-after-later-parent-route
+    kind: http_request
+    scope: *state-scope
+    receive_events: *empty-request
+    observations: *http-observations
+  - action_id: request-child-route
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /tree/child/b
+      query_string: ''
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *http-observations
+  - *state-after
+  source_evidence: *include-evidence
+
+- case_id: fastapi.response-field-traversal.earlier-full-direct-match-skips-later-include
+  verification: parity
+  factory_input:
+    routes:
+    - {kind: route, path: /branch/item, label: direct, value: 43}
+    - kind: include
+      prefix: /branch
+      routes:
+      - {kind: route, path: /item, label: child, value: 47}
+      - {kind: route, path: /other, label: other, value: 53}
+  construction_observation: *construction
+  actions:
+  - *state-before
+  - action_id: request-overlapping-full-path
+    kind: http_request
+    scope: &overlap-get-scope
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /branch/item
+      query_string: ''
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *http-observations
+  - action_id: read-state-after-overlapping-request
+    kind: http_request
+    scope: *state-scope
+    receive_events: *empty-request
+    observations: *http-observations
+  - action_id: request-later-include-only-path
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /branch/other
+      query_string: ''
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *http-observations
+  - action_id: read-state-after-include-only-path
+    kind: http_request
+    scope: *state-scope
+    receive_events: *empty-request
+    observations: *http-observations
+  - action_id: repeat-overlapping-full-path
+    kind: http_request
+    scope: *overlap-get-scope
+    receive_events: *empty-request
+    observations: *http-observations
+  - *state-after
+  source_evidence: *include-evidence
+
+- case_id: fastapi.response-field-traversal.earlier-partial-direct-match-reaches-later-full-include
+  verification: parity
+  factory_input:
+    routes:
+    - {kind: route, path: /branch/item, label: direct-post, method: POST, value: 59}
+    - kind: include
+      prefix: /branch
+      routes:
+      - {kind: route, path: /item, label: child-get, value: 61}
+  construction_observation: *construction
+  actions:
+  - *state-before
+  - action_id: request-later-full-get-path
+    kind: http_request
+    scope: *overlap-get-scope
+    receive_events: *empty-request
+    observations: *http-observations
+  - action_id: read-state-after-get-path
+    kind: http_request
+    scope: *state-scope
+    receive_events: *empty-request
+    observations: *http-observations
+  - action_id: request-earlier-full-post-path
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /branch/item
+      query_string: ''
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *http-observations
+  - *state-after
+  source_evidence: *include-evidence
+
+- case_id: fastapi.response-field-traversal.unmatched-request-visits-both-includes
+  verification: parity
+  factory_input:
+    routes:
+    - kind: include
+      prefix: /left
+      routes:
+      - {kind: route, path: /item, label: left, value: 67}
+    - kind: include
+      prefix: /right
+      routes:
+      - {kind: route, path: /item, label: right, value: 71}
+  construction_observation: *construction
+  actions:
+  - *state-before
+  - action_id: request-unmatched-path
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /missing
+      query_string: ''
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *http-observations
+  - action_id: read-state-after-unmatched-path
+    kind: http_request
+    scope: *state-scope
+    receive_events: *empty-request
+    observations: *http-observations
+  - action_id: request-left-route
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /left/item
+      query_string: ''
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *http-observations
+  - action_id: request-right-route
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /right/item
+      query_string: ''
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *http-observations
+  - *state-after
+  source_evidence: *include-evidence
+
+- case_id: fastapi.response-field-traversal.redirect-search-follows-initial-branch-traversal
+  verification: parity
+  factory_input:
+    routes:
+    - kind: include
+      prefix: /branch
+      routes:
+      - {kind: route, path: /item/, label: slash, value: 73}
+    - kind: include
+      prefix: /later
+      routes:
+      - {kind: route, path: /other, label: later, value: 79}
+  construction_observation: *construction
+  actions:
+  - *state-before
+  - action_id: request-without-declared-slash
+    kind: http_request
+    scope: *overlap-get-scope
+    receive_events: *empty-request
+    observations: *http-observations
+  - action_id: read-state-after-unslashed-request
+    kind: http_request
+    scope: *state-scope
+    receive_events: *empty-request
+    observations: *http-observations
+  - action_id: request-declared-slashed-path
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /branch/item/
+      query_string: ''
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *http-observations
+  - *state-after
+  source_evidence:
+  - {path: tests/test_router_redirect_slashes.py, kind: upstream_test}
+  - {path: tests/test_router_include_context.py, kind: upstream_test}
+  - {path: docs/en/docs/tutorial/bigger-applications.md, kind: upstream_documentation}
+
+- case_id: fastapi.response-field-traversal.returned-response-still-constructs-included-field
+  verification: parity
+  factory_input:
+    routes:
+    - kind: include
+      prefix: /branch
+      routes:
+      - {kind: route, path: /reply, label: returned, value: 83, return_response: true}
+  construction_observation: *construction
+  actions:
+  - *state-before
+  - action_id: first-returned-response-request
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /branch/reply
+      query_string: 'value=89'
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *http-observations
+  - action_id: read-state-after-first-returned-response
+    kind: http_request
+    scope: *state-scope
+    receive_events: *empty-request
+    observations: *http-observations
+  - action_id: repeated-returned-response-request
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /branch/reply
+      query_string: 'value=97'
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *empty-request
+    observations: *http-observations
+  - *state-after
+  source_evidence:
+  - {path: docs/en/docs/advanced/response-directly.md, kind: upstream_documentation}
+  - {path: tests/test_response_model_as_return_annotation.py, kind: upstream_test}
+  - {path: tests/test_router_include_context.py, kind: upstream_test}
