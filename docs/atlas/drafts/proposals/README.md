@@ -115,8 +115,11 @@ Full FastAPI compatibility remains unfinished.
 - `openapi-validation-response/`: independently authored and reviewed four-case /
   24-HTTP-action proposal for automatic validation responses and declared
   `422`/`4XX`/`default` responses. Whole documents, exact sends, query validation,
-  constructor outcomes and all 28 warning phases are selected. It remains outside
-  active inputs; source-first execution and reviewed metadata mappings are pending.
+  constructor outcomes and all 28 warning phases are selected. The authored copies
+  remain in the historical proposal folder. Reviewed copies are now admitted to active
+  inputs with 24 fixture links across six public APIs. Canonical regeneration and
+  the four-source-construction / 24-action gate precede unchanged-target diagnosis;
+  no implementation or parity success is claimed by admission.
 
 Both historical proposals passed recipe-loader/Ruff admission and independent
 static review; their authored copies remain outside active inputs with no

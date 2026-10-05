@@ -11898,6 +11898,71 @@
       ]
     },
     {
+      "id": "openapi-validation-response",
+      "input_path": "tests/fixtures/inputs/parity/openapi-validation-response.json",
+      "input_sha256": "0ef0311b4fc9930eb2faeb442bc28742f0f3d3bd0a0f6bae753dd684ed7b2dc9",
+      "recipe_path": "tests/fixtures/input-recipes/parity/openapi-validation-response.yaml",
+      "recipe_sha256": "4162be8ca5936b1fe8849845bc8e5978574a829250fabe1b567a3afa31ec0334",
+      "workload_path": "tests/fixtures/workloads/openapi_validation_response.py",
+      "workload_sha256": "9f10522043994cc9864a1f77efe1d9eec6056e55abcc863cfcf139e52f3e6130",
+      "case_ids": [
+        "fastapi.openapi-validation-response.automatic-after-declared-responses",
+        "fastapi.openapi-validation-response.declared-422-suppresses-automatic",
+        "fastapi.openapi-validation-response.declared-4xx-suppresses-automatic",
+        "fastapi.openapi-validation-response.declared-default-suppresses-automatic"
+      ],
+      "case_contracts": [
+        {
+          "case_id": "fastapi.openapi-validation-response.automatic-after-declared-responses",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/additional-responses.md",
+            "source:documented-page:tutorial/handling-errors.md",
+            "source:documented-page:tutorial/query-params.md",
+            "source:upstream-test:tests/test_additional_responses_custom_validationerror.py",
+            "source:upstream-test:tests/test_additional_responses_default_validationerror.py",
+            "source:upstream-test:tests/test_additional_responses_router.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-validation-response.declared-422-suppresses-automatic",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/additional-responses.md",
+            "source:documented-page:tutorial/handling-errors.md",
+            "source:documented-page:tutorial/query-params.md",
+            "source:upstream-test:tests/test_additional_responses_custom_validationerror.py",
+            "source:upstream-test:tests/test_additional_responses_default_validationerror.py",
+            "source:upstream-test:tests/test_additional_responses_router.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-validation-response.declared-4xx-suppresses-automatic",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/additional-responses.md",
+            "source:documented-page:tutorial/handling-errors.md",
+            "source:documented-page:tutorial/query-params.md",
+            "source:upstream-test:tests/test_additional_responses_custom_validationerror.py",
+            "source:upstream-test:tests/test_additional_responses_default_validationerror.py",
+            "source:upstream-test:tests/test_additional_responses_router.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-validation-response.declared-default-suppresses-automatic",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/additional-responses.md",
+            "source:documented-page:tutorial/handling-errors.md",
+            "source:documented-page:tutorial/query-params.md",
+            "source:upstream-test:tests/test_additional_responses_custom_validationerror.py",
+            "source:upstream-test:tests/test_additional_responses_default_validationerror.py",
+            "source:upstream-test:tests/test_additional_responses_router.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "openapi-webhook-route-separation-source-review",
       "input_path": "tests/fixtures/inputs/parity/openapi-webhook-route-separation-source-review.json",
       "input_sha256": "c53e322ab5f7c5146a674e0e1b2d625b99d7e941754078d1a4d38fd41527a69b",
@@ -40933,6 +40998,133 @@
       ],
       "observation_selectors": [
         "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:advanced/additional-responses.md",
+      "fixture_id": "fastapi.docs.advanced-additional-responses",
+      "workflow_id": "openapi-validation-response",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 4 case(s); observes asgi.send.message_types, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.openapi-validation-response.automatic-after-declared-responses",
+        "fastapi.openapi-validation-response.declared-422-suppresses-automatic",
+        "fastapi.openapi-validation-response.declared-4xx-suppresses-automatic",
+        "fastapi.openapi-validation-response.declared-default-suppresses-automatic"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "docs.response.headers",
+        "docs.response.status",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status",
+        "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/handling-errors.md",
+      "fixture_id": "fastapi.docs.tutorial-handling-errors",
+      "workflow_id": "openapi-validation-response",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 4 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.openapi-validation-response.automatic-after-declared-responses",
+        "fastapi.openapi-validation-response.declared-422-suppresses-automatic",
+        "fastapi.openapi-validation-response.declared-4xx-suppresses-automatic",
+        "fastapi.openapi-validation-response.declared-default-suppresses-automatic"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/query-params.md",
+      "fixture_id": "fastapi.docs.tutorial-query-params",
+      "workflow_id": "openapi-validation-response",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 4 case(s); observes asgi.send.message_types, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.openapi-validation-response.automatic-after-declared-responses",
+        "fastapi.openapi-validation-response.declared-422-suppresses-automatic",
+        "fastapi.openapi-validation-response.declared-4xx-suppresses-automatic",
+        "fastapi.openapi-validation-response.declared-default-suppresses-automatic"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_additional_responses_custom_validationerror.py",
+      "fixture_id": "fastapi.test.test-additional-responses-custom-validationerror",
+      "workflow_id": "openapi-validation-response",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 4 case(s); observes asgi.send.message_types, docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.openapi-validation-response.automatic-after-declared-responses",
+        "fastapi.openapi-validation-response.declared-422-suppresses-automatic",
+        "fastapi.openapi-validation-response.declared-4xx-suppresses-automatic",
+        "fastapi.openapi-validation-response.declared-default-suppresses-automatic"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "docs.response.body.bytes",
+        "docs.response.headers",
+        "docs.response.status",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status",
+        "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_additional_responses_default_validationerror.py",
+      "fixture_id": "fastapi.test.test-additional-responses-default-validationerror",
+      "workflow_id": "openapi-validation-response",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 4 case(s); observes asgi.send.message_types, docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.openapi-validation-response.automatic-after-declared-responses",
+        "fastapi.openapi-validation-response.declared-422-suppresses-automatic",
+        "fastapi.openapi-validation-response.declared-4xx-suppresses-automatic",
+        "fastapi.openapi-validation-response.declared-default-suppresses-automatic"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "docs.response.body.bytes",
+        "docs.response.headers",
+        "docs.response.status",
+        "http.body.bytes",
+        "http.status",
+        "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_additional_responses_router.py",
+      "fixture_id": "fastapi.test.test-additional-responses-router",
+      "workflow_id": "openapi-validation-response",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 4 case(s); observes asgi.send.message_types, docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.openapi-validation-response.automatic-after-declared-responses",
+        "fastapi.openapi-validation-response.declared-422-suppresses-automatic",
+        "fastapi.openapi-validation-response.declared-4xx-suppresses-automatic",
+        "fastapi.openapi-validation-response.declared-default-suppresses-automatic"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "docs.response.body.bytes",
+        "docs.response.headers",
+        "docs.response.status",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status",
+        "openapi.document"
       ]
     },
     {

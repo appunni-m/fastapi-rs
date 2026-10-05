@@ -2232,6 +2232,18 @@ reviewed_api_contract_overlay:
         - {path: docs/en/docs/advanced/response-directly.md}
         - {path: tests/test_router_include_context.py}
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
+          case_id: fastapi.openapi-validation-response.automatic-after-declared-responses
+          workload_path: tests/fixtures/workloads/openapi_validation_response.py
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
+          case_id: fastapi.openapi-validation-response.declared-422-suppresses-automatic
+          workload_path: tests/fixtures/workloads/openapi_validation_response.py
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
+          case_id: fastapi.openapi-validation-response.declared-4xx-suppresses-automatic
+          workload_path: tests/fixtures/workloads/openapi_validation_response.py
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
+          case_id: fastapi.openapi-validation-response.declared-default-suppresses-automatic
+          workload_path: tests/fixtures/workloads/openapi_validation_response.py
         - recipe_path: tests/fixtures/input-recipes/parity/next-openapi-response-fields.yaml
           case_id: fastapi.next-openapi-response-fields.annotated-metadata-outer-titles-retained-hooks
           workload_path: tests/fixtures/workloads/next_openapi_response_fields.py
@@ -3183,10 +3195,40 @@ reviewed_api_contract_overlay:
         - {path: fastapi/utils.py, symbol: generate_operation_id_for_path}
       feature_ids: [openapi-docs]
       observation_selectors: [python.call_outcome]
+    fastapi.FastAPI:
+      source_evidence:
+        - {path: fastapi/__init__.py}
+        - {path: fastapi/applications.py, symbol: FastAPI}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
+          case_id: fastapi.openapi-validation-response.automatic-after-declared-responses
+          workload_path: tests/fixtures/workloads/openapi_validation_response.py
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
+          case_id: fastapi.openapi-validation-response.declared-422-suppresses-automatic
+          workload_path: tests/fixtures/workloads/openapi_validation_response.py
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
+          case_id: fastapi.openapi-validation-response.declared-4xx-suppresses-automatic
+          workload_path: tests/fixtures/workloads/openapi_validation_response.py
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
+          case_id: fastapi.openapi-validation-response.declared-default-suppresses-automatic
+          workload_path: tests/fixtures/workloads/openapi_validation_response.py
     fastapi.applications.FastAPI:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::new
       source_evidence:
         - {path: fastapi/applications.py, symbol: FastAPI}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
+          case_id: fastapi.openapi-validation-response.automatic-after-declared-responses
+          workload_path: tests/fixtures/workloads/openapi_validation_response.py
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
+          case_id: fastapi.openapi-validation-response.declared-422-suppresses-automatic
+          workload_path: tests/fixtures/workloads/openapi_validation_response.py
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
+          case_id: fastapi.openapi-validation-response.declared-4xx-suppresses-automatic
+          workload_path: tests/fixtures/workloads/openapi_validation_response.py
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
+          case_id: fastapi.openapi-validation-response.declared-default-suppresses-automatic
+          workload_path: tests/fixtures/workloads/openapi_validation_response.py
       feature_ids: [app-routing]
       observation_selectors: [python.signature]
     fastapi.applications.FastAPI.__call__:
@@ -3232,6 +3274,18 @@ reviewed_api_contract_overlay:
         - {path: tests/test_router_redirect_slashes.py}
         - {path: docs/en/docs/advanced/response-directly.md}
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
+          case_id: fastapi.openapi-validation-response.automatic-after-declared-responses
+          workload_path: tests/fixtures/workloads/openapi_validation_response.py
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
+          case_id: fastapi.openapi-validation-response.declared-422-suppresses-automatic
+          workload_path: tests/fixtures/workloads/openapi_validation_response.py
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
+          case_id: fastapi.openapi-validation-response.declared-4xx-suppresses-automatic
+          workload_path: tests/fixtures/workloads/openapi_validation_response.py
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
+          case_id: fastapi.openapi-validation-response.declared-default-suppresses-automatic
+          workload_path: tests/fixtures/workloads/openapi_validation_response.py
         - recipe_path: tests/fixtures/input-recipes/parity/next-openapi-response-fields.yaml
           case_id: fastapi.next-openapi-response-fields.annotated-metadata-outer-titles-retained-hooks
           workload_path: tests/fixtures/workloads/next_openapi_response_fields.py
@@ -3722,6 +3776,18 @@ reviewed_api_contract_overlay:
           symbol: get_openapi_path
         - path: docs/en/docs/how-to/extending-openapi.md
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
+          case_id: fastapi.openapi-validation-response.automatic-after-declared-responses
+          workload_path: tests/fixtures/workloads/openapi_validation_response.py
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
+          case_id: fastapi.openapi-validation-response.declared-422-suppresses-automatic
+          workload_path: tests/fixtures/workloads/openapi_validation_response.py
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
+          case_id: fastapi.openapi-validation-response.declared-4xx-suppresses-automatic
+          workload_path: tests/fixtures/workloads/openapi_validation_response.py
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
+          case_id: fastapi.openapi-validation-response.declared-default-suppresses-automatic
+          workload_path: tests/fixtures/workloads/openapi_validation_response.py
         - recipe_path: tests/fixtures/input-recipes/parity/next-openapi-response-fields.yaml
           case_id: fastapi.next-openapi-response-fields.annotated-metadata-outer-titles-retained-hooks
           workload_path: tests/fixtures/workloads/next_openapi_response_fields.py
@@ -4351,6 +4417,18 @@ reviewed_api_contract_overlay:
         - {path: tests/test_router_redirect_slashes.py}
         - {path: docs/en/docs/advanced/response-directly.md}
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
+          case_id: fastapi.openapi-validation-response.automatic-after-declared-responses
+          workload_path: tests/fixtures/workloads/openapi_validation_response.py
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
+          case_id: fastapi.openapi-validation-response.declared-422-suppresses-automatic
+          workload_path: tests/fixtures/workloads/openapi_validation_response.py
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
+          case_id: fastapi.openapi-validation-response.declared-4xx-suppresses-automatic
+          workload_path: tests/fixtures/workloads/openapi_validation_response.py
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
+          case_id: fastapi.openapi-validation-response.declared-default-suppresses-automatic
+          workload_path: tests/fixtures/workloads/openapi_validation_response.py
         - recipe_path: tests/fixtures/input-recipes/parity/next-openapi-response-fields.yaml
           case_id: fastapi.next-openapi-response-fields.annotated-metadata-outer-titles-retained-hooks
           workload_path: tests/fixtures/workloads/next_openapi_response_fields.py

@@ -415,7 +415,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@5
-    sha256: 51046e82a98daa711e8fdffa5d4c187e348ed4622abf6c93cc103d386baee767
+    sha256: 17fe1bc3d372b41537be4cc79805daebb0456308ed595f967fd35ec08c7a2cab
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -451,7 +451,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: e9a0ed26585c6f8dd7c996a32352dd687eda0fc3d8c436ecff7166b3a0ebbfc9
+    sha256: e34c3ba0931742659444eefe662071cf794bf0167406c6cb9723856e55879328
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -488,14 +488,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@5
-    sha256: 239cc81b7d8fec4b8d5995f6bbbd786dc3bfe4ccf25a8855b0887850922092a6
+    sha256: 0490d2e3366bad2ffa941e5994da07f2a0ea4a8f8c7f0d6c919044e0caf20f68
     schema_path: tests/fixtures/schemas/materialized-input-index-v5.schema.json
     schema_sha256: 13dd4cf1032a4ad9161712364d94b9f91834afee380e1f8eee6f4f05c123261d
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 554
-      cases: 2300
-      partial_source_mappings: 1576
+      workflows: 555
+      cases: 2304
+      partial_source_mappings: 1582
 
 contract_metadata:
   aliases:
@@ -877,8 +877,8 @@ api_surface_contract:
     symbols_with_deprecation_refs: 15
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 101
-    symbols_with_operation_fixture_refs: 152
-    operation_fixture_refs: 1345
+    symbols_with_operation_fixture_refs: 154
+    operation_fixture_refs: 1369
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -4469,6 +4469,99 @@ api_surface_contract:
       fixture_design_ref: null
       observation_selectors: *id002
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-validation-response
+      input_path: tests/fixtures/inputs/parity/openapi-validation-response.json
+      input_sha256: 0ef0311b4fc9930eb2faeb442bc28742f0f3d3bd0a0f6bae753dd684ed7b2dc9
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
+      recipe_sha256: 4162be8ca5936b1fe8849845bc8e5978574a829250fabe1b567a3afa31ec0334
+      workload_path: tests/fixtures/workloads/openapi_validation_response.py
+      workload_sha256: 9f10522043994cc9864a1f77efe1d9eec6056e55abcc863cfcf139e52f3e6130
+      case_id: fastapi.openapi-validation-response.automatic-after-declared-responses
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
+    - workflow_id: openapi-validation-response
+      input_path: tests/fixtures/inputs/parity/openapi-validation-response.json
+      input_sha256: 0ef0311b4fc9930eb2faeb442bc28742f0f3d3bd0a0f6bae753dd684ed7b2dc9
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
+      recipe_sha256: 4162be8ca5936b1fe8849845bc8e5978574a829250fabe1b567a3afa31ec0334
+      workload_path: tests/fixtures/workloads/openapi_validation_response.py
+      workload_sha256: 9f10522043994cc9864a1f77efe1d9eec6056e55abcc863cfcf139e52f3e6130
+      case_id: fastapi.openapi-validation-response.declared-422-suppresses-automatic
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
+    - workflow_id: openapi-validation-response
+      input_path: tests/fixtures/inputs/parity/openapi-validation-response.json
+      input_sha256: 0ef0311b4fc9930eb2faeb442bc28742f0f3d3bd0a0f6bae753dd684ed7b2dc9
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
+      recipe_sha256: 4162be8ca5936b1fe8849845bc8e5978574a829250fabe1b567a3afa31ec0334
+      workload_path: tests/fixtures/workloads/openapi_validation_response.py
+      workload_sha256: 9f10522043994cc9864a1f77efe1d9eec6056e55abcc863cfcf139e52f3e6130
+      case_id: fastapi.openapi-validation-response.declared-4xx-suppresses-automatic
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
+    - workflow_id: openapi-validation-response
+      input_path: tests/fixtures/inputs/parity/openapi-validation-response.json
+      input_sha256: 0ef0311b4fc9930eb2faeb442bc28742f0f3d3bd0a0f6bae753dd684ed7b2dc9
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
+      recipe_sha256: 4162be8ca5936b1fe8849845bc8e5978574a829250fabe1b567a3afa31ec0334
+      workload_path: tests/fixtures/workloads/openapi_validation_response.py
+      workload_sha256: 9f10522043994cc9864a1f77efe1d9eec6056e55abcc863cfcf139e52f3e6130
+      case_id: fastapi.openapi-validation-response.declared-default-suppresses-automatic
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
     identity_workflow_refs:
     - workflow_id: root-alias-identity
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
@@ -4525,7 +4618,7 @@ api_surface_contract:
     - websocket.messages
     operation_scope:
       status: scope-review-pending
-    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    behavior_contract_state: reviewed-operation-and-documentation-links; full compatibility pending
     target_binding:
       target_profile: fastapi-rs-python-consumer
       public_python_path: fastapi.FastAPI
@@ -7117,6 +7210,99 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/376
       observation_selectors: *id006
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: openapi-validation-response
+      input_path: tests/fixtures/inputs/parity/openapi-validation-response.json
+      input_sha256: 0ef0311b4fc9930eb2faeb442bc28742f0f3d3bd0a0f6bae753dd684ed7b2dc9
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
+      recipe_sha256: 4162be8ca5936b1fe8849845bc8e5978574a829250fabe1b567a3afa31ec0334
+      workload_path: tests/fixtures/workloads/openapi_validation_response.py
+      workload_sha256: 9f10522043994cc9864a1f77efe1d9eec6056e55abcc863cfcf139e52f3e6130
+      case_id: fastapi.openapi-validation-response.automatic-after-declared-responses
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
+    - workflow_id: openapi-validation-response
+      input_path: tests/fixtures/inputs/parity/openapi-validation-response.json
+      input_sha256: 0ef0311b4fc9930eb2faeb442bc28742f0f3d3bd0a0f6bae753dd684ed7b2dc9
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
+      recipe_sha256: 4162be8ca5936b1fe8849845bc8e5978574a829250fabe1b567a3afa31ec0334
+      workload_path: tests/fixtures/workloads/openapi_validation_response.py
+      workload_sha256: 9f10522043994cc9864a1f77efe1d9eec6056e55abcc863cfcf139e52f3e6130
+      case_id: fastapi.openapi-validation-response.declared-422-suppresses-automatic
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
+    - workflow_id: openapi-validation-response
+      input_path: tests/fixtures/inputs/parity/openapi-validation-response.json
+      input_sha256: 0ef0311b4fc9930eb2faeb442bc28742f0f3d3bd0a0f6bae753dd684ed7b2dc9
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
+      recipe_sha256: 4162be8ca5936b1fe8849845bc8e5978574a829250fabe1b567a3afa31ec0334
+      workload_path: tests/fixtures/workloads/openapi_validation_response.py
+      workload_sha256: 9f10522043994cc9864a1f77efe1d9eec6056e55abcc863cfcf139e52f3e6130
+      case_id: fastapi.openapi-validation-response.declared-4xx-suppresses-automatic
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
+    - workflow_id: openapi-validation-response
+      input_path: tests/fixtures/inputs/parity/openapi-validation-response.json
+      input_sha256: 0ef0311b4fc9930eb2faeb442bc28742f0f3d3bd0a0f6bae753dd684ed7b2dc9
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
+      recipe_sha256: 4162be8ca5936b1fe8849845bc8e5978574a829250fabe1b567a3afa31ec0334
+      workload_path: tests/fixtures/workloads/openapi_validation_response.py
+      workload_sha256: 9f10522043994cc9864a1f77efe1d9eec6056e55abcc863cfcf139e52f3e6130
+      case_id: fastapi.openapi-validation-response.declared-default-suppresses-automatic
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -7197,6 +7383,98 @@ api_surface_contract:
       observation_selectors: []
     input_workflow_refs: []
     operation_fixture_refs:
+    - workflow_id: openapi-validation-response
+      input_path: tests/fixtures/inputs/parity/openapi-validation-response.json
+      input_sha256: 0ef0311b4fc9930eb2faeb442bc28742f0f3d3bd0a0f6bae753dd684ed7b2dc9
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
+      recipe_sha256: 4162be8ca5936b1fe8849845bc8e5978574a829250fabe1b567a3afa31ec0334
+      workload_path: tests/fixtures/workloads/openapi_validation_response.py
+      workload_sha256: 9f10522043994cc9864a1f77efe1d9eec6056e55abcc863cfcf139e52f3e6130
+      case_id: fastapi.openapi-validation-response.automatic-after-declared-responses
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
+    - workflow_id: openapi-validation-response
+      input_path: tests/fixtures/inputs/parity/openapi-validation-response.json
+      input_sha256: 0ef0311b4fc9930eb2faeb442bc28742f0f3d3bd0a0f6bae753dd684ed7b2dc9
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
+      recipe_sha256: 4162be8ca5936b1fe8849845bc8e5978574a829250fabe1b567a3afa31ec0334
+      workload_path: tests/fixtures/workloads/openapi_validation_response.py
+      workload_sha256: 9f10522043994cc9864a1f77efe1d9eec6056e55abcc863cfcf139e52f3e6130
+      case_id: fastapi.openapi-validation-response.declared-422-suppresses-automatic
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
+    - workflow_id: openapi-validation-response
+      input_path: tests/fixtures/inputs/parity/openapi-validation-response.json
+      input_sha256: 0ef0311b4fc9930eb2faeb442bc28742f0f3d3bd0a0f6bae753dd684ed7b2dc9
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
+      recipe_sha256: 4162be8ca5936b1fe8849845bc8e5978574a829250fabe1b567a3afa31ec0334
+      workload_path: tests/fixtures/workloads/openapi_validation_response.py
+      workload_sha256: 9f10522043994cc9864a1f77efe1d9eec6056e55abcc863cfcf139e52f3e6130
+      case_id: fastapi.openapi-validation-response.declared-4xx-suppresses-automatic
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
+    - workflow_id: openapi-validation-response
+      input_path: tests/fixtures/inputs/parity/openapi-validation-response.json
+      input_sha256: 0ef0311b4fc9930eb2faeb442bc28742f0f3d3bd0a0f6bae753dd684ed7b2dc9
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
+      recipe_sha256: 4162be8ca5936b1fe8849845bc8e5978574a829250fabe1b567a3afa31ec0334
+      workload_path: tests/fixtures/workloads/openapi_validation_response.py
+      workload_sha256: 9f10522043994cc9864a1f77efe1d9eec6056e55abcc863cfcf139e52f3e6130
+      case_id: fastapi.openapi-validation-response.declared-default-suppresses-automatic
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
     - workflow_id: next-openapi-response-fields
       input_path: tests/fixtures/inputs/parity/next-openapi-response-fields.json
       input_sha256: 558a3d9cde89de0fd8342fe9a04deaef08a3caac836f5afd3a1b16d0c6829767
@@ -10594,6 +10872,98 @@ api_surface_contract:
       observation_selectors:
       - python.signature
     operation_fixture_refs:
+    - workflow_id: openapi-validation-response
+      input_path: tests/fixtures/inputs/parity/openapi-validation-response.json
+      input_sha256: 0ef0311b4fc9930eb2faeb442bc28742f0f3d3bd0a0f6bae753dd684ed7b2dc9
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
+      recipe_sha256: 4162be8ca5936b1fe8849845bc8e5978574a829250fabe1b567a3afa31ec0334
+      workload_path: tests/fixtures/workloads/openapi_validation_response.py
+      workload_sha256: 9f10522043994cc9864a1f77efe1d9eec6056e55abcc863cfcf139e52f3e6130
+      case_id: fastapi.openapi-validation-response.automatic-after-declared-responses
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
+    - workflow_id: openapi-validation-response
+      input_path: tests/fixtures/inputs/parity/openapi-validation-response.json
+      input_sha256: 0ef0311b4fc9930eb2faeb442bc28742f0f3d3bd0a0f6bae753dd684ed7b2dc9
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
+      recipe_sha256: 4162be8ca5936b1fe8849845bc8e5978574a829250fabe1b567a3afa31ec0334
+      workload_path: tests/fixtures/workloads/openapi_validation_response.py
+      workload_sha256: 9f10522043994cc9864a1f77efe1d9eec6056e55abcc863cfcf139e52f3e6130
+      case_id: fastapi.openapi-validation-response.declared-422-suppresses-automatic
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
+    - workflow_id: openapi-validation-response
+      input_path: tests/fixtures/inputs/parity/openapi-validation-response.json
+      input_sha256: 0ef0311b4fc9930eb2faeb442bc28742f0f3d3bd0a0f6bae753dd684ed7b2dc9
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
+      recipe_sha256: 4162be8ca5936b1fe8849845bc8e5978574a829250fabe1b567a3afa31ec0334
+      workload_path: tests/fixtures/workloads/openapi_validation_response.py
+      workload_sha256: 9f10522043994cc9864a1f77efe1d9eec6056e55abcc863cfcf139e52f3e6130
+      case_id: fastapi.openapi-validation-response.declared-4xx-suppresses-automatic
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
+    - workflow_id: openapi-validation-response
+      input_path: tests/fixtures/inputs/parity/openapi-validation-response.json
+      input_sha256: 0ef0311b4fc9930eb2faeb442bc28742f0f3d3bd0a0f6bae753dd684ed7b2dc9
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
+      recipe_sha256: 4162be8ca5936b1fe8849845bc8e5978574a829250fabe1b567a3afa31ec0334
+      workload_path: tests/fixtures/workloads/openapi_validation_response.py
+      workload_sha256: 9f10522043994cc9864a1f77efe1d9eec6056e55abcc863cfcf139e52f3e6130
+      case_id: fastapi.openapi-validation-response.declared-default-suppresses-automatic
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
     - workflow_id: next-openapi-response-fields
       input_path: tests/fixtures/inputs/parity/next-openapi-response-fields.json
       input_sha256: 558a3d9cde89de0fd8342fe9a04deaef08a3caac836f5afd3a1b16d0c6829767
@@ -12750,6 +13120,98 @@ api_surface_contract:
       observation_selectors: *id006
     input_workflow_refs: []
     operation_fixture_refs:
+    - workflow_id: openapi-validation-response
+      input_path: tests/fixtures/inputs/parity/openapi-validation-response.json
+      input_sha256: 0ef0311b4fc9930eb2faeb442bc28742f0f3d3bd0a0f6bae753dd684ed7b2dc9
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
+      recipe_sha256: 4162be8ca5936b1fe8849845bc8e5978574a829250fabe1b567a3afa31ec0334
+      workload_path: tests/fixtures/workloads/openapi_validation_response.py
+      workload_sha256: 9f10522043994cc9864a1f77efe1d9eec6056e55abcc863cfcf139e52f3e6130
+      case_id: fastapi.openapi-validation-response.automatic-after-declared-responses
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
+    - workflow_id: openapi-validation-response
+      input_path: tests/fixtures/inputs/parity/openapi-validation-response.json
+      input_sha256: 0ef0311b4fc9930eb2faeb442bc28742f0f3d3bd0a0f6bae753dd684ed7b2dc9
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
+      recipe_sha256: 4162be8ca5936b1fe8849845bc8e5978574a829250fabe1b567a3afa31ec0334
+      workload_path: tests/fixtures/workloads/openapi_validation_response.py
+      workload_sha256: 9f10522043994cc9864a1f77efe1d9eec6056e55abcc863cfcf139e52f3e6130
+      case_id: fastapi.openapi-validation-response.declared-422-suppresses-automatic
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
+    - workflow_id: openapi-validation-response
+      input_path: tests/fixtures/inputs/parity/openapi-validation-response.json
+      input_sha256: 0ef0311b4fc9930eb2faeb442bc28742f0f3d3bd0a0f6bae753dd684ed7b2dc9
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
+      recipe_sha256: 4162be8ca5936b1fe8849845bc8e5978574a829250fabe1b567a3afa31ec0334
+      workload_path: tests/fixtures/workloads/openapi_validation_response.py
+      workload_sha256: 9f10522043994cc9864a1f77efe1d9eec6056e55abcc863cfcf139e52f3e6130
+      case_id: fastapi.openapi-validation-response.declared-4xx-suppresses-automatic
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
+    - workflow_id: openapi-validation-response
+      input_path: tests/fixtures/inputs/parity/openapi-validation-response.json
+      input_sha256: 0ef0311b4fc9930eb2faeb442bc28742f0f3d3bd0a0f6bae753dd684ed7b2dc9
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
+      recipe_sha256: 4162be8ca5936b1fe8849845bc8e5978574a829250fabe1b567a3afa31ec0334
+      workload_path: tests/fixtures/workloads/openapi_validation_response.py
+      workload_sha256: 9f10522043994cc9864a1f77efe1d9eec6056e55abcc863cfcf139e52f3e6130
+      case_id: fastapi.openapi-validation-response.declared-default-suppresses-automatic
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
     - workflow_id: next-openapi-response-fields
       input_path: tests/fixtures/inputs/parity/next-openapi-response-fields.json
       input_sha256: 558a3d9cde89de0fd8342fe9a04deaef08a3caac836f5afd3a1b16d0c6829767
@@ -36500,6 +36962,98 @@ api_surface_contract:
       observation_selectors: *id014
     input_workflow_refs: []
     operation_fixture_refs:
+    - workflow_id: openapi-validation-response
+      input_path: tests/fixtures/inputs/parity/openapi-validation-response.json
+      input_sha256: 0ef0311b4fc9930eb2faeb442bc28742f0f3d3bd0a0f6bae753dd684ed7b2dc9
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
+      recipe_sha256: 4162be8ca5936b1fe8849845bc8e5978574a829250fabe1b567a3afa31ec0334
+      workload_path: tests/fixtures/workloads/openapi_validation_response.py
+      workload_sha256: 9f10522043994cc9864a1f77efe1d9eec6056e55abcc863cfcf139e52f3e6130
+      case_id: fastapi.openapi-validation-response.automatic-after-declared-responses
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
+    - workflow_id: openapi-validation-response
+      input_path: tests/fixtures/inputs/parity/openapi-validation-response.json
+      input_sha256: 0ef0311b4fc9930eb2faeb442bc28742f0f3d3bd0a0f6bae753dd684ed7b2dc9
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
+      recipe_sha256: 4162be8ca5936b1fe8849845bc8e5978574a829250fabe1b567a3afa31ec0334
+      workload_path: tests/fixtures/workloads/openapi_validation_response.py
+      workload_sha256: 9f10522043994cc9864a1f77efe1d9eec6056e55abcc863cfcf139e52f3e6130
+      case_id: fastapi.openapi-validation-response.declared-422-suppresses-automatic
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
+    - workflow_id: openapi-validation-response
+      input_path: tests/fixtures/inputs/parity/openapi-validation-response.json
+      input_sha256: 0ef0311b4fc9930eb2faeb442bc28742f0f3d3bd0a0f6bae753dd684ed7b2dc9
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
+      recipe_sha256: 4162be8ca5936b1fe8849845bc8e5978574a829250fabe1b567a3afa31ec0334
+      workload_path: tests/fixtures/workloads/openapi_validation_response.py
+      workload_sha256: 9f10522043994cc9864a1f77efe1d9eec6056e55abcc863cfcf139e52f3e6130
+      case_id: fastapi.openapi-validation-response.declared-4xx-suppresses-automatic
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
+    - workflow_id: openapi-validation-response
+      input_path: tests/fixtures/inputs/parity/openapi-validation-response.json
+      input_sha256: 0ef0311b4fc9930eb2faeb442bc28742f0f3d3bd0a0f6bae753dd684ed7b2dc9
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
+      recipe_sha256: 4162be8ca5936b1fe8849845bc8e5978574a829250fabe1b567a3afa31ec0334
+      workload_path: tests/fixtures/workloads/openapi_validation_response.py
+      workload_sha256: 9f10522043994cc9864a1f77efe1d9eec6056e55abcc863cfcf139e52f3e6130
+      case_id: fastapi.openapi-validation-response.declared-default-suppresses-automatic
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
     - workflow_id: next-openapi-response-fields
       input_path: tests/fixtures/inputs/parity/next-openapi-response-fields.json
       input_sha256: 558a3d9cde89de0fd8342fe9a04deaef08a3caac836f5afd3a1b16d0c6829767

@@ -96,6 +96,10 @@ are not asserted.
 
 Fresh suite: `benchmark-results/suite-20261005T145041Z-7ec4051b-63b7-499d-b175-5203358c2aa4.json`,
 SHA256 `b6a16a67ecec978780eebd662251ad27b00c8e407ed3a702f71f50dd006f399d`.
+Before the next fixture admission, that suite was preserved byte-for-byte at
+`benchmark-results/archive/62dacc5-before-validation-response/` with its original
+basename. Its relocation receipt retains the original result/comparison paths
+and old manifest. It remains evidence for this measured checkpoint.
 The previous827612f suite used the older `ae88fc58…` manifest. Its bytes were moved
 unchanged into `benchmark-results/archive/827612f-before-openapi-final-model/`;
 all original result/comparison paths and digests remain intact. A relocation
