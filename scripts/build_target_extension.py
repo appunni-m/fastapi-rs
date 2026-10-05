@@ -18,12 +18,30 @@ FAULT_INJECTION_ROOT = ROOT / "target" / "fault-injection"
 FAULT_INJECTION_FEATURE = "fastapi-rs-py/fault-injection"
 
 
-def _install_editable_target(uv: str, target_python: Path) -> int:
+def _install_editable_target(
+    uv: str,
+    target_python: Path,
+    overlay_root: Path,
+    environment: dict[str, str],
+    features: list[str],
+) -> int:
     lockfile = ROOT / "Cargo.lock"
     lock_before = lockfile.read_bytes()
     lock_mode = lockfile.stat().st_mode & 0o7777
-    environment = os.environ.copy()
+    environment = environment.copy()
     environment["PYO3_PYTHON"] = str(target_python)
+    pep517_arguments = [
+        "--manifest-path",
+        str(overlay_root / "fastapi-rs-py/Cargo.toml"),
+        "--locked",
+        "--offline",
+        "--interpreter",
+        str(target_python),
+        "--target-dir",
+        environment["CARGO_TARGET_DIR"],
+        "--features",
+        ",".join(features),
+    ]
     try:
         completed = subprocess.run(
             [
@@ -33,6 +51,8 @@ def _install_editable_target(uv: str, target_python: Path) -> int:
                 "--python",
                 str(target_python),
                 "--no-deps",
+                "--config-setting",
+                f"maturin.build-args={shlex.join(pep517_arguments)}",
                 "--editable",
                 str(ROOT),
             ],
@@ -67,7 +87,7 @@ def _atomic_write(destination: Path, content: bytes, mode: int) -> None:
         temporary_path.unlink(missing_ok=True)
 
 
-def _workspace_overlay(starlette_rs_source: Path, overlay_root: Path) -> None:
+def _workspace_overlay(starlette_rs_source: Path, overlay_root: Path, python_source: Path) -> None:
     manifest = ROOT / "Cargo.toml"
     try:
         manifest_text = manifest.read_text(encoding="utf-8")
@@ -100,9 +120,35 @@ def _workspace_overlay(starlette_rs_source: Path, overlay_root: Path) -> None:
         source_member = ROOT / member_path
         if not source_member.exists():
             raise SystemExit(f"Cargo workspace member does not exist: {member}")
-        link_path = overlay_root / member_path
-        link_path.parent.mkdir(parents=True, exist_ok=True)
-        link_path.symlink_to(source_member, target_is_directory=source_member.is_dir())
+        member_overlay = overlay_root / member_path
+        member_overlay.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source_member / "Cargo.toml", member_overlay / "Cargo.toml")
+        for source_entry in source_member.iterdir():
+            if source_entry.name == "Cargo.toml":
+                continue
+            (member_overlay / source_entry.name).symlink_to(
+                source_entry, target_is_directory=source_entry.is_dir()
+            )
+
+    pyproject_path = ROOT / "pyproject.toml"
+    try:
+        pyproject_text = pyproject_path.read_text(encoding="utf-8")
+        pyproject_data = tomllib.loads(pyproject_text)
+    except (OSError, tomllib.TOMLDecodeError) as exc:
+        raise SystemExit(f"cannot read Python project manifest: {exc}") from exc
+    maturin_options = pyproject_data.get("tool", {}).get("maturin", {})
+    source_setting = maturin_options.get("python-source")
+    if maturin_options.get("manifest-path") != "fastapi-rs-py/Cargo.toml" or not isinstance(
+        source_setting, str
+    ):
+        raise SystemExit("pyproject.toml must configure the native member and Python source")
+    old_source = f"python-source = {json.dumps(source_setting)}"
+    if pyproject_text.count(old_source) != 1:
+        raise SystemExit("pyproject.toml Maturin Python source path is ambiguous")
+    overlay_pyproject = pyproject_text.replace(
+        old_source, f"python-source = {json.dumps(str(python_source.resolve()))}", 1
+    )
+    (overlay_root / "pyproject.toml").write_text(overlay_pyproject, encoding="utf-8")
 
 
 def _verify_overlay_metadata(
@@ -158,11 +204,16 @@ def _verify_overlay_metadata(
     }
     member_packages: dict[str, dict[str, object]] = {}
     for name, source_manifest in expected_members.items():
+        overlay_manifest = overlay_root / source_manifest.relative_to(ROOT)
+        if overlay_manifest.is_symlink() or (
+            overlay_manifest.read_bytes() != source_manifest.read_bytes()
+        ):
+            raise SystemExit(f"overlay Cargo member manifest differs from its source: {name}")
         matches = [
             package
             for package in packages.values()
             if package.get("name") == name
-            and Path(package.get("manifest_path", "")).resolve() == source_manifest.resolve()
+            and Path(package.get("manifest_path", "")).resolve() == overlay_manifest.resolve()
             and package.get("id") in workspace_members
         ]
         if len(matches) != 1:
@@ -170,6 +221,22 @@ def _verify_overlay_metadata(
                 "Cargo metadata does not prove the overlay contains FastAPI workspace member "
                 f"{name}"
             )
+        targets = matches[0].get("targets", [])
+        if not targets:
+            raise SystemExit(f"Cargo metadata omitted source targets for {name}")
+        for target in targets:
+            target_source = Path(target.get("src_path", "")).resolve()
+            try:
+                target_source.relative_to(source_manifest.parent.resolve())
+            except ValueError as exc:
+                raise SystemExit(
+                    f"Cargo metadata resolved {name} source outside its original member: "
+                    f"{target_source}"
+                ) from exc
+            if not target_source.is_file():
+                raise SystemExit(
+                    f"Cargo metadata resolved a missing source target: {target_source}"
+                )
         member_packages[name] = matches[0]
 
     root_node = next(
@@ -286,6 +353,28 @@ def _activate_fault_extension_overlay(site_packages: Path) -> Path:
     return activation_file
 
 
+def _fault_python_source() -> Path:
+    """Keep editable facade paths stable and the fault native package isolated."""
+    source_root = ROOT / "fastapi-rs-py/python"
+    package_overlay = FAULT_INJECTION_ROOT / "python"
+    package_overlay.mkdir(parents=True, exist_ok=True)
+    for source_entry in source_root.iterdir():
+        destination = package_overlay / source_entry.name
+        if source_entry.name == "fastapi_rs":
+            if destination.is_symlink():
+                raise SystemExit("fault native package must not link to the normal package")
+            destination.mkdir(exist_ok=True)
+            shutil.copy2(source_entry / "__init__.py", destination / "__init__.py")
+        elif destination.is_symlink():
+            if destination.resolve() != source_entry.resolve():
+                raise SystemExit(f"fault facade link does not resolve to its source: {destination}")
+        elif destination.exists():
+            raise SystemExit(f"fault facade path is not a source link: {destination}")
+        else:
+            destination.symlink_to(source_entry, target_is_directory=source_entry.is_dir())
+    return package_overlay
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--python", type=Path, help="target virtualenv Python")
@@ -323,11 +412,29 @@ def main() -> int:
     )
     if args.fault_injection:
         target_directory.mkdir(parents=True, exist_ok=True)
+    target_python = None
+    fault_site_packages = None
+    python_source = ROOT / "fastapi-rs-py/python"
+    if not args.clippy:
+        if args.python is None:
+            raise SystemExit("--python is required unless --clippy is selected")
+        target_python = args.python.absolute()
+        if not target_python.is_file():
+            raise SystemExit(f"target Python does not exist: {target_python}")
+        if args.fault_injection:
+            try:
+                target_python.relative_to(FAULT_INJECTION_ROOT)
+            except ValueError as exc:
+                raise SystemExit(
+                    "fault-injection Python must be inside target/fault-injection/"
+                ) from exc
+            fault_site_packages = _fault_site_packages(target_python)
+            python_source = _fault_python_source()
     with tempfile.TemporaryDirectory(
         prefix=".fastapi-rs-build-", dir=overlay_parent
     ) as temporary_directory:
         overlay_root = Path(temporary_directory)
-        _workspace_overlay(starlette_rs_source, overlay_root)
+        _workspace_overlay(starlette_rs_source, overlay_root, python_source)
         _verify_overlay_metadata(
             overlay_root,
             starlette_rs_source,
@@ -356,27 +463,17 @@ def main() -> int:
                 command, cwd=overlay_root, env=environment, check=False
             ).returncode
 
-        if args.python is None:
-            raise SystemExit("--python is required unless --clippy is selected")
-        target_python = args.python.absolute()
-        if not target_python.is_file():
-            raise SystemExit(f"target Python does not exist: {target_python}")
-        fault_site_packages = None
-        if args.fault_injection:
-            try:
-                target_python.relative_to(FAULT_INJECTION_ROOT)
-            except ValueError as exc:
-                raise SystemExit(
-                    "fault-injection Python must be inside target/fault-injection/"
-                ) from exc
-            fault_site_packages = _fault_site_packages(target_python)
-        editable_status = _install_editable_target(args.uv, target_python)
-        if editable_status:
-            return editable_status
+        if target_python is None:
+            raise SystemExit("target Python was not initialized")
         environment["PYO3_PYTHON"] = str(target_python)
         features = ["pyo3/extension-module"]
         if args.fault_injection:
             features.append(FAULT_INJECTION_FEATURE)
+        editable_status = _install_editable_target(
+            args.uv, target_python, overlay_root, environment, features
+        )
+        if editable_status:
+            return editable_status
         command = [
             *cargo_command,
             "build",
