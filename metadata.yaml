@@ -19,6 +19,20 @@ authority:
     source_lock_version: 2.13.4
     public_layer: Reuse Pydantic's public Python model API.
     native_layer: FastAPI-RS calls the separately built pydantic-core==2.46.4 Python wheel APIs through PyO3; its Rust implementation remains Pydantic-owned and is not a FastAPI-RS Cargo dependency or public API.
+  pydantic_core_source:
+    repository: https://github.com/pydantic/pydantic
+    tag: v2.13.4
+    commit: cf67d4b3193c3fe43ede18612ed62785eee11382
+    checkout: ../pydantic
+    version: 2.46.4
+    rust_version: "1.88"
+    cargo_manifest: pydantic-core/Cargo.toml
+    cargo_manifest_sha256: 20fcd4066f125dec91012a0cdb7f7c901963226c98906a7e414210a64ac1fcc3
+    cargo_lock: pydantic-core/Cargo.lock
+    cargo_lock_sha256: c3c27fc600d7dafd149229c6501271dbc5f6b4f7b1bfa116b32e77217c2b5038
+    boundary: >-
+      Separately installed Pydantic-owned Python runtime wheel; its Cargo graph
+      is inventoried independently and is not a FastAPI-RS Cargo dependency.
   upstream_source_lock:
     file: uv.lock
     purpose: FastAPI source-inventory provenance only; it does not select the oracle profile.
@@ -92,6 +106,27 @@ fault_contract_policy:
           kind: http_response
           status: 400
           body: {detail: There was an error parsing the body}
+      excludes: [exception_message, stack_trace, source_line, private_state]
+    - point: http.frontend.lookup.permission-error
+      contract: frontend-static-lookup-permission-denied-401
+      assertion:
+        first_response: {kind: http_response, status: 401}
+      excludes: [exception_message, stack_trace, source_line, private_state]
+    - point: http.frontend.lookup.value-error
+      contract: frontend-static-lookup-value-error-404
+      assertion:
+        first_response: {kind: http_response, status: 404}
+      excludes: [exception_message, stack_trace, source_line, private_state]
+    - point: http.frontend.lookup.name-too-long
+      contract: frontend-static-lookup-name-too-long-404
+      assertion:
+        first_response: {kind: http_response, status: 404}
+      excludes: [exception_message, stack_trace, source_line, private_state]
+    - point: http.frontend.lookup.os-error
+      contract: frontend-static-lookup-os-error-propagates
+      assertion:
+        first_effect: {kind: application_error, selector: exception, exception_class: builtins.OSError}
+        first_response: {kind: http_response, status: 500}
       excludes: [exception_message, stack_trace, source_line, private_state]
 
 manifest:
@@ -528,6 +563,22 @@ cargo_dependency_inventory:
       version: 0.29.2
       signal: Python C-API bindings
       source_description: Python-API bindings for the PyO3 ecosystem
+
+pydantic_core_dependency_inventory:
+  schema: fastapi-rs/pydantic-core-cargo-inventory@1
+  generator: scripts/render_pydantic_core_dependency_inventory.py
+  artifact: docs/PYDANTIC_CORE_DEPENDENCIES.md
+  purpose: >-
+    Recursively map the native Cargo graph inside the separately installed
+    pydantic-core Python wheel while preserving Pydantic ownership and the
+    FastAPI-RS Cargo/runtime dependency boundary.
+  role_policy: >-
+    Roles are resolved Cargo reachability from the Pydantic Core package root;
+    normal, build, and dev paths remain distinct, with optional-path labels.
+  feature_policy: >-
+    Report Cargo's enabled-feature union from the pinned lock graph, including
+    defaults and activated optional features; this is not a per-platform wheel
+    feature guarantee.
 
 reviewed_api_contract_overlay:
   schema: fastapi-rs/reviewed-api-contract-overlay@7

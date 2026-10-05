@@ -29,6 +29,7 @@ from source_api_review_schema import (
 ROOT = Path(__file__).resolve().parents[1]
 METADATA_PATH = ROOT / "metadata.yaml"
 STARLETTE_RS_ROOT_OVERRIDE: Path | None = None
+PYDANTIC_ROOT_OVERRIDE: Path | None = None
 
 
 class MetadataError(ValueError):
@@ -218,6 +219,7 @@ def validate_ci_source_checkouts(metadata: dict[str, Any]) -> None:
 
     authority = metadata["authority"]
     fastapi = authority["source"] if "source" in authority else authority
+    pydantic_core = authority["pydantic_core_source"]
     expected = {
         "fastapi": {
             "repository": fastapi["repository"],
@@ -230,6 +232,10 @@ def validate_ci_source_checkouts(metadata: dict[str, Any]) -> None:
         "starlette-rs": {
             "repository": metadata["starlette_rs"]["repository"],
             "commit": metadata["starlette_rs"]["commit"],
+        },
+        Path(pydantic_core["checkout"]).name: {
+            "repository": pydantic_core["repository"],
+            "commit": pydantic_core["commit"],
         },
     }
     for path, identity in expected.items():
@@ -397,6 +403,23 @@ def validate_fault_contract_policy(metadata: dict[str, Any], manifest: dict[str,
                     "body": {"detail": "There was an error parsing the body"},
                 },
             },
+            "frontend-static-lookup-permission-denied-401": {
+                "first_response": {"kind": "http_response", "status": 401},
+            },
+            "frontend-static-lookup-value-error-404": {
+                "first_response": {"kind": "http_response", "status": 404},
+            },
+            "frontend-static-lookup-name-too-long-404": {
+                "first_response": {"kind": "http_response", "status": 404},
+            },
+            "frontend-static-lookup-os-error-propagates": {
+                "first_effect": {
+                    "kind": "application_error",
+                    "selector": "exception",
+                    "exception_class": "builtins.OSError",
+                },
+                "first_response": {"kind": "http_response", "status": 500},
+            },
         },
     )
     excluded_observations = {row["contract"]: row.get("excludes") for row in contracts}
@@ -409,7 +432,7 @@ def validate_fault_contract_policy(metadata: dict[str, Any], manifest: dict[str,
         },
     )
 
-    workflow = manifest["unresolved"]["python_asgi_workflow_v8"]
+    workflow = manifest["unresolved"]["python_asgi_workflow_v9"]
     schema_path = artifact_path(workflow["schema_path"])
     schema = load_json(schema_path)
     schema_fault_points: dict[str, set[str]] = {}
@@ -439,12 +462,15 @@ def validate() -> None:
     authority = metadata["authority"]
     fastapi = authority["source"] if "source" in authority else authority
     starlette = authority["starlette"]
+    pydantic_core_source = authority["pydantic_core_source"]
     starlette_rs = metadata["starlette_rs"]
     validate_ci_source_checkouts(metadata)
     validate_pinned_source_checkout("FastAPI", (ROOT / fastapi["checkout"]).resolve(), fastapi)
     validate_pinned_source_checkout(
         "Starlette", (ROOT / starlette["checkout"]).resolve(), starlette
     )
+    pydantic_root = PYDANTIC_ROOT_OVERRIDE or (ROOT / pydantic_core_source["checkout"]).resolve()
+    validate_pinned_source_checkout("Pydantic", pydantic_root, pydantic_core_source)
     starlette_rs_root = STARLETTE_RS_ROOT_OVERRIDE or (ROOT / starlette_rs["owner"]).resolve()
     validate_pinned_source_checkout("Starlette-RS", starlette_rs_root, starlette_rs)
 
@@ -474,6 +500,12 @@ def validate() -> None:
     ):
         require_equal(
             f"Pydantic identity {field}", pydantic[field], selected_pydantic[manifest_field]
+        )
+    for field in ("repository", "tag", "commit", "version", "rust_version"):
+        require_equal(
+            f"Pydantic Core source identity {field}",
+            pydantic_core_source[field],
+            selected_pydantic[f"pydantic_core_{field}"],
         )
 
     python_contract = manifest["selected_contracts"]["python"]
@@ -1269,16 +1301,23 @@ def validate() -> None:
 
 
 def main() -> int:
-    global STARLETTE_RS_ROOT_OVERRIDE
+    global PYDANTIC_ROOT_OVERRIDE, STARLETTE_RS_ROOT_OVERRIDE
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--starlette-rs-source",
         type=Path,
         help="use a clean Starlette-RS checkout, such as the contract-pinned source clone",
     )
+    parser.add_argument(
+        "--pydantic-source",
+        type=Path,
+        help="use the pinned Pydantic checkout containing the Pydantic Core Cargo sources",
+    )
     args = parser.parse_args()
     if args.starlette_rs_source is not None:
         STARLETTE_RS_ROOT_OVERRIDE = args.starlette_rs_source.resolve()
+    if args.pydantic_source is not None:
+        PYDANTIC_ROOT_OVERRIDE = args.pydantic_source.resolve()
     try:
         validate()
     except (KeyError, TypeError, MetadataError) as exc:

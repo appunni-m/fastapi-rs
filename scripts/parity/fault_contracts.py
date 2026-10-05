@@ -26,6 +26,14 @@ HTTP_REQUEST_JSON_DECODE_FAULT_POINT = "http.request.json_decode.before"
 HTTP_REQUEST_JSON_DECODE_CONTRACT = "http-body-json-decode-error-returns-400"
 HTTP_REQUEST_FORM_PARSE_FAULT_POINT = "http.request.form_parse.before"
 HTTP_REQUEST_FORM_PARSE_CONTRACT = "http-body-form-parse-error-returns-400"
+HTTP_FRONTEND_LOOKUP_PERMISSION_ERROR_FAULT_POINT = "http.frontend.lookup.permission-error"
+HTTP_FRONTEND_LOOKUP_PERMISSION_ERROR_CONTRACT = "frontend-static-lookup-permission-denied-401"
+HTTP_FRONTEND_LOOKUP_VALUE_ERROR_FAULT_POINT = "http.frontend.lookup.value-error"
+HTTP_FRONTEND_LOOKUP_VALUE_ERROR_CONTRACT = "frontend-static-lookup-value-error-404"
+HTTP_FRONTEND_LOOKUP_NAME_TOO_LONG_FAULT_POINT = "http.frontend.lookup.name-too-long"
+HTTP_FRONTEND_LOOKUP_NAME_TOO_LONG_CONTRACT = "frontend-static-lookup-name-too-long-404"
+HTTP_FRONTEND_LOOKUP_OS_ERROR_FAULT_POINT = "http.frontend.lookup.os-error"
+HTTP_FRONTEND_LOOKUP_OS_ERROR_CONTRACT = "frontend-static-lookup-os-error-propagates"
 HTTP_ROUTE_SCOPED_DEPENDENCY_CLEANUP_CONTRACT = (
     "http-route-invocation-error-orders-function-and-request-dependency-cleanup"
 )
@@ -50,6 +58,16 @@ FAULT_POINT_CONTRACTS: dict[str, frozenset[str]] = {
     ),
     HTTP_REQUEST_JSON_DECODE_FAULT_POINT: frozenset({HTTP_REQUEST_JSON_DECODE_CONTRACT}),
     HTTP_REQUEST_FORM_PARSE_FAULT_POINT: frozenset({HTTP_REQUEST_FORM_PARSE_CONTRACT}),
+    HTTP_FRONTEND_LOOKUP_PERMISSION_ERROR_FAULT_POINT: frozenset(
+        {HTTP_FRONTEND_LOOKUP_PERMISSION_ERROR_CONTRACT}
+    ),
+    HTTP_FRONTEND_LOOKUP_VALUE_ERROR_FAULT_POINT: frozenset(
+        {HTTP_FRONTEND_LOOKUP_VALUE_ERROR_CONTRACT}
+    ),
+    HTTP_FRONTEND_LOOKUP_NAME_TOO_LONG_FAULT_POINT: frozenset(
+        {HTTP_FRONTEND_LOOKUP_NAME_TOO_LONG_CONTRACT}
+    ),
+    HTTP_FRONTEND_LOOKUP_OS_ERROR_FAULT_POINT: frozenset({HTTP_FRONTEND_LOOKUP_OS_ERROR_CONTRACT}),
 }
 
 
@@ -278,6 +296,67 @@ def _assert_http_body_form_parse_error_returns_400(case_result: Mapping[str, Any
     _assert_http_400_error_response(case_result, "Form parse fault")
 
 
+def _assert_http_response_status(
+    case_result: Mapping[str, Any], expected_status: int, context: str
+) -> None:
+    if case_result.get("status") != "completed":
+        raise FaultContractError(f"{context} case did not complete")
+    responses = [
+        observation
+        for _, observation in _observation_rows(case_result)
+        if observation.get("kind") == "http_response"
+    ]
+    if len(responses) != 1:
+        raise FaultContractError(f"{context} must expose exactly one HTTP response")
+    values = responses[0].get("values")
+    if not isinstance(values, Mapping) or type(values.get("status")) is not int:
+        raise FaultContractError(f"{context} response must expose an integer status")
+    if values["status"] != expected_status:
+        raise FaultContractError(f"{context} must expose HTTP {expected_status}")
+
+
+def _assert_http_frontend_lookup_permission_denied_401(
+    case_result: Mapping[str, Any],
+) -> None:
+    _assert_http_response_status(case_result, 401, "Frontend PermissionError lookup fault")
+
+
+def _assert_http_frontend_lookup_value_error_404(case_result: Mapping[str, Any]) -> None:
+    _assert_http_response_status(case_result, 404, "Frontend ValueError lookup fault")
+
+
+def _assert_http_frontend_lookup_name_too_long_404(
+    case_result: Mapping[str, Any],
+) -> None:
+    _assert_http_response_status(case_result, 404, "Frontend ENAMETOOLONG lookup fault")
+
+
+def _assert_http_frontend_lookup_os_error_propagates(
+    case_result: Mapping[str, Any],
+) -> None:
+    if case_result.get("status") != "completed":
+        raise FaultContractError("Frontend OSError lookup fault case did not complete")
+    errors = [
+        (action_index, observation)
+        for action_index, observation in _observation_rows(case_result)
+        if observation.get("kind") == "application_error"
+    ]
+    if len(errors) != 1:
+        raise FaultContractError("Frontend OSError lookup fault must expose one application error")
+    action_index, observation = errors[0]
+    values = observation.get("values")
+    if (
+        observation.get("selector") != "exception"
+        or not isinstance(values, Mapping)
+        or values.get("exception_class") != "builtins.OSError"
+    ):
+        raise FaultContractError("Frontend OSError lookup fault must propagate builtins.OSError")
+    actions = case_result.get("actions")
+    if not isinstance(actions, Sequence) or actions[action_index].get("status") != "completed":
+        raise FaultContractError("Frontend OSError application-error action must complete")
+    _assert_http_response_status(case_result, 500, "Propagated frontend OSError lookup fault")
+
+
 CONTRACT_ASSERTIONS: dict[str, Callable[[Mapping[str, Any]], None]] = {
     HTTP_ROUTE_INVOCATION_CONTRACT: _assert_http_route_invocation_error_and_recovery,
     HTTP_ROUTE_DEPENDENCY_CLEANUP_CONTRACT: _assert_http_route_invocation_error_cleans_dependencies,
@@ -286,6 +365,12 @@ CONTRACT_ASSERTIONS: dict[str, Callable[[Mapping[str, Any]], None]] = {
     ),
     HTTP_REQUEST_JSON_DECODE_CONTRACT: _assert_http_body_json_decode_error_returns_400,
     HTTP_REQUEST_FORM_PARSE_CONTRACT: _assert_http_body_form_parse_error_returns_400,
+    HTTP_FRONTEND_LOOKUP_PERMISSION_ERROR_CONTRACT: (
+        _assert_http_frontend_lookup_permission_denied_401
+    ),
+    HTTP_FRONTEND_LOOKUP_VALUE_ERROR_CONTRACT: _assert_http_frontend_lookup_value_error_404,
+    HTTP_FRONTEND_LOOKUP_NAME_TOO_LONG_CONTRACT: (_assert_http_frontend_lookup_name_too_long_404),
+    HTTP_FRONTEND_LOOKUP_OS_ERROR_CONTRACT: _assert_http_frontend_lookup_os_error_propagates,
 }
 
 

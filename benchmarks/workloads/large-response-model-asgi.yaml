@@ -1,0 +1,48 @@
+schema: fastapi-rs/benchmark-workload@1
+id: fastapi.large-response-model.asgi
+title: Serialize a response model containing 300 nested catalog records
+python_identity:
+  implementation: CPython
+  version: 3.12.13
+input:
+  path: tests/fixtures/inputs/parity/large-response-model.json
+  case_id: fastapi.performance.large-response-model.dict-output-300-items
+  action_id: get-large-catalog
+correctness_gate:
+  parity_runner: scripts/parity/run_first_slice.py
+  parity_case_id: fastapi.performance.large-response-model.dict-output-300-items
+  required_comparison: all-selected-cases-pass
+  require_equal_untimed_observation: [status, headers, body]
+subjects:
+- id: fastapi-0.141.1
+  kind: fastapi
+  environment: oracle
+- id: fastapi-rs-release
+  kind: fastapi-rs
+  environment: target
+timing:
+  boundary: direct ASGI per-request latency times only await app(scope, receive, send); sequential request-loop throughput also includes per-call setup, response observation, correctness checks, and loop bookkeeping
+  includes:
+  - FastAPI response-model validation and JSON serialization for 300 nested item dictionaries
+  - FastAPI-RS public facade, PyO3 conversion, native dispatch, and response serialization
+  - ASGI request dispatch and captured response sends
+  excludes:
+  - interpreter and module startup
+  - app construction and route registration
+  - payload generation during app construction
+  - ASGI scope and receive/send callback construction from per-request latency
+  - response signature extraction and correctness checks from per-request latency
+  - sequential loop bookkeeping from per-request latency
+  - HTTP server startup and server-side request processing
+  - network and HTTP client
+  warmups: 50
+  rounds: 5
+  samples_per_round: 200
+  concurrency: 1
+  metrics:
+  - "per-request latency nanoseconds: min, median, p95, p99, max, mean"
+  - sequential request-loop throughput including per-call setup, response observation, correctness checks, and loop bookkeeping
+  raw_samples: retain all per-request latency samples
+reporting:
+  fastapi_rs_over_fastapi: report median and p95 ratios only
+  starlette_control: omitted because standalone Starlette has no FastAPI response-model semantics

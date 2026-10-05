@@ -1,0 +1,41 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/large_response_model.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.performance.large-response-model.dict-output-300-items
+  actions:
+  - action_id: get-large-catalog
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /catalog/large
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status, headers, body]
+      comparison: exact
+  source_evidence:
+  - path: tests/test_response_model_data_filter.py
+    kind: upstream_test

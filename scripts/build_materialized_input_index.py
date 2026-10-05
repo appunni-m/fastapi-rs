@@ -109,9 +109,10 @@ def _manifest_with_current_index(text: str, index: dict[str, Any]) -> str:
     index_bytes = (json.dumps(index, indent=2) + "\n").encode("utf-8")
     values = {
         "schema": index["schema"],
+        "schema_path": "tests/fixtures/schemas/materialized-input-index-v5.schema.json",
         "sha256": hashlib.sha256(index_bytes).hexdigest(),
         "schema_sha256": sha256_file(
-            ROOT / "tests/fixtures/schemas/materialized-input-index-v4.schema.json"
+            ROOT / "tests/fixtures/schemas/materialized-input-index-v5.schema.json"
         ),
         "workflows": len(index["workflows"]),
         "cases": sum(len(row["case_ids"]) for row in index["workflows"]),
@@ -130,6 +131,7 @@ def _manifest_with_current_index(text: str, index: dict[str, Any]) -> str:
     )
     replacements = {
         "schema": re.compile(r"^    schema: .*(\n?)$"),
+        "schema_path": re.compile(r"^    schema_path: .*(\n?)$"),
         "sha256": re.compile(r"^    sha256: .*(\n?)$"),
         "schema_sha256": re.compile(r"^    schema_sha256: .*(\n?)$"),
         "workflows": re.compile(r"^      workflows: .*(\n?)$"),
@@ -141,7 +143,11 @@ def _manifest_with_current_index(text: str, index: dict[str, Any]) -> str:
         for key, pattern in replacements.items():
             match = pattern.match(lines[i])
             if match:
-                indent = "    " if key in {"schema", "sha256", "schema_sha256"} else "      "
+                indent = (
+                    "    "
+                    if key in {"schema", "schema_path", "sha256", "schema_sha256"}
+                    else "      "
+                )
                 lines[i] = f"{indent}{key}: {values[key]}{match[1]}"
                 found.add(key)
                 break

@@ -15,6 +15,7 @@ from scripts.parity.contract import (
     WORKFLOW_SCHEMA_V6_ID,
     WORKFLOW_SCHEMA_V7_ID,
     WORKFLOW_SCHEMA_V8_ID,
+    WORKFLOW_SCHEMA_V9_ID,
     ContractError,
 )
 from scripts.parity.fault_contracts import (
@@ -539,7 +540,11 @@ def compare_workflow_results(
         if result.get("schema") != expected_result_schema:
             raise ComparisonError("source or target result uses a different workflow result schema")
     _validate_identity_pair(source, target, oracle_profile, target_profile)
-    if workflow.get("schema") in {WORKFLOW_SCHEMA_V7_ID, WORKFLOW_SCHEMA_V8_ID}:
+    if workflow.get("schema") in {
+        WORKFLOW_SCHEMA_V7_ID,
+        WORKFLOW_SCHEMA_V8_ID,
+        WORKFLOW_SCHEMA_V9_ID,
+    }:
         fault_case_present = any(
             verification_mode(case) == "fault-contract" for case in workflow["cases"]
         )
@@ -587,6 +592,7 @@ def compare_workflow_results(
         WORKFLOW_SCHEMA_V6_ID,
         WORKFLOW_SCHEMA_V7_ID,
         WORKFLOW_SCHEMA_V8_ID,
+        WORKFLOW_SCHEMA_V9_ID,
     }:
         compare_case = _compare_case_v4
     elif workflow["schema"] == WORKFLOW_SCHEMA_V3_ID:
@@ -597,7 +603,11 @@ def compare_workflow_results(
     for case in workflow["cases"]:
         source_case = source_cases.get(case["case_id"])
         target_case = target_cases.get(case["case_id"])
-        if workflow["schema"] in {WORKFLOW_SCHEMA_V7_ID, WORKFLOW_SCHEMA_V8_ID}:
+        if workflow["schema"] in {
+            WORKFLOW_SCHEMA_V7_ID,
+            WORKFLOW_SCHEMA_V8_ID,
+            WORKFLOW_SCHEMA_V9_ID,
+        }:
             mode = verification_mode(case)
             if source_case is None or target_case is None:
                 raise ComparisonError(f"missing product result for case {case['case_id']}")
@@ -656,7 +666,11 @@ def compare_workflow_results(
         "failed": outcomes.count("fail"),
         "not_run": outcomes.count("not_run"),
     }
-    if workflow["schema"] in {WORKFLOW_SCHEMA_V7_ID, WORKFLOW_SCHEMA_V8_ID}:
+    if workflow["schema"] in {
+        WORKFLOW_SCHEMA_V7_ID,
+        WORKFLOW_SCHEMA_V8_ID,
+        WORKFLOW_SCHEMA_V9_ID,
+    }:
         parity_results = [case for case in case_results if case["verification"] == "parity"]
         fault_results = [case for case in case_results if case["verification"] == "fault-contract"]
         summary["parity"] = {

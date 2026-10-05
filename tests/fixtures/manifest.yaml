@@ -44,6 +44,10 @@ selected_contracts:
     version: 2.13.4
     pydantic_core_version: 2.46.4
     source_lock_version: 2.13.4
+    pydantic_core_repository: https://github.com/pydantic/pydantic
+    pydantic_core_tag: v2.13.4
+    pydantic_core_commit: cf67d4b3193c3fe43ede18612ed62785eee11382
+    pydantic_core_rust_version: "1.88"
     note: FastAPI-RS calls Pydantic's separately built pydantic-core==2.46.4 Python wheel APIs through PyO3; the native implementation remains Pydantic-owned, not a FastAPI-RS Cargo dependency or public API.
 
 source_provenance:
@@ -411,7 +415,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@5
-    sha256: 495fea27fcc68c6048c5ac0672763b7872d73472470e6f8257c6e2ac1d3e093b
+    sha256: 128131fd72509e8e4d1a3cebe9b9ca6153c772571a09bd54fd6065d13c5001b8
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -447,11 +451,11 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 55c41a96109db8a424afba7bc88c9f35b7644efb487d9ce8357842db044f0e18
+    sha256: ce5b2efe2d80c4d9803fa6e49596c8dde5bebe2ce557d4503807261aaebf225e
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
-      test_case_designs: 2118
+      test_case_designs: 2119
     source_artifact_pointer: /fixture_backlog_ref
   observation_selector_catalog:
     path: tests/fixtures/observation-selectors.json
@@ -483,15 +487,15 @@ source_artifacts:
       pydantic_model_classes: 49
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
-    schema: fastapi-rs/materialized-input-index@4
-    sha256: 0e6fcae01492a46478bedc85153269db165850607e17031dafc419ed06735341
-    schema_path: tests/fixtures/schemas/materialized-input-index-v4.schema.json
-    schema_sha256: e6bc446404458e4b017f50d0b608ad450a13f8984f1b1fb9295262c3ea20d3f8
+    schema: fastapi-rs/materialized-input-index@5
+    sha256: ec9dcdaaf8874ed700e52ec4ad78fd8b1a1994de1103847e61da65d28da081c4
+    schema_path: tests/fixtures/schemas/materialized-input-index-v5.schema.json
+    schema_sha256: 13dd4cf1032a4ad9161712364d94b9f91834afee380e1f8eee6f4f05c123261d
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 536
-      cases: 2120
-      partial_source_mappings: 1496
+      workflows: 538
+      cases: 2125
+      partial_source_mappings: 1498
 
 contract_metadata:
   aliases:
@@ -698,6 +702,21 @@ unresolved:
       Adds target-only route dependency-cleanup contracts and arbitrary JSON decode
       or form parse exception-to-400 contracts, while retaining existing parity and
       fault-contract lanes, input receipts, and lane-specific comparison counts.
+  python_asgi_workflow_v9:
+    state: v9-adds-fastapi-frontend-static-lookup-fault-contracts; v1-v8-remain-supported
+    schema_id: fastapi-rs/python-asgi-workflow@9
+    schema_path: tests/fixtures/schemas/python-asgi-workflow-v9.schema.json
+    schema_sha256: 0ebba2ad03340ac494313a0357e855d07867cb6a4c9f6436948a1dbb684c9513
+    result_schema_id: fastapi-rs/python-asgi-workflow-result@9
+    result_schema_path: tests/fixtures/schemas/python-asgi-workflow-result-v9.schema.json
+    result_schema_sha256: 3e6baca18ce16c5ffd894b8457d40858f44d67e138d418b8ad507fe9ebc60d67
+    comparison_schema_id: fastapi-rs/python-asgi-comparison@9
+    comparison_schema_path: tests/fixtures/schemas/python-asgi-comparison-v9.schema.json
+    comparison_schema_sha256: bcbd65c70fc012fb29826d14b53871600a353599d72eae63e82063b955d8ef8d
+    coverage: >-
+      Adds target-only contracts for FastAPI frontend static lookup exceptions:
+      PermissionError maps to 401, ValueError and ENAMETOOLONG map to 404, and
+      other OSError instances propagate as application errors.
   python_api_workflow:
     state: isolated-oracle-and-target-workers-and-exact-comparator-present; broader-public-api-parity-pending
     schema_id: fastapi-rs/python-api-workflow@1

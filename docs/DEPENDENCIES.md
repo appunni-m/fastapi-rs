@@ -10,6 +10,8 @@ feature, purpose, language/native components, license, and runtime/optional/
 build/dev reachability, see [the dependency graph](DEPENDENCY_GRAPH.md) and
 [the per-package dependency atlas](dependency-atlas.md). For FastAPI-RS's
 actual Cargo graph and direct Rust use, see [Rust target dependencies](RUST_TARGET_DEPENDENCIES.md).
+For the separately installed Pydantic Core wheel's Pydantic-owned native Cargo
+closure, see [Pydantic Core dependencies](PYDANTIC_CORE_DEPENDENCIES.md).
 For license scope, notices, and remaining legal review, see [licensing](LICENSING.md).
 
 The Python package is a thin PyO3 facade. FastAPI-specific routing,

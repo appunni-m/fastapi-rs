@@ -25,6 +25,13 @@ _DEPENDENCY_ORDER_CASE = "fastapi.frontend.dependencies-nested-inclusion-order"
 _DEPENDENCY_OVERRIDE_CASE = "fastapi.frontend.dependencies-override"
 _DEPENDENCY_VALIDATION_CASE = "fastapi.frontend.dependencies-validation-422"
 _API_ROUTE_WINS_CASE = "fastapi.frontend.api-route-wins"
+_LOOKUP_FAULT_RECIPE = (
+    "tests/fixtures/input-recipes/parity/frontend-static-lookup-fault-contract.yaml"
+)
+_LOOKUP_PERMISSION_CASE = "fastapi.fault-contract.frontend-static-lookup.permission-error-401"
+_LOOKUP_VALUE_CASE = "fastapi.fault-contract.frontend-static-lookup.value-error-404"
+_LOOKUP_NAME_TOO_LONG_CASE = "fastapi.fault-contract.frontend-static-lookup.name-too-long-404"
+_LOOKUP_OS_ERROR_CASE = "fastapi.fault-contract.frontend-static-lookup.os-error-propagates"
 
 
 def _source(path: str, start: int, end: int, role: str) -> dict[str, Any]:
@@ -133,6 +140,12 @@ _FRONTEND_CHECK_DIR = _source(
     1881,
     1929,
     "FastAPI resolves check_dir from FASTAPI_ENV and eagerly validates frontend directories and explicit fallback files",
+)
+_FRONTEND_LOOKUP_ERROR_POLICY = _source(
+    "fastapi/routing.py",
+    1974,
+    1984,
+    "FastAPI maps PermissionError to 401, ENAMETOOLONG and ValueError to 404, and propagates other OSError values during frontend lookup",
 )
 _DOC_FALLBACK = _source(
     _DOC,
@@ -248,12 +261,26 @@ FRONTEND_TEST_REVIEW_MAPPINGS = {
                     "http.body.bytes",
                 ],
             },
+            {
+                "recipe_path": _LOOKUP_FAULT_RECIPE,
+                "case_ids": [
+                    _LOOKUP_PERMISSION_CASE,
+                    _LOOKUP_VALUE_CASE,
+                    _LOOKUP_NAME_TOO_LONG_CASE,
+                    _LOOKUP_OS_ERROR_CASE,
+                ],
+                "observation_selectors": [
+                    "http.status",
+                    "asgi.application_error.exception",
+                ],
+            },
         ],
         "rationale": (
             "FastAPI 0.141.1 adds fallback policy and low-priority frontend routing on top of "
             "Starlette static files. The independent waves sample fallback policy, API and "
             "included-router precedence, frontend dependency resolution, and "
-            "construction/deferred directory configuration."
+            "construction/deferred directory configuration, plus target-only frontend lookup "
+            "fault contracts."
         ),
         "supporting_sources": [
             _FALLBACK_IMPL,
@@ -270,9 +297,72 @@ FRONTEND_TEST_REVIEW_MAPPINGS = {
             "directories, and direct ASGI requests. The dependency wave exposes nested dependency "
             "order through an injected response header, without using the planned dependency-order "
             "selector. The fixed missing-directory input is used only for deferred check_dir "
-            "error capture."
+            "error capture. The lookup-fault workflow retains a temporary frontend directory per "
+            "case and observes public outcomes only."
         ),
         "functions": {
+            "test_frontend_static_files_lookup_errors": {
+                "feature_ids": ["app-routing", "public-api-errors"],
+                "observation_selectors": [
+                    "http.status",
+                    "asgi.application_error.exception",
+                ],
+                "rationale": (
+                    "FastAPI's frontend lookup boundary maps PermissionError to 401, ValueError and "
+                    "ENAMETOOLONG to 404, and propagates other OSError values. Four target-only "
+                    "fault-contract cases exercise these public outcomes without asserting private "
+                    "lookup internals."
+                ),
+                "replace_features": True,
+                "supporting_sources": [
+                    _source(
+                        _TEST,
+                        86,
+                        121,
+                        "upstream test injects lookup exceptions and asserts the four public outcomes",
+                    ),
+                    _FRONTEND_LOOKUP_ERROR_POLICY,
+                ],
+                "stimulus_notes": (
+                    "The workflow creates and retains a fresh temporary frontend directory per "
+                    "case, then sends one direct ASGI GET /asset.txt request. Faults are armed only "
+                    "in the target lane; the source oracle is not applicable for these cases."
+                ),
+                "contract_gate": (
+                    "Target-only fault-contract coverage for FastAPI-owned lookup exception "
+                    "handling. The recipe contains no expected outputs and observes only public "
+                    "HTTP status, application exception, and error-response status selectors."
+                ),
+                "workflow_cases": [
+                    {
+                        "recipe_path": _LOOKUP_FAULT_RECIPE,
+                        "case_id": _LOOKUP_PERMISSION_CASE,
+                        "action_ids": ["permission-error-on-asset"],
+                        "observation_selectors": ["http.status"],
+                    },
+                    {
+                        "recipe_path": _LOOKUP_FAULT_RECIPE,
+                        "case_id": _LOOKUP_VALUE_CASE,
+                        "action_ids": ["value-error-on-asset"],
+                        "observation_selectors": ["http.status"],
+                    },
+                    {
+                        "recipe_path": _LOOKUP_FAULT_RECIPE,
+                        "case_id": _LOOKUP_NAME_TOO_LONG_CASE,
+                        "action_ids": ["name-too-long-on-asset"],
+                        "observation_selectors": ["http.status"],
+                    },
+                    {
+                        "recipe_path": _LOOKUP_FAULT_RECIPE,
+                        "case_id": _LOOKUP_OS_ERROR_CASE,
+                        "action_ids": ["os-error-on-asset"],
+                        "observation_selectors": [
+                            "asgi.application_error.exception",
+                            "http.status",
+                        ],
+                    },
+                ],
+            },
             "test_404_fallback_handles_missing_assets": _candidate(
                 start=756,
                 end=765,
@@ -693,9 +783,6 @@ FRONTEND_TEST_REVIEW_MAPPINGS = {
 
 FRONTEND_TEST_FUNCTION_EXCLUSIONS = {
     _TEST: {
-        "test_frontend_static_files_lookup_errors": (
-            "This test monkeypatches the private FastAPI frontend StaticFiles lookup_path and injects operating-system exceptions. The current wave samples public ASGI fallback and routing behavior; direct internal monkeypatch behavior and generic filesystem error injection are outside its input contract."
-        ),
         "test_frontend_route_group_helpers": (
             "This test calls private _frontend_routes.matches/handle/url_path_for directly and asserts Starlette Match and NoMatchFound internals. The current workflow samples the public app/router ASGI path and has no observation for private route-object internals."
         ),
@@ -741,14 +828,6 @@ FRONTEND_TEST_FUNCTION_EXCLUSIONS = {
 
 FRONTEND_TEST_FUNCTION_EXCLUSION_EVIDENCE = {
     _TEST: {
-        "test_frontend_static_files_lookup_errors": [
-            _source(
-                _TEST,
-                86,
-                121,
-                "private lookup_path monkeypatch and injected filesystem error assertions",
-            )
-        ],
         "test_frontend_route_group_helpers": [
             _source(
                 _TEST,

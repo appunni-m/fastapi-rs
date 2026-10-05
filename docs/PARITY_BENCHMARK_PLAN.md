@@ -178,7 +178,7 @@ not own FastAPI's repeated-query list validation behavior.
 ### Required direct-ASGI workload suite
 
 `make benchmark-suite STARLETTE_RS_SOURCE=/path/to/clean/starlette-rs` runs the
-reviewed six-workload set in a fixed order. The contract check rejects missing,
+reviewed seven-workload set in a fixed order. The contract check rejects missing,
 renamed, or additional declarations until the suite denominator is reviewed.
 Before building, the runner verifies the FastAPI, Starlette, and Starlette-RS
 source revisions against their current manifest pins. FastAPI-RS must have a
@@ -214,7 +214,7 @@ do not subtract them from FastAPI timings as a claimed FastAPI-only cost. Only
 compare FastAPI to FastAPI-RS for workloads whose behavioral parity gate
 passes.
 
-The implemented suite currently measures six direct-ASGI workloads through
+The implemented suite currently measures seven direct-ASGI workloads through
 the isolated FastAPI Python consumers. Each run gates the full selected
 workflow, performs an untimed response check, then records 50 warmups and five
 rounds of 200 sequential samples per subject. Per-request latency starts at
@@ -227,7 +227,7 @@ server or a native-only Rust boundary. Those measurements remain separate
 future workloads; do not infer them by subtracting the Starlette control or
 from the end-to-end target time.
 
-#### Latest completed six-workload run
+#### Latest completed six-workload run (suite schema v1)
 
 The run completed at `2026-10-04T21:51:11Z` with suite ID
 `c98c3402-28d7-4c87-9c66-e4ab1717de2f` and suite artifact SHA-256

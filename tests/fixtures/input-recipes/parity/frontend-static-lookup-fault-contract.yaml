@@ -1,0 +1,131 @@
+schema: fastapi-rs/python-asgi-workflow@9
+workload:
+  file: tests/fixtures/workloads/frontend_static_lookup_fault_contract.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.fault-contract.frontend-static-lookup.permission-error-401
+  verification: fault-contract
+  fault:
+    point: http.frontend.lookup.permission-error
+    contract: frontend-static-lookup-permission-denied-401
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: permission-error-on-asset
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /asset.txt
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status], comparison: exact}
+  source_evidence:
+  - {path: tests/test_frontend.py, kind: upstream_test}
+- case_id: fastapi.fault-contract.frontend-static-lookup.value-error-404
+  verification: fault-contract
+  fault:
+    point: http.frontend.lookup.value-error
+    contract: frontend-static-lookup-value-error-404
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: value-error-on-asset
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /asset.txt
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status], comparison: exact}
+  source_evidence:
+  - {path: tests/test_frontend.py, kind: upstream_test}
+- case_id: fastapi.fault-contract.frontend-static-lookup.name-too-long-404
+  verification: fault-contract
+  fault:
+    point: http.frontend.lookup.name-too-long
+    contract: frontend-static-lookup-name-too-long-404
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: name-too-long-on-asset
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /asset.txt
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status], comparison: exact}
+  source_evidence:
+  - {path: tests/test_frontend.py, kind: upstream_test}
+- case_id: fastapi.fault-contract.frontend-static-lookup.os-error-propagates
+  verification: fault-contract
+  fault:
+    point: http.frontend.lookup.os-error
+    contract: frontend-static-lookup-os-error-propagates
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: os-error-on-asset
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /asset.txt
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: application_error, selector: exception, comparison: exact}
+    - {kind: http_response, selectors: [status], comparison: exact}
+  source_evidence:
+  - {path: tests/test_frontend.py, kind: upstream_test}

@@ -4201,6 +4201,33 @@ fn frontend_http_error(py: Python<'_>, status_code: u16) -> PyResult<PyErr> {
     Ok(PyErr::from_value(exception))
 }
 
+#[cfg(feature = "fault-injection")]
+fn frontend_lookup_fault_error(py: Python<'_>) -> PyResult<Option<PyErr>> {
+    use crate::fault_injection::FrontendLookupFault;
+
+    let Some(fault) = crate::fault_injection::take_http_frontend_lookup_fault() else {
+        return Ok(None);
+    };
+    let builtins = py.import("builtins")?;
+    let error = match fault {
+        FrontendLookupFault::PermissionError => builtins.getattr("PermissionError")?.call0()?,
+        FrontendLookupFault::ValueError => builtins.getattr("ValueError")?.call0()?,
+        FrontendLookupFault::NameTooLong => {
+            let error_number = py.import("errno")?.getattr("ENAMETOOLONG")?;
+            builtins
+                .getattr("OSError")?
+                .call1((error_number, "name too long"))?
+        }
+        FrontendLookupFault::OsError => {
+            let error_number = py.import("errno")?.getattr("EIO")?;
+            builtins
+                .getattr("OSError")?
+                .call1((error_number, "other"))?
+        }
+    };
+    Ok(Some(PyErr::from_value(error)))
+}
+
 fn frontend_is_navigation_request(py: Python<'_>, request: &Bound<'_, PyAny>) -> PyResult<bool> {
     let accept = request
         .getattr("headers")?
@@ -9495,6 +9522,10 @@ impl FastApiCall {
             )
         };
         self.frontend_response_status_override = fallback_status_code;
+        #[cfg(feature = "fault-injection")]
+        if let Some(error) = frontend_lookup_fault_error(py)? {
+            return self.frontend_response_failed(py, error);
+        }
         let awaitable = static_files
             .bind(py)
             .call_method1("get_response", (path, self.scope.bind(py)))?;
@@ -9600,6 +9631,23 @@ impl FastApiCall {
         error: PyErr,
     ) -> PyResult<MachineAction> {
         let value = error.value(py);
+        let builtins = py.import("builtins")?;
+        if value.is_instance(&builtins.getattr("PermissionError")?)? {
+            return self.route_exception(py, frontend_http_error(py, 401)?);
+        }
+        if value.is_instance(&builtins.getattr("ValueError")?)? {
+            return self.route_exception(py, frontend_http_error(py, 404)?);
+        }
+        if value.is_instance(&builtins.getattr("OSError")?)? {
+            let error_number = value.getattr("errno")?;
+            let name_too_long = py.import("errno")?.getattr("ENAMETOOLONG")?;
+            if error_number
+                .rich_compare(&name_too_long, pyo3::basic::CompareOp::Eq)?
+                .is_truthy()?
+            {
+                return self.route_exception(py, frontend_http_error(py, 404)?);
+            }
+        }
         let http_exception = py
             .import("starlette.exceptions")?
             .getattr("HTTPException")?;

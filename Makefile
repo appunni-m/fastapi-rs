@@ -19,6 +19,7 @@ BUILD_TOOLS_LOCK ?= $(CURDIR)/requirements/build-tools-cpython-3.12.13.lock
 FASTAPI_SOURCE ?= $(abspath ../fastapi)
 STARLETTE_SOURCE ?= $(abspath ../starlette)
 STARLETTE_RS_SOURCE ?= $(abspath ../starlette-rs)
+PYDANTIC_SOURCE ?= $(abspath ../pydantic)
 export STARLETTE_RS_SOURCE
 SOURCE_RESULT ?=
 TARGET_RESULT ?=
@@ -27,7 +28,7 @@ PARITY_API_INPUT ?= tests/fixtures/inputs/parity/encoding.json
 BENCHMARK_WORKLOAD ?= benchmarks/workloads/first-slice-valid-asgi.yaml
 
 .DEFAULT_GOAL := help
-.PHONY: help fmt format clippy build build-rust build-python build-tools-prepare python-facade-check rust-policy-check compatibility-atlas-update api-contract-update api-contract-check metadata-check dependency-inventory-update dependency-inventory-check dependency-graph-update dependency-graph-check parity-inputs parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-target fault-injection-build parity-api-runtime parity-validate parity-index-update parity-index-check parity-oracle parity-oracle-standard parity-target parity-fault-target parity-compare parity-api-validate parity-api-oracle parity-api-target parity-api-compare parity-first-slice benchmark-input-check benchmark-contract-check benchmark-first-slice benchmark-suite verify clean
+.PHONY: help fmt format clippy build build-rust build-python build-tools-prepare python-facade-check rust-policy-check compatibility-atlas-update api-contract-update api-contract-check metadata-check dependency-inventory-update dependency-inventory-check pydantic-core-inventory-update pydantic-core-inventory-check dependency-graph-update dependency-graph-check parity-inputs parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-target fault-injection-build parity-api-runtime parity-validate parity-index-update parity-index-check parity-oracle parity-oracle-standard parity-target parity-fault-target parity-compare parity-api-validate parity-api-oracle parity-api-target parity-api-compare parity-first-slice benchmark-input-check benchmark-contract-check benchmark-first-slice benchmark-suite verify clean
 
 help: ## Show common development commands
 	@printf '%s\n' \
@@ -47,6 +48,8 @@ help: ## Show common development commands
 	  '  make metadata-check   Check the human-maintained API source authority' \
 	  '  make dependency-inventory-update Regenerate the pinned target dependency/license report' \
 	  '  make dependency-inventory-check Check the pinned target dependency/license report' \
+	  '  make pydantic-core-inventory-update Regenerate the pinned Pydantic Core native dependency report' \
+	  '  make pydantic-core-inventory-check Check the pinned Pydantic Core native dependency report' \
 	  '  make dependency-graph-update Regenerate FastAPI lock-derived dependency edges and surfaces' \
 	  '  make dependency-graph-check Check Python dependency rows against FastAPI 0.141.1 uv.lock' \
 	  '  make parity-inputs    Materialize ignored JSON workflows from YAML recipes' \
@@ -120,13 +123,19 @@ api-contract-check: ## Check per-symbol API links are current
 	$(PYTHON) -m scripts.build_api_surface_contract --check
 
 metadata-check: ## Check API-source metadata against generated contract artifacts
-	$(PYTHON) scripts/check_metadata_authority.py --starlette-rs-source "$(STARLETTE_RS_SOURCE)"
+	$(PYTHON) scripts/check_metadata_authority.py --starlette-rs-source "$(STARLETTE_RS_SOURCE)" --pydantic-source "$(PYDANTIC_SOURCE)"
 
 dependency-inventory-update: ## Regenerate the pinned Cargo/Python target dependency inventory
 	$(PYTHON) scripts/render_rust_target_dependency_inventory.py --offline --starlette-rs-source "$(STARLETTE_RS_SOURCE)"
 
 dependency-inventory-check: ## Check the pinned Cargo/Python target dependency inventory
 	$(PYTHON) scripts/render_rust_target_dependency_inventory.py --offline --check --starlette-rs-source "$(STARLETTE_RS_SOURCE)"
+
+pydantic-core-inventory-update: ## Regenerate the pinned Pydantic Core Cargo dependency inventory
+	$(PYTHON) scripts/render_pydantic_core_dependency_inventory.py --offline --pydantic-source "$(PYDANTIC_SOURCE)"
+
+pydantic-core-inventory-check: ## Check the pinned Pydantic Core Cargo dependency inventory
+	$(PYTHON) scripts/render_pydantic_core_dependency_inventory.py --offline --check --pydantic-source "$(PYDANTIC_SOURCE)"
 
 dependency-graph-check: ## Check Python dependency graph rows against the pinned FastAPI lock
 	$(PYTHON) scripts/check_fastapi_dependency_graph.py
@@ -255,7 +264,7 @@ benchmark-suite: benchmark-input-check parity-prepare-oracle ## Prepare the orac
 
 build: build-rust build-python ## Build the Rust crates and Python wheel
 
-verify: fmt clippy parity-index-check api-contract-check metadata-check dependency-inventory-check dependency-graph-check benchmark-contract-check parity-validate build-python ## Run formatting, lint, static contracts, and package checks
+verify: fmt clippy parity-index-check api-contract-check metadata-check dependency-inventory-check pydantic-core-inventory-check dependency-graph-check benchmark-contract-check parity-validate build-python ## Run formatting, lint, static contracts, and package checks
 
 clean: ## Remove Cargo outputs under target/
 	$(CARGO) clean

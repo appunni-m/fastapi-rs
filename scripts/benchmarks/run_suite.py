@@ -21,10 +21,11 @@ ROOT = contract.ROOT
 RESULT_ROOT = ROOT / "benchmark-results"
 RUNNER = ROOT / "scripts/benchmarks/run_first_slice.py"
 SUITE_SCHEMA_PATH = ROOT / "tests/fixtures/schemas/benchmark-suite-result.schema.json"
+SUITE_SCHEMA_V2_PATH = ROOT / "tests/fixtures/schemas/benchmark-suite-result-v2.schema.json"
+SUITE_SCHEMA_V1_ID = "fastapi-rs/benchmark-suite-result@1"
+SUITE_SCHEMA_V2_ID = "fastapi-rs/benchmark-suite-result@2"
 
-# This list is the reviewed suite denominator. Adding or removing a declaration
-# requires an explicit suite review instead of silently changing benchmark scope.
-EXPECTED_WORKLOADS = (
+EXPECTED_WORKLOADS_V1 = (
     (
         "async-nested-distinct-query-aliases-asgi.yaml",
         "fastapi.async-nested-distinct-query-aliases.asgi",
@@ -35,6 +36,18 @@ EXPECTED_WORKLOADS = (
     ("first-slice-valid-asgi.yaml", "fastapi.first-slice.valid-asgi"),
     ("repeated-sequence-query-asgi.yaml", "fastapi.request.repeated-sequence-query.asgi"),
 )
+
+# This versioned list is the reviewed suite denominator. Adding or removing a
+# declaration requires an explicit suite schema revision.
+EXPECTED_WORKLOADS = (
+    *EXPECTED_WORKLOADS_V1[:-1],
+    ("large-response-model-asgi.yaml", "fastapi.large-response-model.asgi"),
+    EXPECTED_WORKLOADS_V1[-1],
+)
+SUITE_CONTRACTS = {
+    SUITE_SCHEMA_V1_ID: (SUITE_SCHEMA_PATH, EXPECTED_WORKLOADS_V1),
+    SUITE_SCHEMA_V2_ID: (SUITE_SCHEMA_V2_PATH, EXPECTED_WORKLOADS),
+}
 
 
 class SuiteError(RuntimeError):
@@ -375,8 +388,12 @@ def _check_suite_document(
     suite: dict[str, Any],
     loaded_by_id: dict[str, tuple[dict[str, Any], Path, dict[str, Any], Path, dict[str, Any]]],
 ) -> None:
-    contract._validate_schema(suite, SUITE_SCHEMA_PATH, "benchmark suite result")
-    expected_ids = [workload_id for _, workload_id in EXPECTED_WORKLOADS]
+    try:
+        schema_path, expected_workloads = SUITE_CONTRACTS[suite["schema"]]
+    except KeyError as exc:
+        raise SuiteError(f"unsupported benchmark suite schema: {suite.get('schema')!r}") from exc
+    contract._validate_schema(suite, schema_path, "benchmark suite result")
+    expected_ids = [workload_id for _, workload_id in expected_workloads]
     if suite["required_workloads"] != expected_ids:
         raise SuiteError("suite result denominator differs from the reviewed workload set")
     outcomes = suite["workloads"]
@@ -420,7 +437,9 @@ def _check_suite_document(
     failure = suite["failure"]
     if suite["status"] == "completed":
         if len(results) != len(expected_ids):
-            raise SuiteError("completed suite does not reference six completed workload results")
+            raise SuiteError(
+                f"completed suite does not reference {len(expected_ids)} completed workloads"
+            )
         identities = _assert_compatible_results(results)
         if suite["identity"] != identities:
             raise SuiteError("completed suite identity differs from its workload results")
@@ -441,7 +460,9 @@ def _check_suite_document(
         if any(outcome["status"] != "not_run" for outcome in outcomes[failed_index + 1 :]):
             raise SuiteError("workload outcomes after the failure must be not_run")
     if failure["stage"] == "aggregation" and len(results) != len(expected_ids):
-        raise SuiteError("aggregation failure must retain all six completed workload results")
+        raise SuiteError(
+            f"aggregation failure must retain all {len(expected_ids)} completed workloads"
+        )
 
 
 def _validate_saved_suite_artifacts(
@@ -498,7 +519,7 @@ def _suite_document(
     failure: dict[str, Any] | None,
 ) -> dict[str, Any]:
     return {
-        "schema": "fastapi-rs/benchmark-suite-result@1",
+        "schema": SUITE_SCHEMA_V2_ID,
         "run_id": str(uuid.uuid4()),
         "created_at": datetime.now(UTC).isoformat(),
         "status": status,
@@ -534,7 +555,8 @@ def main() -> int:
     try:
         if args.check:
             loaded = _load_expected_workloads()
-            contract._check_schema(SUITE_SCHEMA_PATH, "benchmark suite result")
+            contract._check_schema(SUITE_SCHEMA_PATH, "benchmark suite v1 result")
+            contract._check_schema(SUITE_SCHEMA_V2_PATH, "benchmark suite v2 result")
             artifact_count = _validate_saved_suite_artifacts(loaded)
             print(
                 f"benchmark suite contract valid: {len(loaded)} required workloads, "

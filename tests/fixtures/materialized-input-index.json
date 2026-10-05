@@ -1,5 +1,5 @@
 {
-  "schema": "fastapi-rs/materialized-input-index@4",
+  "schema": "fastapi-rs/materialized-input-index@5",
   "authority": {
     "fastapi": "0.141.1",
     "starlette": "1.6.0"
@@ -7076,6 +7076,67 @@
       ]
     },
     {
+      "id": "frontend-static-lookup-fault-contract",
+      "input_path": "tests/fixtures/inputs/parity/frontend-static-lookup-fault-contract.json",
+      "input_sha256": "0d93d0b0407869c5441747f6b37719717677bc572b6353d927f9e8b074171510",
+      "recipe_path": "tests/fixtures/input-recipes/parity/frontend-static-lookup-fault-contract.yaml",
+      "recipe_sha256": "4cc2e10d6b31161c4870109f4dbf6ce268fda7ab45f70113a30d80dd24ee2c68",
+      "workload_path": "tests/fixtures/workloads/frontend_static_lookup_fault_contract.py",
+      "workload_sha256": "78c6c160b61b9739fcf2466c4c5069e5a32c04c5c5379d66def87ffc24114b49",
+      "case_ids": [
+        "fastapi.fault-contract.frontend-static-lookup.permission-error-401",
+        "fastapi.fault-contract.frontend-static-lookup.value-error-404",
+        "fastapi.fault-contract.frontend-static-lookup.name-too-long-404",
+        "fastapi.fault-contract.frontend-static-lookup.os-error-propagates"
+      ],
+      "case_contracts": [
+        {
+          "case_id": "fastapi.fault-contract.frontend-static-lookup.permission-error-401",
+          "verification": "fault-contract",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_frontend.py"
+          ],
+          "fault": {
+            "point": "http.frontend.lookup.permission-error",
+            "contract": "frontend-static-lookup-permission-denied-401"
+          }
+        },
+        {
+          "case_id": "fastapi.fault-contract.frontend-static-lookup.value-error-404",
+          "verification": "fault-contract",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_frontend.py"
+          ],
+          "fault": {
+            "point": "http.frontend.lookup.value-error",
+            "contract": "frontend-static-lookup-value-error-404"
+          }
+        },
+        {
+          "case_id": "fastapi.fault-contract.frontend-static-lookup.name-too-long-404",
+          "verification": "fault-contract",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_frontend.py"
+          ],
+          "fault": {
+            "point": "http.frontend.lookup.name-too-long",
+            "contract": "frontend-static-lookup-name-too-long-404"
+          }
+        },
+        {
+          "case_id": "fastapi.fault-contract.frontend-static-lookup.os-error-propagates",
+          "verification": "fault-contract",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_frontend.py"
+          ],
+          "fault": {
+            "point": "http.frontend.lookup.os-error",
+            "contract": "frontend-static-lookup-os-error-propagates"
+          }
+        }
+      ]
+    },
+    {
       "id": "generate-clients-tutorial001-upstream",
       "input_path": "tests/fixtures/inputs/parity/generate-clients-tutorial001-upstream.json",
       "input_sha256": "c98c891f28fca114c79f5a2857405931c19603cda79ee83ec25a85dda5a9c868",
@@ -8483,6 +8544,27 @@
           "requirement_refs": [
             "api:fastapi.encoders.jsonable_encoder",
             "source:upstream-test:tests/test_jsonable_encoder.py"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "large-response-model",
+      "input_path": "tests/fixtures/inputs/parity/large-response-model.json",
+      "input_sha256": "8659166f3530ff2ecc5239a4b01e2d9f6df9ddbb2b5d95437ea7c84da39b6e5c",
+      "recipe_path": "tests/fixtures/input-recipes/parity/large-response-model.yaml",
+      "recipe_sha256": "78b7d09d8c879e09076f9e3e1c716d394b0c3fc6ff9fddaaecdd091041de1ab2",
+      "workload_path": "tests/fixtures/workloads/large_response_model.py",
+      "workload_sha256": "1febb0026019df4ef1bb93722fbff4b5614f6b8ff8bd6e811e5aebefb291f802",
+      "case_ids": [
+        "fastapi.performance.large-response-model.dict-output-300-items"
+      ],
+      "case_contracts": [
+        {
+          "case_id": "fastapi.performance.large-response-model.dict-output-300-items",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_response_model_data_filter.py"
           ]
         }
       ]
@@ -35144,6 +35226,26 @@
       ]
     },
     {
+      "source_item_id": "upstream-test:tests/test_frontend.py",
+      "fixture_id": "fastapi.test.test-frontend",
+      "workflow_id": "frontend-static-lookup-fault-contract",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 4 case(s); observes asgi.application_error.exception, construction.exception_class, construction.exception_message, construction.outcome, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.fault-contract.frontend-static-lookup.name-too-long-404",
+        "fastapi.fault-contract.frontend-static-lookup.os-error-propagates",
+        "fastapi.fault-contract.frontend-static-lookup.permission-error-401",
+        "fastapi.fault-contract.frontend-static-lookup.value-error-404"
+      ],
+      "observation_selectors": [
+        "asgi.application_error.exception",
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
+        "http.status"
+      ]
+    },
+    {
       "source_item_id": "documented-example:docs_src/generate_clients/tutorial001_py310.py",
       "fixture_id": "fastapi.docs-example.generate-clients-tutorial001-py310",
       "workflow_id": "generate-clients-tutorial001-upstream",
@@ -35887,6 +35989,21 @@
       "observation_selectors": [
         "python.attribute_value",
         "python.call_outcome"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_response_model_data_filter.py",
+      "fixture_id": "fastapi.test.test-response-model-data-filter",
+      "workflow_id": "large-response-model",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.performance.large-response-model.dict-output-300-items"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
       ]
     },
     {

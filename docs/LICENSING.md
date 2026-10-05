@@ -43,6 +43,10 @@ it does not relicense FastAPI, Starlette, Pydantic, or third-party material.
   [`RUST_TARGET_DEPENDENCIES.md`](RUST_TARGET_DEPENDENCIES.md). The FastAPI
   source dependency graph is documented separately in
   [`DEPENDENCY_GRAPH.md`](DEPENDENCY_GRAPH.md).
+- The Pydantic Core 2.46.4 wheel's Pydantic-owned native Cargo closure is
+  inventoried separately in
+  [`PYDANTIC_CORE_DEPENDENCIES.md`](PYDANTIC_CORE_DEPENDENCIES.md). That graph
+  is not part of FastAPI-RS's Cargo workspace or package bundle.
 
 ### Target Python runtime profile
 
@@ -69,6 +73,12 @@ and [lock](../requirements/target-runtime-cpython-3.12.13.lock).
 | `typing-extensions` | `4.16.0`; direct Starlette-RS-Py runtime dependency (`>=4.12.0`), also used by Pydantic, Pydantic Core, and AnyIO | Provides `TypeVar` with a default state type for generic `HTTPConnection`, `Request`, and `WebSocket` annotations in Starlette-RS `starlette/requests.py`; other packages use it for compatible typing APIs. | Python wheel; no native component is identified by the locked wheel metadata. | PSF-2.0, `License-Expression` in the [4.16.0 wheel metadata](https://pypi.org/pypi/typing-extensions/4.16.0/json). |
 | `typing-inspection` | `0.4.2`; Pydantic transitive runtime dependency | Typing-object inspection required by Pydantic's type and field handling. | Python wheel; no native component is identified by the locked wheel metadata. | MIT, `License-Expression` in the [0.4.2 wheel metadata](https://pypi.org/pypi/typing-inspection/0.4.2/json). |
 | `annotated-doc` | `0.0.4`; direct target runtime dependency | Rust imports `annotated_doc.Doc` through PyO3 to construct `Annotated` metadata for public signatures, parameters, exceptions, and security APIs; the lock also keeps the parity profile aligned. | Pure-Python universal wheel; no native component or runtime dependencies are declared in the locked wheel metadata. | MIT, `License-Expression` in the [0.0.4 wheel metadata](https://pypi.org/pypi/annotated-doc/0.0.4/json). |
+
+The package-level Cargo dependency and license inventory inside the separately
+installed `pydantic-core` wheel is
+[`PYDANTIC_CORE_DEPENDENCIES.md`](PYDANTIC_CORE_DEPENDENCIES.md). Its root
+package is MIT-licensed; dependency license expressions are retained per
+resolved crate. This inventory does not bundle those crates into FastAPI-RS.
 
 The target's current `pyproject.toml` declares no optional dependency groups.
 The pinned Starlette-RS package separately declares `schemas` (`pyyaml`),

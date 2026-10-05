@@ -162,6 +162,10 @@ the local Starlette-RS source install is separately pinned. The FastAPI
 0.141.1 oracle closure is separately locked and documented in
 [`DEPENDENCY_GRAPH.md`](DEPENDENCY_GRAPH.md).
 
+The Pydantic-owned Rust crate graph inside `pydantic-core` is mapped separately
+in [`PYDANTIC_CORE_DEPENDENCIES.md`](PYDANTIC_CORE_DEPENDENCIES.md). It is not
+part of this workspace's `Cargo.lock` and is not a FastAPI-RS Cargo dependency.
+
 ### Isolated Python build-tool closure
 
 `requirements/build-tools-cpython-3.12.13.in` and its hash-locked output
@@ -207,8 +211,10 @@ The input-only encoder review is
 These runtime checks are an internal compatibility bridge, not a FastAPI-RS
 public API. The `pydantic-core` wheel is a direct target Python runtime
 dependency and its Rust implementation remains Pydantic-owned, outside this
-workspace's Cargo graph. The explicit `2.46.4` pin matches the selected
-manifest identity. The public Pydantic `AnyUrl` type does not replace the raw
+workspace's Cargo graph. Its separate native closure is inventoried in
+[`PYDANTIC_CORE_DEPENDENCIES.md`](PYDANTIC_CORE_DEPENDENCIES.md). The explicit
+`2.46.4` pin matches the selected manifest identity. The public Pydantic
+`AnyUrl` type does not replace the raw
 Core `Url` check, and Pydantic does not export the undefined sentinel type as
 a public API. Keep the behavior tied to these encoder classifications and
 revisit it when the Pydantic pin changes.

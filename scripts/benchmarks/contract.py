@@ -181,6 +181,7 @@ def load_workload(path: Path) -> tuple[dict[str, Any], Path, dict[str, Any], Pat
     if not has_control and control_policy not in {
         None,
         "omitted because standalone Starlette has no FastAPI dependency injection semantics",
+        "omitted because standalone Starlette has no FastAPI response-model semantics",
     }:
         _fail("Starlette control reporting is inconsistent with the selected subjects")
 
