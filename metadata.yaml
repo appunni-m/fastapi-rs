@@ -2338,6 +2338,12 @@ reviewed_api_contract_overlay:
         - *additional_field_saved
         - *additional_field_two_contexts
         - *additional_field_retry
+        - recipe_path: tests/fixtures/input-recipes/parity/inline-query-schema-wire.yaml
+          case_id: fastapi.openapi-inline-query-schema-wire.direct-defaults
+          workload_path: tests/fixtures/workloads/inline_query_schema_wire.py
+        - recipe_path: tests/fixtures/input-recipes/parity/inline-query-schema-wire.yaml
+          case_id: fastapi.openapi-inline-query-schema-wire.dependency-defaults
+          workload_path: tests/fixtures/workloads/inline_query_schema_wire.py
       feature_ids: [response-serialization]
       observation_selectors: [http.status, http.body.bytes, http.headers.ordered, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message, validation.error_details, error.public_attributes]
       supported_slice: >-
@@ -3212,6 +3218,12 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
           case_id: fastapi.openapi-validation-response.declared-default-suppresses-automatic
           workload_path: tests/fixtures/workloads/openapi_validation_response.py
+        - recipe_path: tests/fixtures/input-recipes/parity/inline-query-schema-wire.yaml
+          case_id: fastapi.openapi-inline-query-schema-wire.direct-defaults
+          workload_path: tests/fixtures/workloads/inline_query_schema_wire.py
+        - recipe_path: tests/fixtures/input-recipes/parity/inline-query-schema-wire.yaml
+          case_id: fastapi.openapi-inline-query-schema-wire.dependency-defaults
+          workload_path: tests/fixtures/workloads/inline_query_schema_wire.py
     fastapi.applications.FastAPI:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::new
       source_evidence:
@@ -3229,6 +3241,12 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
           case_id: fastapi.openapi-validation-response.declared-default-suppresses-automatic
           workload_path: tests/fixtures/workloads/openapi_validation_response.py
+        - recipe_path: tests/fixtures/input-recipes/parity/inline-query-schema-wire.yaml
+          case_id: fastapi.openapi-inline-query-schema-wire.direct-defaults
+          workload_path: tests/fixtures/workloads/inline_query_schema_wire.py
+        - recipe_path: tests/fixtures/input-recipes/parity/inline-query-schema-wire.yaml
+          case_id: fastapi.openapi-inline-query-schema-wire.dependency-defaults
+          workload_path: tests/fixtures/workloads/inline_query_schema_wire.py
       feature_ids: [app-routing]
       observation_selectors: [python.signature]
     fastapi.applications.FastAPI.__call__:
@@ -3354,6 +3372,12 @@ reviewed_api_contract_overlay:
         - *additional_field_saved
         - *additional_field_two_contexts
         - *additional_field_retry
+        - recipe_path: tests/fixtures/input-recipes/parity/inline-query-schema-wire.yaml
+          case_id: fastapi.openapi-inline-query-schema-wire.direct-defaults
+          workload_path: tests/fixtures/workloads/inline_query_schema_wire.py
+        - recipe_path: tests/fixtures/input-recipes/parity/inline-query-schema-wire.yaml
+          case_id: fastapi.openapi-inline-query-schema-wire.dependency-defaults
+          workload_path: tests/fixtures/workloads/inline_query_schema_wire.py
       feature_ids: [app-routing, dependency-security, response-serialization, python-data-encoding]
       observation_selectors:
         - http.status
@@ -3806,6 +3830,12 @@ reviewed_api_contract_overlay:
           case_id: fastapi.request-files.openapi-documented-shapes
         - recipe_path: tests/fixtures/input-recipes/parity/dependency-override-signature-reanalysis.yaml
           case_id: fastapi.dependency-overrides.signature-reanalysis.sync-unrelated-map
+        - recipe_path: tests/fixtures/input-recipes/parity/inline-query-schema-wire.yaml
+          case_id: fastapi.openapi-inline-query-schema-wire.direct-defaults
+          workload_path: tests/fixtures/workloads/inline_query_schema_wire.py
+        - recipe_path: tests/fixtures/input-recipes/parity/inline-query-schema-wire.yaml
+          case_id: fastapi.openapi-inline-query-schema-wire.dependency-defaults
+          workload_path: tests/fixtures/workloads/inline_query_schema_wire.py
       feature_ids: [openapi-docs]
       observation_selectors: [http.status, http.body.json, openapi.document, openapi.paths, openapi.request_schema]
       supported_slice: >-
@@ -4566,6 +4596,12 @@ reviewed_api_contract_overlay:
         - *additional_field_saved
         - *additional_field_two_contexts
         - *additional_field_retry
+        - recipe_path: tests/fixtures/input-recipes/parity/inline-query-schema-wire.yaml
+          case_id: fastapi.openapi-inline-query-schema-wire.direct-defaults
+          workload_path: tests/fixtures/workloads/inline_query_schema_wire.py
+        - recipe_path: tests/fixtures/input-recipes/parity/inline-query-schema-wire.yaml
+          case_id: fastapi.openapi-inline-query-schema-wire.dependency-defaults
+          workload_path: tests/fixtures/workloads/inline_query_schema_wire.py
       feature_ids: [app-routing, request-validation, response-serialization, openapi-docs]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message, validation.error_details, error.public_attributes]
       supported_slice: >-
@@ -5419,6 +5455,9 @@ reviewed_api_contract_overlay:
           case_id: fastapi.dependencies.depends-yield-scope-signature
         - recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
           case_id: fastapi.parameter-factory-signatures.depends
+        - recipe_path: tests/fixtures/input-recipes/parity/inline-query-schema-wire.yaml
+          case_id: fastapi.openapi-inline-query-schema-wire.dependency-defaults
+          workload_path: tests/fixtures/workloads/inline_query_schema_wire.py
       feature_ids: [dependency-security, request-validation, openapi-docs]
       observation_selectors:
         - asgi.application_error.exception
@@ -5954,6 +5993,9 @@ reviewed_api_contract_overlay:
           case_id: fastapi.root-alias-identity.http-reexports
         - recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
           case_id: fastapi.parameter-factory-signatures.depends
+        - recipe_path: tests/fixtures/input-recipes/parity/inline-query-schema-wire.yaml
+          case_id: fastapi.openapi-inline-query-schema-wire.dependency-defaults
+          workload_path: tests/fixtures/workloads/inline_query_schema_wire.py
       feature_ids: [dependency-security]
       observation_selectors: [http.status, http.body.bytes, python.signature, construction.outcome, asgi.application_error.exception]
       supported_slice: >-

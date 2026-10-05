@@ -415,7 +415,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@5
-    sha256: 17fe1bc3d372b41537be4cc79805daebb0456308ed595f967fd35ec08c7a2cab
+    sha256: 3a9add78f61469d0bff329f8428add9317aaed0932d5e5bbc411b478be4ee8ff
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -451,7 +451,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: e34c3ba0931742659444eefe662071cf794bf0167406c6cb9723856e55879328
+    sha256: 700956dbfc7909eb5458bafb7ec6f2b5b69e3b0e8c4f4a70f78909b8f10e95c6
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -488,14 +488,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@5
-    sha256: 0490d2e3366bad2ffa941e5994da07f2a0ea4a8f8c7f0d6c919044e0caf20f68
+    sha256: 63bc0ef7f8b79e4b88ddd7b9c77ff04a2f42015d247c480262d55ed4f75eb978
     schema_path: tests/fixtures/schemas/materialized-input-index-v5.schema.json
     schema_sha256: 13dd4cf1032a4ad9161712364d94b9f91834afee380e1f8eee6f4f05c123261d
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 555
-      cases: 2304
-      partial_source_mappings: 1582
+      workflows: 556
+      cases: 2306
+      partial_source_mappings: 1585
 
 contract_metadata:
   aliases:
@@ -878,7 +878,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 101
     symbols_with_operation_fixture_refs: 154
-    operation_fixture_refs: 1369
+    operation_fixture_refs: 1383
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -4309,6 +4309,29 @@ api_surface_contract:
       case_id: fastapi.parameter-factory-signatures.depends
       observation_selectors:
       - python.signature
+    - workflow_id: inline-query-schema-wire
+      input_path: tests/fixtures/inputs/parity/inline-query-schema-wire.json
+      input_sha256: 3526e6b55176663e566ae1495c8b5e3ce9779a98cbfe9aaec10750b2e4dbd9b1
+      recipe_path: tests/fixtures/input-recipes/parity/inline-query-schema-wire.yaml
+      recipe_sha256: 316011379f94c5084c210aa7dc1d8e28af2a620df35f8b13a028c7552e7811bc
+      workload_path: tests/fixtures/workloads/inline_query_schema_wire.py
+      workload_sha256: 016c09632284d0c845f5c13554ccad9865884560cbf26ddc7a7bc384476159ef
+      case_id: fastapi.openapi-inline-query-schema-wire.dependency-defaults
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
     identity_workflow_refs:
     - workflow_id: root-alias-identity
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
@@ -4547,6 +4570,52 @@ api_surface_contract:
       workload_path: tests/fixtures/workloads/openapi_validation_response.py
       workload_sha256: 9f10522043994cc9864a1f77efe1d9eec6056e55abcc863cfcf139e52f3e6130
       case_id: fastapi.openapi-validation-response.declared-default-suppresses-automatic
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
+    - workflow_id: inline-query-schema-wire
+      input_path: tests/fixtures/inputs/parity/inline-query-schema-wire.json
+      input_sha256: 3526e6b55176663e566ae1495c8b5e3ce9779a98cbfe9aaec10750b2e4dbd9b1
+      recipe_path: tests/fixtures/input-recipes/parity/inline-query-schema-wire.yaml
+      recipe_sha256: 316011379f94c5084c210aa7dc1d8e28af2a620df35f8b13a028c7552e7811bc
+      workload_path: tests/fixtures/workloads/inline_query_schema_wire.py
+      workload_sha256: 016c09632284d0c845f5c13554ccad9865884560cbf26ddc7a7bc384476159ef
+      case_id: fastapi.openapi-inline-query-schema-wire.direct-defaults
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
+    - workflow_id: inline-query-schema-wire
+      input_path: tests/fixtures/inputs/parity/inline-query-schema-wire.json
+      input_sha256: 3526e6b55176663e566ae1495c8b5e3ce9779a98cbfe9aaec10750b2e4dbd9b1
+      recipe_path: tests/fixtures/input-recipes/parity/inline-query-schema-wire.yaml
+      recipe_sha256: 316011379f94c5084c210aa7dc1d8e28af2a620df35f8b13a028c7552e7811bc
+      workload_path: tests/fixtures/workloads/inline_query_schema_wire.py
+      workload_sha256: 016c09632284d0c845f5c13554ccad9865884560cbf26ddc7a7bc384476159ef
+      case_id: fastapi.openapi-inline-query-schema-wire.dependency-defaults
       observation_selectors:
       - asgi.application_error.exception
       - asgi.send.message_types
@@ -7303,6 +7372,52 @@ api_surface_contract:
       - openapi.document
       - python.warnings
       - warnings.category_message
+    - workflow_id: inline-query-schema-wire
+      input_path: tests/fixtures/inputs/parity/inline-query-schema-wire.json
+      input_sha256: 3526e6b55176663e566ae1495c8b5e3ce9779a98cbfe9aaec10750b2e4dbd9b1
+      recipe_path: tests/fixtures/input-recipes/parity/inline-query-schema-wire.yaml
+      recipe_sha256: 316011379f94c5084c210aa7dc1d8e28af2a620df35f8b13a028c7552e7811bc
+      workload_path: tests/fixtures/workloads/inline_query_schema_wire.py
+      workload_sha256: 016c09632284d0c845f5c13554ccad9865884560cbf26ddc7a7bc384476159ef
+      case_id: fastapi.openapi-inline-query-schema-wire.direct-defaults
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
+    - workflow_id: inline-query-schema-wire
+      input_path: tests/fixtures/inputs/parity/inline-query-schema-wire.json
+      input_sha256: 3526e6b55176663e566ae1495c8b5e3ce9779a98cbfe9aaec10750b2e4dbd9b1
+      recipe_path: tests/fixtures/input-recipes/parity/inline-query-schema-wire.yaml
+      recipe_sha256: 316011379f94c5084c210aa7dc1d8e28af2a620df35f8b13a028c7552e7811bc
+      workload_path: tests/fixtures/workloads/inline_query_schema_wire.py
+      workload_sha256: 016c09632284d0c845f5c13554ccad9865884560cbf26ddc7a7bc384476159ef
+      case_id: fastapi.openapi-inline-query-schema-wire.dependency-defaults
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -8271,6 +8386,52 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: inline-query-schema-wire
+      input_path: tests/fixtures/inputs/parity/inline-query-schema-wire.json
+      input_sha256: 3526e6b55176663e566ae1495c8b5e3ce9779a98cbfe9aaec10750b2e4dbd9b1
+      recipe_path: tests/fixtures/input-recipes/parity/inline-query-schema-wire.yaml
+      recipe_sha256: 316011379f94c5084c210aa7dc1d8e28af2a620df35f8b13a028c7552e7811bc
+      workload_path: tests/fixtures/workloads/inline_query_schema_wire.py
+      workload_sha256: 016c09632284d0c845f5c13554ccad9865884560cbf26ddc7a7bc384476159ef
+      case_id: fastapi.openapi-inline-query-schema-wire.direct-defaults
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
+    - workflow_id: inline-query-schema-wire
+      input_path: tests/fixtures/inputs/parity/inline-query-schema-wire.json
+      input_sha256: 3526e6b55176663e566ae1495c8b5e3ce9779a98cbfe9aaec10750b2e4dbd9b1
+      recipe_path: tests/fixtures/input-recipes/parity/inline-query-schema-wire.yaml
+      recipe_sha256: 316011379f94c5084c210aa7dc1d8e28af2a620df35f8b13a028c7552e7811bc
+      workload_path: tests/fixtures/workloads/inline_query_schema_wire.py
+      workload_sha256: 016c09632284d0c845f5c13554ccad9865884560cbf26ddc7a7bc384476159ef
+      case_id: fastapi.openapi-inline-query-schema-wire.dependency-defaults
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -12349,6 +12510,52 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: inline-query-schema-wire
+      input_path: tests/fixtures/inputs/parity/inline-query-schema-wire.json
+      input_sha256: 3526e6b55176663e566ae1495c8b5e3ce9779a98cbfe9aaec10750b2e4dbd9b1
+      recipe_path: tests/fixtures/input-recipes/parity/inline-query-schema-wire.yaml
+      recipe_sha256: 316011379f94c5084c210aa7dc1d8e28af2a620df35f8b13a028c7552e7811bc
+      workload_path: tests/fixtures/workloads/inline_query_schema_wire.py
+      workload_sha256: 016c09632284d0c845f5c13554ccad9865884560cbf26ddc7a7bc384476159ef
+      case_id: fastapi.openapi-inline-query-schema-wire.direct-defaults
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
+    - workflow_id: inline-query-schema-wire
+      input_path: tests/fixtures/inputs/parity/inline-query-schema-wire.json
+      input_sha256: 3526e6b55176663e566ae1495c8b5e3ce9779a98cbfe9aaec10750b2e4dbd9b1
+      recipe_path: tests/fixtures/input-recipes/parity/inline-query-schema-wire.yaml
+      recipe_sha256: 316011379f94c5084c210aa7dc1d8e28af2a620df35f8b13a028c7552e7811bc
+      workload_path: tests/fixtures/workloads/inline_query_schema_wire.py
+      workload_sha256: 016c09632284d0c845f5c13554ccad9865884560cbf26ddc7a7bc384476159ef
+      case_id: fastapi.openapi-inline-query-schema-wire.dependency-defaults
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -13314,6 +13521,52 @@ api_surface_contract:
       - http.status
       - openapi.document
       - openapi.paths
+    - workflow_id: inline-query-schema-wire
+      input_path: tests/fixtures/inputs/parity/inline-query-schema-wire.json
+      input_sha256: 3526e6b55176663e566ae1495c8b5e3ce9779a98cbfe9aaec10750b2e4dbd9b1
+      recipe_path: tests/fixtures/input-recipes/parity/inline-query-schema-wire.yaml
+      recipe_sha256: 316011379f94c5084c210aa7dc1d8e28af2a620df35f8b13a028c7552e7811bc
+      workload_path: tests/fixtures/workloads/inline_query_schema_wire.py
+      workload_sha256: 016c09632284d0c845f5c13554ccad9865884560cbf26ddc7a7bc384476159ef
+      case_id: fastapi.openapi-inline-query-schema-wire.direct-defaults
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
+    - workflow_id: inline-query-schema-wire
+      input_path: tests/fixtures/inputs/parity/inline-query-schema-wire.json
+      input_sha256: 3526e6b55176663e566ae1495c8b5e3ce9779a98cbfe9aaec10750b2e4dbd9b1
+      recipe_path: tests/fixtures/input-recipes/parity/inline-query-schema-wire.yaml
+      recipe_sha256: 316011379f94c5084c210aa7dc1d8e28af2a620df35f8b13a028c7552e7811bc
+      workload_path: tests/fixtures/workloads/inline_query_schema_wire.py
+      workload_sha256: 016c09632284d0c845f5c13554ccad9865884560cbf26ddc7a7bc384476159ef
+      case_id: fastapi.openapi-inline-query-schema-wire.dependency-defaults
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -35189,6 +35442,29 @@ api_surface_contract:
       case_id: fastapi.parameter-factory-signatures.depends
       observation_selectors:
       - python.signature
+    - workflow_id: inline-query-schema-wire
+      input_path: tests/fixtures/inputs/parity/inline-query-schema-wire.json
+      input_sha256: 3526e6b55176663e566ae1495c8b5e3ce9779a98cbfe9aaec10750b2e4dbd9b1
+      recipe_path: tests/fixtures/input-recipes/parity/inline-query-schema-wire.yaml
+      recipe_sha256: 316011379f94c5084c210aa7dc1d8e28af2a620df35f8b13a028c7552e7811bc
+      workload_path: tests/fixtures/workloads/inline_query_schema_wire.py
+      workload_sha256: 016c09632284d0c845f5c13554ccad9865884560cbf26ddc7a7bc384476159ef
+      case_id: fastapi.openapi-inline-query-schema-wire.dependency-defaults
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -38117,6 +38393,52 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: inline-query-schema-wire
+      input_path: tests/fixtures/inputs/parity/inline-query-schema-wire.json
+      input_sha256: 3526e6b55176663e566ae1495c8b5e3ce9779a98cbfe9aaec10750b2e4dbd9b1
+      recipe_path: tests/fixtures/input-recipes/parity/inline-query-schema-wire.yaml
+      recipe_sha256: 316011379f94c5084c210aa7dc1d8e28af2a620df35f8b13a028c7552e7811bc
+      workload_path: tests/fixtures/workloads/inline_query_schema_wire.py
+      workload_sha256: 016c09632284d0c845f5c13554ccad9865884560cbf26ddc7a7bc384476159ef
+      case_id: fastapi.openapi-inline-query-schema-wire.direct-defaults
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
+    - workflow_id: inline-query-schema-wire
+      input_path: tests/fixtures/inputs/parity/inline-query-schema-wire.json
+      input_sha256: 3526e6b55176663e566ae1495c8b5e3ce9779a98cbfe9aaec10750b2e4dbd9b1
+      recipe_path: tests/fixtures/input-recipes/parity/inline-query-schema-wire.yaml
+      recipe_sha256: 316011379f94c5084c210aa7dc1d8e28af2a620df35f8b13a028c7552e7811bc
+      workload_path: tests/fixtures/workloads/inline_query_schema_wire.py
+      workload_sha256: 016c09632284d0c845f5c13554ccad9865884560cbf26ddc7a7bc384476159ef
+      case_id: fastapi.openapi-inline-query-schema-wire.dependency-defaults
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
     identity_workflow_refs:
     - workflow_id: root-alias-identity
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json

@@ -1,0 +1,135 @@
+# Inactive independent inputs; no prescribed output or native implementation.
+schema: fastapi-rs/python-asgi-workflow@9
+workload:
+  file: tests/fixtures/workloads/inline_query_schema_wire.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.openapi-inline-query-schema-wire.direct-defaults
+  verification: parity
+  factory_input:
+    placement: direct
+  construction_observation: &construction
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+    capture_warnings: true
+  actions: &actions
+  - action_id: initial-document-wire
+    kind: http_request
+    scope:
+      type: http
+      asgi: &asgi
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers: &headers
+      - - host
+        - testserver
+      client: &client
+      - 127.0.0.1
+      - 123
+      server: &server
+      - testserver
+      - 80
+    receive_events: &receive
+    - type: http.request
+      body: ''
+      more_body: false
+    observations: &document_observations
+    - &http_observation
+      kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - &send_observation
+      kind: asgi_send
+      selector: message_types
+      comparison: ordered
+    - &error_observation
+      kind: application_error
+      selector: exception
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - ''
+      comparison: exact
+    capture_warnings: true
+  - action_id: ordinary-default-values
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /observe
+      query_string: ''
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *receive
+    observations: &endpoint_observations
+    - *http_observation
+    - *send_observation
+    - *error_observation
+    capture_warnings: true
+  - action_id: cached-document-wire
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *receive
+    observations: *document_observations
+    capture_warnings: true
+  - action_id: explicit-values-and-prior-journal
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /observe
+      query_string: offset_mark=7&batch_width=41&term=pine&spare_number=5&spare_word=river
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *receive
+    observations: *endpoint_observations
+    capture_warnings: true
+  source_evidence: &source_evidence
+  - path: docs/en/docs/tutorial/query-params.md
+    kind: upstream_documentation
+  - path: docs/en/docs/tutorial/dependencies/index.md
+    kind: upstream_documentation
+  - path: docs/en/docs/advanced/custom-response.md
+    kind: upstream_documentation
+- case_id: fastapi.openapi-inline-query-schema-wire.dependency-defaults
+  verification: parity
+  factory_input:
+    placement: dependency
+  construction_observation: *construction
+  actions: *actions
+  source_evidence: *source_evidence

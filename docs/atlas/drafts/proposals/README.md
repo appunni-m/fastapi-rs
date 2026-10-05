@@ -126,6 +126,18 @@ Full FastAPI compatibility remains unfinished.
   This covers the selected description-only declarations, not modeled ranges,
   arbitrary key callbacks, full response deep merge or schema-name collisions.
 
+- `inline-query-schema-wire/`: independently authored/reviewed two-case /
+  eight-GET-action inputs for direct and async-dependency default-bearing query
+  fields. Byte-identical active copies are admitted with 14 links across eight
+  existing public APIs. Raw document/endpoint response bytes, whole documents,
+  ordered send types, errors, construction and ten warning phases are selected.
+  The public journal retains prior lossless sends and document-object identity;
+  the final response cannot recursively include its own send/exit. Canonical
+  admission and source-first reachability precede unchanged-target diagnosis.
+  No parity or implementation claim follows from admission. Array/items schema
+  ordering, metadata/hooks/factories, custom defaults and broader field lifetimes
+  remain separate gates.
+
 Both historical proposals passed recipe-loader/Ruff admission and independent
 static review; their authored copies remain outside active inputs with no
 expected outputs. Awaitable and response-field lifecycle active copies are
@@ -136,5 +148,5 @@ own reviewed mappings and live observations. Positive OpenAPI retained-hook,
 shared-definition, generated outer-title and cache retry behavior now has bounded
 live evidence. Selected automatic validation-response/status-key behavior now
 has fresh live evidence. A separate independently reviewed two-case raw HTTP
-gate is proposed for default-bearing direct/dependency query schemas; it awaits
-source-first admission. Existing structural selectors remain unchanged.
+gate is admitted for default-bearing direct/dependency query schemas; it awaits
+source-first live evidence. Existing structural selectors remain unchanged.

@@ -69,7 +69,12 @@ core `05fd1420…` above; those are separate binary identities.
 
 ## Benchmark
 
-Fresh suite: `benchmark-results/suite-20261005T155905Z-1835834f-5295-4952-bde3-cfd742f6f608.json`, SHA256 `218fd439c0f30b1043203ff9994779f812aacece51db816d0333936feef4b24f`.
+Fresh measured suite, subsequently archived before the next manifest admission:
+`benchmark-results/archive/d508878-before-inline-query-schema-wire/suite-20261005T155905Z-1835834f-5295-4952-bde3-cfd742f6f608.json`,
+SHA256 `218fd439c0f30b1043203ff9994779f812aacece51db816d0333936feef4b24f`.
+The adjacent relocation receipt preserves its original path, identical bytes
+and all fourteen unchanged result/comparison references. This remains evidence
+for the measured d508878 manifest and implementation.
 All seven workloads completed after their own fresh live parity gates.
 The same release source/native/policy snapshot was saved before and after.
 The gates comprise 42 case executions / 16 distinct case IDs, 56 HTTP

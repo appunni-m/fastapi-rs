@@ -9021,6 +9021,39 @@
       ]
     },
     {
+      "id": "inline-query-schema-wire",
+      "input_path": "tests/fixtures/inputs/parity/inline-query-schema-wire.json",
+      "input_sha256": "3526e6b55176663e566ae1495c8b5e3ce9779a98cbfe9aaec10750b2e4dbd9b1",
+      "recipe_path": "tests/fixtures/input-recipes/parity/inline-query-schema-wire.yaml",
+      "recipe_sha256": "316011379f94c5084c210aa7dc1d8e28af2a620df35f8b13a028c7552e7811bc",
+      "workload_path": "tests/fixtures/workloads/inline_query_schema_wire.py",
+      "workload_sha256": "016c09632284d0c845f5c13554ccad9865884560cbf26ddc7a7bc384476159ef",
+      "case_ids": [
+        "fastapi.openapi-inline-query-schema-wire.direct-defaults",
+        "fastapi.openapi-inline-query-schema-wire.dependency-defaults"
+      ],
+      "case_contracts": [
+        {
+          "case_id": "fastapi.openapi-inline-query-schema-wire.direct-defaults",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/custom-response.md",
+            "source:documented-page:tutorial/dependencies/index.md",
+            "source:documented-page:tutorial/query-params.md"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi-inline-query-schema-wire.dependency-defaults",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/custom-response.md",
+            "source:documented-page:tutorial/dependencies/index.md",
+            "source:documented-page:tutorial/query-params.md"
+          ]
+        }
+      ]
+    },
+    {
       "id": "json-base64-bytes",
       "input_path": "tests/fixtures/inputs/parity/json_base64_bytes.json",
       "input_sha256": "b45fe4d61cc8b458d8c43872fcde19d3ed0b9c209b06a12cc899af18d17b5c9c",
@@ -38961,6 +38994,58 @@
       "observation_selectors": [
         "http.body.bytes",
         "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:advanced/custom-response.md",
+      "fixture_id": "fastapi.docs.advanced-custom-response",
+      "workflow_id": "inline-query-schema-wire",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status, openapi.document, warnings.category_message. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.openapi-inline-query-schema-wire.dependency-defaults",
+        "fastapi.openapi-inline-query-schema-wire.direct-defaults"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status",
+        "openapi.document",
+        "warnings.category_message"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/dependencies/index.md",
+      "fixture_id": "fastapi.docs.tutorial-dependencies-index",
+      "workflow_id": "inline-query-schema-wire",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.openapi-inline-query-schema-wire.dependency-defaults",
+        "fastapi.openapi-inline-query-schema-wire.direct-defaults"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:tutorial/query-params.md",
+      "fixture_id": "fastapi.docs.tutorial-query-params",
+      "workflow_id": "inline-query-schema-wire",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.send.message_types, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.openapi-inline-query-schema-wire.dependency-defaults",
+        "fastapi.openapi-inline-query-schema-wire.direct-defaults"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "http.body.bytes",
         "http.status"
       ]
     },
