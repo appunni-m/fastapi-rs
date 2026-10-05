@@ -180,6 +180,22 @@ TEST_MODULE_EXCLUSION_EVIDENCE: dict[str, list[dict[str, Any]]] = {
             "The needs_py314 marker requires Python 3.14 or newer.",
         ),
     ],
+    "tests/test_tutorial/test_custom_response/test_tutorial001b.py": [
+        _source(
+            "tests/test_tutorial/test_custom_response/test_tutorial001b.py",
+            14,
+            14,
+            "The module is skipped unless the optional orjson package is installed.",
+        ),
+    ],
+    "tests/test_tutorial/test_custom_response/test_tutorial009c.py": [
+        _source(
+            "tests/test_tutorial/test_custom_response/test_tutorial009c.py",
+            4,
+            4,
+            "The module is skipped unless the optional orjson package is installed.",
+        ),
+    ],
     "tests/test_tutorial/test_generate_clients/test_tutorial004.py": [
         _source(
             "tests/test_tutorial/test_generate_clients/test_tutorial004.py",
