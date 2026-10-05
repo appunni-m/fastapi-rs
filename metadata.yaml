@@ -80,7 +80,10 @@ fault_contract_policy:
     - point: http.request.json_decode.before
       contract: http-body-json-decode-error-returns-400
       assertion:
-        first_response: {kind: http_response, selector: status, value: 400}
+        first_response:
+          kind: http_response
+          status: 400
+          body: {detail: There was an error parsing the body}
       excludes: [exception_message, stack_trace, source_line, private_state]
 
 manifest:

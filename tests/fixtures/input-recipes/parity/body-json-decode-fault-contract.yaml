@@ -32,6 +32,6 @@ cases:
     receive_events:
     - {type: http.request, body: '{"name":"Ada"}', more_body: false}
     observations:
-    - {kind: http_response, selectors: [status], comparison: exact}
+    - {kind: http_response, selectors: [status, body], comparison: exact}
   source_evidence:
   - {path: tests/test_tutorial/test_body/test_tutorial001.py, kind: upstream_test}

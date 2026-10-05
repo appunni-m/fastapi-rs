@@ -255,6 +255,20 @@ def _assert_http_body_json_decode_error_returns_400(
         raise FaultContractError("JSON body decode fault response must expose an integer status")
     if values["status"] != 400:
         raise FaultContractError("arbitrary JSON body decode failure must expose HTTP 400")
+    body = values.get("body")
+    if not isinstance(body, Mapping) or body.get("encoding") != "base64":
+        raise FaultContractError("JSON body decode fault response body must use base64 encoding")
+    encoded_body = body.get("data")
+    if not isinstance(encoded_body, str):
+        raise FaultContractError("JSON body decode fault response body must contain base64 data")
+    try:
+        observed_body = json.loads(base64.b64decode(encoded_body, validate=True))
+    except (ValueError, json.JSONDecodeError) as exc:
+        raise FaultContractError("JSON body decode fault response body must be JSON") from exc
+    if observed_body != {"detail": "There was an error parsing the body"}:
+        raise FaultContractError(
+            "arbitrary JSON body decode failure must expose FastAPI's 400 detail"
+        )
 
 
 CONTRACT_ASSERTIONS: dict[str, Callable[[Mapping[str, Any]], None]] = {
