@@ -1,0 +1,393 @@
+# Inactive independent public inputs. No stored or prescribed outcomes.
+schema: fastapi-rs/python-asgi-workflow@9
+workload:
+  file: tests/fixtures/workloads/response_field_recovery.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.response-field-recovery.parent-retained-after-child-error
+  verification: parity
+  factory_input:
+    routes:
+    - kind: include
+      prefix: /tree
+      routes:
+      - kind: route
+        path: /a
+        label: A
+        value: 17
+      - kind: include
+        prefix: /child
+        routes:
+        - kind: route
+          path: /b
+          label: B
+          value: 19
+      - kind: route
+        path: /c
+        label: C
+        value: 23
+  construction_observation: &id009
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - &id010
+    action_id: read-state-before
+    kind: http_request
+    scope: &id007
+      type: http
+      asgi: &id001
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers: &id002
+      - - host
+        - testserver
+      client: &id003
+      - 127.0.0.1
+      - 123
+      server: &id004
+      - testserver
+      - 80
+    receive_events: &id005
+    - type: http.request
+      body: ''
+      more_body: false
+    observations: &id006
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+    - kind: application_error
+      selector: exception
+      comparison: exact
+  - action_id: arm-child-hook
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /arm
+      query_string: label=B
+      root_path: ''
+      headers: *id002
+      client: *id003
+      server: *id004
+    receive_events: *id005
+    observations: *id006
+  - action_id: request-child-with-armed-hook
+    kind: http_request
+    scope: &id008
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /tree/child/b
+      query_string: value=29
+      root_path: ''
+      headers: *id002
+      client: *id003
+      server: *id004
+    receive_events: *id005
+    observations: *id006
+  - action_id: read-state-after-child-error
+    kind: http_request
+    scope: *id007
+    receive_events: *id005
+    observations: *id006
+  - action_id: request-parent-before-child
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /tree/a
+      query_string: value=31
+      root_path: ''
+      headers: *id002
+      client: *id003
+      server: *id004
+    receive_events: *id005
+    observations: *id006
+  - action_id: read-state-after-parent-before-child
+    kind: http_request
+    scope: *id007
+    receive_events: *id005
+    observations: *id006
+  - action_id: retry-child
+    kind: http_request
+    scope: *id008
+    receive_events: *id005
+    observations: *id006
+  - action_id: read-state-after-child-retry
+    kind: http_request
+    scope: *id007
+    receive_events: *id005
+    observations: *id006
+  - action_id: request-parent-after-child
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /tree/c
+      query_string: value=37
+      root_path: ''
+      headers: *id002
+      client: *id003
+      server: *id004
+    receive_events: *id005
+    observations: *id006
+  - action_id: read-state-after-parent-after-child
+    kind: http_request
+    scope: *id007
+    receive_events: *id005
+    observations: *id006
+  source_evidence: &id012
+  - path: tests/test_router_include_context.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/bigger-applications.md
+    kind: upstream_documentation
+  - path: docs/en/docs/tutorial/response-model.md
+    kind: upstream_documentation
+- case_id: fastapi.response-field-recovery.shared-router-prefix-error-isolation
+  verification: parity
+  factory_input:
+    routers:
+      shared:
+        routes:
+        - kind: route
+          path: /one
+          label: first
+          value: 41
+        - kind: route
+          path: /two
+          label: second
+          value: 43
+    routes:
+    - kind: include
+      router: shared
+      prefix: /left
+    - kind: include
+      router: shared
+      prefix: /right
+  construction_observation: *id009
+  actions:
+  - *id010
+  - action_id: warm-first-prefix
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /left/one
+      query_string: value=47
+      root_path: ''
+      headers: *id002
+      client: *id003
+      server: *id004
+    receive_events: *id005
+    observations: *id006
+  - action_id: read-state-after-first-prefix
+    kind: http_request
+    scope: *id007
+    receive_events: *id005
+    observations: *id006
+  - action_id: arm-second-own-hook
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /arm
+      query_string: label=second
+      root_path: ''
+      headers: *id002
+      client: *id003
+      server: *id004
+    receive_events: *id005
+    observations: *id006
+  - action_id: request-second-prefix-with-armed-hook
+    kind: http_request
+    scope: &id011
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /right/one
+      query_string: value=53
+      root_path: ''
+      headers: *id002
+      client: *id003
+      server: *id004
+    receive_events: *id005
+    observations: *id006
+  - action_id: read-state-after-second-prefix-error
+    kind: http_request
+    scope: *id007
+    receive_events: *id005
+    observations: *id006
+  - action_id: revisit-first-prefix
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /left/two
+      query_string: value=59
+      root_path: ''
+      headers: *id002
+      client: *id003
+      server: *id004
+    receive_events: *id005
+    observations: *id006
+  - action_id: read-state-after-first-prefix-revisit
+    kind: http_request
+    scope: *id007
+    receive_events: *id005
+    observations: *id006
+  - action_id: retry-second-prefix
+    kind: http_request
+    scope: *id011
+    receive_events: *id005
+    observations: *id006
+  - action_id: read-state-after-second-prefix-retry
+    kind: http_request
+    scope: *id007
+    receive_events: *id005
+    observations: *id006
+  - action_id: request-second-prefix-later-own-route
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /right/two
+      query_string: value=61
+      root_path: ''
+      headers: *id002
+      client: *id003
+      server: *id004
+    receive_events: *id005
+    observations: *id006
+  - action_id: read-state-after-second-prefix-later-route
+    kind: http_request
+    scope: *id007
+    receive_events: *id005
+    observations: *id006
+  source_evidence: *id012
+- case_id: fastapi.response-field-recovery.warning-filters-restored-before-handler
+  verification: parity
+  factory_input:
+    routes:
+    - kind: include
+      prefix: /branch
+      routes:
+      - kind: route
+        path: /item
+        label: field
+        value: 67
+    handler_warnings:
+    - category: unsupported-field
+      message: public handler emitted an unsupported field warning
+    - category: user
+      message: public handler emitted an ordinary user warning
+  construction_observation: *id009
+  actions:
+  - *id010
+  - action_id: arm-field-hook
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /arm
+      query_string: label=field
+      root_path: ''
+      headers: *id002
+      client: *id003
+      server: *id004
+    receive_events: *id005
+    observations: *id006
+  - action_id: request-field-with-armed-hook
+    kind: http_request
+    scope: &id013
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /branch/item
+      query_string: value=71
+      root_path: ''
+      headers: *id002
+      client: *id003
+      server: *id004
+    receive_events: *id005
+    observations: *id006
+  - action_id: read-state-after-handler-warnings
+    kind: http_request
+    scope: *id007
+    receive_events: *id005
+    observations: *id006
+  - action_id: retry-field
+    kind: http_request
+    scope: *id013
+    receive_events: *id005
+    observations: *id006
+  - action_id: read-state-after-field-retry
+    kind: http_request
+    scope: *id007
+    receive_events: *id005
+    observations: *id006
+  - action_id: repeat-field
+    kind: http_request
+    scope: *id013
+    receive_events: *id005
+    observations: *id006
+  - action_id: read-state-after-field-repeat
+    kind: http_request
+    scope: *id007
+    receive_events: *id005
+    observations: *id006
+  source_evidence:
+  - path: tests/test_router_include_context.py
+    kind: upstream_test
+  - path: tests/test_response_model_invalid.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/handling-errors.md
+    kind: upstream_documentation
+  - path: docs/en/docs/tutorial/response-model.md
+    kind: upstream_documentation

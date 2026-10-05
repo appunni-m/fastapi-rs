@@ -69,12 +69,24 @@ Full FastAPI compatibility remains unfinished.
   full/partial matches, misses, redirects and returned-Response setup. Normal
   user exceptions provide the failure stimulus; no fault hook or expected outputs
   are present. Active copies and 65 precise links to 11 existing public
-  operations are admitted; fresh live observations remain required. Terminal
-  405, dynamic refresh and workers are outside this backlog.
+  operations are admitted. All seven passed on the unchanged Rust implementation
+  within 198 selected normal cases at `9c29938`; fresh normal instrumentation
+  added 213 verified regions. See
+  `../response-field-traversal-contract-review-2026-10-05.md`. Terminal405,
+  dynamic refresh and workers remain outside this gate.
+- `response-field-recovery/`: independently reviewed inactive three-case /
+  30-action follow-on covers retained parent fields after child failure,
+  independent contexts of the same original router and warning-filter restoration
+  inside the public handler. Its canonical-loader YAML merge issue was corrected
+  without changing the active loader. The fault companion is a feasibility note
+  for the existing RuntimeError/500/later200 contract; it makes no cache assertion.
 
 Both historical proposals passed recipe-loader/Ruff admission and independent
 static review; their authored copies remain outside active inputs with no
 expected outputs. Awaitable and response-field lifecycle active copies are
 admitted and measured. The traversal follow-on has its own independent static
 review. Historical authored copies remain outside active inputs; active traversal
-copies require their own fresh live receipts.
+copies now have fresh live receipts. The recovery follow-on still requires its
+own reviewed mappings and live observations. Additional response-field lifecycle
+and OpenAPI timing are the next concrete native implementation gap; see
+`../response-field-next-control-priority-review-2026-10-05.md`.
