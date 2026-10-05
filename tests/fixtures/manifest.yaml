@@ -411,7 +411,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@5
-    sha256: 2d6aecdf5dfbc6b97c24f43cde0808c61c2295ae66748169417ab0c12063a8c1
+    sha256: 9c228fa3a9b88721ab2e53b35d965a533aad0be399e2449dddab2cf52e6ec82b
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -447,7 +447,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 5fea0df5de361a5c282f98bc6be735246426e7a2d387e32f7005bd07272baf80
+    sha256: 5f656a7e191e3749f27bfbcefa0858e718c2d853a1e0826506cee60572a14e67
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -484,14 +484,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@4
-    sha256: 2819fc3a7f0454641c6ba2bce10d036b9558ed98849dce7d65ddfc58dc51ac54
+    sha256: da4c0f232374df50415c9eb005b1e35b88d4533698a9cffbdcc33eb6127fea3f
     schema_path: tests/fixtures/schemas/materialized-input-index-v4.schema.json
-    schema_sha256: 3f092521bf3bfc4b366a4545e8d2499ce30f3ec8c03e3f23e833951ea61f106d
+    schema_sha256: fa46b4cd3e7d2f77aae2f7117da77eb08a21ca4c696b49571f4c8f3384e46e62
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 534
-      cases: 2118
-      partial_source_mappings: 1494
+      workflows: 535
+      cases: 2119
+      partial_source_mappings: 1495
 
 contract_metadata:
   aliases:
@@ -684,10 +684,10 @@ unresolved:
       oracle fault cases are explicit not-applicable receipts and instrumented target
       identity is recorded for fault-bearing workflows.
   python_asgi_workflow_v8:
-    state: v8-adds-route-dependency-cleanup-fault-contracts; v1-v7-remain-supported
+    state: v8-adds-route-dependency-cleanup-and-json-body-decode-fault-contracts; v1-v7-remain-supported
     schema_id: fastapi-rs/python-asgi-workflow@8
     schema_path: tests/fixtures/schemas/python-asgi-workflow-v8.schema.json
-    schema_sha256: ee573ab7829ba3b5d4112a287a2f759095767070b4cad0847e9674267b1ea25e
+    schema_sha256: 4c287f5b89e6b5cbba025e30a7050c195179d4afd992ff8b231255d6b9b6c128
     result_schema_id: fastapi-rs/python-asgi-workflow-result@8
     result_schema_path: tests/fixtures/schemas/python-asgi-workflow-result-v8.schema.json
     result_schema_sha256: 1e509ec6cd0cacdf56618ceaa9d7f65b584c7456578a974753a4e5c10372d4dd
@@ -695,9 +695,9 @@ unresolved:
     comparison_schema_path: tests/fixtures/schemas/python-asgi-comparison-v8.schema.json
     comparison_schema_sha256: a0365c9dc4c4491a3f2802d50eeb95d6f5963837a7695e9406cc9d9992251f75
     coverage: >-
-      Adds target-only route dependency-cleanup fault contracts, including function- and
-      request-scope cleanup ordering, while retaining existing parity and fault-contract
-      lanes, input receipts, and lane-specific comparison counts.
+      Adds target-only route dependency-cleanup contracts and the JSON body decode
+      arbitrary-exception-to-400 contract, while retaining existing parity and
+      fault-contract lanes, input receipts, and lane-specific comparison counts.
   python_api_workflow:
     state: isolated-oracle-and-target-workers-and-exact-comparator-present; broader-public-api-parity-pending
     schema_id: fastapi-rs/python-api-workflow@1

@@ -8611,6 +8611,12 @@ fn decode_input_values(
         }
         let value = match input.location {
             FastApiInputLocation::Body if parse_json_body => {
+                #[cfg(feature = "fault-injection")]
+                if crate::fault_injection::take_http_request_json_decode_before() {
+                    return Err(InputDecodeError::BodyParse(PyRuntimeError::new_err(
+                        "Fault injected at http.request.json_decode.before",
+                    )));
+                }
                 let json = py.import("json").map_err(InputDecodeError::Other)?;
                 let loads = json.getattr("loads").map_err(InputDecodeError::Other)?;
                 match loads.call1((PyBytes::new(py, &value),)) {

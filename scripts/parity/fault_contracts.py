@@ -22,6 +22,8 @@ HTTP_ROUTE_INVOCATION_FAULT_POINT = "http.route.invoke.before"
 HTTP_ROUTE_INVOCATION_CONTRACT = "http-route-invocation-error-and-recovery"
 HTTP_ROUTE_DEPENDENCY_CLEANUP_FAULT_POINT = "http.route.invoke.after_dependencies.before"
 HTTP_ROUTE_DEPENDENCY_CLEANUP_CONTRACT = "http-route-invocation-error-cleans-dependencies"
+HTTP_REQUEST_JSON_DECODE_FAULT_POINT = "http.request.json_decode.before"
+HTTP_REQUEST_JSON_DECODE_CONTRACT = "http-body-json-decode-error-returns-400"
 HTTP_ROUTE_SCOPED_DEPENDENCY_CLEANUP_CONTRACT = (
     "http-route-invocation-error-orders-function-and-request-dependency-cleanup"
 )
@@ -44,6 +46,7 @@ FAULT_POINT_CONTRACTS: dict[str, frozenset[str]] = {
             HTTP_ROUTE_SCOPED_DEPENDENCY_CLEANUP_CONTRACT,
         }
     ),
+    HTTP_REQUEST_JSON_DECODE_FAULT_POINT: frozenset({HTTP_REQUEST_JSON_DECODE_CONTRACT}),
 }
 
 
@@ -235,12 +238,32 @@ def _assert_http_route_invocation_error_orders_scoped_dependency_cleanup(
         )
 
 
+def _assert_http_body_json_decode_error_returns_400(
+    case_result: Mapping[str, Any],
+) -> None:
+    if case_result.get("status") != "completed":
+        raise FaultContractError("JSON body decode fault case did not complete")
+    responses = [
+        observation
+        for _, observation in _observation_rows(case_result)
+        if observation.get("kind") == "http_response"
+    ]
+    if len(responses) != 1:
+        raise FaultContractError("JSON body decode fault must expose exactly one HTTP response")
+    values = responses[0].get("values")
+    if not isinstance(values, Mapping) or type(values.get("status")) is not int:
+        raise FaultContractError("JSON body decode fault response must expose an integer status")
+    if values["status"] != 400:
+        raise FaultContractError("arbitrary JSON body decode failure must expose HTTP 400")
+
+
 CONTRACT_ASSERTIONS: dict[str, Callable[[Mapping[str, Any]], None]] = {
     HTTP_ROUTE_INVOCATION_CONTRACT: _assert_http_route_invocation_error_and_recovery,
     HTTP_ROUTE_DEPENDENCY_CLEANUP_CONTRACT: _assert_http_route_invocation_error_cleans_dependencies,
     HTTP_ROUTE_SCOPED_DEPENDENCY_CLEANUP_CONTRACT: (
         _assert_http_route_invocation_error_orders_scoped_dependency_cleanup
     ),
+    HTTP_REQUEST_JSON_DECODE_CONTRACT: _assert_http_body_json_decode_error_returns_400,
 }
 
 

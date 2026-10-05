@@ -12,7 +12,11 @@ import yaml
 from jsonschema import Draft202012Validator
 from yaml import SafeLoader
 
-from scripts.parity.fault_contracts import FaultContractError, verification_mode
+from scripts.parity.fault_contracts import (
+    HTTP_REQUEST_JSON_DECODE_CONTRACT,
+    FaultContractError,
+    verification_mode,
+)
 
 ROOT = Path(__file__).resolve().parents[2]
 WORKFLOW_SCHEMA = ROOT / "tests/fixtures/schemas/python-asgi-workflow-v2.schema.json"
@@ -788,7 +792,21 @@ def load_workflow(
                 ) from exc
             if mode == "fault-contract":
                 actions = case["actions"]
-                if (
+                if case["fault"]["contract"] == HTTP_REQUEST_JSON_DECODE_CONTRACT:
+                    if (
+                        len(actions) != 1
+                        or actions[0]["kind"] != "http_request"
+                        or not any(
+                            observation["kind"] == "http_response"
+                            and "status" in observation["selectors"]
+                            for observation in actions[0]["observations"]
+                        )
+                    ):
+                        raise ContractError(
+                            "JSON body decode fault contract requires one status-observing "
+                            "HTTP request"
+                        )
+                elif (
                     len(actions) < 2
                     or actions[0]["kind"] != "http_request"
                     or not any(

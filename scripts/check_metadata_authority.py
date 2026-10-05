@@ -383,6 +383,13 @@ def validate_fault_contract_policy(metadata: dict[str, Any], manifest: dict[str,
                     },
                 },
             },
+            "http-body-json-decode-error-returns-400": {
+                "first_response": {
+                    "kind": "http_response",
+                    "selector": "status",
+                    "value": 400,
+                },
+            },
         },
     )
     excluded_observations = {row["contract"]: row.get("excludes") for row in contracts}

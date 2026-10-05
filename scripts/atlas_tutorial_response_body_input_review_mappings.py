@@ -1160,7 +1160,7 @@ TUTORIAL_RESPONSE_BODY_INPUT_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
             "test_other_exceptions": _excluded(
                 _BODY_ROOT + "test_tutorial001.py",
                 "test_other_exceptions",
-                "The function patches json.loads to raise an arbitrary Python exception while a request is being parsed. That injected process-local failure is not an input-only HTTP/ASGI stimulus and cannot be represented by a deterministic request recipe without reproducing the test harness monkeypatch.",
+                "The function patches json.loads to raise an arbitrary Python exception while a request is being parsed, so it is excluded from source-oracle parity inputs. Its public fallback-400 assertion is represented separately by target-only fault-contract case fastapi.fault-contract.body-json-decode.arbitrary-error-400, using the allow-listed decode-boundary injector.",
             ),
             "test_openapi_schema": _function(
                 _BODY_ROOT + "test_tutorial001.py",

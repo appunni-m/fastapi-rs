@@ -70,7 +70,7 @@ COMPATIBILITY_GATES = (
     "HTTP tests compare status plus raw response bytes in the workflow, while the upstream assertions generally compare parsed response JSON. Raw-byte identity is an additional observation and is not claimed by the source tests.",
     "Each source OpenAPI function asserts its full tutorial-app snapshot. The independent app selects only requestBody paths and component schemas; full document metadata, operation identifiers, and exact source-app snapshots remain gated.",
     "The independent workload uses new routes and values. Multi-body tutorial 003, 004, and 005 cases include separate default-value and Annotated declarations in each case.",
-    "test_other_exceptions is excluded because its only stimulus replaces the process-wide json.loads callable with a test-only side effect; it does not describe a request-reachable public input contract.",
+    "test_other_exceptions is excluded from source-oracle parity inputs because it replaces process-wide json.loads; its public fallback-400 assertion is represented by the target-only fault-contract case fastapi.fault-contract.body-json-decode.arbitrary-error-400.",
     "This review performs static source, schema, and link checks only. No oracle or target workload was executed, and no parity or compatibility result is claimed.",
 )
 
@@ -392,8 +392,10 @@ def _function_review(test_path: str, function_name: str) -> dict[str, Any]:
             "exclusion_reason": (
                 "The test patches json.loads to raise an arbitrary Exception and then "
                 "asserts FastAPI's fallback 400 response. The injected process-wide "
-                "monkeypatch is not an ASGI request input and is test-only behavior, so "
-                "this function has no independent input recipe case."
+                "monkeypatch is not a source-oracle ASGI input, so the function is "
+                "excluded from parity inputs. Its public 400 assertion is represented "
+                "separately by the target-only fault-contract case "
+                "fastapi.fault-contract.body-json-decode.arbitrary-error-400."
             ),
             "supporting_sources": [_test_span(test_path, function_name)],
         }

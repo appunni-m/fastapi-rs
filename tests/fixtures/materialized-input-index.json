@@ -1488,6 +1488,31 @@
       ]
     },
     {
+      "id": "body-json-decode-fault-contract",
+      "input_path": "tests/fixtures/inputs/parity/body-json-decode-fault-contract.json",
+      "input_sha256": "3c9c705d3afd051f500a244acc858e8a6142087d5bb131b6b774ace1416b9e27",
+      "recipe_path": "tests/fixtures/input-recipes/parity/body-json-decode-fault-contract.yaml",
+      "recipe_sha256": "3179a52241df65b25e0d7eebbff5688efaab15ab92c9c84c5f513dfce25ff518",
+      "workload_path": "tests/fixtures/workloads/body_json_decode_fault_contract.py",
+      "workload_sha256": "8ba6c41f46e511b91daba6b7b6fb144dac4eb882ae491fe4d1f3f70fd2d3bbf1",
+      "case_ids": [
+        "fastapi.fault-contract.body-json-decode.arbitrary-error-400"
+      ],
+      "case_contracts": [
+        {
+          "case_id": "fastapi.fault-contract.body-json-decode.arbitrary-error-400",
+          "verification": "fault-contract",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_tutorial/test_body/test_tutorial001.py"
+          ],
+          "fault": {
+            "point": "http.request.json_decode.before",
+            "contract": "http-body-json-decode-error-returns-400"
+          }
+        }
+      ]
+    },
+    {
       "id": "body-surface",
       "input_path": "tests/fixtures/inputs/parity/body-surface.json",
       "input_sha256": "5bc87e9aa49d203e7d4e02b5601646191b985db50347f98fa6e0dbfca9adf5fa",
@@ -28905,6 +28930,19 @@
       ],
       "observation_selectors": [
         "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_body/test_tutorial001.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-body-test-tutorial001",
+      "workflow_id": "body-json-decode-fault-contract",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.fault-contract.body-json-decode.arbitrary-error-400"
+      ],
+      "observation_selectors": [
         "http.status"
       ]
     },

@@ -77,6 +77,11 @@ fault_contract_policy:
           body:
             events: [function-enter, request-enter, function-cleanup, request-cleanup, response-start, response-end]
       excludes: [exception_message, stack_trace, source_line, private_state]
+    - point: http.request.json_decode.before
+      contract: http-body-json-decode-error-returns-400
+      assertion:
+        first_response: {kind: http_response, selector: status, value: 400}
+      excludes: [exception_message, stack_trace, source_line, private_state]
 
 manifest:
   path: tests/fixtures/manifest.yaml
