@@ -104,6 +104,7 @@ def _load_factory(path: Path, name: str) -> Any:
     if spec is None or spec.loader is None:
         raise BenchmarkError(f"cannot load benchmark app workload: {path}")
     module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
     spec.loader.exec_module(module)
     factory = getattr(module, name, None)
     if not callable(factory):
