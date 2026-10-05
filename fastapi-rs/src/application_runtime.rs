@@ -950,15 +950,49 @@ impl ResponseClassChoice {
     }
 }
 
+struct AdditionalResponseField {
+    status: String,
+    response: Py<PyDict>,
+    field: Option<ResponseField>,
+}
+
+impl AdditionalResponseField {
+    fn clone_ref(&self, py: Python<'_>) -> Self {
+        Self {
+            status: self.status.clone(),
+            response: self.response.clone_ref(py),
+            field: self.field.as_ref().map(|field| field.clone_ref(py)),
+        }
+    }
+}
+
+struct RouteResponseFields {
+    primary: Option<ResponseField>,
+    additional: Vec<AdditionalResponseField>,
+}
+
 enum ResponseFieldState {
     Deferred,
-    Ready(Option<ResponseField>),
+    Ready(RouteResponseFields),
 }
 
 impl ResponseFieldState {
     fn field(&self, py: Python<'_>) -> PyResult<Option<ResponseField>> {
         match self {
-            Self::Ready(field) => Ok(field.as_ref().map(|field| field.clone_ref(py))),
+            Self::Ready(fields) => Ok(fields.primary.as_ref().map(|field| field.clone_ref(py))),
+            Self::Deferred => Err(PyRuntimeError::new_err(
+                "included response field was not materialized",
+            )),
+        }
+    }
+
+    fn additional_fields(&self, py: Python<'_>) -> PyResult<Vec<AdditionalResponseField>> {
+        match self {
+            Self::Ready(fields) => Ok(fields
+                .additional
+                .iter()
+                .map(|field| field.clone_ref(py))
+                .collect()),
             Self::Deferred => Err(PyRuntimeError::new_err(
                 "included response field was not materialized",
             )),
@@ -975,7 +1009,7 @@ struct FastApiRoute {
     param_convertors: Py<PyDict>,
     summary: Option<String>,
     response_description: String,
-    additional_responses: Vec<OpenApiAdditionalResponse>,
+    responses: Py<PyDict>,
     operation_id: Option<String>,
     deprecated: Option<bool>,
     tags: Option<Vec<String>>,
@@ -1430,9 +1464,19 @@ fn build_response_field(
     if !model.bind(py).is_truthy()? {
         return Ok(None);
     }
-    let unique_id =
-        explicit_operation_id.map_or_else(|| operation_id(name, path, method), str::to_owned);
+    let unique_id = response_unique_id(name, path, method, explicit_operation_id);
     ResponseField::new(py, &format!("Response_{unique_id}"), model.bind(py)).map(Some)
+}
+
+fn response_unique_id(
+    name: &str,
+    path: &str,
+    method: &str,
+    explicit_operation_id: Option<&str>,
+) -> String {
+    explicit_operation_id
+        .filter(|value| !value.is_empty())
+        .map_or_else(|| operation_id(name, path, method), str::to_owned)
 }
 
 struct ResponseFieldInput {
@@ -1442,6 +1486,7 @@ struct ResponseFieldInput {
     method: String,
     operation_id: Option<String>,
     model: Option<Py<PyAny>>,
+    responses: Py<PyDict>,
 }
 
 fn materialize_included_response_fields(
@@ -1480,6 +1525,7 @@ fn materialize_included_response_fields(
                             .response_model
                             .as_ref()
                             .map(|model| model.clone_ref(py)),
+                        responses: route.responses.clone_ref(py),
                     })
                 })
                 .collect::<PyResult<Vec<_>>>()?
@@ -1488,6 +1534,14 @@ fn materialize_included_response_fields(
         // the app borrow. No successful partial branch is published on error.
         let mut prepared = Vec::with_capacity(inputs.len());
         for input in inputs {
+            let unique_id = response_unique_id(
+                &input.name,
+                &input.path,
+                &input.method,
+                input.operation_id.as_deref(),
+            );
+            let additional =
+                build_additional_response_fields(py, input.responses.bind(py), &unique_id)?;
             let field = build_response_field(
                 py,
                 &input.name,
@@ -1496,7 +1550,13 @@ fn materialize_included_response_fields(
                 input.operation_id.as_deref(),
                 input.model.as_ref(),
             )?;
-            prepared.push((input.index, ResponseFieldState::Ready(field)));
+            prepared.push((
+                input.index,
+                ResponseFieldState::Ready(RouteResponseFields {
+                    primary: field,
+                    additional,
+                }),
+            ));
         }
         let retired = {
             let mut app = app.bind(py).borrow_mut();
@@ -1640,6 +1700,92 @@ pub(crate) struct PyFastApi {
     websocket_routes: Vec<FastApiWebSocketRoute>,
     user_middleware: Vec<Py<PyAny>>,
     middleware_stack: Option<Py<PyAny>>,
+}
+
+struct OpenApiRouteSnapshot {
+    path_format: String,
+    method: String,
+    summary: Option<String>,
+    response_description: String,
+    operation_id: Option<String>,
+    deprecated: Option<bool>,
+    tags: Option<Vec<String>>,
+    status_code: Option<u16>,
+    response_class: ResponseClassChoice,
+    sse_stream: bool,
+    generator_kind: FastApiGeneratorKind,
+    stream_item_type: Option<Py<PyAny>>,
+    endpoint: Py<PyAny>,
+    response_model: Option<Py<PyAny>>,
+    additional_fields: Vec<AdditionalResponseField>,
+    plan: CallablePlan,
+}
+
+impl OpenApiRouteSnapshot {
+    fn from_route(py: Python<'_>, route: &FastApiRoute) -> PyResult<Self> {
+        Ok(Self {
+            path_format: route.path_format.clone(),
+            method: route.method.clone(),
+            summary: route.summary.clone(),
+            response_description: route.response_description.clone(),
+            operation_id: route.operation_id.clone(),
+            deprecated: route.deprecated,
+            tags: route.tags.clone(),
+            status_code: route.status_code,
+            response_class: route.response_class.clone_ref(py),
+            sse_stream: route.sse_stream,
+            generator_kind: route.generator_kind,
+            stream_item_type: route
+                .stream_item_type
+                .as_ref()
+                .map(|value| value.clone_ref(py)),
+            endpoint: route.endpoint.clone_ref(py),
+            response_model: route
+                .response_model
+                .as_ref()
+                .map(|value| value.clone_ref(py)),
+            additional_fields: route.response_field.additional_fields(py)?,
+            plan: route.plan.clone_ref(py),
+        })
+    }
+}
+
+struct OpenApiAppSnapshot {
+    title: String,
+    summary: Option<String>,
+    description: String,
+    terms_of_service: Option<String>,
+    contact: Option<Py<PyAny>>,
+    license_info: Option<Py<PyAny>>,
+    openapi_external_docs: Option<Py<PyAny>>,
+    servers: Py<PyAny>,
+    version: String,
+    operations: Vec<OpenApiRouteSnapshot>,
+}
+
+impl OpenApiAppSnapshot {
+    fn from_app(py: Python<'_>, app: &PyFastApi) -> PyResult<Self> {
+        Ok(Self {
+            title: app.title.clone(),
+            summary: app.summary.clone(),
+            description: app.description.clone(),
+            terms_of_service: app.terms_of_service.clone(),
+            contact: app.contact.as_ref().map(|value| value.clone_ref(py)),
+            license_info: app.license_info.as_ref().map(|value| value.clone_ref(py)),
+            openapi_external_docs: app
+                .openapi_external_docs
+                .as_ref()
+                .map(|value| value.clone_ref(py)),
+            servers: app.servers.clone_ref(py),
+            version: app.version.clone(),
+            operations: app
+                .routes
+                .iter()
+                .filter(|route| route.include_in_schema)
+                .map(|route| OpenApiRouteSnapshot::from_route(py, route))
+                .collect::<PyResult<Vec<_>>>()?,
+        })
+    }
 }
 
 struct OpenApiCache {
@@ -3082,24 +3228,35 @@ impl PyFastApi {
         Ok(())
     }
 
-    fn openapi(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
-        let routes_version = self.routes_version.load(Ordering::Relaxed);
-        let (cached_schema, cached_routes_version) = self
-            .openapi_cache
-            .lock()
-            .map(|cache| (cache.schema.clone_ref(py), cache.routes_version))
-            .map_err(|_| PyRuntimeError::new_err("OpenAPI schema cache is unavailable"))?;
+    fn openapi(slf: Py<Self>, py: Python<'_>) -> PyResult<Py<PyAny>> {
+        let (routes_version, cached_schema, cached_routes_version) = {
+            let app = slf.bind(py).borrow();
+            let cache = app
+                .openapi_cache
+                .lock()
+                .map_err(|_| PyRuntimeError::new_err("OpenAPI schema cache is unavailable"))?;
+            (
+                app.routes_version.load(Ordering::Relaxed),
+                cache.schema.clone_ref(py),
+                cache.routes_version,
+            )
+        };
         if cached_routes_version == Some(routes_version) && cached_schema.bind(py).is_truthy()? {
             return Ok(cached_schema);
         }
 
-        let schema = self.openapi_document(py, None)?;
-        let mut cache = self
-            .openapi_cache
-            .lock()
-            .map_err(|_| PyRuntimeError::new_err("OpenAPI schema cache is unavailable"))?;
-        cache.schema = schema.clone_ref(py);
-        cache.routes_version = Some(routes_version);
+        let schema = Self::openapi_document(&slf, py, None)?;
+        let retired = {
+            let app = slf.bind(py).borrow();
+            let mut cache = app
+                .openapi_cache
+                .lock()
+                .map_err(|_| PyRuntimeError::new_err("OpenAPI schema cache is unavailable"))?;
+            let retired = std::mem::replace(&mut cache.schema, schema.clone_ref(py));
+            cache.routes_version = Some(routes_version);
+            retired
+        };
+        drop(retired);
         Ok(schema)
     }
 
@@ -3885,25 +4042,33 @@ impl PyFastApi {
         Ok(stack)
     }
 
-    fn openapi_document(&self, py: Python<'_>, root_path: Option<&str>) -> PyResult<Py<PyAny>> {
-        let operations = self
-            .routes
+    fn openapi_document(
+        app: &Py<Self>,
+        py: Python<'_>,
+        root_path: Option<&str>,
+    ) -> PyResult<Py<PyAny>> {
+        materialize_included_response_fields(py, app, None)?;
+        let snapshot = {
+            let app = app.bind(py).borrow();
+            OpenApiAppSnapshot::from_app(py, &app)?
+        };
+        let operations = snapshot
+            .operations
             .iter()
-            .filter(|route| route.include_in_schema)
-            .map(|route| self.openapi_operation(py, route))
+            .map(|route| Self::openapi_operation(py, route))
             .collect::<PyResult<Vec<_>>>()?;
         openapi_document(
             py,
             OpenApiInfo {
-                title: &self.title,
-                summary: self.summary.as_deref(),
-                description: &self.description,
-                terms_of_service: self.terms_of_service.as_deref(),
-                contact: self.contact.as_ref(),
-                license_info: self.license_info.as_ref(),
-                openapi_external_docs: self.openapi_external_docs.as_ref(),
-                servers: Some(&self.servers),
-                version: &self.version,
+                title: &snapshot.title,
+                summary: snapshot.summary.as_deref(),
+                description: &snapshot.description,
+                terms_of_service: snapshot.terms_of_service.as_deref(),
+                contact: snapshot.contact.as_ref(),
+                license_info: snapshot.license_info.as_ref(),
+                openapi_external_docs: snapshot.openapi_external_docs.as_ref(),
+                servers: Some(&snapshot.servers),
+                version: &snapshot.version,
             },
             &operations,
             root_path,
@@ -3911,9 +4076,8 @@ impl PyFastApi {
     }
 
     fn openapi_operation(
-        &self,
         py: Python<'_>,
-        route: &FastApiRoute,
+        route: &OpenApiRouteSnapshot,
     ) -> PyResult<OpenApiOperation> {
         let name = route
             .endpoint
@@ -4137,7 +4301,11 @@ impl PyFastApi {
             method: route.method.to_ascii_lowercase(),
             summary,
             response_description: route.response_description.clone(),
-            additional_responses: clone_additional_responses(py, &route.additional_responses),
+            additional_responses: route
+                .additional_fields
+                .iter()
+                .map(|response| additional_response_openapi(py, response))
+                .collect::<PyResult<Vec<_>>>()?,
             operation_id,
             status: route.status_code,
             response_status_key: openapi_response_status_key(
@@ -4919,10 +5087,7 @@ fn merge_router_routes(
             param_convertors,
             summary: source_route.summary.clone(),
             response_description: source_route.response_description.clone(),
-            additional_responses: clone_additional_responses(
-                py,
-                &source_route.additional_responses,
-            ),
+            responses: source_route.responses.clone_ref(py),
             operation_id: source_route.operation_id.clone(),
             deprecated: combined_deprecated(inherited_deprecated, source_route.deprecated),
             tags,
@@ -5055,7 +5220,7 @@ struct PyOperationDecorator {
     method: String,
     summary: Option<String>,
     response_description: String,
-    additional_responses: Vec<OpenApiAdditionalResponse>,
+    responses: Option<Py<PyAny>>,
     operation_id: Option<String>,
     deprecated: Option<bool>,
     tags: Option<Vec<String>>,
@@ -5182,89 +5347,125 @@ fn stream_item_type(py: Python<'_>, annotation: &Bound<'_, PyAny>) -> PyResult<O
     }
 }
 
-fn additional_response_descriptions(
+fn route_response_declarations(
     py: Python<'_>,
     responses: Option<&Py<PyAny>>,
-) -> PyResult<Vec<OpenApiAdditionalResponse>> {
-    let Some(responses) = responses else {
-        return Ok(Vec::new());
-    };
-    let responses = responses.bind(py).cast::<PyDict>()?;
-    let mut additional_responses = Vec::with_capacity(responses.len());
+) -> PyResult<Py<PyDict>> {
+    let declarations = PyDict::new(py);
+    if let Some(responses) = responses {
+        // Source's saved decorator captures the object and shallow-merges it at
+        // attachment. Nested records/annotations retain their original owners.
+        if responses.bind(py).is_truthy()? {
+            for (status, response) in responses.bind(py).cast::<PyDict>()?.iter() {
+                declarations.set_item(status, response)?;
+            }
+        }
+    }
+    Ok(declarations.unbind())
+}
+
+fn additional_response_description(response: &Bound<'_, PyDict>) -> PyResult<String> {
+    for (key, _) in response.iter() {
+        let key = key.extract::<String>()?;
+        if !matches!(key.as_str(), "description" | "model") {
+            return Err(PyNotImplementedError::new_err(
+                "route-level responses currently support description and model entries only",
+            ));
+        }
+    }
+    if response.len() > 2 {
+        return Err(PyNotImplementedError::new_err(
+            "route-level responses currently support description and model entries only",
+        ));
+    }
+    let description = response
+        .get_item("description")?
+        .ok_or_else(|| {
+            PyNotImplementedError::new_err("route-level responses require an explicit description")
+        })?
+        .extract::<String>()?;
+    if description.is_empty() {
+        return Err(PyNotImplementedError::new_err(
+            "route-level response descriptions must be non-empty",
+        ));
+    }
+    Ok(description)
+}
+
+fn build_additional_response_fields(
+    py: Python<'_>,
+    responses: &Bound<'_, PyDict>,
+    unique_id: &str,
+) -> PyResult<Vec<AdditionalResponseField>> {
+    let mut fields = Vec::with_capacity(responses.len());
     for (status, response) in responses.iter() {
         if !status.is_instance_of::<PyInt>() || status.is_instance_of::<PyBool>() {
             return Err(PyNotImplementedError::new_err(
                 "route-level responses currently support integer status keys only",
             ));
         }
-        let status = status.str()?.to_str()?.to_owned();
-        let response = response.cast::<PyDict>()?;
-        for (key, _) in response.iter() {
-            let key = key.extract::<String>()?;
-            if !matches!(key.as_str(), "description" | "model") {
-                return Err(PyNotImplementedError::new_err(
-                    "route-level responses currently support description and model entries only",
-                ));
+        let response = response
+            .cast::<PyDict>()
+            .map_err(|_| PyAssertionError::new_err("An additional response must be a dict"))?;
+        // Keep the existing deliberately restricted metadata policy. It is not
+        // FastAPI's general response-dictionary contract.
+        additional_response_description(response)?;
+        let model = response.get_item("model")?;
+        let field = match model {
+            Some(model) if model.is_truthy()? => {
+                let code = py.import("builtins")?.getattr("int")?.call1((&status,))?;
+                if code.lt(200)? || code.eq(204)? || code.eq(205)? || code.eq(304)? {
+                    let options = PyDict::new(py);
+                    options.set_item("status", &status)?;
+                    let message =
+                        PyString::new(py, "Status code {status} must not have a response body")
+                            .call_method("format", (), Some(&options))?
+                            .extract::<String>()?;
+                    return Err(PyAssertionError::new_err(message));
+                }
+                let options = PyDict::new(py);
+                options.set_item("status", &status)?;
+                options.set_item("unique_id", unique_id)?;
+                let name = PyString::new(py, "Response_{status}_{unique_id}")
+                    .call_method("format", (), Some(&options))?
+                    .extract::<String>()?;
+                Some(ResponseField::new(py, &name, &model)?)
             }
-        }
-        if response.len() > 2 {
-            return Err(PyNotImplementedError::new_err(
-                "route-level responses currently support description and model entries only",
-            ));
-        }
-        let description = response
-            .get_item("description")?
-            .ok_or_else(|| {
-                PyNotImplementedError::new_err(
-                    "route-level responses require an explicit description",
-                )
-            })?
-            .extract::<String>()?;
-        if description.is_empty() {
-            return Err(PyNotImplementedError::new_err(
-                "route-level response descriptions must be non-empty",
-            ));
-        }
-        let (response_model_name, response_schema) = match response.get_item("model")? {
-            Some(response_model) if !response_model.is_none() => {
-                let schema = pydantic_schema(py, &response_model, "serialization", None)?;
-                let model_name = match schema_definition_name(schema.bind(py))? {
-                    Some(name) => Some(name),
-                    None if is_pydantic_model(py, &response_model)? => {
-                        model_name(py, &response_model)?
-                    }
-                    None => None,
-                };
-                (model_name, Some(schema))
-            }
-            _ => (None, None),
+            _ => None,
         };
-        additional_responses.push(OpenApiAdditionalResponse {
-            status,
-            description,
-            response_model_name,
-            response_schema,
+        fields.push(AdditionalResponseField {
+            status: status.str()?.to_str()?.to_owned(),
+            response: response.clone().unbind(),
+            field,
         });
     }
-    Ok(additional_responses)
+    Ok(fields)
 }
 
-fn clone_additional_responses(
+fn additional_response_openapi(
     py: Python<'_>,
-    responses: &[OpenApiAdditionalResponse],
-) -> Vec<OpenApiAdditionalResponse> {
-    responses
-        .iter()
-        .map(|response| OpenApiAdditionalResponse {
-            status: response.status.clone(),
-            description: response.description.clone(),
-            response_model_name: response.response_model_name.clone(),
-            response_schema: response
-                .response_schema
-                .as_ref()
-                .map(|schema| schema.clone_ref(py)),
-        })
-        .collect()
+    response: &AdditionalResponseField,
+) -> PyResult<OpenApiAdditionalResponse> {
+    let (response_model_name, response_schema) = match response.field.as_ref() {
+        Some(field) => {
+            let schema = response_field_json_schema(py, field)?;
+            let model_name = match schema_definition_name(schema.bind(py))? {
+                Some(name) => Some(name),
+                None if is_pydantic_model(py, field.annotation.bind(py))? => {
+                    model_name(py, field.annotation.bind(py))?
+                }
+                None => None,
+            };
+            (model_name, Some(schema))
+        }
+        None => (None, None),
+    };
+    Ok(OpenApiAdditionalResponse {
+        status: response.status.clone(),
+        description: additional_response_description(response.response.bind(py))?,
+        response_model_name,
+        response_schema,
+    })
 }
 
 fn operation_decorator(
@@ -5276,8 +5477,6 @@ fn operation_decorator(
     status_code: Option<u16>,
     response_model_options: ResponseModelOptions,
 ) -> PyResult<Py<PyOperationDecorator>> {
-    let additional_responses =
-        additional_response_descriptions(py, response_model_options.responses.as_ref())?;
     Py::new(
         py,
         PyOperationDecorator {
@@ -5288,7 +5487,7 @@ fn operation_decorator(
             response_description: response_model_options
                 .response_description
                 .unwrap_or_else(|| DEFAULT_RESPONSE_DESCRIPTION.to_owned()),
-            additional_responses,
+            responses: response_model_options.responses,
             operation_id: response_model_options.operation_id,
             deprecated: response_model_options.deprecated,
             tags: response_model_options.tags,
@@ -5311,6 +5510,26 @@ fn operation_decorator(
 #[pymethods]
 impl PyOperationDecorator {
     fn __call__(&self, py: Python<'_>, endpoint: Py<PyAny>) -> PyResult<Py<PyAny>> {
+        let (inferred_name, param_convertors) =
+            route_reverse_metadata(py, &self.path, endpoint.bind(py))?;
+        let name = self.name.clone().unwrap_or(inferred_name);
+        let scope_path = {
+            let app = self.app.bind(py).borrow();
+            format!("{}{}", app.route_scope_prefix, self.path)
+        };
+        let (route_scope, path_format) =
+            http_route_scope(py, &scope_path, endpoint.bind(py), &self.method, &name)?;
+        let responses = route_response_declarations(py, self.responses.as_ref())?;
+        let unique_id = response_unique_id(
+            &name,
+            &path_format,
+            &self.method,
+            self.operation_id.as_deref(),
+        );
+        let additional = build_additional_response_fields(py, responses.bind(py), &unique_id)?;
+        if !endpoint.bind(py).is_callable() {
+            return Err(PyAssertionError::new_err("An endpoint must be a callable"));
+        }
         let path_parameters = path_parameter_names(&self.path);
         let app_dependencies = self
             .app
@@ -5333,15 +5552,6 @@ impl PyOperationDecorator {
         // uses it for endpoint dispatch and response model validation.
         let endpoint_is_coroutine = dependency_override_callable(py, endpoint.bind(py))?
             != DependencyOverrideCallable::Sync;
-        let (inferred_name, param_convertors) =
-            route_reverse_metadata(py, &self.path, endpoint.bind(py))?;
-        let name = self.name.clone().unwrap_or(inferred_name);
-        let scope_path = {
-            let app = self.app.bind(py).borrow();
-            format!("{}{}", app.route_scope_prefix, self.path)
-        };
-        let (route_scope, path_format) =
-            http_route_scope(py, &scope_path, endpoint.bind(py), &self.method, &name)?;
         let inferred_stream_item_type = match (
             generator_kind.is_generator(),
             plan.return_annotation.as_ref(),
@@ -5406,7 +5616,7 @@ impl PyOperationDecorator {
             && self.status_code.is_none()
             && self.include_in_schema
             && self.response_description == DEFAULT_RESPONSE_DESCRIPTION
-            && self.additional_responses.is_empty()
+            && responses.bind(py).is_empty()
             && self.response_class.is_default()
             && !has_default_response_class
             && response_model.is_none()
@@ -5464,7 +5674,7 @@ impl PyOperationDecorator {
             param_convertors,
             summary: self.summary.clone(),
             response_description: self.response_description.clone(),
-            additional_responses: clone_additional_responses(py, &self.additional_responses),
+            responses,
             operation_id: self.operation_id.clone(),
             deprecated: self.deprecated,
             tags: self.tags.clone(),
@@ -5481,7 +5691,10 @@ impl PyOperationDecorator {
             public_route,
             effective_route_context: None,
             response_model,
-            response_field: ResponseFieldState::Ready(response_field),
+            response_field: ResponseFieldState::Ready(RouteResponseFields {
+                primary: response_field,
+                additional,
+            }),
             response_model_include: self
                 .response_model_include
                 .as_ref()
@@ -8131,6 +8344,44 @@ fn pydantic_schema_with_config(
         .import("pydantic")?
         .getattr("TypeAdapter")?
         .call((annotation,), Some(&adapter_kwargs))?;
+    pydantic_schema_from_adapter(py, &adapter, mode, title)
+}
+
+fn response_field_json_schema(py: Python<'_>, field: &ResponseField) -> PyResult<Py<PyAny>> {
+    let schema = pydantic_schema_from_adapter(py, field.adapter.bind(py), field.mode, None)?;
+    let schema_dict = schema.bind(py).cast::<PyDict>()?;
+    if schema_dict.get_item("$ref")?.is_none() {
+        let info = field.field_info.bind(py);
+        let explicit_title = info.getattr("title")?;
+        let title = if explicit_title.is_truthy()? {
+            explicit_title
+        } else {
+            let serialization_alias = info.getattr("serialization_alias")?;
+            let alias = if serialization_alias.is_truthy()? {
+                serialization_alias
+            } else {
+                let alias = info.getattr("alias")?;
+                if alias.is_none() {
+                    field.name.bind(py).clone().into_any()
+                } else {
+                    alias
+                }
+            };
+            alias
+                .call_method0("title")?
+                .call_method1("replace", ("_", " "))?
+        };
+        schema_dict.set_item("title", title)?;
+    }
+    Ok(schema)
+}
+
+fn pydantic_schema_from_adapter(
+    py: Python<'_>,
+    adapter: &Bound<'_, PyAny>,
+    mode: &str,
+    title: Option<&str>,
+) -> PyResult<Py<PyAny>> {
     let core_schema = adapter.getattr("core_schema")?;
     let generator_kwargs = PyDict::new(py);
     generator_kwargs.set_item("ref_template", "#/components/schemas/{model}")?;
@@ -10170,10 +10421,11 @@ impl FastApiCall {
         if let Some(openapi_url) = openapi_url.as_deref().filter(|url| !url.is_empty()) {
             if route_path == openapi_url && method == "GET" {
                 let root_path = root_path.trim_end_matches('/');
-                let document = {
-                    let app = self.app.bind(py).borrow();
-                    openapi_document_for_root_path(py, app.openapi(py)?, root_path)?
-                };
+                let document = openapi_document_for_root_path(
+                    py,
+                    PyFastApi::openapi(self.app.clone_ref(py), py)?,
+                    root_path,
+                )?;
                 self.response_status = 200;
                 self.response_body = json_bytes(py, document.bind(py))?;
                 return self.send_start(py);

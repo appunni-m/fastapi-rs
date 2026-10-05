@@ -1,4 +1,4 @@
-//! Construction and ownership of a primary FastAPI response field.
+//! Construction and ownership of FastAPI response fields.
 
 use pyo3::exceptions::{PyImportError, PyTypeError, PyUserWarning};
 use pyo3::prelude::*;
@@ -59,7 +59,7 @@ pub(crate) struct ResponseField {
 }
 
 impl ResponseField {
-    /// Constructs the primary field used in response serialization.
+    /// Constructs a response field in serialization mode.
     ///
     /// This follows FastAPI's `create_model_field` and v2 `ModelField` setup for
     /// an Undefined default, no alias, serialization mode and no adapter config.
