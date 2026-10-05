@@ -19,7 +19,7 @@ pub(crate) struct OpenApiParameter {
 }
 
 pub(crate) struct OpenApiAdditionalResponse {
-    pub(crate) status: String,
+    pub(crate) status: Py<PyAny>,
     pub(crate) description: String,
     pub(crate) response_model_name: Option<String>,
     pub(crate) response_schema: Option<Py<PyAny>>,
@@ -372,20 +372,8 @@ pub(crate) fn openapi_document(
             responses.set_item(py.None(), success_response)?;
         }
 
-        let needs_validation_response =
-            operation.validation_parameters_present || operation.request_body_present;
-        if needs_validation_response && operation.status != Some(422) {
-            responses.set_item("422", validation_response(py)?)?;
-            schemas
-                .entry("HTTPValidationError".to_owned())
-                .or_insert(http_validation_error_schema(py)?.unbind().into_any());
-            schemas
-                .entry("ValidationError".to_owned())
-                .or_insert(validation_error_schema(py)?.unbind().into_any());
-        }
-
         for additional_response in &operation.additional_responses {
-            let response = match responses.get_item(&additional_response.status)? {
+            let response = match responses.get_item(additional_response.status.bind(py))? {
                 Some(existing) => existing.cast_into::<PyDict>().map_err(|_| {
                     PyErr::new::<pyo3::exceptions::PyTypeError, _>(
                         "OpenAPI response must be a dictionary",
@@ -393,7 +381,7 @@ pub(crate) fn openapi_document(
                 })?,
                 None => {
                     let response = PyDict::new(py);
-                    responses.set_item(&additional_response.status, &response)?;
+                    responses.set_item(additional_response.status.bind(py), &response)?;
                     response
                 }
             };
@@ -433,6 +421,23 @@ pub(crate) fn openapi_document(
                 };
                 media.set_item("schema", schema)?;
             }
+        }
+
+        let needs_validation_response =
+            operation.validation_parameters_present || operation.request_body_present;
+        // Source makes this decision after all declared responses have merged.
+        if needs_validation_response
+            && !responses.contains("422")?
+            && !responses.contains("4XX")?
+            && !responses.contains("default")?
+        {
+            responses.set_item("422", validation_response(py)?)?;
+            schemas
+                .entry("HTTPValidationError".to_owned())
+                .or_insert(http_validation_error_schema(py)?.unbind().into_any());
+            schemas
+                .entry("ValidationError".to_owned())
+                .or_insert(validation_error_schema(py)?.unbind().into_any());
         }
 
         operation_document.set_item("responses", responses)?;

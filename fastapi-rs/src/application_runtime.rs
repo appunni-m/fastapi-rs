@@ -14,8 +14,8 @@ use pyo3::exceptions::{
 use pyo3::prelude::*;
 use pyo3::sync::PyOnceLock;
 use pyo3::types::{
-    PyBool, PyBytes, PyDict, PyInt, PyIterator, PyList, PyMapping, PyModule, PySet, PyString,
-    PyTuple, PyType,
+    PyBool, PyBytes, PyDict, PyFrozenSet, PyInt, PyIterator, PyList, PyMapping, PyModule, PySet,
+    PyString, PyTuple, PyType,
 };
 use starlette_rs::{DetailedRouteMatch, NamedRouteError, NamedRouteTable, QueryParams, RouteTable};
 
@@ -951,7 +951,7 @@ impl ResponseClassChoice {
 }
 
 struct AdditionalResponseField {
-    status: String,
+    status: Py<PyAny>,
     response: Py<PyDict>,
     field: Option<ResponseField>,
 }
@@ -959,7 +959,7 @@ struct AdditionalResponseField {
 impl AdditionalResponseField {
     fn clone_ref(&self, py: Python<'_>) -> Self {
         Self {
-            status: self.status.clone(),
+            status: self.status.clone_ref(py),
             response: self.response.clone_ref(py),
             field: self.field.as_ref().map(|field| field.clone_ref(py)),
         }
@@ -5423,6 +5423,51 @@ fn additional_response_description(response: &Bound<'_, PyDict>) -> PyResult<Str
     Ok(description)
 }
 
+fn additional_response_body_allowed(py: Python<'_>, status: &Bound<'_, PyAny>) -> PyResult<bool> {
+    if status.is_none() {
+        return Ok(true);
+    }
+    // Source's literal membership test precedes int conversion and is case-sensitive.
+    if PyFrozenSet::new(py, ["default", "1XX", "2XX", "3XX", "4XX", "5XX"])?.contains(status)? {
+        return Ok(true);
+    }
+    let code = py.import("builtins")?.getattr("int")?.call1((status,))?;
+    Ok(!(code.lt(200)? || code.eq(204)? || code.eq(205)? || code.eq(304)?))
+}
+
+fn evaluate_additional_response_status_text(
+    py: Python<'_>,
+    status: &Bound<'_, PyAny>,
+) -> PyResult<()> {
+    let ranges = PyDict::new(py);
+    for (key, description) in [
+        ("1XX", "Information"),
+        ("2XX", "Success"),
+        ("3XX", "Redirection"),
+        ("4XX", "Client Error"),
+        ("5XX", "Server Error"),
+        ("DEFAULT", "Default Response"),
+    ] {
+        ranges.set_item(key, description)?;
+    }
+    // Source evaluates this second conversion and fallback even when an explicit
+    // description wins. The retained metadata subset requires that description.
+    let key = status.str()?.call_method0("upper")?;
+    if let Some(description) = ranges.get_item(key)? {
+        if description.is_truthy()? {
+            return Ok(());
+        }
+    }
+    // Python resolves the bound callee before evaluating its int argument.
+    let get_status_text = py
+        .import("http.client")?
+        .getattr("responses")?
+        .getattr("get")?;
+    let code = py.import("builtins")?.getattr("int")?.call1((status,))?;
+    get_status_text.call1((code,))?;
+    Ok(())
+}
+
 fn build_additional_response_fields(
     py: Python<'_>,
     responses: &Bound<'_, PyDict>,
@@ -5430,11 +5475,6 @@ fn build_additional_response_fields(
 ) -> PyResult<Vec<AdditionalResponseField>> {
     let mut fields = Vec::with_capacity(responses.len());
     for (status, response) in responses.iter() {
-        if !status.is_instance_of::<PyInt>() || status.is_instance_of::<PyBool>() {
-            return Err(PyNotImplementedError::new_err(
-                "route-level responses currently support integer status keys only",
-            ));
-        }
         let response = response
             .cast::<PyDict>()
             .map_err(|_| PyAssertionError::new_err("An additional response must be a dict"))?;
@@ -5444,8 +5484,7 @@ fn build_additional_response_fields(
         let model = response.get_item("model")?;
         let field = match model {
             Some(model) if model.is_truthy()? => {
-                let code = py.import("builtins")?.getattr("int")?.call1((&status,))?;
-                if code.lt(200)? || code.eq(204)? || code.eq(205)? || code.eq(304)? {
+                if !additional_response_body_allowed(py, &status)? {
                     let options = PyDict::new(py);
                     options.set_item("status", &status)?;
                     let message =
@@ -5465,7 +5504,7 @@ fn build_additional_response_fields(
             _ => None,
         };
         fields.push(AdditionalResponseField {
-            status: status.str()?.to_str()?.to_owned(),
+            status: status.unbind(),
             response: response.clone().unbind(),
             field,
         });
@@ -5479,6 +5518,14 @@ fn additional_response_openapi(
     response_schemas: &ResponseFieldSchemaBatch,
     next_field_key: &mut usize,
 ) -> PyResult<OpenApiAdditionalResponse> {
+    // Keep the raw declaration key until the OpenAPI stage. Source canonicalizes
+    // it before reading the corresponding field schema.
+    let status = response.status.bind(py).str()?.call_method0("upper")?;
+    let status = if status.eq("DEFAULT")? {
+        PyString::new(py, "default").into_any()
+    } else {
+        status
+    };
     let response_schema = match response.field.as_ref() {
         Some(field) => {
             let schema = response_schemas.schema(py, *next_field_key, field)?;
@@ -5487,8 +5534,9 @@ fn additional_response_openapi(
         }
         None => None,
     };
+    evaluate_additional_response_status_text(py, response.status.bind(py))?;
     Ok(OpenApiAdditionalResponse {
-        status: response.status.clone(),
+        status: status.unbind(),
         description: additional_response_description(response.response.bind(py))?,
         response_model_name: None,
         response_schema,
