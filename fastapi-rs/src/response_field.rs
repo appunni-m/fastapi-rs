@@ -2,7 +2,7 @@
 
 use pyo3::exceptions::{PyImportError, PyTypeError, PyUserWarning};
 use pyo3::prelude::*;
-use pyo3::types::{PyBytes, PyDict, PyModule, PyString, PyTuple, PyType};
+use pyo3::types::{PyBytes, PyDict, PyList, PyModule, PyString, PyTuple, PyType};
 
 // FastAPI 0.141.1's compatibility decomposition deliberately omits Undefined
 // values. Pydantic's FieldInfo.asdict() retains them on the pinned version.
@@ -164,6 +164,55 @@ impl ResponseField {
         }
     }
 
+    /// Resolves the serialization-field alias before schema mapping lookup.
+    ///
+    /// Source's property returns `sa or None`, then its caller applies another
+    /// `or field.alias`. A truthy serialization alias is tested at both stages.
+    fn serialization_field_alias(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
+        let serialization_alias = self.field_info.bind(py).getattr("serialization_alias")?;
+        let property_alias = if serialization_alias.is_truthy()? {
+            serialization_alias
+        } else {
+            py.None().into_bound(py)
+        };
+        let alias = if property_alias.is_truthy()? {
+            property_alias
+        } else {
+            let alias = self.field_info.bind(py).getattr("alias")?;
+            if alias.is_none() {
+                self.name.bind(py).clone().into_any()
+            } else {
+                alias
+            }
+        };
+        Ok(alias.unbind())
+    }
+
+    /// Applies the serialization-field title after mapping lookup.
+    ///
+    /// Reference schemas retain every generated sibling key unchanged. They
+    /// skip title reads, while alias resolution has already occurred.
+    fn apply_schema_title(
+        &self,
+        py: Python<'_>,
+        schema: &Bound<'_, PyDict>,
+        alias: &Bound<'_, PyAny>,
+    ) -> PyResult<()> {
+        if schema.get_item("$ref")?.is_some() {
+            return Ok(());
+        }
+        let info = self.field_info.bind(py);
+        let explicit_title = info.getattr("title")?;
+        let title = if explicit_title.is_truthy()? {
+            explicit_title
+        } else {
+            alias
+                .call_method0("title")?
+                .call_method1("replace", ("_", " "))?
+        };
+        schema.set_item("title", title)
+    }
+
     /// Copies owned references without constructing another adapter or field.
     pub(crate) fn clone_ref(&self, py: Python<'_>) -> Self {
         Self {
@@ -179,6 +228,75 @@ impl ResponseField {
             mode: self.mode,
             config: self.config.clone_ref(py),
         }
+    }
+}
+
+/// Document-local schemas generated together from retained response adapters.
+///
+/// Callers supply distinct field owners in source collection order, primary
+/// before extras. The ordinal keys distinguish fields even when core refs are
+/// shared. All callbacks and drops occur outside application/cache guards.
+pub(crate) struct ResponseFieldSchemaBatch {
+    field_mapping: Py<PyDict>,
+    pub(crate) definitions: Py<PyDict>,
+}
+
+impl ResponseFieldSchemaBatch {
+    pub(crate) fn new(py: Python<'_>, fields: &[&ResponseField]) -> PyResult<Self> {
+        let generator_options = PyDict::new(py);
+        generator_options.set_item("ref_template", "#/components/schemas/{model}")?;
+        let generator = py
+            .import("fastapi_rs._core")?
+            .getattr("_FastApiGenerateJsonSchema")?
+            .call((), Some(&generator_options))?;
+        let inputs = PyList::empty(py);
+        for (key, field) in fields.iter().enumerate() {
+            inputs.append(PyTuple::new(
+                py,
+                [
+                    key.into_pyobject(py)?.into_any(),
+                    PyString::new(py, field.mode).into_any(),
+                    field.adapter.bind(py).getattr("core_schema")?,
+                ],
+            )?)?;
+        }
+        // Pydantic owns both passes, reference sharing and definitions remapping.
+        // A hook error aborts this local batch without an alternate generator.
+        let generated = generator
+            .call_method1("generate_definitions", (inputs,))?
+            .cast_into::<PyTuple>()?;
+        let field_mapping = generated.get_item(0)?.cast_into::<PyDict>()?;
+        let definitions = generated.get_item(1)?.cast_into::<PyDict>()?;
+        for definition in definitions.call_method0("values")?.try_iter()? {
+            let definition = definition?;
+            if definition.contains("description")? {
+                let description = definition
+                    .get_item("description")?
+                    .call_method1("split", ("\u{000c}",))?
+                    .get_item(0)?;
+                definition.set_item("description", description)?;
+            }
+        }
+        Ok(Self {
+            field_mapping: field_mapping.unbind(),
+            definitions: definitions.unbind(),
+        })
+    }
+
+    pub(crate) fn schema(
+        &self,
+        py: Python<'_>,
+        key: usize,
+        field: &ResponseField,
+    ) -> PyResult<Py<PyAny>> {
+        let alias = field.serialization_field_alias(py)?;
+        let schema = self
+            .field_mapping
+            .bind(py)
+            .call_method1("__getitem__", ((key, field.mode),))?
+            .cast_into::<PyDict>()?;
+        field.apply_schema_title(py, &schema, alias.bind(py))?;
+        Ok(schema.into_any().unbind())
     }
 }
 

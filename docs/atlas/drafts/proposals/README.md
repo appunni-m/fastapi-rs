@@ -104,8 +104,16 @@ Full FastAPI compatibility remains unfinished.
   titles, and ordinary JSON-hook refusal/public retry/cache. Request invocation is
   mapped only to retry; all three register handlers. Inner Annotated Field metadata
   does not establish nondefault outer FieldInfo title/alias branches. Fresh pinned
-  oracle and unchanged-target receipts remain required before native implementation.
+  oracle and unchanged-target receipts completed all three cases and 19 actions,
+  recording three parity failures. The reviewed native patch awaits fresh build
+  and parity evidence.
   No expected outputs, private field mutation or comparator normalization is used.
+
+- `openapi-validation-response/`: independently authored and reviewed four-case /
+  24-HTTP-action proposal for automatic validation responses and declared
+  `422`/`4XX`/`default` responses. Whole documents, exact sends, query validation,
+  constructor outcomes and all 28 warning phases are selected. It remains outside
+  active inputs; source-first execution and reviewed metadata mappings are pending.
 
 Both historical proposals passed recipe-loader/Ruff admission and independent
 static review; their authored copies remain outside active inputs with no

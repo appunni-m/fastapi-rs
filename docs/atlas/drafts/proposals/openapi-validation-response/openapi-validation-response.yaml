@@ -1,0 +1,266 @@
+# Inactive independent public inputs. No prescribed or stored outcomes.
+schema: fastapi-rs/python-asgi-workflow@9
+workload:
+  file: tests/fixtures/workloads/openapi_validation_response.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.openapi-validation-response.automatic-after-declared-responses
+  verification: parity
+  factory_input:
+    responses:
+    - status: 409
+      description: Independent earlier conflict description
+    - status: 202
+      description: Independent later accepted description
+  construction_observation: &id006
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+    capture_warnings: true
+  actions: &id007
+  - action_id: docs-before-validation
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations: &id005
+    - &id001
+      kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - &id002
+      kind: asgi_send
+      selector: message_types
+      comparison: ordered
+    - &id003
+      kind: application_error
+      selector: exception
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - ''
+      comparison: exact
+    capture_warnings: true
+  - action_id: valid-required-query
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /reading
+      query_string: reading=27
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations: &id004
+    - *id001
+    - *id002
+    - *id003
+    capture_warnings: true
+  - action_id: missing-required-query
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /reading
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations: *id004
+    capture_warnings: true
+  - action_id: malformed-required-query
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /reading
+      query_string: reading=brook
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations: *id004
+    capture_warnings: true
+  - action_id: public-document-after-validation
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /document
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations: *id005
+    capture_warnings: true
+  - action_id: state-after-document-and-validation
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /state
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations: *id004
+    capture_warnings: true
+  source_evidence: &id008
+  - path: docs/en/docs/advanced/additional-responses.md
+    kind: upstream_documentation
+  - path: docs/en/docs/tutorial/handling-errors.md
+    kind: upstream_documentation
+  - path: docs/en/docs/tutorial/query-params.md
+    kind: upstream_documentation
+  - path: tests/test_additional_responses_default_validationerror.py
+    kind: upstream_test
+  - path: tests/test_additional_responses_custom_validationerror.py
+    kind: upstream_test
+  - path: tests/test_additional_responses_router.py
+    kind: upstream_test
+- case_id: fastapi.openapi-validation-response.declared-422-suppresses-automatic
+  verification: parity
+  factory_input:
+    responses:
+    - status: 409
+      description: Independent earlier conflict description
+    - status: 422
+      description: Independent declared validation response
+    - status: 202
+      description: Independent later accepted description
+  construction_observation: *id006
+  actions: *id007
+  source_evidence: *id008
+- case_id: fastapi.openapi-validation-response.declared-4xx-suppresses-automatic
+  verification: parity
+  factory_input:
+    responses:
+    - status: 409
+      description: Independent earlier conflict description
+    - status: 4XX
+      description: Independent declared client-error range
+    - status: 202
+      description: Independent later accepted description
+  construction_observation: *id006
+  actions: *id007
+  source_evidence: *id008
+- case_id: fastapi.openapi-validation-response.declared-default-suppresses-automatic
+  verification: parity
+  factory_input:
+    responses:
+    - status: 409
+      description: Independent earlier conflict description
+    - status: default
+      description: Independent declared default response
+    - status: 202
+      description: Independent later accepted description
+  construction_observation: *id006
+  actions: *id007
+  source_evidence: *id008

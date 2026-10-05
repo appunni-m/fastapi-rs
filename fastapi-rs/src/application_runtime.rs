@@ -30,7 +30,7 @@ use crate::lifespan::{FastApiLifespan, warn_on_event};
 use crate::openapi::{
     OpenApiAdditionalResponse, OpenApiInfo, OpenApiOperation, OpenApiParameter, openapi_document,
 };
-use crate::response_field::ResponseField;
+use crate::response_field::{ResponseField, ResponseFieldSchemaBatch};
 use crate::sse;
 use crate::{
     FastApiInputLocation, FastApiInputParameter, FastApiOperationMatch, FastApiOperationRouter,
@@ -1343,7 +1343,7 @@ pub(crate) fn direct_route_openapi_operation(
         request_media_type: "application/json".to_owned(),
         response_model_name: None,
         response_schema: None,
-        response_schema_title: String::new(),
+        response_schema_title: Some(String::new()),
         response_media_type: Some("application/json".to_owned()),
         response_class_is_json: true,
         jsonl_stream: false,
@@ -1705,6 +1705,7 @@ pub(crate) struct PyFastApi {
 struct OpenApiRouteSnapshot {
     path_format: String,
     method: String,
+    name: String,
     summary: Option<String>,
     response_description: String,
     operation_id: Option<String>,
@@ -1715,8 +1716,8 @@ struct OpenApiRouteSnapshot {
     sse_stream: bool,
     generator_kind: FastApiGeneratorKind,
     stream_item_type: Option<Py<PyAny>>,
-    endpoint: Py<PyAny>,
     response_model: Option<Py<PyAny>>,
+    primary_field: Option<ResponseField>,
     additional_fields: Vec<AdditionalResponseField>,
     plan: CallablePlan,
 }
@@ -1726,6 +1727,7 @@ impl OpenApiRouteSnapshot {
         Ok(Self {
             path_format: route.path_format.clone(),
             method: route.method.clone(),
+            name: route.name.clone(),
             summary: route.summary.clone(),
             response_description: route.response_description.clone(),
             operation_id: route.operation_id.clone(),
@@ -1739,11 +1741,11 @@ impl OpenApiRouteSnapshot {
                 .stream_item_type
                 .as_ref()
                 .map(|value| value.clone_ref(py)),
-            endpoint: route.endpoint.clone_ref(py),
             response_model: route
                 .response_model
                 .as_ref()
                 .map(|value| value.clone_ref(py)),
+            primary_field: route.response_field.field(py)?,
             additional_fields: route.response_field.additional_fields(py)?,
             plan: route.plan.clone_ref(py),
         })
@@ -4052,15 +4054,33 @@ impl PyFastApi {
             let app = app.bind(py).borrow();
             OpenApiAppSnapshot::from_app(py, &app)?
         };
+        let response_fields = snapshot
+            .operations
+            .iter()
+            .flat_map(|route| {
+                route.primary_field.iter().chain(
+                    route
+                        .additional_fields
+                        .iter()
+                        .filter_map(|response| response.field.as_ref()),
+                )
+            })
+            .collect::<Vec<_>>();
+        // Source collects primary then extras before the shared two-pass JSON
+        // generator. The snapshot retains owners across callbacks and errors.
+        let response_schemas = ResponseFieldSchemaBatch::new(py, &response_fields)?;
+        let mut next_field_key = 0;
         let operations = snapshot
             .operations
             .iter()
-            .map(|route| Self::openapi_operation(py, route))
+            .map(|route| Self::openapi_operation(py, route, &response_schemas, &mut next_field_key))
             .collect::<PyResult<Vec<_>>>()?;
         openapi_document(
             py,
             OpenApiInfo {
                 title: &snapshot.title,
+                openapi_version: "3.1.0",
+                tags: None,
                 summary: snapshot.summary.as_deref(),
                 description: &snapshot.description,
                 terms_of_service: snapshot.terms_of_service.as_deref(),
@@ -4072,36 +4092,30 @@ impl PyFastApi {
             },
             &operations,
             root_path,
+            Some(&response_schemas.definitions),
         )
     }
 
     fn openapi_operation(
         py: Python<'_>,
         route: &OpenApiRouteSnapshot,
+        response_schemas: &ResponseFieldSchemaBatch,
+        next_field_key: &mut usize,
     ) -> PyResult<OpenApiOperation> {
-        let name = route
-            .endpoint
-            .bind(py)
-            .getattr("__name__")?
-            .extract::<String>()?;
-        let summary = route
-            .summary
-            .as_ref()
-            .filter(|summary| !summary.is_empty())
-            .cloned()
-            .unwrap_or_else(|| {
-                name.split('_')
-                    .filter(|part| !part.is_empty())
-                    .map(title_case)
-                    .collect::<Vec<_>>()
-                    .join(" ")
-            });
+        let name = route.name.as_str();
+        let summary = match route.summary.as_ref().filter(|summary| !summary.is_empty()) {
+            Some(summary) => summary.clone(),
+            None => PyString::new(py, name)
+                .call_method1("replace", ("_", " "))?
+                .call_method0("title")?
+                .extract::<String>()?,
+        };
         let operation_id = route
             .operation_id
             .as_ref()
             .filter(|operation_id| !operation_id.is_empty())
             .cloned()
-            .unwrap_or_else(|| operation_id(&name, &route.path_format, &route.method));
+            .unwrap_or_else(|| operation_id(name, &route.path_format, &route.method));
         let parameters = route
             .plan
             .openapi_parameters(py)?
@@ -4217,22 +4231,33 @@ impl PyFastApi {
                     }
                 }
             };
-        let (response_model_name, response_schema) = match route.response_model.as_ref() {
-            Some(model) => {
-                let schema = pydantic_schema(py, model.bind(py), "serialization", None)?;
-                let model_name = match schema_definition_name(schema.bind(py))? {
-                    Some(name) => Some(name),
-                    None => {
-                        if is_pydantic_model(py, model.bind(py))? {
-                            model_name(py, model.bind(py))?
-                        } else {
-                            None
-                        }
-                    }
-                };
-                (model_name, Some(schema))
+        let (response_model_name, response_schema) = match route.primary_field.as_ref() {
+            Some(field) => {
+                let schema = response_schemas.schema(py, *next_field_key, field)?;
+                *next_field_key += 1;
+                // Preserve generated reference siblings and the retained owner
+                // title; assembly must not reconstruct a model-name-only ref.
+                (None, Some(schema))
             }
-            None => (None, None),
+            None => match route.response_model.as_ref() {
+                // Stream paths do not yet retain a primary response field.
+                // Their existing standalone schema behavior remains separate.
+                Some(model) => {
+                    let schema = pydantic_schema(py, model.bind(py), "serialization", None)?;
+                    let model_name = match schema_definition_name(schema.bind(py))? {
+                        Some(name) => Some(name),
+                        None => {
+                            if is_pydantic_model(py, model.bind(py))? {
+                                model_name(py, model.bind(py))?
+                            } else {
+                                None
+                            }
+                        }
+                    };
+                    (model_name, Some(schema))
+                }
+                None => (None, None),
+            },
         };
         let (response_media_type, response_class_is_json) = if !route.response_class.is_default() {
             let actual_response_class = route.response_class.actual(py)?;
@@ -4304,7 +4329,9 @@ impl PyFastApi {
             additional_responses: route
                 .additional_fields
                 .iter()
-                .map(|response| additional_response_openapi(py, response))
+                .map(|response| {
+                    additional_response_openapi(py, response, response_schemas, next_field_key)
+                })
                 .collect::<PyResult<Vec<_>>>()?,
             operation_id,
             status: route.status_code,
@@ -4325,11 +4352,15 @@ impl PyFastApi {
             request_media_type,
             response_model_name,
             response_schema,
-            response_schema_title: response_field_schema_title(
-                &name,
-                &route.path_format,
-                &route.method,
-            ),
+            response_schema_title: if route.primary_field.is_some() {
+                None
+            } else {
+                Some(response_field_schema_title(
+                    name,
+                    &route.path_format,
+                    &route.method,
+                ))
+            },
             response_media_type,
             response_class_is_json,
             jsonl_stream,
@@ -5445,25 +5476,21 @@ fn build_additional_response_fields(
 fn additional_response_openapi(
     py: Python<'_>,
     response: &AdditionalResponseField,
+    response_schemas: &ResponseFieldSchemaBatch,
+    next_field_key: &mut usize,
 ) -> PyResult<OpenApiAdditionalResponse> {
-    let (response_model_name, response_schema) = match response.field.as_ref() {
+    let response_schema = match response.field.as_ref() {
         Some(field) => {
-            let schema = response_field_json_schema(py, field)?;
-            let model_name = match schema_definition_name(schema.bind(py))? {
-                Some(name) => Some(name),
-                None if is_pydantic_model(py, field.annotation.bind(py))? => {
-                    model_name(py, field.annotation.bind(py))?
-                }
-                None => None,
-            };
-            (model_name, Some(schema))
+            let schema = response_schemas.schema(py, *next_field_key, field)?;
+            *next_field_key += 1;
+            Some(schema)
         }
-        None => (None, None),
+        None => None,
     };
     Ok(OpenApiAdditionalResponse {
         status: response.status.clone(),
         description: additional_response_description(response.response.bind(py))?,
-        response_model_name,
+        response_model_name: None,
         response_schema,
     })
 }
@@ -8345,35 +8372,6 @@ fn pydantic_schema_with_config(
         .getattr("TypeAdapter")?
         .call((annotation,), Some(&adapter_kwargs))?;
     pydantic_schema_from_adapter(py, &adapter, mode, title)
-}
-
-fn response_field_json_schema(py: Python<'_>, field: &ResponseField) -> PyResult<Py<PyAny>> {
-    let schema = pydantic_schema_from_adapter(py, field.adapter.bind(py), field.mode, None)?;
-    let schema_dict = schema.bind(py).cast::<PyDict>()?;
-    if schema_dict.get_item("$ref")?.is_none() {
-        let info = field.field_info.bind(py);
-        let explicit_title = info.getattr("title")?;
-        let title = if explicit_title.is_truthy()? {
-            explicit_title
-        } else {
-            let serialization_alias = info.getattr("serialization_alias")?;
-            let alias = if serialization_alias.is_truthy()? {
-                serialization_alias
-            } else {
-                let alias = info.getattr("alias")?;
-                if alias.is_none() {
-                    field.name.bind(py).clone().into_any()
-                } else {
-                    alias
-                }
-            };
-            alias
-                .call_method0("title")?
-                .call_method1("replace", ("_", " "))?
-        };
-        schema_dict.set_item("title", title)?;
-    }
-    Ok(schema)
 }
 
 fn pydantic_schema_from_adapter(
