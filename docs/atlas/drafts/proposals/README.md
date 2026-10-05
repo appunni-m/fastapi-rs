@@ -14,10 +14,11 @@ expected outputs or copied upstream tests.
 The native classifier, once-await behavior, ordinary endpoint worker dispatch,
 response validation context, loop serialization, and ordinary ASGI body field
 shape are integrated. Formatting, strict Clippy, and the Python facade check pass.
-Fresh fixed-source comparisons are required before claiming this slice complete.
-Classification history, mutable descriptors, generator-based await adapters,
-response adapter construction/reuse, and explicit placeholder provenance remain
-separate boundaries.
+The selected classifier and normal regression gates passed on measured revision
+4b4a18c; see `../generator-awaitable-native-contract-review-2026-10-05.md`. The
+complete worker gate remains blocked below. Classification history, mutable
+descriptors, unselected await protocols, response adapter construction/reuse and
+explicit placeholder provenance remain separate boundaries.
 
 ## Confirmed sibling blocker
 
@@ -50,15 +51,18 @@ Full FastAPI compatibility remains unfinished.
 
 ## Reviewed next inputs
 
-- `generator-awaitable/`: 13 cases / 40 actions cover direct generator-based
-  awaitables, invalid await results, future errors/warnings, cleanup and recovery.
-  Its native adapter patch has bounded independent static review, but remains
-  unapplied and uncompiled. Generic throw arity and audit hooks remain gaps.
+- `generator-awaitable/`: preserves the historical 13 cases / 40 actions and
+  reviewed patch. The active workflow has 15 cases / 47 actions after two public
+  Future-error controls were added without workload changes. Native integration
+  and all 15 comparisons passed as part of 175 selected regression cases at
+  4b4a18c. Generic throw arity, audit hooks and unselected protocols remain gaps.
 - `response-field-lifecycle/`: 16 cases / 61 actions cover registration-time
   adapters, reuse, metadata, schema errors/warnings and immutable public response
   class precedence. Included response class defaults remain a deliberate target
-  gap. No runtime execution or native implementation is claimed.
+  gap. `native-design.md` records a source-backed ownership and lazy-context
+  proposal. No live or implementation evidence follows from that design.
 
-Both proposals passed recipe-loader/Ruff admission and independent static review.
-They are outside active inputs and have no expected outputs. Activate and map
-them before implementation or coverage claims.
+Both historical proposals passed recipe-loader/Ruff admission and independent
+static review; their authored copies remain outside active inputs with no
+expected outputs. The awaitable active copy is admitted and measured; the
+response-field follow-on requires its own reviewed mappings and fresh receipts.
