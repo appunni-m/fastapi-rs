@@ -205,11 +205,18 @@ enum ParameterSource {
 type DependencyCacheKey = (usize, Vec<String>, String);
 type OpenApiSecurityVisitKey = (usize, Option<String>, Vec<String>);
 
+#[derive(Clone, Copy)]
+enum ParameterDefaultDelivery {
+    External,
+    InAnnotation,
+}
+
 struct CallableParameter {
     name: String,
     annotation: Py<PyAny>,
     validation_adapter: Option<Py<PyAny>>,
     default: Option<Py<PyAny>>,
+    default_delivery: ParameterDefaultDelivery,
     is_sequence: bool,
     parameter_model_fields: Option<Vec<ParameterModelField>>,
     parameter_model_config: Option<Py<PyAny>>,
@@ -289,6 +296,7 @@ impl CallableParameter {
                 .as_ref()
                 .map(|adapter| adapter.clone_ref(py)),
             default: self.default.as_ref().map(|value| value.clone_ref(py)),
+            default_delivery: self.default_delivery,
             is_sequence: self.is_sequence,
             parameter_model_fields: self.parameter_model_fields.as_ref().map(|fields| {
                 fields
@@ -1657,6 +1665,7 @@ struct ParameterOpenApiPlan {
     annotation: Py<PyAny>,
     schema_config: Option<Py<PyAny>>,
     default: Option<Py<PyAny>>,
+    default_delivery: ParameterDefaultDelivery,
     title: Option<String>,
     description: Option<String>,
     deprecated: bool,
@@ -4126,23 +4135,13 @@ impl PyFastApi {
                 } else {
                     title_case(&parameter.name.replace('_', " "))
                 };
-                let schema = pydantic_schema_with_config(
-                    py,
-                    parameter.annotation.bind(py),
-                    "validation",
-                    parameter.title.as_deref().or(Some(&title)),
-                    parameter
-                        .schema_config
-                        .as_ref()
-                        .map(|config| config.bind(py)),
-                )?;
+                let schema = pydantic_parameter_schema(py, &parameter, &title)?;
                 Ok(OpenApiParameter {
                     name: parameter.name,
                     location: parameter.location,
                     required: parameter.required,
                     description: parameter.description,
                     deprecated: parameter.deprecated,
-                    default: parameter.default,
                     schema,
                 })
             })
@@ -6001,7 +6000,7 @@ impl CallablePlan {
                 } else {
                     Some(raw_default.unbind())
                 };
-                let validated_annotation = constrained_parameter_annotation(
+                let (validated_annotation, default_delivery) = constrained_parameter_annotation(
                     py,
                     annotation.bind(py),
                     &metadata,
@@ -6050,6 +6049,7 @@ impl CallablePlan {
                     annotation: validated_annotation,
                     validation_adapter,
                     default,
+                    default_delivery,
                     is_sequence,
                     parameter_model_fields,
                     parameter_model_config,
@@ -6140,6 +6140,7 @@ impl CallablePlan {
                 annotation,
                 validation_adapter: None,
                 default: None,
+                default_delivery: ParameterDefaultDelivery::External,
                 is_sequence: false,
                 parameter_model_fields: None,
                 parameter_model_config: None,
@@ -6447,11 +6448,8 @@ impl CallablePlan {
                             required: parameter.default.is_none(),
                             annotation: parameter.annotation.clone_ref(py),
                             schema_config: None,
-                            default: parameter
-                                .default
-                                .as_ref()
-                                .filter(|value| !value.bind(py).is_none())
-                                .map(|value| value.clone_ref(py)),
+                            default: parameter.default.as_ref().map(|value| value.clone_ref(py)),
+                            default_delivery: parameter.default_delivery,
                             title: parameter.title.clone(),
                             description: parameter.description.clone(),
                             deprecated: parameter.deprecated,
@@ -7947,8 +7945,9 @@ fn constrained_parameter_annotation(
     annotation: &Bound<'_, PyAny>,
     metadata: &[Py<PyAny>],
     default: Option<&Bound<'_, PyAny>>,
-) -> PyResult<Py<PyAny>> {
+) -> PyResult<(Py<PyAny>, ParameterDefaultDelivery)> {
     let mut annotated_arguments = vec![annotation.clone().unbind()];
+    let mut default_delivery = ParameterDefaultDelivery::External;
     for marker in metadata {
         let marker = marker.bind(py);
         if is_dependency_record(py, marker)? {
@@ -7987,6 +7986,7 @@ fn constrained_parameter_annotation(
             if let Some(default) = default {
                 kwargs.set_item("default", default)?;
                 has_field_metadata = true;
+                default_delivery = ParameterDefaultDelivery::InAnnotation;
             }
         }
         if has_field_metadata {
@@ -7998,13 +7998,15 @@ fn constrained_parameter_annotation(
         }
     }
     if annotated_arguments.len() == 1 {
-        return Ok(annotated_arguments.remove(0));
+        return Ok((annotated_arguments.remove(0), default_delivery));
     }
     let arguments = PyTuple::new(py, annotated_arguments)?;
-    py.import("typing")?
+    let annotation = py
+        .import("typing")?
         .getattr("Annotated")?
-        .get_item(arguments)
-        .map(Bound::unbind)
+        .get_item(arguments)?
+        .unbind();
+    Ok((annotation, default_delivery))
 }
 
 fn is_pydantic_model(py: Python<'_>, annotation: &Bound<'_, PyAny>) -> PyResult<bool> {
@@ -8402,6 +8404,57 @@ fn body_parameter_schema(
         .getattr("Annotated")?
         .get_item(annotation)?;
     pydantic_schema(py, &annotation, "validation", title)
+}
+
+fn pydantic_parameter_schema(
+    py: Python<'_>,
+    parameter: &ParameterOpenApiPlan,
+    fallback_title: &str,
+) -> PyResult<Py<PyAny>> {
+    let annotation = match parameter.default_delivery {
+        ParameterDefaultDelivery::External => {
+            if let Some(default) = parameter.default.as_ref() {
+                // Source's outer Field clears an inherited factory while delivering
+                // the static default, including an actual Python None.
+                let kwargs = PyDict::new(py);
+                kwargs.set_item("default", default.bind(py))?;
+                kwargs.set_item("default_factory", py.None())?;
+                let field = py
+                    .import("pydantic")?
+                    .getattr("Field")?
+                    .call((), Some(&kwargs))?;
+                let arguments = PyTuple::new(py, [parameter.annotation.bind(py).clone(), field])?;
+                py.import("typing")?
+                    .getattr("Annotated")?
+                    .call_method1("__class_getitem__", (arguments,))?
+                    .unbind()
+            } else {
+                parameter.annotation.clone_ref(py)
+            }
+        }
+        ParameterDefaultDelivery::InAnnotation => parameter.annotation.clone_ref(py),
+    };
+    let schema = pydantic_schema_with_config(
+        py,
+        annotation.bind(py),
+        "validation",
+        None,
+        parameter
+            .schema_config
+            .as_ref()
+            .map(|config| config.bind(py)),
+    )?;
+    let schema_dictionary = schema.bind(py).cast::<PyDict>()?;
+    if schema_dictionary.get_item("$ref")?.is_none() {
+        // Source assigns the outer title after Pydantic encodes the default.
+        let title = parameter
+            .title
+            .as_deref()
+            .filter(|title| !title.is_empty())
+            .unwrap_or(fallback_title);
+        schema_dictionary.set_item("title", title)?;
+    }
+    Ok(schema)
 }
 
 fn pydantic_schema_with_config(
@@ -8841,7 +8894,6 @@ fn parameter_model_field_openapi_plan(
         .getattr("description")?
         .extract::<Option<String>>()?;
     let deprecated = field_info.getattr("deprecated")?.is_truthy()?;
-    let default = query_model_field_openapi_default(py, field_info)?;
     let annotation = pydantic_field_schema_annotation(py, field_info)?;
     let name = if source == InputSource::Header
         && field
@@ -8859,28 +8911,12 @@ fn parameter_model_field_openapi_plan(
         required,
         annotation,
         schema_config: model_config.map(|value| value.clone_ref(py)),
-        default,
+        default: None,
+        default_delivery: ParameterDefaultDelivery::InAnnotation,
         title: Some(title),
         description,
         deprecated,
     }))
-}
-
-fn query_model_field_openapi_default(
-    py: Python<'_>,
-    field_info: &Bound<'_, PyAny>,
-) -> PyResult<Option<Py<PyAny>>> {
-    if field_info.call_method0("is_required")?.extract::<bool>()?
-        || !field_info.getattr("default_factory")?.is_none()
-    {
-        return Ok(None);
-    }
-    let default = field_info.getattr("default")?;
-    let undefined = py.import("pydantic_core")?.getattr("PydanticUndefined")?;
-    if default.is_none() || default.is(&undefined) {
-        return Ok(None);
-    }
-    Ok(Some(default.unbind()))
 }
 
 fn copy_unmatched_form_values(

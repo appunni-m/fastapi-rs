@@ -14,7 +14,6 @@ pub(crate) struct OpenApiParameter {
     pub(crate) required: bool,
     pub(crate) description: Option<String>,
     pub(crate) deprecated: bool,
-    pub(crate) default: Option<Py<PyAny>>,
     pub(crate) schema: Py<PyAny>,
 }
 
@@ -152,7 +151,7 @@ pub(crate) fn openapi_document(
             register_security_scheme(&mut security_schemes, name.clone(), definition.unbind());
         }
         for parameter in &operation.parameters {
-            collect_schema_definitions(py, &mut schemas, &parameter.schema, false)?;
+            collect_schema_definitions(py, &mut schemas, &parameter.schema, true)?;
         }
         if operation.request_body_present {
             if let Some(schema) = operation.request_schema.as_ref() {
@@ -230,19 +229,7 @@ pub(crate) fn openapi_document(
                 if parameter.deprecated {
                     parameter_document.set_item("deprecated", true)?;
                 }
-                let mut schema = normalize_schema(py, parameter.schema.bind(py), false)?;
-                if let Some(default) = parameter.default.as_ref() {
-                    if let Ok(schema) = schema.cast::<PyDict>() {
-                        schema.set_item("default", default.bind(py))?;
-                    } else {
-                        let wrapped_schema = PyDict::new(py);
-                        let all_of = PyList::empty(py);
-                        all_of.append(&schema)?;
-                        wrapped_schema.set_item("allOf", all_of)?;
-                        wrapped_schema.set_item("default", default.bind(py))?;
-                        schema = wrapped_schema.into_any();
-                    }
-                }
+                let schema = normalize_parameter_schema(py, parameter.schema.bind(py))?;
                 parameter_document.set_item("schema", schema)?;
                 parameters.append(parameter_document)?;
             }
@@ -801,6 +788,104 @@ fn collect_schema_definitions(
         }
     }
     Ok(())
+}
+
+fn normalize_parameter_schema<'py>(
+    py: Python<'py>,
+    value: &Bound<'py, PyAny>,
+) -> PyResult<Bound<'py, PyAny>> {
+    let Ok(source) = value.cast::<PyDict>() else {
+        return Ok(value.clone());
+    };
+    let schema_type = source
+        .get_item("type")?
+        .and_then(|item| item.extract::<String>().ok());
+    let schema_format = source
+        .get_item("format")?
+        .and_then(|item| item.extract::<String>().ok());
+    let fastapi_binary_bytes_schema = schema_type.as_deref() == Some("string")
+        && schema_format.as_deref() == Some("binary")
+        && source.get_item("contentMediaType")?.is_none();
+    let result = PyDict::new(py);
+    for (key, item) in source.iter() {
+        let key: String = key.extract()?;
+        if key == "$defs" || (fastapi_binary_bytes_schema && key == "format") {
+            continue;
+        }
+        if key == "$ref" {
+            if let Ok(reference) = item.extract::<String>() {
+                result.set_item(key, reference.replace("#/$defs/", "#/components/schemas/"))?;
+                continue;
+            }
+        }
+        if key == "exclusiveMinimum" && !item.is_instance_of::<PyBool>() {
+            if let Ok(number) = item.extract::<f64>() {
+                result.set_item(key, PyFloat::new(py, number))?;
+                continue;
+            }
+        }
+        let item = normalize_parameter_schema_value(py, &key, &item)?;
+        result.set_item(&key, item)?;
+        if key == "type" && fastapi_binary_bytes_schema {
+            result.set_item("contentMediaType", "application/octet-stream")?;
+        }
+    }
+    Ok(result.into_any())
+}
+
+fn normalize_parameter_schema_value<'py>(
+    py: Python<'py>,
+    key: &str,
+    value: &Bound<'py, PyAny>,
+) -> PyResult<Bound<'py, PyAny>> {
+    if matches!(key, "properties" | "patternProperties" | "dependentSchemas") {
+        if let Ok(source) = value.cast::<PyDict>() {
+            let result = PyDict::new(py);
+            for (name, schema) in source.iter() {
+                result.set_item(name, normalize_parameter_schema(py, &schema)?)?;
+            }
+            return Ok(result.into_any());
+        }
+    }
+
+    if matches!(key, "anyOf" | "allOf" | "oneOf" | "prefixItems") {
+        if let Ok(source) = value.cast::<PyList>() {
+            let result = PyList::empty(py);
+            for schema in source.iter() {
+                result.append(normalize_parameter_schema(py, &schema)?)?;
+            }
+            return Ok(result.into_any());
+        }
+    }
+
+    if matches!(
+        key,
+        "items"
+            | "additionalProperties"
+            | "not"
+            | "contains"
+            | "if"
+            | "then"
+            | "else"
+            | "propertyNames"
+            | "unevaluatedProperties"
+            | "contentSchema"
+    ) {
+        if value.cast::<PyDict>().is_ok() {
+            return normalize_parameter_schema(py, value);
+        }
+        if key == "items" {
+            if let Ok(source) = value.cast::<PyList>() {
+                let result = PyList::empty(py);
+                for schema in source.iter() {
+                    result.append(normalize_parameter_schema(py, &schema)?)?;
+                }
+                return Ok(result.into_any());
+            }
+        }
+    }
+
+    Ok(value.clone())
 }
 
 fn normalize_schema<'py>(
