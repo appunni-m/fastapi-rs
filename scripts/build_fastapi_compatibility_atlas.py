@@ -8391,9 +8391,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                     (
                         "starlette.routing.Mount",
                         "route-dispatch",
-                        [
-                            "starlette.routing.Mount.route-dispatch.nested-scope-composition"
-                        ],
+                        ["starlette.routing.Mount.route-dispatch.nested-scope-composition"],
                     ),
                     (
                         "starlette.requests.Request",
@@ -8414,9 +8412,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                     (
                         "starlette.routing.Mount",
                         "route-dispatch",
-                        [
-                            "starlette.routing.Mount.route-dispatch.nested-scope-composition"
-                        ],
+                        ["starlette.routing.Mount.route-dispatch.nested-scope-composition"],
                     ),
                     (
                         "starlette.staticfiles.StaticFiles",
@@ -8689,9 +8685,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                             (
                                 "starlette.routing.Mount",
                                 "route-dispatch",
-                                [
-                                    "starlette.routing.Mount.route-dispatch.nested-scope-composition"
-                                ],
+                                ["starlette.routing.Mount.route-dispatch.nested-scope-composition"],
                             ),
                         ]
                     )

@@ -109,6 +109,7 @@ def _workspace_overlay(starlette_rs_source: Path, overlay_root: Path, python_sou
     shutil.copy2(ROOT / "Cargo.lock", overlay_root / "Cargo.lock")
     for filename in ("README.md", "LICENSE.md", "THIRD_PARTY_NOTICES.md"):
         shutil.copy2(ROOT / filename, overlay_root / filename)
+    shutil.copy2(ROOT / "metadata.yaml", overlay_root / "metadata.yaml")
 
     members = manifest_data.get("workspace", {}).get("members", [])
     if not members:
