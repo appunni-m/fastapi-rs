@@ -1,5 +1,7 @@
 # FastAPI-RS
 
+[![Sponsor on GitHub](https://img.shields.io/badge/Sponsor-GitHub%20Sponsors-ea4aaa?logo=githubsponsors)](https://github.com/sponsors/appunni-m)
+
 A Rust reimplementation of FastAPI that provides the existing `fastapi` import
 surface through a pass-through facade. The initial native vertical slice
 implements a scoped HTTP request-to-response flow; full FastAPI compatibility
