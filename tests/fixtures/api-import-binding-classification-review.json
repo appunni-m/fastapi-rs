@@ -4562,14 +4562,14 @@
         "starlette-private-module"
       ],
       "id": "fastapi.routing.get_route_path",
-      "reason": "FastAPI source imports starlette._utils.get_route_path into fastapi.routing and consumes it in the cited implementation lines; no FastAPI-facing documentation or explicit source contract establishes fastapi.routing.get_route_path as a consumer import path. Classify this binding as an internal FastAPI dependency. FastAPI owns its integration/control flow; Starlette-RS owns generic target behavior. The pinned sibling review has no exact target row, so its absence is recorded as a limitation rather than a negative API claim.",
+      "reason": "FastAPI source imports starlette._utils.get_route_path into fastapi.routing and consumes it in the cited implementation lines; no FastAPI-facing documentation or explicit source contract establishes fastapi.routing.get_route_path as a consumer import path. Classify this binding as an internal FastAPI dependency. Its observable root_path prefix matching is mapped to the pinned sibling requirement starlette.routing.Router.route-dispatch.root-path-match, and mounted-scope composition is mapped to starlette.routing.Mount.route-dispatch.nested-scope-composition. These are behavior-level ownership links, not a public helper export or FastAPI-RS parity claim. The pinned sibling review has no exact get_route_path target row; absence is not a negative API claim.",
       "recommendation": "private/internal",
       "source": {
         "line": 93,
         "path": "fastapi/routing.py"
       },
       "starlette_rs_review": {
-        "limitation": "No exact named target row is present in the pinned sibling review; absence does not establish that the target or FastAPI binding is unsupported.",
+        "limitation": "No exact named get_route_path target row is present in the pinned sibling review. Its observable root-path and mounted-scope behavior is linked to exact routing requirements in the reason; absence of a helper row does not establish unsupported behavior.",
         "qualified_name": "starlette._utils.get_route_path",
         "state": "no_exact_row"
       }
@@ -4613,14 +4613,14 @@
         "starlette-private-module"
       ],
       "id": "fastapi.routing.is_async_callable",
-      "reason": "FastAPI source imports starlette._utils.is_async_callable into fastapi.routing and consumes it in the cited implementation lines; no FastAPI-facing documentation or explicit source contract establishes fastapi.routing.is_async_callable as a consumer import path. Classify this binding as an internal FastAPI dependency. FastAPI owns its integration/control flow; Starlette-RS owns generic target behavior. The pinned sibling review has no exact target row, so its absence is recorded as a limitation rather than a negative API claim.",
+      "reason": "FastAPI source imports starlette._utils.is_async_callable into fastapi.routing and consumes it in the cited implementation lines; no FastAPI-facing documentation or explicit source contract establishes fastapi.routing.is_async_callable as a consumer import path. Classify this binding as an internal FastAPI dependency. Generic sync/async callable-shape dispatch is linked to the pinned sibling requirements starlette.routing.sync-endpoint-callable-form, starlette.routing.async-endpoint-callable-form, starlette.responses.Response.asgi-call.background-callable-shapes, and starlette.asgi.exception-handler.async-callback. FastAPI dependency, event-handler, and exception integration remains FastAPI-owned; these links do not claim complete helper parity. The pinned sibling review has no exact is_async_callable target row, and absence is not a negative API claim.",
       "recommendation": "private/internal",
       "source": {
         "line": 93,
         "path": "fastapi/routing.py"
       },
       "starlette_rs_review": {
-        "limitation": "No exact named target row is present in the pinned sibling review; absence does not establish that the target or FastAPI binding is unsupported.",
+        "limitation": "No exact named is_async_callable target row is present. Its bounded generic callable-shape behaviors are linked to exact sibling requirements in the reason; FastAPI-specific callback integration is outside that sibling slice.",
         "qualified_name": "starlette._utils.is_async_callable",
         "state": "no_exact_row"
       }
@@ -4827,14 +4827,14 @@
         "starlette-private-module"
       ],
       "id": "fastapi.routing.wrap_app_handling_exceptions",
-      "reason": "FastAPI source imports starlette._exception_handler.wrap_app_handling_exceptions into fastapi.routing and consumes it in the cited implementation lines; no FastAPI-facing documentation or explicit source contract establishes fastapi.routing.wrap_app_handling_exceptions as a consumer import path. Classify this binding as an internal FastAPI dependency. FastAPI owns its integration/control flow; Starlette-RS owns generic target behavior. The pinned sibling review has no exact target row, so its absence is recorded as a limitation rather than a negative API claim.",
+      "reason": "FastAPI source imports starlette._exception_handler.wrap_app_handling_exceptions into fastapi.routing and wraps its generated HTTP and WebSocket ASGI apps; no FastAPI-facing documentation or explicit source contract establishes fastapi.routing.wrap_app_handling_exceptions as a consumer import path. Classify this binding as an internal FastAPI dependency. Generic exception selection and response behavior are linked to the pinned sibling requirements starlette.asgi.exception-handler.status-code, starlette.asgi.exception-handler.exception-class, starlette.asgi.exception-handler.async-callback, starlette.asgi.exception-handler.headers-forwarding, starlette.asgi.exception-handler.router-miss-404, starlette.asgi.websocket-exception.default-handler, starlette.asgi.websocket-exception.http-denial-response, starlette.asgi.websocket-exception.custom-handler, and starlette.asgi.websocket-exception.websocket-class-handler. FastAPI dependency-stack integration remains FastAPI-owned; these links are not FastAPI-RS parity. The pinned sibling review has no exact wrap_app_handling_exceptions target row; absence is not a negative API claim.",
       "recommendation": "private/internal",
       "source": {
         "line": 92,
         "path": "fastapi/routing.py"
       },
       "starlette_rs_review": {
-        "limitation": "No exact named target row is present in the pinned sibling review; absence does not establish that the target or FastAPI binding is unsupported.",
+        "limitation": "No exact named wrap_app_handling_exceptions target row is present. Its generic exception outcome behavior is linked to exact sibling requirements in the reason; the FastAPI dependency-stack wrapper remains FastAPI-owned.",
         "qualified_name": "starlette._exception_handler.wrap_app_handling_exceptions",
         "state": "no_exact_row"
       }

@@ -8297,6 +8297,55 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
 
     def starlette_contract_mappings_for(coverage_item: dict[str, Any]) -> list[dict[str, Any]]:
         source_path = str(coverage_item.get("source_path", "")).lower()
+        mapping_evidence = coverage_item.get("mapping_evidence")
+        if not isinstance(mapping_evidence, dict):
+            mapping_evidence = {}
+
+        def signal_terms_for(feature_id: str) -> list[str]:
+            terms: list[str] = []
+
+            def visit(value: Any, selected_feature: bool = False) -> None:
+                if isinstance(value, dict):
+                    if "feature_id" in value:
+                        selected_feature = value.get("feature_id") == feature_id
+                    term = value.get("term")
+                    if selected_feature and isinstance(term, str):
+                        terms.append(term.lower())
+                    for child in value.values():
+                        visit(child, selected_feature)
+                elif isinstance(value, list):
+                    for child in value:
+                        visit(child, selected_feature)
+
+            visit(mapping_evidence)
+            return terms
+
+        def has_fastapi_path_converter_source() -> bool:
+            source_paths = {source_path}
+            reviewed_module = mapping_evidence.get("reviewed_module_mapping")
+            if isinstance(reviewed_module, dict):
+                supporting_sources = reviewed_module.get("supporting_sources", [])
+                if isinstance(supporting_sources, list):
+                    source_paths.update(
+                        source.get("path")
+                        for source in supporting_sources
+                        if isinstance(source, dict)
+                        and isinstance(source.get("path"), str)
+                        and source["path"].startswith(("docs_src/", "docs/en/docs/", "tests/"))
+                    )
+
+            for source in source_paths:
+                source_file = fastapi_root / source
+                if not source_file.is_file():
+                    continue
+                try:
+                    source_text = source_file.read_text(encoding="utf-8")
+                except OSError:
+                    continue
+                if re.search(r"\{[^{}]+:path\}", source_text):
+                    return True
+            return False
+
         mappings = []
         specifications = {
             "app-routing": (
@@ -8324,7 +8373,55 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                             "starlette.routing.request-scope-values",
                             "starlette.routing.items-route-miss-404",
                             "starlette.routing.items-wrong-method-405",
+                            "starlette.routing.sync-endpoint-callable-form",
+                            "starlette.routing.async-endpoint-callable-form",
                         ],
+                    ),
+                ],
+            ),
+            "root-path": (
+                "shared Starlette root-path and mounted-scope boundary",
+                "FastAPI 0.141.1 assigns its configured root_path in fastapi/applications.py:949, 1160-1163 and projects request root_path into OpenAPI/docs URLs at 1108-1154; docs/en/docs/advanced/behind-a-proxy.md:98-112 describes this FastAPI behavior. Starlette-RS owns generic Router root-path matching, Mount child-scope composition, and Request.url_for root-path projection. The linked Request.url_for requirement is Python-package-only, and its Rust-native support gap remains visible. These links identify the shared boundary and target support; they do not claim FastAPI-RS parity.",
+                [
+                    (
+                        "starlette.routing.Router",
+                        "route-dispatch",
+                        ["starlette.routing.Router.route-dispatch.root-path-match"],
+                    ),
+                    (
+                        "starlette.routing.Mount",
+                        "route-dispatch",
+                        [
+                            "starlette.routing.Mount.route-dispatch.nested-scope-composition"
+                        ],
+                    ),
+                    (
+                        "starlette.requests.Request",
+                        "url_for",
+                        ["starlette.requests.Request.url_for.mount-app-root-path"],
+                    ),
+                ],
+            ),
+            "static-files": (
+                "shared Starlette mount and static-file ASGI boundary",
+                "FastAPI docs/en/docs/tutorial/static-files.md:13-42 states that fastapi.staticfiles is the Starlette StaticFiles class and documents mounting it; fastapi/routing.py:112-113 imports Starlette Mount and StaticFiles. Starlette-RS owns generic mount dispatch, child-scope composition, and static-file serving; FastAPI owns its convenience import, app integration, and parent OpenAPI boundary. The Rust-native Router still declares Mount dispatch gaps, which remain visible in the linked target support. These links are contract ownership, not parity evidence.",
+                [
+                    (
+                        "starlette.routing.Router",
+                        "route-dispatch",
+                        ["starlette.routing.Router.route-dispatch.mount-route-dispatch"],
+                    ),
+                    (
+                        "starlette.routing.Mount",
+                        "route-dispatch",
+                        [
+                            "starlette.routing.Mount.route-dispatch.nested-scope-composition"
+                        ],
+                    ),
+                    (
+                        "starlette.staticfiles.StaticFiles",
+                        "asgi-call",
+                        ["starlette.staticfiles.StaticFiles.asgi-call.rooted-file-get"],
                     ),
                 ],
             ),
@@ -8336,7 +8433,6 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                         "starlette.applications.Starlette",
                         "request-dispatch",
                         [
-                            "starlette.request.path-param-int",
                             "starlette.request.query-params-getlist-scalar",
                             "starlette.request.headers-case-insensitive",
                             "starlette.request.json-chunked-body",
@@ -8368,12 +8464,25 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             ),
             "public-api-errors": (
                 "composed error boundary",
-                "This sibling requirement covers Starlette's generic default server-error response only; FastAPI HTTP/validation exceptions and handler integration need their own FastAPI contract cases.",
+                "Starlette-RS supplies generic HTTP/WebSocket exception selection and ASGI response behavior. FastAPI-owned validation error projection, dependency cleanup, and handler registration remain separate behavior; these are ownership links, not FastAPI-RS parity claims.",
                 [
                     (
                         "starlette.applications.Starlette",
                         "__call__",
-                        ["starlette.asgi.server-error.default-response"],
+                        [
+                            "starlette.asgi.server-error.default-response",
+                            "starlette.asgi.server-error.status-500-handler",
+                            "starlette.asgi.server-error.exception-handler",
+                            "starlette.asgi.exception-handler.status-code",
+                            "starlette.asgi.exception-handler.exception-class",
+                            "starlette.asgi.exception-handler.async-callback",
+                            "starlette.asgi.exception-handler.headers-forwarding",
+                            "starlette.asgi.exception-handler.router-miss-404",
+                            "starlette.asgi.websocket-exception.default-handler",
+                            "starlette.asgi.websocket-exception.http-denial-response",
+                            "starlette.asgi.websocket-exception.custom-handler",
+                            "starlette.asgi.websocket-exception.websocket-class-handler",
+                        ],
                     ),
                 ],
             ),
@@ -8546,6 +8655,77 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                         "The sibling contract contains bounded CORSMiddleware and GZipMiddleware slices; this behavior has no exact matching operation or requirement in the current FastAPI mapping. Other middleware, integrations, and CLI behavior remain outside those slices.",
                         [],
                     )
+            elif feature_id == "public-api-errors" and any(
+                marker in source_path for marker in ("static_files", "static-files")
+            ):
+                specs = (
+                    "static-files boundary; generic error dispatch is not sampled",
+                    "This static-files documentation or example row has a broad public-api-errors feature tag, but its mapped workflow observes mounting/static serving and does not exercise generic HTTP or WebSocket exception dispatch. StaticFiles configuration and serving requirements remain linked through the middleware-integrations and static-files feature rows; no exception-dispatch behavior is claimed here.",
+                    [],
+                )
+            elif feature_id == "app-routing":
+                relation, note, base_operation_specs = specifications[feature_id]
+                operation_specs = list(base_operation_specs)
+                feature_terms = signal_terms_for(feature_id)
+                has_mount_source = any(
+                    marker in source_path
+                    for marker in ("mount", "sub_applications", "sub-applications")
+                )
+                if has_mount_source or any("mount" in term for term in feature_terms):
+                    relation = "shared FastAPI/Starlette mounted-application boundary"
+                    note = (
+                        "The source mapping identifies a mounted child application or static app. "
+                        "These exact Router/Mount requirements cover generic prefix dispatch and "
+                        "child-scope composition; FastAPI mount registration and OpenAPI effects "
+                        "remain FastAPI-owned. The links do not claim FastAPI-RS parity."
+                    )
+                    operation_specs.extend(
+                        [
+                            (
+                                "starlette.routing.Router",
+                                "route-dispatch",
+                                ["starlette.routing.Router.route-dispatch.mount-route-dispatch"],
+                            ),
+                            (
+                                "starlette.routing.Mount",
+                                "route-dispatch",
+                                [
+                                    "starlette.routing.Mount.route-dispatch.nested-scope-composition"
+                                ],
+                            ),
+                        ]
+                    )
+                if any(marker in source_path for marker in ("path_params", "path-params")):
+                    has_path_converter = has_fastapi_path_converter_source()
+                    if has_path_converter:
+                        note += (
+                            " This source also declares the Starlette :path converter; its "
+                            "multi-segment matching remains generic Starlette behavior."
+                        )
+                        operation_specs.append(
+                            (
+                                "starlette.routing.Router",
+                                "route-dispatch",
+                                ["starlette.routing.Router.route-dispatch.path-converter-match"],
+                            )
+                        )
+                    if (
+                        not has_path_converter
+                        or coverage_item.get("kind") == "documented_feature_page"
+                    ):
+                        note += (
+                            " Default path parameters also use the generic string-route match; "
+                            "FastAPI annotation-based type conversion and Pydantic validation "
+                            "remain FastAPI-owned."
+                        )
+                        operation_specs.append(
+                            (
+                                "starlette.routing.Router",
+                                "route-dispatch",
+                                ["starlette.routing.Router.route-dispatch.string-converter-match"],
+                            )
+                        )
+                specs = (relation, note, operation_specs)
             elif feature_id in specifications:
                 specs = specifications[feature_id]
             elif feature_id == "dependency-security":
