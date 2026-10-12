@@ -356,7 +356,6 @@
       "required": [
         "fastapi_rs_source",
         "fastapi_rs",
-        "fastapi_rs_native_extension_sha256",
         "target_binary_sha256",
         "starlette_rs",
         "starlette_rs_source",
@@ -369,6 +368,9 @@
         "fastapi_rs": {
           "type": "string",
           "minLength": 1
+        },
+        "fastapi_rs_extension_sha256": {
+          "$ref": "#/$defs/sha256"
         },
         "fastapi_rs_native_extension_sha256": {
           "$ref": "#/$defs/sha256"
@@ -387,6 +389,14 @@
           "$ref": "#/$defs/sharedPackages"
         }
       },
+      "oneOf": [
+        {
+          "required": ["fastapi_rs_extension_sha256"]
+        },
+        {
+          "required": ["fastapi_rs_native_extension_sha256"]
+        }
+      ],
       "additionalProperties": false
     },
     "targetBuild": {

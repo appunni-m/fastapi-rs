@@ -230,7 +230,7 @@ def _identity(
     return {
         "fastapi_rs_source": target_commit,
         "fastapi_rs": fastapi_rs_version,
-        "fastapi_rs_native_extension_sha256": _digest(fastapi_rs_core_path),
+        "fastapi_rs_extension_sha256": _digest(fastapi_rs_core_path),
         "target_binary_sha256": _combine_digests(
             {
                 "fastapi_rs._core": _digest(fastapi_rs_core_path),

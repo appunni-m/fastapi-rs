@@ -140,16 +140,21 @@
     },
     "fastapiRsIdentity": {
       "type": "object",
-      "required": ["fastapi_rs_source", "fastapi_rs", "fastapi_rs_native_extension_sha256", "target_binary_sha256", "starlette_rs", "starlette_rs_source", "shared_packages"],
+      "required": ["fastapi_rs_source", "fastapi_rs", "target_binary_sha256", "starlette_rs", "starlette_rs_source", "shared_packages"],
       "properties": {
         "fastapi_rs_source": {"$ref": "#/$defs/gitRevision"},
         "fastapi_rs": {"type": "string", "minLength": 1},
+        "fastapi_rs_extension_sha256": {"$ref": "#/$defs/sha256"},
         "fastapi_rs_native_extension_sha256": {"$ref": "#/$defs/sha256"},
         "target_binary_sha256": {"$ref": "#/$defs/sha256"},
         "starlette_rs": {"type": "string", "minLength": 1},
         "starlette_rs_source": {"$ref": "#/$defs/gitRevision"},
         "shared_packages": {"$ref": "#/$defs/sharedPackages"}
       },
+      "oneOf": [
+        {"required": ["fastapi_rs_extension_sha256"]},
+        {"required": ["fastapi_rs_native_extension_sha256"]}
+      ],
       "additionalProperties": false
     },
     "targetBuild": {

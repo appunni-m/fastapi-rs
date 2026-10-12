@@ -128,7 +128,7 @@ worktree can be used while the sibling development checkout has changes. The
 FastAPI-RS checkout must have a clean working tree; its current HEAD is recorded
 in each result because its revision is not pinned by the manifest. The suite
 summary is written only after every workload has a fresh passing parity gate
-and all seven results share source, native binary, Python, host, and build
+and all seven results share source, extension hashes, Python, host, and build
 identities. Completed and incomplete suite records, plus per-workload results,
 are stored under ignored `benchmark-results/`.
 
