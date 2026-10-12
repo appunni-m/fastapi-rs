@@ -4497,6 +4497,9 @@ reviewed_api_contract_overlay:
         - {path: tests/test_router_include_context.py}
         - {path: fastapi/routing.py, symbol: _IncludedRouter}
         - {path: docs/en/docs/tutorial/bigger-applications.md}
+        - {path: fastapi/utils.py, symbol: deep_dict_update}
+        - {path: fastapi/openapi/utils.py, symbol: get_openapi_path}
+        - {path: docs/en/docs/advanced/path-operation-advanced-configuration.md}
       fixture_refs:
         - *generate_unique_id_callback_precedence
         - *response_field_included_reuse
@@ -4515,6 +4518,10 @@ reviewed_api_contract_overlay:
         - *response_traversal_returned_response
         - *additional_field_two_contexts
         - *additional_field_retry
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-extra-deep-merge.yaml
+          case_id: fastapi.openapi-extra.deep-merge-and-router-inclusion
+          workload_path: tests/fixtures/workloads/openapi_extra_deep_merge.py
+          observation_selectors: [openapi.document]
       feature_ids: [app-routing, request-validation, openapi-docs, response-serialization]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.paths, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
       supported_slice: >-
@@ -4561,6 +4568,7 @@ reviewed_api_contract_overlay:
         The GET decorator accepts a route-level callback that overrides router and include callbacks, sampled by `generate-unique-id-function-precedence`. Other verbs, callback errors or non-string results, and duplicate or empty operation IDs remain unproven.
 
         Only callback access to the route `name` and `path_format` fields is exercised; inspection or mutation of other `APIRoute` state remains unproven.
+        `openapi_extra` is applied after generated operation metadata with recursive mapping merge, list concatenation, and scalar replacement. The direct and included-router cases in `openapi-extra-deep-merge` observe summary override, tag append, nested response merge, and operation extensions.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
@@ -4851,6 +4859,9 @@ reviewed_api_contract_overlay:
         - {path: docs/en/docs/tutorial/bigger-applications.md}
         - {path: tests/test_router_redirect_slashes.py}
         - {path: docs/en/docs/advanced/response-directly.md}
+        - {path: fastapi/utils.py, symbol: deep_dict_update}
+        - {path: fastapi/openapi/utils.py, symbol: get_openapi_path}
+        - {path: docs/en/docs/advanced/path-operation-advanced-configuration.md}
       fixture_refs:
         - *generate_unique_id_callback_precedence
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
@@ -5014,6 +5025,10 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/array-items-query-wire.yaml
           case_id: fastapi.openapi-array-items-query-wire.required-list
           workload_path: tests/fixtures/workloads/array_items_query_wire.py
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-extra-deep-merge.yaml
+          case_id: fastapi.openapi-extra.deep-merge-and-router-inclusion
+          workload_path: tests/fixtures/workloads/openapi_extra_deep_merge.py
+          observation_selectors: [openapi.document]
       feature_ids: [app-routing, request-validation, response-serialization, openapi-docs]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message, validation.error_details, error.public_attributes]
       supported_slice: >-
@@ -5091,6 +5106,7 @@ reviewed_api_contract_overlay:
         A direct GET route uses the application callback when no route-level callback is supplied, sampled by `generate-unique-id-function-precedence`. An explicit FastAPI.get route callback and other verbs remain unproven.
 
         Only callback access to the route `name` and `path_format` fields is exercised; inspection or mutation of other `APIRoute` state remains unproven.
+        `openapi_extra` is applied after generated operation metadata with recursive mapping merge, list concatenation, and scalar replacement. The direct and included-router cases in `openapi-extra-deep-merge` observe summary override, tag append, nested response merge, and operation extensions.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract

@@ -11383,6 +11383,28 @@
       ]
     },
     {
+      "id": "openapi-extra-deep-merge",
+      "input_path": "tests/fixtures/inputs/parity/openapi-extra-deep-merge.json",
+      "input_sha256": "e2e13bd2728d30719d33fdca8d64e6ef704768dccf1f0659e010883205211d93",
+      "recipe_path": "tests/fixtures/input-recipes/parity/openapi-extra-deep-merge.yaml",
+      "recipe_sha256": "628b71fb3b7ffc314df4d8f6b9667144229de435b5dae14f6ddcd1cc226b3d43",
+      "workload_path": "tests/fixtures/workloads/openapi_extra_deep_merge.py",
+      "workload_sha256": "0093f1747c6fd06b346547cf64fadd85f3da1445e7f46fc24d8d280a580df766",
+      "case_ids": [
+        "fastapi.openapi-extra.deep-merge-and-router-inclusion"
+      ],
+      "case_contracts": [
+        {
+          "case_id": "fastapi.openapi-extra.deep-merge-and-router-inclusion",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/path-operation-advanced-configuration.md",
+            "source:upstream-test:tests/test_openapi_route_extensions.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "openapi-get-openapi-public-api",
       "input_path": "tests/fixtures/inputs/parity/openapi-get-openapi-public-api.json",
       "input_sha256": "29d53396ae531b88d61c589f8bfba8e8295290634031cc4d2e6b2fc93b779403",
@@ -40960,6 +40982,34 @@
       ],
       "observation_selectors": [
         "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:advanced/path-operation-advanced-configuration.md",
+      "fixture_id": "fastapi.docs.advanced-path-operation-advanced-configuration",
+      "workflow_id": "openapi-extra-deep-merge",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.openapi-extra.deep-merge-and-router-inclusion"
+      ],
+      "observation_selectors": [
+        "openapi.document",
+        "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_openapi_route_extensions.py",
+      "fixture_id": "fastapi.test.test-openapi-route-extensions",
+      "workflow_id": "openapi-extra-deep-merge",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.openapi-extra.deep-merge-and-router-inclusion"
+      ],
+      "observation_selectors": [
+        "openapi.document",
+        "openapi.paths"
       ]
     },
     {

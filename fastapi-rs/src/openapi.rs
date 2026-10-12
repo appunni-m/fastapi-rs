@@ -57,6 +57,7 @@ pub(crate) struct OpenApiOperation {
     pub(crate) stream_item_model_name: Option<String>,
     pub(crate) stream_item_schema: Option<Py<PyAny>>,
     pub(crate) additional_responses: Vec<OpenApiAdditionalResponse>,
+    pub(crate) openapi_extra: Option<Py<PyAny>>,
 }
 
 /// OpenAPI info supplied by the FastAPI application constructor.
@@ -116,12 +117,16 @@ fn deduplicate_operation_parameters<'py>(
 
 pub(crate) fn deep_dict_update(
     main_dict: &Bound<'_, PyDict>,
-    update_dict: &Bound<'_, PyDict>,
+    update_dict: &Bound<'_, PyAny>,
 ) -> PyResult<()> {
-    for (key, value) in update_dict.iter() {
+    let updates = update_dict.call_method0("items")?;
+    for update in updates.try_iter()? {
+        let update = update?;
+        let key = update.get_item(0)?;
+        let value = update.get_item(1)?;
         if let Some(existing) = main_dict.get_item(&key)? {
             if existing.is_instance_of::<PyDict>() && value.is_instance_of::<PyDict>() {
-                deep_dict_update(existing.cast::<PyDict>()?, value.cast::<PyDict>()?)?;
+                deep_dict_update(existing.cast::<PyDict>()?, &value)?;
                 continue;
             }
             if existing.is_instance_of::<PyList>() && value.is_instance_of::<PyList>() {
@@ -491,6 +496,12 @@ pub(crate) fn openapi_document(
                 security.append(requirement)?;
             }
             operation_document.set_item("security", security)?;
+        }
+        if let Some(openapi_extra) = operation.openapi_extra.as_ref() {
+            let openapi_extra = openapi_extra.bind(py);
+            if openapi_extra.is_truthy()? {
+                deep_dict_update(&operation_document, openapi_extra)?;
+            }
         }
         path_item.set_item(operation.method.to_ascii_lowercase(), operation_document)?;
     }

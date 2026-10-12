@@ -1,0 +1,46 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/openapi_extra_deep_merge.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+  - case_id: fastapi.openapi-extra.deep-merge-and-router-inclusion
+    actions:
+      - action_id: openapi
+        kind: http_request
+        scope:
+          type: http
+          asgi:
+            version: '3.0'
+            spec_version: '2.4'
+          http_version: '1.1'
+          scheme: http
+          query_string: ''
+          root_path: ''
+          client: [127.0.0.1, 123]
+          server: [testserver, 80]
+          method: GET
+          path: /openapi.json
+          headers:
+            - [host, testserver]
+        receive_events:
+          - type: http.request
+            body: ''
+            more_body: false
+        observations:
+          - kind: openapi
+            json_pointers:
+              - /paths/~1direct/get/summary
+              - /paths/~1direct/get/tags
+              - /paths/~1direct/get/responses/200
+              - /paths/~1direct/get/x-fastapi-rs-extra/nested/owner
+              - /paths/~1v1~1router/get/summary
+              - /paths/~1v1~1router/get/tags
+              - /paths/~1v1~1router/get/responses/200
+              - /paths/~1v1~1router/get/x-fastapi-rs-extra/nested/owner
+            comparison: exact
+    source_evidence:
+      - path: tests/test_openapi_route_extensions.py
+        kind: upstream_test
+      - path: docs/en/docs/advanced/path-operation-advanced-configuration.md
+        kind: upstream_documentation
