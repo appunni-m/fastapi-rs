@@ -20,16 +20,18 @@ source files, 24 reference Markdown pages, 61 unique reference autodoc targets,
 and 492 `test_*.py` modules. These are inventory inputs, **not** the number of
 manifest operations. Many targets expand into classes with multiple methods,
 many public names are aliases, and the `status`/OpenAPI-model targets expand to
-large value/model sets. The active manifest indexes 460 direct required public
-symbols plus 9 required inherited operations (469 required candidates total),
-with source-inventory and runtime-reflection pointers. This is the reviewed API
-denominator, not an implementation-support count. It records 224
+large value/model sets. The source inventory has 1,593 symbol IDs, classified by
+the atlas as 468 supported, 1,102 private/internal, and 23 uncertain; the atlas
+separately classifies 13 inherited `APIRouter` candidates. The active manifest
+indexes the 468 source-supported direct public symbols plus 9 supported
+inherited operations (477 supported public API entries). This is the reviewed
+public-entry scope, not an implementation-support count. It records 225
 runtime-reflected signatures, one unavailable constructor signature for
 `Example` (`TypedDict(total=False)`), one module object with no call signature,
-and 234 non-callable values/fields. The source inventory records its
-`total=False` class option; runtime reflection records its required and optional
-keys. Broader operation-level behavior and full implementation coverage remain
-pending.
+235 non-callable values/fields, and 6 source-recorded signatures. The source
+inventory records `Example`'s `total=False` class option; runtime reflection
+records its required and optional keys. Broader operation-level behavior and
+full implementation coverage remain pending.
 
 The API authority is the versioned source plus its English reference and
 user-facing docs. The migration-parity manifest should preserve fully qualified
