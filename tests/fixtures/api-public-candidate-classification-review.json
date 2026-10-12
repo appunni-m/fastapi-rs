@@ -1145,10 +1145,12 @@
         }
       ],
       "evidence_basis": [
-        "documented"
+        "documented",
+        "source-declaration",
+        "member-exposure-unresolved"
       ],
       "id": "fastapi.exceptions.FastAPIDeprecationWarning",
-      "reason": "The pinned source defines this warning class and release notes name it, but the documentation does not establish a consumer-facing import path; keep its API classification uncertain.",
+      "reason": "The pinned source defines FastAPIDeprecationWarning and release notes announce it by name, but the published docs do not establish fastapi.exceptions.FastAPIDeprecationWarning as a consumer import path. Keep this import candidate uncertain; warning behavior evidence does not promote the API classification.",
       "recommendation": "uncertain",
       "source": {
         "line": 252,
@@ -1212,6 +1214,12 @@
           "line": 157,
           "path": "fastapi/exceptions.py",
           "role": "fastapi-source-declaration"
+        },
+        {
+          "end_line": 20,
+          "line": 7,
+          "path": "docs/en/docs/reference/exceptions.md",
+          "role": "fastapi-public-documentation"
         }
       ],
       "evidence_basis": [
@@ -1219,7 +1227,7 @@
         "member-exposure-unresolved"
       ],
       "id": "fastapi.exceptions.RequestErrorModel",
-      "reason": "FastAPI 0.141.1 declares this generated model value, but the pinned source contains no use and the pinned documentation establishes no consumer-facing contract. The source cannot settle whether the importable name is intentional API or an unused implementation artifact, so retain it as uncertain.",
+      "reason": "FastAPI 0.141.1 declares RequestErrorModel at fastapi/exceptions.py:157, but no other pinned FastAPI source references the binding and the published exception reference lists HTTPException and WebSocketException only. The available evidence establishes neither an internal use nor a consumer-facing contract, so retain uncertain.",
       "recommendation": "uncertain",
       "source": {
         "line": 157,
@@ -1283,6 +1291,12 @@
           "line": 158,
           "path": "fastapi/exceptions.py",
           "role": "fastapi-source-declaration"
+        },
+        {
+          "end_line": 20,
+          "line": 7,
+          "path": "docs/en/docs/reference/exceptions.md",
+          "role": "fastapi-public-documentation"
         }
       ],
       "evidence_basis": [
@@ -1290,7 +1304,7 @@
         "member-exposure-unresolved"
       ],
       "id": "fastapi.exceptions.WebSocketErrorModel",
-      "reason": "FastAPI 0.141.1 declares this generated model value, but the pinned source contains no use and the pinned documentation establishes no consumer-facing contract. The source cannot settle whether the importable name is intentional API or an unused implementation artifact, so retain it as uncertain.",
+      "reason": "FastAPI 0.141.1 declares WebSocketErrorModel at fastapi/exceptions.py:158, but no other pinned FastAPI source references the binding and the published exception reference lists HTTPException and WebSocketException only. The available evidence establishes neither an internal use nor a consumer-facing contract, so retain uncertain.",
       "recommendation": "uncertain",
       "source": {
         "line": 158,
@@ -2988,12 +3002,8 @@
           "role": "fastapi-source-declaration"
         },
         {
-          "line": 1830,
-          "path": "fastapi/routing.py",
-          "role": "fastapi-source-declaration"
-        },
-        {
-          "line": 1837,
+          "end_line": 1839,
+          "line": 1828,
           "path": "fastapi/routing.py",
           "role": "fastapi-implementation-use"
         },
@@ -3005,12 +3015,11 @@
       ],
       "evidence_basis": [
         "documented",
-        "source-declaration",
-        "member-exposure-unresolved"
+        "source-declaration"
       ],
       "id": "fastapi.routing.RouteContext",
-      "reason": "FastAPI 0.141.1 release notes announce iter_route_contexts() for advanced consumer use, and fastapi.routing.iter_route_contexts is annotated as Iterator[RouteContext] and yields RouteContext instances. This exposes the type in the announced helper’s result, so implementation-only evidence is insufficient for a private/internal classification. The pinned docs do not establish fastapi.routing.RouteContext as a consumer import path or define its stable type contract; retain uncertain.",
-      "recommendation": "uncertain",
+      "reason": "The pinned release notes announce iter_route_contexts() for advanced consumer use, and fastapi.routing.iter_route_contexts is typed as Iterator[RouteContext] and yields RouteContext instances. This supports RouteContext as that helper’s public result type in fastapi.routing; it does not assert a root-package export or separately promise each member.",
+      "recommendation": "supported",
       "source": {
         "line": 1545,
         "path": "fastapi/routing.py"
@@ -3431,8 +3440,8 @@
         "documented"
       ],
       "id": "fastapi.types.IncEx",
-      "reason": "The pinned release note says IncEx is re-exported from Pydantic, and fastapi.types binds the alias, but it does not identify fastapi.types.IncEx as a consumer import path; retain an uncertain disposition until that path is established.",
-      "recommendation": "uncertain",
+      "reason": "The pinned release note explicitly announces re-export of IncEx from Pydantic, and fastapi.types binds the exact IncEx alias to pydantic.main.IncEx. Classify fastapi.types.IncEx as supported; Pydantic remains the owner of the underlying type semantics and this is not a root export.",
+      "recommendation": "supported",
       "source": {
         "line": 7,
         "path": "fastapi/types.py"
@@ -3495,8 +3504,8 @@
     "candidate_ids_sha256": "69e78951df8bf49e40555500df2a4d9f61e970f4d5d635fb80ebe852d7126042",
     "recommendation_counts": {
       "private/internal": 123,
-      "uncertain": 6,
-      "supported": 8
+      "supported": 10,
+      "uncertain": 4
     }
   },
   "source_identity": {

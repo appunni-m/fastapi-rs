@@ -70,13 +70,16 @@
     },
     {
       "evidence": [
+        "fastapi/applications.py:1301-1359",
+        "docs/en/docs/reference/fastapi.md:11-32",
         "tests/test_application.py"
       ],
       "evidence_basis": [
-        "tests-or-runtime-prove-existence-only"
+        "related-doc-not-member-contract",
+        "tests-are-implementation-coverage-only"
       ],
       "id": "fastapi.applications.FastAPI.api_route",
-      "reason": "Path-operation decorator exists, but current docs enumerate verb-specific decorators and do not establish api_route as a supported contract.",
+      "reason": "FastAPI.api_route() is a source-defined generic path-operation decorator, but the pinned reference omits this spelling. Source existence does not establish a consumer contract, and documentation omission does not prove internal status; retain uncertain pending an explicit surface decision.",
       "recommendation": "uncertain",
       "source": {
         "line": 1301,
@@ -960,15 +963,17 @@
     },
     {
       "evidence": [
-        "docs/en/docs/reference/parameters.md",
+        "fastapi/params.py:29-131",
+        "docs/en/docs/reference/parameters.md:5-35",
+        "docs/en/docs/tutorial/body-fields.md:28-30",
         "tests/test_param_class.py"
       ],
       "evidence_basis": [
         "related-doc-not-member-contract",
-        "tests-or-runtime-prove-existence-only"
+        "tests-are-implementation-coverage-only"
       ],
       "id": "fastapi.params.Param.__init__",
-      "reason": "Concrete parameter constructors are documented, but the abstract base Param constructor is not independently documented.",
+      "reason": "Param.__init__() is the shared FieldInfo-based constructor and is named as the common base for concrete parameter classes. The reference documents concrete constructors, not direct Param construction; whether users should construct Param itself remains uncertain.",
       "recommendation": "uncertain",
       "source": {
         "line": 29,
@@ -1057,16 +1062,16 @@
     },
     {
       "evidence": [
-        "docs/en/docs/release-notes.md:378-387",
+        "fastapi/routing.py:1261-1281",
+        "docs/en/docs/release-notes.md:374-387",
         "tests/test_custom_route_class.py"
       ],
       "evidence_basis": [
-        "related-doc-not-member-contract",
         "alpha-or-advanced-release-note",
-        "tests-or-runtime-prove-existence-only"
+        "tests-are-implementation-coverage-only"
       ],
       "id": "fastapi.routing.APIRoute.handle",
-      "reason": "Routing protocol method is inherited/overridden plumbing; subclass customization remains documented as experimental.",
+      "reason": "APIRoute.handle() is a routing customization point. The release notes call routing customization undocumented, experimental, and unsupported as a stable contract, while still describing consumer customization; retain uncertain rather than infer private status.",
       "recommendation": "uncertain",
       "source": {
         "line": 1261,
@@ -1075,16 +1080,16 @@
     },
     {
       "evidence": [
-        "docs/en/docs/release-notes.md:378-387",
+        "fastapi/routing.py:1251-1259",
+        "docs/en/docs/release-notes.md:374-387",
         "tests/test_custom_route_class.py"
       ],
       "evidence_basis": [
-        "related-doc-not-member-contract",
         "alpha-or-advanced-release-note",
-        "tests-or-runtime-prove-existence-only"
+        "tests-are-implementation-coverage-only"
       ],
       "id": "fastapi.routing.APIRoute.matches",
-      "reason": "Routing protocol method is inherited/overridden plumbing; subclass customization remains documented as experimental.",
+      "reason": "APIRoute.matches() is a routing customization point. The release notes call routing customization undocumented, experimental, and unsupported as a stable contract, while still describing consumer customization; retain uncertain rather than infer private status.",
       "recommendation": "uncertain",
       "source": {
         "line": 1251,
@@ -1193,14 +1198,17 @@
     },
     {
       "evidence": [
+        "fastapi/routing.py:2973-3033",
+        "docs/en/docs/reference/apirouter.md:11-25",
         "tests/test_custom_route_class.py",
         "tests/test_ws_router.py"
       ],
       "evidence_basis": [
-        "tests-or-runtime-prove-existence-only"
+        "related-doc-not-member-contract",
+        "tests-are-implementation-coverage-only"
       ],
       "id": "fastapi.routing.APIRouter.api_route",
-      "reason": "No direct APIRouter.api_route reference found; docs center on concrete verb decorators while implementation delegates to add_api_route.",
+      "reason": "APIRouter.api_route() is a source-defined generic path-operation decorator, but the pinned reference omits this spelling. Source existence does not establish a consumer contract, and documentation omission does not prove internal status; retain uncertain pending an explicit surface decision.",
       "recommendation": "uncertain",
       "source": {
         "line": 2973,
@@ -1226,17 +1234,17 @@
     },
     {
       "evidence": [
-        "docs/en/docs/release-notes.md:378-387",
+        "fastapi/routing.py:2783-2791",
+        "docs/en/docs/release-notes.md:374-382",
         "tests/test_custom_route_class.py",
         "tests/test_ws_router.py"
       ],
       "evidence_basis": [
-        "related-doc-not-member-contract",
         "alpha-or-advanced-release-note",
-        "tests-or-runtime-prove-existence-only"
+        "tests-are-implementation-coverage-only"
       ],
       "id": "fastapi.routing.APIRouter.handle",
-      "reason": "Release notes put router handle customization under alpha features, not officially supported.",
+      "reason": "APIRouter.handle() is an alpha routing customization point. The release notes say it is not officially supported and may change, while describing consumer customization; retain uncertain rather than infer private status.",
       "recommendation": "uncertain",
       "source": {
         "line": 2783,
@@ -1245,17 +1253,17 @@
     },
     {
       "evidence": [
-        "docs/en/docs/release-notes.md:378-387",
+        "fastapi/routing.py:2793-2801",
+        "docs/en/docs/release-notes.md:374-382",
         "tests/test_custom_route_class.py",
         "tests/test_ws_router.py"
       ],
       "evidence_basis": [
-        "related-doc-not-member-contract",
         "alpha-or-advanced-release-note",
-        "tests-or-runtime-prove-existence-only"
+        "tests-are-implementation-coverage-only"
       ],
       "id": "fastapi.routing.APIRouter.matches",
-      "reason": "Release notes put router matches customization under alpha features, not officially supported.",
+      "reason": "APIRouter.matches() is an alpha routing customization point. The release notes say it is not officially supported and may change, while describing consumer customization; retain uncertain rather than infer private status.",
       "recommendation": "uncertain",
       "source": {
         "line": 2793,
@@ -1723,15 +1731,16 @@
     },
     {
       "evidence": [
-        "docs/en/docs/reference/security/index.md",
+        "fastapi/security/http.py:94-102",
+        "docs/en/docs/reference/security/index.md:41-48",
         "tests/test_security_http_base.py"
       ],
       "evidence_basis": [
         "related-doc-not-member-contract",
-        "tests-or-runtime-prove-existence-only"
+        "tests-are-implementation-coverage-only"
       ],
       "id": "fastapi.security.http.HTTPBase.__call__",
-      "reason": "Base-class callable appears in focused tests, while security docs target concrete schemes and do not state a stable HTTPBase call contract.",
+      "reason": "HTTPBase.__call__() is the shared implementation for concrete HTTP security schemes, and upstream examples instantiate HTTPBase directly as a Security dependency. The reference documents concrete schemes but not HTTPBase; its direct consumer contract remains uncertain.",
       "recommendation": "uncertain",
       "source": {
         "line": 94,
@@ -1740,15 +1749,16 @@
     },
     {
       "evidence": [
-        "docs/en/docs/reference/security/index.md",
+        "fastapi/security/http.py:72-83",
+        "docs/en/docs/reference/security/index.md:41-48",
         "tests/test_security_http_base.py"
       ],
       "evidence_basis": [
         "related-doc-not-member-contract",
-        "tests-or-runtime-prove-existence-only"
+        "tests-are-implementation-coverage-only"
       ],
       "id": "fastapi.security.http.HTTPBase.__init__",
-      "reason": "Base-class construction appears in focused tests, while security docs target concrete schemes and do not state a stable HTTPBase constructor contract.",
+      "reason": "HTTPBase.__init__() initializes the shared base for concrete HTTP security schemes, and upstream examples instantiate HTTPBase directly. The reference documents concrete schemes but not HTTPBase construction; its direct consumer contract remains uncertain.",
       "recommendation": "uncertain",
       "source": {
         "line": 72,

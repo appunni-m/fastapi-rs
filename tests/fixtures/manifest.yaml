@@ -122,7 +122,7 @@ source_artifacts:
   api_classification_review:
     path: tests/fixtures/api-classification-review.json
     schema: fastapi-callable-classification-review/v1
-    sha256: 4aa6d560ad53ff317be4add3fa46dc65a4b320ab5dac104766d19ed5b6131fd2
+    sha256: 05e1493696521f17d8b7f07c113d9b5a95c92e47a6624b0ee8ccabcdf3b998f6
     purpose: Reviewed source-backed disposition of uncertain public/protocol callable candidates
     counts:
       candidates: 137
@@ -415,7 +415,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@5
-    sha256: 484eff0bcd4fffb01c8e069ef9a4d3b239c3179dbac5536ce58a3203c78ed48d
+    sha256: 4477bbd7b55ee579f738d262b566786a7c3afac2cf68edddae1a397681721f41
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -426,9 +426,9 @@ source_artifacts:
       reviewed_import_binding_candidates: 97
       reviewed_source_api_candidates: 392
       source_classifications:
-        supported: 460
+        supported: 462
         private_or_internal: 1102
-        uncertain: 31
+        uncertain: 29
       alias_records: 69
       source_deprecations: 21
       error_candidates: 42
@@ -853,25 +853,26 @@ api_surface_contract:
   - source_artifacts.materialized_input_index.workflows
   - source_artifacts.materialized_input_index.mappings
   counts:
-    required_public_symbols: 460
+    required_public_symbols: 462
     required_inherited_operations: 9
-    required_public_api_candidates: 469
+    required_public_api_candidates: 471
     signature_contract_states:
       module-object-no-call-signature: 1
-      non-callable-surface: 234
-      runtime-signature-reflected: 224
+      non-callable-surface: 235
+      runtime-signature-reflected: 225
       runtime-signature-unavailable: 1
     symbols_with_constructor_definition_refs: 37
     unique_source_constructor_definitions: 20
     operation_scope_statuses:
+      scope-review-pending: 2
       slice-described: 460
     implementation_owner_plans:
-      fastapi-rs: 429
+      fastapi-rs: 431
       starlette-rs: 31
     inherited_implementation_owner_plans:
       fastapi-rs: 8
       starlette-rs: 1
-    symbols_with_documented_feature_refs: 454
+    symbols_with_documented_feature_refs: 456
     symbols_with_alias_refs: 46
     symbols_with_deprecation_refs: 22
     symbols_with_error_contract_refs: 13
@@ -41863,6 +41864,53 @@ api_surface_contract:
       status: full-contract-not-established
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::websocket_route, PyRawWebSocketDecorator,
         PyApiRouter::__getattr__, FastApiCall::begin_websocket
+  - id: fastapi.routing.RouteContext
+    kind: class
+    source_candidate_ref: /api_candidates/1141
+    source_inventory_refs:
+    - /modules/33/definitions/36
+    source_signature_state: not-recorded
+    source_signature_refs: []
+    runtime_reflections:
+      core:
+        ref: /symbols/1140
+        status: reflected
+        object_identity: fastapi.routing.RouteContext
+        kind: class
+        signature_status: available
+      standard:
+        ref: /symbols/1140
+        object_identity: fastapi.routing.RouteContext
+        kind: class
+        signature_status: available
+    signature_contract_state: runtime-signature-reflected
+    alias_refs: []
+    deprecation_refs: []
+    error_contract_refs: []
+    documentation_contract_refs:
+    - coverage_matrix_ref: /coverage_matrix/560
+      source_path: docs/en/docs/release-notes.md
+      mapping_status: excluded
+      fixture_id: null
+      fixture_design_ref: null
+      observation_selectors: *id002
+    input_workflow_refs: []
+    identity_workflow_refs: []
+    feature_ids: []
+    observation_selectors: []
+    operation_scope:
+      status: scope-review-pending
+    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    target_binding:
+      target_profile: fastapi-rs-python-consumer
+      public_python_path: fastapi.routing.RouteContext
+      implementation_owner: fastapi-rs
+      implementation_owner_evidence:
+        kind: fastapi_owned_or_adapter
+        source_candidate_refs:
+        - /api_candidates/1141
+      status: full-contract-not-established
+      rust_binding: null
   - id: fastapi.routing.iter_route_contexts
     kind: function
     source_candidate_ref: /api_candidates/1390
@@ -52154,6 +52202,53 @@ api_surface_contract:
         kind: direct_starlette_reexport
         source_candidate_refs:
         - /api_candidates/1553
+      status: full-contract-not-established
+      rust_binding: null
+  - id: fastapi.types.IncEx
+    kind: import_binding
+    source_candidate_ref: /api_candidates/1560
+    source_inventory_refs:
+    - /import_bindings/631
+    source_signature_state: not-recorded
+    source_signature_refs: []
+    runtime_reflections:
+      core:
+        ref: /symbols/1557
+        status: reflected
+        object_identity: typing.Union
+        kind: value
+        signature_status: not-applicable
+      standard:
+        ref: /symbols/1559
+        object_identity: typing.Union
+        kind: value
+        signature_status: not-applicable
+    signature_contract_state: non-callable-surface
+    alias_refs: []
+    deprecation_refs: []
+    error_contract_refs: []
+    documentation_contract_refs:
+    - coverage_matrix_ref: /coverage_matrix/560
+      source_path: docs/en/docs/release-notes.md
+      mapping_status: excluded
+      fixture_id: null
+      fixture_design_ref: null
+      observation_selectors: *id002
+    input_workflow_refs: []
+    identity_workflow_refs: []
+    feature_ids: []
+    observation_selectors: []
+    operation_scope:
+      status: scope-review-pending
+    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    target_binding:
+      target_profile: fastapi-rs-python-consumer
+      public_python_path: fastapi.types.IncEx
+      implementation_owner: fastapi-rs
+      implementation_owner_evidence:
+        kind: fastapi_owned_or_adapter
+        source_candidate_refs:
+        - /api_candidates/1560
       status: full-contract-not-established
       rust_binding: null
   - id: fastapi.utils.generate_operation_id_for_path

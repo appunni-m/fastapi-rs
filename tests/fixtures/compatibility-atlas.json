@@ -12497,12 +12497,15 @@
       "classification_evidence_rule": "Reviewed pinned-source/docs/test evidence; tests establish exercised behavior, while public documentation, release notes, or explicit deprecation evidence establish lifecycle and exposure.",
       "classification_review": {
         "evidence": [
+          "fastapi/applications.py:1301-1359",
+          "docs/en/docs/reference/fastapi.md:11-32",
           "tests/test_application.py"
         ],
         "evidence_basis": [
-          "tests-or-runtime-prove-existence-only"
+          "related-doc-not-member-contract",
+          "tests-are-implementation-coverage-only"
         ],
-        "reason": "Path-operation decorator exists, but current docs enumerate verb-specific decorators and do not establish api_route as a supported contract.",
+        "reason": "FastAPI.api_route() is a source-defined generic path-operation decorator, but the pinned reference omits this spelling. Source existence does not establish a consumer contract, and documentation omission does not prove internal status; retain uncertain pending an explicit surface decision.",
         "source": {
           "line": 1301,
           "path": "fastapi/applications.py"
@@ -29189,9 +29192,11 @@
           }
         ],
         "evidence_basis": [
-          "documented"
+          "documented",
+          "source-declaration",
+          "member-exposure-unresolved"
         ],
-        "reason": "The pinned source defines this warning class and release notes name it, but the documentation does not establish a consumer-facing import path; keep its API classification uncertain.",
+        "reason": "The pinned source defines FastAPIDeprecationWarning and release notes announce it by name, but the published docs do not establish fastapi.exceptions.FastAPIDeprecationWarning as a consumer import path. Keep this import candidate uncertain; warning behavior evidence does not promote the API classification.",
         "review_artifact": "api_public_candidate_classification_review",
         "source": {
           "line": 252,
@@ -29443,13 +29448,19 @@
             "line": 157,
             "path": "fastapi/exceptions.py",
             "role": "fastapi-source-declaration"
+          },
+          {
+            "end_line": 20,
+            "line": 7,
+            "path": "docs/en/docs/reference/exceptions.md",
+            "role": "fastapi-public-documentation"
           }
         ],
         "evidence_basis": [
           "source-declaration",
           "member-exposure-unresolved"
         ],
-        "reason": "FastAPI 0.141.1 declares this generated model value, but the pinned source contains no use and the pinned documentation establishes no consumer-facing contract. The source cannot settle whether the importable name is intentional API or an unused implementation artifact, so retain it as uncertain.",
+        "reason": "FastAPI 0.141.1 declares RequestErrorModel at fastapi/exceptions.py:157, but no other pinned FastAPI source references the binding and the published exception reference lists HTTPException and WebSocketException only. The available evidence establishes neither an internal use nor a consumer-facing contract, so retain uncertain.",
         "review_artifact": "api_public_candidate_classification_review",
         "source": {
           "line": 157,
@@ -30095,13 +30106,19 @@
             "line": 158,
             "path": "fastapi/exceptions.py",
             "role": "fastapi-source-declaration"
+          },
+          {
+            "end_line": 20,
+            "line": 7,
+            "path": "docs/en/docs/reference/exceptions.md",
+            "role": "fastapi-public-documentation"
           }
         ],
         "evidence_basis": [
           "source-declaration",
           "member-exposure-unresolved"
         ],
-        "reason": "FastAPI 0.141.1 declares this generated model value, but the pinned source contains no use and the pinned documentation establishes no consumer-facing contract. The source cannot settle whether the importable name is intentional API or an unused implementation artifact, so retain it as uncertain.",
+        "reason": "FastAPI 0.141.1 declares WebSocketErrorModel at fastapi/exceptions.py:158, but no other pinned FastAPI source references the binding and the published exception reference lists HTTPException and WebSocketException only. The available evidence establishes neither an internal use nor a consumer-facing contract, so retain uncertain.",
         "review_artifact": "api_public_candidate_classification_review",
         "source": {
           "line": 158,
@@ -46527,14 +46544,16 @@
       "classification_evidence_rule": "Reviewed pinned-source/docs/test evidence; tests establish exercised behavior, while public documentation, release notes, or explicit deprecation evidence establish lifecycle and exposure.",
       "classification_review": {
         "evidence": [
-          "docs/en/docs/reference/parameters.md",
+          "fastapi/params.py:29-131",
+          "docs/en/docs/reference/parameters.md:5-35",
+          "docs/en/docs/tutorial/body-fields.md:28-30",
           "tests/test_param_class.py"
         ],
         "evidence_basis": [
           "related-doc-not-member-contract",
-          "tests-or-runtime-prove-existence-only"
+          "tests-are-implementation-coverage-only"
         ],
-        "reason": "Concrete parameter constructors are documented, but the abstract base Param constructor is not independently documented.",
+        "reason": "Param.__init__() is the shared FieldInfo-based constructor and is named as the common base for concrete parameter classes. The reference documents concrete constructors, not direct Param construction; whether users should construct Param itself remains uncertain.",
         "source": {
           "line": 29,
           "path": "fastapi/params.py"
@@ -49494,15 +49513,15 @@
       "classification_evidence_rule": "Reviewed pinned-source/docs/test evidence; tests establish exercised behavior, while public documentation, release notes, or explicit deprecation evidence establish lifecycle and exposure.",
       "classification_review": {
         "evidence": [
-          "docs/en/docs/release-notes.md:378-387",
+          "fastapi/routing.py:1261-1281",
+          "docs/en/docs/release-notes.md:374-387",
           "tests/test_custom_route_class.py"
         ],
         "evidence_basis": [
-          "related-doc-not-member-contract",
           "alpha-or-advanced-release-note",
-          "tests-or-runtime-prove-existence-only"
+          "tests-are-implementation-coverage-only"
         ],
-        "reason": "Routing protocol method is inherited/overridden plumbing; subclass customization remains documented as experimental.",
+        "reason": "APIRoute.handle() is a routing customization point. The release notes call routing customization undocumented, experimental, and unsupported as a stable contract, while still describing consumer customization; retain uncertain rather than infer private status.",
         "source": {
           "line": 1261,
           "path": "fastapi/routing.py"
@@ -49661,15 +49680,15 @@
       "classification_evidence_rule": "Reviewed pinned-source/docs/test evidence; tests establish exercised behavior, while public documentation, release notes, or explicit deprecation evidence establish lifecycle and exposure.",
       "classification_review": {
         "evidence": [
-          "docs/en/docs/release-notes.md:378-387",
+          "fastapi/routing.py:1251-1259",
+          "docs/en/docs/release-notes.md:374-387",
           "tests/test_custom_route_class.py"
         ],
         "evidence_basis": [
-          "related-doc-not-member-contract",
           "alpha-or-advanced-release-note",
-          "tests-or-runtime-prove-existence-only"
+          "tests-are-implementation-coverage-only"
         ],
-        "reason": "Routing protocol method is inherited/overridden plumbing; subclass customization remains documented as experimental.",
+        "reason": "APIRoute.matches() is a routing customization point. The release notes call routing customization undocumented, experimental, and unsupported as a stable contract, while still describing consumer customization; retain uncertain rather than infer private status.",
         "source": {
           "line": 1251,
           "path": "fastapi/routing.py"
@@ -51035,13 +51054,16 @@
       "classification_evidence_rule": "Reviewed pinned-source/docs/test evidence; tests establish exercised behavior, while public documentation, release notes, or explicit deprecation evidence establish lifecycle and exposure.",
       "classification_review": {
         "evidence": [
+          "fastapi/routing.py:2973-3033",
+          "docs/en/docs/reference/apirouter.md:11-25",
           "tests/test_custom_route_class.py",
           "tests/test_ws_router.py"
         ],
         "evidence_basis": [
-          "tests-or-runtime-prove-existence-only"
+          "related-doc-not-member-contract",
+          "tests-are-implementation-coverage-only"
         ],
-        "reason": "No direct APIRouter.api_route reference found; docs center on concrete verb decorators while implementation delegates to add_api_route.",
+        "reason": "APIRouter.api_route() is a source-defined generic path-operation decorator, but the pinned reference omits this spelling. Source existence does not establish a consumer contract, and documentation omission does not prove internal status; retain uncertain pending an explicit surface decision.",
         "source": {
           "line": 2973,
           "path": "fastapi/routing.py"
@@ -51180,16 +51202,16 @@
       "classification_evidence_rule": "Reviewed pinned-source/docs/test evidence; tests establish exercised behavior, while public documentation, release notes, or explicit deprecation evidence establish lifecycle and exposure.",
       "classification_review": {
         "evidence": [
-          "docs/en/docs/release-notes.md:378-387",
+          "fastapi/routing.py:2783-2791",
+          "docs/en/docs/release-notes.md:374-382",
           "tests/test_custom_route_class.py",
           "tests/test_ws_router.py"
         ],
         "evidence_basis": [
-          "related-doc-not-member-contract",
           "alpha-or-advanced-release-note",
-          "tests-or-runtime-prove-existence-only"
+          "tests-are-implementation-coverage-only"
         ],
-        "reason": "Release notes put router handle customization under alpha features, not officially supported.",
+        "reason": "APIRouter.handle() is an alpha routing customization point. The release notes say it is not officially supported and may change, while describing consumer customization; retain uncertain rather than infer private status.",
         "source": {
           "line": 2783,
           "path": "fastapi/routing.py"
@@ -51268,16 +51290,16 @@
       "classification_evidence_rule": "Reviewed pinned-source/docs/test evidence; tests establish exercised behavior, while public documentation, release notes, or explicit deprecation evidence establish lifecycle and exposure.",
       "classification_review": {
         "evidence": [
-          "docs/en/docs/release-notes.md:378-387",
+          "fastapi/routing.py:2793-2801",
+          "docs/en/docs/release-notes.md:374-382",
           "tests/test_custom_route_class.py",
           "tests/test_ws_router.py"
         ],
         "evidence_basis": [
-          "related-doc-not-member-contract",
           "alpha-or-advanced-release-note",
-          "tests-or-runtime-prove-existence-only"
+          "tests-are-implementation-coverage-only"
         ],
-        "reason": "Release notes put router matches customization under alpha features, not officially supported.",
+        "reason": "APIRouter.matches() is an alpha routing customization point. The release notes say it is not officially supported and may change, while describing consumer customization; retain uncertain rather than infer private status.",
         "source": {
           "line": 2793,
           "path": "fastapi/routing.py"
@@ -56638,7 +56660,7 @@
       "candidate_kinds": [
         "source_declaration"
       ],
-      "classification": "uncertain",
+      "classification": "supported",
       "classification_evidence_rule": "Reviewed pinned FastAPI source/docs evidence; this source classification makes no FastAPI-RS support or parity claim.",
       "classification_review": {
         "binding": null,
@@ -56650,12 +56672,8 @@
             "role": "fastapi-source-declaration"
           },
           {
-            "line": 1830,
-            "path": "fastapi/routing.py",
-            "role": "fastapi-source-declaration"
-          },
-          {
-            "line": 1837,
+            "end_line": 1839,
+            "line": 1828,
             "path": "fastapi/routing.py",
             "role": "fastapi-implementation-use"
           },
@@ -56667,10 +56685,9 @@
         ],
         "evidence_basis": [
           "documented",
-          "source-declaration",
-          "member-exposure-unresolved"
+          "source-declaration"
         ],
-        "reason": "FastAPI 0.141.1 release notes announce iter_route_contexts() for advanced consumer use, and fastapi.routing.iter_route_contexts is annotated as Iterator[RouteContext] and yields RouteContext instances. This exposes the type in the announced helper’s result, so implementation-only evidence is insufficient for a private/internal classification. The pinned docs do not establish fastapi.routing.RouteContext as a consumer import path or define its stable type contract; retain uncertain.",
+        "reason": "The pinned release notes announce iter_route_contexts() for advanced consumer use, and fastapi.routing.iter_route_contexts is typed as Iterator[RouteContext] and yields RouteContext instances. This supports RouteContext as that helper’s public result type in fastapi.routing; it does not assert a root-package export or separately promise each member.",
         "review_artifact": "api_public_candidate_classification_review",
         "source": {
           "line": 1545,
@@ -56679,7 +56696,13 @@
       },
       "id": "fastapi.routing.RouteContext",
       "kind": "class",
-      "public_evidence": [],
+      "public_evidence": [
+        {
+          "kind": "reviewed_public_candidate_documentation_contract",
+          "line": 300,
+          "path": "docs/en/docs/release-notes.md"
+        }
+      ],
       "source_evidence": [
         {
           "end_line": 1582,
@@ -67535,14 +67558,15 @@
       "classification_evidence_rule": "Reviewed pinned-source/docs/test evidence; tests establish exercised behavior, while public documentation, release notes, or explicit deprecation evidence establish lifecycle and exposure.",
       "classification_review": {
         "evidence": [
-          "docs/en/docs/reference/security/index.md",
+          "fastapi/security/http.py:94-102",
+          "docs/en/docs/reference/security/index.md:41-48",
           "tests/test_security_http_base.py"
         ],
         "evidence_basis": [
           "related-doc-not-member-contract",
-          "tests-or-runtime-prove-existence-only"
+          "tests-are-implementation-coverage-only"
         ],
-        "reason": "Base-class callable appears in focused tests, while security docs target concrete schemes and do not state a stable HTTPBase call contract.",
+        "reason": "HTTPBase.__call__() is the shared implementation for concrete HTTP security schemes, and upstream examples instantiate HTTPBase directly as a Security dependency. The reference documents concrete schemes but not HTTPBase; its direct consumer contract remains uncertain.",
         "source": {
           "line": 94,
           "path": "fastapi/security/http.py"
@@ -67569,14 +67593,15 @@
       "classification_evidence_rule": "Reviewed pinned-source/docs/test evidence; tests establish exercised behavior, while public documentation, release notes, or explicit deprecation evidence establish lifecycle and exposure.",
       "classification_review": {
         "evidence": [
-          "docs/en/docs/reference/security/index.md",
+          "fastapi/security/http.py:72-83",
+          "docs/en/docs/reference/security/index.md:41-48",
           "tests/test_security_http_base.py"
         ],
         "evidence_basis": [
           "related-doc-not-member-contract",
-          "tests-or-runtime-prove-existence-only"
+          "tests-are-implementation-coverage-only"
         ],
-        "reason": "Base-class construction appears in focused tests, while security docs target concrete schemes and do not state a stable HTTPBase constructor contract.",
+        "reason": "HTTPBase.__init__() initializes the shared base for concrete HTTP security schemes, and upstream examples instantiate HTTPBase directly. The reference documents concrete schemes but not HTTPBase construction; its direct consumer contract remains uncertain.",
         "source": {
           "line": 72,
           "path": "fastapi/security/http.py"
@@ -72840,7 +72865,7 @@
       "candidate_kinds": [
         "import_binding"
       ],
-      "classification": "uncertain",
+      "classification": "supported",
       "classification_evidence_rule": "Reviewed pinned FastAPI source/docs evidence; this source classification makes no FastAPI-RS support or parity claim.",
       "classification_review": {
         "binding": {
@@ -72864,7 +72889,7 @@
         "evidence_basis": [
           "documented"
         ],
-        "reason": "The pinned release note says IncEx is re-exported from Pydantic, and fastapi.types binds the alias, but it does not identify fastapi.types.IncEx as a consumer import path; retain an uncertain disposition until that path is established.",
+        "reason": "The pinned release note explicitly announces re-export of IncEx from Pydantic, and fastapi.types binds the exact IncEx alias to pydantic.main.IncEx. Classify fastapi.types.IncEx as supported; Pydantic remains the owner of the underlying type semantics and this is not a root export.",
         "review_artifact": "api_public_candidate_classification_review",
         "source": {
           "line": 7,
@@ -72878,7 +72903,13 @@
       "kind": "import_binding",
       "local_name": "IncEx",
       "module": "fastapi.types",
-      "public_evidence": [],
+      "public_evidence": [
+        {
+          "kind": "reviewed_public_candidate_documentation_contract",
+          "line": 976,
+          "path": "docs/en/docs/release-notes.md"
+        }
+      ],
       "root_export": false,
       "source_evidence": [
         {
@@ -74444,7 +74475,7 @@
         "uncertain": 18
       }
     },
-    "sha256": "4aa6d560ad53ff317be4add3fa46dc65a4b320ab5dac104766d19ed5b6131fd2"
+    "sha256": "05e1493696521f17d8b7f07c113d9b5a95c92e47a6624b0ee8ccabcdf3b998f6"
   },
   "api_import_binding_classification_review": {
     "path": "tests/fixtures/api-import-binding-classification-review.json",
@@ -74505,11 +74536,11 @@
       "candidate_ids_sha256": "69e78951df8bf49e40555500df2a4d9f61e970f4d5d635fb80ebe852d7126042",
       "recommendation_counts": {
         "private/internal": 123,
-        "supported": 8,
-        "uncertain": 6
+        "supported": 10,
+        "uncertain": 4
       }
     },
-    "sha256": "231f7cf0bdd38f1763701ae75e30ecce634c0078c0132c4c4e46713866d1794a",
+    "sha256": "d8c9e764e84af2926c04dc731a002af952c0ada7ed0726ce52b8c7e8fa60c5dd",
     "source_identity": {
       "package": "FastAPI",
       "source_commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
@@ -74876,8 +74907,8 @@
     "api_candidates": 1593,
     "api_classifications": {
       "private/internal": 1102,
-      "supported": 460,
-      "uncertain": 31
+      "supported": 462,
+      "uncertain": 29
     },
     "documentation_pages": 155,
     "documentation_pages_candidate_links_pending_behavior_review": 0,

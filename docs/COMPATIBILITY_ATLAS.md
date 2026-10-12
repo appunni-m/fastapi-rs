@@ -14,7 +14,7 @@ This source-backed compatibility atlas indexes the API denominator and candidate
 
 | Candidates | Supported by source evidence | Private/internal | Uncertain |
 |---:|---:|---:|---:|
-| 1593 | 460 | 1102 | 31 |
+| 1593 | 462 | 1102 | 29 |
 
 `api_candidates` in the machine-readable atlas carries a FastAPI source path/line for every row plus public evidence or an explicit uncertainty/private rule. `supported` classifies the upstream API surface only; it does not claim target implementation support.
 
@@ -28,13 +28,13 @@ Supported inherited candidates link FastAPI inheritance, documentation, and sibl
 
 ## Per-symbol API contract in the active manifest
 
-The single `tests/fixtures/manifest.yaml` indexes 460 source-supported symbols and 9 supported inherited operations from 13 reviewed inherited candidates (469 supported public API entries total). The remaining inherited candidates have explicit private/internal or uncertain dispositions and do not create target operation contracts. Supported inherited operations delegate to a canonical Starlette-RS operation or record a pinned source signature and explicit sibling-contract gap. The contract links alias, deprecation, error, documented-feature, direct API workflow, selector, and planned Python import-path evidence; 454 direct symbols link to a documented-page fixture design and 101 to a direct API input workflow. Its operation-scope field distinguishes 183 source-described slices from 277 symbols still awaiting a slice description; slice descriptions are scope metadata, not parity evidence. It also links 37 symbol rows to 20 distinct source-defined class constructors, separately from reflected class-call signatures. The current Python facade directly re-exports 21 native names; this source contract does not measure behavioral completeness, and broader operation-level review remains pending.
+The single `tests/fixtures/manifest.yaml` indexes 462 source-supported symbols and 9 supported inherited operations from 13 reviewed inherited candidates (471 supported public API entries total). The remaining inherited candidates have explicit private/internal or uncertain dispositions and do not create target operation contracts. Supported inherited operations delegate to a canonical Starlette-RS operation or record a pinned source signature and explicit sibling-contract gap. The contract links alias, deprecation, error, documented-feature, direct API workflow, selector, and planned Python import-path evidence; 456 direct symbols link to a documented-page fixture design and 101 to a direct API input workflow. Its operation-scope field distinguishes 460 source-described slices from 2 symbols still awaiting a slice description; slice descriptions are scope metadata, not parity evidence. It also links 37 symbol rows to 20 distinct source-defined class constructors, separately from reflected class-call signatures. The current Python facade directly re-exports 21 native names; this source contract does not measure behavioral completeness, and broader operation-level review remains pending.
 
 | Signature/shape evidence | Symbols |
 |---|---:|
 | `module-object-no-call-signature` | 1 |
-| `non-callable-surface` | 234 |
-| `runtime-signature-reflected` | 224 |
+| `non-callable-surface` | 235 |
+| `runtime-signature-reflected` | 225 |
 | `runtime-signature-unavailable` | 1 |
 
 ## Merged coverage matrix and fixture backlog

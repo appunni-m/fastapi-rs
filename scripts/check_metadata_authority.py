@@ -1128,10 +1128,28 @@ def validate() -> None:
     callable_review_artifact = manifest["source_artifacts"]["api_classification_review"]
     callable_review = load_json(artifact_path(callable_review_artifact["path"]))
     callable_review_rows = callable_review.get("rows", [])
-    callable_uncertain_ids = {
-        row.get("id") for row in callable_review_rows if row.get("recommendation") == "uncertain"
+    callable_recommendations = Counter(row.get("recommendation") for row in callable_review_rows)
+    callable_counts = {
+        "candidates": len(callable_review_rows),
+        "supported": callable_recommendations.get("supported", 0),
+        "private_or_internal": callable_recommendations.get("private/internal", 0),
+        "uncertain": callable_recommendations.get("uncertain", 0),
     }
-    require_equal("retained uncertain callable denominator", len(callable_uncertain_ids), 18)
+    require_equal(
+        "callable review summary count",
+        callable_review.get("scope", {}).get("candidate_count"),
+        len(callable_review_rows),
+    )
+    require_equal(
+        "callable review recommendation counts",
+        callable_review.get("scope", {}).get("recommendation_counts"),
+        {key: value for key, value in callable_recommendations.items()},
+    )
+    require_equal(
+        "manifest callable review counts",
+        callable_review_artifact["counts"],
+        callable_counts,
+    )
     for row in callable_review_rows:
         candidate = candidates_by_id.get(row.get("id"))
         if candidate is None:
