@@ -25,13 +25,20 @@ SOURCE_RESULT ?=
 TARGET_RESULT ?=
 PARITY_INPUT ?= tests/fixtures/inputs/parity/first-asgi-request.json
 PARITY_API_INPUT ?= tests/fixtures/inputs/parity/encoding.json
+PARITY_PROCESS_INPUT ?= tests/fixtures/inputs/parity/fastapi-cli-process-workflow.json
+# Keep results immutable while making repeated process runs safe. Reuse the same
+# id across separate oracle, target, and compare invocations to pair artifacts.
+PARITY_PROCESS_RUN_ID ?= $(shell $(PYTHON) -c 'import uuid; print(uuid.uuid4().hex)')
+PARITY_PROCESS_ORACLE_RESULT ?= parity-results/process/oracle/fastapi-cli-process-workflow-$(PARITY_PROCESS_RUN_ID).json
+PARITY_PROCESS_TARGET_RESULT ?= parity-results/process/target/fastapi-cli-process-workflow-$(PARITY_PROCESS_RUN_ID).json
+PARITY_PROCESS_COMPARISON_RESULT ?= parity-results/process/comparison/fastapi-cli-process-workflow-$(PARITY_PROCESS_RUN_ID).json
 BENCHMARK_WORKLOAD ?= benchmarks/workloads/first-slice-valid-asgi.yaml
 RELEASE_NOTICE_WHEEL ?=
 RELEASE_CRATE_DIR ?= target/package
 RELEASE_VERSION ?= 0.1.0
 
 .DEFAULT_GOAL := help
-.PHONY: help fmt format clippy build build-rust build-python build-tools-prepare python-facade-check rust-policy-check license-notices-update license-notices-check license-artifact-check compatibility-atlas-update api-contract-update api-contract-check metadata-check dependency-inventory-update dependency-inventory-check pydantic-core-inventory-update pydantic-core-inventory-check dependency-graph-update dependency-graph-check parity-inputs parity-workload-check parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-target fault-injection-build parity-api-runtime parity-validate parity-index-update parity-index-check parity-oracle parity-oracle-standard parity-target parity-fault-target parity-compare parity-api-validate parity-api-oracle parity-api-target parity-api-compare parity-first-slice benchmark-input-check benchmark-contract-check benchmark-first-slice benchmark-suite verify clean
+.PHONY: help fmt format clippy build build-rust build-python build-tools-prepare python-facade-check rust-policy-check license-notices-update license-notices-check license-artifact-check compatibility-atlas-update api-contract-update api-contract-check metadata-check dependency-inventory-update dependency-inventory-check pydantic-core-inventory-update pydantic-core-inventory-check dependency-graph-update dependency-graph-check parity-inputs parity-workload-check parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-target fault-injection-build parity-api-runtime parity-validate parity-index-update parity-index-check parity-oracle parity-oracle-standard parity-target parity-fault-target parity-compare parity-api-validate parity-api-oracle parity-api-target parity-api-compare parity-process-validate parity-process-oracle parity-process-target parity-process-compare parity-first-slice benchmark-input-check benchmark-contract-check benchmark-first-slice benchmark-suite verify clean
 
 help: ## Show common development commands
 	@printf '%s\n' \
@@ -74,6 +81,7 @@ help: ## Show common development commands
 	  '  make parity-fault-target Run PARITY_INPUT against the isolated fault-enabled target' \
 	  '  make parity-compare  Compare live source/target result artifacts exactly' \
 	  '  make parity-api-*    Validate, run, and compare direct Python API probes' \
+	  '  make parity-process-* Run CLI processes; pass the same PARITY_PROCESS_RUN_ID to pair separate runs' \
 	  '  make parity-first-slice Run and compare the pinned first HTTP slice end to end' \
 	  '  make benchmark-input-check Validate workload declarations and their parity inputs' \
 	  '  make benchmark-contract-check Validate benchmark workloads against parity inputs and runner policy' \
@@ -200,6 +208,35 @@ parity-workload-check: ## Statically screen active parity workload Python source
 
 parity-validate: parity-inputs parity-workload-check ## Validate workflows, source atlas, fixture mappings, and pinned source references
 	$(PYTHON) -m scripts.parity.cli validate --input "$(PARITY_INPUT)"
+	$(PYTHON) -m scripts.parity.process_worker validate --input "$(PARITY_PROCESS_INPUT)" --fastapi-source "$(FASTAPI_SOURCE)"
+
+parity-process-validate: parity-inputs ## Validate the input-only FastAPI CLI process workflow
+	$(PYTHON) -m scripts.parity.process_worker validate --input "$(PARITY_PROCESS_INPUT)" --fastapi-source "$(FASTAPI_SOURCE)"
+
+parity-process-oracle: parity-process-validate ## Run the pinned FastAPI CLI process oracle
+	$(PYTHON) -m scripts.parity.process_worker oracle \
+	  --input "$(PARITY_PROCESS_INPUT)" \
+	  --profile fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-standard \
+	  --python "$(ORACLE_STANDARD_PYTHON)" \
+	  --fastapi-source "$(FASTAPI_SOURCE)" \
+	  --starlette-source "$(STARLETTE_SOURCE)" \
+	  --output "$(PARITY_PROCESS_ORACLE_RESULT)"
+
+parity-process-target: parity-process-validate ## Run the FastAPI-RS CLI target process lane
+	$(PYTHON) -m scripts.parity.process_worker target \
+	  --input "$(PARITY_PROCESS_INPUT)" \
+	  --profile fastapi-rs-python-consumer \
+	  --python "$(TARGET_PYTHON)" \
+	  --target-source "$(CURDIR)" \
+	  --starlette-rs-source "$(STARLETTE_RS_SOURCE)" \
+	  --output "$(PARITY_PROCESS_TARGET_RESULT)"
+
+parity-process-compare: ## Compare completed FastAPI and FastAPI-RS CLI process artifacts
+	$(PYTHON) -m scripts.parity.process_worker compare \
+	  --input "$(PARITY_PROCESS_INPUT)" \
+	  --source-result "$(PARITY_PROCESS_ORACLE_RESULT)" \
+	  --target-result "$(PARITY_PROCESS_TARGET_RESULT)" \
+	  --output "$(PARITY_PROCESS_COMPARISON_RESULT)"
 
 parity-index-update: parity-inputs ## Rebuild source mappings for current fixture workflows
 	$(PYTHON) -m scripts.build_materialized_input_index

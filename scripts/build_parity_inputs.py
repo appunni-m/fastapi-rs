@@ -15,8 +15,8 @@ from jsonschema import Draft202012Validator
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from scripts.parity.contract import (
+    RECIPE_WORKFLOW_SCHEMAS,
     ROOT,
-    WORKFLOW_SCHEMAS,
     ContractError,
     _UniqueKeyLoader,
     read_json,
@@ -34,7 +34,7 @@ def read_recipe(path: Path) -> dict[str, Any]:
         raise ContractError(f"cannot read parity input recipe {path}: {exc}") from exc
     if not isinstance(value, dict):
         raise ContractError(f"parity input recipe must be a YAML object: {path}")
-    schema_path = WORKFLOW_SCHEMAS.get(value.get("schema"))
+    schema_path = RECIPE_WORKFLOW_SCHEMAS.get(value.get("schema"))
     if schema_path is None:
         raise ContractError(f"unsupported workflow schema in recipe: {path}")
     schema = read_json(schema_path)

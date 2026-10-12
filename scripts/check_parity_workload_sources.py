@@ -14,6 +14,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from scripts.build_parity_inputs import RECIPE_DIR, read_recipe
 from scripts.parity.contract import ROOT, ContractError
+from scripts.parity.process_contract import PROCESS_WORKFLOW_SCHEMA_ID
 
 WORKLOAD_ROOT = (ROOT / "tests/fixtures/workloads").resolve()
 DEFAULT_FASTAPI_SOURCE = (ROOT / "../fastapi").resolve()
@@ -151,22 +152,23 @@ def _parity_workload_paths(
 
     for recipe_path in recipes:
         recipe = read_recipe(recipe_path)
-        workload = recipe.get("workload")
-        if not isinstance(workload, dict) or not isinstance(workload.get("file"), str):
-            raise ContractError(
-                f"active parity recipe has no workload file reference: "
-                f"{recipe_path.relative_to(ROOT)}"
-            )
-        workload_path = (ROOT / workload["file"]).resolve()
-        try:
-            workload_path.relative_to(WORKLOAD_ROOT)
-        except ValueError as exc:
-            raise ContractError(
-                f"active workload resolves outside tests/fixtures/workloads: {workload['file']}"
-            ) from exc
-        if not workload_path.is_file():
-            raise ContractError(f"active workload does not exist: {workload['file']}")
-        workload_paths.add(workload_path)
+        if recipe.get("schema") != PROCESS_WORKFLOW_SCHEMA_ID:
+            workload = recipe.get("workload")
+            if not isinstance(workload, dict) or not isinstance(workload.get("file"), str):
+                raise ContractError(
+                    f"active parity recipe has no workload file reference: "
+                    f"{recipe_path.relative_to(ROOT)}"
+                )
+            workload_path = (ROOT / workload["file"]).resolve()
+            try:
+                workload_path.relative_to(WORKLOAD_ROOT)
+            except ValueError as exc:
+                raise ContractError(
+                    f"active workload resolves outside tests/fixtures/workloads: {workload['file']}"
+                ) from exc
+            if not workload_path.is_file():
+                raise ContractError(f"active workload does not exist: {workload['file']}")
+            workload_paths.add(workload_path)
 
         for case in recipe.get("cases", []):
             for evidence in case.get("source_evidence", []):

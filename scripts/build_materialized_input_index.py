@@ -23,12 +23,14 @@ from scripts.parity.contract import (
     sha256_file,
 )
 from scripts.parity.materialized import _api_probe_selectors, _source_selectors_for_case
+from scripts.parity.process_contract import PROCESS_WORKFLOW_SCHEMA_ID, load_process_workflow
 
 INDEX_PATH = ROOT / "tests/fixtures/materialized-input-index.json"
 INPUT_DIR = ROOT / "tests/fixtures/inputs/parity"
 FASTAPI_SOURCE = (ROOT / "../fastapi").resolve()
 MANIFEST_PATH = ROOT / "tests/fixtures/manifest.yaml"
 INDEX_SCHEMA = MATERIALIZED_INPUT_INDEX_SCHEMA_ID
+INDEX_SCHEMA_PATH = ROOT / "tests/fixtures/schemas/materialized-input-index-v6.schema.json"
 
 
 def _source_item_id(
@@ -109,11 +111,9 @@ def _manifest_with_current_index(text: str, index: dict[str, Any]) -> str:
     index_bytes = (json.dumps(index, indent=2) + "\n").encode("utf-8")
     values = {
         "schema": index["schema"],
-        "schema_path": "tests/fixtures/schemas/materialized-input-index-v5.schema.json",
+        "schema_path": INDEX_SCHEMA_PATH.relative_to(ROOT).as_posix(),
         "sha256": hashlib.sha256(index_bytes).hexdigest(),
-        "schema_sha256": sha256_file(
-            ROOT / "tests/fixtures/schemas/materialized-input-index-v5.schema.json"
-        ),
+        "schema_sha256": sha256_file(INDEX_SCHEMA_PATH),
         "workflows": len(index["workflows"]),
         "cases": sum(len(row["case_ids"]) for row in index["workflows"]),
         "partial_source_mappings": sum(
@@ -184,9 +184,17 @@ def build_index() -> dict[str, Any]:
         # Workflow IDs follow the materialized-index slug schema even when an
         # older input filename uses underscores.
         workflow_id = input_path.stem.replace("_", "-")
-        workflow, _, input_digest, workload_path = load_workflow(
-            input_path, source_root=FASTAPI_SOURCE
-        )
+        if read_json(input_path).get("schema") == PROCESS_WORKFLOW_SCHEMA_ID:
+            workflow, _, input_digest = load_process_workflow(
+                input_path, source_root=FASTAPI_SOURCE
+            )
+            workload_path = None
+            is_process_workflow = True
+        else:
+            workflow, _, input_digest, workload_path = load_workflow(
+                input_path, source_root=FASTAPI_SOURCE
+            )
+            is_process_workflow = False
         api_definitions = []
         api_probes = []
         for case in workflow["cases"]:
@@ -249,10 +257,14 @@ def build_index() -> dict[str, Any]:
             "recipe_sha256": sha256_file(
                 ROOT / "tests/fixtures/input-recipes/parity" / f"{input_path.stem}.yaml"
             ),
-            "workload_path": workload_path.relative_to(ROOT).as_posix(),
-            "workload_sha256": sha256_file(workload_path),
             "case_ids": [case["case_id"] for case in workflow["cases"]],
         }
+        if is_process_workflow:
+            workflow_ref["workflow_schema"] = PROCESS_WORKFLOW_SCHEMA_ID
+        else:
+            assert workload_path is not None
+            workflow_ref["workload_path"] = workload_path.relative_to(ROOT).as_posix()
+            workflow_ref["workload_sha256"] = sha256_file(workload_path)
         if "oracle_profile_extension" in workflow:
             workflow_ref["oracle_profile_extension"] = workflow["oracle_profile_extension"]
         if api_definitions:
@@ -300,6 +312,7 @@ def build_index() -> dict[str, Any]:
                     case,
                     source_selectors,
                     workflow_schema=workflow["schema"],
+                    selector_support=selector_support,
                 )
                 usable = {
                     selector

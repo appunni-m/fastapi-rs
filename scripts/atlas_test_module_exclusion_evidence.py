@@ -118,20 +118,6 @@ TEST_MODULE_EXCLUSION_EVIDENCE: dict[str, list[dict[str, Any]]] = {
             "The optional response markers skip when orjson or ujson is unavailable.",
         ),
     ],
-    "tests/test_fastapi_cli.py": [
-        _source(
-            "tests/test_fastapi_cli.py",
-            1,
-            7,
-            "The source test imports subprocess and FastAPI CLI module state.",
-        ),
-        _source(
-            "tests/test_fastapi_cli.py",
-            10,
-            34,
-            "The existing CLI cases require process output/exit capture and monkeypatching.",
-        ),
-    ],
     "tests/test_orjson_response_class.py": [
         _source(
             "tests/test_orjson_response_class.py",

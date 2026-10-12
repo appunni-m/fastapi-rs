@@ -17,6 +17,7 @@ from collections.abc import Mapping
 from pathlib import Path, PurePosixPath
 from typing import Any
 
+from scripts.parity.contract import MATERIALIZED_INPUT_INDEX_SCHEMA_ID
 from scripts.parity.worker import (
     ORACLE_PROFILE_ID,
     ROOT,
@@ -47,7 +48,7 @@ RESULT_SCHEMA_IDS_BY_WORKFLOW = {
 }
 MANIFEST_PATH = ROOT / "tests/fixtures/manifest.yaml"
 ATLAS_SCHEMA_ID = "fastapi-rs/compatibility-atlas@5"
-INDEX_SCHEMA_ID = "fastapi-rs/materialized-input-index@5"
+INDEX_SCHEMA_ID = MATERIALIZED_INPUT_INDEX_SCHEMA_ID
 _MODULE_PATH = re.compile(r"fastapi(?:\.[A-Za-z_][A-Za-z0-9_]*)*\Z")
 _ATTRIBUTE_PATH = re.compile(r"[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*\Z")
 PINNED_AUTHORITIES = {

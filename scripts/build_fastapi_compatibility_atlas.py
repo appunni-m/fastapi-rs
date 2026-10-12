@@ -63,6 +63,63 @@ REVIEWED_CALLABLE_KINDS = {
 # alone. These describe source evidence only; they never embed upstream test
 # bodies or expected results.
 TEST_REVIEW_MAPPINGS = {
+    "tests/test_fastapi_cli.py": {
+        "feature_ids": ["cli-process"],
+        "module_observation_selectors": [
+            "process.exit_code",
+            "process.stdout",
+            "process.stderr",
+        ],
+        "rationale": (
+            "The public `fastapi` console command is an observable FastAPI integration. "
+            "The pinned standard oracle selects fastapi-cli 0.0.32; one independent "
+            "process input covers the upstream and documented missing-app-path behavior. "
+            "The module-level helper test is explicitly excluded because the source review "
+            "classifies `fastapi.cli.main` as private/internal."
+        ),
+        "stimulus_notes": (
+            "Run `fastapi dev non_existent_file.py` in an isolated empty directory under "
+            "the pinned standard profile. The recipe contains stimuli and selectors, with "
+            "no expected results."
+        ),
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/fastapi-cli-process-workflow.yaml",
+                "case_ids": ["fastapi.cli.process.missing-path"],
+                "observation_selectors": [
+                    "process.exit_code",
+                    "process.stdout",
+                    "process.stderr",
+                ],
+            }
+        ],
+        "supporting_sources": [
+            {
+                "path": "tests/test_fastapi_cli.py",
+                "start_line": 10,
+                "end_line": 28,
+                "role": "Upstream missing-path CLI process invocation and assertions.",
+            },
+            {
+                "path": "fastapi/cli.py",
+                "start_line": 1,
+                "end_line": 13,
+                "role": "FastAPI CLI wrapper and optional fastapi-cli delegation.",
+            },
+            {
+                "path": "pyproject.toml",
+                "start_line": 119,
+                "end_line": 120,
+                "role": "The `fastapi` console entrypoint declaration.",
+            },
+            {
+                "path": "docs/en/docs/fastapi-cli.md",
+                "start_line": 1,
+                "end_line": 23,
+                "role": "Documented CLI installation, discovery, and entrypoint invocation.",
+            },
+        ],
+    },
     "tests/test_router_events.py": {
         "feature_ids": ["websocket-lifecycle", "public-api-errors"],
         "module_observation_selectors": [
@@ -744,12 +801,6 @@ merge_test_review_mappings(
 )
 
 TEST_EXCLUSIONS = {
-    "tests/test_fastapi_cli.py": (
-        "The CLI contract is subprocess based: test_fastapi_cli invokes `python -m coverage run -m fastapi dev` "
-        "and checks process stdout/exit status, while test_fastapi_cli_not_installed monkeypatches "
-        "fastapi.cli.cli_main. The fixed direct-ASGI workload has no subprocess runner or module-state "
-        "control; process.stdout and process.exit_code remain planned selectors."
-    ),
     "tests/test_orjson_response_class.py": (
         'The module calls pytest.importorskip("orjson") before defining its app. No selected locked '
         "oracle profile installs orjson, so this optional response implementation is unavailable in the "
@@ -860,6 +911,13 @@ for _test_path, _supporting_sources in TEST_MODULE_EXCLUSION_EVIDENCE.items():
 merge_test_review_mappings(_test_module_exclusion_reviews)
 
 TEST_FUNCTION_EXCLUSIONS = {
+    "tests/test_fastapi_cli.py": {
+        "test_fastapi_cli_not_installed": (
+            "Directly patches and calls `fastapi.cli.main`, which the pinned source API review "
+            "classifies private/internal because the documented consumer contract is the `fastapi` "
+            "console command. The command process behavior is mapped independently."
+        ),
+    },
     "tests/test_tutorial/test_settings/test_app01.py": {
         "test_settings_validation_error": (
             "Deletes ADMIN_EMAIL, imports the tutorial module, and asserts the import-time "
@@ -946,6 +1004,28 @@ TEST_FUNCTION_EXCLUSIONS = {
 }
 
 TEST_FUNCTION_EXCLUSION_EVIDENCE = {
+    "tests/test_fastapi_cli.py": {
+        "test_fastapi_cli_not_installed": [
+            {
+                "path": "fastapi/cli.py",
+                "start_line": 1,
+                "end_line": 13,
+                "role": "Source-reviewed CLI wrapper classified private/internal; public contract is its console entrypoint.",
+            },
+            {
+                "path": "pyproject.toml",
+                "start_line": 119,
+                "end_line": 120,
+                "role": "The documented `fastapi` console command is declared here.",
+            },
+            {
+                "path": "docs/en/docs/fastapi-cli.md",
+                "start_line": 1,
+                "end_line": 23,
+                "role": "Consumer-facing FastAPI CLI contract.",
+            },
+        ],
+    },
     "tests/test_tutorial/test_settings/test_app01.py": {
         "test_settings_validation_error": [
             {
@@ -4067,7 +4147,6 @@ DOC_EXCLUSION_OVERRIDES = {
     "deployment/server-workers.md": "Server worker startup, process count, and deployment behavior belong to Uvicorn and the deployment environment, outside FastAPI's library contract.",
     "editor-support.md": "Editor and language-server integration is tooling behavior, not FastAPI runtime behavior.",
     "environment-variables.md": "Environment parsing in this guide is supplied by Pydantic Settings and deployment configuration, not an independent FastAPI runtime feature.",
-    "fastapi-cli.md": "The page delegates the `fastapi` console entrypoint to a separate fastapi-cli package. Treat this as a visible package-pin and process-workflow boundary; the CLI is excluded from current executable inputs until its product identity and argv/stdout/stderr/exit contract are selected.",
     "features.md": "Broad feature index with no independent stimulus; the focused feature pages carry the relevant FastAPI workflows.",
     "history-design-future.md": "Historical and design narrative, not behavior in the pinned FastAPI 0.141.1 contract.",
     "how-to/general.md": "How-to navigation page with no independently observable behavior; focused guides are mapped separately.",
@@ -5666,6 +5745,17 @@ FEATURES = [
             "applications-requests-responses-background-concurrency",
         ],
         "stimulus": "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
+    },
+    {
+        "id": "cli-process",
+        "terms": ("fastapi-cli", "fastapi dev", "fastapi run", "fastapi command"),
+        "observations": [
+            "process.exit_code",
+            "process.stdout",
+            "process.stderr",
+        ],
+        "starlette_areas": [],
+        "stimulus": "Invoke the documented FastAPI console command as a child process with a controlled argv, working directory, and environment; observe its exit code and raw output streams.",
     },
     {
         "id": "root-path",
@@ -9894,9 +9984,9 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         },
         {
             "id": "fastapi-cli-compatibility-boundary",
-            "status": "package-pin-and-process-workflow-required",
-            "question": "Does FastAPI-RS replace FastAPI's `fastapi` console script, and if so which fastapi-cli package identity, optional environment, arguments, output streams, and exit behavior are in the compatibility contract?",
-            "evidence": "FastAPI 0.141.1 declares the `fastapi` entrypoint and delegates its implementation to the separate fastapi-cli package; the current workflow schemas cannot execute or observe subprocesses, and no CLI package pin is selected.",
+            "status": "standard-oracle-pinned; one-input-process-contract-defined; target-entrypoint-and-cli-feature-coverage-pending",
+            "question": "Can FastAPI-RS expose the `fastapi` console entrypoint with the pinned standard FastAPI 0.141.1 process behavior, and which documented CLI operations still need independent inputs?",
+            "evidence": "The standard source profile identifies fastapi-cli 0.0.32 and the input-only fastapi-cli-process-workflow.yaml records argv, isolated cwd, controlled environment, timeout, source digests, and exit/stdout/stderr selectors for the upstream missing-path case. The source atlas classifies fastapi.cli.main as private/internal; its upstream monkeypatch test is explicitly excluded, while the documented fastapi console command is mapped. The target console entrypoint remains unimplemented, so parity is unresolved; auto-discovery, configured entrypoints, run/reload options, and server launch behaviors also remain unmapped.",
         },
         {
             "id": "fastapi-testclient-public-alias",
@@ -10917,23 +11007,28 @@ def render_markdown(atlas: dict[str, Any]) -> str:
             "",
             "## Independently authored input workflows",
             "",
-            "Reviewed workflow recipes live in `tests/fixtures/input-recipes/parity/*.yaml`. Run `make parity-inputs` to generate ignored JSON under `tests/fixtures/inputs/parity/` before running a workflow. The materialized index binds each recipe, generated input, and workload digest to source modules or documentation pages, exact observed selectors, and a deliberately partial scope. These rows are source-oracle inputs; they do not imply full upstream-suite coverage or FastAPI-RS parity. Each merged source-coverage row also carries explicit ownership links to relevant Starlette-RS operations and requirement IDs, or records that the behavior is outside its current slice.",
+            "Reviewed workflow recipes live in `tests/fixtures/input-recipes/parity/*.yaml`. Run `make parity-inputs` to generate ignored JSON under `tests/fixtures/inputs/parity/` before running a workflow. The materialized index binds each recipe and generated input, plus a workload digest where the workflow uses one, to source modules or documentation pages, exact observed selectors, and a deliberately partial scope. Isolated process workflows execute directly and therefore have no Python workload. These rows are source-oracle inputs; they do not imply full upstream-suite coverage or FastAPI-RS parity. Each merged source-coverage row also carries explicit ownership links to relevant Starlette-RS operations and requirement IDs, or records that the behavior is outside its current slice.",
             "",
             "| Workflow | Cases | Partial source mappings | Recipe | Workload |",
             "|---|---:|---:|---|---|",
         ]
     )
     for workflow in materialized_index["workflows"]:
+        workload_path = workflow.get("workload_path")
+        workload_link = (
+            "[`%s`](../%s)" % (workload_path, workload_path)
+            if workload_path
+            else "— (direct process invocation)"
+        )
         lines.append(
-            "| `%s` | %d | %d | [`%s`](../%s) | [`%s`](../%s) |"
+            "| `%s` | %d | %d | [`%s`](../%s) | %s |"
             % (
                 workflow["id"],
                 len(workflow["case_ids"]),
                 mappings_by_workflow.get(workflow["id"], 0),
                 workflow["recipe_path"],
                 workflow["recipe_path"],
-                workflow["workload_path"],
-                workflow["workload_path"],
+                workload_link,
             )
         )
     lines.extend(

@@ -32,6 +32,7 @@ WORKFLOW_SCHEMA_V6 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-v6.sche
 WORKFLOW_SCHEMA_V7 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-v7.schema.json"
 WORKFLOW_SCHEMA_V8 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-v8.schema.json"
 WORKFLOW_SCHEMA_V9 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-v9.schema.json"
+PROCESS_WORKFLOW_SCHEMA = ROOT / "tests/fixtures/schemas/python-process-workflow.schema.json"
 API_WORKFLOW_SCHEMA = ROOT / "tests/fixtures/schemas/python-api-workflow.schema.json"
 API_WORKFLOW_SCHEMA_V2 = ROOT / "tests/fixtures/schemas/python-api-workflow-v2.schema.json"
 API_WORKFLOW_SCHEMA_V3 = ROOT / "tests/fixtures/schemas/python-api-workflow-v3.schema.json"
@@ -68,11 +69,12 @@ WORKFLOW_SCHEMA_V6_ID = "fastapi-rs/python-asgi-workflow@6"
 WORKFLOW_SCHEMA_V7_ID = "fastapi-rs/python-asgi-workflow@7"
 WORKFLOW_SCHEMA_V8_ID = "fastapi-rs/python-asgi-workflow@8"
 WORKFLOW_SCHEMA_V9_ID = "fastapi-rs/python-asgi-workflow@9"
+PROCESS_WORKFLOW_SCHEMA_ID = "fastapi-rs/python-process-workflow@1"
 API_WORKFLOW_SCHEMA_ID = "fastapi-rs/python-api-workflow@1"
 API_WORKFLOW_SCHEMA_V2_ID = "fastapi-rs/python-api-workflow@2"
 API_WORKFLOW_SCHEMA_V3_ID = "fastapi-rs/python-api-workflow@3"
 API_WORKFLOW_SCHEMA_V4_ID = "fastapi-rs/python-api-workflow@4"
-MATERIALIZED_INPUT_INDEX_SCHEMA_ID = "fastapi-rs/materialized-input-index@5"
+MATERIALIZED_INPUT_INDEX_SCHEMA_ID = "fastapi-rs/materialized-input-index@6"
 API_RESULT_SCHEMA_ID = "fastapi-rs/python-api-workflow-result@2"
 API_RESULT_SCHEMA_V3_ID = "fastapi-rs/python-api-workflow-result@3"
 API_RESULT_SCHEMA_V4_ID = "fastapi-rs/python-api-workflow-result@4"
@@ -143,6 +145,10 @@ WORKFLOW_SCHEMAS = {
     API_WORKFLOW_SCHEMA_V2_ID: API_WORKFLOW_SCHEMA_V2,
     API_WORKFLOW_SCHEMA_V3_ID: API_WORKFLOW_SCHEMA_V3,
     API_WORKFLOW_SCHEMA_V4_ID: API_WORKFLOW_SCHEMA_V4,
+}
+RECIPE_WORKFLOW_SCHEMAS = {
+    **WORKFLOW_SCHEMAS,
+    PROCESS_WORKFLOW_SCHEMA_ID: PROCESS_WORKFLOW_SCHEMA,
 }
 RESULT_SCHEMAS = {
     RESULT_SCHEMA_ID: RESULT_SCHEMA,

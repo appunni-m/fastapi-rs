@@ -6,6 +6,57 @@ Linked recipes contain stimuli, not parity results.
 """
 
 DOC_PAGE_REVIEW_MAPPINGS = {
+    "fastapi-cli.md": {
+        "replace_features": True,
+        "feature_ids": ["cli-process"],
+        "observation_selectors": [
+            "process.exit_code",
+            "process.stdout",
+            "process.stderr",
+        ],
+        "rationale": (
+            "FastAPI 0.141.1 publishes the `fastapi` console entrypoint through its "
+            "optional fastapi-cli integration. The selected standard oracle pins "
+            "fastapi-cli 0.0.32, and the independent process recipe links one documented "
+            "missing-path invocation to this page."
+        ),
+        "stimulus_notes": (
+            "The recipe runs `fastapi dev non_existent_file.py` from an isolated empty "
+            "directory with a controlled environment and captures exit status plus raw "
+            "stdout/stderr. It covers the missing-path process behavior only."
+        ),
+        "contract_gate": (
+            "Partial page coverage only: auto-discovery, configured entrypoints, `--entrypoint`, "
+            "`fastapi run`, reload behavior, bind options, environment selection, and server "
+            "launch behavior remain unrepresented. The target `fastapi` console entrypoint is "
+            "not implemented, so no target parity claim follows from this input mapping."
+        ),
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/fastapi-cli-process-workflow.yaml",
+                "case_ids": ["fastapi.cli.process.missing-path"],
+                "observation_selectors": [
+                    "process.exit_code",
+                    "process.stdout",
+                    "process.stderr",
+                ],
+            }
+        ],
+        "supporting_sources": [
+            {
+                "path": "docs/en/docs/fastapi-cli.md",
+                "start_line": 1,
+                "end_line": 23,
+                "role": "CLI installation, automatic discovery, and invocation overview.",
+            },
+            {
+                "path": "docs/en/docs/fastapi-cli.md",
+                "start_line": 119,
+                "end_line": 138,
+                "role": "CLI execution and environment selection documentation.",
+            },
+        ],
+    },
     "advanced/json-base64-bytes.md": {
         "replace_features": True,
         "feature_ids": [
@@ -5210,23 +5261,6 @@ DOC_PAGE_EXCLUSION_MAPPINGS = {
                 "end_line": 30,
                 "role": "Page-level evidence supporting exclusion "
                 "from FastAPI runtime feature coverage.",
-            }
-        ],
-    },
-    "fastapi-cli.md": {
-        "exclusion_reason": "The page delegates the `fastapi` console entrypoint to a "
-        "separate fastapi-cli package. Treat this as a visible "
-        "package-pin and process-workflow boundary; the CLI is "
-        "excluded from current executable inputs until its product "
-        "identity and argv/stdout/stderr/exit contract are "
-        "selected.",
-        "supporting_sources": [
-            {
-                "path": "docs/en/docs/fastapi-cli.md",
-                "start_line": 1,
-                "end_line": 138,
-                "role": "Page-level evidence supporting exclusion from "
-                "FastAPI runtime feature coverage.",
             }
         ],
     },

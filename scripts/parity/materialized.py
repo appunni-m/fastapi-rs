@@ -28,8 +28,13 @@ from scripts.parity.contract import (
     sha256_file,
 )
 from scripts.parity.fault_contracts import FaultContractError, verification_mode
+from scripts.parity.process_contract import (
+    PROCESS_WORKFLOW_SCHEMA_ID,
+    _process_selectors_for_case,
+    load_process_workflow,
+)
 
-INDEX_SCHEMA = ROOT / "tests/fixtures/schemas/materialized-input-index-v5.schema.json"
+INDEX_SCHEMA = ROOT / "tests/fixtures/schemas/materialized-input-index-v6.schema.json"
 INDEX_SCHEMA_ID = MATERIALIZED_INPUT_INDEX_SCHEMA_ID
 API_OBSERVATION_SELECTORS = {
     "python_attribute_value": "python.attribute_value",
@@ -195,9 +200,15 @@ def _source_selectors_for_case(
     source_selectors: set[str],
     *,
     workflow_schema: str | None = None,
+    selector_support: dict[str, str] | None = None,
 ) -> set[str]:
     """Pair feature selectors with generic protocol observations used by this case."""
-    selected = _selected_selectors(case, workflow_schema=workflow_schema)
+    if workflow_schema == PROCESS_WORKFLOW_SCHEMA_ID:
+        if selector_support is None:
+            _fail("process selector support is required to validate observations")
+        selected = _process_selectors_for_case(case, selector_support)
+    else:
+        selected = _selected_selectors(case, workflow_schema=workflow_schema)
     candidates = set(source_selectors)
     if "asgi.send.message_types" in selected and any(
         action.get("kind") == "http_request" for action in case.get("actions", [])
@@ -254,11 +265,14 @@ def validate_materialized_input_index(
     requirements_by_case: dict[tuple[str, str], set[str]] = defaultdict(set)
     api_definition_cases: dict[str, set[str]] = {}
     for workflow_id, workflow_ref in workflow_by_id.items():
-        for path_key, digest_key, label in (
+        is_process_workflow = workflow_ref.get("workflow_schema") == PROCESS_WORKFLOW_SCHEMA_ID
+        indexed_paths = [
             ("input_path", "input_sha256", "workflow input"),
             ("recipe_path", "recipe_sha256", "workflow recipe"),
-            ("workload_path", "workload_sha256", "workload"),
-        ):
+        ]
+        if not is_process_workflow:
+            indexed_paths.append(("workload_path", "workload_sha256", "workload"))
+        for path_key, digest_key, label in indexed_paths:
             path = (ROOT / workflow_ref[path_key]).resolve()
             try:
                 path.relative_to(ROOT)
@@ -269,19 +283,29 @@ def validate_materialized_input_index(
             if not path.is_file() or sha256_file(path) != workflow_ref[digest_key]:
                 _fail(f"{label} path/digest is missing or stale: {workflow_ref[path_key]}")
 
-        workflow, _, input_digest, workload_path = load_workflow(
-            ROOT / workflow_ref["input_path"], source_root=fastapi_source
-        )
+        if is_process_workflow:
+            workflow, resolved_input_path, input_digest = load_process_workflow(
+                ROOT / workflow_ref["input_path"], source_root=fastapi_source
+            )
+            if resolved_input_path.relative_to(ROOT).as_posix() != workflow_ref["input_path"]:
+                _fail(f"process workflow input path differs from index: {workflow_id}")
+            if workflow_ref["workflow_schema"] != workflow["schema"]:
+                _fail(f"process workflow schema differs from index: {workflow_id}")
+        else:
+            workflow, _, input_digest, workload_path = load_workflow(
+                ROOT / workflow_ref["input_path"], source_root=fastapi_source
+            )
         if read_recipe(ROOT / workflow_ref["recipe_path"]) != workflow:
             _fail(f"generated workflow differs from its YAML recipe: {workflow_id}")
         if workflow_ref.get("oracle_profile_extension") != workflow.get("oracle_profile_extension"):
             _fail(f"workflow oracle profile extension differs from index: {workflow_id}")
         if input_digest != workflow_ref["input_sha256"]:
             _fail(f"workflow input digest differs from loaded input: {workflow_id}")
-        if workload_path.relative_to(ROOT).as_posix() != workflow_ref["workload_path"]:
-            _fail(f"workload binding differs from index: {workflow_id}")
-        if sha256_file(workload_path) != workflow_ref["workload_sha256"]:
-            _fail(f"workload digest differs from loaded workflow: {workflow_id}")
+        if not is_process_workflow:
+            if workload_path.relative_to(ROOT).as_posix() != workflow_ref["workload_path"]:
+                _fail(f"workload binding differs from index: {workflow_id}")
+            if sha256_file(workload_path) != workflow_ref["workload_sha256"]:
+                _fail(f"workload digest differs from loaded workflow: {workflow_id}")
         expected_api_definitions: list[dict[str, str]] = []
         defined_cases: set[str] = set()
         for case in workflow["cases"]:
@@ -474,7 +498,10 @@ def validate_materialized_input_index(
             ):
                 _fail(f"workflow case lacks matching source evidence: {case_id} -> {source_id}")
             workflow_schema = workflow_schemas[workflow_id]
-            used_selectors.update(_selected_selectors(case, workflow_schema=workflow_schema))
+            if workflow_schema == PROCESS_WORKFLOW_SCHEMA_ID:
+                used_selectors.update(_process_selectors_for_case(case, selector_support))
+            else:
+                used_selectors.update(_selected_selectors(case, workflow_schema=workflow_schema))
             source_candidates = set(coverage["observation_selectors"])
             if coverage["kind"] == "documented_python_example_source":
                 source_candidates = set(
@@ -485,6 +512,7 @@ def validate_materialized_input_index(
                     case,
                     source_candidates,
                     workflow_schema=workflow_schema,
+                    selector_support=selector_support,
                 )
             )
 
