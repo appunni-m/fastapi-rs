@@ -1,0 +1,140 @@
+# Input-only parity recipe; it contains no expected outputs.
+schema: fastapi-rs/python-asgi-workflow@9
+workload:
+  file: tests/fixtures/workloads/array_items_query_wire.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.openapi-array-items-query-wire.required-sequence
+  verification: parity
+  factory_input:
+    annotation_family: sequence
+  construction_observation: &construction
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+    capture_warnings: true
+  actions: &actions
+  - action_id: initial-document-wire
+    kind: http_request
+    scope:
+      type: http
+      asgi: &asgi {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers: &headers [[host, testserver]]
+      client: &client [127.0.0.1, 123]
+      server: &server [testserver, 80]
+    receive_events: &receive [{type: http.request, body: '', more_body: false}]
+    observations: &document_observations
+    - &http
+      kind: http_response
+      # The full /openapi.json HTTP body is compared as exact raw bytes.
+      selectors: [status, headers, body]
+      comparison: exact
+    - &send
+      kind: asgi_send
+      selector: message_types
+      comparison: ordered
+    - &error
+      kind: application_error
+      selector: exception
+      comparison: exact
+    - kind: openapi
+      json_pointers: ['']
+      comparison: exact
+    capture_warnings: true
+  - action_id: repeated-integers
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /cargo
+      query_string: cargo_totals=4&cargo_totals=18&cargo_totals=4
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *receive
+    observations: &endpoint_observations [*http, *send, *error]
+    capture_warnings: true
+  - action_id: missing-required-query
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /cargo
+      query_string: ''
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *receive
+    observations: *endpoint_observations
+    capture_warnings: true
+  - action_id: cached-document-wire
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *receive
+    observations: *document_observations
+    capture_warnings: true
+  - action_id: signed-integers-and-prior-journal
+    kind: http_request
+    scope:
+      type: http
+      asgi: *asgi
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /cargo
+      query_string: cargo_totals=-2&cargo_totals=0&cargo_totals=9
+      root_path: ''
+      headers: *headers
+      client: *client
+      server: *server
+    receive_events: *receive
+    observations: *endpoint_observations
+    capture_warnings: true
+  source_evidence: &docs_evidence
+  - path: docs/en/docs/tutorial/query-params-str-validations.md
+    kind: upstream_documentation
+  - path: docs/en/docs/advanced/custom-response.md
+    kind: upstream_documentation
+- case_id: fastapi.openapi-array-items-query-wire.required-list
+  verification: parity
+  factory_input:
+    annotation_family: list
+  construction_observation: *construction
+  actions: *actions
+  source_evidence:
+  - path: tests/main.py
+    kind: upstream_test
+  - path: tests/test_query.py
+    kind: upstream_test
+  - path: tests/test_request_params/test_query/test_list.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/query-params-str-validations.md
+    kind: upstream_documentation
+  - path: docs/en/docs/advanced/custom-response.md
+    kind: upstream_documentation

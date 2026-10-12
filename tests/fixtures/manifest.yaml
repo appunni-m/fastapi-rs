@@ -89,7 +89,7 @@ target:
   id: fastapi-rs-python-consumer
   version: 0.1.0
   public_surface: import fastapi
-  role: consumer-facing Python facade; Rust implementation remains private
+  role: single FastAPI-RS implementation exposed through the public Python consumer surface
   starlette_dependency: Starlette-RS under the separate Starlette 1.6.0 contract
   starlette_rs_distribution:
     name: starlette-rs-py
@@ -122,13 +122,13 @@ source_artifacts:
   api_classification_review:
     path: tests/fixtures/api-classification-review.json
     schema: fastapi-callable-classification-review/v1
-    sha256: 05e1493696521f17d8b7f07c113d9b5a95c92e47a6624b0ee8ccabcdf3b998f6
+    sha256: 9e66069cef3516c28551aa0b07fa61f5061656e6a58d03eaf25fdcb3d455eb6b
     purpose: Reviewed source-backed disposition of uncertain public/protocol callable candidates
     counts:
       candidates: 137
-      supported: 47
+      supported: 53
       private_or_internal: 72
-      uncertain: 18
+      uncertain: 12
   api_import_binding_classification_review:
     path: tests/fixtures/api-import-binding-classification-review.json
     schema: fastapi-starlette-import-binding-review/v1
@@ -415,7 +415,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@5
-    sha256: 66515aa660e0bb23bc7b7310ea9774e1f6cd65c8944e21b317259a217d138868
+    sha256: 1da31f52c3f233353aae566e93579b3b4138ad747c8921608c436b4b64a8461b
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1593
@@ -426,9 +426,9 @@ source_artifacts:
       reviewed_import_binding_candidates: 97
       reviewed_source_api_candidates: 392
       source_classifications:
-        supported: 462
+        supported: 468
         private_or_internal: 1102
-        uncertain: 29
+        uncertain: 23
       alias_records: 69
       source_deprecations: 21
       error_candidates: 42
@@ -451,7 +451,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: 655578cc250c00fdfa3647f5883c46f408b03a3dda14c4291d1c7d7999940e88
+    sha256: 3994fa425b030a52429b55b341f2d188ece5cecc2a45af7a4983e73a28c2611b
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 890
@@ -488,14 +488,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@5
-    sha256: 61c0d9901a9c2472bf3db6b4168045a9fc935621973d13cf22034b98f8849faa
+    sha256: dc854a768d815d9eb61a4a72a49411d9bc347d2550820ca486ebb8e0114b70f1
     schema_path: tests/fixtures/schemas/materialized-input-index-v5.schema.json
     schema_sha256: 13dd4cf1032a4ad9161712364d94b9f91834afee380e1f8eee6f4f05c123261d
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 556
-      cases: 2313
-      partial_source_mappings: 1588
+      workflows: 557
+      cases: 2315
+      partial_source_mappings: 1592
 
 contract_metadata:
   aliases:
@@ -853,31 +853,33 @@ api_surface_contract:
   - source_artifacts.materialized_input_index.workflows
   - source_artifacts.materialized_input_index.mappings
   counts:
-    required_public_symbols: 462
+    required_public_symbols: 468
     required_inherited_operations: 9
-    required_public_api_candidates: 471
+    required_public_api_candidates: 477
     signature_contract_states:
       module-object-no-call-signature: 1
       non-callable-surface: 235
       runtime-signature-reflected: 225
       runtime-signature-unavailable: 1
+      source-signature-recorded: 6
     symbols_with_constructor_definition_refs: 37
     unique_source_constructor_definitions: 20
     operation_scope_statuses:
+      scope-review-pending: 6
       slice-described: 462
     implementation_owner_plans:
-      fastapi-rs: 431
+      fastapi-rs: 437
       starlette-rs: 31
     inherited_implementation_owner_plans:
       fastapi-rs: 8
       starlette-rs: 1
-    symbols_with_documented_feature_refs: 456
+    symbols_with_documented_feature_refs: 462
     symbols_with_alias_refs: 46
     symbols_with_deprecation_refs: 22
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 101
-    symbols_with_operation_fixture_refs: 161
-    operation_fixture_refs: 1422
+    symbols_with_operation_fixture_refs: 163
+    operation_fixture_refs: 1441
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -4633,6 +4635,52 @@ api_surface_contract:
       - openapi.document
       - python.warnings
       - warnings.category_message
+    - workflow_id: array-items-query-wire
+      input_path: tests/fixtures/inputs/parity/array-items-query-wire.json
+      input_sha256: 038daa526235908ecc4284f0d10a09a6059f45407167c9e911ec9ba355a2f247
+      recipe_path: tests/fixtures/input-recipes/parity/array-items-query-wire.yaml
+      recipe_sha256: be93ff735c3835256b8d664e0180dd742259a97720e6cd38c6d8b42b524a20b9
+      workload_path: tests/fixtures/workloads/array_items_query_wire.py
+      workload_sha256: 59ff0718a24a2fd22d83952a8b65e2f00676cc33a3d1ddcfcd6f286e924296bd
+      case_id: fastapi.openapi-array-items-query-wire.required-sequence
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
+    - workflow_id: array-items-query-wire
+      input_path: tests/fixtures/inputs/parity/array-items-query-wire.json
+      input_sha256: 038daa526235908ecc4284f0d10a09a6059f45407167c9e911ec9ba355a2f247
+      recipe_path: tests/fixtures/input-recipes/parity/array-items-query-wire.yaml
+      recipe_sha256: be93ff735c3835256b8d664e0180dd742259a97720e6cd38c6d8b42b524a20b9
+      workload_path: tests/fixtures/workloads/array_items_query_wire.py
+      workload_sha256: 59ff0718a24a2fd22d83952a8b65e2f00676cc33a3d1ddcfcd6f286e924296bd
+      case_id: fastapi.openapi-array-items-query-wire.required-list
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
     identity_workflow_refs:
     - workflow_id: root-alias-identity
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
@@ -6075,6 +6123,52 @@ api_surface_contract:
       case_id: fastapi.parameter-factory-signatures.query
       observation_selectors:
       - python.signature
+    - workflow_id: array-items-query-wire
+      input_path: tests/fixtures/inputs/parity/array-items-query-wire.json
+      input_sha256: 038daa526235908ecc4284f0d10a09a6059f45407167c9e911ec9ba355a2f247
+      recipe_path: tests/fixtures/input-recipes/parity/array-items-query-wire.yaml
+      recipe_sha256: be93ff735c3835256b8d664e0180dd742259a97720e6cd38c6d8b42b524a20b9
+      workload_path: tests/fixtures/workloads/array_items_query_wire.py
+      workload_sha256: 59ff0718a24a2fd22d83952a8b65e2f00676cc33a3d1ddcfcd6f286e924296bd
+      case_id: fastapi.openapi-array-items-query-wire.required-sequence
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
+    - workflow_id: array-items-query-wire
+      input_path: tests/fixtures/inputs/parity/array-items-query-wire.json
+      input_sha256: 038daa526235908ecc4284f0d10a09a6059f45407167c9e911ec9ba355a2f247
+      recipe_path: tests/fixtures/input-recipes/parity/array-items-query-wire.yaml
+      recipe_sha256: be93ff735c3835256b8d664e0180dd742259a97720e6cd38c6d8b42b524a20b9
+      workload_path: tests/fixtures/workloads/array_items_query_wire.py
+      workload_sha256: 59ff0718a24a2fd22d83952a8b65e2f00676cc33a3d1ddcfcd6f286e924296bd
+      case_id: fastapi.openapi-array-items-query-wire.required-list
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
     identity_workflow_refs:
     - workflow_id: root-alias-identity
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
@@ -7456,6 +7550,52 @@ api_surface_contract:
       - openapi.document
       - python.warnings
       - warnings.category_message
+    - workflow_id: array-items-query-wire
+      input_path: tests/fixtures/inputs/parity/array-items-query-wire.json
+      input_sha256: 038daa526235908ecc4284f0d10a09a6059f45407167c9e911ec9ba355a2f247
+      recipe_path: tests/fixtures/input-recipes/parity/array-items-query-wire.yaml
+      recipe_sha256: be93ff735c3835256b8d664e0180dd742259a97720e6cd38c6d8b42b524a20b9
+      workload_path: tests/fixtures/workloads/array_items_query_wire.py
+      workload_sha256: 59ff0718a24a2fd22d83952a8b65e2f00676cc33a3d1ddcfcd6f286e924296bd
+      case_id: fastapi.openapi-array-items-query-wire.required-sequence
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
+    - workflow_id: array-items-query-wire
+      input_path: tests/fixtures/inputs/parity/array-items-query-wire.json
+      input_sha256: 038daa526235908ecc4284f0d10a09a6059f45407167c9e911ec9ba355a2f247
+      recipe_path: tests/fixtures/input-recipes/parity/array-items-query-wire.yaml
+      recipe_sha256: be93ff735c3835256b8d664e0180dd742259a97720e6cd38c6d8b42b524a20b9
+      workload_path: tests/fixtures/workloads/array_items_query_wire.py
+      workload_sha256: 59ff0718a24a2fd22d83952a8b65e2f00676cc33a3d1ddcfcd6f286e924296bd
+      case_id: fastapi.openapi-array-items-query-wire.required-list
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -8456,6 +8596,52 @@ api_surface_contract:
       workload_path: tests/fixtures/workloads/inline_query_schema_wire.py
       workload_sha256: 016c09632284d0c845f5c13554ccad9865884560cbf26ddc7a7bc384476159ef
       case_id: fastapi.openapi-inline-query-schema-wire.dependency-defaults
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
+    - workflow_id: array-items-query-wire
+      input_path: tests/fixtures/inputs/parity/array-items-query-wire.json
+      input_sha256: 038daa526235908ecc4284f0d10a09a6059f45407167c9e911ec9ba355a2f247
+      recipe_path: tests/fixtures/input-recipes/parity/array-items-query-wire.yaml
+      recipe_sha256: be93ff735c3835256b8d664e0180dd742259a97720e6cd38c6d8b42b524a20b9
+      workload_path: tests/fixtures/workloads/array_items_query_wire.py
+      workload_sha256: 59ff0718a24a2fd22d83952a8b65e2f00676cc33a3d1ddcfcd6f286e924296bd
+      case_id: fastapi.openapi-array-items-query-wire.required-sequence
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
+    - workflow_id: array-items-query-wire
+      input_path: tests/fixtures/inputs/parity/array-items-query-wire.json
+      input_sha256: 038daa526235908ecc4284f0d10a09a6059f45407167c9e911ec9ba355a2f247
+      recipe_path: tests/fixtures/input-recipes/parity/array-items-query-wire.yaml
+      recipe_sha256: be93ff735c3835256b8d664e0180dd742259a97720e6cd38c6d8b42b524a20b9
+      workload_path: tests/fixtures/workloads/array_items_query_wire.py
+      workload_sha256: 59ff0718a24a2fd22d83952a8b65e2f00676cc33a3d1ddcfcd6f286e924296bd
+      case_id: fastapi.openapi-array-items-query-wire.required-list
       observation_selectors:
       - asgi.application_error.exception
       - asgi.send.message_types
@@ -12595,6 +12781,52 @@ api_surface_contract:
       - openapi.document
       - python.warnings
       - warnings.category_message
+    - workflow_id: array-items-query-wire
+      input_path: tests/fixtures/inputs/parity/array-items-query-wire.json
+      input_sha256: 038daa526235908ecc4284f0d10a09a6059f45407167c9e911ec9ba355a2f247
+      recipe_path: tests/fixtures/input-recipes/parity/array-items-query-wire.yaml
+      recipe_sha256: be93ff735c3835256b8d664e0180dd742259a97720e6cd38c6d8b42b524a20b9
+      workload_path: tests/fixtures/workloads/array_items_query_wire.py
+      workload_sha256: 59ff0718a24a2fd22d83952a8b65e2f00676cc33a3d1ddcfcd6f286e924296bd
+      case_id: fastapi.openapi-array-items-query-wire.required-sequence
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
+    - workflow_id: array-items-query-wire
+      input_path: tests/fixtures/inputs/parity/array-items-query-wire.json
+      input_sha256: 038daa526235908ecc4284f0d10a09a6059f45407167c9e911ec9ba355a2f247
+      recipe_path: tests/fixtures/input-recipes/parity/array-items-query-wire.yaml
+      recipe_sha256: be93ff735c3835256b8d664e0180dd742259a97720e6cd38c6d8b42b524a20b9
+      workload_path: tests/fixtures/workloads/array_items_query_wire.py
+      workload_sha256: 59ff0718a24a2fd22d83952a8b65e2f00676cc33a3d1ddcfcd6f286e924296bd
+      case_id: fastapi.openapi-array-items-query-wire.required-list
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -13591,6 +13823,52 @@ api_surface_contract:
       workload_path: tests/fixtures/workloads/inline_query_schema_wire.py
       workload_sha256: 016c09632284d0c845f5c13554ccad9865884560cbf26ddc7a7bc384476159ef
       case_id: fastapi.openapi-inline-query-schema-wire.dependency-defaults
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
+    - workflow_id: array-items-query-wire
+      input_path: tests/fixtures/inputs/parity/array-items-query-wire.json
+      input_sha256: 038daa526235908ecc4284f0d10a09a6059f45407167c9e911ec9ba355a2f247
+      recipe_path: tests/fixtures/input-recipes/parity/array-items-query-wire.yaml
+      recipe_sha256: be93ff735c3835256b8d664e0180dd742259a97720e6cd38c6d8b42b524a20b9
+      workload_path: tests/fixtures/workloads/array_items_query_wire.py
+      workload_sha256: 59ff0718a24a2fd22d83952a8b65e2f00676cc33a3d1ddcfcd6f286e924296bd
+      case_id: fastapi.openapi-array-items-query-wire.required-sequence
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
+    - workflow_id: array-items-query-wire
+      input_path: tests/fixtures/inputs/parity/array-items-query-wire.json
+      input_sha256: 038daa526235908ecc4284f0d10a09a6059f45407167c9e911ec9ba355a2f247
+      recipe_path: tests/fixtures/input-recipes/parity/array-items-query-wire.yaml
+      recipe_sha256: be93ff735c3835256b8d664e0180dd742259a97720e6cd38c6d8b42b524a20b9
+      workload_path: tests/fixtures/workloads/array_items_query_wire.py
+      workload_sha256: 59ff0718a24a2fd22d83952a8b65e2f00676cc33a3d1ddcfcd6f286e924296bd
+      case_id: fastapi.openapi-array-items-query-wire.required-list
       observation_selectors:
       - asgi.application_error.exception
       - asgi.send.message_types
@@ -36265,6 +36543,52 @@ api_surface_contract:
       case_id: fastapi.parameter-factory-signatures.query
       observation_selectors:
       - python.signature
+    - workflow_id: array-items-query-wire
+      input_path: tests/fixtures/inputs/parity/array-items-query-wire.json
+      input_sha256: 038daa526235908ecc4284f0d10a09a6059f45407167c9e911ec9ba355a2f247
+      recipe_path: tests/fixtures/input-recipes/parity/array-items-query-wire.yaml
+      recipe_sha256: be93ff735c3835256b8d664e0180dd742259a97720e6cd38c6d8b42b524a20b9
+      workload_path: tests/fixtures/workloads/array_items_query_wire.py
+      workload_sha256: 59ff0718a24a2fd22d83952a8b65e2f00676cc33a3d1ddcfcd6f286e924296bd
+      case_id: fastapi.openapi-array-items-query-wire.required-sequence
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
+    - workflow_id: array-items-query-wire
+      input_path: tests/fixtures/inputs/parity/array-items-query-wire.json
+      input_sha256: 038daa526235908ecc4284f0d10a09a6059f45407167c9e911ec9ba355a2f247
+      recipe_path: tests/fixtures/input-recipes/parity/array-items-query-wire.yaml
+      recipe_sha256: be93ff735c3835256b8d664e0180dd742259a97720e6cd38c6d8b42b524a20b9
+      workload_path: tests/fixtures/workloads/array_items_query_wire.py
+      workload_sha256: 59ff0718a24a2fd22d83952a8b65e2f00676cc33a3d1ddcfcd6f286e924296bd
+      case_id: fastapi.openapi-array-items-query-wire.required-list
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -38721,6 +39045,52 @@ api_surface_contract:
       workload_path: tests/fixtures/workloads/inline_query_schema_wire.py
       workload_sha256: 016c09632284d0c845f5c13554ccad9865884560cbf26ddc7a7bc384476159ef
       case_id: fastapi.openapi-inline-query-schema-wire.dependency-defaults
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
+    - workflow_id: array-items-query-wire
+      input_path: tests/fixtures/inputs/parity/array-items-query-wire.json
+      input_sha256: 038daa526235908ecc4284f0d10a09a6059f45407167c9e911ec9ba355a2f247
+      recipe_path: tests/fixtures/input-recipes/parity/array-items-query-wire.yaml
+      recipe_sha256: be93ff735c3835256b8d664e0180dd742259a97720e6cd38c6d8b42b524a20b9
+      workload_path: tests/fixtures/workloads/array_items_query_wire.py
+      workload_sha256: 59ff0718a24a2fd22d83952a8b65e2f00676cc33a3d1ddcfcd6f286e924296bd
+      case_id: fastapi.openapi-array-items-query-wire.required-sequence
+      observation_selectors:
+      - asgi.application_error.exception
+      - asgi.send.message_types
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.body.bytes
+      - docs.response.headers
+      - docs.response.status
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+      - openapi.document
+      - python.warnings
+      - warnings.category_message
+    - workflow_id: array-items-query-wire
+      input_path: tests/fixtures/inputs/parity/array-items-query-wire.json
+      input_sha256: 038daa526235908ecc4284f0d10a09a6059f45407167c9e911ec9ba355a2f247
+      recipe_path: tests/fixtures/input-recipes/parity/array-items-query-wire.yaml
+      recipe_sha256: be93ff735c3835256b8d664e0180dd742259a97720e6cd38c6d8b42b524a20b9
+      workload_path: tests/fixtures/workloads/array_items_query_wire.py
+      workload_sha256: 59ff0718a24a2fd22d83952a8b65e2f00676cc33a3d1ddcfcd6f286e924296bd
+      case_id: fastapi.openapi-array-items-query-wire.required-list
       observation_selectors:
       - asgi.application_error.exception
       - asgi.send.message_types
@@ -41949,6 +42319,294 @@ api_surface_contract:
       known_gaps:
       - Constructor and dataclass semantics are not claimed.
       - General forwarded-member behavior is not yet fully inventoried.
+  - id: fastapi.routing.RouteContext.endpoint
+    kind: property_getter
+    source_candidate_ref: /api_candidates/1145
+    source_inventory_refs:
+    - /modules/33/definitions/36/members/8
+    source_signature_state: recorded
+    source_signature_refs:
+    - /modules/33/definitions/36/members/8
+    runtime_reflections:
+      core:
+        ref: /symbols/1144
+        status: reflected
+        object_identity: builtins.property
+        kind: value
+        signature_status: not-applicable
+      standard:
+        ref: /symbols/1144
+        object_identity: builtins.property
+        kind: value
+        signature_status: not-applicable
+    signature_contract_state: source-signature-recorded
+    alias_refs: []
+    deprecation_refs: []
+    error_contract_refs: []
+    documentation_contract_refs:
+    - coverage_matrix_ref: /coverage_matrix/560
+      source_path: docs/en/docs/release-notes.md
+      mapping_status: excluded
+      fixture_id: null
+      fixture_design_ref: null
+      observation_selectors: *id002
+    input_workflow_refs: []
+    identity_workflow_refs: []
+    feature_ids: []
+    observation_selectors: []
+    operation_scope:
+      status: scope-review-pending
+    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    target_binding:
+      target_profile: fastapi-rs-python-consumer
+      public_python_path: fastapi.routing.RouteContext.endpoint
+      implementation_owner: fastapi-rs
+      implementation_owner_evidence:
+        kind: fastapi_owned_or_adapter
+        source_candidate_refs:
+        - /api_candidates/1145
+      status: full-contract-not-established
+      rust_binding: null
+  - id: fastapi.routing.RouteContext.methods
+    kind: property_getter
+    source_candidate_ref: /api_candidates/1146
+    source_inventory_refs:
+    - /modules/33/definitions/36/members/7
+    source_signature_state: recorded
+    source_signature_refs:
+    - /modules/33/definitions/36/members/7
+    runtime_reflections:
+      core:
+        ref: /symbols/1145
+        status: reflected
+        object_identity: builtins.property
+        kind: value
+        signature_status: not-applicable
+      standard:
+        ref: /symbols/1145
+        object_identity: builtins.property
+        kind: value
+        signature_status: not-applicable
+    signature_contract_state: source-signature-recorded
+    alias_refs: []
+    deprecation_refs: []
+    error_contract_refs: []
+    documentation_contract_refs:
+    - coverage_matrix_ref: /coverage_matrix/560
+      source_path: docs/en/docs/release-notes.md
+      mapping_status: excluded
+      fixture_id: null
+      fixture_design_ref: null
+      observation_selectors: *id002
+    input_workflow_refs: []
+    identity_workflow_refs: []
+    feature_ids: []
+    observation_selectors: []
+    operation_scope:
+      status: scope-review-pending
+    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    target_binding:
+      target_profile: fastapi-rs-python-consumer
+      public_python_path: fastapi.routing.RouteContext.methods
+      implementation_owner: fastapi-rs
+      implementation_owner_evidence:
+        kind: fastapi_owned_or_adapter
+        source_candidate_refs:
+        - /api_candidates/1146
+      status: full-contract-not-established
+      rust_binding: null
+  - id: fastapi.routing.RouteContext.name
+    kind: property_getter
+    source_candidate_ref: /api_candidates/1147
+    source_inventory_refs:
+    - /modules/33/definitions/36/members/6
+    source_signature_state: recorded
+    source_signature_refs:
+    - /modules/33/definitions/36/members/6
+    runtime_reflections:
+      core:
+        ref: /symbols/1146
+        status: reflected
+        object_identity: builtins.property
+        kind: value
+        signature_status: not-applicable
+      standard:
+        ref: /symbols/1146
+        object_identity: builtins.property
+        kind: value
+        signature_status: not-applicable
+    signature_contract_state: source-signature-recorded
+    alias_refs: []
+    deprecation_refs: []
+    error_contract_refs: []
+    documentation_contract_refs:
+    - coverage_matrix_ref: /coverage_matrix/560
+      source_path: docs/en/docs/release-notes.md
+      mapping_status: excluded
+      fixture_id: null
+      fixture_design_ref: null
+      observation_selectors: *id002
+    input_workflow_refs: []
+    identity_workflow_refs: []
+    feature_ids: []
+    observation_selectors: []
+    operation_scope:
+      status: scope-review-pending
+    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    target_binding:
+      target_profile: fastapi-rs-python-consumer
+      public_python_path: fastapi.routing.RouteContext.name
+      implementation_owner: fastapi-rs
+      implementation_owner_evidence:
+        kind: fastapi_owned_or_adapter
+        source_candidate_refs:
+        - /api_candidates/1147
+      status: full-contract-not-established
+      rust_binding: null
+  - id: fastapi.routing.RouteContext.original_route
+    kind: property_getter
+    source_candidate_ref: /api_candidates/1148
+    source_inventory_refs:
+    - /modules/33/definitions/36/members/2
+    source_signature_state: recorded
+    source_signature_refs:
+    - /modules/33/definitions/36/members/2
+    runtime_reflections:
+      core:
+        ref: /symbols/1147
+        status: reflected
+        object_identity: builtins.property
+        kind: value
+        signature_status: not-applicable
+      standard:
+        ref: /symbols/1147
+        object_identity: builtins.property
+        kind: value
+        signature_status: not-applicable
+    signature_contract_state: source-signature-recorded
+    alias_refs: []
+    deprecation_refs: []
+    error_contract_refs: []
+    documentation_contract_refs:
+    - coverage_matrix_ref: /coverage_matrix/560
+      source_path: docs/en/docs/release-notes.md
+      mapping_status: excluded
+      fixture_id: null
+      fixture_design_ref: null
+      observation_selectors: *id002
+    input_workflow_refs: []
+    identity_workflow_refs: []
+    feature_ids: []
+    observation_selectors: []
+    operation_scope:
+      status: scope-review-pending
+    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    target_binding:
+      target_profile: fastapi-rs-python-consumer
+      public_python_path: fastapi.routing.RouteContext.original_route
+      implementation_owner: fastapi-rs
+      implementation_owner_evidence:
+        kind: fastapi_owned_or_adapter
+        source_candidate_refs:
+        - /api_candidates/1148
+      status: full-contract-not-established
+      rust_binding: null
+  - id: fastapi.routing.RouteContext.path
+    kind: property_getter
+    source_candidate_ref: /api_candidates/1149
+    source_inventory_refs:
+    - /modules/33/definitions/36/members/4
+    source_signature_state: recorded
+    source_signature_refs:
+    - /modules/33/definitions/36/members/4
+    runtime_reflections:
+      core:
+        ref: /symbols/1148
+        status: reflected
+        object_identity: builtins.property
+        kind: value
+        signature_status: not-applicable
+      standard:
+        ref: /symbols/1148
+        object_identity: builtins.property
+        kind: value
+        signature_status: not-applicable
+    signature_contract_state: source-signature-recorded
+    alias_refs: []
+    deprecation_refs: []
+    error_contract_refs: []
+    documentation_contract_refs:
+    - coverage_matrix_ref: /coverage_matrix/560
+      source_path: docs/en/docs/release-notes.md
+      mapping_status: excluded
+      fixture_id: null
+      fixture_design_ref: null
+      observation_selectors: *id002
+    input_workflow_refs: []
+    identity_workflow_refs: []
+    feature_ids: []
+    observation_selectors: []
+    operation_scope:
+      status: scope-review-pending
+    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    target_binding:
+      target_profile: fastapi-rs-python-consumer
+      public_python_path: fastapi.routing.RouteContext.path
+      implementation_owner: fastapi-rs
+      implementation_owner_evidence:
+        kind: fastapi_owned_or_adapter
+        source_candidate_refs:
+        - /api_candidates/1149
+      status: full-contract-not-established
+      rust_binding: null
+  - id: fastapi.routing.RouteContext.path_format
+    kind: property_getter
+    source_candidate_ref: /api_candidates/1150
+    source_inventory_refs:
+    - /modules/33/definitions/36/members/5
+    source_signature_state: recorded
+    source_signature_refs:
+    - /modules/33/definitions/36/members/5
+    runtime_reflections:
+      core:
+        ref: /symbols/1149
+        status: reflected
+        object_identity: builtins.property
+        kind: value
+        signature_status: not-applicable
+      standard:
+        ref: /symbols/1149
+        object_identity: builtins.property
+        kind: value
+        signature_status: not-applicable
+    signature_contract_state: source-signature-recorded
+    alias_refs: []
+    deprecation_refs: []
+    error_contract_refs: []
+    documentation_contract_refs:
+    - coverage_matrix_ref: /coverage_matrix/560
+      source_path: docs/en/docs/release-notes.md
+      mapping_status: excluded
+      fixture_id: null
+      fixture_design_ref: null
+      observation_selectors: *id002
+    input_workflow_refs: []
+    identity_workflow_refs: []
+    feature_ids: []
+    observation_selectors: []
+    operation_scope:
+      status: scope-review-pending
+    behavior_contract_state: documentation-fixture-design-linked; operation-level review pending
+    target_binding:
+      target_profile: fastapi-rs-python-consumer
+      public_python_path: fastapi.routing.RouteContext.path_format
+      implementation_owner: fastapi-rs
+      implementation_owner_evidence:
+        kind: fastapi_owned_or_adapter
+        source_candidate_refs:
+        - /api_candidates/1150
+      status: full-contract-not-established
+      rust_binding: null
   - id: fastapi.routing.iter_route_contexts
     kind: function
     source_candidate_ref: /api_candidates/1390
@@ -46433,6 +47091,19 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: security-credentials-upstream
+      input_path: tests/fixtures/inputs/parity/security_credentials_upstream.json
+      input_sha256: 24db451f130a07b454af785220c7748a0431f3e00079910a99ac9d7f0d3f833e
+      recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+      recipe_sha256: 1529e00721082110ba4a45caf6cc5976d1e1108c5f4f8ef3c2cc7f4a18697874
+      workload_path: tests/fixtures/workloads/security_credentials_upstream.py
+      workload_sha256: cd847beec32b56aae20840bb882f402f82bbcfde434a46214de14627fa3b889f
+      case_id: fastapi.security.http-bearer.test-security-http-bearer
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -46501,6 +47172,31 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/384
       observation_selectors: *id017
     input_workflow_refs: []
+    operation_fixture_refs:
+    - workflow_id: security-credentials-upstream
+      input_path: tests/fixtures/inputs/parity/security_credentials_upstream.json
+      input_sha256: 24db451f130a07b454af785220c7748a0431f3e00079910a99ac9d7f0d3f833e
+      recipe_path: tests/fixtures/input-recipes/parity/security_credentials_upstream.yaml
+      recipe_sha256: 1529e00721082110ba4a45caf6cc5976d1e1108c5f4f8ef3c2cc7f4a18697874
+      workload_path: tests/fixtures/workloads/security_credentials_upstream.py
+      workload_sha256: cd847beec32b56aae20840bb882f402f82bbcfde434a46214de14627fa3b889f
+      case_id: fastapi.security.http-bearer.test-security-http-bearer-no-credentials
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
+    - workflow_id: http-digest-auth-upstream
+      input_path: tests/fixtures/inputs/parity/http-digest-auth-upstream.json
+      input_sha256: 42e0837d0419589be26f406b465c6a4747512d15279214bdd837b43325c3f18d
+      recipe_path: tests/fixtures/input-recipes/parity/http-digest-auth-upstream.yaml
+      recipe_sha256: 9f84339f1b744a878d60b09b0557c6ecf023501f03450fa633eca0f8f83cd5de
+      workload_path: tests/fixtures/workloads/http_digest_auth_upstream.py
+      workload_sha256: 91cf2dfde99e883acd5a8cbbd77468b3550c8f275b8180f085159a8ee6a09d1d
+      case_id: fastapi.test.test-security-http-digest-description.test-security-http-digest-no-credentials
+      observation_selectors:
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - dependency-security

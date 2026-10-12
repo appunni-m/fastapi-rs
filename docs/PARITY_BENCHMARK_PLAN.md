@@ -22,12 +22,13 @@ identity. The multipart lane adds `python-multipart` 0.0.32 from the locked
 standard environment; FastAPI, Pydantic, Python, and Starlette remain pinned to
 the same versions.
 
-The primary target profile is the **FastAPI-RS Python consumer surface**:
-user code builds the app, routes, endpoint callables, and Pydantic models
-through FastAPI-RS's public `fastapi` import, whose Python layer mechanically
-forwards to PyO3 and Rust. The `fastapi-rs` crate owns FastAPI decisions and
-control flow; `fastapi-rs-py` handles PyO3 boundary conversion. Upstream
-FastAPI is source-oracle/dev-only and must not be an installed runtime
+The target profile is the **FastAPI-RS Python consumer surface**: user code
+builds the app, routes, endpoint callables, and Pydantic models through
+FastAPI-RS's public `fastapi` import. It is one FastAPI implementation:
+`fastapi-rs` owns its behavior and control flow, while `fastapi-rs-py` is the
+thin PyO3 packaging and boundary-conversion crate. The Python facade forwards
+to that implementation; parity and benchmarks have one FastAPI-RS target.
+Upstream FastAPI is source-oracle/dev-only and must not be an installed runtime
 dependency or imported by the target process. FastAPI-RS uses Starlette-RS for
 the generic Starlette contract. Run the target in a separate
 process/environment from upstream FastAPI because both use the `fastapi`
@@ -45,10 +46,9 @@ integration of HTTP, WebSocket, and lifespan operations. Starlette-RS's own
 contract owns the generic Starlette APIs and primitives. FastAPI workflows
 must still exercise these primitives through FastAPI so integration and
 cross-layer regressions are visible; the FastAPI manifest should not duplicate
-Starlette's entire public denominator. If FastAPI-RS also exposes a native
-Rust API, declare it as a distinct target with a documented mapping to
-consumer-visible operations. Do not treat native Rust microbenchmarks as
-Python-facade or FastAPI parity results.
+Starlette's entire public denominator. Benchmarks and parity exercise the same
+Python consumer surface; Rust-only microbenchmarks are not FastAPI parity or
+consumer-surface benchmark results.
 
 ## Parity suite
 
@@ -190,7 +190,7 @@ clean working tree; its current HEAD is recorded per run because the manifest
 does not pin a FastAPI-RS commit. Each workload then runs its own fresh
 full-workflow parity gate and release measurement. A completed suite summary is
 emitted only if every declaration has a new valid result and all results share
-source revisions, native target binary, Python, host, and build identities. A
+source revisions, FastAPI-RS target artifact, Python, host, and build identities. A
 versioned suite record references each per-workload artifact by path and
 SHA-256. `make benchmark-contract-check` validates the suite schema and every
 saved suite-to-result reference. If preflight, a workload, or identity
@@ -224,12 +224,12 @@ workflow, performs an untimed response check, then records 50 warmups and five
 rounds of 200 sequential samples per subject. Per-request latency starts at
 `await app(scope, receive, send)`: app construction, interpreter startup, and
 per-call ASGI scope/callback setup are outside that timer. The target timing
-includes its public `fastapi` facade, PyO3 conversion, native FastAPI-RS code,
+includes its public `fastapi` facade, PyO3 conversion, Rust FastAPI-RS code,
 Pydantic work, and Starlette-RS dispatch as one combined path. The current
 results do not separate those components and do not measure a loopback HTTP
-server or a native-only Rust boundary. Those measurements remain separate
-future workloads; do not infer them by subtracting the Starlette control or
-from the end-to-end target time.
+server. Internal Rust timing attribution may be added as a measurement of this
+same implementation; it is not a separate target. Do not infer component costs
+by subtracting the Starlette control or from the end-to-end target time.
 
 #### Latest completed historical seven-workload run (suite schema v2)
 
@@ -282,7 +282,7 @@ dependency overrides, and retain the invalid error-body parity gate.
 | 2. OpenAPI | Preserve the upstream graph: 20 routes sharing a 101-dependency chain, with query parameters discovered from the graph. | Measure cold generation by clearing the schema cache then calling `app.openapi()`. Keep route/app construction outside the measured function, as upstream does. Add warm cached lookup as a separate workload. |
 | 3. Construction and memory | Preserve route dependency graph construction (20 routes) and the graph with 50 endpoint parameters and 100-deep dependencies. Measure application setup, route registration, and retained/peak memory in distinct workloads. | Time construction only when it is the declared workload. Report memory separately from latency and identify whether app creation, OpenAPI generation, or request execution is inside the measurement. |
 | 4. ASGI/server | Add direct in-process ASGI requests and loopback HTTP server runs only after the upstream-equivalent tier is stable. Include startup/shutdown, steady-state request latency, throughput, concurrency, and tail latency as separate declared measurements. | Use the same pinned server, client, transport, configuration, payload, machine class, and concurrency for source and target. Keep server start-up out of steady-state request timings; report it separately. |
-| 5. Native Rust | For workloads with a measurable Rust boundary, record native Rust time/cost separately from the public Python `fastapi` call; state the instrumentation or native harness boundary. | Keep the public Python-facade result as the primary FastAPI-RS comparison. Report native Rust measurements separately, even when collected through internal instrumentation, and mark them unavailable when the boundary cannot be measured. Do not infer native cost by subtracting from end-to-end time or present it as Python-facade/FastAPI parity. |
+| 5. Internal Rust attribution | If useful, instrument Rust-owned work within the same FastAPI-RS target and declare the boundary. | Keep the public Python `fastapi` path as the primary result. Report internal timing only as attribution within that path, never as a separate implementation or parity target. Do not infer it by subtracting from end-to-end time. |
 
 For each workload, the input declares its subjects, exact work, measurement
 boundary, measured steps, metrics, warmups, sample/iteration policy,

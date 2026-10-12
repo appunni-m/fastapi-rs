@@ -36,9 +36,11 @@ user-facing docs. The migration-parity manifest should preserve fully qualified
 spelling, exact Python parameter names/kinds/defaults/annotations, aliases,
 deprecation metadata, and observable results. Treat each overload/member as a
 separate manifest operation when callers can invoke or inspect it separately.
-Use an explicit target mapping for native Rust APIs rather than treating a
-Python alias or Rust convenience name as the same public symbol. This document
-is an audit aid; it is not a second manifest or an execution result.
+FastAPI-RS has one target profile: the Python consumer surface imported as
+`fastapi`. The `fastapi-rs` crate owns its behavior; `fastapi-rs-py` packages
+the thin PyO3 boundary. Rust implementation details are not a second FastAPI
+target or additional Python API surface. This document is an audit aid; it is
+not a second manifest or an execution result.
 
 Runtime namespace reflection complements the AST inventory in
 [`runtime-api-surface-core.json`](../tests/fixtures/runtime-api-surface-core.json)
@@ -455,10 +457,9 @@ For the single `tests/fixtures/manifest.yaml`:
    and the selected Starlette 1.6.0 source identity, plus behavior-relevant
    optional extras. Keep source dependency-lock inventory separate from the
    sole selected compatibility profile.
-2. Declare separate public target profiles for the Python facade and native
-   Rust API if both are offered. The facade target must exercise the same
-   import names shown above; a Rust-only API does not silently satisfy Python
-   import operations.
+2. Use one public target profile: the Python `fastapi` consumer surface. Bind
+   each Python operation to its FastAPI-RS implementation owner; the PyO3
+   packaging crate is not a separate implementation or target profile.
 3. Create canonical surfaces for root exports and module namespaces; record
    object aliases as aliases, not extra unrelated operations. Expand each
    class into independently observable constructor, public method, property,

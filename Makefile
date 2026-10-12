@@ -105,8 +105,8 @@ build-tools-prepare: ## Prepare isolated hash-locked CPython 3.12.13 build tools
 	$(UV) pip sync --python "$(BUILD_TOOLS_PYTHON)" --require-hashes "$(BUILD_TOOLS_LOCK)"
 	$(BUILD_TOOLS_PYTHON) -m maturin --version
 
-build-python: build-tools-prepare ## Build the Python wheel under target/wheels
-	PYO3_PYTHON="$(BUILD_TOOLS_PYTHON)" $(MATURIN) build --release --out target/wheels
+build-python: build-tools-prepare ## Build and statically validate the release wheel under target/wheels
+	$(PYTHON) scripts/build_target_extension.py --release-wheel --python "$(BUILD_TOOLS_PYTHON)" --maturin "$(MATURIN)" --out target/wheels --starlette-rs-source "$(STARLETTE_RS_SOURCE)"
 
 compatibility-atlas-update: parity-inputs ## Rebuild generated source atlas, fixture backlog, index, and contract
 	$(PYTHON) scripts/build_fastapi_compatibility_atlas.py --fastapi-source "$(FASTAPI_SOURCE)" --starlette-source "$(STARLETTE_SOURCE)" --starlette-rs-root "$(STARLETTE_RS_SOURCE)"

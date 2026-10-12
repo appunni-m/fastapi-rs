@@ -8,6 +8,7 @@ import os
 import shlex
 import shutil
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
 
@@ -91,6 +92,8 @@ def _workspace_overlay(
     starlette_rs_source: Path,
     overlay_root: Path,
     python_source: Path,
+    *,
+    python_source_external: bool = True,
 ) -> None:
     manifest = ROOT / "Cargo.toml"
     try:
@@ -135,6 +138,17 @@ def _workspace_overlay(
                 source_entry, target_is_directory=source_entry.is_dir()
             )
 
+    if not python_source_external:
+        python_source_overlay = overlay_root / "fastapi-rs-py/python"
+        if not python_source_overlay.is_symlink():
+            raise SystemExit("release overlay Python source must begin as a workspace source link")
+        python_source_overlay.unlink()
+        shutil.copytree(
+            python_source,
+            python_source_overlay,
+            ignore=shutil.ignore_patterns("__pycache__", "*.pyc"),
+        )
+
     pyproject_path = ROOT / "pyproject.toml"
     try:
         pyproject_text = pyproject_path.read_text(encoding="utf-8")
@@ -147,12 +161,26 @@ def _workspace_overlay(
         source_setting, str
     ):
         raise SystemExit("pyproject.toml must configure the native member and Python source")
-    old_source = f"python-source = {json.dumps(source_setting)}"
-    if pyproject_text.count(old_source) != 1:
-        raise SystemExit("pyproject.toml Maturin Python source path is ambiguous")
-    overlay_pyproject = pyproject_text.replace(
-        old_source, f"python-source = {json.dumps(str(python_source.resolve()))}", 1
-    )
+    if python_source_external:
+        old_source = f"python-source = {json.dumps(source_setting)}"
+        if pyproject_text.count(old_source) != 1:
+            raise SystemExit("pyproject.toml Maturin Python source path is ambiguous")
+        overlay_pyproject = pyproject_text.replace(
+            old_source, f"python-source = {json.dumps(str(python_source.resolve()))}", 1
+        )
+    else:
+        configured_source = (overlay_root / source_setting).resolve()
+        try:
+            configured_source.relative_to(overlay_root.resolve())
+        except ValueError as exc:
+            raise SystemExit(
+                "release wheel Python source must resolve inside the temporary build overlay"
+            ) from exc
+        if not configured_source.is_dir():
+            raise SystemExit(
+                "pyproject.toml Maturin Python source is missing from the temporary build overlay"
+            )
+        overlay_pyproject = pyproject_text
     (overlay_root / "pyproject.toml").write_text(overlay_pyproject, encoding="utf-8")
 
 
@@ -270,6 +298,69 @@ def _verify_overlay_metadata(
             "FastAPI-RS Cargo metadata resolved Starlette-RS outside the selected checkout: "
             f"expected {expected_starlette_manifest}, got {actual}"
         )
+
+
+def _build_release_wheel(args: argparse.Namespace, starlette_rs_source: Path) -> int:
+    """Build and statically validate a non-editable wheel from the pinned-source overlay."""
+    try:
+        from render_rust_target_dependency_inventory import validate_starlette_rs_revision
+
+        revision = validate_starlette_rs_revision(starlette_rs_source)
+    except (ImportError, RuntimeError, subprocess.CalledProcessError) as exc:
+        raise SystemExit(f"cannot verify the pinned Starlette-RS source: {exc}") from exc
+
+    if args.python is None or not args.python.is_file():
+        raise SystemExit("--python must name the prepared build-tools interpreter")
+    maturin_command = shlex.split(args.maturin)
+    if not maturin_command:
+        raise SystemExit("Maturin command must not be empty")
+
+    output_directory = args.out.resolve()
+    output_directory.mkdir(parents=True, exist_ok=True)
+    target_directory = Path(os.environ.get("CARGO_TARGET_DIR", ROOT / "target")).resolve()
+    target_directory.mkdir(parents=True, exist_ok=True)
+
+    with tempfile.TemporaryDirectory(prefix=".fastapi-rs-release-", dir=ROOT) as temporary:
+        overlay_root = Path(temporary)
+        _workspace_overlay(
+            starlette_rs_source,
+            overlay_root,
+            ROOT / "fastapi-rs-py/python",
+            python_source_external=False,
+        )
+        _verify_overlay_metadata(overlay_root, starlette_rs_source, shlex.split(args.cargo))
+
+        environment = os.environ.copy()
+        environment["PYO3_PYTHON"] = str(args.python.resolve())
+        environment["CARGO_TARGET_DIR"] = str(target_directory)
+        command = [
+            *maturin_command,
+            "build",
+            "--release",
+            "--locked",
+            "--offline",
+            "--target-dir",
+            str(target_directory),
+            "--out",
+            str(output_directory),
+        ]
+        print(f"building release wheel against Starlette-RS {revision} from {starlette_rs_source}")
+        completed = subprocess.run(command, cwd=overlay_root, env=environment, check=False)
+        if completed.returncode:
+            return completed.returncode
+
+    wheels = sorted(output_directory.glob("*.whl"))
+    if len(wheels) != 1:
+        raise SystemExit(
+            f"expected exactly one release wheel in {output_directory}, found {len(wheels)}"
+        )
+    check_command = [
+        sys.executable,
+        str(ROOT / "scripts/check_release_wheel.py"),
+        "--wheel",
+        str(wheels[0]),
+    ]
+    return subprocess.run(check_command, cwd=ROOT, check=False).returncode
 
 
 def _extension_suffix(target_python: Path) -> str:
@@ -394,16 +485,31 @@ def main() -> int:
         help="build into target/fault-injection without replacing the normal extension",
     )
     parser.add_argument(
+        "--release-wheel",
+        action="store_true",
+        help="build and validate a non-editable wheel against the pinned Starlette-RS source",
+    )
+    parser.add_argument(
+        "--maturin", default="maturin", help="Maturin command (supports wrappers)"
+    )
+    parser.add_argument(
+        "--out", type=Path, default=ROOT / "target/wheels", help="release wheel output directory"
+    )
+    parser.add_argument(
         "--starlette-rs-source", required=True, type=Path, help="selected Starlette-RS checkout"
     )
     args = parser.parse_args()
     if args.clippy and args.fault_injection:
         parser.error("--fault-injection cannot be combined with --clippy")
+    if args.release_wheel and (args.clippy or args.fault_injection):
+        parser.error("--release-wheel cannot be combined with --clippy or --fault-injection")
     if args.fault_injection and args.python is None:
         parser.error("--fault-injection requires --python inside target/fault-injection/")
     starlette_rs_source = args.starlette_rs_source.resolve()
     if not starlette_rs_source.is_dir():
         raise SystemExit(f"Starlette-RS source directory does not exist: {starlette_rs_source}")
+    if args.release_wheel:
+        return _build_release_wheel(args, starlette_rs_source)
     cargo_command = shlex.split(args.cargo)
     if not cargo_command:
         raise SystemExit("Cargo command must not be empty")
