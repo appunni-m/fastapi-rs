@@ -541731,6 +541731,29 @@
           },
           {
             "case_ids": [
+              "fastapi.request-parameters.query.validation-alias-list.both-aliases.accepts-validation-alias",
+              "fastapi.request-parameters.query.validation-alias-list.both-aliases.missing",
+              "fastapi.request-parameters.query.validation-alias-list.both-aliases.openapi",
+              "fastapi.request-parameters.query.validation-alias-list.both-aliases.rejects-declared-alias",
+              "fastapi.request-parameters.query.validation-alias-list.both-aliases.rejects-field-name",
+              "fastapi.request-parameters.query.validation-alias-list.validation-only.accepts-wire-name",
+              "fastapi.request-parameters.query.validation-alias-list.validation-only.missing",
+              "fastapi.request-parameters.query.validation-alias-list.validation-only.openapi",
+              "fastapi.request-parameters.query.validation-alias-list.validation-only.rejects-field-name"
+            ],
+            "coverage_scope": "Partial independent sample across 9 case(s); observes http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.status",
+              "openapi.document",
+              "openapi.paths"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/query-validation-alias-list-cases.yaml",
+            "workflow_id": "query-validation-alias-list-cases"
+          },
+          {
+            "case_ids": [
               "fastapi.request-parameters.query.repeated-alias-values",
               "fastapi.request-parameters.query.repeated-python-name-missing",
               "fastapi.request-parameters.query.required-list-missing"
@@ -541807,72 +541830,72 @@
             "case_id": "fastapi.test.test-request-params-test-query-test-list.test-required-list-validation-alias-schema",
             "end_line": 220,
             "line": 206,
-            "mapping_scope": "test_function_source",
-            "mapping_status": "candidate",
+            "mapping_scope": "reviewed_source_mapping",
+            "mapping_status": "contract_gated_source_candidate",
             "name": "test_required_list_validation_alias_schema"
           },
           {
             "case_id": "fastapi.test.test-request-params-test-query-test-list.test-required-list-validation-alias-missing",
             "end_line": 246,
             "line": 230,
-            "mapping_scope": "test_function_source",
-            "mapping_status": "candidate",
+            "mapping_scope": "reviewed_source_mapping",
+            "mapping_status": "contract_gated_source_candidate",
             "name": "test_required_list_validation_alias_missing"
           },
           {
             "case_id": "fastapi.test.test-request-params-test-query-test-list.test-required-list-validation-alias-by-name",
             "end_line": 270,
             "line": 256,
-            "mapping_scope": "test_function_source",
-            "mapping_status": "candidate",
+            "mapping_scope": "reviewed_source_mapping",
+            "mapping_status": "contract_gated_source_candidate",
             "name": "test_required_list_validation_alias_by_name"
           },
           {
             "case_id": "fastapi.test.test-request-params-test-query-test-list.test-required-list-validation-alias-by-validation-alias",
             "end_line": 282,
             "line": 277,
-            "mapping_scope": "test_function_source",
-            "mapping_status": "candidate",
+            "mapping_scope": "reviewed_source_mapping",
+            "mapping_status": "contract_gated_source_candidate",
             "name": "test_required_list_validation_alias_by_validation_alias"
           },
           {
             "case_id": "fastapi.test.test-request-params-test-query-test-list.test-required-list-alias-and-validation-alias-schema",
             "end_line": 328,
             "line": 314,
-            "mapping_scope": "test_function_source",
-            "mapping_status": "candidate",
+            "mapping_scope": "reviewed_source_mapping",
+            "mapping_status": "contract_gated_source_candidate",
             "name": "test_required_list_alias_and_validation_alias_schema"
           },
           {
             "case_id": "fastapi.test.test-request-params-test-query-test-list.test-required-list-alias-and-validation-alias-missing",
             "end_line": 354,
             "line": 338,
-            "mapping_scope": "test_function_source",
-            "mapping_status": "candidate",
+            "mapping_scope": "reviewed_source_mapping",
+            "mapping_status": "contract_gated_source_candidate",
             "name": "test_required_list_alias_and_validation_alias_missing"
           },
           {
             "case_id": "fastapi.test.test-request-params-test-query-test-list.test-required-list-alias-and-validation-alias-by-name",
             "end_line": 388,
             "line": 364,
-            "mapping_scope": "test_function_source",
-            "mapping_status": "candidate",
+            "mapping_scope": "reviewed_source_mapping",
+            "mapping_status": "contract_gated_source_candidate",
             "name": "test_required_list_alias_and_validation_alias_by_name"
           },
           {
             "case_id": "fastapi.test.test-request-params-test-query-test-list.test-required-list-alias-and-validation-alias-by-alias",
             "end_line": 414,
             "line": 398,
-            "mapping_scope": "test_function_source",
-            "mapping_status": "candidate",
+            "mapping_scope": "reviewed_source_mapping",
+            "mapping_status": "contract_gated_source_candidate",
             "name": "test_required_list_alias_and_validation_alias_by_alias"
           },
           {
             "case_id": "fastapi.test.test-request-params-test-query-test-list.test-required-list-alias-and-validation-alias-by-validation-alias",
             "end_line": 428,
             "line": 424,
-            "mapping_scope": "test_function_source",
-            "mapping_status": "candidate",
+            "mapping_scope": "reviewed_source_mapping",
+            "mapping_status": "contract_gated_source_candidate",
             "name": "test_required_list_alias_and_validation_alias_by_validation_alias"
           }
         ],
@@ -541890,7 +541913,7 @@
         "reviewed_module_mapping": {
           "contract_gate": "Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements, and no live parity result is claimed. The cases are selected examples from the pinned test module; full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors after the complete FastAPI manifest and the isolated Python/ASGI runner are ready; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
           "rationale": "Source-reviewed request-parameter module with explicitly linked partial input cases.",
-          "stimulus_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-validation-parameters.yaml::fastapi.request-parameters.query.repeated-alias-values (actions: get-repeated-query-values; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-validation-parameters.yaml::fastapi.request-parameters.query.required-list-missing (actions: get-required-query-list-missing; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-validation-parameters.yaml::fastapi.request-parameters.query.repeated-python-name-missing (actions: get-repeated-query-values-by-python-name; selectors: http.body.bytes, http.status). Inputs contain no expected results.",
+          "stimulus_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/query-validation-alias-list-cases.yaml::fastapi.request-parameters.query.validation-alias-list.validation-only.missing (actions: direct-missing, model-missing; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/query-validation-alias-list-cases.yaml::fastapi.request-parameters.query.validation-alias-list.validation-only.rejects-field-name (actions: direct-field-name, model-field-name; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/query-validation-alias-list-cases.yaml::fastapi.request-parameters.query.validation-alias-list.validation-only.accepts-wire-name (actions: direct-wire-name, model-wire-name; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/query-validation-alias-list-cases.yaml::fastapi.request-parameters.query.validation-alias-list.validation-only.openapi (actions: openapi-validation-only-parameters; selectors: openapi.document, openapi.paths); tests/fixtures/input-recipes/parity/query-validation-alias-list-cases.yaml::fastapi.request-parameters.query.validation-alias-list.both-aliases.missing (actions: direct-missing, model-missing; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/query-validation-alias-list-cases.yaml::fastapi.request-parameters.query.validation-alias-list.both-aliases.rejects-field-name (actions: direct-field-name, model-field-name; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/query-validation-alias-list-cases.yaml::fastapi.request-parameters.query.validation-alias-list.both-aliases.rejects-declared-alias (actions: direct-declared-alias, model-declared-alias; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/query-validation-alias-list-cases.yaml::fastapi.request-parameters.query.validation-alias-list.both-aliases.accepts-validation-alias (actions: direct-wire-name, model-wire-name; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/query-validation-alias-list-cases.yaml::fastapi.request-parameters.query.validation-alias-list.both-aliases.openapi (actions: openapi-both-aliases-parameters; selectors: openapi.document, openapi.paths); tests/fixtures/input-recipes/parity/request-validation-parameters.yaml::fastapi.request-parameters.query.repeated-alias-values (actions: get-repeated-query-values; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-validation-parameters.yaml::fastapi.request-parameters.query.required-list-missing (actions: get-required-query-list-missing; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-validation-parameters.yaml::fastapi.request-parameters.query.repeated-python-name-missing (actions: get-repeated-query-values-by-python-name; selectors: http.body.bytes, http.status). Inputs contain no expected results.",
           "supporting_sources": [
             {
               "end_line": 347,
@@ -542084,6 +542107,96 @@
             }
           ],
           "workflow_cases": [
+            {
+              "case_ids": [
+                "fastapi.request-parameters.query.validation-alias-list.validation-only.missing"
+              ],
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/query-validation-alias-list-cases.yaml"
+            },
+            {
+              "case_ids": [
+                "fastapi.request-parameters.query.validation-alias-list.validation-only.rejects-field-name"
+              ],
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/query-validation-alias-list-cases.yaml"
+            },
+            {
+              "case_ids": [
+                "fastapi.request-parameters.query.validation-alias-list.validation-only.accepts-wire-name"
+              ],
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/query-validation-alias-list-cases.yaml"
+            },
+            {
+              "case_ids": [
+                "fastapi.request-parameters.query.validation-alias-list.validation-only.openapi"
+              ],
+              "observation_selectors": [
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/query-validation-alias-list-cases.yaml"
+            },
+            {
+              "case_ids": [
+                "fastapi.request-parameters.query.validation-alias-list.both-aliases.missing"
+              ],
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/query-validation-alias-list-cases.yaml"
+            },
+            {
+              "case_ids": [
+                "fastapi.request-parameters.query.validation-alias-list.both-aliases.rejects-field-name"
+              ],
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/query-validation-alias-list-cases.yaml"
+            },
+            {
+              "case_ids": [
+                "fastapi.request-parameters.query.validation-alias-list.both-aliases.rejects-declared-alias"
+              ],
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/query-validation-alias-list-cases.yaml"
+            },
+            {
+              "case_ids": [
+                "fastapi.request-parameters.query.validation-alias-list.both-aliases.accepts-validation-alias"
+              ],
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/query-validation-alias-list-cases.yaml"
+            },
+            {
+              "case_ids": [
+                "fastapi.request-parameters.query.validation-alias-list.both-aliases.openapi"
+              ],
+              "observation_selectors": [
+                "openapi.document",
+                "openapi.paths"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/query-validation-alias-list-cases.yaml"
+            },
             {
               "case_ids": [
                 "fastapi.request-parameters.query.repeated-alias-values"

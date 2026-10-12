@@ -567,6 +567,9 @@ _OPTIONAL_LIST_SCHEMA_CASES = {
 }
 _REQUEST_UPLOADS_RECIPE = "tests/fixtures/input-recipes/parity/request-uploads.yaml"
 _FILE_LIST_FORM_ORDER_CASE = "fastapi.request-uploads.file-form-order.test-file-list-form-order"
+_QUERY_LIST_VALIDATION_ALIAS_RECIPE = (
+    "tests/fixtures/input-recipes/parity/query-validation-alias-list-cases.yaml"
+)
 
 
 def _tail_function_mapping(
@@ -830,6 +833,49 @@ def _request_http_function_mapping(
     }
 
 
+def _query_list_validation_alias_function_mapping(
+    function_name: str,
+    case_id: str,
+    action_ids: list[str],
+    observation_selectors: list[str],
+    behavior: str,
+) -> dict[str, Any]:
+    test_path = "tests/test_request_params/test_query/test_list.py"
+    tree = ast.parse((FASTAPI_ROOT / test_path).read_text(encoding="utf-8"))
+    matches = [
+        node
+        for node in tree.body
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+        and node.name == function_name
+    ]
+    if len(matches) != 1:
+        raise ValueError(f"expected exact source function {function_name} in {test_path}")
+    function = matches[0]
+    return {
+        "source_span": _source(
+            test_path,
+            function.lineno,
+            function.end_lineno or function.lineno,
+            f"upstream FastAPI 0.141.1 test function {function_name}",
+        ),
+        "workflow_case": {
+            "recipe_path": _QUERY_LIST_VALIDATION_ALIAS_RECIPE,
+            "case_id": case_id,
+            "action_ids": list(action_ids),
+            "observation_selectors": list(observation_selectors),
+        },
+        "rationale": behavior,
+        "contract_gate": (
+            "Partial input mapping only: independently named direct-list and Query(BaseModel) "
+            "routes exercise validation_alias selection, repeated values, rejected alternate "
+            "names, and the route-specific OpenAPI parameter projection. The recipe contains "
+            "no expected outputs and makes no live parity claim; complete error-detail parsing, "
+            "unlisted constraints, and exact TestClient behavior remain outside this mapping. "
+            "Generic query-string parsing remains owned by the separate Starlette 1.6.0 contract."
+        ),
+    }
+
+
 REQUEST_PARAMETER_FUNCTION_MAPPINGS = {
     "tests/test_request_params/test_header/test_required_str.py": (
         _header_cookie_alias_module_mappings("header", "Header")
@@ -849,6 +895,71 @@ REQUEST_PARAMETER_FUNCTION_MAPPINGS = {
                 "each route. It samples the source function's status/body observations without "
                 "reusing its file contents, form value, or response assertion."
             ),
+        ),
+    },
+    "tests/test_request_params/test_query/test_list.py": {
+        "test_required_list_validation_alias_schema": _query_list_validation_alias_function_mapping(
+            "test_required_list_validation_alias_schema",
+            "fastapi.request-parameters.query.validation-alias-list.validation-only.openapi",
+            ["openapi-validation-only-parameters"],
+            ["openapi.document", "openapi.paths"],
+            "The OpenAPI case projects validation-alias-selected query parameter schemas for both direct list and Query(BaseModel) routes.",
+        ),
+        "test_required_list_validation_alias_missing": _query_list_validation_alias_function_mapping(
+            "test_required_list_validation_alias_missing",
+            "fastapi.request-parameters.query.validation-alias-list.validation-only.missing",
+            ["direct-missing", "model-missing"],
+            ["http.body.bytes", "http.status"],
+            "The input case omits the required validation-alias list from both direct and model-valued routes.",
+        ),
+        "test_required_list_validation_alias_by_name": _query_list_validation_alias_function_mapping(
+            "test_required_list_validation_alias_by_name",
+            "fastapi.request-parameters.query.validation-alias-list.validation-only.rejects-field-name",
+            ["direct-field-name", "model-field-name"],
+            ["http.body.bytes", "http.status"],
+            "The input case supplies repeated values under the Python field name instead of the required validation alias.",
+        ),
+        "test_required_list_validation_alias_by_validation_alias": _query_list_validation_alias_function_mapping(
+            "test_required_list_validation_alias_by_validation_alias",
+            "fastapi.request-parameters.query.validation-alias-list.validation-only.accepts-wire-name",
+            ["direct-wire-name", "model-wire-name"],
+            ["http.body.bytes", "http.status"],
+            "The input case supplies repeated values under the validation alias for both route forms.",
+        ),
+        "test_required_list_alias_and_validation_alias_schema": _query_list_validation_alias_function_mapping(
+            "test_required_list_alias_and_validation_alias_schema",
+            "fastapi.request-parameters.query.validation-alias-list.both-aliases.openapi",
+            ["openapi-both-aliases-parameters"],
+            ["openapi.document", "openapi.paths"],
+            "The OpenAPI case compares validation-alias-selected parameters when a separate declared alias is also present.",
+        ),
+        "test_required_list_alias_and_validation_alias_missing": _query_list_validation_alias_function_mapping(
+            "test_required_list_alias_and_validation_alias_missing",
+            "fastapi.request-parameters.query.validation-alias-list.both-aliases.missing",
+            ["direct-missing", "model-missing"],
+            ["http.body.bytes", "http.status"],
+            "The input case omits the required wire value when both declared alias and validation alias are present.",
+        ),
+        "test_required_list_alias_and_validation_alias_by_name": _query_list_validation_alias_function_mapping(
+            "test_required_list_alias_and_validation_alias_by_name",
+            "fastapi.request-parameters.query.validation-alias-list.both-aliases.rejects-field-name",
+            ["direct-field-name", "model-field-name"],
+            ["http.body.bytes", "http.status"],
+            "The input case uses the Python field name and distinguishes it from both declared aliases.",
+        ),
+        "test_required_list_alias_and_validation_alias_by_alias": _query_list_validation_alias_function_mapping(
+            "test_required_list_alias_and_validation_alias_by_alias",
+            "fastapi.request-parameters.query.validation-alias-list.both-aliases.rejects-declared-alias",
+            ["direct-declared-alias", "model-declared-alias"],
+            ["http.body.bytes", "http.status"],
+            "The input case uses the declared alias, which differs from the accepted validation alias.",
+        ),
+        "test_required_list_alias_and_validation_alias_by_validation_alias": _query_list_validation_alias_function_mapping(
+            "test_required_list_alias_and_validation_alias_by_validation_alias",
+            "fastapi.request-parameters.query.validation-alias-list.both-aliases.accepts-validation-alias",
+            ["direct-wire-name", "model-wire-name"],
+            ["http.body.bytes", "http.status"],
+            "The input case uses repeated validation-alias values while both aliases are declared.",
         ),
     },
     "tests/test_request_params/test_body/test_required_str.py": {
