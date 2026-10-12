@@ -635,6 +635,11 @@ def validate() -> None:
         import_binding_review.get("schema"),
         import_binding_meta["schema"],
     )
+    require_equal(
+        "metadata import-binding review digest",
+        import_binding_meta["sha256"],
+        hashlib.sha256(import_binding_path.read_bytes()).hexdigest(),
+    )
     validate_digest(import_binding_path, manifest_import_binding, "import-binding review")
     expected_import_binding_identity = {
         "package": "FastAPI",

@@ -120,13 +120,14 @@ def _load_upstream_test_bodies(
 
 def _parity_workload_paths(
     source_root: Path,
-) -> tuple[int, list[Path], set[Path]]:
+) -> tuple[int, list[Path], set[Path], set[Path]]:
     recipes = sorted(RECIPE_DIR.glob("*.yaml"))
     if not recipes:
         raise ContractError(f"no active parity recipes found under {RECIPE_DIR}")
 
     workload_paths: set[Path] = set()
-    source_test_paths: set[Path] = set()
+    test_module_paths: set[Path] = set()
+    source_scan_paths: set[Path] = set()
     resolved_source_root = source_root.resolve()
     upstream_tests_root = resolved_source_root / "tests"
     if not upstream_tests_root.is_dir():
@@ -145,7 +146,8 @@ def _parity_workload_paths(
                 "upstream test module resolves outside the pinned FastAPI source tree: "
                 f"{source_path}"
             ) from exc
-        source_test_paths.add(resolved_source_path)
+        test_module_paths.add(resolved_source_path)
+        source_scan_paths.add(resolved_source_path)
 
     for recipe_path in recipes:
         recipe = read_recipe(recipe_path)
@@ -182,7 +184,7 @@ def _parity_workload_paths(
                     raise ContractError(
                         f"upstream test evidence does not exist: {evidence['path']}"
                     )
-                source_test_paths.add(source_path)
+                source_scan_paths.add(source_path)
 
     for workload_path in WORKLOAD_ROOT.rglob("*.py"):
         if not workload_path.is_file():
@@ -196,7 +198,7 @@ def _parity_workload_paths(
             ) from exc
         workload_paths.add(resolved_workload_path)
 
-    return len(recipes), sorted(workload_paths), source_test_paths
+    return len(recipes), sorted(workload_paths), test_module_paths, source_scan_paths
 
 
 class _WorkloadSourceVisitor(ast.NodeVisitor):
@@ -324,9 +326,11 @@ def _is_expected_output_name(name: str) -> bool:
     return bool(parts & OUTPUT_SOURCE_MARKERS) and bool(parts & OUTPUT_WORDS)
 
 
-def check_active_workloads(source_root: Path) -> tuple[int, int, int, list[str]]:
-    recipe_count, workload_paths, source_test_paths = _parity_workload_paths(source_root)
-    source_test_bodies = _load_upstream_test_bodies(source_test_paths, source_root.resolve())
+def check_active_workloads(source_root: Path) -> tuple[int, int, int, int, list[str]]:
+    recipe_count, workload_paths, test_module_paths, source_scan_paths = _parity_workload_paths(
+        source_root
+    )
+    source_test_bodies = _load_upstream_test_bodies(source_scan_paths, source_root.resolve())
     failures: list[str] = []
     for workload_path in workload_paths:
         relative_path = workload_path.relative_to(ROOT).as_posix()
@@ -344,7 +348,13 @@ def check_active_workloads(source_root: Path) -> tuple[int, int, int, list[str]]
         visitor = _WorkloadSourceVisitor(source_test_bodies=source_test_bodies)
         visitor.visit(tree)
         failures.extend(f"{relative_path}:{line}: {message}" for line, message in visitor.findings)
-    return recipe_count, len(workload_paths), len(source_test_paths), sorted(failures)
+    return (
+        recipe_count,
+        len(workload_paths),
+        len(test_module_paths),
+        len(source_scan_paths - test_module_paths),
+        sorted(failures),
+    )
 
 
 def main() -> int:
@@ -357,26 +367,35 @@ def main() -> int:
     )
     args = parser.parse_args()
     try:
-        recipe_count, workload_count, source_test_count, failures = check_active_workloads(
-            args.fastapi_source
-        )
+        (
+            recipe_count,
+            workload_count,
+            test_module_count,
+            additional_source_count,
+            failures,
+        ) = check_active_workloads(args.fastapi_source)
     except (ContractError, OSError, ValueError) as exc:
         print(f"parity workload source check failed: {exc}", file=sys.stderr)
         return 1
+    additional_source_label = "source" if additional_source_count == 1 else "sources"
 
     if failures:
         for failure in failures:
             print(f"parity workload source check failed: {failure}", file=sys.stderr)
         print(
-            f"checked {workload_count} workload sources against {source_test_count} "
-            f"upstream test modules and {recipe_count} recipes; found {len(failures)} issue(s)",
+            f"checked {workload_count} workload sources against {test_module_count} "
+            f"upstream test modules and {additional_source_count} additional evidence "
+            f"{additional_source_label} "
+            f"from {recipe_count} recipes; found {len(failures)} issue(s)",
             file=sys.stderr,
         )
         return 1
 
     print(
-        f"checked {workload_count} workload sources against {source_test_count} upstream "
-        f"test modules from {recipe_count} recipes; "
+        f"checked {workload_count} workload sources against {test_module_count} upstream "
+        f"test modules and {additional_source_count} additional evidence "
+        f"{additional_source_label} from "
+        f"{recipe_count} recipes; "
         "no expected-output or copied-test-code patterns found"
     )
     return 0
