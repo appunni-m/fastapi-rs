@@ -52,6 +52,32 @@ target_runtime:
     sha256: efb7ca633fc9a9c8587a6f59f8ee9b509151f6f77ceb75a56dd3cdeff2be99f7
     profile: CPython 3.12.13
 
+fastapi_cli_policy:
+  command: fastapi
+  oracle_packages: {fastapi-cli: 0.0.32, fastapi-cloud-cli: 0.11.0}
+  oracle_lock: {path: uv.lock, sha256: 96ae079a121e11b4cc0d260df5b7f77189bb90fa23a2da368f607418c2d98165}
+  target_owner: fastapi-rs
+  target_cli_python_dependencies: []
+  target_python_surface: direct-native-re-export-only
+  process_contract: identity-checked-isolated-subprocess
+  implementation_state: mapped; target-console-entrypoint-pending
+  cloud_operations_state: external-hosted-service-excluded
+  cloud_exclusion:
+    dependency: fastapi-cloud-cli
+    version: 0.11.0
+    lockfile: uv.lock
+    lockfile_sha256: 96ae079a121e11b4cc0d260df5b7f77189bb90fa23a2da368f607418c2d98165
+    wheel_sha256: 76857b0f09d918acfcb50ade34682ba3b2079ca0c43fda10215de301f185a7f8
+    sdist_sha256: ecc83a5db106be35af528eccb01aa9bced1d29783efd48c8c1c831cf111eea99
+    evidence:
+      - {path: fastapi_cloud_cli/cli.py, sha256: 8a5b95006f38e06ed985b6b9501023c3979211a6d3917dd7d6586ddcc7aefc72}
+      - {path: fastapi_cloud_cli/commands/deploy.py, sha256: 085ba94f7b8c15b93c207b2cd042decf6d293b0290545f4bd6c18e969bd626d8}
+      - {path: fastapi_cloud_cli/utils/api.py, sha256: 6b9c18c52bdc3482484a47da57b70e2c21b700fe686cd2c7a92437886ccb94c4}
+      - {path: fastapi_cloud_cli/utils/auth.py, sha256: 8584c274e3471dab9bedabd6f70b937208ed039de5012c28350837d4c94bf5f7}
+    reason: >-
+      This optional package manages the separate FastAPI Cloud hosted service using authenticated
+      remote API operations and S3 uploads; it is outside the FastAPI framework library contract.
+
 fault_contract_policy:
   schema: fastapi-rs/fault-contract-policy@1
   target_only: true

@@ -26,6 +26,10 @@ TARGET_RESULT ?=
 PARITY_INPUT ?= tests/fixtures/inputs/parity/first-asgi-request.json
 PARITY_API_INPUT ?= tests/fixtures/inputs/parity/encoding.json
 PARITY_PROCESS_INPUT ?= tests/fixtures/inputs/parity/fastapi-cli-process-workflow.json
+PARITY_PROCESS_V2_INPUT ?= tests/fixtures/inputs/parity/fastapi-cli-documented-process-v2.json
+PARITY_PROCESS_CORE_INPUT ?= tests/fixtures/inputs/parity/fastapi-cli-missing-optional-process-v2.json
+PARITY_PROCESS_ORACLE_PROFILE ?= fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-standard
+PARITY_PROCESS_ORACLE_PYTHON ?= $(ORACLE_STANDARD_PYTHON)
 # Keep results immutable while making repeated process runs safe. Reuse the same
 # id across separate oracle, target, and compare invocations to pair artifacts.
 PARITY_PROCESS_RUN_ID ?= $(shell $(PYTHON) -c 'import uuid; print(uuid.uuid4().hex)')
@@ -209,6 +213,8 @@ parity-workload-check: ## Statically screen active parity workload Python source
 parity-validate: parity-inputs parity-workload-check ## Validate workflows, source atlas, fixture mappings, and pinned source references
 	$(PYTHON) -m scripts.parity.cli validate --input "$(PARITY_INPUT)"
 	$(PYTHON) -m scripts.parity.process_worker validate --input "$(PARITY_PROCESS_INPUT)" --fastapi-source "$(FASTAPI_SOURCE)"
+	$(PYTHON) -m scripts.parity.process_worker validate --input "$(PARITY_PROCESS_V2_INPUT)" --fastapi-source "$(FASTAPI_SOURCE)"
+	$(PYTHON) -m scripts.parity.process_worker validate --input "$(PARITY_PROCESS_CORE_INPUT)" --fastapi-source "$(FASTAPI_SOURCE)"
 
 parity-process-validate: parity-inputs ## Validate the input-only FastAPI CLI process workflow
 	$(PYTHON) -m scripts.parity.process_worker validate --input "$(PARITY_PROCESS_INPUT)" --fastapi-source "$(FASTAPI_SOURCE)"
@@ -216,8 +222,8 @@ parity-process-validate: parity-inputs ## Validate the input-only FastAPI CLI pr
 parity-process-oracle: parity-process-validate ## Run the pinned FastAPI CLI process oracle
 	$(PYTHON) -m scripts.parity.process_worker oracle \
 	  --input "$(PARITY_PROCESS_INPUT)" \
-	  --profile fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-standard \
-	  --python "$(ORACLE_STANDARD_PYTHON)" \
+	  --profile "$(PARITY_PROCESS_ORACLE_PROFILE)" \
+	  --python "$(PARITY_PROCESS_ORACLE_PYTHON)" \
 	  --fastapi-source "$(FASTAPI_SOURCE)" \
 	  --starlette-source "$(STARLETTE_SOURCE)" \
 	  --output "$(PARITY_PROCESS_ORACLE_RESULT)"

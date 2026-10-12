@@ -34,7 +34,8 @@ from scripts.parity.contract import (
     sha256_file,
 )
 from scripts.parity.process_contract import (
-    ORACLE_PROCESS_PROFILE_ID,
+    ORACLE_PROCESS_CORE_PROFILE_ID,
+    ORACLE_PROCESS_PROFILE_IDS,
     PROCESS_REQUEST_MAX_RESPONSE_BYTES,
     PROCESS_STREAM_MAX_BYTES,
     TARGET_PROCESS_PROFILE_ID,
@@ -71,6 +72,7 @@ PROCESS_COMPARISON_SCHEMA_PATHS = {
     PROCESS_WORKFLOW_SCHEMA_V2_ID: PROCESS_COMPARISON_SCHEMA_V2_PATH,
 }
 MANIFEST_PATH = ROOT / "tests/fixtures/manifest.yaml"
+CORE_SURFACE_PATH = ROOT / "tests/fixtures/runtime-api-surface-core.json"
 STANDARD_SURFACE_PATH = ROOT / "tests/fixtures/runtime-api-surface-standard.json"
 SELECTOR_CATALOG_PATH = ROOT / "tests/fixtures/observation-selectors.json"
 ORACLE_PYTHON_PACKAGES = {
@@ -103,6 +105,18 @@ TARGET_SHARED_PACKAGES = {
     "idna",
     "pydantic",
     "pydantic-core",
+    "typing-extensions",
+    "typing-inspection",
+}
+CORE_ORACLE_PYTHON_PACKAGES = {
+    "annotated-doc",
+    "annotated-types",
+    "anyio",
+    "fastapi",
+    "idna",
+    "pydantic",
+    "pydantic-core",
+    "starlette",
     "typing-extensions",
     "typing-inspection",
 }
@@ -192,12 +206,15 @@ def _profile_expectations(mode: Literal["oracle", "target"], profile_id: str) ->
     """Resolve the expected runtime facts from the checked-in pinned profiles."""
     manifest = read_manifest()
     if mode == "oracle":
-        if profile_id != ORACLE_PROCESS_PROFILE_ID:
+        if profile_id not in ORACLE_PROCESS_PROFILE_IDS:
             raise ProcessError("oracle process runner received a non-pinned profile")
-        standard = read_json(STANDARD_SURFACE_PATH)
-        authority = standard.get("authority", {})
+        profile_name = (
+            "core" if profile_id == ORACLE_PROCESS_CORE_PROFILE_ID else "standard"
+        )
+        surface_path = CORE_SURFACE_PATH if profile_name == "core" else STANDARD_SURFACE_PATH
+        authority = read_json(surface_path).get("authority", {})
         if not isinstance(authority, dict):
-            raise ProcessError("standard oracle runtime identity is malformed")
+            raise ProcessError(f"{profile_name} oracle runtime identity is malformed")
         python = authority.get("python")
         fastapi = authority.get("fastapi")
         starlette = authority.get("starlette")
@@ -208,15 +225,30 @@ def _profile_expectations(mode: Literal["oracle", "target"], profile_id: str) ->
             or not isinstance(starlette, dict)
             or not isinstance(optional_packages, dict)
         ):
-            raise ProcessError("standard oracle runtime identity is incomplete")
-        base_profile = manifest["oracle_profile"]
-        packages = {**base_profile["packages"], **optional_packages}
-        if set(packages) != ORACLE_PYTHON_PACKAGES:
-            raise ProcessError("standard oracle package identity differs from the reviewed profile")
+            raise ProcessError(f"{profile_name} oracle runtime identity is incomplete")
+        base_packages = manifest["oracle_profile"]["packages"]
+        if not isinstance(base_packages, dict):
+            raise ProcessError("base oracle package identity is malformed")
+        packages = {**base_packages, **optional_packages}
+        if profile_name == "core":
+            standard_authority = read_json(STANDARD_SURFACE_PATH).get("authority", {})
+            standard_optional = standard_authority.get("optional_package_versions", {})
+            if optional_packages or not isinstance(standard_optional, dict):
+                raise ProcessError("core oracle profile must not include optional packages")
+            forbidden_packages = sorted(standard_optional)
+            if set(base_packages) != CORE_ORACLE_PYTHON_PACKAGES:
+                raise ProcessError("core oracle package identity differs from the reviewed profile")
+        else:
+            if set(packages) != ORACLE_PYTHON_PACKAGES:
+                raise ProcessError(
+                    "standard oracle package identity differs from the reviewed profile"
+                )
+            forbidden_packages = []
         expected = {
             "id": profile_id,
             "python": python,
             "packages": packages,
+            "forbidden_packages": forbidden_packages,
             "repositories": {
                 "fastapi_source": fastapi.get("commit"),
                 "starlette_source": starlette.get("commit"),
@@ -228,7 +260,7 @@ def _profile_expectations(mode: Literal["oracle", "target"], profile_id: str) ->
             or expected["repositories"]["fastapi_source"] is None
             or expected["repositories"]["starlette_source"] is None
         ):
-            raise ProcessError("standard oracle package and repository identities disagree")
+            raise ProcessError(f"{profile_name} oracle package and repository identities disagree")
         return expected
 
     if profile_id != TARGET_PROCESS_PROFILE_ID:
@@ -290,6 +322,7 @@ print(json.dumps({
 
 def _runtime_facts(python: Path, expectations: dict[str, Any]) -> dict[str, Any]:
     package_names = set(expectations["packages"])
+    package_names.update(expectations.get("forbidden_packages", []))
     if "target_version" in expectations:
         package_names.update({"fastapi", "starlette"})
     package_names = sorted(package_names)
@@ -342,6 +375,16 @@ def _runtime_facts(python: Path, expectations: dict[str, Any]) -> dict[str, Any]
     if missing or mismatched:
         raise ProcessError(
             f"selected Python package profile mismatch (missing={missing}, mismatched={mismatched})"
+        )
+    forbidden_packages = sorted(
+        name
+        for name in expectations.get("forbidden_packages", [])
+        if actual_packages.get(name) is not None
+    )
+    if forbidden_packages:
+        raise ProcessError(
+            "selected Python profile contains forbidden optional packages: "
+            + ", ".join(forbidden_packages)
         )
     if "target_version" in expectations:
         forbidden = sorted(
@@ -1279,11 +1322,12 @@ def run_process_workflow(
         raise ProcessError(
             "target CLI entrypoint must be provided by the selected profile next to --python"
         )
-    expected_profile_id = (
-        ORACLE_PROCESS_PROFILE_ID if mode == "oracle" else TARGET_PROCESS_PROFILE_ID
+    expected_profile_ids = (
+        ORACLE_PROCESS_PROFILE_IDS if mode == "oracle" else {TARGET_PROCESS_PROFILE_ID}
     )
-    if profile != expected_profile_id:
-        raise ProcessError(f"{mode} process runner requires profile {expected_profile_id}")
+    if profile not in expected_profile_ids:
+        allowed = ", ".join(sorted(expected_profile_ids))
+        raise ProcessError(f"{mode} process runner requires one of these profiles: {allowed}")
     if source_root is None:
         source_root = (ROOT.parent / "fastapi").resolve()
     if starlette_source is None:

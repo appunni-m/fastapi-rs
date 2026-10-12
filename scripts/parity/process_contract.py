@@ -25,6 +25,10 @@ from scripts.parity.contract import (
 )
 
 ORACLE_PROCESS_PROFILE_ID = "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-standard"
+ORACLE_PROCESS_CORE_PROFILE_ID = "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-core"
+ORACLE_PROCESS_PROFILE_IDS = frozenset(
+    {ORACLE_PROCESS_PROFILE_ID, ORACLE_PROCESS_CORE_PROFILE_ID}
+)
 TARGET_PROCESS_PROFILE_ID = "fastapi-rs-python-consumer"
 PROCESS_TREE_MAX_FILES = 128
 PROCESS_TREE_MAX_FILE_BYTES = 1_048_576
@@ -406,10 +410,13 @@ def _verify_source_evidence(case: dict[str, Any], source_root: Path) -> None:
 
 def _verify_profiles(workflow: dict[str, Any]) -> None:
     profiles = workflow["profiles"]
-    if profiles != {
-        "oracle": ORACLE_PROCESS_PROFILE_ID,
-        "target": TARGET_PROCESS_PROFILE_ID,
-    }:
+    if not isinstance(profiles, dict):
+        raise ContractError("process workflow profiles must be an object")
+    oracle_profile_id = profiles.get("oracle")
+    if (
+        oracle_profile_id not in ORACLE_PROCESS_PROFILE_IDS
+        or profiles.get("target") != TARGET_PROCESS_PROFILE_ID
+    ):
         raise ContractError("process workflow profiles differ from the pinned profile identities")
     manifest_path = ROOT / "tests/fixtures/manifest.yaml"
     try:
@@ -419,14 +426,15 @@ def _verify_profiles(workflow: dict[str, Any]) -> None:
     artifacts = manifest.get("source_artifacts", {}) if isinstance(manifest, dict) else {}
     if not isinstance(artifacts, dict):
         raise ContractError("manifest has no source artifact identities for process profiles")
-    artifact = artifacts.get("runtime_api_surface_standard")
+    profile_name = "core" if oracle_profile_id == ORACLE_PROCESS_CORE_PROFILE_ID else "standard"
+    artifact = artifacts.get(f"runtime_api_surface_{profile_name}")
     if not isinstance(artifact, dict):
-        raise ContractError("manifest standard runtime surface reference is malformed")
+        raise ContractError(f"manifest {profile_name} runtime surface reference is malformed")
     surface_path = (ROOT / artifact.get("path", "")).resolve()
     if not _is_under(surface_path, ROOT) or not surface_path.is_file():
-        raise ContractError("manifest standard runtime surface path is invalid")
+        raise ContractError(f"manifest {profile_name} runtime surface path is invalid")
     if sha256_file(surface_path) != artifact.get("sha256"):
-        raise ContractError("manifest standard runtime surface digest is stale")
+        raise ContractError(f"manifest {profile_name} runtime surface digest is stale")
     surface = read_json(surface_path)
     authority = surface.get("authority", {}) if isinstance(surface, dict) else {}
     expected_authority = {
@@ -436,13 +444,19 @@ def _verify_profiles(workflow: dict[str, Any]) -> None:
     }
     optional_versions = authority.get("optional_package_versions", {})
     if authority.get("fastapi") != expected_authority["fastapi"]:
-        raise ContractError("standard process profile does not identify FastAPI 0.141.1")
+        raise ContractError(f"{profile_name} process profile does not identify FastAPI 0.141.1")
     if authority.get("starlette") != expected_authority["starlette"]:
-        raise ContractError("standard process profile does not identify Starlette 1.6.0")
+        raise ContractError(f"{profile_name} process profile does not identify Starlette 1.6.0")
     if authority.get("python") != expected_authority["python"]:
-        raise ContractError("standard process profile does not identify CPython 3.12.13")
-    if optional_versions.get("fastapi-cli") != "0.0.32":
-        raise ContractError("standard process profile must pin fastapi-cli 0.0.32")
+        raise ContractError(f"{profile_name} process profile does not identify CPython 3.12.13")
+    if profile_name == "core":
+        if optional_versions:
+            raise ContractError("core process profile must not include optional packages")
+    elif (
+        optional_versions.get("fastapi-cli") != "0.0.32"
+        or optional_versions.get("fastapi-cloud-cli") != "0.11.0"
+    ):
+        raise ContractError("standard process profile must pin fastapi-cli and fastapi-cloud-cli")
 
 
 def load_process_workflow(

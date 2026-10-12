@@ -7973,6 +7973,27 @@
       ]
     },
     {
+      "id": "fastapi-cli-missing-optional-process-v2",
+      "input_path": "tests/fixtures/inputs/parity/fastapi-cli-missing-optional-process-v2.json",
+      "input_sha256": "dd2a8d2ce5b62a25b67a1d4d4bef17e8e0761f181e64f60c69a880da5288fe32",
+      "recipe_path": "tests/fixtures/input-recipes/parity/fastapi-cli-missing-optional-process-v2.yaml",
+      "recipe_sha256": "5c0a2de758393f2f28d26c804eca1d8787c12dfee64cc2f6c1318769a006cfe8",
+      "case_ids": [
+        "fastapi.cli.process.missing-optional-cli"
+      ],
+      "workflow_schema": "fastapi-rs/python-process-workflow@2",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.cli.process.missing-optional-cli",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:fastapi-cli.md",
+            "source:upstream-test:tests/test_fastapi_cli.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "fastapi-cli-process-workflow",
       "input_path": "tests/fixtures/inputs/parity/fastapi-cli-process-workflow.json",
       "input_sha256": "0086aa761fb8ba5c9c5abb20c1b222ec528abc9bec25e63ccef8836474f31759",
@@ -38844,6 +38865,36 @@
       "observation_selectors": [
         "http.body.bytes",
         "http.status",
+        "process.exit_code",
+        "process.stderr",
+        "process.stdout"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:fastapi-cli.md",
+      "fixture_id": "fastapi.docs.fastapi-cli",
+      "workflow_id": "fastapi-cli-missing-optional-process-v2",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes process.exit_code, process.stderr, process.stdout. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.cli.process.missing-optional-cli"
+      ],
+      "observation_selectors": [
+        "process.exit_code",
+        "process.stderr",
+        "process.stdout"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_fastapi_cli.py",
+      "fixture_id": "fastapi.test.test-fastapi-cli",
+      "workflow_id": "fastapi-cli-missing-optional-process-v2",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes process.exit_code, process.stderr, process.stdout. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.cli.process.missing-optional-cli"
+      ],
+      "observation_selectors": [
         "process.exit_code",
         "process.stderr",
         "process.stdout"

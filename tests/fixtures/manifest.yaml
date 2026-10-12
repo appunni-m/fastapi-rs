@@ -416,7 +416,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@6
-    sha256: a6ce9b68b5a639cadd2e1025684393601dec16d03e9ae51a6c6f75ec51603c2b
+    sha256: 537cc3c36dcb9b3155b6e172eb4c122c191c9483dad8d0ac4628ad2fb7af81ea
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1624
@@ -452,7 +452,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: cd8bbb66f38acbf67ad100245a77f5757e1e41e407de7c82ac660d523f1fd201
+    sha256: 26c6bb324b3f80d38bbc10d299d5e87b0f57ebad0df1cdd6073aa0ba82dda49e
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 892
@@ -489,14 +489,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@7
-    sha256: e377c4cb919cdf8cb67d2f761257b6db0a6125624551da6819b2f226cefeaadd
+    sha256: 6755e89639dd5ccfb72a5523d3767f33ebd252660f3d4dcb6b3970fe3d9fecd2
     schema_path: tests/fixtures/schemas/materialized-input-index-v7.schema.json
     schema_sha256: 97ce3a2e9f3c7d173d91bc582b0f409813c7d70a07111d5a0d13690b29df425f
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 569
-      cases: 2385
-      partial_source_mappings: 1624
+      workflows: 570
+      cases: 2386
+      partial_source_mappings: 1626
 
 contract_metadata:
   aliases:
@@ -812,13 +812,14 @@ unresolved:
       isolated cwd, controlled environment, timeout, and raw process observations.
       The source oracle runs with verified identity. The target has no fastapi
       console entrypoint yet, so no target parity claim is possible. The
-      monkeypatched upstream test of private fastapi.cli.main is excluded with
-      source evidence; the documented console command remains mapped.
+      private monkeypatch technique in the upstream test is excluded with
+      source evidence; its public missing-extra command outcome is observed by
+      the separate core-profile v2 process workflow.
   python_process_workflow_v2:
     state: documented-cli-crosswalk-inputs-materialized; target-console-entrypoint-unimplemented
     schema_id: fastapi-rs/python-process-workflow@2
     schema_path: tests/fixtures/schemas/python-process-workflow-v2.schema.json
-    schema_sha256: 6ed19e4116f9bb274b8bfb63abd8245ed90c261009e035146e4b1da8b0088dbc
+    schema_sha256: 6a62966ed24570d7fc0937faeb81f78bc414c167a211a4d5e67ceed98a185c7c
     result_schema_id: fastapi-rs/python-process-workflow-result@2
     result_schema_path: tests/fixtures/schemas/python-process-workflow-result-v2.schema.json
     result_schema_sha256: 8c425c2a780044f6de2324a52c636ad70cf7b527b953ea6a7921184c3370a54d
@@ -860,6 +861,11 @@ unresolved:
         reason: >-
           The source atlas excludes worker replication and deployment behavior as Uvicorn-owned;
           the run-workers case samples CLI forwarding only and makes no worker-count claim.
+      - source_item_id: documented-page:deployment/fastapicloud.md
+        reason: >-
+          FastAPI Cloud deploy/login behavior belongs to the separately hosted service and its
+          optional fastapi-cloud-cli package, outside the FastAPI framework contract. The standard
+          root-help input still records the command names exposed by the pinned source profile.
     known_gaps:
       - behavior: development-auto-reload-after-file-change
         source_item_id: documented-page:fastapi-cli.md
@@ -878,15 +884,16 @@ unresolved:
         reason: >-
           The documented 0.0.0.0 default is not launched by the isolated runner; run help is
           compared, and server inputs require explicit loopback binding.
-      - behavior: fastapi-cloud-cli-command-execution
+      - behavior: fastapi-cloud-cli-root-help-target-surface
         source_item_id: documented-page:fastapi-cli.md
         source_sha256: ad3860dd30364ab774324d61580dd2b7b175e28a0a3fbd3fc1b2c5ec779ffe3f
         dependency: fastapi-cloud-cli@0.11.0
         lockfile_sha256: 96ae079a121e11b4cc0d260df5b7f77189bb90fa23a2da368f607418c2d98165
         reason: >-
-          The locked standard extra exposes Cloud commands in root help; their credentialed
-          remote-service behavior is delegated to an optional external CLI and remains
-          unresolved for replacement scope.
+          The pinned standard-profile root-help input captures the Cloud command names, but target
+          root-help parity cannot be checked until the Rust-owned console entrypoint exists.
+          Executing Cloud operations is explicitly excluded in source_exclusions because it is an
+          external hosted service; this gap concerns only the help surface.
     observation_selectors:
       - process.exit_code
       - process.stdout
@@ -907,10 +914,46 @@ unresolved:
       Server stdout/stderr are drained but not compared because logs contain the assigned port,
       temporary project path, and process identifiers. Actual file-change reload behavior and
       worker-count cardinality are not established by one bounded request. FASTAPI_PUBLIC_URL
-      startup text is not observed. fastapi-cloud-cli commands are exposed by the locked standard
-      extra and root help is sampled, but remote cloud/auth behavior remains separately owned and
-      unresolved. These are explicit gaps, not parity claims. Server workflows require POSIX;
+      startup text is not observed. The locked standard extra exposes FastAPI Cloud command names
+      in root help, and that help surface is sampled; target help parity remains pending with the
+      Rust-owned console entrypoint. FastAPI Cloud remote/auth operations are explicitly excluded
+      as external hosted-service behavior. These are explicit gaps, not parity claims. Server workflows require POSIX;
       non-POSIX v2 execution is rejected.
+  python_process_core_workflow_v2:
+    state: core-profile-missing-optional-cli-input-materialized; target-console-entrypoint-unimplemented
+    schema_id: fastapi-rs/python-process-workflow@2
+    schema_path: tests/fixtures/schemas/python-process-workflow-v2.schema.json
+    schema_sha256: 6a62966ed24570d7fc0937faeb81f78bc414c167a211a4d5e67ceed98a185c7c
+    result_schema_id: fastapi-rs/python-process-workflow-result@2
+    result_schema_path: tests/fixtures/schemas/python-process-workflow-result-v2.schema.json
+    result_schema_sha256: 8c425c2a780044f6de2324a52c636ad70cf7b527b953ea6a7921184c3370a54d
+    comparison_schema_id: fastapi-rs/python-process-comparison@2
+    comparison_schema_path: tests/fixtures/schemas/python-process-comparison-v2.schema.json
+    comparison_schema_sha256: 8d7c77b71d345c26d60f29d758f25f91d4618044f1b5bebdf9a0c9fd421e7c6f
+    recipe_path: tests/fixtures/input-recipes/parity/fastapi-cli-missing-optional-process-v2.yaml
+    recipe_sha256: 5c0a2de758393f2f28d26c804eca1d8787c12dfee64cc2f6c1318769a006cfe8
+    case_ids: [fastapi.cli.process.missing-optional-cli]
+    profiles:
+      oracle: fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-core
+      target: fastapi-rs-python-consumer
+    source_mappings:
+      - documented-page:fastapi-cli.md
+      - upstream-test:tests/test_fastapi_cli.py
+    observation_selectors: [process.exit_code, process.stdout, process.stderr]
+    known_gaps:
+      - behavior: traceback-install-path-and-native-entrypoint-frame
+        source_item_id: upstream-test:tests/test_fastapi_cli.py
+        source_sha256: c5256b040fd47757ef89e15c9193348af8eb1f5f38e13193a521ab0033133b8c
+        reason: >-
+          The source process raises RuntimeError after printing the install guidance; Python adds
+          environment-specific traceback paths. The target console entrypoint does not exist, so
+          the intended public error boundary and any narrow normalization remain undecided.
+    coverage: >-
+      Runs the public `fastapi --help` command from the pinned core profile, where fastapi-cli and
+      fastapi-cloud-cli are absent. It observes process exit, stdout guidance, and stderr. This
+      exercises FastAPI's missing-optional-CLI path from an actual environment instead of the
+      upstream test's private monkeypatch. Oracle input is validated; target execution remains
+      unresolved until fastapi-rs exposes its Rust-owned console entrypoint.
   fixture_backlog_integrity:
     state: source-linked-designs-validated; incremental-materialization-indexed; full-backlog-pending
     source_artifacts: [compatibility_atlas, fixture_backlog, materialized_input_index]
