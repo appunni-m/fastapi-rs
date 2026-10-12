@@ -3000,6 +3000,11 @@ reviewed_api_contract_overlay:
         Route-level `APIRoute` mutation and
         custom route classes remain outside the reviewed slice.
     fastapi.encoders.jsonable_encoder:
+      supported_slice: >-
+        Direct-call behavior is bounded to the listed encoder recipes: signature, recursive
+        JSON-compatible output for their dataclass/Pydantic/mapping inputs, alias and exclusion
+        options, exact/base custom encoders, and the selected unsupported-value/Pydantic-v1
+        errors; unselected third-party object protocols remain outside scope.
       rust_binding: fastapi-rs-py/src/lib.rs::PyJsonableEncoder::__call__
       source_evidence:
         - {path: fastapi/encoders.py, symbol: jsonable_encoder}
@@ -3124,6 +3129,9 @@ reviewed_api_contract_overlay:
         known_gaps:
           - The inputs do not compare object identity, mutation persistence, or the full mapping behavior across multiple helper calls.
     fastapi.openapi.utils.generate_operation_id:
+      supported_slice: >-
+        Deprecated direct helper only: warn, return an explicit route operation ID when present,
+        otherwise use the path fallback; it is not used internally.
       rust_binding: fastapi-rs/src/deprecated_api.rs::generate_operation_id
       source_evidence:
         - {path: fastapi/openapi/utils.py, symbol: generate_operation_id}
@@ -3196,12 +3204,18 @@ reviewed_api_contract_overlay:
           - The linked fixtures cover empty routes, metadata options, and one simple static GET; invalid arguments, metadata validation errors, and the remaining route shapes/options are not compared.
           - Native OpenAPI generation for the FastAPI application's /openapi.json route does not establish parity for this separately exported callable.
     fastapi.utils.generate_operation_id_for_path:
+      supported_slice: >-
+        Deprecated direct helper that returns the documented name+path slug with lowercase
+        method suffix and emits `FastAPIDeprecationWarning`.
       rust_binding: fastapi-rs/src/deprecated_api.rs::generate_operation_id_for_path
       source_evidence:
         - {path: fastapi/utils.py, symbol: generate_operation_id_for_path}
       feature_ids: [openapi-docs]
       observation_selectors: [python.call_outcome]
     fastapi.FastAPI:
+      supported_slice: >-
+        Root export identity only: `fastapi.FastAPI` is the `fastapi.applications.FastAPI`
+        class.
       source_evidence:
         - {path: fastapi/__init__.py}
         - {path: fastapi/applications.py, symbol: FastAPI}
@@ -3225,6 +3239,11 @@ reviewed_api_contract_overlay:
           case_id: fastapi.openapi-inline-query-schema-wire.dependency-defaults
           workload_path: tests/fixtures/workloads/inline_query_schema_wire.py
     fastapi.applications.FastAPI:
+      supported_slice: >-
+        Application construction and route behavior only for the linked validation-response
+        cases (automatic 422 insertion/suppression for declared response variants) and
+        inline-query cases (direct and dependency defaults in the OpenAPI/request wire shape);
+        other constructor options and app lifecycle remain outside this slice.
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::new
       source_evidence:
         - {path: fastapi/applications.py, symbol: FastAPI}
@@ -7142,6 +7161,9 @@ reviewed_api_contract_overlay:
         FastAPI.exception_handler; the fixtures do not establish the complete
         constructor signature or Starlette subclass contract.
     fastapi.exceptions.WebSocketException:
+      supported_slice: >-
+        FastAPI exception subtype and constructor; close behavior is delegated to the pinned
+        Starlette WebSocket exception path.
       rust_binding: fastapi-rs/src/errors.rs::register
       source_evidence:
         - {path: fastapi/exceptions.py, symbol: WebSocketException}
@@ -7155,6 +7177,9 @@ reviewed_api_contract_overlay:
         - websocket.close_code
         - websocket.close_reason
     fastapi.exceptions.WebSocketException.__init__:
+      supported_slice: >-
+        Accept required close code and optional reason, then delegate both values unchanged to
+        Starlette.
       rust_binding: fastapi-rs/src/errors.rs::register
       source_evidence:
         - path: fastapi/exceptions.py
@@ -8280,6 +8305,11 @@ reviewed_api_contract_overlay:
         The selected OpenAPI cases serialize the APIKey scheme type as
         `apiKey`; direct field validation remains unverified.
     fastapi.openapi.models.Components:
+      supported_slice: >-
+        The active direct inputs declare a python.signature observation for this class. The
+        model-result stimulus supplies only schemas (one inline Schema and one $ref Reference)
+        plus an extension value; other component maps, validation, coercion, and other
+        serialization modes are outside this input slice.
       rust_binding: null
       source_evidence:
         - path: fastapi/openapi/models.py
@@ -8301,6 +8331,10 @@ reviewed_api_contract_overlay:
           - The target fastapi.openapi.models façade does not export Components; the direct model input records source construction and serialization only.
         rust_binding: null
     fastapi.openapi.models.Discriminator:
+      supported_slice: >-
+        The active inputs declare python.signature and model-result observations; the
+        model-result stimulus supplies required propertyName and one optional mapping. Other
+        validation, coercion, and model_dump configurations are unverified.
       rust_binding: null
       source_evidence:
         - path: fastapi/openapi/models.py
@@ -8322,6 +8356,12 @@ reviewed_api_contract_overlay:
           - The target fastapi.openapi.models façade does not export Discriminator; the direct model input records source construction and serialization only.
         rust_binding: null
     fastapi.openapi.models.Schema:
+      supported_slice: >-
+        The active inputs declare signature and model-result observations. The model-result
+        stimulus supplies schema_ (serialized by alias), id, title, type, required, properties
+        (including nested type/minLength), additionalProperties, discriminator, and one
+        extension key. Other keywords and constraints, alias-name input, validation failures,
+        and schema generation are outside this input slice.
       rust_binding: null
       source_evidence:
         - path: fastapi/openapi/models.py
@@ -8511,6 +8551,3166 @@ reviewed_api_contract_overlay:
         background callback, its context, and function/request scope ordering.
         Fresh receipts are required. Standalone task behavior, sync callbacks,
         reflection and generic scheduling remain in the sibling contract.
+
+    fastapi.BackgroundTasks:
+      source_evidence:
+        - path: fastapi/__init__.py
+          kind: import-binding
+          line: 8
+          imported_module: background
+          relative_level: 1
+          imported_name: BackgroundTasks
+          alias_spelling: BackgroundTasks
+          local_name: BackgroundTasks
+          target_path: fastapi.background.BackgroundTasks
+      supported_slice: >-
+        Root export identity only: `fastapi.BackgroundTasks` is the
+        `fastapi.background.BackgroundTasks` class re-exported at the pinned root.
+
+    fastapi.UploadFile:
+      source_evidence:
+        - path: fastapi/__init__.py
+          kind: import-binding
+          line: 9
+          imported_module: datastructures
+          relative_level: 1
+          imported_name: UploadFile
+          alias_spelling: UploadFile
+          local_name: UploadFile
+          target_path: fastapi.datastructures.UploadFile
+      supported_slice: >-
+        Root export identity only: `fastapi.UploadFile` is the
+        `fastapi.datastructures.UploadFile` class.
+
+    fastapi.WebSocket:
+      source_evidence:
+        - path: fastapi/__init__.py
+          kind: import-binding
+          line: 24
+          imported_module: websockets
+          relative_level: 1
+          imported_name: WebSocket
+          alias_spelling: WebSocket
+          local_name: WebSocket
+          target_path: fastapi.websockets.WebSocket
+      supported_slice: >-
+        Import identity only: the root binding aliases the FastAPI websocket-module binding,
+        which directly re-exports `starlette.websockets.WebSocket`.
+
+    fastapi.WebSocketDisconnect:
+      source_evidence:
+        - path: fastapi/__init__.py
+          kind: import-binding
+          line: 25
+          imported_module: websockets
+          relative_level: 1
+          imported_name: WebSocketDisconnect
+          alias_spelling: WebSocketDisconnect
+          local_name: WebSocketDisconnect
+          target_path: fastapi.websockets.WebSocketDisconnect
+      supported_slice: >-
+        Import identity only: the root binding aliases the FastAPI websocket-module binding,
+        which directly re-exports `starlette.websockets.WebSocketDisconnect`.
+
+    fastapi.__version__:
+      source_evidence:
+        - path: fastapi/__init__.py
+          kind: module-value
+          symbol: __version__
+          start_line: 3
+          end_line: 3
+      supported_slice: >-
+        Expose the pinned source version literal `0.141.1` as `fastapi.__version__`; this does
+        not describe distribution metadata or a version-discovery API.
+
+    fastapi.background.BackgroundTasks:
+      source_evidence:
+        - path: fastapi/background.py
+          kind: source-definition
+          symbol: BackgroundTasks
+          start_line: 11
+          end_line: 61
+      supported_slice: >-
+        FastAPI-specific behavior is the subclass and unchanged `add_task(func, *args,
+        **kwargs)` forwarding; task collection, execution order, and sync/async dispatch follow
+        the pinned Starlette contract.
+
+    fastapi.datastructures.UploadFile:
+      source_evidence:
+        - path: fastapi/datastructures.py
+          kind: source-definition
+          symbol: UploadFile
+          start_line: 21
+          end_line: 150
+      supported_slice: >-
+        FastAPI subclass recognition and Pydantic hooks: the plain validator accepts Starlette
+        `UploadFile` instances, and the generated JSON schema is string/octet-stream; the listed
+        methods and fields are separate rows.
+
+    fastapi.datastructures.UploadFile.close:
+      source_evidence:
+        - path: fastapi/datastructures.py
+          kind: source-definition
+          symbol: close
+          owner: UploadFile
+          start_line: 124
+          end_line: 130
+      supported_slice: >-
+        Async close forwarding to the pinned Starlette `UploadFile.close`, returning its result.
+
+    fastapi.datastructures.UploadFile.content_type:
+      source_evidence:
+        - path: fastapi/datastructures.py
+          kind: source-definition
+          symbol: UploadFile
+          start_line: 21
+          end_line: 150
+      supported_slice: >-
+        Read the nullable upload content-type value exposed from its headers.
+
+    fastapi.datastructures.UploadFile.file:
+      source_evidence:
+        - path: fastapi/datastructures.py
+          kind: source-definition
+          symbol: UploadFile
+          start_line: 21
+          end_line: 150
+      supported_slice: >-
+        Expose the underlying standard blocking `BinaryIO` file object.
+
+    fastapi.datastructures.UploadFile.filename:
+      source_evidence:
+        - path: fastapi/datastructures.py
+          kind: source-definition
+          symbol: UploadFile
+          start_line: 21
+          end_line: 150
+      supported_slice: >-
+        Read the nullable original upload filename.
+
+    fastapi.datastructures.UploadFile.headers:
+      source_evidence:
+        - path: fastapi/datastructures.py
+          kind: source-definition
+          symbol: UploadFile
+          start_line: 21
+          end_line: 150
+      supported_slice: >-
+        Read the upload’s `Headers` value.
+
+    fastapi.datastructures.UploadFile.read:
+      source_evidence:
+        - path: fastapi/datastructures.py
+          kind: source-definition
+          symbol: read
+          owner: UploadFile
+          start_line: 86
+          end_line: 102
+      supported_slice: >-
+        Forward the optional byte count to awaited Starlette `UploadFile.read`; return bytes.
+
+    fastapi.datastructures.UploadFile.seek:
+      source_evidence:
+        - path: fastapi/datastructures.py
+          kind: source-definition
+          symbol: seek
+          owner: UploadFile
+          start_line: 104
+          end_line: 122
+      supported_slice: >-
+        Forward a required byte offset to awaited Starlette `UploadFile.seek`; return `None`.
+
+    fastapi.datastructures.UploadFile.size:
+      source_evidence:
+        - path: fastapi/datastructures.py
+          kind: source-definition
+          symbol: UploadFile
+          start_line: 21
+          end_line: 150
+      supported_slice: >-
+        Read the nullable upload size in bytes.
+
+    fastapi.datastructures.UploadFile.write:
+      source_evidence:
+        - path: fastapi/datastructures.py
+          kind: source-definition
+          symbol: write
+          owner: UploadFile
+          start_line: 66
+          end_line: 84
+      supported_slice: >-
+        Forward bytes to awaited Starlette `UploadFile.write`; return `None`.
+
+    fastapi.exceptions.HTTPException:
+      source_evidence:
+        - path: fastapi/exceptions.py
+          kind: source-definition
+          symbol: HTTPException
+          start_line: 17
+          end_line: 83
+      supported_slice: >-
+        FastAPI exception subtype identity and its FastAPI constructor surface; transport
+        handling and response conversion are separate handler/middleware behavior.
+
+    fastapi.exceptions.HTTPException.__init__:
+      source_evidence:
+        - path: fastapi/exceptions.py
+          kind: source-definition
+          symbol: __init__
+          owner: HTTPException
+          start_line: 45
+          end_line: 83
+      supported_slice: >-
+        Constructor requiredness/defaults and unchanged delegation of status, arbitrary detail,
+        and optional headers to Starlette.
+
+    fastapi.responses.ORJSONResponse:
+      source_evidence:
+        - path: fastapi/responses.py
+          kind: source-definition
+          symbol: ORJSONResponse
+          start_line: 78
+          end_line: 98
+      supported_slice: >-
+        Deprecated JSON response class requiring optional `orjson`; class construction uses the
+        JSON response envelope, while serialization is the separately listed `render` operation.
+
+    fastapi.responses.ORJSONResponse.render:
+      source_evidence:
+        - path: fastapi/responses.py
+          kind: source-definition
+          symbol: render
+          owner: ORJSONResponse
+          start_line: 94
+          end_line: 98
+      supported_slice: >-
+        Serialize content to bytes with the two pinned ORJSON options; preserve the source
+        assertion when the optional package is absent.
+
+    fastapi.responses.UJSONResponse:
+      source_evidence:
+        - path: fastapi/responses.py
+          kind: source-definition
+          symbol: UJSONResponse
+          start_line: 48
+          end_line: 66
+      supported_slice: >-
+        Deprecated JSON response class requiring optional `ujson`; class construction uses the
+        JSON response envelope, while serialization is the separately listed `render` operation.
+
+    fastapi.responses.UJSONResponse.render:
+      source_evidence:
+        - path: fastapi/responses.py
+          kind: source-definition
+          symbol: render
+          owner: UJSONResponse
+          start_line: 64
+          end_line: 66
+      supported_slice: >-
+        Serialize content using `ujson.dumps(..., ensure_ascii=False)` followed by UTF-8
+        encoding; preserve the source assertion when the optional package is absent.
+
+    fastapi.routing.APIRoute.response_class:
+      source_evidence:
+        - path: fastapi/routing.py
+          kind: source-definition
+          symbol: APIRoute
+          start_line: 1126
+          end_line: 1281
+      supported_slice: >-
+        Read the configured response class or retained `DefaultPlaceholder` from an APIRoute;
+        handler response selection resolves that stored value separately.
+
+    fastapi.routing.APIRoute.tags:
+      source_evidence:
+        - path: fastapi/routing.py
+          kind: source-definition
+          symbol: APIRoute
+          start_line: 1126
+          end_line: 1281
+      supported_slice: >-
+        Read the APIRoute tag list supplied at construction, or an empty list when absent.
+
+    fastapi.routing.APIRouter:
+      source_evidence:
+        - path: fastapi/routing.py
+          kind: source-definition
+          symbol: APIRouter
+          start_line: 2255
+          end_line: 6447
+      supported_slice: >-
+        Constructor state only for router prefix, tags, dependencies, default response class,
+        responses/callbacks, route class and lifespan/startup configuration; path-operation
+        decorators, `include_router`, event methods, and Starlette route matching remain their
+        own operations/contracts.
+
+    fastapi.security.http.HTTPAuthorizationCredentials.scheme:
+      source_evidence:
+        - path: fastapi/security/http.py
+          kind: source-definition
+          symbol: HTTPAuthorizationCredentials
+          start_line: 29
+          end_line: 66
+      supported_slice: >-
+        Required string field holding the parsed authorization scheme; credential parsing and
+        the sibling `credentials` field remain separate operations.
+
+    fastapi.security.http.HTTPBase.make_not_authenticated_error:
+      source_evidence:
+        - path: fastapi/security/http.py
+          kind: source-definition
+          symbol: make_not_authenticated_error
+          owner: HTTPBase
+          start_line: 87
+          end_line: 92
+      supported_slice: >-
+        Build the source 401 FastAPI exception with fixed detail and scheme-derived
+        `WWW-Authenticate` header.
+
+    fastapi.openapi.models.Components.callbacks:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Components
+          start_line: 399
+          end_line: 410
+      supported_slice: >-
+        Declared field only: annotation dict[str, dict[str, PathItem] | Reference | Any] | None;
+        default None. Pydantic validation/coercion, default omission, alias parsing/dump,
+        errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Components.examples:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Components
+          start_line: 399
+          end_line: 410
+      supported_slice: >-
+        Declared field only: annotation dict[str, Example | Reference] | None; default None.
+        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
+        schema behavior are not claimed.
+
+    fastapi.openapi.models.Components.headers:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Components
+          start_line: 399
+          end_line: 410
+      supported_slice: >-
+        Declared field only: annotation dict[str, Header | Reference] | None; default None.
+        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
+        schema behavior are not claimed.
+
+    fastapi.openapi.models.Components.links:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Components
+          start_line: 399
+          end_line: 410
+      supported_slice: >-
+        Declared field only: annotation dict[str, Link | Reference] | None; default None.
+        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
+        schema behavior are not claimed.
+
+    fastapi.openapi.models.Components.parameters:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Components
+          start_line: 399
+          end_line: 410
+      supported_slice: >-
+        Declared field only: annotation dict[str, Parameter | Reference] | None; default None.
+        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
+        schema behavior are not claimed.
+
+    fastapi.openapi.models.Components.pathItems:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Components
+          start_line: 399
+          end_line: 410
+      supported_slice: >-
+        Declared field only: annotation dict[str, PathItem | Reference] | None; default None.
+        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
+        schema behavior are not claimed.
+
+    fastapi.openapi.models.Components.requestBodies:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Components
+          start_line: 399
+          end_line: 410
+      supported_slice: >-
+        Declared field only: annotation dict[str, RequestBody | Reference] | None; default None.
+        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
+        schema behavior are not claimed.
+
+    fastapi.openapi.models.Components.responses:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Components
+          start_line: 399
+          end_line: 410
+      supported_slice: >-
+        Declared field only: annotation dict[str, Response | Reference] | None; default None.
+        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
+        schema behavior are not claimed.
+
+    fastapi.openapi.models.Components.schemas:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Components
+          start_line: 399
+          end_line: 410
+      supported_slice: >-
+        Declared field only: annotation dict[str, Schema | Reference] | None; default None;
+        parent input sample only through openapi-models.components.model-result; no field-row
+        fixture link. Pydantic validation/coercion, default omission, alias parsing/dump,
+        errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Components.securitySchemes:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Components
+          start_line: 399
+          end_line: 410
+      supported_slice: >-
+        Declared field only: annotation dict[str, SecurityScheme | Reference] | None; default
+        None. Pydantic validation/coercion, default omission, alias parsing/dump, errors, and
+        full schema behavior are not claimed.
+
+    fastapi.openapi.models.Contact:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Contact
+          start_line: 61
+          end_line: 64
+      supported_slice: >-
+        Source model declaration only: Contact inherits BaseModelWithConfig and declares email,
+        name, url. No direct constructor/model_result case is row-linked; Pydantic signature
+        generation, validation/coercion, extras, serialization, and JSON Schema behavior remain
+        outside this source-only slice.
+
+    fastapi.openapi.models.Contact.email:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Contact
+          start_line: 61
+          end_line: 64
+      supported_slice: >-
+        Declared field only: annotation EmailStr | None; default None; source has an optional
+        email-validator/fallback branch. Pydantic validation/coercion, default omission, alias
+        parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Contact.name:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Contact
+          start_line: 61
+          end_line: 64
+      supported_slice: >-
+        Declared field only: annotation str | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Contact.url:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Contact
+          start_line: 61
+          end_line: 64
+      supported_slice: >-
+        Declared field only: annotation AnyUrl | None; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.Discriminator.mapping:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Discriminator
+          start_line: 99
+          end_line: 101
+      supported_slice: >-
+        Declared field only: annotation dict[str, str] | None; default None; parent input sample
+        only through openapi-models.discriminator.model-result; no field-row fixture link.
+        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
+        schema behavior are not claimed.
+
+    fastapi.openapi.models.Discriminator.propertyName:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Discriminator
+          start_line: 99
+          end_line: 101
+      supported_slice: >-
+        Declared field only: annotation str; required declaration (no default); parent input
+        sample only through openapi-models.discriminator.model-result; no field-row fixture
+        link. Pydantic validation/coercion, default omission, alias parsing/dump, errors, and
+        full schema behavior are not claimed.
+
+    fastapi.openapi.models.Encoding:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Encoding
+          start_line: 228
+          end_line: 233
+      supported_slice: >-
+        Source model declaration only: Encoding inherits BaseModelWithConfig and declares
+        allowReserved, contentType, explode, headers, style. No direct constructor/model_result
+        case is row-linked; Pydantic signature generation, validation/coercion, extras,
+        serialization, and JSON Schema behavior remain outside this source-only slice.
+
+    fastapi.openapi.models.Encoding.allowReserved:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Encoding
+          start_line: 228
+          end_line: 233
+      supported_slice: >-
+        Declared field only: annotation bool | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Encoding.contentType:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Encoding
+          start_line: 228
+          end_line: 233
+      supported_slice: >-
+        Declared field only: annotation str | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Encoding.explode:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Encoding
+          start_line: 228
+          end_line: 233
+      supported_slice: >-
+        Declared field only: annotation bool | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Encoding.headers:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Encoding
+          start_line: 228
+          end_line: 233
+      supported_slice: >-
+        Declared field only: annotation dict[str, Union["Header", Reference]] | None; default
+        None. Pydantic validation/coercion, default omission, alias parsing/dump, errors, and
+        full schema behavior are not claimed.
+
+    fastapi.openapi.models.Encoding.style:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Encoding
+          start_line: 228
+          end_line: 233
+      supported_slice: >-
+        Declared field only: annotation str | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Example:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Example
+          start_line: 212
+          end_line: 218
+      supported_slice: >-
+        TypedDict declaration only: total=False makes the declared keys non-required;
+        __pydantic_config__ separately declares extra=allow. Direct TypedDict construction and
+        key/value projections are not mapped.
+
+    fastapi.openapi.models.Example.__pydantic_config__:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Example
+          start_line: 212
+          end_line: 218
+      supported_slice: >-
+        TypedDict config declaration only: __pydantic_config__ is {"extra": "allow"}; runtime
+        typing/Pydantic treatment is not directly observed.
+
+    fastapi.openapi.models.Example.description:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Example
+          start_line: 212
+          end_line: 218
+      supported_slice: >-
+        Declared field only: annotation str | None; optional TypedDict key
+        (Example.total=False). Pydantic validation/coercion, default omission, alias
+        parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Example.externalValue:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Example
+          start_line: 212
+          end_line: 218
+      supported_slice: >-
+        Declared field only: annotation AnyUrl | None; optional TypedDict key
+        (Example.total=False). Pydantic validation/coercion, default omission, alias
+        parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Example.summary:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Example
+          start_line: 212
+          end_line: 218
+      supported_slice: >-
+        Declared field only: annotation str | None; optional TypedDict key
+        (Example.total=False). Pydantic validation/coercion, default omission, alias
+        parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Example.value:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Example
+          start_line: 212
+          end_line: 218
+      supported_slice: >-
+        Declared field only: annotation Any | None; optional TypedDict key
+        (Example.total=False). Pydantic validation/coercion, default omission, alias
+        parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.ExternalDocumentation:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: ExternalDocumentation
+          start_line: 112
+          end_line: 114
+      supported_slice: >-
+        Source model declaration only: ExternalDocumentation inherits BaseModelWithConfig and
+        declares description, url. No direct constructor/model_result case is row-linked;
+        Pydantic signature generation, validation/coercion, extras, serialization, and JSON
+        Schema behavior remain outside this source-only slice.
+
+    fastapi.openapi.models.ExternalDocumentation.description:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: ExternalDocumentation
+          start_line: 112
+          end_line: 114
+      supported_slice: >-
+        Declared field only: annotation str | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.ExternalDocumentation.url:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: ExternalDocumentation
+          start_line: 112
+          end_line: 114
+      supported_slice: >-
+        Declared field only: annotation AnyUrl; required declaration (no default). Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.HTTPBase:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: HTTPBase
+          start_line: 345
+          end_line: 347
+      supported_slice: >-
+        Source model declaration only: HTTPBase inherits SecurityBase and declares scheme,
+        type_. No direct constructor/model_result case is row-linked; Pydantic signature
+        generation, validation/coercion, extras, serialization, and JSON Schema behavior remain
+        outside this source-only slice.
+
+    fastapi.openapi.models.HTTPBase.scheme:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: HTTPBase
+          start_line: 345
+          end_line: 347
+      supported_slice: >-
+        Declared field only: annotation str; required declaration (no default). Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.HTTPBase.type_:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: HTTPBase
+          start_line: 345
+          end_line: 347
+      supported_slice: >-
+        Declared field only: annotation SecuritySchemeType; default SecuritySchemeType.http;
+        serialization alias 'type'. Pydantic validation/coercion, default omission, alias
+        parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.HTTPBearer:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: HTTPBearer
+          start_line: 350
+          end_line: 352
+      supported_slice: >-
+        Source model declaration only: HTTPBearer inherits HTTPBase and declares bearerFormat,
+        scheme. No direct constructor/model_result case is row-linked; Pydantic signature
+        generation, validation/coercion, extras, serialization, and JSON Schema behavior remain
+        outside this source-only slice.
+
+    fastapi.openapi.models.HTTPBearer.bearerFormat:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: HTTPBearer
+          start_line: 350
+          end_line: 352
+      supported_slice: >-
+        Declared field only: annotation str | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.HTTPBearer.scheme:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: HTTPBearer
+          start_line: 350
+          end_line: 352
+      supported_slice: >-
+        Declared field only: annotation Literal["bearer"]; default "bearer". Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.Header:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Header
+          start_line: 263
+          end_line: 264
+      supported_slice: >-
+        Source model declaration only: Header inherits ParameterBase and declares no own child
+        fields. No direct constructor/model_result case is row-linked; Pydantic signature
+        generation, validation/coercion, extras, serialization, and JSON Schema behavior remain
+        outside this source-only slice.
+
+    fastapi.openapi.models.Info:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Info
+          start_line: 73
+          end_line: 80
+      supported_slice: >-
+        The direct API input declares a signature observation for the Info class. A related docs
+        workflow uses Info as a response_model and declares OpenAPI observations for its
+        generated Info schema; standalone construction, model_result, and field validation are
+        not mapped.
+
+    fastapi.openapi.models.Info.contact:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Info
+          start_line: 73
+          end_line: 80
+      supported_slice: >-
+        Declared field only: annotation Contact | None; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.Info.description:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Info
+          start_line: 73
+          end_line: 80
+      supported_slice: >-
+        Declared field only: annotation str | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Info.license:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Info
+          start_line: 73
+          end_line: 80
+      supported_slice: >-
+        Declared field only: annotation License | None; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.Info.summary:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Info
+          start_line: 73
+          end_line: 80
+      supported_slice: >-
+        Declared field only: annotation str | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Info.termsOfService:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Info
+          start_line: 73
+          end_line: 80
+      supported_slice: >-
+        Declared field only: annotation str | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Info.title:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Info
+          start_line: 73
+          end_line: 80
+      supported_slice: >-
+        Declared field only: annotation str; required declaration (no default). Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.Info.version:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Info
+          start_line: 73
+          end_line: 80
+      supported_slice: >-
+        Declared field only: annotation str; required declaration (no default). Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.License:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: License
+          start_line: 67
+          end_line: 70
+      supported_slice: >-
+        Source model declaration only: License inherits BaseModelWithConfig and declares
+        identifier, name, url. No direct constructor/model_result case is row-linked; Pydantic
+        signature generation, validation/coercion, extras, serialization, and JSON Schema
+        behavior remain outside this source-only slice.
+
+    fastapi.openapi.models.License.identifier:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: License
+          start_line: 67
+          end_line: 70
+      supported_slice: >-
+        Declared field only: annotation str | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.License.name:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: License
+          start_line: 67
+          end_line: 70
+      supported_slice: >-
+        Declared field only: annotation str; required declaration (no default). Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.License.url:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: License
+          start_line: 67
+          end_line: 70
+      supported_slice: >-
+        Declared field only: annotation AnyUrl | None; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.Link:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Link
+          start_line: 273
+          end_line: 279
+      supported_slice: >-
+        Source model declaration only: Link inherits BaseModelWithConfig and declares
+        description, operationId, operationRef, parameters, requestBody, server. No direct
+        constructor/model_result case is row-linked; Pydantic signature generation,
+        validation/coercion, extras, serialization, and JSON Schema behavior remain outside this
+        source-only slice.
+
+    fastapi.openapi.models.Link.description:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Link
+          start_line: 273
+          end_line: 279
+      supported_slice: >-
+        Declared field only: annotation str | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Link.operationId:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Link
+          start_line: 273
+          end_line: 279
+      supported_slice: >-
+        Declared field only: annotation str | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Link.operationRef:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Link
+          start_line: 273
+          end_line: 279
+      supported_slice: >-
+        Declared field only: annotation str | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Link.parameters:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Link
+          start_line: 273
+          end_line: 279
+      supported_slice: >-
+        Declared field only: annotation dict[str, Any | str] | None; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.Link.requestBody:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Link
+          start_line: 273
+          end_line: 279
+      supported_slice: >-
+        Declared field only: annotation Any | str | None; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.Link.server:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Link
+          start_line: 273
+          end_line: 279
+      supported_slice: >-
+        Declared field only: annotation Server | None; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.MediaType:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: MediaType
+          start_line: 236
+          end_line: 240
+      supported_slice: >-
+        Source model declaration only: MediaType inherits BaseModelWithConfig and declares
+        encoding, example, examples, schema_. No direct constructor/model_result case is
+        row-linked; Pydantic signature generation, validation/coercion, extras, serialization,
+        and JSON Schema behavior remain outside this source-only slice.
+
+    fastapi.openapi.models.MediaType.encoding:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: MediaType
+          start_line: 236
+          end_line: 240
+      supported_slice: >-
+        Declared field only: annotation dict[str, Encoding] | None; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.MediaType.example:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: MediaType
+          start_line: 236
+          end_line: 240
+      supported_slice: >-
+        Declared field only: annotation Any | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.MediaType.examples:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: MediaType
+          start_line: 236
+          end_line: 240
+      supported_slice: >-
+        Declared field only: annotation dict[str, Example | Reference] | None; default None.
+        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
+        schema behavior are not claimed.
+
+    fastapi.openapi.models.MediaType.schema_:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: MediaType
+          start_line: 236
+          end_line: 240
+      supported_slice: >-
+        Declared field only: annotation Schema | Reference | None; default None; serialization
+        alias 'schema'. Pydantic validation/coercion, default omission, alias parsing/dump,
+        errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.OAuth2:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: OAuth2
+          start_line: 384
+          end_line: 386
+      supported_slice: >-
+        Source model declaration only: OAuth2 inherits SecurityBase and declares flows, type_.
+        No direct constructor/model_result case is row-linked; Pydantic signature generation,
+        validation/coercion, extras, serialization, and JSON Schema behavior remain outside this
+        source-only slice.
+
+    fastapi.openapi.models.OAuth2.flows:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: OAuth2
+          start_line: 384
+          end_line: 386
+      supported_slice: >-
+        Declared field only: annotation OAuthFlows; required declaration (no default). Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.OAuth2.type_:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: OAuth2
+          start_line: 384
+          end_line: 386
+      supported_slice: >-
+        Declared field only: annotation SecuritySchemeType; default SecuritySchemeType.oauth2;
+        serialization alias 'type'. Pydantic validation/coercion, default omission, alias
+        parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.OAuthFlow:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: OAuthFlow
+          start_line: 355
+          end_line: 357
+      supported_slice: >-
+        Source model declaration only: OAuthFlow inherits BaseModelWithConfig and declares
+        refreshUrl, scopes. No direct constructor/model_result case is row-linked; Pydantic
+        signature generation, validation/coercion, extras, serialization, and JSON Schema
+        behavior remain outside this source-only slice.
+
+    fastapi.openapi.models.OAuthFlow.refreshUrl:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: OAuthFlow
+          start_line: 355
+          end_line: 357
+      supported_slice: >-
+        Declared field only: annotation str | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.OAuthFlow.scopes:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: OAuthFlow
+          start_line: 355
+          end_line: 357
+      supported_slice: >-
+        Declared field only: annotation dict[str, str]; default {}. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.OAuthFlowAuthorizationCode:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: OAuthFlowAuthorizationCode
+          start_line: 372
+          end_line: 374
+      supported_slice: >-
+        Source model declaration only: OAuthFlowAuthorizationCode inherits OAuthFlow and
+        declares authorizationUrl, tokenUrl. No direct constructor/model_result case is
+        row-linked; Pydantic signature generation, validation/coercion, extras, serialization,
+        and JSON Schema behavior remain outside this source-only slice.
+
+    fastapi.openapi.models.OAuthFlowAuthorizationCode.authorizationUrl:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: OAuthFlowAuthorizationCode
+          start_line: 372
+          end_line: 374
+      supported_slice: >-
+        Declared field only: annotation str; required declaration (no default). Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.OAuthFlowAuthorizationCode.tokenUrl:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: OAuthFlowAuthorizationCode
+          start_line: 372
+          end_line: 374
+      supported_slice: >-
+        Declared field only: annotation str; required declaration (no default). Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.OAuthFlowClientCredentials:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: OAuthFlowClientCredentials
+          start_line: 368
+          end_line: 369
+      supported_slice: >-
+        Source model declaration only: OAuthFlowClientCredentials inherits OAuthFlow and
+        declares tokenUrl. No direct constructor/model_result case is row-linked; Pydantic
+        signature generation, validation/coercion, extras, serialization, and JSON Schema
+        behavior remain outside this source-only slice.
+
+    fastapi.openapi.models.OAuthFlowClientCredentials.tokenUrl:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: OAuthFlowClientCredentials
+          start_line: 368
+          end_line: 369
+      supported_slice: >-
+        Declared field only: annotation str; required declaration (no default). Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.OAuthFlowImplicit:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: OAuthFlowImplicit
+          start_line: 360
+          end_line: 361
+      supported_slice: >-
+        Source model declaration only: OAuthFlowImplicit inherits OAuthFlow and declares
+        authorizationUrl. No direct constructor/model_result case is row-linked; Pydantic
+        signature generation, validation/coercion, extras, serialization, and JSON Schema
+        behavior remain outside this source-only slice.
+
+    fastapi.openapi.models.OAuthFlowImplicit.authorizationUrl:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: OAuthFlowImplicit
+          start_line: 360
+          end_line: 361
+      supported_slice: >-
+        Declared field only: annotation str; required declaration (no default). Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.OAuthFlowPassword:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: OAuthFlowPassword
+          start_line: 364
+          end_line: 365
+      supported_slice: >-
+        Source model declaration only: OAuthFlowPassword inherits OAuthFlow and declares
+        tokenUrl. No direct constructor/model_result case is row-linked; Pydantic signature
+        generation, validation/coercion, extras, serialization, and JSON Schema behavior remain
+        outside this source-only slice.
+
+    fastapi.openapi.models.OAuthFlowPassword.tokenUrl:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: OAuthFlowPassword
+          start_line: 364
+          end_line: 365
+      supported_slice: >-
+        Declared field only: annotation str; required declaration (no default). Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.OAuthFlows:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: OAuthFlows
+          start_line: 377
+          end_line: 381
+      supported_slice: >-
+        Source model declaration only: OAuthFlows inherits BaseModelWithConfig and declares
+        authorizationCode, clientCredentials, implicit, password. No direct
+        constructor/model_result case is row-linked; Pydantic signature generation,
+        validation/coercion, extras, serialization, and JSON Schema behavior remain outside this
+        source-only slice.
+
+    fastapi.openapi.models.OAuthFlows.authorizationCode:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: OAuthFlows
+          start_line: 377
+          end_line: 381
+      supported_slice: >-
+        Declared field only: annotation OAuthFlowAuthorizationCode | None; default None.
+        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
+        schema behavior are not claimed.
+
+    fastapi.openapi.models.OAuthFlows.clientCredentials:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: OAuthFlows
+          start_line: 377
+          end_line: 381
+      supported_slice: >-
+        Declared field only: annotation OAuthFlowClientCredentials | None; default None.
+        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
+        schema behavior are not claimed.
+
+    fastapi.openapi.models.OAuthFlows.implicit:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: OAuthFlows
+          start_line: 377
+          end_line: 381
+      supported_slice: >-
+        Declared field only: annotation OAuthFlowImplicit | None; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.OAuthFlows.password:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: OAuthFlows
+          start_line: 377
+          end_line: 381
+      supported_slice: >-
+        Declared field only: annotation OAuthFlowPassword | None; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.OpenAPI:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: OpenAPI
+          start_line: 419
+          end_line: 430
+      supported_slice: >-
+        The direct API input declares only a signature observation for the OpenAPI class.
+        App-level openapi.document workflows exercise document generation, not direct OpenAPI
+        model construction, validation, or model_dump for this symbol.
+
+    fastapi.openapi.models.OpenAPI.components:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: OpenAPI
+          start_line: 419
+          end_line: 430
+      supported_slice: >-
+        Declared field only: annotation Components | None; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.OpenAPI.externalDocs:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: OpenAPI
+          start_line: 419
+          end_line: 430
+      supported_slice: >-
+        Declared field only: annotation ExternalDocumentation | None; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.OpenAPI.info:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: OpenAPI
+          start_line: 419
+          end_line: 430
+      supported_slice: >-
+        Declared field only: annotation Info; required declaration (no default). Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.OpenAPI.jsonSchemaDialect:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: OpenAPI
+          start_line: 419
+          end_line: 430
+      supported_slice: >-
+        Declared field only: annotation str | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.OpenAPI.openapi:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: OpenAPI
+          start_line: 419
+          end_line: 430
+      supported_slice: >-
+        Declared field only: annotation str; required declaration (no default). Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.OpenAPI.paths:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: OpenAPI
+          start_line: 419
+          end_line: 430
+      supported_slice: >-
+        Declared field only: annotation dict[str, PathItem | Any] | None; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.OpenAPI.security:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: OpenAPI
+          start_line: 419
+          end_line: 430
+      supported_slice: >-
+        Declared field only: annotation list[dict[str, list[str]]] | None; default None.
+        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
+        schema behavior are not claimed.
+
+    fastapi.openapi.models.OpenAPI.servers:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: OpenAPI
+          start_line: 419
+          end_line: 430
+      supported_slice: >-
+        Declared field only: annotation list[Server] | None; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.OpenAPI.tags:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: OpenAPI
+          start_line: 419
+          end_line: 430
+      supported_slice: >-
+        Declared field only: annotation list[Tag] | None; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.OpenAPI.webhooks:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: OpenAPI
+          start_line: 419
+          end_line: 430
+      supported_slice: >-
+        Declared field only: annotation dict[str, PathItem | Reference] | None; default None.
+        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
+        schema behavior are not claimed.
+
+    fastapi.openapi.models.OpenIdConnect:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: OpenIdConnect
+          start_line: 389
+          end_line: 393
+      supported_slice: >-
+        Source model declaration only: OpenIdConnect inherits SecurityBase and declares
+        openIdConnectUrl, type_. No direct constructor/model_result case is row-linked; Pydantic
+        signature generation, validation/coercion, extras, serialization, and JSON Schema
+        behavior remain outside this source-only slice.
+
+    fastapi.openapi.models.OpenIdConnect.openIdConnectUrl:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: OpenIdConnect
+          start_line: 389
+          end_line: 393
+      supported_slice: >-
+        Declared field only: annotation str; required declaration (no default). Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.OpenIdConnect.type_:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: OpenIdConnect
+          start_line: 389
+          end_line: 393
+      supported_slice: >-
+        Declared field only: annotation SecuritySchemeType; default
+        SecuritySchemeType.openIdConnect; serialization alias 'type'. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.Operation:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Operation
+          start_line: 289
+          end_line: 302
+      supported_slice: >-
+        Source model declaration only: Operation inherits BaseModelWithConfig and declares
+        callbacks, deprecated, description, externalDocs, operationId, parameters, requestBody,
+        responses, security, servers, summary, tags. No direct constructor/model_result case is
+        row-linked; Pydantic signature generation, validation/coercion, extras, serialization,
+        and JSON Schema behavior remain outside this source-only slice.
+
+    fastapi.openapi.models.Operation.callbacks:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Operation
+          start_line: 289
+          end_line: 302
+      supported_slice: >-
+        Declared field only: annotation dict[str, dict[str, "PathItem"] | Reference] | None;
+        default None. Pydantic validation/coercion, default omission, alias parsing/dump,
+        errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Operation.deprecated:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Operation
+          start_line: 289
+          end_line: 302
+      supported_slice: >-
+        Declared field only: annotation bool | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Operation.description:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Operation
+          start_line: 289
+          end_line: 302
+      supported_slice: >-
+        Declared field only: annotation str | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Operation.externalDocs:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Operation
+          start_line: 289
+          end_line: 302
+      supported_slice: >-
+        Declared field only: annotation ExternalDocumentation | None; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.Operation.operationId:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Operation
+          start_line: 289
+          end_line: 302
+      supported_slice: >-
+        Declared field only: annotation str | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Operation.parameters:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Operation
+          start_line: 289
+          end_line: 302
+      supported_slice: >-
+        Declared field only: annotation list[Parameter | Reference] | None; default None.
+        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
+        schema behavior are not claimed.
+
+    fastapi.openapi.models.Operation.requestBody:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Operation
+          start_line: 289
+          end_line: 302
+      supported_slice: >-
+        Declared field only: annotation RequestBody | Reference | None; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.Operation.responses:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Operation
+          start_line: 289
+          end_line: 302
+      supported_slice: >-
+        Declared field only: annotation dict[str, Response | Any] | None; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.Operation.security:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Operation
+          start_line: 289
+          end_line: 302
+      supported_slice: >-
+        Declared field only: annotation list[dict[str, list[str]]] | None; default None.
+        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
+        schema behavior are not claimed.
+
+    fastapi.openapi.models.Operation.servers:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Operation
+          start_line: 289
+          end_line: 302
+      supported_slice: >-
+        Declared field only: annotation list[Server] | None; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.Operation.summary:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Operation
+          start_line: 289
+          end_line: 302
+      supported_slice: >-
+        Declared field only: annotation str | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Operation.tags:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Operation
+          start_line: 289
+          end_line: 302
+      supported_slice: >-
+        Declared field only: annotation list[str] | None; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.Parameter:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Parameter
+          start_line: 258
+          end_line: 260
+      supported_slice: >-
+        Source model declaration only: Parameter inherits ParameterBase and declares in_, name.
+        No direct constructor/model_result case is row-linked; Pydantic signature generation,
+        validation/coercion, extras, serialization, and JSON Schema behavior remain outside this
+        source-only slice.
+
+    fastapi.openapi.models.Parameter.in_:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Parameter
+          start_line: 258
+          end_line: 260
+      supported_slice: >-
+        Declared field only: annotation ParameterInType; required Field declaration (no
+        default); serialization alias 'in'. Pydantic validation/coercion, default omission,
+        alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Parameter.name:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Parameter
+          start_line: 258
+          end_line: 260
+      supported_slice: >-
+        Declared field only: annotation str; required declaration (no default). Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.ParameterBase:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: ParameterBase
+          start_line: 243
+          end_line: 255
+      supported_slice: >-
+        Source model declaration only: ParameterBase inherits BaseModelWithConfig and declares
+        allowReserved, content, deprecated, description, example, examples, explode, required,
+        schema_, style. No direct constructor/model_result case is row-linked; Pydantic
+        signature generation, validation/coercion, extras, serialization, and JSON Schema
+        behavior remain outside this source-only slice.
+
+    fastapi.openapi.models.ParameterBase.allowReserved:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: ParameterBase
+          start_line: 243
+          end_line: 255
+      supported_slice: >-
+        Declared field only: annotation bool | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.ParameterBase.content:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: ParameterBase
+          start_line: 243
+          end_line: 255
+      supported_slice: >-
+        Declared field only: annotation dict[str, MediaType] | None; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.ParameterBase.deprecated:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: ParameterBase
+          start_line: 243
+          end_line: 255
+      supported_slice: >-
+        Declared field only: annotation bool | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.ParameterBase.description:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: ParameterBase
+          start_line: 243
+          end_line: 255
+      supported_slice: >-
+        Declared field only: annotation str | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.ParameterBase.example:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: ParameterBase
+          start_line: 243
+          end_line: 255
+      supported_slice: >-
+        Declared field only: annotation Any | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.ParameterBase.examples:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: ParameterBase
+          start_line: 243
+          end_line: 255
+      supported_slice: >-
+        Declared field only: annotation dict[str, Example | Reference] | None; default None.
+        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
+        schema behavior are not claimed.
+
+    fastapi.openapi.models.ParameterBase.explode:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: ParameterBase
+          start_line: 243
+          end_line: 255
+      supported_slice: >-
+        Declared field only: annotation bool | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.ParameterBase.required:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: ParameterBase
+          start_line: 243
+          end_line: 255
+      supported_slice: >-
+        Declared field only: annotation bool | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.ParameterBase.schema_:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: ParameterBase
+          start_line: 243
+          end_line: 255
+      supported_slice: >-
+        Declared field only: annotation Schema | Reference | None; default None; serialization
+        alias 'schema'. Pydantic validation/coercion, default omission, alias parsing/dump,
+        errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.ParameterBase.style:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: ParameterBase
+          start_line: 243
+          end_line: 255
+      supported_slice: >-
+        Declared field only: annotation str | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.ParameterInType:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: ParameterInType
+          start_line: 221
+          end_line: 225
+      supported_slice: >-
+        Enum container declaration only: the child rows declare cookie, header, path, and query
+        values; no direct enum identity/member-value workflow is mapped.
+
+    fastapi.openapi.models.ParameterInType.cookie:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: ParameterInType
+          start_line: 221
+          end_line: 225
+      supported_slice: >-
+        Enum member only: fastapi.openapi.models.ParameterInType.cookie binds 'cookie'; no
+        direct member-value/identity case is indexed.
+
+    fastapi.openapi.models.ParameterInType.header:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: ParameterInType
+          start_line: 221
+          end_line: 225
+      supported_slice: >-
+        Enum member only: fastapi.openapi.models.ParameterInType.header binds 'header'; no
+        direct member-value/identity case is indexed.
+
+    fastapi.openapi.models.ParameterInType.path:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: ParameterInType
+          start_line: 221
+          end_line: 225
+      supported_slice: >-
+        Enum member only: fastapi.openapi.models.ParameterInType.path binds 'path'; no direct
+        member-value/identity case is indexed.
+
+    fastapi.openapi.models.ParameterInType.query:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: ParameterInType
+          start_line: 221
+          end_line: 225
+      supported_slice: >-
+        Enum member only: fastapi.openapi.models.ParameterInType.query binds 'query'; no direct
+        member-value/identity case is indexed.
+
+    fastapi.openapi.models.PathItem:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: PathItem
+          start_line: 305
+          end_line: 318
+      supported_slice: >-
+        Source model declaration only: PathItem inherits BaseModelWithConfig and declares
+        delete, description, get, head, options, parameters, patch, post, put, ref, servers,
+        summary, trace. No direct constructor/model_result case is row-linked; Pydantic
+        signature generation, validation/coercion, extras, serialization, and JSON Schema
+        behavior remain outside this source-only slice.
+
+    fastapi.openapi.models.PathItem.delete:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: PathItem
+          start_line: 305
+          end_line: 318
+      supported_slice: >-
+        Declared field only: annotation Operation | None; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.PathItem.description:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: PathItem
+          start_line: 305
+          end_line: 318
+      supported_slice: >-
+        Declared field only: annotation str | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.PathItem.get:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: PathItem
+          start_line: 305
+          end_line: 318
+      supported_slice: >-
+        Declared field only: annotation Operation | None; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.PathItem.head:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: PathItem
+          start_line: 305
+          end_line: 318
+      supported_slice: >-
+        Declared field only: annotation Operation | None; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.PathItem.options:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: PathItem
+          start_line: 305
+          end_line: 318
+      supported_slice: >-
+        Declared field only: annotation Operation | None; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.PathItem.parameters:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: PathItem
+          start_line: 305
+          end_line: 318
+      supported_slice: >-
+        Declared field only: annotation list[Parameter | Reference] | None; default None.
+        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
+        schema behavior are not claimed.
+
+    fastapi.openapi.models.PathItem.patch:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: PathItem
+          start_line: 305
+          end_line: 318
+      supported_slice: >-
+        Declared field only: annotation Operation | None; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.PathItem.post:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: PathItem
+          start_line: 305
+          end_line: 318
+      supported_slice: >-
+        Declared field only: annotation Operation | None; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.PathItem.put:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: PathItem
+          start_line: 305
+          end_line: 318
+      supported_slice: >-
+        Declared field only: annotation Operation | None; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.PathItem.ref:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: PathItem
+          start_line: 305
+          end_line: 318
+      supported_slice: >-
+        Declared field only: annotation str | None; default None; serialization alias '$ref'.
+        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
+        schema behavior are not claimed.
+
+    fastapi.openapi.models.PathItem.servers:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: PathItem
+          start_line: 305
+          end_line: 318
+      supported_slice: >-
+        Declared field only: annotation list[Server] | None; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.PathItem.summary:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: PathItem
+          start_line: 305
+          end_line: 318
+      supported_slice: >-
+        Declared field only: annotation str | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.PathItem.trace:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: PathItem
+          start_line: 305
+          end_line: 318
+      supported_slice: >-
+        Declared field only: annotation Operation | None; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.Reference:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Reference
+          start_line: 95
+          end_line: 96
+      supported_slice: >-
+        Source model declaration only: Reference inherits BaseModel and declares ref. No direct
+        constructor/model_result case is row-linked; Pydantic signature generation,
+        validation/coercion, extras, serialization, and JSON Schema behavior remain outside this
+        source-only slice.
+
+    fastapi.openapi.models.Reference.ref:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Reference
+          start_line: 95
+          end_line: 96
+      supported_slice: >-
+        Declared field only: annotation str; required Field declaration (no default);
+        serialization alias '$ref'; parent input sample only through
+        openapi-models.components.model-result ($ref entry in Components.schemas); no field-row
+        fixture link. Pydantic validation/coercion, default omission, alias parsing/dump,
+        errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.RequestBody:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: RequestBody
+          start_line: 267
+          end_line: 270
+      supported_slice: >-
+        Source model declaration only: RequestBody inherits BaseModelWithConfig and declares
+        content, description, required. No direct constructor/model_result case is row-linked;
+        Pydantic signature generation, validation/coercion, extras, serialization, and JSON
+        Schema behavior remain outside this source-only slice.
+
+    fastapi.openapi.models.RequestBody.content:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: RequestBody
+          start_line: 267
+          end_line: 270
+      supported_slice: >-
+        Declared field only: annotation dict[str, MediaType]; required declaration (no default).
+        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
+        schema behavior are not claimed.
+
+    fastapi.openapi.models.RequestBody.description:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: RequestBody
+          start_line: 267
+          end_line: 270
+      supported_slice: >-
+        Declared field only: annotation str | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.RequestBody.required:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: RequestBody
+          start_line: 267
+          end_line: 270
+      supported_slice: >-
+        Declared field only: annotation bool | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Response:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Response
+          start_line: 282
+          end_line: 286
+      supported_slice: >-
+        Source model declaration only: Response inherits BaseModelWithConfig and declares
+        content, description, headers, links. No direct constructor/model_result case is
+        row-linked; Pydantic signature generation, validation/coercion, extras, serialization,
+        and JSON Schema behavior remain outside this source-only slice.
+
+    fastapi.openapi.models.Response.content:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Response
+          start_line: 282
+          end_line: 286
+      supported_slice: >-
+        Declared field only: annotation dict[str, MediaType] | None; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.Response.description:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Response
+          start_line: 282
+          end_line: 286
+      supported_slice: >-
+        Declared field only: annotation str; required declaration (no default). Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.Response.headers:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Response
+          start_line: 282
+          end_line: 286
+      supported_slice: >-
+        Declared field only: annotation dict[str, Header | Reference] | None; default None.
+        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
+        schema behavior are not claimed.
+
+    fastapi.openapi.models.Response.links:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Response
+          start_line: 282
+          end_line: 286
+      supported_slice: >-
+        Declared field only: annotation dict[str, Link | Reference] | None; default None.
+        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
+        schema behavior are not claimed.
+
+    fastapi.openapi.models.Schema.additionalProperties:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation Optional["SchemaOrBool"]; default None; parent input
+        sample only through openapi-models.schema.model-result; no field-row fixture link.
+        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
+        schema behavior are not claimed.
+
+    fastapi.openapi.models.Schema.allOf:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation list["SchemaOrBool"] | None; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.Schema.anchor:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation str | None; default None; serialization alias '$anchor'.
+        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
+        schema behavior are not claimed.
+
+    fastapi.openapi.models.Schema.anyOf:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation list["SchemaOrBool"] | None; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.Schema.comment:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation str | None; default None; serialization alias
+        '$comment'. Pydantic validation/coercion, default omission, alias parsing/dump, errors,
+        and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Schema.const:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation Any | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Schema.contains:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation Optional["SchemaOrBool"]; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.Schema.contentEncoding:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation str | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Schema.contentMediaType:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation str | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Schema.contentSchema:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation Optional["SchemaOrBool"]; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.Schema.default:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation Any | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Schema.defs:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation dict[str, "SchemaOrBool"] | None; default None;
+        serialization alias '$defs'. Pydantic validation/coercion, default omission, alias
+        parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Schema.dependentRequired:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation dict[str, set[str]] | None; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.Schema.dependentSchemas:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation dict[str, "SchemaOrBool"] | None; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.Schema.deprecated:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation bool | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Schema.description:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation str | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Schema.discriminator:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation Discriminator | None; default None; parent input sample
+        only through openapi-models.schema.model-result; no field-row fixture link. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.Schema.dynamicAnchor:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation str | None; default None; serialization alias
+        '$dynamicAnchor'. Pydantic validation/coercion, default omission, alias parsing/dump,
+        errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Schema.dynamicRef:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation str | None; default None; serialization alias
+        '$dynamicRef'. Pydantic validation/coercion, default omission, alias parsing/dump,
+        errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Schema.else_:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation Optional["SchemaOrBool"]; default None; serialization
+        alias 'else'. Pydantic validation/coercion, default omission, alias parsing/dump,
+        errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Schema.enum:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation list[Any] | None; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.Schema.example:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation Annotated[ Any | None, typing_deprecated( "Deprecated in
+        OpenAPI 3.1.0 that now uses JSON Schema 2020-12, " "although still supported. Use
+        examples instead." ), ]; default None. Pydantic validation/coercion, default omission,
+        alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Schema.examples:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation list[Any] | None; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.Schema.exclusiveMaximum:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation float | None; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.Schema.exclusiveMinimum:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation float | None; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.Schema.externalDocs:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation ExternalDocumentation | None; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.Schema.format:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation str | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Schema.id:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation str | None; default None; serialization alias '$id';
+        parent input sample only through openapi-models.schema.model-result; no field-row
+        fixture link. Pydantic validation/coercion, default omission, alias parsing/dump,
+        errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Schema.if_:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation Optional["SchemaOrBool"]; default None; serialization
+        alias 'if'. Pydantic validation/coercion, default omission, alias parsing/dump, errors,
+        and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Schema.items:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation Optional["SchemaOrBool"]; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.Schema.maxContains:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation int | None; default None; Field constraint ge=0.
+        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
+        schema behavior are not claimed.
+
+    fastapi.openapi.models.Schema.maxItems:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation int | None; default None; Field constraint ge=0.
+        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
+        schema behavior are not claimed.
+
+    fastapi.openapi.models.Schema.maxLength:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation int | None; default None; Field constraint ge=0.
+        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
+        schema behavior are not claimed.
+
+    fastapi.openapi.models.Schema.maxProperties:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation int | None; default None; Field constraint ge=0.
+        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
+        schema behavior are not claimed.
+
+    fastapi.openapi.models.Schema.maximum:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation float | None; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.Schema.minContains:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation int | None; default None; Field constraint ge=0.
+        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
+        schema behavior are not claimed.
+
+    fastapi.openapi.models.Schema.minItems:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation int | None; default None; Field constraint ge=0.
+        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
+        schema behavior are not claimed.
+
+    fastapi.openapi.models.Schema.minLength:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation int | None; default None; Field constraint ge=0; parent
+        input sample only through openapi-models.schema.model-result (nested properties schema);
+        no field-row fixture link. Pydantic validation/coercion, default omission, alias
+        parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Schema.minProperties:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation int | None; default None; Field constraint ge=0.
+        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
+        schema behavior are not claimed.
+
+    fastapi.openapi.models.Schema.minimum:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation float | None; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.Schema.multipleOf:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation float | None; default None; Field constraint gt=0.
+        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
+        schema behavior are not claimed.
+
+    fastapi.openapi.models.Schema.not_:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation Optional["SchemaOrBool"]; default None; serialization
+        alias 'not'. Pydantic validation/coercion, default omission, alias parsing/dump, errors,
+        and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Schema.oneOf:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation list["SchemaOrBool"] | None; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.Schema.pattern:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation str | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Schema.patternProperties:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation dict[str, "SchemaOrBool"] | None; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.Schema.prefixItems:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation list["SchemaOrBool"] | None; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.Schema.properties:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation dict[str, "SchemaOrBool"] | None; default None; parent
+        input sample only through openapi-models.schema.model-result; no field-row fixture link.
+        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
+        schema behavior are not claimed.
+
+    fastapi.openapi.models.Schema.propertyNames:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation Optional["SchemaOrBool"]; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.Schema.readOnly:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation bool | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Schema.ref:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation str | None; default None; serialization alias '$ref'.
+        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
+        schema behavior are not claimed.
+
+    fastapi.openapi.models.Schema.required:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation list[str] | None; default None; parent input sample only
+        through openapi-models.schema.model-result; no field-row fixture link. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.Schema.schema_:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation str | None; default None; serialization alias '$schema';
+        parent input sample only through openapi-models.schema.model-result; no field-row
+        fixture link. Pydantic validation/coercion, default omission, alias parsing/dump,
+        errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Schema.then:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation Optional["SchemaOrBool"]; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.Schema.title:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation str | None; default None; parent input sample only
+        through openapi-models.schema.model-result; no field-row fixture link. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.Schema.type:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation SchemaType | list[SchemaType] | None; default None;
+        parent input sample only through openapi-models.schema.model-result; no field-row
+        fixture link. Pydantic validation/coercion, default omission, alias parsing/dump,
+        errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Schema.unevaluatedItems:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation Optional["SchemaOrBool"]; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.Schema.unevaluatedProperties:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation Optional["SchemaOrBool"]; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.Schema.uniqueItems:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation bool | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Schema.vocabulary:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation str | None; default None; serialization alias
+        '$vocabulary'. Pydantic validation/coercion, default omission, alias parsing/dump,
+        errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Schema.writeOnly:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation bool | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Schema.xml:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Schema
+          start_line: 123
+          end_line: 204
+      supported_slice: >-
+        Declared field only: annotation XML | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.SchemaOrBool:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: module-value
+          symbol: SchemaOrBool
+          start_line: 209
+          end_line: 209
+      supported_slice: >-
+        Module type-alias binding only: SchemaOrBool is Schema | bool; runtime validation and
+        consumer behavior are not established by a direct input.
+
+    fastapi.openapi.models.SchemaType:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: module-value
+          symbol: SchemaType
+          start_line: 118
+          end_line: 120
+      supported_slice: >-
+        Module type-alias binding only: SchemaType is Literal["array", "boolean", "integer",
+        "null", "number", "object", "string"]; type identity/consumer behavior is not
+        established by a direct input.
+
+    fastapi.openapi.models.SecurityScheme:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: module-value
+          symbol: SecurityScheme
+          start_line: 396
+          end_line: 396
+      supported_slice: >-
+        Module type-alias binding only: SecurityScheme is APIKey | HTTPBase | OAuth2 |
+        OpenIdConnect | HTTPBearer; concrete scheme construction remains the separate
+        model-class scope.
+
+    fastapi.openapi.models.SecuritySchemeType.http:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: SecuritySchemeType
+          start_line: 321
+          end_line: 325
+      supported_slice: >-
+        Enum member only: fastapi.openapi.models.SecuritySchemeType.http binds 'http'; no direct
+        member-value/identity case is indexed.
+
+    fastapi.openapi.models.SecuritySchemeType.oauth2:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: SecuritySchemeType
+          start_line: 321
+          end_line: 325
+      supported_slice: >-
+        Enum member only: fastapi.openapi.models.SecuritySchemeType.oauth2 binds 'oauth2'; no
+        direct member-value/identity case is indexed.
+
+    fastapi.openapi.models.SecuritySchemeType.openIdConnect:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: SecuritySchemeType
+          start_line: 321
+          end_line: 325
+      supported_slice: >-
+        Enum member only: fastapi.openapi.models.SecuritySchemeType.openIdConnect binds
+        'openIdConnect'; no direct member-value/identity case is indexed.
+
+    fastapi.openapi.models.Server:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Server
+          start_line: 89
+          end_line: 92
+      supported_slice: >-
+        Source model declaration only: Server inherits BaseModelWithConfig and declares
+        description, url, variables. No direct constructor/model_result case is row-linked;
+        Pydantic signature generation, validation/coercion, extras, serialization, and JSON
+        Schema behavior remain outside this source-only slice.
+
+    fastapi.openapi.models.Server.description:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Server
+          start_line: 89
+          end_line: 92
+      supported_slice: >-
+        Declared field only: annotation str | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Server.url:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Server
+          start_line: 89
+          end_line: 92
+      supported_slice: >-
+        Declared field only: annotation AnyUrl | str; required declaration (no default).
+        Pydantic validation/coercion, default omission, alias parsing/dump, errors, and full
+        schema behavior are not claimed.
+
+    fastapi.openapi.models.Server.variables:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Server
+          start_line: 89
+          end_line: 92
+      supported_slice: >-
+        Declared field only: annotation dict[str, ServerVariable] | None; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.ServerVariable:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: ServerVariable
+          start_line: 83
+          end_line: 86
+      supported_slice: >-
+        Source model declaration only: ServerVariable inherits BaseModelWithConfig and declares
+        default, description, enum. No direct constructor/model_result case is row-linked;
+        Pydantic signature generation, validation/coercion, extras, serialization, and JSON
+        Schema behavior remain outside this source-only slice.
+
+    fastapi.openapi.models.ServerVariable.default:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: ServerVariable
+          start_line: 83
+          end_line: 86
+      supported_slice: >-
+        Declared field only: annotation str; required declaration (no default). Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.ServerVariable.description:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: ServerVariable
+          start_line: 83
+          end_line: 86
+      supported_slice: >-
+        Declared field only: annotation str | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.ServerVariable.enum:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: ServerVariable
+          start_line: 83
+          end_line: 86
+      supported_slice: >-
+        Declared field only: annotation Annotated[list[str] | None, Field(min_length=1)];
+        default None. Pydantic validation/coercion, default omission, alias parsing/dump,
+        errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Tag:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Tag
+          start_line: 413
+          end_line: 416
+      supported_slice: >-
+        Source model declaration only: Tag inherits BaseModelWithConfig and declares
+        description, externalDocs, name. No direct constructor/model_result case is row-linked;
+        Pydantic signature generation, validation/coercion, extras, serialization, and JSON
+        Schema behavior remain outside this source-only slice.
+
+    fastapi.openapi.models.Tag.description:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Tag
+          start_line: 413
+          end_line: 416
+      supported_slice: >-
+        Declared field only: annotation str | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.Tag.externalDocs:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Tag
+          start_line: 413
+          end_line: 416
+      supported_slice: >-
+        Declared field only: annotation ExternalDocumentation | None; default None. Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.Tag.name:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: Tag
+          start_line: 413
+          end_line: 416
+      supported_slice: >-
+        Declared field only: annotation str; required declaration (no default). Pydantic
+        validation/coercion, default omission, alias parsing/dump, errors, and full schema
+        behavior are not claimed.
+
+    fastapi.openapi.models.XML:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: XML
+          start_line: 104
+          end_line: 109
+      supported_slice: >-
+        Source model declaration only: XML inherits BaseModelWithConfig and declares attribute,
+        name, namespace, prefix, wrapped. No direct constructor/model_result case is row-linked;
+        Pydantic signature generation, validation/coercion, extras, serialization, and JSON
+        Schema behavior remain outside this source-only slice.
+
+    fastapi.openapi.models.XML.attribute:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: XML
+          start_line: 104
+          end_line: 109
+      supported_slice: >-
+        Declared field only: annotation bool | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.XML.name:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: XML
+          start_line: 104
+          end_line: 109
+      supported_slice: >-
+        Declared field only: annotation str | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.XML.namespace:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: XML
+          start_line: 104
+          end_line: 109
+      supported_slice: >-
+        Declared field only: annotation str | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.XML.prefix:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: XML
+          start_line: 104
+          end_line: 109
+      supported_slice: >-
+        Declared field only: annotation str | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
+    fastapi.openapi.models.XML.wrapped:
+      source_evidence:
+        - path: fastapi/openapi/models.py
+          kind: source-definition
+          symbol: XML
+          start_line: 104
+          end_line: 109
+      supported_slice: >-
+        Declared field only: annotation bool | None; default None. Pydantic validation/coercion,
+        default omission, alias parsing/dump, errors, and full schema behavior are not claimed.
+
   inherited_candidate_reviews:
     fastapi.routing.APIRouter.host:
       kind: inherited_method
