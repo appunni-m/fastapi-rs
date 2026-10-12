@@ -47789,7 +47789,7 @@
         "evidence_basis": [
           "member-exposure-unresolved"
         ],
-        "reason": "FastAPI 0.141.1 explicitly aliases fastapi.sse.EventSourceResponse into fastapi.responses, and tests/test_sse.py:8 imports it from fastapi.responses. The reference docs identify fastapi.sse as the direct import path at lines 9-15. Keep the alternate module path uncertain: explicit import and test use do not resolve whether fastapi.responses.EventSourceResponse is part of the supported public contract.",
+        "reason": "FastAPI 0.141.1 aliases fastapi.sse.EventSourceResponse into fastapi.responses at the cited source line. The pinned reference docs identify fastapi.sse as the direct import path and do not document the fastapi.responses alias. Keep the alternate module path uncertain: an import binding alone establishes availability, not whether that module path is part of the supported public contract.",
         "source": {
           "line": 5,
           "path": "fastapi/responses.py"
@@ -74877,7 +74877,7 @@
         ]
       }
     },
-    "sha256": "52a6ae794ff47fa8039864a8876af4b48368eab8a118e8f7c311d93279440ca4",
+    "sha256": "62febc7fda9106731098c252e64c6c26c5955df7be2774c2bc9a47417e3c0358",
     "source_identity": {
       "package": "FastAPI",
       "source_commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
