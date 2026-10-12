@@ -1232,6 +1232,11 @@ struct PyApiRoute {
     name: String,
     methods: Vec<String>,
     tags: Vec<String>,
+    summary: Option<String>,
+    response_description: String,
+    responses: Py<PyDict>,
+    deprecated: Option<bool>,
+    include_in_schema: bool,
     operation_id: Option<String>,
     openapi_extra: Option<Py<PyAny>>,
     endpoint: Py<PyAny>,
@@ -1268,6 +1273,31 @@ impl PyApiRoute {
     #[getter]
     fn name(&self) -> &str {
         &self.name
+    }
+
+    #[getter]
+    fn summary(&self) -> Option<&str> {
+        self.summary.as_deref()
+    }
+
+    #[getter]
+    fn response_description(&self) -> &str {
+        &self.response_description
+    }
+
+    #[getter]
+    fn responses(&self, py: Python<'_>) -> Py<PyDict> {
+        self.responses.clone_ref(py)
+    }
+
+    #[getter]
+    fn deprecated(&self) -> Option<bool> {
+        self.deprecated
+    }
+
+    #[getter]
+    fn include_in_schema(&self) -> bool {
+        self.include_in_schema
     }
 
     #[getter]
@@ -1386,6 +1416,11 @@ struct ApiRouteViewConfig<'a> {
     method: &'a str,
     name: &'a str,
     tags: &'a [String],
+    summary: Option<&'a str>,
+    response_description: &'a str,
+    responses: &'a Py<PyDict>,
+    deprecated: Option<bool>,
+    include_in_schema: bool,
     operation_id: Option<&'a str>,
     openapi_extra: Option<&'a Py<PyAny>>,
     generate_unique_id_function: &'a GenerateUniqueIdChoice,
@@ -1405,6 +1440,11 @@ fn new_api_route_view(
             name: config.name.to_owned(),
             methods: vec![config.method.to_owned()],
             tags: config.tags.to_vec(),
+            summary: config.summary.map(str::to_owned),
+            response_description: config.response_description.to_owned(),
+            responses: config.responses.clone_ref(py),
+            deprecated: config.deprecated,
+            include_in_schema: config.include_in_schema,
             operation_id: config.operation_id.map(str::to_owned),
             openapi_extra: config.openapi_extra.map(|value| value.clone_ref(py)),
             endpoint,
@@ -5316,6 +5356,11 @@ fn merge_router_routes(
                 method: &source_route.method,
                 name: &source_route.name,
                 tags: tags.as_deref().unwrap_or_default(),
+                summary: source_route.summary.as_deref(),
+                response_description: &source_route.response_description,
+                responses: &source_route.responses,
+                deprecated: combined_deprecated(inherited_deprecated, source_route.deprecated),
+                include_in_schema: inherited_include_in_schema && source_route.include_in_schema,
                 operation_id: source_route.operation_id.as_deref(),
                 openapi_extra: source_route.openapi_extra.as_ref(),
                 generate_unique_id_function: &generate_unique_id_function,
@@ -5793,6 +5838,7 @@ impl PyOperationDecorator {
             let app = self.app.bind(py).borrow();
             format!("{}{}", app.route_scope_prefix, self.path)
         };
+        let deprecated = combined_deprecated(self.deprecated, None);
         let (route_scope, path_format) =
             http_route_scope(py, &scope_path, endpoint.bind(py), &self.method, &name)?;
         let responses = route_response_declarations(py, self.responses.as_ref())?;
@@ -5910,6 +5956,11 @@ impl PyOperationDecorator {
                 method: &self.method,
                 name: &name,
                 tags: self.tags.as_deref().unwrap_or_default(),
+                summary: self.summary.as_deref(),
+                response_description: &self.response_description,
+                responses: &responses,
+                deprecated,
+                include_in_schema: self.include_in_schema,
                 operation_id: self.operation_id.as_deref(),
                 openapi_extra: self.openapi_extra.as_ref(),
                 generate_unique_id_function: &self.generate_unique_id_function,
@@ -5953,7 +6004,7 @@ impl PyOperationDecorator {
             operation_id: self.operation_id.clone(),
             unique_id,
             generate_unique_id_function: self.generate_unique_id_function.clone_ref(py),
-            deprecated: self.deprecated,
+            deprecated,
             tags: self.tags.clone(),
             status_code: self.status_code,
             include_in_schema: self.include_in_schema,

@@ -1330,7 +1330,7 @@ reviewed_api_contract_overlay:
 
         The custom `generate_unique_id_function` is the default for direct routes and the application-level fallback when an included router retains its default callback, sampled by `generate-unique-id-function-precedence`. Other HTTP verbs, callback errors or non-string results, and duplicate or empty operation IDs remain unproven.
 
-        Only callback access to the route `name` and `path_format` fields is exercised; inspection or mutation of other `APIRoute` state remains unproven.
+        Its effective route view exposes `name`, `path_format`, `tags`, `summary`, `response_description`, `responses`, `deprecated`, and `include_in_schema`. The fixture reads these fields from direct and included routes while producing their operation IDs. It samples true `include_in_schema`, explicit false normalized to `None` for direct `deprecated`, and inherited true `deprecated`; other field values, callback mutation, and later-initialized APIRoute state remain unproven.
     fastapi.applications.FastAPI.exception_handler:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::exception_handler
       source_evidence:
@@ -4041,7 +4041,7 @@ reviewed_api_contract_overlay:
 
         An explicit include callback supplies the fallback for an included router whose callback retains its default, sampled by `generate-unique-id-function-precedence`. Nested callback error timing and non-string results remain unproven.
 
-        Only callback access to the route `name` and `path_format` fields is exercised; inspection or mutation of other `APIRoute` state remains unproven.
+        Its effective route view exposes `name`, `path_format`, `tags`, `summary`, `response_description`, `responses`, `deprecated`, and `include_in_schema`. The fixture reads these fields from included routes while producing operation IDs and observes inherited true `deprecated`. It does not establish explicit false normalization on this inclusion path, callback mutation, or later-initialized APIRoute state.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
@@ -4297,7 +4297,7 @@ reviewed_api_contract_overlay:
 
         For nested inclusion, the router callback takes precedence over the include callback; a route callback overrides both, and the selected callback sees the effective prefixed route, sampled by `generate-unique-id-function-precedence`. Callback errors and non-string results remain unproven.
 
-        Only callback access to the route `name` and `path_format` fields is exercised; inspection or mutation of other `APIRoute` state remains unproven.
+        Its effective route view exposes `name`, `path_format`, `tags`, `summary`, `response_description`, `responses`, `deprecated`, and `include_in_schema`. The fixture reads these fields from direct and nested included routes while producing operation IDs and observes inherited true `deprecated`. It does not establish explicit false normalization on this inclusion path, callback mutation, or later-initialized APIRoute state.
       fixture_refs:
         - *generate_unique_id_callback_precedence
         - *response_traversal_parent_child
@@ -4429,7 +4429,7 @@ reviewed_api_contract_overlay:
 
         A router-level callback is used for its own routes and retained as an inclusion candidate in the nested-tree sample `generate-unique-id-function-precedence`. Callback errors and non-string results remain unproven.
 
-        Only callback access to the route `name` and `path_format` fields is exercised; inspection or mutation of other `APIRoute` state remains unproven.
+        Its effective route view exposes `name`, `path_format`, `tags`, `summary`, `response_description`, `responses`, `deprecated`, and `include_in_schema`. The fixture reads them from direct router routes with default values and observes inherited true `deprecated` after inclusion. It does not establish explicit false normalization on a router-default path, callback mutation, or later-initialized APIRoute state.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
@@ -4567,7 +4567,7 @@ reviewed_api_contract_overlay:
 
         The GET decorator accepts a route-level callback that overrides router and include callbacks, sampled by `generate-unique-id-function-precedence`. Other verbs, callback errors or non-string results, and duplicate or empty operation IDs remain unproven.
 
-        Only callback access to the route `name` and `path_format` fields is exercised; inspection or mutation of other `APIRoute` state remains unproven.
+        Its effective route view exposes `name`, `path_format`, `tags`, `summary`, `response_description`, `responses`, `deprecated`, and `include_in_schema`. The fixture reads these fields from direct router routes and included routes while producing their operation IDs and observes inherited true `deprecated`. It does not establish explicit false normalization with an APIRouter default, callback mutation, or later-initialized APIRoute state.
         `openapi_extra` is applied after generated operation metadata with recursive mapping merge, list concatenation, and scalar replacement. The direct and included-router cases in `openapi-extra-deep-merge` observe summary override, tag append, nested response merge, and operation extensions.
       target_binding:
         implementation_owner: fastapi-rs
@@ -5105,7 +5105,7 @@ reviewed_api_contract_overlay:
 
         A direct GET route uses the application callback when no route-level callback is supplied, sampled by `generate-unique-id-function-precedence`. An explicit FastAPI.get route callback and other verbs remain unproven.
 
-        Only callback access to the route `name` and `path_format` fields is exercised; inspection or mutation of other `APIRoute` state remains unproven.
+        Its effective route view exposes `name`, `path_format`, `tags`, `summary`, `response_description`, `responses`, `deprecated`, and `include_in_schema`. The fixture reads these fields from direct and included routes while producing their operation IDs. It samples true `include_in_schema`, explicit false normalized to `None` for direct `deprecated`, and inherited true `deprecated`; other field values, callback mutation, and later-initialized APIRoute state remain unproven.
         `openapi_extra` is applied after generated operation metadata with recursive mapping merge, list concatenation, and scalar replacement. The direct and included-router cases in `openapi-extra-deep-merge` observe summary override, tag append, nested response merge, and operation extensions.
       target_binding:
         implementation_owner: fastapi-rs
