@@ -539,6 +539,13 @@ for _test_path in REQUEST_PARAM_SOURCE_MODULES:
 
 
 _TAIL_WAVE_CASE_ID = "fastapi.request-parameter-alias-validation-tail-wave.body-form-file"
+_TAIL_WAVE_CASES = {
+    _TAIL_WAVE_CASE_ID,
+    "fastapi.request-parameter-alias-validation-tail-wave.header-validation-alias",
+    "fastapi.request-parameter-alias-validation-tail-wave.header-alias-validation-alias",
+    "fastapi.request-parameter-alias-validation-tail-wave.cookie-validation-alias",
+    "fastapi.request-parameter-alias-validation-tail-wave.cookie-alias-validation-alias",
+}
 _TAIL_WAVE_RECIPE = (
     "tests/fixtures/input-recipes/parity/request-parameter-alias-validation-tail-wave.yaml"
 )
@@ -570,6 +577,25 @@ _FILE_LIST_FORM_ORDER_CASE = "fastapi.request-uploads.file-form-order.test-file-
 _QUERY_LIST_VALIDATION_ALIAS_RECIPE = (
     "tests/fixtures/input-recipes/parity/query-validation-alias-list-cases.yaml"
 )
+_OPTIONAL_QUERY_LIST_ALIAS_RECIPE = (
+    "tests/fixtures/input-recipes/parity/optional-query-list-aliases.yaml"
+)
+_OPTIONAL_QUERY_LIST_ALIAS_WORKLOAD = "tests/fixtures/workloads/optional_query_list_aliases.py"
+_OPTIONAL_QUERY_LIST_ALIAS_CASES = {
+    "fastapi.request-parameters.query.optional-list.alias.openapi",
+    "fastapi.request-parameters.query.optional-list.alias.missing",
+    "fastapi.request-parameters.query.optional-list.alias.field-name",
+    "fastapi.request-parameters.query.optional-list.alias.accepts-wire-name",
+    "fastapi.request-parameters.query.optional-list.validation-alias.openapi",
+    "fastapi.request-parameters.query.optional-list.validation-alias.missing",
+    "fastapi.request-parameters.query.optional-list.validation-alias.field-name",
+    "fastapi.request-parameters.query.optional-list.validation-alias.accepts-wire-name",
+    "fastapi.request-parameters.query.optional-list.combined-aliases.openapi",
+    "fastapi.request-parameters.query.optional-list.combined-aliases.missing",
+    "fastapi.request-parameters.query.optional-list.combined-aliases.field-name",
+    "fastapi.request-parameters.query.optional-list.combined-aliases.declared-alias",
+    "fastapi.request-parameters.query.optional-list.combined-aliases.validation-alias",
+}
 
 
 def _tail_function_mapping(
@@ -845,8 +871,7 @@ def _query_list_validation_alias_function_mapping(
     matches = [
         node
         for node in tree.body
-        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
-        and node.name == function_name
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == function_name
     ]
     if len(matches) != 1:
         raise ValueError(f"expected exact source function {function_name} in {test_path}")
@@ -872,6 +897,48 @@ def _query_list_validation_alias_function_mapping(
             "no expected outputs and makes no live parity claim; complete error-detail parsing, "
             "unlisted constraints, and exact TestClient behavior remain outside this mapping. "
             "Generic query-string parsing remains owned by the separate Starlette 1.6.0 contract."
+        ),
+    }
+
+
+def _optional_query_list_alias_function_mapping(
+    function_name: str,
+    case_id: str,
+    action_ids: list[str],
+    observation_selectors: list[str],
+    behavior: str,
+) -> dict[str, Any]:
+    test_path = "tests/test_request_params/test_query/test_optional_list.py"
+    tree = ast.parse((FASTAPI_ROOT / test_path).read_text(encoding="utf-8"))
+    matches = [
+        node
+        for node in tree.body
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == function_name
+    ]
+    if len(matches) != 1:
+        raise ValueError(f"expected exact source function {function_name} in {test_path}")
+    function = matches[0]
+    return {
+        "source_span": _source(
+            test_path,
+            function.lineno,
+            function.end_lineno or function.lineno,
+            f"upstream FastAPI 0.141.1 test function {function_name}",
+        ),
+        "workflow_case": {
+            "recipe_path": _OPTIONAL_QUERY_LIST_ALIAS_RECIPE,
+            "case_id": case_id,
+            "action_ids": list(action_ids),
+            "observation_selectors": list(observation_selectors),
+        },
+        "rationale": behavior,
+        "contract_gate": (
+            "Partial input mapping only: independently named optional direct-list and "
+            "Query(BaseModel) routes exercise missing or ignored names as well as repeated "
+            "values under the selected wire name. OpenAPI cases select both route forms. "
+            "The input records requests and observation selectors, not expected status or "
+            "body values; alias declaration/extraction belongs to FastAPI while generic "
+            "query-string decoding remains owned by Starlette 1.6.0 / Starlette-RS."
         ),
     }
 
@@ -960,6 +1027,99 @@ REQUEST_PARAMETER_FUNCTION_MAPPINGS = {
             ["direct-wire-name", "model-wire-name"],
             ["http.body.bytes", "http.status"],
             "The input case uses repeated validation-alias values while both aliases are declared.",
+        ),
+    },
+    "tests/test_request_params/test_query/test_optional_list.py": {
+        "test_optional_list_str_alias_schema": _optional_query_list_alias_function_mapping(
+            "test_optional_list_str_alias_schema",
+            "fastapi.request-parameters.query.optional-list.alias.openapi",
+            ["inspect-openapi"],
+            ["openapi.document", "openapi.paths"],
+            "The schema source function parametrizes direct and Query(BaseModel) routes; the selected OpenAPI pointers project both alias-only parameter lists.",
+        ),
+        "test_optional_list_alias_missing": _optional_query_list_alias_function_mapping(
+            "test_optional_list_alias_missing",
+            "fastapi.request-parameters.query.optional-list.alias.missing",
+            ["direct-missing", "model-missing"],
+            ["http.body.bytes", "http.status"],
+            "The optional alias case omits the wire key from both route forms.",
+        ),
+        "test_optional_list_alias_by_name": _optional_query_list_alias_function_mapping(
+            "test_optional_list_alias_by_name",
+            "fastapi.request-parameters.query.optional-list.alias.field-name",
+            ["direct-field-name", "model-field-name"],
+            ["http.body.bytes", "http.status"],
+            "The optional alias case supplies repeated values under the Python field name on both route forms.",
+        ),
+        "test_optional_list_alias_by_alias": _optional_query_list_alias_function_mapping(
+            "test_optional_list_alias_by_alias",
+            "fastapi.request-parameters.query.optional-list.alias.accepts-wire-name",
+            ["direct-declared-alias", "model-declared-alias"],
+            ["http.body.bytes", "http.status"],
+            "The optional alias case supplies repeated values under the declared alias on both route forms.",
+        ),
+        "test_optional_list_validation_alias_schema": _optional_query_list_alias_function_mapping(
+            "test_optional_list_validation_alias_schema",
+            "fastapi.request-parameters.query.optional-list.validation-alias.openapi",
+            ["inspect-openapi"],
+            ["openapi.document", "openapi.paths"],
+            "The schema source function parametrizes direct and Query(BaseModel) routes; the selected OpenAPI pointers project both validation-alias-only parameter lists.",
+        ),
+        "test_optional_list_validation_alias_missing": _optional_query_list_alias_function_mapping(
+            "test_optional_list_validation_alias_missing",
+            "fastapi.request-parameters.query.optional-list.validation-alias.missing",
+            ["direct-missing", "model-missing"],
+            ["http.body.bytes", "http.status"],
+            "The optional validation-alias case omits the selected wire key from both route forms.",
+        ),
+        "test_optional_list_validation_alias_by_name": _optional_query_list_alias_function_mapping(
+            "test_optional_list_validation_alias_by_name",
+            "fastapi.request-parameters.query.optional-list.validation-alias.field-name",
+            ["direct-field-name", "model-field-name"],
+            ["http.body.bytes", "http.status"],
+            "The optional validation-alias case supplies repeated values under the Python field name on both route forms.",
+        ),
+        "test_optional_list_validation_alias_by_validation_alias": _optional_query_list_alias_function_mapping(
+            "test_optional_list_validation_alias_by_validation_alias",
+            "fastapi.request-parameters.query.optional-list.validation-alias.accepts-wire-name",
+            ["direct-validation-alias", "model-validation-alias"],
+            ["http.body.bytes", "http.status"],
+            "The optional validation-alias case supplies repeated values under the validation alias on both route forms.",
+        ),
+        "test_optional_list_alias_and_validation_alias_schema": _optional_query_list_alias_function_mapping(
+            "test_optional_list_alias_and_validation_alias_schema",
+            "fastapi.request-parameters.query.optional-list.combined-aliases.openapi",
+            ["inspect-openapi"],
+            ["openapi.document", "openapi.paths"],
+            "The schema source function parametrizes direct and Query(BaseModel) routes; the selected OpenAPI pointers project both parameter lists with both aliases configured.",
+        ),
+        "test_optional_list_alias_and_validation_alias_missing": _optional_query_list_alias_function_mapping(
+            "test_optional_list_alias_and_validation_alias_missing",
+            "fastapi.request-parameters.query.optional-list.combined-aliases.missing",
+            ["direct-missing", "model-missing"],
+            ["http.body.bytes", "http.status"],
+            "The optional combined-alias case omits the selected wire key from both route forms.",
+        ),
+        "test_optional_list_alias_and_validation_alias_by_name": _optional_query_list_alias_function_mapping(
+            "test_optional_list_alias_and_validation_alias_by_name",
+            "fastapi.request-parameters.query.optional-list.combined-aliases.field-name",
+            ["direct-field-name", "model-field-name"],
+            ["http.body.bytes", "http.status"],
+            "The optional combined-alias case supplies repeated values under the Python field name on both route forms.",
+        ),
+        "test_optional_list_alias_and_validation_alias_by_alias": _optional_query_list_alias_function_mapping(
+            "test_optional_list_alias_and_validation_alias_by_alias",
+            "fastapi.request-parameters.query.optional-list.combined-aliases.declared-alias",
+            ["direct-declared-alias", "model-declared-alias"],
+            ["http.body.bytes", "http.status"],
+            "The optional combined-alias case supplies repeated values under alias even though validation_alias selects the other wire key.",
+        ),
+        "test_optional_list_alias_and_validation_alias_by_validation_alias": _optional_query_list_alias_function_mapping(
+            "test_optional_list_alias_and_validation_alias_by_validation_alias",
+            "fastapi.request-parameters.query.optional-list.combined-aliases.validation-alias",
+            ["direct-validation-alias", "model-validation-alias"],
+            ["http.body.bytes", "http.status"],
+            "The optional combined-alias case supplies repeated values under validation_alias on both route forms.",
         ),
     },
     "tests/test_request_params/test_body/test_required_str.py": {
@@ -1215,8 +1375,9 @@ def validate_request_parameter_mappings() -> list[str]:
     tail_path = PROJECT_ROOT / _TAIL_WAVE_RECIPE
     tail = yaml.safe_load(tail_path.read_text(encoding="utf-8"))
     tail_cases = tail.get("cases", [])
-    if len(tail_cases) != 1 or tail_cases[0].get("case_id") != _TAIL_WAVE_CASE_ID:
-        errors.append("tail alias recipe does not contain its one declared case")
+    tail_case_ids = [case.get("case_id") for case in tail_cases]
+    if len(tail_case_ids) != len(_TAIL_WAVE_CASES) or set(tail_case_ids) != _TAIL_WAVE_CASES:
+        errors.append("tail alias recipe does not contain its five exact reviewed cases")
     optional_upload_path = PROJECT_ROOT / _OPTIONAL_UPLOAD_RECIPE
     optional_upload = yaml.safe_load(optional_upload_path.read_text(encoding="utf-8"))
     optional_upload_cases = {case.get("case_id"): case for case in optional_upload.get("cases", [])}
@@ -1232,6 +1393,53 @@ def validate_request_parameter_mappings() -> list[str]:
     }
     if set(optional_list_schema_cases) != _OPTIONAL_LIST_SCHEMA_CASES:
         errors.append("optional-list OpenAPI recipe does not contain its four reviewed cases")
+    optional_query_list_path = PROJECT_ROOT / _OPTIONAL_QUERY_LIST_ALIAS_RECIPE
+    optional_query_list = yaml.safe_load(optional_query_list_path.read_text(encoding="utf-8"))
+    optional_query_list_cases = {
+        case.get("case_id"): case for case in optional_query_list.get("cases", [])
+    }
+    if set(optional_query_list_cases) != _OPTIONAL_QUERY_LIST_ALIAS_CASES:
+        errors.append(
+            "optional query-list alias recipe does not contain its thirteen reviewed cases"
+        )
+    expected_openapi_pointers = {
+        "fastapi.request-parameters.query.optional-list.alias.openapi": {
+            "/paths/~1optional-alias~1direct/get/parameters",
+            "/paths/~1optional-alias~1model/get/parameters",
+        },
+        "fastapi.request-parameters.query.optional-list.validation-alias.openapi": {
+            "/paths/~1optional-validation-alias~1direct/get/parameters",
+            "/paths/~1optional-validation-alias~1model/get/parameters",
+        },
+        "fastapi.request-parameters.query.optional-list.combined-aliases.openapi": {
+            "/paths/~1optional-combined-alias~1direct/get/parameters",
+            "/paths/~1optional-combined-alias~1model/get/parameters",
+        },
+    }
+    for case_id, expected_pointers in expected_openapi_pointers.items():
+        case = optional_query_list_cases.get(case_id, {})
+        action = next(
+            (
+                action
+                for action in case.get("actions", [])
+                if action.get("action_id") == "inspect-openapi"
+            ),
+            {},
+        )
+        observations = [
+            observation
+            for observation in action.get("observations", [])
+            if observation.get("kind") == "openapi"
+        ]
+        pointers = {
+            pointer
+            for observation in observations
+            for pointer in observation.get("json_pointers", [])
+        }
+        if len(observations) != 1 or pointers != expected_pointers:
+            errors.append(
+                f"optional query-list OpenAPI selectors do not cover both routes for {case_id}"
+            )
     forbidden = {
         "expected",
         "expected_output",
@@ -1257,6 +1465,10 @@ def validate_request_parameter_mappings() -> list[str]:
         optional_list_schema,
         str(optional_list_schema_path.relative_to(PROJECT_ROOT)),
     )
+    scan_input_only(
+        optional_query_list,
+        str(optional_query_list_path.relative_to(PROJECT_ROOT)),
+    )
     if not (PROJECT_ROOT / _TAIL_WAVE_WORKLOAD).is_file():
         errors.append("tail recipe workload file is missing")
     if tail.get("workload", {}).get("file") != _TAIL_WAVE_WORKLOAD:
@@ -1271,20 +1483,41 @@ def validate_request_parameter_mappings() -> list[str]:
         errors.append("optional-list OpenAPI workload file is missing")
     if optional_list_schema.get("workload", {}).get("file") != _OPTIONAL_LIST_SCHEMA_WORKLOAD:
         errors.append("optional-list OpenAPI recipe references a different reviewed workload")
-    tail_actions = {
-        action.get("action_id") for case in tail_cases for action in case.get("actions", [])
-    }
-    referenced_tail_actions = {
-        action_id
+    if not (PROJECT_ROOT / _OPTIONAL_QUERY_LIST_ALIAS_WORKLOAD).is_file():
+        errors.append("optional query-list alias workload file is missing")
+    if optional_query_list.get("workload", {}).get("file") != _OPTIONAL_QUERY_LIST_ALIAS_WORKLOAD:
+        errors.append("optional query-list alias recipe references a different reviewed workload")
+    referenced_tail_cases = {
+        row["workflow_case"]["case_id"]
         for rows in REQUEST_PARAMETER_FUNCTION_MAPPINGS.values()
         for row in rows.values()
-        if row["workflow_case"]["case_id"] == _TAIL_WAVE_CASE_ID
-        for action_id in row["workflow_case"]["action_ids"]
+        if row["workflow_case"]["recipe_path"] == _TAIL_WAVE_RECIPE
     }
-    if not referenced_tail_actions <= tail_actions:
+    if referenced_tail_cases != _TAIL_WAVE_CASES:
         errors.append(
-            f"tail function mapping references unknown action IDs: {sorted(referenced_tail_actions - tail_actions)}"
+            "tail alias function mappings do not cover the five reviewed recipe cases: "
+            f"missing={sorted(_TAIL_WAVE_CASES - referenced_tail_cases)}, "
+            f"unexpected={sorted(referenced_tail_cases - _TAIL_WAVE_CASES)}"
         )
+    tail_cases_by_id = {case.get("case_id"): case for case in tail_cases}
+    for case_id in _TAIL_WAVE_CASES & tail_cases_by_id.keys():
+        declared_actions = {
+            action.get("action_id") for action in tail_cases_by_id[case_id].get("actions", [])
+        }
+        referenced_actions = {
+            action_id
+            for rows in REQUEST_PARAMETER_FUNCTION_MAPPINGS.values()
+            for row in rows.values()
+            if row["workflow_case"]["case_id"] == case_id
+            for action_id in row["workflow_case"]["action_ids"]
+        }
+        if not referenced_actions:
+            errors.append(f"tail alias recipe case has no exact source mapping: {case_id}")
+        if not referenced_actions <= declared_actions:
+            errors.append(
+                f"tail function mapping references unknown action IDs for {case_id}: "
+                f"{sorted(referenced_actions - declared_actions)}"
+            )
     for case_id, case in optional_upload_cases.items():
         declared_actions = {action.get("action_id") for action in case.get("actions", [])}
         referenced_actions = {
@@ -1311,6 +1544,20 @@ def validate_request_parameter_mappings() -> list[str]:
         if not referenced_actions <= declared_actions:
             errors.append(
                 f"optional-list OpenAPI mapping references unknown actions for {case_id}: "
+                f"{sorted(referenced_actions - declared_actions)}"
+            )
+    for case_id, case in optional_query_list_cases.items():
+        declared_actions = {action.get("action_id") for action in case.get("actions", [])}
+        referenced_actions = {
+            action_id
+            for rows in REQUEST_PARAMETER_FUNCTION_MAPPINGS.values()
+            for row in rows.values()
+            if row["workflow_case"]["case_id"] == case_id
+            for action_id in row["workflow_case"]["action_ids"]
+        }
+        if not referenced_actions <= declared_actions:
+            errors.append(
+                f"optional query-list alias mapping references unknown actions for {case_id}: "
                 f"{sorted(referenced_actions - declared_actions)}"
             )
 

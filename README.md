@@ -80,8 +80,8 @@ An earlier OpenAPI response-contract checkpoint passed 214 selected normal
 cases and six separate fault contracts; its incremental coverage added 42 Rust
 regions. See the
 [checkpoint report](docs/atlas/drafts/openapi-validation-response-native-contract-review-2026-10-05.md)
-for that run's identity, scope and remaining schema-order gaps. The fresh
-2026-10-12 direct-ASGI benchmark suite ran against FastAPI-RS commit `98fd2eb`
+for that run's identity, scope and remaining schema-order gaps. The latest
+2026-10-12 direct-ASGI benchmark suite ran against FastAPI-RS commit `979909f`
 and passed all seven workload gates (42/42 selected comparisons). FastAPI-RS
 was faster on two workloads and slower on five; see the
 [current benchmark record](docs/PARITY_BENCHMARK_PLAN.md#latest-completed-seven-workload-run-2026-10-12-suite-schema-v2)
