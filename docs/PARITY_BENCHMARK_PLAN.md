@@ -233,12 +233,12 @@ by subtracting the Starlette control or from the end-to-end target time.
 
 #### Latest completed seven-workload run (2026-10-12; suite schema v2)
 
-The suite completed at `2026-10-12T13:09:30Z` with suite ID
-`3aef720f-2d4d-4393-adb9-828d29a8cf50` and receipt
-`benchmark-results/suite-20261012T130930Z-3aef720f-2d4d-4393-adb9-828d29a8cf50.json`.
-It ran against FastAPI-RS commit `08b326d1d450cf2af53eb59fe1a344c9ceea9375`
+The suite completed at `2026-10-12T14:48:16Z` with suite ID
+`a5f2aaff-8460-45ed-b82a-c78517006bf6` and receipt
+`benchmark-results/suite-20261012T144816Z-a5f2aaff-8460-45ed-b82a-c78517006bf6.json`.
+It ran against FastAPI-RS commit `a68e09a5a39a2d4c20b6d742d8a2be5cd6a8ec46`
 and manifest SHA-256
-`9b36d000935f6a05e062fa43d3be0bf494918360ab1596b1e6dfa606970feb66`.
+`b0871654e15f2d3a4064b8e2b24bce3660b52b86d4f6d702924d59cc43c92815`.
 The source identities are FastAPI 0.141.1 at
 `95f8322ee1dcda7ceace7b1c4f6c9915b36d748f`, Starlette 1.6.0 at
 `4f250d6b814587e20c5365f0a5f0c4d42bcb929f`, and Starlette-RS at
@@ -248,9 +248,9 @@ release profile with `pyo3/extension-module`. All seven fresh parity gates
 passed: 42/42 selected comparisons, zero failed, and zero not-run. Each subject
 used 50 warmups and 1,000 measured calls in five rounds. The target extension
 SHA-256 was
-`b958f99b749a8ecf26aa8d43ff2d09ee5c76b3b54fd6a90b4e6f4e9228e6d654`; the
+`a2ed5782986ba01f797406e52264f95a25be21111c40e2792411ac620c779882`; the
 target binary SHA-256 was
-`c2f671034055ccd12df33ce812ac4ddfa97532d491fb9fc55352b55ca4d9564b`.
+`2d428dec131535cfdeb59d51d1ecfce9549f67f8e8c1093b4d27bd4e60318ccf`.
 
 The table reports median and p95 direct-ASGI latency in microseconds; ratios
 are FastAPI-RS divided by FastAPI, so values above `1.0x` mean FastAPI-RS took
@@ -259,20 +259,23 @@ suite and workload receipts linked above.
 
 | Workload | FastAPI median / p95 | FastAPI-RS median / p95 | Median / p95 ratio |
 | --- | ---: | ---: | ---: |
-| Async nested dependencies, distinct query aliases | 493.5 / 521.7 µs | 301.0 / 334.0 µs | 0.610x / 0.640x |
-| Async nested dependencies, two query parameters | 415.0 / 441.2 µs | 274.9 / 297.3 µs | 0.663x / 0.674x |
-| Chunked request body | 136.9 / 157.9 µs | 144.2 / 170.6 µs | 1.054x / 1.081x |
-| Invalid request | 148.8 / 222.9 µs | 319.0 / 356.3 µs | 2.145x / 1.599x |
-| Valid request | 130.2 / 142.6 µs | 138.8 / 164.1 µs | 1.066x / 1.151x |
-| Large response model | 363.1 / 389.4 µs | 393.1 / 433.0 µs | 1.083x / 1.112x |
-| Repeated sequence query | 115.2 / 129.6 µs | 111.8 / 131.0 µs | 0.971x / 1.011x |
+| Async nested dependencies, distinct query aliases | 487.1 / 503.1 µs | 306.8 / 341.0 µs | 0.630x / 0.678x |
+| Async nested dependencies, two query parameters | 412.0 / 426.5 µs | 274.3 / 291.3 µs | 0.666x / 0.683x |
+| Chunked request body | 139.5 / 467.4 µs | 139.8 / 151.9 µs | 1.001x / 0.325x |
+| Invalid request | 146.7 / 216.7 µs | 324.4 / 361.5 µs | 2.212x / 1.669x |
+| Valid request | 134.1 / 164.8 µs | 137.1 / 156.5 µs | 1.023x / 0.949x |
+| Large response model | 371.6 / 403.6 µs | 388.4 / 424.8 µs | 1.045x / 1.052x |
+| Repeated sequence query | 100.0 / 105.0 µs | 110.9 / 120.8 µs | 1.109x / 1.150x |
 
-FastAPI-RS had lower median latency on the two nested-query workloads and the
-repeated-query workload, and higher median latency on the other four. Its p95
-was lower on the two nested-query workloads and higher on the other five.
-These single-host direct-ASGI results do not measure network/server latency or
-isolate native Rust time. `make benchmark-contract-check` passed with all seven
-workload declarations, this suite, and its referenced results.
+FastAPI-RS had lower median latency on the two nested-query workloads and
+higher median latency on the other five. The chunked-body FastAPI p95 contains
+a large tail outlier (467.4 µs versus a 139.5 µs median); its p95 ratio is
+therefore not representative of the usual request cost, and the raw samples
+are retained for inspection. These single-host direct-ASGI results do not
+measure network/server latency or isolate native Rust time. The stale prior
+suite was moved to `benchmark-results/archive/stale-manifest-20261012/`.
+`make benchmark-contract-check` passed with all seven workload declarations,
+this suite, and its referenced results.
 
 #### Previous run (2026-10-12; suite schema v2; stale manifest)
 
