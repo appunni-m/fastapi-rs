@@ -233,24 +233,25 @@ by subtracting the Starlette control or from the end-to-end target time.
 
 #### Latest completed seven-workload run (2026-10-12; suite schema v2)
 
-The suite completed at `2026-10-12T14:48:16Z` with suite ID
-`a5f2aaff-8460-45ed-b82a-c78517006bf6` and receipt
-`benchmark-results/suite-20261012T144816Z-a5f2aaff-8460-45ed-b82a-c78517006bf6.json`.
-It ran against FastAPI-RS commit `a68e09a5a39a2d4c20b6d742d8a2be5cd6a8ec46`
-and manifest SHA-256
-`b0871654e15f2d3a4064b8e2b24bce3660b52b86d4f6d702924d59cc43c92815`.
+The suite completed at `2026-10-12T21:43:47Z` with suite ID
+`f2ef972b-6d9a-4a77-add3-d441720fc008` and receipt
+`benchmark-results/suite-20261012T214347Z-f2ef972b-6d9a-4a77-add3-d441720fc008.json`
+(SHA-256 `9d7ad4fd341b98df837b26bd55801cdcc9b95495b792a5b1240bf84b3cf68083`).
+It ran against FastAPI-RS commit `6094094ba79d3cbf94a8d847f71dbc8f2ee0f449`
+and current manifest SHA-256
+`58acf66af845d7e958658a9fd3b9d2bfc1a1cb4ee1e4d7d8d64001859b24357f`.
 The source identities are FastAPI 0.141.1 at
 `95f8322ee1dcda7ceace7b1c4f6c9915b36d748f`, Starlette 1.6.0 at
 `4f250d6b814587e20c5365f0a5f0c4d42bcb929f`, and Starlette-RS at
 `b4c8a65c85e1b0d251ca05874412811eaa3ac7b8`. The run used CPython 3.12.13,
 macOS 15.7.7 arm64 (12 logical CPUs), Cargo/rustc 1.98.1, and the optimized
-release profile with `pyo3/extension-module`. All seven fresh parity gates
-passed: 42/42 selected comparisons, zero failed, and zero not-run. Each subject
-used 50 warmups and 1,000 measured calls in five rounds. The target extension
-SHA-256 was
-`a2ed5782986ba01f797406e52264f95a25be21111c40e2792411ac620c779882`; the
+release profile with `pyo3/extension-module`. All seven workloads completed;
+all selected parity gates passed (42/42 comparisons, zero failed, zero
+not-run). Each subject used 50 warmups and 1,000 measured calls in five rounds.
+The target extension SHA-256 was
+`cfdc64a5343715e02eac44b6c2c88a13aea75a8a2d1fe31893569d442ec1e6ce`; the
 target binary SHA-256 was
-`2d428dec131535cfdeb59d51d1ecfce9549f67f8e8c1093b4d27bd4e60318ccf`.
+`ff88fc1417a7edf5f4615d4404e700c8161a45ba60737e5e38994a79bccffbd1`.
 
 The table reports median and p95 direct-ASGI latency in microseconds; ratios
 are FastAPI-RS divided by FastAPI, so values above `1.0x` mean FastAPI-RS took
@@ -259,25 +260,39 @@ suite and workload receipts linked above.
 
 | Workload | FastAPI median / p95 | FastAPI-RS median / p95 | Median / p95 ratio |
 | --- | ---: | ---: | ---: |
-| Async nested dependencies, distinct query aliases | 487.1 / 503.1 µs | 306.8 / 341.0 µs | 0.630x / 0.678x |
-| Async nested dependencies, two query parameters | 412.0 / 426.5 µs | 274.3 / 291.3 µs | 0.666x / 0.683x |
-| Chunked request body | 139.5 / 467.4 µs | 139.8 / 151.9 µs | 1.001x / 0.325x |
-| Invalid request | 146.7 / 216.7 µs | 324.4 / 361.5 µs | 2.212x / 1.669x |
-| Valid request | 134.1 / 164.8 µs | 137.1 / 156.5 µs | 1.023x / 0.949x |
-| Large response model | 371.6 / 403.6 µs | 388.4 / 424.8 µs | 1.045x / 1.052x |
-| Repeated sequence query | 100.0 / 105.0 µs | 110.9 / 120.8 µs | 1.109x / 1.150x |
+| Async nested dependencies, distinct query aliases | 508.9 / 721.9 µs | 316.4 / 443.5 µs | 0.622x / 0.614x |
+| Async nested dependencies, two query parameters | 421.7 / 737.2 µs | 294.2 / 535.9 µs | 0.698x / 0.727x |
+| Chunked request body | 137.3 / 176.5 µs | 144.7 / 196.3 µs | 1.054x / 1.112x |
+| Invalid request | 149.6 / 251.3 µs | 334.0 / 627.3 µs | 2.233x / 2.496x |
+| Valid request | 134.0 / 186.7 µs | 144.6 / 215.2 µs | 1.079x / 1.152x |
+| Large response model | 367.8 / 635.8 µs | 430.9 / 1783.5 µs | 1.172x / 2.805x |
+| Repeated sequence query | 103.6 / 139.8 µs | 114.9 / 156.1 µs | 1.109x / 1.117x |
 
 FastAPI-RS had lower median latency on the two nested-query workloads and
-higher median latency on the other five. The chunked-body FastAPI p95 contains
-a large tail outlier (467.4 µs versus a 139.5 µs median); its p95 ratio is
-therefore not representative of the usual request cost, and the raw samples
-are retained for inspection. These single-host direct-ASGI results do not
-measure network/server latency or isolate native Rust time. The stale prior
-suite was moved to `benchmark-results/archive/stale-manifest-20261012/`.
-`make benchmark-contract-check` passed with all seven workload declarations,
-this suite, and its referenced results.
+higher median latency on the other five. The large-response-model p95 is
+2.805x the FastAPI p95 on this host; raw samples remain in the workload
+receipt for inspection. These single-host direct-ASGI results do not measure
+network/server latency or isolate native Rust time. The preceding 14:48Z
+suite is retained below as historical evidence.
 
-#### Previous run (2026-10-12; suite schema v2; stale manifest)
+#### Previous completed seven-workload run (2026-10-12; suite schema v2)
+
+The prior suite completed at `2026-10-12T14:48:16Z` with suite ID
+`a5f2aaff-8460-45ed-b82a-c78517006bf6` and receipt
+`benchmark-results/suite-20261012T144816Z-a5f2aaff-8460-45ed-b82a-c78517006bf6.json`.
+It ran against FastAPI-RS commit `a68e09a5a39a2d4c20b6d742d8a2be5cd6a8ec46`
+and manifest SHA-256
+`b0871654e15f2d3a4064b8e2b24bce3660b52b86d4f6d702924d59cc43c92815`.
+The source identities were FastAPI 0.141.1 at
+`95f8322ee1dcda7ceace7b1c4f6c9915b36d748f`, Starlette 1.6.0 at
+`4f250d6b814587e20c5365f0a5f0c4d42bcb929f`, and Starlette-RS at
+`b4c8a65c85e1b0d251ca05874412811eaa3ac7b8`. It used CPython 3.12.13,
+macOS 15.7.7 arm64 (12 logical CPUs), Cargo/rustc 1.98.1, and the optimized
+release profile with `pyo3/extension-module`. All seven parity gates passed
+(42/42 comparisons); each subject used 50 warmups and 1,000 measured calls in
+five rounds. Its results remain below for historical comparison.
+
+#### Historical stale-manifest run (2026-10-12; suite schema v2)
 
 This run completed at `2026-10-12T12:34:22Z` with suite ID
 `2a7f56cb-f01b-427b-a9c4-2817954131ce`. Its preserved receipt is archived at
