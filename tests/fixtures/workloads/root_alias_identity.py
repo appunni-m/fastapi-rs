@@ -1,8 +1,9 @@
-"""Input workload for FastAPI root re-export identity relations."""
+"""Input workload for FastAPI export and re-export identity relations."""
 
 from __future__ import annotations
 
 import json
+from importlib import import_module
 
 import fastapi.middleware.cors as fastapi_cors
 import fastapi.middleware.gzip as fastapi_gzip
@@ -145,6 +146,12 @@ def create_app() -> FastAPI:
     @app.get("/identity")
     def read_http_identity_relations() -> dict[str, dict[str, bool]]:
         return _http_identity_relations()
+
+    @app.get("/pydantic-inc-ex-identity")
+    def read_pydantic_inc_ex_identity() -> dict[str, bool]:
+        fastapi_types = import_module("fastapi.types")
+        pydantic_main = import_module("pydantic.main")
+        return {"identity": fastapi_types.IncEx is pydantic_main.IncEx}
 
     @app.websocket("/identity")
     async def read_websocket_identity_relations(websocket: WebSocket) -> None:

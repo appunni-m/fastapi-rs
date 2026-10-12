@@ -12319,6 +12319,8 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     ] {
         module.add(name, responses.getattr(name)?)?;
     }
+    let inc_ex = module.py().import("pydantic.main")?.getattr("IncEx")?;
+    module.add("IncEx", &inc_ex)?;
     let static_files = module
         .py()
         .import("starlette.staticfiles")?

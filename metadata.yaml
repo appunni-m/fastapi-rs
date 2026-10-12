@@ -2976,6 +2976,71 @@ reviewed_api_contract_overlay:
         mutation, custom route classes, RouteContext construction or general
         forwarding behavior, and unobserved context fields remain outside this
         slice.
+    fastapi.routing.RouteContext:
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyRouteContext
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        rust_binding: fastapi-rs/src/application_runtime.rs::PyRouteContext
+        known_gaps:
+          - Constructor and dataclass semantics are not claimed.
+          - General forwarded-member behavior is not yet fully inventoried.
+      source_evidence:
+        - path: fastapi/routing.py
+          symbol: RouteContext
+          kind: source-definition
+          start_line: 1545
+          end_line: 1582
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
+          case_id: fastapi.routing.apiroute-state.direct
+          workload_path: tests/fixtures/workloads/router_apiroute_context_upstream.py
+          observation_selectors: [http.status, http.body.bytes, asgi.application_error.exception]
+        - recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
+          case_id: fastapi.routing.iter-route-contexts.nested-included
+          workload_path: tests/fixtures/workloads/router_apiroute_context_upstream.py
+          observation_selectors: [http.status, http.body.bytes, asgi.application_error.exception]
+      feature_ids: [app-routing]
+      observation_selectors: [http.status, http.body.bytes, asgi.application_error.exception]
+      supported_slice: >-
+        `RouteContext` is the public result type yielded by
+        `iter_route_contexts`. The linked workflows observe that both a direct
+        APIRoute context and a nested included-route context are instances of
+        the exported `fastapi.routing.RouteContext` type, alongside the
+        separately scoped route-context observations. This does not promise a
+        public constructor, dataclass value semantics, or every forwarded
+        member.
+    fastapi.types.IncEx:
+      rust_binding: fastapi-rs/src/application_runtime.rs::register
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        rust_binding: fastapi-rs/src/application_runtime.rs::register
+        known_gaps:
+          - Pydantic owns IncEx semantics; this mapping only owns the FastAPI import path and object identity.
+      source_evidence:
+        - path: fastapi/types.py
+          symbol: IncEx
+          kind: import-binding
+          line: 7
+          relative_level: 0
+          imported_module: pydantic.main
+          imported_name: IncEx
+          alias_spelling: IncEx
+          local_name: IncEx
+          target_path: pydantic.main.IncEx
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
+          case_id: fastapi.types.inc-ex.pydantic-identity
+          workload_path: tests/fixtures/workloads/root_alias_identity.py
+          observation_selectors: [http.status, http.body.bytes]
+      feature_ids: [response-serialization]
+      observation_selectors: [http.status, http.body.bytes]
+      supported_slice: >-
+        `fastapi.types.IncEx` is the exact type alias re-exported from
+        `pydantic.main.IncEx`; the independent HTTP workflow compares that
+        identity relation. Pydantic owns the alias semantics, and FastAPI does
+        not export `IncEx` from the package root.
     fastapi.routing.APIRoute.get_route_handler:
       source_evidence:
         - {path: fastapi/routing.py, symbol: get_route_handler}

@@ -5,7 +5,10 @@ from fastapi_rs._core import (
     APIRouter as APIRouter,
 )
 from fastapi_rs._core import (
+    RouteContext as RouteContext,
+)
+from fastapi_rs._core import (
     iter_route_contexts as iter_route_contexts,
 )
 
-__all__ = ["APIRoute", "APIRouter", "iter_route_contexts"]
+__all__ = ["APIRoute", "APIRouter", "RouteContext", "iter_route_contexts"]

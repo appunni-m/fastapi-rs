@@ -8,6 +8,8 @@ from fastapi import APIRouter, FastAPI, Request
 
 
 def _snapshot_route(route: Any, context: Any) -> dict[str, object]:
+    from fastapi.routing import RouteContext
+
     return {
         "route": {
             "type": type(route).__name__,
@@ -20,6 +22,7 @@ def _snapshot_route(route: Any, context: Any) -> dict[str, object]:
         },
         "context": {
             "type": type(context).__name__,
+            "is_public_route_context": isinstance(context, RouteContext),
             "original_route_matches": context.original_route is route,
             "path": context.path,
             "path_format": context.path_format,
@@ -36,7 +39,7 @@ def create_app(factory_input: dict[str, Any], event_trace: list[str]) -> FastAPI
     app = FastAPI()
 
     @app.get("/direct/{item_id}", name="read_direct", tags=["direct"])
-    def read_direct(item_id: str, request: Request) -> dict[str, object]:
+    async def read_direct(item_id: str, request: Request) -> dict[str, object]:
         from fastapi.routing import APIRoute, iter_route_contexts
 
         route = next(
@@ -60,7 +63,7 @@ def create_app(factory_input: dict[str, Any], event_trace: list[str]) -> FastAPI
     leaf_router = APIRouter()
 
     @leaf_router.get("/items/{item_id}", name="read_nested", tags=["route"])
-    def read_nested(item_id: str, request: Request) -> dict[str, object]:
+    async def read_nested(item_id: str, request: Request) -> dict[str, object]:
         from fastapi.routing import iter_route_contexts
 
         original_route = leaf_router.routes[0]

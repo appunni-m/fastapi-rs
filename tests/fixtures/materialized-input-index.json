@@ -22364,14 +22364,15 @@
     {
       "id": "root-alias-identity",
       "input_path": "tests/fixtures/inputs/parity/root-alias-identity.json",
-      "input_sha256": "4113becb3c2fc41b631895f5e0f17a1a1c662c26d8619a58d4ab8216e68e3e1d",
+      "input_sha256": "3dd478edbe1ef213c36a4495906edec9adf732f372d7184275c1cd630a7b5801",
       "recipe_path": "tests/fixtures/input-recipes/parity/root-alias-identity.yaml",
-      "recipe_sha256": "4f7186ec29a4ea3f6e6fe34a4a946d662f4a061265297b0b859065624899888f",
+      "recipe_sha256": "c141b591d1a6280e849cbfb17fbd1f5bbad95449f523b2b40df333c56bad1124",
       "workload_path": "tests/fixtures/workloads/root_alias_identity.py",
-      "workload_sha256": "6e00762c3937ac0efbca7459ec0a260074150b354926a2394c6cc523ab38144d",
+      "workload_sha256": "934cd902ce9eb76a215f95f4febedf23acee12179776b2ecc5e0671c1b3e4ff5",
       "case_ids": [
         "fastapi.root-alias-identity.http-reexports",
-        "fastapi.root-alias-identity.websocket-reexports"
+        "fastapi.root-alias-identity.websocket-reexports",
+        "fastapi.types.inc-ex.pydantic-identity"
       ],
       "case_contracts": [
         {
@@ -22398,6 +22399,13 @@
           "verification": "parity",
           "requirement_refs": [
             "source:documented-page:reference/websockets.md"
+          ]
+        },
+        {
+          "case_id": "fastapi.types.inc-ex.pydantic-identity",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_response_model_include_exclude.py"
           ]
         }
       ]
@@ -22555,7 +22563,7 @@
       "recipe_path": "tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml",
       "recipe_sha256": "e49e2741ffeaca984ed842f98fee6415891085d3a925ce83e873edeb0e5111a1",
       "workload_path": "tests/fixtures/workloads/router_apiroute_context_upstream.py",
-      "workload_sha256": "c77c0affb8f4168c315b24c4ea4db81393b4de8802504ce28884cfb0011439e0",
+      "workload_sha256": "6141e5bfb5ce5b5b40d3c8e504d3c1c57674dba088a921dd053de35b08c3f425",
       "case_ids": [
         "fastapi.routing.apiroute-state.direct",
         "fastapi.routing.iter-route-contexts.nested-included"
@@ -50204,6 +50212,20 @@
       "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.root-alias-identity.http-reexports"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_response_model_include_exclude.py",
+      "fixture_id": "fastapi.test.test-response-model-include-exclude",
+      "workflow_id": "root-alias-identity",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.types.inc-ex.pydantic-identity"
       ],
       "observation_selectors": [
         "http.body.bytes",
