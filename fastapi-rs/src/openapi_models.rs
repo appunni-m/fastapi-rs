@@ -10,6 +10,7 @@ use pyo3::types::{PyDict, PyModule, PyString, PyTuple};
 
 const MODEL_MODULE: &str = "fastapi.openapi.models";
 const ROOT_HANDLE: &str = "_FastApiOpenApiModel";
+const PUBLIC_MODEL_EXPORTS: &[&str] = &["Schema", "Discriminator", "Components"];
 
 enum Annotation {
     Named(&'static str),
@@ -94,7 +95,7 @@ pub(crate) fn register(py: Python<'_>, module: &Bound<'_, PyModule>) -> PyResult
                 namespace.set_item(name, annotation.resolve(py, &namespace)?)?;
             }
             GraphDefinition::Schema => {
-                let fields = crate::openapi_model_schema::schema_fields(py)?;
+                let fields = crate::openapi_model_schema::schema_fields(py, &namespace)?;
                 let options = fields.bind(py);
                 options.set_item("__module__", MODEL_MODULE)?;
                 options.set_item("__base__", named(&namespace, "BaseModelWithConfig")?)?;
@@ -117,7 +118,11 @@ pub(crate) fn register(py: Python<'_>, module: &Bound<'_, PyModule>) -> PyResult
             .bind(py)
             .call_method("model_rebuild", (), Some(&options))?;
     }
-    module.add(ROOT_HANDLE, named(&namespace, "OpenAPI")?)
+    module.add(ROOT_HANDLE, named(&namespace, "OpenAPI")?)?;
+    for name in PUBLIC_MODEL_EXPORTS {
+        module.add(*name, named(&namespace, name)?)?;
+    }
+    Ok(())
 }
 
 /// Applies the private source-shaped root model to a complete raw document.

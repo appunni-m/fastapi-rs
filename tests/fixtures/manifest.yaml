@@ -20335,11 +20335,12 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/599
-      status: unimplemented
-      rust_binding: null
+      status: partial-contract
+      rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
-      - The target fastapi.openapi.models façade does not export Components; the direct model input records
-        source construction and serialization only.
+      - Only the exact constructor signature and one successful model_dump projection are verified; other
+        component maps, validation/coercion, alternate serialization, and JSON Schema behavior remain
+        unproven.
   - id: fastapi.openapi.models.Components.callbacks
     kind: field
     source_candidate_ref: /api_candidates/600
@@ -21179,11 +21180,11 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/614
-      status: unimplemented
-      rust_binding: null
+      status: partial-contract
+      rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
-      - The target fastapi.openapi.models façade does not export Discriminator; the direct model input
-        records source construction and serialization only.
+      - Only the exact constructor signature and one successful model_dump projection are verified; invalid
+        values, alias handling, alternate serialization, and JSON Schema behavior remain unproven.
   - id: fastapi.openapi.models.Discriminator.mapping
     kind: field
     source_candidate_ref: /api_candidates/615
@@ -28684,11 +28685,12 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/761
-      status: unimplemented
-      rust_binding: null
+      status: partial-contract
+      rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       known_gaps:
-      - The target fastapi.openapi.models façade does not export Schema; the direct model input records
-        source construction and serialization only.
+      - Only the exact constructor signature and one successful model_dump projection are verified; unexercised
+        fields and constraints, alias-name input, invalid values, recursive schemas, alternate serialization,
+        and JSON Schema behavior remain unproven.
   - id: fastapi.openapi.models.Schema.additionalProperties
     kind: field
     source_candidate_ref: /api_candidates/762

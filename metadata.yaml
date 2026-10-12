@@ -8724,12 +8724,12 @@ reviewed_api_contract_overlay:
         The selected OpenAPI cases serialize the APIKey scheme type as
         `apiKey`; direct field validation remains unverified.
     fastapi.openapi.models.Components:
+      rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       supported_slice: >-
         The active direct inputs declare a python.signature observation for this class. The
         model-result stimulus supplies only schemas (one inline Schema and one $ref Reference)
         plus an extension value; other component maps, validation, coercion, and other
         serialization modes are outside this input slice.
-      rust_binding: null
       source_evidence:
         - path: fastapi/openapi/models.py
           symbol: Components
@@ -8745,16 +8745,16 @@ reviewed_api_contract_overlay:
       observation_selectors: [python.signature, python.pydantic_model_result]
       target_binding:
         implementation_owner: fastapi-rs
-        status: unimplemented
+        status: partial-contract
         known_gaps:
-          - The target fastapi.openapi.models façade does not export Components; the direct model input records source construction and serialization only.
-        rust_binding: null
+          - Only the exact constructor signature and one successful model_dump projection are verified; other component maps, validation/coercion, alternate serialization, and JSON Schema behavior remain unproven.
+        rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
     fastapi.openapi.models.Discriminator:
+      rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       supported_slice: >-
         The active inputs declare python.signature and model-result observations; the
         model-result stimulus supplies required propertyName and one optional mapping. Other
         validation, coercion, and model_dump configurations are unverified.
-      rust_binding: null
       source_evidence:
         - path: fastapi/openapi/models.py
           symbol: Discriminator
@@ -8770,18 +8770,18 @@ reviewed_api_contract_overlay:
       observation_selectors: [python.signature, python.pydantic_model_result]
       target_binding:
         implementation_owner: fastapi-rs
-        status: unimplemented
+        status: partial-contract
         known_gaps:
-          - The target fastapi.openapi.models façade does not export Discriminator; the direct model input records source construction and serialization only.
-        rust_binding: null
+          - Only the exact constructor signature and one successful model_dump projection are verified; invalid values, alias handling, alternate serialization, and JSON Schema behavior remain unproven.
+        rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
     fastapi.openapi.models.Schema:
+      rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
       supported_slice: >-
         The active inputs declare signature and model-result observations. The model-result
         stimulus supplies schema_ (serialized by alias), id, title, type, required, properties
         (including nested type/minLength), additionalProperties, discriminator, and one
         extension key. Other keywords and constraints, alias-name input, validation failures,
         and schema generation are outside this input slice.
-      rust_binding: null
       source_evidence:
         - path: fastapi/openapi/models.py
           symbol: Schema
@@ -8797,10 +8797,10 @@ reviewed_api_contract_overlay:
       observation_selectors: [python.signature, python.pydantic_model_result]
       target_binding:
         implementation_owner: fastapi-rs
-        status: unimplemented
+        status: partial-contract
         known_gaps:
-          - The target fastapi.openapi.models façade does not export Schema; the direct model input records source construction and serialization only.
-        rust_binding: null
+          - Only the exact constructor signature and one successful model_dump projection are verified; unexercised fields and constraints, alias-name input, invalid values, recursive schemas, alternate serialization, and JSON Schema behavior remain unproven.
+        rust_binding: fastapi-rs/src/openapi_models.rs::PUBLIC_MODEL_EXPORTS
     fastapi.openapi.models.APIKeyIn:
       rust_binding: fastapi-rs/src/security.rs::create_api_key_models
       source_evidence:

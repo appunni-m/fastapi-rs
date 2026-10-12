@@ -1,5 +1,6 @@
 //! Private declaration data for the pinned OpenAPI Schema model.
 
+use pyo3::exceptions::PyRuntimeError;
 use pyo3::prelude::*;
 use pyo3::types::{PyBool, PyDict, PyFloat, PyInt, PyList, PySet, PyString, PyTuple};
 
@@ -112,7 +113,7 @@ const SCHEMA_FIELDS: [SchemaDescriptor; 61] = {
 /// The caller supplies its extra-allowing base and rebuilds every model using a
 /// complete type namespace. Fixed ForwardRefs express SchemaOrBool recursion
 /// and companion classes; no user annotation or Python source is evaluated.
-pub(crate) fn schema_fields(py: Python<'_>) -> PyResult<Py<PyDict>> {
+pub(crate) fn schema_fields(py: Python<'_>, namespace: &Bound<'_, PyDict>) -> PyResult<Py<PyDict>> {
     let typing = py.import("typing")?;
     let union = py.import("operator")?.getattr("or_")?;
     let optional = typing.getattr("Optional")?;
@@ -141,9 +142,9 @@ pub(crate) fn schema_fields(py: Python<'_>) -> PyResult<Py<PyDict>> {
     )?)?;
     let schema_type_list = list_type.get_item(&schema_type)?;
     let schema_type_union = union.call1((&schema_type, &schema_type_list))?;
-    let discriminator = forward_ref.call1(("Discriminator",))?;
-    let xml = forward_ref.call1(("XML",))?;
-    let external_docs = forward_ref.call1(("ExternalDocumentation",))?;
+    let discriminator = model_type(namespace, "Discriminator")?;
+    let xml = model_type(namespace, "XML")?;
+    let external_docs = model_type(namespace, "ExternalDocumentation")?;
     let field = py.import("pydantic")?.getattr("Field")?;
     let fields = PyDict::new(py);
 
@@ -202,4 +203,10 @@ pub(crate) fn schema_fields(py: Python<'_>) -> PyResult<Py<PyDict>> {
         fields.set_item(name, PyTuple::new(py, [annotation, default])?)?;
     }
     Ok(fields.unbind())
+}
+
+fn model_type<'py>(namespace: &Bound<'py, PyDict>, name: &str) -> PyResult<Bound<'py, PyAny>> {
+    namespace.get_item(name)?.ok_or_else(|| {
+        PyRuntimeError::new_err(format!("OpenAPI model namespace is missing {name}"))
+    })
 }
