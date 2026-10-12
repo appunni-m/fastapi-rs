@@ -1,0 +1,358 @@
+schema: fastapi-rs/python-process-workflow@2
+profiles:
+  oracle: fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-standard
+  target: fastapi-rs-python-consumer
+cases:
+  - case_id: fastapi.cli.process.root-help
+    argv: [fastapi, --help]
+    cwd: &empty_tree
+      kind: isolated-tree
+      files: []
+    environment: &stable_terminal
+      set:
+        COLUMNS: "100"
+        LINES: "32"
+        NO_COLOR: "1"
+        PYTHONIOENCODING: utf-8
+        TERM: dumb
+      unset: [FASTAPI_ENV, FASTAPI_PUBLIC_URL, PORT]
+    timeout_seconds: 20
+    observations: [process.exit_code, process.stdout, process.stderr]
+    execution: {kind: command}
+    source_evidence: &cli_sources
+      - path: tests/test_fastapi_cli.py
+        kind: upstream_test
+        sha256: c5256b040fd47757ef89e15c9193348af8eb1f5f38e13193a521ab0033133b8c
+      - path: docs/en/docs/fastapi-cli.md
+        kind: upstream_documentation
+        sha256: ad3860dd30364ab774324d61580dd2b7b175e28a0a3fbd3fc1b2c5ec779ffe3f
+      - path: fastapi/cli.py
+        kind: upstream_implementation_source
+        sha256: 3988596f4351fdd7ae4f9a1fc8f176368341cd90cd38ff126a579fda793e1ea0
+      - path: pyproject.toml
+        kind: upstream_project_metadata
+        sha256: 8762fce1f84ba4fd9033ed58aeadefae050ca485ce97ca5130b7d2d1eb7db6f6
+      - path: uv.lock
+        kind: upstream_lockfile
+        sha256: 96ae079a121e11b4cc0d260df5b7f77189bb90fa23a2da368f607418c2d98165
+
+  - case_id: fastapi.cli.process.root-version
+    argv: [fastapi, --version]
+    cwd: *empty_tree
+    environment: *stable_terminal
+    timeout_seconds: 20
+    observations: [process.exit_code, process.stdout, process.stderr]
+    execution: {kind: command}
+    source_evidence: *cli_sources
+
+  - case_id: fastapi.cli.process.dev-help
+    argv: [fastapi, dev, --help]
+    cwd: *empty_tree
+    environment: *stable_terminal
+    timeout_seconds: 20
+    observations: [process.exit_code, process.stdout, process.stderr]
+    execution: {kind: command}
+    source_evidence: *cli_sources
+
+  - case_id: fastapi.cli.process.run-help
+    argv: [fastapi, run, --help]
+    cwd: *empty_tree
+    environment: *stable_terminal
+    timeout_seconds: 20
+    observations: [process.exit_code, process.stdout, process.stderr]
+    execution: {kind: command}
+    source_evidence: *cli_sources
+
+  - case_id: fastapi.cli.process.dev-no-app
+    argv: [fastapi, dev, --no-reload]
+    cwd: *empty_tree
+    environment: *stable_terminal
+    timeout_seconds: 20
+    observations: [process.exit_code, process.stdout, process.stderr]
+    execution: {kind: command}
+    source_evidence: *cli_sources
+
+  - case_id: fastapi.cli.process.dev-entrypoint-conflict
+    argv: [fastapi, dev, main.py, --entrypoint, main:app]
+    cwd: &main_app_tree
+      kind: isolated-tree
+      files:
+        - path: main.py
+          content: &main_app |
+            import os
+
+            from fastapi import FastAPI
+
+            app = FastAPI()
+
+            @app.get("/probe")
+            def probe():
+                return {"fastapi_env": os.environ.get("FASTAPI_ENV")}
+    environment: *stable_terminal
+    timeout_seconds: 20
+    observations: [process.exit_code, process.stdout, process.stderr]
+    execution: {kind: command}
+    source_evidence: *cli_sources
+
+  - case_id: fastapi.cli.process.dev-invalid-pyproject-entrypoint
+    argv: [fastapi, dev, --no-reload]
+    cwd:
+      kind: isolated-tree
+      files:
+        - path: pyproject.toml
+          content: |
+            [tool.fastapi]
+            entrypoint = 42
+    environment: *stable_terminal
+    timeout_seconds: 20
+    observations: [process.exit_code, process.stdout, process.stderr]
+    execution: {kind: command}
+    source_evidence: *cli_sources
+
+  - case_id: fastapi.cli.process.dev-auto-discovery-environment-default
+    argv: [fastapi, dev, --port, "{port}"]
+    cwd: *main_app_tree
+    environment: *stable_terminal
+    timeout_seconds: 30
+    observations: [process.exit_code, http.status, http.body.bytes]
+    execution: &server_execution
+      kind: http-server
+      readiness:
+        path: /probe
+        timeout_seconds: 12
+        poll_interval_ms: 100
+      request:
+        method: GET
+        path: /probe
+        headers: {}
+        body: ""
+        timeout_seconds: 5
+      shutdown:
+        grace_seconds: 4
+    source_evidence: *cli_sources
+
+  - case_id: fastapi.cli.process.dev-auto-discovery-app-py
+    argv: [fastapi, dev, --no-reload, --port, "{port}"]
+    cwd:
+      kind: isolated-tree
+      files:
+        - path: app.py
+          content: *main_app
+    environment: *stable_terminal
+    timeout_seconds: 30
+    observations: [process.exit_code, http.status, http.body.bytes]
+    execution: *server_execution
+    source_evidence: *cli_sources
+
+  - case_id: fastapi.cli.process.dev-auto-discovery-api-py
+    argv: [fastapi, dev, --no-reload, --port, "{port}"]
+    cwd:
+      kind: isolated-tree
+      files:
+        - path: api.py
+          content: *main_app
+    environment: *stable_terminal
+    timeout_seconds: 30
+    observations: [process.exit_code, http.status, http.body.bytes]
+    execution: *server_execution
+    source_evidence: *cli_sources
+
+  - case_id: fastapi.cli.process.dev-auto-discovery-app-main-py
+    argv: [fastapi, dev, --no-reload, --port, "{port}"]
+    cwd:
+      kind: isolated-tree
+      files:
+        - path: app/__init__.py
+          content: ""
+        - path: app/main.py
+          content: *main_app
+    environment: *stable_terminal
+    timeout_seconds: 30
+    observations: [process.exit_code, http.status, http.body.bytes]
+    execution: *server_execution
+    source_evidence: *cli_sources
+
+  - case_id: fastapi.cli.process.dev-auto-discovery-app-app-py
+    argv: [fastapi, dev, --no-reload, --port, "{port}"]
+    cwd:
+      kind: isolated-tree
+      files:
+        - path: app/__init__.py
+          content: ""
+        - path: app/app.py
+          content: *main_app
+    environment: *stable_terminal
+    timeout_seconds: 30
+    observations: [process.exit_code, http.status, http.body.bytes]
+    execution: *server_execution
+    source_evidence: *cli_sources
+
+  - case_id: fastapi.cli.process.dev-auto-discovery-app-api-py
+    argv: [fastapi, dev, --no-reload, --port, "{port}"]
+    cwd:
+      kind: isolated-tree
+      files:
+        - path: app/__init__.py
+          content: ""
+        - path: app/api.py
+          content: *main_app
+    environment: *stable_terminal
+    timeout_seconds: 30
+    observations: [process.exit_code, http.status, http.body.bytes]
+    execution: *server_execution
+    source_evidence: *cli_sources
+
+  - case_id: fastapi.cli.process.dev-auto-discovery-api-object
+    argv: [fastapi, dev, --no-reload, --port, "{port}"]
+    cwd:
+      kind: isolated-tree
+      files:
+        - path: main.py
+          content: &api_named_app |
+            import os
+
+            from fastapi import FastAPI
+
+            api = FastAPI()
+
+            @api.get("/probe")
+            def probe():
+                return {"fastapi_env": os.environ.get("FASTAPI_ENV")}
+    environment: *stable_terminal
+    timeout_seconds: 30
+    observations: [process.exit_code, http.status, http.body.bytes]
+    execution: *server_execution
+    source_evidence: *cli_sources
+
+  - case_id: fastapi.cli.process.dev-path-preserves-environment
+    argv: [fastapi, dev, main.py, --no-reload, --port, "{port}"]
+    cwd: *main_app_tree
+    environment:
+      set:
+        COLUMNS: "100"
+        FASTAPI_ENV: staging
+        LINES: "32"
+        NO_COLOR: "1"
+        PYTHONIOENCODING: utf-8
+        TERM: dumb
+      unset: [FASTAPI_PUBLIC_URL, PORT]
+    timeout_seconds: 30
+    observations: [process.exit_code, http.status, http.body.bytes]
+    execution: *server_execution
+    source_evidence: *cli_sources
+
+  - case_id: fastapi.cli.process.run-leaves-environment-unchanged
+    argv: [fastapi, run, main.py, --host, 127.0.0.1, --port, "{port}"]
+    cwd: *main_app_tree
+    environment: *stable_terminal
+    timeout_seconds: 30
+    observations: [process.exit_code, http.status, http.body.bytes]
+    execution: *server_execution
+    source_evidence: *cli_sources
+
+  - case_id: fastapi.cli.process.run-auto-discovery-no-path
+    argv: [fastapi, run, --host, 127.0.0.1, --port, "{port}"]
+    cwd: *main_app_tree
+    environment: *stable_terminal
+    timeout_seconds: 30
+    observations: [process.exit_code, http.status, http.body.bytes]
+    execution: *server_execution
+    source_evidence: *cli_sources
+
+  - case_id: fastapi.cli.process.dev-pyproject-entrypoint
+    argv: [fastapi, dev, --no-reload, --port, "{port}"]
+    cwd:
+      kind: isolated-tree
+      files:
+        - path: pyproject.toml
+          content: |
+            [tool.fastapi]
+            entrypoint = "backend.main:app"
+        - path: backend/__init__.py
+          content: ""
+        - path: backend/main.py
+          content: *main_app
+    environment: *stable_terminal
+    timeout_seconds: 30
+    observations: [process.exit_code, http.status, http.body.bytes]
+    execution: *server_execution
+    source_evidence: *cli_sources
+
+  - case_id: fastapi.cli.process.run-explicit-entrypoint
+    argv: [fastapi, run, --entrypoint, backend.main:app, --host, 127.0.0.1, --port, "{port}"]
+    cwd:
+      kind: isolated-tree
+      files:
+        - path: backend/__init__.py
+          content: ""
+        - path: backend/main.py
+          content: *main_app
+    environment: *stable_terminal
+    timeout_seconds: 30
+    observations: [process.exit_code, http.status, http.body.bytes]
+    execution: *server_execution
+    source_evidence: *cli_sources
+
+  - case_id: fastapi.cli.process.dev-app-option
+    argv: [fastapi, dev, main.py, --app, api, --no-reload, --port, "{port}"]
+    cwd:
+      kind: isolated-tree
+      files:
+        - path: main.py
+          content: |
+            from fastapi import FastAPI
+
+            api = FastAPI()
+
+            @api.get("/probe")
+            def probe():
+                return {"selected": "api"}
+    environment: *stable_terminal
+    timeout_seconds: 30
+    observations: [process.exit_code, http.status, http.body.bytes]
+    execution: *server_execution
+    source_evidence: *cli_sources
+
+  - case_id: fastapi.cli.process.dev-port-environment
+    argv: [fastapi, dev, main.py, --no-reload]
+    cwd: *main_app_tree
+    environment:
+      set:
+        COLUMNS: "100"
+        LINES: "32"
+        NO_COLOR: "1"
+        PORT: "{port}"
+        PYTHONIOENCODING: utf-8
+        TERM: dumb
+      unset: [FASTAPI_ENV, FASTAPI_PUBLIC_URL]
+    timeout_seconds: 30
+    observations: [process.exit_code, http.status, http.body.bytes]
+    execution: *server_execution
+    source_evidence: *cli_sources
+
+  - case_id: fastapi.cli.process.run-workers
+    argv: [fastapi, run, main.py, --host, 127.0.0.1, --port, "{port}", --workers, "2"]
+    cwd: *main_app_tree
+    environment: *stable_terminal
+    timeout_seconds: 30
+    observations: [process.exit_code, http.status, http.body.bytes]
+    execution: *server_execution
+    source_evidence:
+      - path: tests/test_fastapi_cli.py
+        kind: upstream_test
+        sha256: c5256b040fd47757ef89e15c9193348af8eb1f5f38e13193a521ab0033133b8c
+      - path: docs/en/docs/fastapi-cli.md
+        kind: upstream_documentation
+        sha256: ad3860dd30364ab774324d61580dd2b7b175e28a0a3fbd3fc1b2c5ec779ffe3f
+      - path: docs/en/docs/deployment/server-workers.md
+        kind: upstream_documentation
+        sha256: 5b4bd1b6afe1c9ef70bd210aa101ce386f6c48ee9f8c97e4066ab667545b74da
+      - path: fastapi/cli.py
+        kind: upstream_implementation_source
+        sha256: 3988596f4351fdd7ae4f9a1fc8f176368341cd90cd38ff126a579fda793e1ea0
+      - path: pyproject.toml
+        kind: upstream_project_metadata
+        sha256: 8762fce1f84ba4fd9033ed58aeadefae050ca485ce97ca5130b7d2d1eb7db6f6
+      - path: uv.lock
+        kind: upstream_lockfile
+        sha256: 96ae079a121e11b4cc0d260df5b7f77189bb90fa23a2da368f607418c2d98165

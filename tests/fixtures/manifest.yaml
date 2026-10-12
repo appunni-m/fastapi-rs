@@ -416,7 +416,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@6
-    sha256: 2ec72ec3b73568c012acd306e326c4c2a77274002eff799c220c04367991f2d3
+    sha256: 07d60935236a809b4f8bc80395cbf00096b2eaa67aee802e2c0267672d99e44d
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1624
@@ -452,7 +452,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@1
-    sha256: ffcc87b8702e9eb089c42458bee56d488ca53643e50f8b5679bb96fba26f7358
+    sha256: 3e744bc049105f56858052964d81580385b3b98fbfb7c9147845cef52a7a9793
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 892
@@ -489,14 +489,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@7
-    sha256: 15f2fdb12596c75cdc111b2a6321e49477527c3b95904bb5df17d6371ec24f31
+    sha256: 4e4704add8fa00e676a9ce1d8e69480055dade47b62840ab701878cdb3cade0b
     schema_path: tests/fixtures/schemas/materialized-input-index-v7.schema.json
     schema_sha256: 97ce3a2e9f3c7d173d91bc582b0f409813c7d70a07111d5a0d13690b29df425f
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 568
-      cases: 2361
-      partial_source_mappings: 1622
+      workflows: 569
+      cases: 2383
+      partial_source_mappings: 1624
 
 contract_metadata:
   aliases:
@@ -815,7 +815,7 @@ unresolved:
       monkeypatched upstream test of private fastapi.cli.main is excluded with
       source evidence; the documented console command remains mapped.
   python_process_workflow_v2:
-    state: bounded-isolated-tree-and-loopback-server-lifecycle-supported
+    state: documented-cli-crosswalk-inputs-materialized; target-console-entrypoint-unimplemented
     schema_id: fastapi-rs/python-process-workflow@2
     schema_path: tests/fixtures/schemas/python-process-workflow-v2.schema.json
     schema_sha256: 6ed19e4116f9bb274b8bfb63abd8245ed90c261009e035146e4b1da8b0088dbc
@@ -825,18 +825,89 @@ unresolved:
     comparison_schema_id: fastapi-rs/python-process-comparison@2
     comparison_schema_path: tests/fixtures/schemas/python-process-comparison-v2.schema.json
     comparison_schema_sha256: 8d7c77b71d345c26d60f29d758f25f91d4618044f1b5bebdf9a0c9fd421e7c6f
+    recipe_path: tests/fixtures/input-recipes/parity/fastapi-cli-documented-process-v2.yaml
+    recipe_sha256: b8fbb78c9cccf01387e8bd1eaab079eabbeb50d8e5e9ca8ad420916ac60cef58
+    case_ids:
+      - fastapi.cli.process.root-help
+      - fastapi.cli.process.root-version
+      - fastapi.cli.process.dev-help
+      - fastapi.cli.process.run-help
+      - fastapi.cli.process.dev-no-app
+      - fastapi.cli.process.dev-entrypoint-conflict
+      - fastapi.cli.process.dev-invalid-pyproject-entrypoint
+      - fastapi.cli.process.dev-auto-discovery-environment-default
+      - fastapi.cli.process.dev-auto-discovery-app-py
+      - fastapi.cli.process.dev-auto-discovery-api-py
+      - fastapi.cli.process.dev-auto-discovery-app-main-py
+      - fastapi.cli.process.dev-auto-discovery-app-app-py
+      - fastapi.cli.process.dev-auto-discovery-app-api-py
+      - fastapi.cli.process.dev-auto-discovery-api-object
+      - fastapi.cli.process.dev-path-preserves-environment
+      - fastapi.cli.process.run-leaves-environment-unchanged
+      - fastapi.cli.process.run-auto-discovery-no-path
+      - fastapi.cli.process.dev-pyproject-entrypoint
+      - fastapi.cli.process.run-explicit-entrypoint
+      - fastapi.cli.process.dev-app-option
+      - fastapi.cli.process.dev-port-environment
+      - fastapi.cli.process.run-workers
+    source_mappings:
+      - documented-page:fastapi-cli.md
+      - upstream-test:tests/test_fastapi_cli.py
+    source_exclusions:
+      - source_item_id: documented-page:deployment/server-workers.md
+        reason: >-
+          The source atlas excludes worker replication and deployment behavior as Uvicorn-owned;
+          the run-workers case samples CLI forwarding only and makes no worker-count claim.
+    known_gaps:
+      - behavior: development-auto-reload-after-file-change
+        source_item_id: documented-page:fastapi-cli.md
+        source_sha256: ad3860dd30364ab774324d61580dd2b7b175e28a0a3fbd3fc1b2c5ec779ffe3f
+        reason: The v2 runner does not mutate files or issue a second request after startup.
+      - behavior: server-startup-output-and-FASTAPI_PUBLIC_URL
+        source_item_id: documented-page:fastapi-cli.md
+        source_sha256: ad3860dd30364ab774324d61580dd2b7b175e28a0a3fbd3fc1b2c5ec779ffe3f
+        reason: >-
+          V2 drains but does not compare server stdout/stderr because they contain the assigned
+          port, temporary project path, and process identifiers; FASTAPI_PUBLIC_URL affects
+          this unobserved startup text.
+      - behavior: fastapi-run-default-bind-address
+        source_item_id: documented-page:fastapi-cli.md
+        source_sha256: ad3860dd30364ab774324d61580dd2b7b175e28a0a3fbd3fc1b2c5ec779ffe3f
+        reason: >-
+          The documented 0.0.0.0 default is not launched by the isolated runner; run help is
+          compared, and server inputs require explicit loopback binding.
+      - behavior: fastapi-cloud-cli-command-execution
+        source_item_id: documented-page:fastapi-cli.md
+        source_sha256: ad3860dd30364ab774324d61580dd2b7b175e28a0a3fbd3fc1b2c5ec779ffe3f
+        dependency: fastapi-cloud-cli@0.11.0
+        lockfile_sha256: 96ae079a121e11b4cc0d260df5b7f77189bb90fa23a2da368f607418c2d98165
+        reason: >-
+          The locked standard extra exposes Cloud commands in root help; their credentialed
+          remote-service behavior is delegated to an optional external CLI and remains
+          unresolved for replacement scope.
+    observation_selectors:
+      - process.exit_code
+      - process.stdout
+      - process.stderr
+      - http.status
+      - http.body.bytes
     coverage: >-
-      Adds bounded UTF-8 project trees, stable staged-tree identity, and an optional
-      loopback HTTP server lifecycle with readiness, one request, and process-group shutdown.
-      Command cases compare exit code and exact stdout/stderr; server cases compare exit code
-      and HTTP status with an optional exact response body. Server stdout/stderr are drained
-      under the output cap but excluded because CLI startup output includes run-assigned ports
-      and process identifiers. Server binding supports --port {port} or PORT={port}, exclusively.
-      FastAPI dev may use its documented safe 127.0.0.1 default host; FastAPI run must set
-      --host 127.0.0.1 explicitly because its documented default binds all interfaces.
-      FASTAPI_PUBLIC_URL is independently settable/unsettable but startup-text effects are not
-      observed in this infrastructure slice. Server workflows require POSIX; non-POSIX v2
-      execution is rejected. Recipes and source mappings remain separately reviewed.
+      Adds bounded UTF-8 project trees, stable staged-tree identity, and a loopback HTTP server
+      lifecycle with readiness, one request, and process-group shutdown. The 22-case CLI recipe
+      observes root/dev/run help and version, missing-app and configuration errors, all six
+      documented default discovery paths, app-name discovery, path and explicit/pyproject
+      entrypoints, FASTAPI_ENV default/preservation, the PORT environment variable, and a
+      documented multi-worker invocation. Command cases compare exact exit code/stdout/stderr;
+      server cases compare exit code, HTTP status, and exact response body. FastAPI dev uses its
+      127.0.0.1 default; fastapi run binds explicitly to 127.0.0.1 for safe loopback execution.
+      FASTAPI run's documented 0.0.0.0 default is not launched; its value is visible in run help.
+      Server stdout/stderr are drained but not compared because logs contain the assigned port,
+      temporary project path, and process identifiers. Actual file-change reload behavior and
+      worker-count cardinality are not established by one bounded request. FASTAPI_PUBLIC_URL
+      startup text is not observed. fastapi-cloud-cli commands are exposed by the locked standard
+      extra and root help is sampled, but remote cloud/auth behavior remains separately owned and
+      unresolved. These are explicit gaps, not parity claims. Server workflows require POSIX;
+      non-POSIX v2 execution is rejected.
   fixture_backlog_integrity:
     state: source-linked-designs-validated; incremental-materialization-indexed; full-backlog-pending
     source_artifacts: [compatibility_atlas, fixture_backlog, materialized_input_index]
