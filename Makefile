@@ -180,7 +180,7 @@ parity-inputs: ## Materialize ignored JSON workflows from input-only YAML recipe
 	$(PYTHON) scripts/build_parity_inputs.py
 
 parity-workload-check: ## Statically screen active parity workload Python sources
-	$(PYTHON) scripts/check_parity_workload_sources.py
+	$(PYTHON) scripts/check_parity_workload_sources.py --fastapi-source "$(FASTAPI_SOURCE)"
 
 parity-validate: parity-inputs parity-workload-check ## Validate workflows, source atlas, fixture mappings, and pinned source references
 	$(PYTHON) -m scripts.parity.cli validate --input "$(PARITY_INPUT)"

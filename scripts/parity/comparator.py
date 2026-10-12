@@ -145,26 +145,6 @@ def _observation_index(action_result: dict[str, Any]) -> dict[int, dict[str, Any
     return indexed
 
 
-def _not_run_action_reason(
-    action_specs: list[dict[str, Any]],
-    source_actions: dict[str, dict[str, Any]],
-    target_actions: dict[str, dict[str, Any]],
-) -> str | None:
-    skipped = []
-    for action_spec in action_specs:
-        action_id = action_spec["action_id"]
-        details = []
-        for side, actions in (("source", source_actions), ("target", target_actions)):
-            action = actions.get(action_id)
-            if action is not None and action["status"] == "not_run":
-                details.append(f"{side}: {action.get('reason', 'reason omitted')}")
-        if details:
-            skipped.append(f"{action_id} ({'; '.join(details)})")
-    if not skipped:
-        return None
-    return f"planned action(s) did not run: {'; '.join(skipped)}"
-
-
 def _compare_action(
     action_spec: dict[str, Any],
     source_action: dict[str, Any] | None,
@@ -184,7 +164,15 @@ def _compare_action(
             }
         ]
     if source_action["status"] == "not_run" or target_action["status"] == "not_run":
-        return []
+        return [
+            {
+                "action_id": action_id,
+                "path": "status",
+                "comparison": "exact",
+                "source": source_action["status"],
+                "target": target_action["status"],
+            }
+        ]
     if source_action["status"] == "product_error" or target_action["status"] == "product_error":
         if source_action["status"] != target_action["status"]:
             return _compare_error(
@@ -361,12 +349,7 @@ def _compare_case(
                 "target": action_id in target_actions,
             }
         )
-    reason = _not_run_action_reason(case_spec["actions"], source_actions, target_actions)
-    outcome = "fail" if diffs else "not_run" if reason else "pass"
-    result = {"case_id": case_id, "outcome": outcome, "diffs": diffs}
-    if outcome == "not_run":
-        result["reason"] = reason
-    return result
+    return {"case_id": case_id, "outcome": "fail" if diffs else "pass", "diffs": diffs}
 
 
 def _compare_case_v3(
@@ -417,12 +400,7 @@ def _compare_case_v3(
                 "target": action_id in target_actions,
             }
         )
-    reason = _not_run_action_reason(case_spec["actions"], source_actions, target_actions)
-    outcome = "fail" if diffs else "not_run" if reason else "pass"
-    result = {"case_id": case_id, "outcome": outcome, "diffs": diffs}
-    if outcome == "not_run":
-        result["reason"] = reason
-    return result
+    return {"case_id": case_id, "outcome": "fail" if diffs else "pass", "diffs": diffs}
 
 
 def _compare_warning_sidecar(
@@ -540,12 +518,7 @@ def _compare_case_v4(
                 "target": action_id in target_actions,
             }
         )
-    reason = _not_run_action_reason(case_spec["actions"], source_actions, target_actions)
-    outcome = "fail" if diffs else "not_run" if reason else "pass"
-    result = {"case_id": case_id, "outcome": outcome, "diffs": diffs}
-    if outcome == "not_run":
-        result["reason"] = reason
-    return result
+    return {"case_id": case_id, "outcome": "fail" if diffs else "pass", "diffs": diffs}
 
 
 def compare_workflow_results(
