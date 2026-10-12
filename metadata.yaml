@@ -1022,6 +1022,16 @@ reviewed_api_contract_overlay:
           case_id: fastapi.routing.generate-unique-id-router-deprecated-false-hidden-view
           workload_path: tests/fixtures/workloads/generate_unique_id_callback_values.py
           observation_selectors: [http.status, http.body.bytes, openapi.document, construction.outcome, construction.exception_class, construction.exception_message]
+        - &generate_unique_id_router_add_api_route
+          recipe_path: tests/fixtures/input-recipes/parity/generate-unique-id-callback-values.yaml
+          case_id: fastapi.routing.generate-unique-id-router-add-api-route-defaults
+          workload_path: tests/fixtures/workloads/generate_unique_id_callback_values.py
+          observation_selectors: [http.status, http.body.bytes, openapi.document, construction.outcome, construction.exception_class, construction.exception_message]
+        - &generate_unique_id_app_add_api_route
+          recipe_path: tests/fixtures/input-recipes/parity/generate-unique-id-callback-values.yaml
+          case_id: fastapi.applications.generate-unique-id-app-add-api-route-defaults
+          workload_path: tests/fixtures/workloads/generate_unique_id_callback_values.py
+          observation_selectors: [http.status, http.body.bytes, openapi.document, construction.outcome, construction.exception_class, construction.exception_message]
         - &generate_unique_id_callback_mutation
           recipe_path: tests/fixtures/input-recipes/parity/generate-unique-id-callback-values.yaml
           case_id: fastapi.routing.generate-unique-id-callback-mutates-route-metadata
@@ -3684,12 +3694,16 @@ reviewed_api_contract_overlay:
         Application construction and route behavior only for the linked validation-response
         cases (automatic 422 insertion/suppression for declared response variants) and
         inline-query cases (direct and dependency defaults in the OpenAPI/request wire shape);
-        other constructor options and app lifecycle remain outside this slice.
+        other constructor options and app lifecycle remain outside this slice. A separate
+        input probes callback-visible defaults through the source's semi-internal direct
+        `add_api_route` registration path; this does not classify that method as a public
+        FastAPI contract.
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::new
       source_evidence:
         - {path: fastapi/applications.py, symbol: FastAPI}
       fixture_refs:
         - *generate_unique_id_multi_methods
+        - *generate_unique_id_app_add_api_route
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
           case_id: fastapi.openapi-validation-response.automatic-after-declared-responses
           workload_path: tests/fixtures/workloads/openapi_validation_response.py
@@ -9521,11 +9535,14 @@ reviewed_api_contract_overlay:
           end_line: 6447
       fixture_refs:
         - *generate_unique_id_multi_methods
+        - *generate_unique_id_router_add_api_route
       supported_slice: >-
         Constructor state only for router prefix, tags, dependencies, default response class,
         responses/callbacks, route class and lifespan/startup configuration; path-operation
         decorators, `include_router`, event methods, and Starlette route matching remain their
-        own operations/contracts.
+        own operations/contracts. A separate input probes callback-visible defaults when the
+        source's semi-internal `add_api_route` registration path is called directly; it does not
+        classify that method as a public FastAPI contract.
 
     fastapi.security.http.HTTPAuthorizationCredentials.scheme:
       source_evidence:

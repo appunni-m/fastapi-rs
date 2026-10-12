@@ -78,6 +78,57 @@ cases:
   - {path: tests/test_generate_unique_id_function.py, kind: upstream_test}
   - {path: tests/test_router_include_context.py, kind: upstream_test}
   - {path: docs/en/docs/advanced/generate-clients.md, kind: upstream_documentation}
+- case_id: fastapi.routing.generate-unique-id-router-add-api-route-defaults
+  factory_input: {behavior: router-add-api-route}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: router-add-api-route-view
+    kind: http_request
+    scope: *observe-scope
+    receive_events: *empty-request
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: router-add-api-route-hidden-openapi
+    kind: http_request
+    scope: *openapi-scope
+    receive_events: *empty-request
+    observations:
+    - {kind: http_response, selectors: [status], comparison: exact}
+    - kind: openapi
+      json_pointers: [/paths]
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_generate_unique_id_function.py, kind: upstream_test}
+  - {path: docs/en/docs/advanced/generate-clients.md, kind: upstream_documentation}
+- case_id: fastapi.applications.generate-unique-id-app-add-api-route-defaults
+  factory_input: {behavior: app-add-api-route}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: app-add-api-route-view
+    kind: http_request
+    scope: *observe-scope
+    receive_events: *empty-request
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: app-add-api-route-hidden-openapi
+    kind: http_request
+    scope: *openapi-scope
+    receive_events: *empty-request
+    observations:
+    - {kind: http_response, selectors: [status], comparison: exact}
+    - kind: openapi
+      json_pointers: [/paths]
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_generate_unique_id_function.py, kind: upstream_test}
+  - {path: tests/test_extra_routes.py, kind: upstream_test}
+  - {path: docs/en/docs/advanced/generate-clients.md, kind: upstream_documentation}
 - case_id: fastapi.routing.generate-unique-id-callback-mutates-route-metadata
   factory_input: {behavior: mutation}
   construction_observation:

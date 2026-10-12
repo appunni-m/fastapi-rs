@@ -3350,8 +3350,8 @@ impl PyFastApi {
     }
 
     #[pyo3(
-        signature = (path, endpoint, *, dependencies = None, methods = None, include_in_schema = true, name = None, openapi_extra = None, generate_unique_id_function = GenerateUniqueIdArgument::Omitted),
-        text_signature = "($self, path, endpoint, *, dependencies=None, methods=None, include_in_schema=True, name=None, openapi_extra=None, generate_unique_id_function=None)"
+        signature = (path, endpoint, *, dependencies = None, methods = None, include_in_schema = true, name = None, openapi_extra = None, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, deprecated = None, tags = None),
+        text_signature = "($self, path, endpoint, *, dependencies=None, methods=None, include_in_schema=True, name=None, openapi_extra=None, generate_unique_id_function=None, deprecated=None, tags=None)"
     )]
     // lint-exception: preserve the supported FastAPI.add_api_route keyword signature.
     #[allow(
@@ -3369,6 +3369,8 @@ impl PyFastApi {
         name: Option<String>,
         openapi_extra: Option<Py<PyAny>>,
         generate_unique_id_function: GenerateUniqueIdArgument,
+        deprecated: Option<bool>,
+        tags: Option<Vec<String>>,
     ) -> PyResult<()> {
         let normalized_methods = PySet::empty(py)?;
         if let Some(methods) = methods {
@@ -3395,18 +3397,15 @@ impl PyFastApi {
             openapi_extra,
             generate_unique_id_function,
         )?;
-        {
-            let mut decorator = decorator.bind(py).borrow_mut();
-            decorator.callback_methods = callback_methods.clone();
-            decorator.registration_cache = Some(Rc::new(RefCell::new(
-                OperationRouteRegistrationCache::default(),
-            )));
-        }
-        for method in callback_methods {
-            decorator.bind(py).borrow_mut().method = method;
-            decorator.bind(py).call1((endpoint.bind(py),))?;
-        }
-        Ok(())
+        register_multi_method_api_route(
+            py,
+            decorator,
+            endpoint,
+            callback_methods,
+            tags,
+            deprecated,
+            false,
+        )
     }
 
     #[pyo3(signature = (path, app, name=None))]
@@ -4873,6 +4872,83 @@ impl PyApiRouter {
         self.inner.bind(py).borrow_mut().strict_content_type = Some(strict_content_type);
     }
 
+    #[pyo3(
+        signature = (path, endpoint, *, dependencies = None, methods = None, include_in_schema = true, name = None, openapi_extra = None, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, deprecated = None, tags = None),
+        text_signature = "($self, path, endpoint, *, dependencies=None, methods=None, include_in_schema=True, name=None, openapi_extra=None, generate_unique_id_function=None, deprecated=None, tags=None)"
+    )]
+    // lint-exception: preserve the selected FastAPI.add_api_route keyword interface.
+    #[allow(
+        clippy::too_many_arguments,
+        reason = "preserve the FastAPI-compatible add_api_route keyword signature"
+    )]
+    fn add_api_route(
+        slf: Py<Self>,
+        py: Python<'_>,
+        path: &str,
+        endpoint: Py<PyAny>,
+        dependencies: Option<Vec<Py<PyAny>>>,
+        methods: Option<Py<PyAny>>,
+        include_in_schema: bool,
+        name: Option<String>,
+        openapi_extra: Option<Py<PyAny>>,
+        generate_unique_id_function: GenerateUniqueIdArgument,
+        deprecated: Option<bool>,
+        tags: Option<Vec<String>>,
+    ) -> PyResult<()> {
+        let normalized_methods = PySet::empty(py)?;
+        if let Some(methods) = methods {
+            for method in methods.bind(py).try_iter()? {
+                normalized_methods.add(method?.call_method0("upper")?)?;
+            }
+        } else {
+            normalized_methods.add("GET")?;
+        }
+        if normalized_methods.is_empty() {
+            return Err(PyAssertionError::new_err(""));
+        }
+        let callback_methods = normalized_methods
+            .iter()
+            .map(|method| method.extract::<String>())
+            .collect::<PyResult<Vec<_>>>()?;
+        let (inner, router_tags, mut route_dependencies, router_deprecated, router_include) = {
+            let router = slf.bind(py).borrow();
+            (
+                router.inner.clone_ref(py),
+                router.tags.clone(),
+                router
+                    .dependencies
+                    .iter()
+                    .map(|dependency| dependency.clone_ref(py))
+                    .collect::<Vec<_>>(),
+                router.deprecated,
+                router.include_in_schema,
+            )
+        };
+        route_dependencies.extend(dependencies.unwrap_or_default());
+        let tags = combined_route_tags(&router_tags, tags.as_deref());
+        let deprecated = combined_deprecated(deprecated, router_deprecated);
+        let include_in_schema = include_in_schema && router_include;
+        let decorator = PyFastApi::api_route(
+            inner,
+            py,
+            path,
+            Some(route_dependencies),
+            include_in_schema,
+            name,
+            openapi_extra,
+            generate_unique_id_function,
+        )?;
+        register_multi_method_api_route(
+            py,
+            decorator,
+            endpoint,
+            callback_methods,
+            tags,
+            deprecated,
+            true,
+        )
+    }
+
     fn add_event_handler(
         &self,
         py: Python<'_>,
@@ -5772,6 +5848,32 @@ struct PyOperationDecorator {
 struct OperationRouteRegistrationCache {
     public_route: Option<Py<PyAny>>,
     unique_id: Option<Py<PyAny>>,
+}
+
+fn register_multi_method_api_route(
+    py: Python<'_>,
+    decorator: Py<PyOperationDecorator>,
+    endpoint: Py<PyAny>,
+    callback_methods: Vec<String>,
+    tags: Option<Vec<String>>,
+    deprecated: Option<bool>,
+    deprecated_precombined: bool,
+) -> PyResult<()> {
+    {
+        let mut decorator = decorator.bind(py).borrow_mut();
+        decorator.callback_methods = callback_methods.clone();
+        decorator.registration_cache = Some(Rc::new(RefCell::new(
+            OperationRouteRegistrationCache::default(),
+        )));
+        decorator.tags = tags;
+        decorator.deprecated = deprecated;
+        decorator.deprecated_precombined = deprecated_precombined;
+    }
+    for method in callback_methods {
+        decorator.bind(py).borrow_mut().method = method;
+        decorator.bind(py).call1((endpoint.bind(py),))?;
+    }
+    Ok(())
 }
 
 fn inspect_generator_kind(

@@ -22,6 +22,16 @@ def create_app(factory_input: dict[str, Any], event_trace: list[str]) -> FastAPI
             raise LookupError("unique ID callback failed")
         if behavior == "router-flags":
             return f"{route.deprecated!r}:{route.include_in_schema!r}:{route.path}"
+        if behavior == "router-add-api-route":
+            return (
+                f"{route.deprecated!r}:{route.include_in_schema!r}:"
+                f"{route.path}:{','.join(route.tags)}"
+            )
+        if behavior == "app-add-api-route":
+            return (
+                f"{route.deprecated!r}:{route.include_in_schema!r}:"
+                f"{route.path}:{','.join(route.tags)}"
+            )
         if behavior == "mutation":
             route.summary = "callback summary"
             route.tags.append("callback-tag")
@@ -48,6 +58,30 @@ def create_app(factory_input: dict[str, Any], event_trace: list[str]) -> FastAPI
         router.get("/hidden")(lambda: {"value": "hidden"})
         router_route = router.routes[0]
         app.include_router(router, prefix="/api")
+    elif behavior == "router-add-api-route":
+        router = APIRouter(
+            tags=["router-tag"],
+            deprecated=False,
+            include_in_schema=False,
+            generate_unique_id_function=generate,
+        )
+        router.add_api_route(
+            "/hidden",
+            lambda: {"value": "hidden"},
+            tags=["route-tag"],
+        )
+        router_route = router.routes[0]
+        app.include_router(router, prefix="/api")
+    elif behavior == "app-add-api-route":
+        app.add_api_route(
+            "/hidden",
+            lambda: {"value": "hidden"},
+            deprecated=False,
+            include_in_schema=False,
+            tags=["route-tag"],
+            generate_unique_id_function=generate,
+        )
+        router_route = next(route for route in app.routes if route.path == "/hidden")
     elif behavior == "mutation":
         app.get(
             "/mutated",
@@ -71,6 +105,7 @@ def create_app(factory_input: dict[str, Any], event_trace: list[str]) -> FastAPI
             return {
                 "deprecated": router_route.deprecated,
                 "include_in_schema": router_route.include_in_schema,
+                "tags": router_route.tags,
                 "unique_id": router_route.unique_id,
             }
         if mutated_route is not None:
