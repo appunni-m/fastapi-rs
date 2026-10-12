@@ -20341,6 +20341,29 @@
       ]
     },
     {
+      "id": "request-validation-cross-location-wave",
+      "input_path": "tests/fixtures/inputs/parity/request-validation-cross-location-wave.json",
+      "input_sha256": "712b7b023ef9eb578c55ab620c9e8e684f5c48eaa2e88328b00ecda46690e9b8",
+      "recipe_path": "tests/fixtures/input-recipes/parity/request-validation-cross-location-wave.yaml",
+      "recipe_sha256": "849acccdba4f2211ca449596841282d6ea09558aa620f1744a614895879b3278",
+      "workload_path": "tests/fixtures/workloads/request_validation_cross_location_wave.py",
+      "workload_sha256": "5a2f1f6d397af3f8294e1bb27895145fab421acce98fe2b45ae2df7fd4b8e183",
+      "case_ids": [
+        "fastapi.request-validation.cross-location.path-query-body-aggregation"
+      ],
+      "case_contracts": [
+        {
+          "case_id": "fastapi.request-validation.cross-location.path-query-body-aggregation",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_multi_body_errors.py",
+            "source:upstream-test:tests/test_multi_query_errors.py",
+            "source:upstream-test:tests/test_validation_error_context.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "request-validation-error-details-wave",
       "input_path": "tests/fixtures/inputs/parity/request-validation-error-details-wave.json",
       "input_sha256": "5939f83391603bcf9c667acd5c7c28639b3684b6052614e1b84bc35c4f480413",
@@ -47462,6 +47485,60 @@
         "http.headers.ordered",
         "http.status",
         "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_multi_body_errors.py",
+      "fixture_id": "fastapi.test.test-multi-body-errors",
+      "workflow_id": "request-validation-cross-location-wave",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.request-validation.cross-location.path-query-body-aggregation"
+      ],
+      "observation_selectors": [
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_multi_query_errors.py",
+      "fixture_id": "fastapi.test.test-multi-query-errors",
+      "workflow_id": "request-validation-cross-location-wave",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.request-validation.cross-location.path-query-body-aggregation"
+      ],
+      "observation_selectors": [
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_validation_error_context.py",
+      "fixture_id": "fastapi.test.test-validation-error-context",
+      "workflow_id": "request-validation-cross-location-wave",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.request-validation.cross-location.path-query-body-aggregation"
+      ],
+      "observation_selectors": [
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
       ]
     },
     {
