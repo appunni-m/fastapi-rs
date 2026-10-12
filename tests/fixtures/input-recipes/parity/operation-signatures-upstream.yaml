@@ -150,7 +150,82 @@ cases:
     - kind: python_signature
       selector: signature
       comparison: exact
+  - probe_id: fastapi-class-signature
+    public_callable:
+      module: fastapi
+      attribute: FastAPI
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: fastapi-openapi-signature
+    public_callable:
+      module: fastapi.applications
+      attribute: FastAPI.openapi
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: fastapi-websocket-signature
+    public_callable:
+      module: fastapi.applications
+      attribute: FastAPI.websocket
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: fastapi-include-router-signature
+    public_callable:
+      module: fastapi.applications
+      attribute: FastAPI.include_router
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: fastapi-frontend-signature
+    public_callable:
+      module: fastapi.applications
+      attribute: FastAPI.frontend
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: fastapi-on-event-signature
+    public_callable:
+      module: fastapi.applications
+      attribute: FastAPI.on_event
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: fastapi-middleware-signature
+    public_callable:
+      module: fastapi.applications
+      attribute: FastAPI.middleware
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
+  - probe_id: fastapi-exception-handler-signature
+    public_callable:
+      module: fastapi.applications
+      attribute: FastAPI.exception_handler
+    argument_bundle: unused
+    observations:
+    - kind: python_signature
+      selector: signature
+      comparison: exact
   source_evidence:
   - path: tests/test_operations_signatures.py
     kind: upstream_test
     sha256: f491a8f09ca5dfdfb4ce29c4448687014e7d81c5a01b2deb08982bc50ae03796
+  - path: docs/en/docs/reference/fastapi.md
+    kind: upstream_documentation
+    sha256: 24ae7edeabea12e47165c6026470a201b261c67ea108f762ef4faff756b72504

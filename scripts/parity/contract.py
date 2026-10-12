@@ -22,6 +22,7 @@ from scripts.parity.fault_contracts import (
     FaultContractError,
     verification_mode,
 )
+from scripts.parity.schema_ids import MATERIALIZED_INPUT_INDEX_SCHEMA_ID
 
 ROOT = Path(__file__).resolve().parents[2]
 WORKFLOW_SCHEMA = ROOT / "tests/fixtures/schemas/python-asgi-workflow-v2.schema.json"
@@ -74,7 +75,6 @@ API_WORKFLOW_SCHEMA_ID = "fastapi-rs/python-api-workflow@1"
 API_WORKFLOW_SCHEMA_V2_ID = "fastapi-rs/python-api-workflow@2"
 API_WORKFLOW_SCHEMA_V3_ID = "fastapi-rs/python-api-workflow@3"
 API_WORKFLOW_SCHEMA_V4_ID = "fastapi-rs/python-api-workflow@4"
-MATERIALIZED_INPUT_INDEX_SCHEMA_ID = "fastapi-rs/materialized-input-index@6"
 API_RESULT_SCHEMA_ID = "fastapi-rs/python-api-workflow-result@2"
 API_RESULT_SCHEMA_V3_ID = "fastapi-rs/python-api-workflow-result@3"
 API_RESULT_SCHEMA_V4_ID = "fastapi-rs/python-api-workflow-result@4"

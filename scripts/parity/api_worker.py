@@ -17,7 +17,7 @@ from collections.abc import Mapping
 from pathlib import Path, PurePosixPath
 from typing import Any
 
-from scripts.parity.contract import MATERIALIZED_INPUT_INDEX_SCHEMA_ID
+from scripts.parity.schema_ids import MATERIALIZED_INPUT_INDEX_SCHEMA_ID
 from scripts.parity.worker import (
     ORACLE_PROFILE_ID,
     ROOT,

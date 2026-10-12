@@ -4927,7 +4927,7 @@ DOC_PAGE_REVIEW_MAPPINGS = {
         "replace_features": True,
         "feature_ids": [
             "app-routing",
-            "dependency-security",
+            "dependency-overrides",
             "middleware-integrations",
             "openapi-docs",
             "public-api-errors",
@@ -4936,60 +4936,304 @@ DOC_PAGE_REVIEW_MAPPINGS = {
             "websocket-lifecycle",
         ],
         "observation_selectors": [
-            "python.import_path",
             "python.signature",
-            "python.attribute_value",
             "warnings.category_message",
-            "http.status",
+            "asgi.send.message_types",
+            "docs.response.body.bytes",
+            "docs.response.status",
+            "http.body.bytes",
             "http.headers.ordered",
-            "http.body.json",
-            "validation.error_class",
-            "validation.error_details",
-            "route.match",
-            "dependency.call_order",
+            "http.status",
             "openapi.document",
             "openapi.paths",
-            "openapi.request_schema",
-            "openapi.security",
-            "docs.response.status",
-            "docs.response.body.bytes",
-            "response.background_effects",
-            "websocket.messages",
             "websocket.event_order",
-            "lifecycle.event_order",
-            "lifecycle.cleanup_effects",
+            "websocket.messages",
         ],
-        "rationale": "This is the full FastAPI class reference. The curated set covers its route methods, dependency overrides, request/response configuration, OpenAPI, WebSocket/lifespan, middleware and public API signatures. Request validation and response serialization were missing from the previous mapping; generic process stdout/stderr are not FastAPI class behavior.",
+        "rationale": "This generated class-reference page lists the FastAPI constructor and 19 named fields/methods but does not specify their full behavior. The section-level crosswalk links each listed member to an exact signature or input-only behavior case and records only those observed selectors. Every mapping remains a sample; the remaining method branches, options, and error contracts are not claimed.",
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/root-alias-identity.yaml",
+                "case_ids": ["fastapi.root-alias-identity.http-reexports"],
+                "member_names": ["FastAPI"],
+                "observation_selectors": ["http.body.bytes", "http.status"],
+                "scope_note": "Checks that the documented `from fastapi import FastAPI` class is the public root re-export; it does not claim constructor or runtime behavior.",
+            },
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/operation-signatures-upstream.yaml",
+                "case_ids": ["fastapi.test.test-operations-signatures.test-signatures-consistency"],
+                "member_names": [
+                    "FastAPI",
+                    "get",
+                    "put",
+                    "post",
+                    "delete",
+                    "options",
+                    "head",
+                    "patch",
+                    "trace",
+                ],
+                "observation_selectors": ["python.signature"],
+                "scope_note": "Exact callable-signature probes cover the FastAPI constructor and all eight documented HTTP operation decorators; no route behavior is implied by this signature check.",
+            },
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/first-asgi-request.yaml",
+                "case_ids": [
+                    "fastapi.first-slice.create-item-valid",
+                    "fastapi.first-slice.create-item-invalid",
+                ],
+                "member_names": ["post"],
+                "observation_selectors": [
+                    "asgi.send.message_types",
+                    "http.body.bytes",
+                    "http.headers.ordered",
+                    "http.status",
+                ],
+                "scope_note": "One valid and one invalid request exercise a small `@app.post` route-to-response path, including request validation; this is not complete POST or response-model coverage.",
+            },
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/http-connection-injection-websocket.yaml",
+                "case_ids": [
+                    "fastapi.http-connection-injection.http-app-state",
+                    "fastapi.http-connection-injection.websocket-app-state",
+                ],
+                "member_names": ["state"],
+                "observation_selectors": [
+                    "http.body.bytes",
+                    "http.status",
+                    "websocket.messages",
+                ],
+                "scope_note": "Reads application state through one HTTP dependency and one WebSocket dependency; it does not cover the full Starlette state interface.",
+            },
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/dependency-lifecycle.yaml",
+                "case_ids": ["fastapi.dependencies.override-resolution"],
+                "member_names": ["dependency_overrides"],
+                "observation_selectors": ["http.body.bytes", "http.status"],
+                "scope_note": "Observes a dependency replacement through the public override map for one request path.",
+            },
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/instance-openapi-version.yaml",
+                "case_ids": ["fastapi.instance-openapi-version.mutated-field"],
+                "member_names": ["openapi_version"],
+                "observation_selectors": [
+                    "docs.response.status",
+                    "http.status",
+                    "openapi.document",
+                ],
+                "scope_note": "Mutates the instance OpenAPI version and observes the resulting schema; unrelated construction-failure observations are excluded from this member link.",
+            },
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/openapi-docs.yaml",
+                "case_ids": [
+                    "fastapi.openapi.tutorial-openapi-webhooks-tutorial001.openapi-schema"
+                ],
+                "member_names": ["webhooks"],
+                "observation_selectors": [
+                    "docs.response.status",
+                    "http.status",
+                    "openapi.document",
+                ],
+                "scope_note": "Projects one registered webhook into the generated OpenAPI document; it does not cover all webhook route options.",
+            },
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/docs-reference-openapi.yaml",
+                "case_ids": ["fastapi.docs.reference-wave.openapi.fastapi-application-settings"],
+                "member_names": ["openapi"],
+                "observation_selectors": [
+                    "docs.response.body.bytes",
+                    "docs.response.status",
+                    "http.body.bytes",
+                    "http.headers.ordered",
+                    "http.status",
+                    "openapi.document",
+                    "openapi.paths",
+                ],
+                "scope_note": "Calls the application OpenAPI endpoint for one settings-and-route fixture and selects the generated schema; it is not a complete schema contract.",
+            },
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/websockets-upstream.yaml",
+                "case_ids": ["fastapi.test.test-ws-dependencies.test-index"],
+                "member_names": ["websocket"],
+                "observation_selectors": ["websocket.event_order", "websocket.messages"],
+                "scope_note": "Exercises one `app.websocket` dependency-injection endpoint and its ordered messages; generic WebSocket protocol behavior belongs to Starlette-RS.",
+            },
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/generate-unique-id-function-precedence.yaml",
+                "case_ids": ["fastapi.routing.generate-unique-id-function-precedence"],
+                "member_names": ["include_router"],
+                "observation_selectors": [
+                    "docs.response.status",
+                    "http.status",
+                    "openapi.document",
+                    "openapi.paths",
+                ],
+                "scope_note": "Includes a router and observes operation-ID precedence in OpenAPI for that composition case.",
+            },
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/frontend-dependency-source-wave.yaml",
+                "case_ids": ["fastapi.frontend.dependencies-override"],
+                "member_names": ["frontend"],
+                "observation_selectors": [
+                    "http.body.bytes",
+                    "http.headers.ordered",
+                    "http.status",
+                ],
+                "scope_note": "Observes one frontend mount combined with dependency overrides through HTTP; construction-failure selectors from the broader case are outside this member link.",
+            },
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml",
+                "case_ids": ["fastapi.lifecycle.router-events-legacy"],
+                "member_names": ["on_event"],
+                "observation_selectors": [
+                    "http.body.bytes",
+                    "http.status",
+                    "warnings.category_message",
+                ],
+                "scope_note": "Registers legacy startup/shutdown callbacks and observes their request effect and deprecation warnings; it does not cover modern lifespan configuration.",
+            },
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/middleware.yaml",
+                "case_ids": [
+                    "fastapi.middleware.decorator-openapi",
+                    "fastapi.middleware.decorator-body-replay",
+                ],
+                "member_names": ["middleware"],
+                "observation_selectors": [
+                    "docs.response.status",
+                    "http.body.bytes",
+                    "http.headers.ordered",
+                    "http.status",
+                    "openapi.document",
+                    "openapi.paths",
+                ],
+                "scope_note": "Samples middleware decoration around OpenAPI and HTTP body replay with two independent cases; generic middleware stack and BaseHTTPMiddleware contracts are not implied.",
+            },
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/inherited-exception-handler-registration.yaml",
+                "case_ids": ["fastapi.applications.exception-handler.decorator"],
+                "member_names": ["exception_handler"],
+                "observation_selectors": [
+                    "http.body.bytes",
+                    "http.headers.ordered",
+                    "http.status",
+                ],
+                "scope_note": "Registers one custom exception handler with the decorator and observes the selected HTTP response; unrelated constructor and lifespan selectors are excluded.",
+            },
+        ],
         "supporting_sources": [
             {
                 "path": "docs/en/docs/reference/fastapi.md",
                 "start_line": 1,
                 "end_line": 32,
-                "role": "full FastAPI class reference and member list",
+                "role": "FastAPI class reference, root import, and exact member list used by the section-level fixture crosswalk",
             },
             {
                 "path": "fastapi/applications.py",
                 "start_line": 42,
                 "end_line": 45,
-                "role": "FastAPI subclasses Starlette",
+                "role": "FastAPI public class declaration",
             },
             {
                 "path": "fastapi/applications.py",
-                "start_line": 1165,
-                "end_line": 1195,
-                "role": "FastAPI route registration signature and response configuration",
+                "start_line": 893,
+                "end_line": 983,
+                "role": "FastAPI instance fields `openapi_version`, `webhooks`, `state`, and `dependency_overrides`",
             },
             {
                 "path": "fastapi/routing.py",
                 "start_line": 301,
                 "end_line": 342,
-                "role": "FastAPI response validation and serialization",
+                "role": "FastAPI route response validation and serialization, sampled only by the POST input cases",
             },
             {
                 "path": "fastapi/applications.py",
-                "start_line": 1105,
-                "end_line": 1120,
-                "role": "FastAPI OpenAPI route generation and serving",
+                "start_line": 1070,
+                "end_line": 1103,
+                "role": "FastAPI application OpenAPI generation and caching",
+            },
+            {
+                "path": "fastapi/applications.py",
+                "start_line": 1222,
+                "end_line": 1299,
+                "role": "FastAPI frontend mount method",
+            },
+            {
+                "path": "fastapi/applications.py",
+                "start_line": 1376,
+                "end_line": 1439,
+                "role": "FastAPI WebSocket route decorator",
+            },
+            {
+                "path": "fastapi/applications.py",
+                "start_line": 1441,
+                "end_line": 1644,
+                "role": "FastAPI router inclusion method",
+            },
+            {
+                "path": "fastapi/applications.py",
+                "start_line": 1646,
+                "end_line": 1648,
+                "role": "FastAPI GET operation decorator; all eight documented HTTP decorators have signature probes",
+            },
+            {
+                "path": "fastapi/applications.py",
+                "start_line": 2019,
+                "end_line": 2021,
+                "role": "FastAPI PUT operation decorator",
+            },
+            {
+                "path": "fastapi/applications.py",
+                "start_line": 2397,
+                "end_line": 2399,
+                "role": "FastAPI POST operation decorator",
+            },
+            {
+                "path": "fastapi/applications.py",
+                "start_line": 2775,
+                "end_line": 2777,
+                "role": "FastAPI DELETE operation decorator",
+            },
+            {
+                "path": "fastapi/applications.py",
+                "start_line": 3148,
+                "end_line": 3150,
+                "role": "FastAPI OPTIONS operation decorator",
+            },
+            {
+                "path": "fastapi/applications.py",
+                "start_line": 3521,
+                "end_line": 3523,
+                "role": "FastAPI HEAD operation decorator",
+            },
+            {
+                "path": "fastapi/applications.py",
+                "start_line": 3894,
+                "end_line": 3896,
+                "role": "FastAPI PATCH operation decorator",
+            },
+            {
+                "path": "fastapi/applications.py",
+                "start_line": 4272,
+                "end_line": 4274,
+                "role": "FastAPI TRACE operation decorator",
+            },
+            {
+                "path": "fastapi/applications.py",
+                "start_line": 4654,
+                "end_line": 4681,
+                "role": "Deprecated FastAPI on_event method and its warning contract",
+            },
+            {
+                "path": "fastapi/applications.py",
+                "start_line": 4683,
+                "end_line": 4727,
+                "role": "FastAPI middleware decorator",
+            },
+            {
+                "path": "fastapi/applications.py",
+                "start_line": 4729,
+                "end_line": 4774,
+                "role": "FastAPI exception-handler decorator",
             },
         ],
     },
@@ -9753,6 +9997,61 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         fixture_id = "fastapi.docs." + norm_id(rel.removesuffix(".md"))
         exclusion = docs_exclusion(rel)
         independent_workflow_mappings = indexed_workflow_mappings_by_source.get(page_id, [])
+        if rel == "reference/fastapi.md" and reviewed_page_mapping.get("workflow_cases"):
+            directive = re.search(r"(?ms)^::: fastapi\.FastAPI\b(.*?)(?=^:::|\Z)", content)
+            if directive is None:
+                raise AtlasError("FastAPI reference page no longer contains its class directive")
+            documented_members = {
+                "FastAPI",
+                *re.findall(r"(?m)^\s*-\s*([A-Za-z_][A-Za-z0-9_]*)\s*$", directive.group(1)),
+            }
+            member_rows = reviewed_page_mapping["workflow_cases"]
+            mapped_members = {
+                member for row in member_rows for member in row.get("member_names", [])
+            }
+            if mapped_members != documented_members:
+                missing = sorted(documented_members - mapped_members)
+                extra = sorted(mapped_members - documented_members)
+                raise AtlasError(
+                    "FastAPI class-reference member crosswalk drift; "
+                    f"unmapped={missing}, undocumented={extra}"
+                )
+            declared_selectors: set[str] = set()
+            for row in member_rows:
+                recipe_path = row.get("recipe_path")
+                case_ids = set(row.get("case_ids", []))
+                selectors = set(row.get("observation_selectors", []))
+                if not row.get("scope_note") or not row.get("member_names") or not selectors:
+                    raise AtlasError(
+                        "FastAPI class-reference member rows require members, selectors, and a scope note"
+                    )
+                matching_workflows = [
+                    mapping
+                    for mapping in independent_workflow_mappings
+                    if mapping["recipe_path"] == recipe_path
+                    and case_ids <= set(mapping["case_ids"])
+                ]
+                if not matching_workflows:
+                    raise AtlasError(
+                        "FastAPI class-reference member case is not linked from its input recipe: "
+                        f"{recipe_path} {sorted(case_ids)}"
+                    )
+                observed = {
+                    selector
+                    for mapping in matching_workflows
+                    for selector in mapping["observation_selectors"]
+                }
+                if not selectors <= observed:
+                    raise AtlasError(
+                        "FastAPI class-reference member selects unobserved selectors: "
+                        f"{recipe_path} {sorted(selectors - observed)}"
+                    )
+                declared_selectors.update(selectors)
+            page_selectors = set(reviewed_page_mapping.get("observation_selectors", []))
+            if declared_selectors != page_selectors:
+                raise AtlasError(
+                    "FastAPI class-reference page selectors must equal the union of its member links"
+                )
         review_status = (
             "excluded"
             if exclusion
