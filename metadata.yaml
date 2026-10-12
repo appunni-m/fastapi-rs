@@ -1017,6 +1017,11 @@ reviewed_api_contract_overlay:
           case_id: fastapi.routing.generate-unique-id-duplicate-integer-warning
           workload_path: tests/fixtures/workloads/generate_unique_id_callback_values.py
           observation_selectors: [http.status, openapi.document, warnings.category_message, construction.outcome, construction.exception_class, construction.exception_message]
+        - &generate_unique_id_router_flags
+          recipe_path: tests/fixtures/input-recipes/parity/generate-unique-id-callback-values.yaml
+          case_id: fastapi.routing.generate-unique-id-router-deprecated-false-hidden-view
+          workload_path: tests/fixtures/workloads/generate_unique_id_callback_values.py
+          observation_selectors: [http.status, http.body.bytes, openapi.document, construction.outcome, construction.exception_class, construction.exception_message]
         - recipe_path: tests/fixtures/input-recipes/parity/next-openapi-response-fields.yaml
           case_id: fastapi.next-openapi-response-fields.annotated-metadata-outer-titles-retained-hooks
           workload_path: tests/fixtures/workloads/next_openapi_response_fields.py
@@ -5102,6 +5107,7 @@ reviewed_api_contract_overlay:
         - *generate_unique_id_unhashable_return
         - *generate_unique_id_callback_error
         - *generate_unique_id_duplicate_integer
+        - *generate_unique_id_router_flags
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
           case_id: fastapi.openapi-validation-response.automatic-after-declared-responses
           workload_path: tests/fixtures/workloads/openapi_validation_response.py
@@ -5343,7 +5349,7 @@ reviewed_api_contract_overlay:
 
         A direct GET route uses the application callback when no route-level callback is supplied, sampled by `generate-unique-id-function-precedence`. Callback integer and empty-string returns are retained as operation IDs; unhashable returns fail during OpenAPI generation, callback exceptions surface during registration, and duplicate integer IDs emit warnings, sampled by `generate-unique-id-callback-values`.
 
-        Its effective route view exposes `name`, `path_format`, `tags`, `summary`, `response_description`, `responses`, `deprecated`, and `include_in_schema`. The fixture reads these fields from direct and included routes while producing their operation IDs. It samples true `include_in_schema`, explicit false normalized to `None` for direct `deprecated`, and inherited true `deprecated`; other field values, callback mutation, and later-initialized APIRoute state remain unproven.
+        Its effective route view exposes `name`, `path_format`, `tags`, `summary`, `response_description`, `responses`, `deprecated`, and `include_in_schema`. The fixture reads these fields from direct and included routes while producing their operation IDs. It samples true `include_in_schema`, explicit false normalized to `None` for direct `deprecated`, inherited true `deprecated`, and an APIRouter route created with `deprecated=False` and `include_in_schema=False`; other field values, callback mutation, and later-initialized APIRoute state remain unproven.
         `openapi_extra` is applied after generated operation metadata with recursive mapping merge, list concatenation, and scalar replacement. The direct and included-router cases in `openapi-extra-deep-merge` observe summary override, tag append, nested response merge, and operation extensions.
       target_binding:
         implementation_owner: fastapi-rs

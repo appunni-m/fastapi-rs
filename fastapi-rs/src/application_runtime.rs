@@ -2274,24 +2274,55 @@ impl PyOperationRouteCallable {
             .as_ref()
             .map(|kwargs| kwargs.bind(py))
             .or(kwargs);
+        let mut router_kwargs = None;
         let method_instance = if self.is_router {
-            instance
-                .extract::<PyRef<'_, PyApiRouter>>()?
-                .inner
-                .clone_ref(py)
-                .into_bound(py)
-                .into_any()
+            let router = instance.extract::<PyRef<'_, PyApiRouter>>()?;
+            let effective_kwargs = PyDict::new(py);
+            if let Some(kwargs) = forwarded_kwargs {
+                for (key, value) in kwargs.iter() {
+                    effective_kwargs.set_item(key, value)?;
+                }
+            }
+            let route_deprecated = effective_kwargs
+                .get_item("deprecated")?
+                .map(|value| value.extract::<Option<bool>>())
+                .transpose()?
+                .flatten();
+            effective_kwargs.set_item(
+                "deprecated",
+                combined_deprecated(route_deprecated, router.deprecated),
+            )?;
+            let route_include_in_schema = effective_kwargs
+                .get_item("include_in_schema")?
+                .map(|value| value.extract::<bool>())
+                .transpose()?
+                .unwrap_or(true);
+            effective_kwargs.set_item(
+                "include_in_schema",
+                route_include_in_schema && router.include_in_schema,
+            )?;
+            router_kwargs = Some(effective_kwargs.unbind());
+            router.inner.clone_ref(py).into_bound(py).into_any()
         } else {
             instance
         };
+        let forwarded_kwargs = router_kwargs
+            .as_ref()
+            .map(|kwargs| kwargs.bind(py))
+            .or(forwarded_kwargs);
         let mut forwarded_arguments = Vec::with_capacity(args.len() + 1);
         forwarded_arguments.push(method_instance);
         forwarded_arguments.extend(args.iter().skip(first_argument));
         let forwarded_arguments = PyTuple::new(py, forwarded_arguments)?;
-        self.method
+        let result = self
+            .method
             .bind(py)
-            .call(&forwarded_arguments, forwarded_kwargs)
-            .map(Bound::unbind)
+            .call(&forwarded_arguments, forwarded_kwargs)?;
+        if self.is_router {
+            let mut decorator = result.extract::<PyRefMut<'_, PyOperationDecorator>>()?;
+            decorator.deprecated_precombined = true;
+        }
+        Ok(result.unbind())
     }
 }
 
@@ -5072,11 +5103,11 @@ fn combined_route_tags(
     Some(tags)
 }
 
-fn combined_deprecated(inherited: Option<bool>, router: Option<bool>) -> Option<bool> {
-    if inherited.unwrap_or(false) || router.unwrap_or(false) {
-        Some(true)
+fn combined_deprecated(route: Option<bool>, inherited: Option<bool>) -> Option<bool> {
+    if route.unwrap_or(false) {
+        route
     } else {
-        None
+        inherited
     }
 }
 
@@ -5491,7 +5522,7 @@ fn merge_router_routes(
                     summary: source_route.summary.as_deref(),
                     response_description: &source_route.response_description,
                     responses: &source_route.responses,
-                    deprecated: combined_deprecated(inherited_deprecated, source_route.deprecated),
+                    deprecated: combined_deprecated(source_route.deprecated, inherited_deprecated),
                     include_in_schema: inherited_include_in_schema
                         && source_route.include_in_schema,
                     operation_id: source_route.operation_id.as_deref(),
@@ -5557,7 +5588,7 @@ fn merge_router_routes(
             unique_id,
             unique_id_value,
             generate_unique_id_function,
-            deprecated: combined_deprecated(inherited_deprecated, source_route.deprecated),
+            deprecated: combined_deprecated(source_route.deprecated, inherited_deprecated),
             tags,
             status_code: source_route.status_code,
             include_in_schema: inherited_include_in_schema && source_route.include_in_schema,
@@ -5695,6 +5726,7 @@ struct PyOperationDecorator {
     operation_id: Option<String>,
     generate_unique_id_function: GenerateUniqueIdChoice,
     deprecated: Option<bool>,
+    deprecated_precombined: bool,
     tags: Option<Vec<String>>,
     dependencies: Vec<Py<PyAny>>,
     response_model: Option<Py<PyAny>>,
@@ -5967,6 +5999,7 @@ fn operation_decorator(
             operation_id: response_model_options.operation_id,
             generate_unique_id_function,
             deprecated: response_model_options.deprecated,
+            deprecated_precombined: false,
             tags: response_model_options.tags,
             dependencies: response_model_options.dependencies,
             response_model,
@@ -5994,7 +6027,11 @@ impl PyOperationDecorator {
             let app = self.app.bind(py).borrow();
             format!("{}{}", app.route_scope_prefix, self.path)
         };
-        let deprecated = combined_deprecated(self.deprecated, None);
+        let deprecated = if self.deprecated_precombined {
+            self.deprecated
+        } else {
+            combined_deprecated(self.deprecated, None)
+        };
         let (route_scope, path_format) =
             http_route_scope(py, &scope_path, endpoint.bind(py), &self.method, &name)?;
         let responses = route_response_declarations(py, self.responses.as_ref())?;

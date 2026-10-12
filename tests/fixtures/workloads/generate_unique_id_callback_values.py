@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from fastapi import FastAPI
+from fastapi import APIRouter, FastAPI
 
 
 def create_app(factory_input: dict[str, Any], event_trace: list[str]) -> FastAPI:
@@ -12,7 +12,6 @@ def create_app(factory_input: dict[str, Any], event_trace: list[str]) -> FastAPI
     behavior = factory_input["behavior"]
 
     def generate(route: Any) -> Any:
-        del route
         if behavior == "integer":
             return 17
         if behavior == "empty":
@@ -21,9 +20,12 @@ def create_app(factory_input: dict[str, Any], event_trace: list[str]) -> FastAPI
             return []
         if behavior == "error":
             raise LookupError("unique ID callback failed")
+        if behavior == "router-flags":
+            return f"{route.deprecated!r}:{route.include_in_schema!r}:{route.path}"
         raise AssertionError(f"unknown callback behavior: {behavior}")
 
     app = FastAPI()
+    router_route = None
     if behavior == "error":
 
         @app.get("/trigger", operation_id="trigger")
@@ -32,6 +34,15 @@ def create_app(factory_input: dict[str, Any], event_trace: list[str]) -> FastAPI
                 "/late", lambda: {"value": "ok"}, generate_unique_id_function=generate
             )
             return {"value": "ok"}
+    elif behavior == "router-flags":
+        router = APIRouter(
+            deprecated=False,
+            include_in_schema=False,
+            generate_unique_id_function=generate,
+        )
+        router.get("/hidden")(lambda: {"value": "hidden"})
+        router_route = router.routes[0]
+        app.include_router(router, prefix="/api")
     else:
         app.get(
             "/value",
@@ -43,6 +54,12 @@ def create_app(factory_input: dict[str, Any], event_trace: list[str]) -> FastAPI
 
     @app.get("/observe", operation_id="observe")
     def observe() -> dict[str, Any]:
+        if router_route is not None:
+            return {
+                "deprecated": router_route.deprecated,
+                "include_in_schema": router_route.include_in_schema,
+                "unique_id": router_route.unique_id,
+            }
         return {
             "unique_id": next(route.unique_id for route in app.routes if route.path == "/value")
         }

@@ -8305,18 +8305,19 @@
     {
       "id": "generate-unique-id-callback-values",
       "input_path": "tests/fixtures/inputs/parity/generate-unique-id-callback-values.json",
-      "input_sha256": "a8ef7ea0f58a61a0b14c1dc0756abd9ebff01d47522fd54660deaf5f83958b34",
+      "input_sha256": "574602b6eb5ae35dfecb72fdda672a8f47b19820900891aa5662b1148a1c46e8",
       "recipe_path": "tests/fixtures/input-recipes/parity/generate-unique-id-callback-values.yaml",
-      "recipe_sha256": "d5649dbd5d40f0695def4c717d90eddce42f5201c6d09fc8459f623d8d16e890",
+      "recipe_sha256": "1375f571e219017f5a3b8a12c135bba7ebdb58f1e6cd83cac255ec34e576ef48",
       "case_ids": [
         "fastapi.routing.generate-unique-id-integer-return",
+        "fastapi.routing.generate-unique-id-router-deprecated-false-hidden-view",
         "fastapi.routing.generate-unique-id-empty-return",
         "fastapi.routing.generate-unique-id-unhashable-return",
         "fastapi.routing.generate-unique-id-callback-error-on-registration",
         "fastapi.routing.generate-unique-id-duplicate-integer-warning"
       ],
       "workload_path": "tests/fixtures/workloads/generate_unique_id_callback_values.py",
-      "workload_sha256": "1b5a0467c31b9614b95d5ae41a234edcf4ab74c1c3e6a6b4306eb76e48144a2d",
+      "workload_sha256": "3244013de5661e6c9886b671fb5c7b3b100a826b3eeb119c274a63a3b33b8f1e",
       "case_contracts": [
         {
           "case_id": "fastapi.routing.generate-unique-id-integer-return",
@@ -8324,6 +8325,15 @@
           "requirement_refs": [
             "source:documented-page:advanced/generate-clients.md",
             "source:upstream-test:tests/test_generate_unique_id_function.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.routing.generate-unique-id-router-deprecated-false-hidden-view",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/generate-clients.md",
+            "source:upstream-test:tests/test_generate_unique_id_function.py",
+            "source:upstream-test:tests/test_router_include_context.py"
           ]
         },
         {
@@ -39139,11 +39149,12 @@
       "fixture_id": "fastapi.docs.advanced-generate-clients",
       "workflow_id": "generate-unique-id-callback-values",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 3 case(s); observes docs.response.status, http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 4 case(s); observes docs.response.status, http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.routing.generate-unique-id-callback-error-on-registration",
         "fastapi.routing.generate-unique-id-empty-return",
-        "fastapi.routing.generate-unique-id-integer-return"
+        "fastapi.routing.generate-unique-id-integer-return",
+        "fastapi.routing.generate-unique-id-router-deprecated-false-hidden-view"
       ],
       "observation_selectors": [
         "docs.response.status",
@@ -39158,17 +39169,34 @@
       "fixture_id": "fastapi.test.test-generate-unique-id-function",
       "workflow_id": "generate-unique-id-callback-values",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 5 case(s); observes docs.response.status, http.body.bytes, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 6 case(s); observes docs.response.status, http.body.bytes, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.routing.generate-unique-id-callback-error-on-registration",
         "fastapi.routing.generate-unique-id-duplicate-integer-warning",
         "fastapi.routing.generate-unique-id-empty-return",
         "fastapi.routing.generate-unique-id-integer-return",
+        "fastapi.routing.generate-unique-id-router-deprecated-false-hidden-view",
         "fastapi.routing.generate-unique-id-unhashable-return"
       ],
       "observation_selectors": [
         "docs.response.status",
         "http.body.bytes",
+        "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_router_include_context.py",
+      "fixture_id": "fastapi.test.test-router-include-context",
+      "workflow_id": "generate-unique-id-callback-values",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.body.bytes, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.routing.generate-unique-id-router-deprecated-false-hidden-view"
+      ],
+      "observation_selectors": [
+        "docs.response.status",
+        "http.body.bytes",
+        "http.status",
         "openapi.document"
       ]
     },
