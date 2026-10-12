@@ -886,6 +886,16 @@ fn default_response_class(py: Python<'_>) -> PyResult<Py<PyAny>> {
     Py::new(py, PyFastApiDefaultPlaceholder { value }).map(Py::into_any)
 }
 
+fn strict_content_type_python_value(py: Python<'_>, value: Option<bool>) -> PyResult<Py<PyAny>> {
+    match value {
+        Some(value) => Ok(PyBool::new(py, value).to_owned().unbind().into_any()),
+        None => {
+            let value = PyBool::new(py, true).to_owned().unbind().into_any();
+            Py::new(py, PyFastApiDefaultPlaceholder { value }).map(Py::into_any)
+        }
+    }
+}
+
 // Argument presence is captured before Python None could be conflated with an
 // omitted keyword. Default creation may fail normally and occurs in the method.
 enum ResponseClassArgument {
@@ -935,6 +945,12 @@ impl ResponseClassChoice {
         match self {
             Self::Default(value) => Self::Default(value.clone_ref(py)),
             Self::Explicit(value) => Self::Explicit(value.clone_ref(py)),
+        }
+    }
+
+    fn python_value(&self, py: Python<'_>) -> Py<PyAny> {
+        match self {
+            Self::Default(value) | Self::Explicit(value) => value.clone_ref(py),
         }
     }
 
@@ -1231,6 +1247,8 @@ impl ResponseModelValidator {
 struct PyApiRoute {
     path: String,
     path_format: String,
+    path_regex: Py<PyAny>,
+    param_convertors: Py<PyDict>,
     name: String,
     methods: Vec<String>,
     tags: Py<PyList>,
@@ -1244,6 +1262,17 @@ struct PyApiRoute {
     endpoint: Py<PyAny>,
     unique_id: Option<Py<PyAny>>,
     generate_unique_id_function: Py<PyAny>,
+    response_model_include: Option<Py<PyAny>>,
+    response_model_exclude: Option<Py<PyAny>>,
+    response_model_by_alias: bool,
+    response_model_exclude_unset: bool,
+    response_model_exclude_defaults: bool,
+    response_model_exclude_none: bool,
+    response_class: Py<PyAny>,
+    dependency_overrides_provider: Option<Py<PyAny>>,
+    callbacks: Py<PyAny>,
+    strict_content_type: Py<PyAny>,
+    stream_item_type: Option<Py<PyAny>>,
     direct_openapi_supported: bool,
 }
 
@@ -1270,6 +1299,16 @@ impl PyApiRoute {
     #[getter]
     fn path_format(&self) -> &str {
         &self.path_format
+    }
+
+    #[getter]
+    fn path_regex(&self, py: Python<'_>) -> Py<PyAny> {
+        self.path_regex.clone_ref(py)
+    }
+
+    #[getter]
+    fn param_convertors(&self, py: Python<'_>) -> Py<PyDict> {
+        self.param_convertors.clone_ref(py)
     }
 
     #[getter]
@@ -1350,6 +1389,73 @@ impl PyApiRoute {
     fn endpoint(&self, py: Python<'_>) -> Py<PyAny> {
         self.endpoint.clone_ref(py)
     }
+
+    #[getter]
+    fn response_model_include(&self, py: Python<'_>) -> Py<PyAny> {
+        self.response_model_include
+            .as_ref()
+            .map(|value| value.clone_ref(py))
+            .unwrap_or_else(|| py.None())
+    }
+
+    #[getter]
+    fn response_model_exclude(&self, py: Python<'_>) -> Py<PyAny> {
+        self.response_model_exclude
+            .as_ref()
+            .map(|value| value.clone_ref(py))
+            .unwrap_or_else(|| py.None())
+    }
+
+    #[getter]
+    fn response_model_by_alias(&self) -> bool {
+        self.response_model_by_alias
+    }
+
+    #[getter]
+    fn response_model_exclude_unset(&self) -> bool {
+        self.response_model_exclude_unset
+    }
+
+    #[getter]
+    fn response_model_exclude_defaults(&self) -> bool {
+        self.response_model_exclude_defaults
+    }
+
+    #[getter]
+    fn response_model_exclude_none(&self) -> bool {
+        self.response_model_exclude_none
+    }
+
+    #[getter]
+    fn response_class(&self, py: Python<'_>) -> Py<PyAny> {
+        self.response_class.clone_ref(py)
+    }
+
+    #[getter]
+    fn dependency_overrides_provider(&self, py: Python<'_>) -> Py<PyAny> {
+        self.dependency_overrides_provider
+            .as_ref()
+            .map(|value| value.clone_ref(py))
+            .unwrap_or_else(|| py.None())
+    }
+
+    #[getter]
+    fn callbacks(&self, py: Python<'_>) -> Py<PyAny> {
+        self.callbacks.clone_ref(py)
+    }
+
+    #[getter]
+    fn strict_content_type(&self, py: Python<'_>) -> Py<PyAny> {
+        self.strict_content_type.clone_ref(py)
+    }
+
+    #[getter]
+    fn stream_item_type(&self, py: Python<'_>) -> Py<PyAny> {
+        self.stream_item_type
+            .as_ref()
+            .map(|value| value.clone_ref(py))
+            .unwrap_or_else(|| py.None())
+    }
 }
 
 #[pymethods]
@@ -1419,6 +1525,8 @@ impl PyRouteContextIterator {
 struct ApiRouteViewConfig<'a> {
     path: &'a str,
     path_format: &'a str,
+    path_regex: &'a Py<PyAny>,
+    param_convertors: &'a Py<PyDict>,
     methods: &'a [String],
     name: &'a str,
     tags: &'a [String],
@@ -1430,6 +1538,17 @@ struct ApiRouteViewConfig<'a> {
     operation_id: Option<&'a str>,
     openapi_extra: Option<&'a Py<PyAny>>,
     generate_unique_id_function: &'a GenerateUniqueIdChoice,
+    response_model_include: Option<&'a Py<PyAny>>,
+    response_model_exclude: Option<&'a Py<PyAny>>,
+    response_model_by_alias: bool,
+    response_model_exclude_unset: bool,
+    response_model_exclude_defaults: bool,
+    response_model_exclude_none: bool,
+    response_class: &'a ResponseClassChoice,
+    dependency_overrides_provider: Option<&'a Py<PyAny>>,
+    callbacks: Option<&'a Py<PyAny>>,
+    strict_content_type: &'a Py<PyAny>,
+    stream_item_type: Option<&'a Py<PyAny>>,
     direct_openapi_supported: bool,
 }
 
@@ -1447,6 +1566,8 @@ fn new_api_route_view(
         PyApiRoute {
             path: config.path.to_owned(),
             path_format: config.path_format.to_owned(),
+            path_regex: config.path_regex.clone_ref(py),
+            param_convertors: config.param_convertors.clone_ref(py),
             name: config.name.to_owned(),
             methods: config.methods.to_vec(),
             tags: tags.unbind(),
@@ -1460,6 +1581,26 @@ fn new_api_route_view(
             endpoint,
             unique_id: None,
             generate_unique_id_function: config.generate_unique_id_function.python_value(py),
+            response_model_include: config
+                .response_model_include
+                .map(|value| value.clone_ref(py)),
+            response_model_exclude: config
+                .response_model_exclude
+                .map(|value| value.clone_ref(py)),
+            response_model_by_alias: config.response_model_by_alias,
+            response_model_exclude_unset: config.response_model_exclude_unset,
+            response_model_exclude_defaults: config.response_model_exclude_defaults,
+            response_model_exclude_none: config.response_model_exclude_none,
+            response_class: config.response_class.python_value(py),
+            dependency_overrides_provider: config
+                .dependency_overrides_provider
+                .map(|value| value.clone_ref(py)),
+            callbacks: config
+                .callbacks
+                .map(|value| value.clone_ref(py))
+                .unwrap_or_else(|| PyList::empty(py).unbind().into_any()),
+            strict_content_type: config.strict_content_type.clone_ref(py),
+            stream_item_type: config.stream_item_type.map(|value| value.clone_ref(py)),
             direct_openapi_supported: config.direct_openapi_supported,
         },
     )
@@ -2347,6 +2488,7 @@ impl PyOperationRouteCallable {
         if self.is_router {
             let mut decorator = result.extract::<PyRefMut<'_, PyOperationDecorator>>()?;
             decorator.deprecated_precombined = true;
+            decorator.dependency_overrides_provider = None;
         }
         Ok(result.unbind())
     }
@@ -3608,10 +3750,12 @@ impl PyFastApi {
         let include_in_schema = include_in_schema && router.include_in_schema;
         let source = router.inner.bind(py).borrow();
         let route_position = destination.routes.len();
+        let dependency_overrides_provider = slf.clone_ref(py).into_any();
         merge_router_routes(
             py,
             destination,
             &source,
+            &dependency_overrides_provider,
             RouterIncludePolicy {
                 prefix: &prefix,
                 response_class: &inherited_response_class,
@@ -4938,6 +5082,10 @@ impl PyApiRouter {
             openapi_extra,
             generate_unique_id_function,
         )?;
+        decorator
+            .bind(py)
+            .borrow_mut()
+            .dependency_overrides_provider = None;
         register_multi_method_api_route(
             py,
             decorator,
@@ -5050,10 +5198,12 @@ impl PyApiRouter {
         }
         let inherited_strict_content_type = destination.strict_content_type;
         let route_position = destination.routes.len();
+        let dependency_overrides_provider = inner.clone_ref(py).into_any();
         merge_router_routes(
             py,
             &mut destination,
             &source,
+            &dependency_overrides_provider,
             RouterIncludePolicy {
                 prefix: &prefix,
                 response_class: &inherited_response_class,
@@ -5545,6 +5695,7 @@ fn merge_router_routes(
     py: Python<'_>,
     app: &mut PyFastApi,
     source: &PyFastApi,
+    dependency_overrides_provider: &Py<PyAny>,
     policy: RouterIncludePolicy<'_>,
 ) -> PyResult<()> {
     let RouterIncludePolicy {
@@ -5578,6 +5729,7 @@ fn merge_router_routes(
         )?;
         plan.prepend_dependencies(py, &route_dependencies)?;
         let param_convertors = route_param_convertors(py, &path)?;
+        let path_regex = route_path_regex(py, &path)?;
         let response_class = ResponseClassChoice::first_explicit(
             py,
             &[
@@ -5597,6 +5749,13 @@ fn merge_router_routes(
                 inherited_generate_unique_id_function,
             ],
         );
+        let strict_content_type = strict_content_type_python_value(
+            py,
+            source_route
+                .strict_content_type
+                .or(source.strict_content_type)
+                .or(inherited_strict_content_type),
+        )?;
         let original_route = source_route.original_route.clone_ref(py);
         let route_key = original_route.as_ptr() as usize;
         let cached_route = effective_route_cache.get(&route_key).map(
@@ -5618,6 +5777,8 @@ fn merge_router_routes(
                 ApiRouteViewConfig {
                     path: &path,
                     path_format: &path_format,
+                    path_regex: &path_regex,
+                    param_convertors: &param_convertors,
                     methods: &source_route.callback_methods,
                     name: &source_route.name,
                     tags: tags.as_deref().unwrap_or_default(),
@@ -5630,6 +5791,17 @@ fn merge_router_routes(
                     operation_id: source_route.operation_id.as_deref(),
                     openapi_extra: source_route.openapi_extra.as_ref(),
                     generate_unique_id_function: &generate_unique_id_function,
+                    response_model_include: source_route.response_model_include.as_ref(),
+                    response_model_exclude: source_route.response_model_exclude.as_ref(),
+                    response_model_by_alias: source_route.response_model_by_alias,
+                    response_model_exclude_unset: source_route.response_model_exclude_unset,
+                    response_model_exclude_defaults: source_route.response_model_exclude_defaults,
+                    response_model_exclude_none: source_route.response_model_exclude_none,
+                    response_class: &response_class,
+                    dependency_overrides_provider: Some(dependency_overrides_provider),
+                    callbacks: None,
+                    strict_content_type: &strict_content_type,
+                    stream_item_type: source_route.stream_item_type.as_ref(),
                     direct_openapi_supported: false,
                 },
                 source_route.endpoint.clone_ref(py),
@@ -5817,6 +5989,7 @@ fn merge_router_routes(
 #[pyclass(name = "_OperationDecorator", module = "fastapi_rs._core", unsendable)]
 struct PyOperationDecorator {
     app: Py<PyFastApi>,
+    dependency_overrides_provider: Option<Py<PyAny>>,
     path: String,
     method: String,
     callback_methods: Vec<String>,
@@ -6113,6 +6286,7 @@ fn operation_decorator(
     Py::new(
         py,
         PyOperationDecorator {
+            dependency_overrides_provider: Some(app.clone_ref(py).into_any()),
             app,
             path: path.to_owned(),
             method: method.to_owned(),
@@ -6162,6 +6336,8 @@ impl PyOperationDecorator {
         };
         let (route_scope, path_format) =
             http_route_scope(py, &scope_path, endpoint.bind(py), &self.method, &name)?;
+        let callback_param_convertors = route_param_convertors(py, &scope_path)?;
+        let path_regex = route_path_regex(py, &scope_path)?;
         let responses = route_response_declarations(py, self.responses.as_ref())?;
         if !endpoint.bind(py).is_callable() {
             return Err(PyAssertionError::new_err("An endpoint must be a callable"));
@@ -6269,11 +6445,15 @@ impl PyOperationDecorator {
             && plan.return_annotation.is_none()
             && !generator_kind.is_generator()
             && !endpoint_has_docstring;
+        let strict_content_type = self.app.bind(py).borrow().strict_content_type;
+        let strict_content_type_value = strict_content_type_python_value(py, strict_content_type)?;
         let (public_route, unique_id) = api_route_view_and_unique_id(
             py,
             ApiRouteViewConfig {
                 path: &scope_path,
                 path_format: &path_format,
+                path_regex: &path_regex,
+                param_convertors: &callback_param_convertors,
                 methods: &self.callback_methods,
                 name: &name,
                 tags: self.tags.as_deref().unwrap_or_default(),
@@ -6285,6 +6465,17 @@ impl PyOperationDecorator {
                 operation_id: self.operation_id.as_deref(),
                 openapi_extra: self.openapi_extra.as_ref(),
                 generate_unique_id_function: &self.generate_unique_id_function,
+                response_model_include: self.response_model_include.as_ref(),
+                response_model_exclude: self.response_model_exclude.as_ref(),
+                response_model_by_alias: self.response_model_by_alias,
+                response_model_exclude_unset: self.response_model_exclude_unset,
+                response_model_exclude_defaults: self.response_model_exclude_defaults,
+                response_model_exclude_none: self.response_model_exclude_none,
+                response_class: &response_class,
+                dependency_overrides_provider: self.dependency_overrides_provider.as_ref(),
+                callbacks: None,
+                strict_content_type: &strict_content_type_value,
+                stream_item_type: None,
                 direct_openapi_supported,
             },
             endpoint.clone_ref(py),
@@ -6312,7 +6503,6 @@ impl PyOperationDecorator {
         app.router
             .set_parameters(index, inputs)
             .ok_or_else(|| PyRuntimeError::new_err("registered FastAPI operation was lost"))?;
-        let strict_content_type = app.strict_content_type;
         app.routes.push(FastApiRoute {
             path: self.path.clone(),
             path_format,
@@ -8773,6 +8963,14 @@ fn route_param_convertors(py: Python<'_>, path: &str) -> PyResult<Py<PyDict>> {
         .cast::<PyDict>()?
         .clone()
         .unbind())
+}
+
+fn route_path_regex(py: Python<'_>, path: &str) -> PyResult<Py<PyAny>> {
+    py.import("starlette.routing")?
+        .getattr("compile_path")?
+        .call1((path,))?
+        .get_item(0)
+        .map(Bound::unbind)
 }
 
 fn route_path_format(py: Python<'_>, path: &str) -> PyResult<String> {

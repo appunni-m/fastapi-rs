@@ -1037,6 +1037,11 @@ reviewed_api_contract_overlay:
           case_id: fastapi.routing.generate-unique-id-callback-mutates-route-metadata
           workload_path: tests/fixtures/workloads/generate_unique_id_callback_values.py
           observation_selectors: [http.status, http.body.bytes, openapi.document, construction.outcome, construction.exception_class, construction.exception_message]
+        - &generate_unique_id_callback_state
+          recipe_path: tests/fixtures/input-recipes/parity/generate-unique-id-callback-values.yaml
+          case_id: fastapi.routing.generate-unique-id-callback-construction-state
+          workload_path: tests/fixtures/workloads/generate_unique_id_callback_values.py
+          observation_selectors: [http.status, http.body.bytes, openapi.document, construction.outcome, construction.exception_class, construction.exception_message]
         - recipe_path: tests/fixtures/input-recipes/parity/next-openapi-response-fields.yaml
           case_id: fastapi.next-openapi-response-fields.annotated-metadata-outer-titles-retained-hooks
           workload_path: tests/fixtures/workloads/next_openapi_response_fields.py
@@ -1457,9 +1462,9 @@ reviewed_api_contract_overlay:
         include-level responses, dependency schema timing and mutable history
         remain separate compatibility gates.
 
-        The custom `generate_unique_id_function` is the default for direct routes and the application-level fallback when an included router retains its default callback, sampled by `generate-unique-id-function-precedence`. Duplicate operation-ID warnings and operation values are sampled by `generate-unique-id-duplicate-warnings`. Multi-method registration passes the full method set to one callback on direct and included routes, sampled by `generate-unique-id-multi-methods`. Callback errors or non-string results and empty operation IDs remain unproven.
+        The custom `generate_unique_id_function` is the default for direct routes and the application-level fallback when an included router retains its default callback, sampled by `generate-unique-id-function-precedence`. Duplicate operation-ID warnings and operation values are sampled by `generate-unique-id-duplicate-warnings`. Multi-method registration passes the full method set to one callback on direct and included routes, sampled by `generate-unique-id-multi-methods`. Callback exceptions, integer/empty/unhashable results, duplicate integer IDs, operation-ID short-circuit behavior, summary/tag mutation, and a selected pre-callback APIRoute state projection are sampled by `generate-unique-id-callback-values`. Other APIRoute state and mutations remain unproven.
 
-        Its effective route view exposes `name`, `path_format`, `tags`, `summary`, `response_description`, `responses`, `deprecated`, and `include_in_schema`. The fixture reads these fields from direct and included routes while producing their operation IDs. It samples true `include_in_schema`, explicit false normalized to `None` for direct `deprecated`, and inherited true `deprecated`; other field values, callback mutation, and later-initialized APIRoute state remain unproven.
+        Its route view exposes the selected source fields and supports `summary` and tag-list mutation. Inputs observe direct and included route values, explicit false normalized to `None` for direct `deprecated`, inherited true `deprecated`, selected callback-time response-model options, response-class/default placeholder, route regex and converters, dependency provider, strict content type, stream item type, and the absence of selected later-initialized attributes. Mutations beyond `summary` and tags, complete APIRoute constructor behavior, and later route-method effects remain unproven.
     fastapi.applications.FastAPI.exception_handler:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::exception_handler
       source_evidence:
@@ -5128,6 +5133,7 @@ reviewed_api_contract_overlay:
         - *generate_unique_id_duplicate_integer
         - *generate_unique_id_router_flags
         - *generate_unique_id_callback_mutation
+        - *generate_unique_id_callback_state
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-validation-response.yaml
           case_id: fastapi.openapi-validation-response.automatic-after-declared-responses
           workload_path: tests/fixtures/workloads/openapi_validation_response.py
@@ -9508,9 +9514,12 @@ reviewed_api_contract_overlay:
           symbol: APIRoute
           start_line: 1126
           end_line: 1281
+      fixture_refs:
+        - *generate_unique_id_callback_state
       supported_slice: >-
-        Read the configured response class or retained `DefaultPlaceholder` from an APIRoute;
-        handler response selection resolves that stored value separately.
+        Read the configured response class or retained `DefaultPlaceholder` in the unique-ID
+        callback before handler construction; handler response selection resolves that stored
+        value separately.
 
     fastapi.routing.APIRoute.tags:
       source_evidence:

@@ -8305,22 +8305,23 @@
     {
       "id": "generate-unique-id-callback-values",
       "input_path": "tests/fixtures/inputs/parity/generate-unique-id-callback-values.json",
-      "input_sha256": "c559243e49081bd925f7f9d4b75fb50d368008966ecc78130b3165764919fc5f",
+      "input_sha256": "db6dd3e57e9b7959f7cd49a79426b7108921de4ad58f458ad13ea5606405183a",
       "recipe_path": "tests/fixtures/input-recipes/parity/generate-unique-id-callback-values.yaml",
-      "recipe_sha256": "c9a0e1bd525a5f6150c68f98901c7ecd0a959a0759d2e35337fbce1cf722affb",
+      "recipe_sha256": "6dda6d3f164a103c2d2aaf9c4111d9903bb494b87b62efd6863de38e0006b2c9",
       "case_ids": [
         "fastapi.routing.generate-unique-id-integer-return",
         "fastapi.routing.generate-unique-id-router-deprecated-false-hidden-view",
         "fastapi.routing.generate-unique-id-router-add-api-route-defaults",
         "fastapi.applications.generate-unique-id-app-add-api-route-defaults",
         "fastapi.routing.generate-unique-id-callback-mutates-route-metadata",
+        "fastapi.routing.generate-unique-id-callback-construction-state",
         "fastapi.routing.generate-unique-id-empty-return",
         "fastapi.routing.generate-unique-id-unhashable-return",
         "fastapi.routing.generate-unique-id-callback-error-on-registration",
         "fastapi.routing.generate-unique-id-duplicate-integer-warning"
       ],
       "workload_path": "tests/fixtures/workloads/generate_unique_id_callback_values.py",
-      "workload_sha256": "5a22699f2f895db4fcae25cea250a682bb5118224abeeeb2fa2ebd47a69943da",
+      "workload_sha256": "1c345264352468c06b776af43250a523b80b4c0141ada1bae20b1cbf505e3168",
       "case_contracts": [
         {
           "case_id": "fastapi.routing.generate-unique-id-integer-return",
@@ -8358,6 +8359,14 @@
         },
         {
           "case_id": "fastapi.routing.generate-unique-id-callback-mutates-route-metadata",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/generate-clients.md",
+            "source:upstream-test:tests/test_generate_unique_id_function.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.routing.generate-unique-id-callback-construction-state",
           "verification": "parity",
           "requirement_refs": [
             "source:documented-page:advanced/generate-clients.md",
@@ -39177,9 +39186,10 @@
       "fixture_id": "fastapi.docs.advanced-generate-clients",
       "workflow_id": "generate-unique-id-callback-values",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 7 case(s); observes docs.response.status, http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 8 case(s); observes docs.response.status, http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.applications.generate-unique-id-app-add-api-route-defaults",
+        "fastapi.routing.generate-unique-id-callback-construction-state",
         "fastapi.routing.generate-unique-id-callback-error-on-registration",
         "fastapi.routing.generate-unique-id-callback-mutates-route-metadata",
         "fastapi.routing.generate-unique-id-empty-return",
@@ -39216,9 +39226,10 @@
       "fixture_id": "fastapi.test.test-generate-unique-id-function",
       "workflow_id": "generate-unique-id-callback-values",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 9 case(s); observes docs.response.status, http.body.bytes, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 10 case(s); observes docs.response.status, http.body.bytes, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.applications.generate-unique-id-app-add-api-route-defaults",
+        "fastapi.routing.generate-unique-id-callback-construction-state",
         "fastapi.routing.generate-unique-id-callback-error-on-registration",
         "fastapi.routing.generate-unique-id-callback-mutates-route-metadata",
         "fastapi.routing.generate-unique-id-duplicate-integer-warning",
