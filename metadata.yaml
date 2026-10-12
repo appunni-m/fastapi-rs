@@ -1468,6 +1468,8 @@ reviewed_api_contract_overlay:
         - {path: fastapi/param_functions.py, symbol: Path}
         - {path: fastapi/params.py, symbol: Path}
         - {path: tests/test_ambiguous_params.py}
+        - {path: tests/test_path.py, symbol: test_path_param_minlength_foo}
+        - {path: tests/test_path.py, symbol: test_path_param_minlength_fo}
         - {path: tests/test_path.py, symbol: test_path_param_ge_int_2}
         - {path: tests/test_path.py, symbol: test_path_param_le_ge_int_4}
         - {path: tests/test_path.py, symbol: test_path_param_le_int_42}
@@ -1482,6 +1484,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.path.ge-le-lower-bound-invalid
         - recipe_path: tests/fixtures/input-recipes/parity/body-surface.yaml
           case_id: fastapi.path.ge-le-upper-bound-invalid
+        - recipe_path: tests/fixtures/input-recipes/parity/path-validation-test-path-upstream.yaml
+          case_id: fastapi.path-validation.test-path.min-length.valid
+        - recipe_path: tests/fixtures/input-recipes/parity/path-validation-test-path-upstream.yaml
+          case_id: fastapi.path-validation.test-path.min-length.invalid
         - recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
           case_id: fastapi.parameter-factory-signatures.path
       feature_ids: [request-validation]
@@ -1491,7 +1497,9 @@ reviewed_api_contract_overlay:
         with a strict lower bound; the linked Path(ge=..., le=...) inputs reject
         integer values below the lower bound and above the upper bound. Equality
         at either bound is not yet represented. The body-surface workflow checks
-        both rejection paths.
+        both rejection paths. The path-validation workflow also checks a
+        valid three-character path and the exact 422 result for a
+        two-character path under `min_length=3`.
         The raw default argument defaults to Ellipsis; any other object raises
         AssertionError with the source message before marker construction.
         The ambiguous-parameters input observes that construction failure.
@@ -6125,6 +6133,8 @@ reviewed_api_contract_overlay:
       rust_binding: fastapi-rs/src/parameters.rs::path
       source_evidence:
         - {path: fastapi/param_functions.py, symbol: Path}
+        - {path: tests/test_path.py, symbol: test_path_param_minlength_foo}
+        - {path: tests/test_path.py, symbol: test_path_param_minlength_fo}
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/core-ambiguous-params-construction-upstream.yaml
           case_id: fastapi.request.ambiguous-params.path-default-in-annotated
@@ -6132,6 +6142,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.root-alias-identity.http-reexports
         - recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
           case_id: fastapi.parameter-factory-signatures.path
+        - recipe_path: tests/fixtures/input-recipes/parity/path-validation-test-path-upstream.yaml
+          case_id: fastapi.path-validation.test-path.min-length.valid
+        - recipe_path: tests/fixtures/input-recipes/parity/path-validation-test-path-upstream.yaml
+          case_id: fastapi.path-validation.test-path.min-length.invalid
       feature_ids: [request-validation]
       observation_selectors: [http.body.bytes, python.signature, construction.outcome, construction.exception_class, construction.exception_message]
       supported_slice: >-
@@ -6141,11 +6155,13 @@ reviewed_api_contract_overlay:
         not establish the full upstream factory signature, marker return type,
         or constructor behavior. The default argument's Ellipsis identity
         assertion is separately observed by the ambiguous-parameters input.
+        The selected path-validation workflow also exercises marker behavior
+        for string `min_length`.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Exact signature parity remains incomplete; source has 29 parameters and an Any return annotation, while target has 10 parameters and returns None.
+          - Exact signature parity remains incomplete; source has 29 parameters and an Any return annotation, while target has 12 parameters and returns None.
           - The returned marker is not the upstream fastapi.params.Path FieldInfo subclass.
     fastapi.param_functions.Query:
       rust_binding: fastapi-rs/src/parameters.rs::query

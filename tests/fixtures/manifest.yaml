@@ -878,7 +878,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 13
     symbols_with_direct_api_input_workflow_refs: 101
     symbols_with_operation_fixture_refs: 169
-    operation_fixture_refs: 1465
+    operation_fixture_refs: 1469
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -5460,6 +5460,28 @@ api_surface_contract:
       - asgi.send.message_types
       - http.body.bytes
       - http.headers.ordered
+      - http.status
+    - workflow_id: path-validation-test-path-upstream
+      input_path: tests/fixtures/inputs/parity/path-validation-test-path-upstream.json
+      input_sha256: b36012b930d89b32a6fd3d8cba50faf8df26092731f1d0a02889a75277041fad
+      recipe_path: tests/fixtures/input-recipes/parity/path-validation-test-path-upstream.yaml
+      recipe_sha256: 6a0f25022081d23c20675c2ab7a468c183f6644a18c6b10a8abb573f97da8c1d
+      workload_path: tests/fixtures/workloads/path_validation_test_path_upstream.py
+      workload_sha256: 18e91de05703f4b89e9b36e7b269645cd62bd3471455f15bbd48479f805b44db
+      case_id: fastapi.path-validation.test-path.min-length.valid
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: path-validation-test-path-upstream
+      input_path: tests/fixtures/inputs/parity/path-validation-test-path-upstream.json
+      input_sha256: b36012b930d89b32a6fd3d8cba50faf8df26092731f1d0a02889a75277041fad
+      recipe_path: tests/fixtures/input-recipes/parity/path-validation-test-path-upstream.yaml
+      recipe_sha256: 6a0f25022081d23c20675c2ab7a468c183f6644a18c6b10a8abb573f97da8c1d
+      workload_path: tests/fixtures/workloads/path_validation_test_path_upstream.py
+      workload_sha256: 18e91de05703f4b89e9b36e7b269645cd62bd3471455f15bbd48479f805b44db
+      case_id: fastapi.path-validation.test-path.min-length.invalid
+      observation_selectors:
+      - http.body.bytes
       - http.status
     - workflow_id: parameter-factory-signatures
       input_path: tests/fixtures/inputs/parity/parameter-factory-signatures.json
@@ -36533,6 +36555,28 @@ api_surface_contract:
       case_id: fastapi.parameter-factory-signatures.path
       observation_selectors:
       - python.signature
+    - workflow_id: path-validation-test-path-upstream
+      input_path: tests/fixtures/inputs/parity/path-validation-test-path-upstream.json
+      input_sha256: b36012b930d89b32a6fd3d8cba50faf8df26092731f1d0a02889a75277041fad
+      recipe_path: tests/fixtures/input-recipes/parity/path-validation-test-path-upstream.yaml
+      recipe_sha256: 6a0f25022081d23c20675c2ab7a468c183f6644a18c6b10a8abb573f97da8c1d
+      workload_path: tests/fixtures/workloads/path_validation_test_path_upstream.py
+      workload_sha256: 18e91de05703f4b89e9b36e7b269645cd62bd3471455f15bbd48479f805b44db
+      case_id: fastapi.path-validation.test-path.min-length.valid
+      observation_selectors:
+      - http.body.bytes
+      - http.status
+    - workflow_id: path-validation-test-path-upstream
+      input_path: tests/fixtures/inputs/parity/path-validation-test-path-upstream.json
+      input_sha256: b36012b930d89b32a6fd3d8cba50faf8df26092731f1d0a02889a75277041fad
+      recipe_path: tests/fixtures/input-recipes/parity/path-validation-test-path-upstream.yaml
+      recipe_sha256: 6a0f25022081d23c20675c2ab7a468c183f6644a18c6b10a8abb573f97da8c1d
+      workload_path: tests/fixtures/workloads/path_validation_test_path_upstream.py
+      workload_sha256: 18e91de05703f4b89e9b36e7b269645cd62bd3471455f15bbd48479f805b44db
+      case_id: fastapi.path-validation.test-path.min-length.invalid
+      observation_selectors:
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -36564,7 +36608,7 @@ api_surface_contract:
       rust_binding: fastapi-rs/src/parameters.rs::path
       known_gaps:
       - Exact signature parity remains incomplete; source has 29 parameters and an Any return annotation,
-        while target has 10 parameters and returns None.
+        while target has 12 parameters and returns None.
       - The returned marker is not the upstream fastapi.params.Path FieldInfo subclass.
   - id: fastapi.param_functions.Query
     kind: function
