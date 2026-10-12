@@ -1,11 +1,11 @@
 //! OpenAPI document assembly owned by the FastAPI compatibility layer.
 
-use std::collections::{BTreeMap, HashSet};
+use std::collections::BTreeMap;
 
 use crate::encoding::{JsonableEncoderInput, JsonableEncoderOptions, jsonable_encoder};
 use pyo3::exceptions::{PyKeyError, PyNotImplementedError, PyUserWarning, PyValueError};
 use pyo3::prelude::*;
-use pyo3::types::{PyBool, PyDict, PyFloat, PyList, PyModule, PyString, PyTuple};
+use pyo3::types::{PyBool, PyDict, PyFloat, PyList, PyModule, PySet, PyString, PyTuple};
 
 /// One OpenAPI parameter extracted from a FastAPI operation.
 pub(crate) struct OpenApiParameter {
@@ -30,7 +30,7 @@ pub(crate) struct OpenApiOperation {
     pub(crate) method: String,
     pub(crate) summary: String,
     pub(crate) response_description: String,
-    pub(crate) operation_id: String,
+    pub(crate) operation_id: Py<PyAny>,
     pub(crate) endpoint_name: String,
     pub(crate) endpoint_file: Option<String>,
     pub(crate) deprecated: Option<bool>,
@@ -252,12 +252,14 @@ pub(crate) fn openapi_document(
     }
 
     let paths = PyDict::new(py);
-    let mut operation_ids = HashSet::with_capacity(operations.len());
+    let operation_ids = PySet::empty(py)?;
     for operation in operations {
-        if !operation_ids.insert(operation.operation_id.clone()) {
+        let operation_id = operation.operation_id.bind(py);
+        if operation_ids.contains(operation_id)? {
             let mut message = format!(
                 "Duplicate Operation ID {} for function {}",
-                operation.operation_id, operation.endpoint_name
+                operation_id.str()?.to_string_lossy(),
+                operation.endpoint_name
             );
             if let Some(file_name) = operation.endpoint_file.as_deref() {
                 message.push_str(" at ");
@@ -270,6 +272,7 @@ pub(crate) fn openapi_document(
                 303,
             ))?;
         }
+        operation_ids.add(operation_id)?;
         let path_item = match paths.get_item(&operation.path)? {
             Some(value) => value.cast_into::<PyDict>().map_err(|_| {
                 PyErr::new::<pyo3::exceptions::PyTypeError, _>(
@@ -292,7 +295,7 @@ pub(crate) fn openapi_document(
             operation_document.set_item("tags", tag_values)?;
         }
         operation_document.set_item("summary", &operation.summary)?;
-        operation_document.set_item("operationId", &operation.operation_id)?;
+        operation_document.set_item("operationId", operation_id)?;
         if operation.deprecated == Some(true) {
             operation_document.set_item("deprecated", true)?;
         }

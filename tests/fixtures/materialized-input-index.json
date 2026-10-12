@@ -8303,6 +8303,62 @@
       ]
     },
     {
+      "id": "generate-unique-id-callback-values",
+      "input_path": "tests/fixtures/inputs/parity/generate-unique-id-callback-values.json",
+      "input_sha256": "a8ef7ea0f58a61a0b14c1dc0756abd9ebff01d47522fd54660deaf5f83958b34",
+      "recipe_path": "tests/fixtures/input-recipes/parity/generate-unique-id-callback-values.yaml",
+      "recipe_sha256": "d5649dbd5d40f0695def4c717d90eddce42f5201c6d09fc8459f623d8d16e890",
+      "case_ids": [
+        "fastapi.routing.generate-unique-id-integer-return",
+        "fastapi.routing.generate-unique-id-empty-return",
+        "fastapi.routing.generate-unique-id-unhashable-return",
+        "fastapi.routing.generate-unique-id-callback-error-on-registration",
+        "fastapi.routing.generate-unique-id-duplicate-integer-warning"
+      ],
+      "workload_path": "tests/fixtures/workloads/generate_unique_id_callback_values.py",
+      "workload_sha256": "1b5a0467c31b9614b95d5ae41a234edcf4ab74c1c3e6a6b4306eb76e48144a2d",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.routing.generate-unique-id-integer-return",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/generate-clients.md",
+            "source:upstream-test:tests/test_generate_unique_id_function.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.routing.generate-unique-id-empty-return",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/generate-clients.md",
+            "source:upstream-test:tests/test_generate_unique_id_function.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.routing.generate-unique-id-unhashable-return",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_generate_unique_id_function.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.routing.generate-unique-id-callback-error-on-registration",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/generate-clients.md",
+            "source:upstream-test:tests/test_generate_unique_id_function.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.routing.generate-unique-id-duplicate-integer-warning",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_generate_unique_id_function.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "generate-unique-id-duplicate-warnings",
       "input_path": "tests/fixtures/inputs/parity/generate-unique-id-duplicate-warnings.json",
       "input_sha256": "35b0f23bf2a4863b9ff900126556da5f8300f1fe62eb2dfb1f4582ac19a61baa",
@@ -39076,6 +39132,44 @@
         "http.status",
         "openapi.document",
         "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:advanced/generate-clients.md",
+      "fixture_id": "fastapi.docs.advanced-generate-clients",
+      "workflow_id": "generate-unique-id-callback-values",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes docs.response.status, http.body.bytes, http.status, openapi.document, openapi.paths. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.routing.generate-unique-id-callback-error-on-registration",
+        "fastapi.routing.generate-unique-id-empty-return",
+        "fastapi.routing.generate-unique-id-integer-return"
+      ],
+      "observation_selectors": [
+        "docs.response.status",
+        "http.body.bytes",
+        "http.status",
+        "openapi.document",
+        "openapi.paths"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_generate_unique_id_function.py",
+      "fixture_id": "fastapi.test.test-generate-unique-id-function",
+      "workflow_id": "generate-unique-id-callback-values",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 5 case(s); observes docs.response.status, http.body.bytes, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.routing.generate-unique-id-callback-error-on-registration",
+        "fastapi.routing.generate-unique-id-duplicate-integer-warning",
+        "fastapi.routing.generate-unique-id-empty-return",
+        "fastapi.routing.generate-unique-id-integer-return",
+        "fastapi.routing.generate-unique-id-unhashable-return"
+      ],
+      "observation_selectors": [
+        "docs.response.status",
+        "http.body.bytes",
+        "openapi.document"
       ]
     },
     {

@@ -1107,6 +1107,7 @@ struct FastApiRoute {
     openapi_extra: Option<Py<PyAny>>,
     operation_id: Option<String>,
     unique_id: String,
+    unique_id_value: Py<PyAny>,
     generate_unique_id_function: GenerateUniqueIdChoice,
     deprecated: Option<bool>,
     tags: Option<Vec<String>>,
@@ -1241,7 +1242,7 @@ struct PyApiRoute {
     operation_id: Option<String>,
     openapi_extra: Option<Py<PyAny>>,
     endpoint: Py<PyAny>,
-    unique_id: Option<String>,
+    unique_id: Option<Py<PyAny>>,
     generate_unique_id_function: Py<PyAny>,
     direct_openapi_supported: bool,
 }
@@ -1315,10 +1316,13 @@ impl PyApiRoute {
     }
 
     #[getter]
-    fn unique_id(&self) -> PyResult<&str> {
-        self.unique_id.as_deref().ok_or_else(|| {
-            PyAttributeError::new_err("'APIRoute' object has no attribute 'unique_id'")
-        })
+    fn unique_id(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
+        self.unique_id
+            .as_ref()
+            .map(|unique_id| unique_id.clone_ref(py))
+            .ok_or_else(|| {
+                PyAttributeError::new_err("'APIRoute' object has no attribute 'unique_id'")
+            })
     }
 
     #[getter]
@@ -1462,15 +1466,15 @@ fn generated_unique_id(
     generate_unique_id_function: &GenerateUniqueIdChoice,
     route: &Py<PyAny>,
     operation_id: Option<&str>,
-) -> PyResult<String> {
+) -> PyResult<Py<PyAny>> {
     if let Some(operation_id) = operation_id.filter(|value| !value.is_empty()) {
-        return Ok(operation_id.to_owned());
+        return Ok(PyString::new(py, operation_id).into_any().unbind());
     }
     generate_unique_id_function
         .actual(py)?
         .bind(py)
-        .call1((route.bind(py),))?
-        .extract::<String>()
+        .call1((route.bind(py),))
+        .map(Bound::unbind)
 }
 
 fn api_route_view_and_unique_id(
@@ -1480,7 +1484,7 @@ fn api_route_view_and_unique_id(
     generate_unique_id_function: &GenerateUniqueIdChoice,
     operation_id: Option<&str>,
     cache: Option<&Rc<RefCell<OperationRouteRegistrationCache>>>,
-) -> PyResult<(Py<PyAny>, String)> {
+) -> PyResult<(Py<PyAny>, Py<PyAny>)> {
     if let Some(cache) = cache {
         let cached = {
             let cache = cache.borrow();
@@ -1488,7 +1492,7 @@ fn api_route_view_and_unique_id(
                 .public_route
                 .as_ref()
                 .zip(cache.unique_id.as_ref())
-                .map(|(route, unique_id)| (route.clone_ref(py), unique_id.clone()))
+                .map(|(route, unique_id)| (route.clone_ref(py), unique_id.clone_ref(py)))
         };
         if let Some(cached) = cached {
             return Ok(cached);
@@ -1498,21 +1502,29 @@ fn api_route_view_and_unique_id(
     let public_route = new_api_route_view(py, config, endpoint)?;
     let unique_id =
         generated_unique_id(py, generate_unique_id_function, &public_route, operation_id)?;
-    set_api_route_unique_id(py, &public_route, unique_id.clone())?;
+    set_api_route_unique_id(py, &public_route, unique_id.bind(py))?;
     if let Some(cache) = cache {
         let mut cache = cache.borrow_mut();
         cache.public_route = Some(public_route.clone_ref(py));
-        cache.unique_id = Some(unique_id.clone());
+        cache.unique_id = Some(unique_id.clone_ref(py));
     }
     Ok((public_route, unique_id))
 }
 
-fn set_api_route_unique_id(py: Python<'_>, route: &Py<PyAny>, unique_id: String) -> PyResult<()> {
+fn set_api_route_unique_id(
+    py: Python<'_>,
+    route: &Py<PyAny>,
+    unique_id: &Bound<'_, PyAny>,
+) -> PyResult<()> {
     route
         .bind(py)
         .extract::<PyRefMut<'_, PyApiRoute>>()?
-        .unique_id = Some(unique_id);
+        .unique_id = Some(unique_id.clone().unbind());
     Ok(())
+}
+
+fn python_string_value(value: &Bound<'_, PyAny>) -> PyResult<String> {
+    Ok(value.str()?.to_string_lossy().into_owned())
 }
 
 fn new_route_context(
@@ -1584,7 +1596,9 @@ pub(crate) fn direct_route_openapi_operation(
         method: method.to_ascii_lowercase(),
         summary: title_case(&route.name),
         response_description: DEFAULT_RESPONSE_DESCRIPTION.to_owned(),
-        operation_id: operation_id(&route.name, &route.path_format, method),
+        operation_id: PyString::new(py, &operation_id(&route.name, &route.path_format, method))
+            .into_any()
+            .unbind(),
         endpoint_name,
         endpoint_file,
         deprecated: None,
@@ -1947,6 +1961,7 @@ struct OpenApiRouteSnapshot {
     openapi_extra: Option<Py<PyAny>>,
     operation_id: Option<String>,
     unique_id: String,
+    unique_id_value: Py<PyAny>,
     deprecated: Option<bool>,
     tags: Option<Vec<String>>,
     status_code: Option<u16>,
@@ -1975,6 +1990,7 @@ impl OpenApiRouteSnapshot {
                 .map(|value| value.clone_ref(py)),
             operation_id: route.operation_id.clone(),
             unique_id: route.unique_id.clone(),
+            unique_id_value: route.unique_id_value.clone_ref(py),
             deprecated: route.deprecated,
             tags: route.tags.clone(),
             status_code: route.status_code,
@@ -4442,12 +4458,18 @@ impl PyFastApi {
                 .call_method0("title")?
                 .extract::<String>()?,
         };
-        let operation_id = route
+        let explicit_operation_id = route
             .operation_id
             .as_ref()
             .filter(|operation_id| !operation_id.is_empty())
-            .cloned()
-            .unwrap_or_else(|| route.unique_id.clone());
+            .cloned();
+        let (operation_id, operation_id_text) = match explicit_operation_id {
+            Some(operation_id) => (
+                PyString::new(py, &operation_id).into_any().unbind(),
+                operation_id,
+            ),
+            None => (route.unique_id_value.clone_ref(py), route.unique_id.clone()),
+        };
         let parameters = route
             .plan
             .openapi_parameters(py)?
@@ -4486,7 +4508,7 @@ impl PyFastApi {
                 let body_parameters = route.plan.all_body_parameters();
                 let aggregate_body = form_body_should_embed(py, &body_parameters)?;
                 if aggregate_body {
-                    let aggregate_name = format!("Body_{operation_id}");
+                    let aggregate_name = format!("Body_{operation_id_text}");
                     let aggregate_model =
                         aggregate_body_model(py, &aggregate_name, &body_parameters)?;
                     let request_schema =
@@ -4519,7 +4541,7 @@ impl PyFastApi {
                 let direct_body_parameters = route.plan.all_body_parameters();
                 let aggregate_body = body_fields_embedded(&direct_body_parameters);
                 if aggregate_body {
-                    let aggregate_name = format!("Body_{operation_id}");
+                    let aggregate_name = format!("Body_{operation_id_text}");
                     let aggregate_model =
                         aggregate_body_model(py, &aggregate_name, &direct_body_parameters)?;
                     let request_schema =
@@ -5402,7 +5424,7 @@ fn merge_router_routes(
         include_in_schema: inherited_include_in_schema,
         strict_content_type: inherited_strict_content_type,
     } = policy;
-    let mut effective_route_cache = HashMap::<usize, (Py<PyAny>, String)>::new();
+    let mut effective_route_cache = HashMap::<usize, (Py<PyAny>, Py<PyAny>, String)>::new();
     for source_route in &source.routes {
         let path = format!("{prefix}{}", source_route.path);
         let mut route_dependencies = inherited_dependencies
@@ -5444,13 +5466,18 @@ fn merge_router_routes(
         );
         let original_route = source_route.original_route.clone_ref(py);
         let route_key = original_route.as_ptr() as usize;
-        let cached_route =
-            effective_route_cache
-                .get(&route_key)
-                .map(|(effective_route_context, unique_id)| {
-                    (effective_route_context.clone_ref(py), unique_id.clone())
-                });
-        let (effective_route_context, unique_id) = if let Some(cached_route) = cached_route {
+        let cached_route = effective_route_cache.get(&route_key).map(
+            |(effective_route_context, unique_id_value, unique_id)| {
+                (
+                    effective_route_context.clone_ref(py),
+                    unique_id_value.clone_ref(py),
+                    unique_id.clone(),
+                )
+            },
+        );
+        let (effective_route_context, unique_id_value, unique_id) = if let Some(cached_route) =
+            cached_route
+        {
             cached_route
         } else {
             let effective_route = new_api_route_view(
@@ -5479,18 +5506,23 @@ fn merge_router_routes(
                 original_route.clone_ref(py),
                 effective_route.clone_ref(py),
             )?;
-            let unique_id = generated_unique_id(
+            let unique_id_value = generated_unique_id(
                 py,
                 &generate_unique_id_function,
                 &effective_route_context,
                 source_route.operation_id.as_deref(),
             )?;
-            set_api_route_unique_id(py, &effective_route, unique_id.clone())?;
+            set_api_route_unique_id(py, &effective_route, unique_id_value.bind(py))?;
+            let unique_id = python_string_value(unique_id_value.bind(py))?;
             effective_route_cache.insert(
                 route_key,
-                (effective_route_context.clone_ref(py), unique_id.clone()),
+                (
+                    effective_route_context.clone_ref(py),
+                    unique_id_value.clone_ref(py),
+                    unique_id.clone(),
+                ),
             );
-            (effective_route_context, unique_id)
+            (effective_route_context, unique_id_value, unique_id)
         };
         let actual_response_class = response_class.actual(py)?;
         let sse_stream = source_route.generator_kind.is_generator()
@@ -5523,6 +5555,7 @@ fn merge_router_routes(
                 .map(|value| value.clone_ref(py)),
             operation_id: source_route.operation_id.clone(),
             unique_id,
+            unique_id_value,
             generate_unique_id_function,
             deprecated: combined_deprecated(inherited_deprecated, source_route.deprecated),
             tags,
@@ -5680,7 +5713,7 @@ struct PyOperationDecorator {
 #[derive(Default)]
 struct OperationRouteRegistrationCache {
     public_route: Option<Py<PyAny>>,
-    unique_id: Option<String>,
+    unique_id: Option<Py<PyAny>>,
 }
 
 fn inspect_generator_kind(
@@ -6094,8 +6127,9 @@ impl PyOperationDecorator {
             self.operation_id.as_deref(),
             self.registration_cache.as_ref(),
         )?;
-        let additional = build_additional_response_fields(py, responses.bind(py), &unique_id)?;
-        let response_field = build_response_field(py, &unique_id, response_model.as_ref())?;
+        let unique_id_text = python_string_value(unique_id.bind(py))?;
+        let additional = build_additional_response_fields(py, responses.bind(py), &unique_id_text)?;
+        let response_field = build_response_field(py, &unique_id_text, response_model.as_ref())?;
         let inputs = plan.input_parameters();
         let mut app = self.app.bind(py).borrow_mut();
         let index = app
@@ -6122,7 +6156,8 @@ impl PyOperationDecorator {
             responses,
             openapi_extra: self.openapi_extra.as_ref().map(|value| value.clone_ref(py)),
             operation_id: self.operation_id.clone(),
-            unique_id,
+            unique_id: unique_id_text,
+            unique_id_value: unique_id,
             generate_unique_id_function: self.generate_unique_id_function.clone_ref(py),
             deprecated,
             tags: self.tags.clone(),

@@ -1,0 +1,151 @@
+schema: fastapi-rs/python-asgi-workflow@4
+workload:
+  file: tests/fixtures/workloads/generate_unique_id_callback_values.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.routing.generate-unique-id-integer-return
+  factory_input: {behavior: integer}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: route-unique-id
+    kind: http_request
+    scope: &observe-scope
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /observe
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: &empty-request
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: openapi
+    kind: http_request
+    scope: &openapi-scope
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations:
+    - {kind: http_response, selectors: [status], comparison: exact}
+    - kind: openapi
+      json_pointers: [/paths/~1value/get/operationId]
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_generate_unique_id_function.py, kind: upstream_test}
+  - {path: docs/en/docs/advanced/generate-clients.md, kind: upstream_documentation}
+- case_id: fastapi.routing.generate-unique-id-empty-return
+  factory_input: {behavior: empty, operation_id: ''}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: route-unique-id
+    kind: http_request
+    scope: *observe-scope
+    receive_events: *empty-request
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  - action_id: openapi
+    kind: http_request
+    scope: *openapi-scope
+    receive_events: *empty-request
+    observations:
+    - {kind: http_response, selectors: [status], comparison: exact}
+    - kind: openapi
+      json_pointers: [/paths/~1value/get/operationId]
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_generate_unique_id_function.py, kind: upstream_test}
+  - {path: docs/en/docs/advanced/generate-clients.md, kind: upstream_documentation}
+- case_id: fastapi.routing.generate-unique-id-unhashable-return
+  factory_input: {behavior: unhashable}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: openapi-unhashable-operation-id
+    kind: http_request
+    scope: *openapi-scope
+    receive_events: *empty-request
+    observations:
+    - {kind: http_response, selectors: [status], comparison: exact}
+    - {kind: application_error, selector: exception, comparison: exact}
+  source_evidence:
+  - {path: tests/test_generate_unique_id_function.py, kind: upstream_test}
+- case_id: fastapi.routing.generate-unique-id-callback-error-on-registration
+  factory_input: {behavior: error}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: callback-error-during-registration
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /trigger
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events: *empty-request
+    observations:
+    - {kind: http_response, selectors: [status], comparison: exact}
+    - {kind: application_error, selector: exception, comparison: exact}
+  - action_id: openapi-after-failed-registration
+    kind: http_request
+    scope: *openapi-scope
+    receive_events: *empty-request
+    observations:
+    - {kind: http_response, selectors: [status], comparison: exact}
+    - kind: openapi
+      json_pointers: [/paths/~1trigger/get/operationId]
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_generate_unique_id_function.py, kind: upstream_test}
+  - {path: docs/en/docs/advanced/generate-clients.md, kind: upstream_documentation}
+- case_id: fastapi.routing.generate-unique-id-duplicate-integer-warning
+  factory_input: {behavior: integer, duplicate: true}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: openapi-duplicate-operation-ids
+    kind: http_request
+    capture_warnings: true
+    scope: *openapi-scope
+    receive_events: *empty-request
+    observations:
+    - {kind: http_response, selectors: [status], comparison: exact}
+    - kind: openapi
+      json_pointers: [/paths/~1value/get/operationId, /paths/~1second/get/operationId]
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_generate_unique_id_function.py, kind: upstream_test}
