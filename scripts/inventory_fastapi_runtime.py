@@ -324,6 +324,7 @@ def _module_candidates(inventory: dict[str, Any]) -> dict[str, dict[str, Any]]:
                     "source_ref": member.get("source_ref"),
                     "visibility": member.get("visibility"),
                     "kind": member.get("kind"),
+                    "storage": member.get("storage"),
                 }
     for binding in inventory["import_bindings"]:
         result[binding["id"]] = {
@@ -340,15 +341,23 @@ def _runtime_symbol(
     module_id: str,
     module: types.ModuleType,
     candidate: dict[str, Any],
+    instance_cache: dict[str, Any],
 ) -> tuple[dict[str, Any], Any | None]:
     if candidate["kind"] == "field":
-        try:
-            value = _resolve(module, identifier, module_id)
-        except AttributeError:
-            field = _field_symbol(identifier, module_id, module)
-            field["source_visibility"] = candidate["visibility"]
-            field["source_kind"] = candidate["kind"]
-            return field, None
+        if candidate.get("storage") == "instance":
+            owner_id, _, field_name = identifier.rpartition(".")
+            if owner_id not in instance_cache:
+                owner = _resolve(module, owner_id, module_id)
+                instance_cache[owner_id] = owner()
+            value = getattr(instance_cache[owner_id], field_name)
+        else:
+            try:
+                value = _resolve(module, identifier, module_id)
+            except AttributeError:
+                field = _field_symbol(identifier, module_id, module)
+                field["source_visibility"] = candidate["visibility"]
+                field["source_kind"] = candidate["kind"]
+                return field, None
     else:
         value = _resolve(module, identifier, module_id)
     symbol: dict[str, Any] = {
@@ -359,6 +368,8 @@ def _runtime_symbol(
         "source_visibility": candidate["visibility"],
         "source_kind": candidate["kind"],
     }
+    if candidate.get("storage") is not None:
+        symbol["source_storage"] = candidate["storage"]
     signature = _signature(value)
     if signature is not None:
         symbol["signature"] = signature
@@ -496,6 +507,7 @@ def build_runtime_surface(
             else []
         )
         missing = []
+        instance_cache: dict[str, Any] = {}
         for identifier in declared_ids:
             try:
                 symbol, value = _runtime_symbol(
@@ -503,6 +515,7 @@ def build_runtime_surface(
                     module_id,
                     module,
                     candidates[identifier],
+                    instance_cache,
                 )
             except (AttributeError, ImportError, RuntimeError) as exc:
                 missing.append({"id": identifier, "reason": type(exc).__name__})

@@ -164,6 +164,9 @@ api_inventory:
     import_bindings:
       artifact: /counts/import_bindings
       manifest: /source_artifacts/api_inventory/counts/import_bindings
+    fastapi_instance_assignment_candidates:
+      artifact: /counts/fastapi_instance_assignment_candidates
+      manifest: /source_artifacts/api_inventory/counts/fastapi_instance_assignment_candidates
     source_deprecations:
       artifact: /counts/symbols_with_source_deprecation_evidence
       manifest: /source_artifacts/api_inventory/counts/source_deprecations
@@ -454,17 +457,17 @@ source_api_classification_review:
 api_public_candidate_classification_review:
   artifact: tests/fixtures/api-public-candidate-classification-review.json
   schema: fastapi-rs/public-candidate-classification-review@1
-  sha256: d8c9e764e84af2926c04dc731a002af952c0ada7ed0726ce52b8c7e8fa60c5dd
+  sha256: 5efeef36eb19b32364e0bc823211fe4286bce18a589068c6c649a9b8d72b6f3f
   source_identity:
     package: FastAPI
     version: 0.141.1
     source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
   counts:
-    candidates: 137
-    supported: 10
+    candidates: 167
+    supported: 14
     private_or_internal: 123
-    uncertain: 4
-  candidate_ids_sha256: 69e78951df8bf49e40555500df2a4d9f61e970f4d5d635fb80ebe852d7126042
+    uncertain: 30
+  candidate_ids_sha256: 01dd8633543cba28cc8fc64235130598e5dfd20225244b0da48f579503388141
 
 classification_atlas:
   artifact: tests/fixtures/compatibility-atlas.json
@@ -4168,6 +4171,119 @@ reviewed_api_contract_overlay:
         stack. Other middleware_type values, arbitrary dispatch behavior,
         composition and ordering beyond these cases, and broader middleware
         error, lifecycle, and protocol behavior remain outside this slice.
+    fastapi.applications.FastAPI.openapi_version:
+      source_evidence:
+        - path: fastapi/applications.py
+          kind: instance-assignment
+          symbol: openapi_version
+          owner: FastAPI
+          initializer: __init__
+          start_line: 893
+          end_line: 923
+        - {path: docs/en/docs/how-to/extending-openapi.md}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/instance-openapi-version.yaml
+          case_id: fastapi.instance-openapi-version.mutated-field
+      documentation_contract_refs:
+        - source_path: docs/en/docs/how-to/extending-openapi.md
+          fixture_id: fastapi.docs.how-to-extending-openapi
+          observation_selectors: [openapi.document]
+      observation_selectors: [openapi.document]
+      supported_slice: >-
+        A public FastAPI instance can set `openapi_version` after construction;
+        the input recipe sets it to `3.0.2` and observes the generated document's
+        `/openapi` value. Other version strings and OpenAPI-version feature
+        compatibility are outside this observation.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - Only the documented post-construction `3.0.2` mutation and generated `/openapi` value are observed; other values and OpenAPI feature compatibility remain unproven.
+    fastapi.applications.FastAPI.state:
+      source_evidence:
+        - path: fastapi/applications.py
+          kind: instance-assignment
+          symbol: state
+          owner: FastAPI
+          initializer: __init__
+          start_line: 950
+          end_line: 966
+        - {path: docs/en/docs/reference/fastapi.md}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/http-connection-injection-websocket.yaml
+          case_id: fastapi.http-connection-injection.http-app-state
+        - recipe_path: tests/fixtures/input-recipes/parity/http-connection-injection-websocket.yaml
+          case_id: fastapi.http-connection-injection.websocket-app-state
+      documentation_contract_refs:
+        - source_path: docs/en/docs/reference/fastapi.md
+          fixture_id: fastapi.docs.reference-fastapi
+          observation_selectors: [http.status, http.body.bytes, websocket.messages]
+      observation_selectors: [http.status, http.body.bytes, websocket.messages]
+      supported_slice: >-
+        FastAPI documents the `state` instance attribute as inherited from
+        Starlette. These inputs cover storing a marker through `app.state` and
+        reading it from FastAPI HTTP and WebSocket request app contexts. Generic
+        State behavior remains owned by Starlette-RS and is not claimed here.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - Generic State behavior remains delegated to Starlette-RS; these inputs cover only app.state assignment and the selected FastAPI HTTP and WebSocket request-context observations.
+    fastapi.applications.FastAPI.dependency_overrides:
+      source_evidence:
+        - path: fastapi/applications.py
+          kind: instance-assignment
+          symbol: dependency_overrides
+          owner: FastAPI
+          initializer: __init__
+          start_line: 967
+          end_line: 983
+        - {path: docs/en/docs/advanced/testing-dependencies.md}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/dependency-lifecycle.yaml
+          case_id: fastapi.dependencies.override-resolution
+      documentation_contract_refs:
+        - source_path: docs/en/docs/advanced/testing-dependencies.md
+          fixture_id: fastapi.docs.advanced-testing-dependencies
+          observation_selectors: [http.status, http.body.bytes]
+      observation_selectors: [http.status, http.body.bytes]
+      supported_slice: >-
+        The input replaces one dependency through the documented app-level
+        dictionary and observes the selected request's status and response
+        body. Other override-map uses and interactions remain outside this slice.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - The linked input covers one dependency override and its request result; other override-map use sites and dependency reanalysis interactions remain outside this slice.
+    fastapi.applications.FastAPI.openapi_schema:
+      source_evidence:
+        - path: fastapi/applications.py
+          kind: instance-assignment
+          symbol: openapi_schema
+          owner: FastAPI
+          initializer: __init__
+          start_line: 924
+          end_line: 924
+        - {path: docs/en/docs/how-to/extending-openapi.md}
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/instance-openapi-schema.yaml
+          case_id: fastapi.instance-openapi-schema.mutated-field
+      documentation_contract_refs:
+        - source_path: docs/en/docs/how-to/extending-openapi.md
+          fixture_id: fastapi.docs.how-to-extending-openapi
+          observation_selectors: [openapi.document]
+      observation_selectors: [openapi.document]
+      supported_slice: >-
+        The input primes OpenAPI generation, assigns a custom document through
+        the documented `openapi_schema` cache field, and observes that document
+        from `/openapi.json`. Callable replacement, other cache mutations, and
+        error paths remain outside this slice.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        known_gaps:
+          - The linked input observes one direct cache assignment after generation; callable replacement, other mutations, and error paths remain outside this slice.
     fastapi.applications.FastAPI.openapi:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::openapi
       source_evidence:

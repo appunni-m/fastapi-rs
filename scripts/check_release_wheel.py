@@ -8,6 +8,7 @@ import email.policy
 import re
 import sys
 import zipfile
+from collections import Counter
 from pathlib import Path, PurePosixPath
 
 import tomllib
@@ -53,6 +54,9 @@ def validate_wheel(wheel_path: Path) -> list[str]:
         names = archive.namelist()
         if not names:
             raise SystemExit("wheel archive is empty")
+        duplicates = sorted(name for name, count in Counter(names).items() if count > 1)
+        if duplicates:
+            raise SystemExit(f"wheel contains duplicate archive members: {duplicates}")
         for name in names:
             member = PurePosixPath(name)
             if member.is_absolute() or ".." in member.parts:
@@ -143,6 +147,12 @@ def validate_wheel(wheel_path: Path) -> list[str]:
         if not isinstance(license_files, list) or not license_files:
             raise SystemExit("pyproject.toml must declare Python license files")
         expected_license_names = {Path(value).name for value in license_files}
+        required_license_names = {"LICENSE.md", "THIRD_PARTY_NOTICES.md"}
+        if not required_license_names.issubset(expected_license_names):
+            raise SystemExit(
+                "pyproject.toml license-files must include the project license and third-party "
+                f"notices: {sorted(required_license_names)}"
+            )
         archive_license_paths = {
             name.removeprefix(f"{dist_info}/licenses/")
             for name in names

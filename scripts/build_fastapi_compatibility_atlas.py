@@ -7959,6 +7959,8 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                 "visibility": record.get("visibility", "unknown"),
                 "kind": record.get("kind", candidate_kind),
             }
+            if record.get("storage") is not None:
+                existing["storage"] = record["storage"]
             candidates[candidate_id] = existing
         if candidate_kind not in existing["candidate_kinds"]:
             existing["candidate_kinds"].append(candidate_kind)
@@ -8058,7 +8060,11 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             continue
         for member in members:
             candidate = candidates.get(parent_id + "." + member["member"])
-            if candidate is not None and not candidate["visibility"].startswith("private"):
+            if (
+                candidate is not None
+                and candidate.get("storage") != "instance"
+                and not candidate["visibility"].startswith("private")
+            ):
                 candidate["public_evidence"].append(
                     {
                         "kind": "documented_member_allowlist",
@@ -11194,6 +11200,9 @@ def _sync_manifest_artifact_metadata(
             "python_source_modules": inventory_counts["python_source_modules"],
             "source_defined_callables": inventory_counts["source_defined_callables"],
             "import_bindings": inventory_counts["import_bindings"],
+            "fastapi_instance_assignment_candidates": inventory_counts[
+                "fastapi_instance_assignment_candidates"
+            ],
             "source_deprecations": inventory_counts["symbols_with_source_deprecation_evidence"],
         },
     )

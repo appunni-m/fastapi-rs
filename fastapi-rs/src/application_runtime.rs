@@ -1839,6 +1839,7 @@ pub(crate) struct PyFastApi {
     summary: Option<String>,
     description: String,
     version: String,
+    openapi_version: String,
     openapi_url: Option<String>,
     servers: Py<PyAny>,
     swagger_ui_oauth2_redirect_url: Option<String>,
@@ -1933,6 +1934,7 @@ struct OpenApiAppSnapshot {
     title: String,
     summary: Option<String>,
     description: String,
+    openapi_version: String,
     terms_of_service: Option<String>,
     contact: Option<Py<PyAny>>,
     license_info: Option<Py<PyAny>>,
@@ -1948,6 +1950,7 @@ impl OpenApiAppSnapshot {
             title: app.title.clone(),
             summary: app.summary.clone(),
             description: app.description.clone(),
+            openapi_version: app.openapi_version.clone(),
             terms_of_service: app.terms_of_service.clone(),
             contact: app.contact.as_ref().map(|value| value.clone_ref(py)),
             license_info: app.license_info.as_ref().map(|value| value.clone_ref(py)),
@@ -2466,6 +2469,7 @@ impl PyFastApi {
             summary,
             description: description.to_owned(),
             version: version.to_owned(),
+            openapi_version: "3.1.0".to_owned(),
             openapi_url: openapi_url.map(str::to_owned),
             servers,
             swagger_ui_oauth2_redirect_url: swagger_ui_oauth2_redirect_url.map(str::to_owned),
@@ -2506,6 +2510,16 @@ impl PyFastApi {
     #[getter]
     fn state(&self, py: Python<'_>) -> Py<PyAny> {
         self.state.clone_ref(py)
+    }
+
+    #[getter]
+    fn openapi_version(&self) -> &str {
+        &self.openapi_version
+    }
+
+    #[setter]
+    fn set_openapi_version(&mut self, openapi_version: String) {
+        self.openapi_version = openapi_version;
     }
 
     #[getter]
@@ -4320,7 +4334,7 @@ impl PyFastApi {
             py,
             OpenApiInfo {
                 title: &snapshot.title,
-                openapi_version: "3.1.0",
+                openapi_version: &snapshot.openapi_version,
                 tags: None,
                 summary: snapshot.summary.as_deref(),
                 description: &snapshot.description,

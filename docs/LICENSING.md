@@ -100,27 +100,69 @@ not a review of bundled files or a substitute for the distribution notice gate
 below. The target runtime lock pins wheel hashes but does not include the local
 Starlette-RS source package or the separate build-tool environment.
 
+## Notice file and archive checks
+
+`THIRD_PARTY_NOTICES.md` reproduces the FastAPI `LICENSE` and Starlette-RS
+`LICENSE.md` bytes from the commits in `metadata.yaml`. It also contains every
+license/copyright-named source file from each registry `.crate` in the pinned
+`Cargo.lock`, including nested vendored, build-only, and target-specific
+packages. The inventory records each crate's lock checksum, license expression,
+role, source path, and source-file digest; identical text is included once.
+These are the locked dependency-source union. They do not imply that every
+listed package is linked into every wheel. The current arm64 wheel's link table
+is described separately below. The notice also reproduces the exact bundled
+zlib 1.3.2 license from `libz-sys` 1.1.29, explicitly conditional on that
+artifact selecting the bundled backend.
+
+The two Cargo package roots carry generated copies of that full notice file;
+`LICENSE.md` remains the shared project license. Run
+`make license-notices-check` after editing the notice, dependency lock, or pin.
+It verifies local cached `.crate` bytes against `Cargo.lock`; if those archives
+are absent, run `cargo fetch --locked`. To regenerate the pinned excerpts,
+Cargo license sections, zlib notice, and Cargo copies, run
+`make license-notices-update` and review the diff.
+
+`scripts/check_release_wheel.py` requires both declared license files in a
+wheel, checks `License-File` metadata, and compares archived bytes with the
+repository. Since the complete selected Cargo license-source union is in
+`THIRD_PARTY_NOTICES.md`, this byte comparison covers those texts too.
+`make license-artifact-check RELEASE_NOTICE_WHEEL=<wheel-path>`
+also requires the already-built `fastapi-rs-<version>.crate` and
+`fastapi-rs-py-<version>.crate` under `RELEASE_CRATE_DIR` and checks their
+root-level license and notice bytes. These checks establish file presence and
+identity for the supplied artifacts only. They do not establish the selected
+zlib backend or host-system license set for every target, that the checked
+artifacts are the intended release build, or that any contributor/rightsholder
+has granted rights to distribute the project.
+
 ## Release gate
 
 Before publishing, record whether each component is independently authored,
 copied, generated, or bundled; resolve and review the Cargo and Python
 distribution dependency graphs; and include the applicable notices and license
-texts in source and binary distributions. The Starlette-RS BSD text is now
-included, but the selected zlib backend still needs to be recorded for each
-release build. The target's external Python runtime and Maturin build-tool
+texts in source and binary distributions. The Starlette-RS BSD text and
+checksum-verified Cargo license-source set are included, but the selected zlib
+backend still needs to be recorded for each release build. The target's
+external Python runtime and Maturin build-tool
 distribution closures are hash-locked for CPython 3.12.13; these locks do not
 cover the separate local Starlette-RS checkout or establish every release
 artifact's contents. If a source distribution contains bundled zlib source,
-retain its notice and mark altered
-source; zlib says product-documentation
+retain its notice and mark altered source; zlib says product-documentation
 acknowledgment is appreciated but not required. Cargo.lock does not identify
-whether a platform build uses system or bundled zlib. The inspected local
-macOS arm64 development extension links `/usr/lib/libz.1.dylib` version 1.2.12;
-this does not establish the backend in other platform builds or release
-artifacts. Verify wheel and sdist contents, including their license-file
-metadata and notices, against the versions and native components actually
-shipped.
+whether a platform build uses system or bundled zlib. Verify wheel and sdist
+contents, including license-file metadata and notices, against the versions
+and native components actually shipped.
 Upstream tests, docs, examples, and branding must be reviewed separately.
+
+The inspected arm64 wheel
+`target/wheels-x0mz-20261012/fastapi_rs-0.1.0-cp310-abi3-macosx_11_0_arm64.whl`
+(SHA-256 `a29839e2c0679ac6fcff483c847e08022037688e07dcd49044662eac2c80bc5b`)
+has an extension whose `otool -L` output lists `/usr/lib/libz.1.dylib` version
+1.2.12, `/usr/lib/libiconv.2.dylib`, and `/usr/lib/libSystem.B.dylib`.
+That observation applies to this archived arm64 wheel only. Backend selection
+for other artifacts remains unresolved until each artifact's link table or
+build record is inspected. Host-zlib license source/version is likewise not
+established by Cargo.lock.
 
 The project should identify itself as an independent implementation and avoid
 implying endorsement by FastAPI, Starlette, or Pydantic. This is an engineering

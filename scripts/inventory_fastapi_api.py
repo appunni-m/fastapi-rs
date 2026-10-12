@@ -551,7 +551,7 @@ def assignment_record(
     value = node.value
     return {
         "id": qualname,
-        "kind": "field" if scope == "class" else "value",
+        "kind": "field" if scope in {"class", "instance"} else "value",
         "visibility": public_visibility(name),
         "annotation_source": node_source(module, annotation),
         "annotation_expression": ast.unparse(annotation) if annotation is not None else None,
@@ -560,6 +560,75 @@ def assignment_record(
         "deprecations": deprecation_evidence(module, node),
         "source_ref": source_ref(module, node),
     }
+
+
+def instance_assignment_records(module: ParsedModule, owner: ast.ClassDef) -> list[dict[str, Any]]:
+    """Discover ``self.name`` assignments in FastAPI.__init__ without classifying them.
+
+    These records describe constructor assignment candidates, not public API. A
+    separate reviewed classification artifact decides which names FastAPI's
+    documentation establishes as public fields.
+    """
+    initializer = next(
+        (
+            child
+            for child in owner.body
+            if isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef))
+            and child.name == "__init__"
+        ),
+        None,
+    )
+    if initializer is None:
+        return []
+
+    assignments: dict[str, list[ast.Assign | ast.AnnAssign]] = {}
+
+    def assigned_attributes(target: ast.expr) -> list[str]:
+        if isinstance(target, ast.Attribute) and isinstance(target.value, ast.Name):
+            if target.value.id == "self":
+                return [target.attr]
+        if isinstance(target, (ast.Tuple, ast.List)):
+            return [name for item in target.elts for name in assigned_attributes(item)]
+        return []
+
+    # Do not descend into nested function or class bodies: those assignments
+    # are not part of the initializer's execution at construction time.
+    pending = list(initializer.body)
+    while pending:
+        node = pending.pop()
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef, ast.Lambda)):
+            continue
+        if isinstance(node, ast.Assign):
+            targets = node.targets
+            assignment = node
+        elif isinstance(node, ast.AnnAssign):
+            targets = [node.target]
+            assignment = node
+        else:
+            targets = []
+            assignment = None
+        if assignment is not None:
+            for target in targets:
+                for name in assigned_attributes(target):
+                    assignments.setdefault(name, []).append(assignment)
+        pending.extend(ast.iter_child_nodes(node))
+
+    records = []
+    for name in sorted(assignments):
+        nodes = sorted(assignments[name], key=lambda item: (item.lineno, item.col_offset))
+        first = nodes[0]
+        record = assignment_record(
+            module,
+            first,
+            name,
+            f"{module.name}.{owner.name}.{name}",
+            "instance",
+        )
+        record["storage"] = "instance"
+        record["assignment_owner"] = f"{owner.name}.__init__"
+        record["source_assignments"] = [source_ref(module, node) for node in nodes]
+        records.append(record)
+    return records
 
 
 def resolve_base(expr: ast.AST, imports: dict[str, str]) -> str:
@@ -602,6 +671,14 @@ def class_record(
                     "source_ref": source_ref(module, child),
                 }
             )
+    if module.name == "fastapi.applications" and node.name == "FastAPI":
+        members.extend(instance_assignment_records(module, node))
+        members.sort(
+            key=lambda item: (
+                item.get("source_ref", {}).get("line", 0),
+                item["id"],
+            )
+        )
     bases = [
         {
             "source_expression": node_source(module, base),
@@ -926,6 +1003,12 @@ def build_inventory(checkout: Path) -> dict[str, Any]:
         for definition in module["definitions"]
         if definition["kind"] == "class" and definition["visibility"] == "public"
     )
+    instance_assignment_candidates = sum(
+        member.get("storage") == "instance"
+        for module in module_records
+        for definition in module["definitions"]
+        for member in definition.get("members", [])
+    )
     return {
         "schema": SCHEMA,
         "purpose": "pinned FastAPI source API inventory; not a parity result, support claim, or executable manifest",
@@ -944,6 +1027,7 @@ def build_inventory(checkout: Path) -> dict[str, Any]:
                 item["visibility"] in {"public", "public_protocol"} for item in callables
             ),
             "public_classes": public_classes,
+            "fastapi_instance_assignment_candidates": instance_assignment_candidates,
             "pydantic_model_classes": len(pydantic_classes),
             "pydantic_integration_classes": len(pydantic_integrations),
             "starlette_reexport_bindings": len(starlette_reexports),
@@ -981,6 +1065,7 @@ def build_inventory(checkout: Path) -> dict[str, Any]:
             },
         },
         "inventory_limits": [
+            "FastAPI.__init__ self-assignments are emitted as discovery candidates only; source discovery does not classify them as supported API.",
             "Importable private implementation names are present only when represented by source definitions/import bindings; they are not classified as supported public API solely because they exist.",
             "The inventory preserves source annotations and default expressions, including Annotated metadata, but does not execute them or infer their runtime type domains.",
             "Documented module targets such as fastapi.status and fastapi.openapi.models are represented as targets/modules; their delegated or generated members are identified in delegated_scope rather than expanded as FastAPI-owned declarations.",

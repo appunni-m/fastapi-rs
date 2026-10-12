@@ -9155,6 +9155,48 @@
       ]
     },
     {
+      "id": "instance-openapi-schema",
+      "input_path": "tests/fixtures/inputs/parity/instance-openapi-schema.json",
+      "input_sha256": "996a5878cb897ad7a31d62e30689af337c9e2976b66d3a992b225fa225d2bc39",
+      "recipe_path": "tests/fixtures/input-recipes/parity/instance-openapi-schema.yaml",
+      "recipe_sha256": "9fa815105b30936df279f39fec07b1478e622b68b6e35149e43ae43e3af29a82",
+      "workload_path": "tests/fixtures/workloads/instance_openapi_schema.py",
+      "workload_sha256": "dbdb89920d5a2aafc44db0445421ed60f7f2161830553dc57a30f810a0690ad6",
+      "case_ids": [
+        "fastapi.instance-openapi-schema.mutated-field"
+      ],
+      "case_contracts": [
+        {
+          "case_id": "fastapi.instance-openapi-schema.mutated-field",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:how-to/extending-openapi.md"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "instance-openapi-version",
+      "input_path": "tests/fixtures/inputs/parity/instance-openapi-version.json",
+      "input_sha256": "82dfd63c0fb5e55c813f20e3a0dc7693a84f9653041e14ea8627c61ea59697ff",
+      "recipe_path": "tests/fixtures/input-recipes/parity/instance-openapi-version.yaml",
+      "recipe_sha256": "5b4b7cb37a702d08229b8f9b74f920703c70731c480a9803a332f663d52ca7c3",
+      "workload_path": "tests/fixtures/workloads/instance_openapi_version.py",
+      "workload_sha256": "cb73124198d5b5407dd9ab5169278e6a9a044a1f3e478e80595f569c4b27757e",
+      "case_ids": [
+        "fastapi.instance-openapi-version.mutated-field"
+      ],
+      "case_contracts": [
+        {
+          "case_id": "fastapi.instance-openapi-version.mutated-field",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:how-to/extending-openapi.md"
+          ]
+        }
+      ]
+    },
+    {
       "id": "json-base64-bytes",
       "input_path": "tests/fixtures/inputs/parity/json_base64_bytes.json",
       "input_sha256": "b45fe4d61cc8b458d8c43872fcde19d3ed0b9c209b06a12cc899af18d17b5c9c",
@@ -39508,6 +39550,36 @@
         "asgi.send.message_types",
         "http.body.bytes",
         "http.status"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:how-to/extending-openapi.md",
+      "fixture_id": "fastapi.docs.how-to-extending-openapi",
+      "workflow_id": "instance-openapi-schema",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.instance-openapi-schema.mutated-field"
+      ],
+      "observation_selectors": [
+        "docs.response.status",
+        "http.status",
+        "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:how-to/extending-openapi.md",
+      "fixture_id": "fastapi.docs.how-to-extending-openapi",
+      "workflow_id": "instance-openapi-version",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes docs.response.status, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.instance-openapi-version.mutated-field"
+      ],
+      "observation_selectors": [
+        "docs.response.status",
+        "http.status",
+        "openapi.document"
       ]
     },
     {

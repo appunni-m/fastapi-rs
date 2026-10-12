@@ -26,9 +26,12 @@ TARGET_RESULT ?=
 PARITY_INPUT ?= tests/fixtures/inputs/parity/first-asgi-request.json
 PARITY_API_INPUT ?= tests/fixtures/inputs/parity/encoding.json
 BENCHMARK_WORKLOAD ?= benchmarks/workloads/first-slice-valid-asgi.yaml
+RELEASE_NOTICE_WHEEL ?=
+RELEASE_CRATE_DIR ?= target/package
+RELEASE_VERSION ?= 0.1.0
 
 .DEFAULT_GOAL := help
-.PHONY: help fmt format clippy build build-rust build-python build-tools-prepare python-facade-check rust-policy-check compatibility-atlas-update api-contract-update api-contract-check metadata-check dependency-inventory-update dependency-inventory-check pydantic-core-inventory-update pydantic-core-inventory-check dependency-graph-update dependency-graph-check parity-inputs parity-workload-check parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-target fault-injection-build parity-api-runtime parity-validate parity-index-update parity-index-check parity-oracle parity-oracle-standard parity-target parity-fault-target parity-compare parity-api-validate parity-api-oracle parity-api-target parity-api-compare parity-first-slice benchmark-input-check benchmark-contract-check benchmark-first-slice benchmark-suite verify clean
+.PHONY: help fmt format clippy build build-rust build-python build-tools-prepare python-facade-check rust-policy-check license-notices-update license-notices-check license-artifact-check compatibility-atlas-update api-contract-update api-contract-check metadata-check dependency-inventory-update dependency-inventory-check pydantic-core-inventory-update pydantic-core-inventory-check dependency-graph-update dependency-graph-check parity-inputs parity-workload-check parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-target fault-injection-build parity-api-runtime parity-validate parity-index-update parity-index-check parity-oracle parity-oracle-standard parity-target parity-fault-target parity-compare parity-api-validate parity-api-oracle parity-api-target parity-api-compare parity-first-slice benchmark-input-check benchmark-contract-check benchmark-first-slice benchmark-suite verify clean
 
 help: ## Show common development commands
 	@printf '%s\n' \
@@ -48,6 +51,9 @@ help: ## Show common development commands
 	  '  make metadata-check   Check the human-maintained API source authority' \
 	  '  make dependency-inventory-update Regenerate the pinned target dependency/license report' \
 	  '  make dependency-inventory-check Check the pinned target dependency/license report' \
+	  '  make license-notices-update Sync pinned source, Cargo crate, and conditional zlib notices' \
+	  '  make license-notices-check Check source notices and Cargo package mirrors' \
+	  '  make license-artifact-check Check wheel and both Cargo archive license files' \
 	  '  make pydantic-core-inventory-update Regenerate the pinned Pydantic Core native dependency report' \
 	  '  make pydantic-core-inventory-check Check the pinned Pydantic Core native dependency report' \
 	  '  make dependency-graph-update Regenerate FastAPI lock-derived dependency edges and surfaces' \
@@ -88,6 +94,16 @@ python-facade-check: ## Require imports/re-exports only in the Python runtime pa
 
 rust-policy-check: ## Enforce no-unsafe, no-unit-test, and lint-suppression policy
 	$(PYTHON) scripts/check_rust_policy.py
+
+license-notices-update: ## Sync pinned, Cargo, and conditional bundled-zlib notices
+	$(PYTHON) scripts/check_release_notices.py --sync --fastapi-source "$(FASTAPI_SOURCE)" --starlette-rs-source "$(STARLETTE_RS_SOURCE)"
+
+license-notices-check: ## Check pinned notices, Cargo source texts, and package mirrors
+	$(PYTHON) scripts/check_release_notices.py --fastapi-source "$(FASTAPI_SOURCE)" --starlette-rs-source "$(STARLETTE_RS_SOURCE)"
+
+license-artifact-check: license-notices-check ## Check already-built wheel and Cargo archive license contents
+	@test -n "$(RELEASE_NOTICE_WHEEL)" || { printf '%s\n' 'set RELEASE_NOTICE_WHEEL to the already-built release wheel'; exit 2; }
+	$(PYTHON) scripts/check_release_notices.py --fastapi-source "$(FASTAPI_SOURCE)" --starlette-rs-source "$(STARLETTE_RS_SOURCE)" --wheel "$(RELEASE_NOTICE_WHEEL)" --crate "fastapi-rs=$(RELEASE_CRATE_DIR)/fastapi-rs-$(RELEASE_VERSION).crate" --crate "fastapi-rs-py=$(RELEASE_CRATE_DIR)/fastapi-rs-py-$(RELEASE_VERSION).crate" --require-all-crates
 
 format: ## Apply Rust formatting
 	$(CARGO) fmt --package fastapi-rs --package fastapi-rs-py
@@ -268,7 +284,7 @@ benchmark-suite: benchmark-input-check parity-prepare-oracle ## Prepare the orac
 
 build: build-rust build-python ## Build the Rust crates and Python wheel
 
-verify: fmt clippy parity-index-check api-contract-check metadata-check dependency-inventory-check pydantic-core-inventory-check dependency-graph-check benchmark-contract-check parity-validate build-python ## Run formatting, lint, static contracts, and package checks
+verify: fmt clippy parity-index-check api-contract-check metadata-check dependency-inventory-check pydantic-core-inventory-check dependency-graph-check license-notices-check benchmark-contract-check parity-validate build-python ## Run formatting, lint, static contracts, and package checks
 
 clean: ## Remove Cargo outputs under target/
 	$(CARGO) clean

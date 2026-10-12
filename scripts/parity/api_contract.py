@@ -2235,6 +2235,79 @@ def build_api_surface_contract(
                     raise ContractError(
                         f"reviewed source import target differs: {source_path}:{line}:{target_path}"
                     )
+            elif reference.get("kind") == "instance-assignment":
+                owner = reference.get("owner")
+                initializer = reference.get("initializer")
+                line = reference.get("start_line")
+                end_line = reference.get("end_line")
+                if (
+                    not isinstance(symbol, str)
+                    or not symbol
+                    or not isinstance(owner, str)
+                    or not isinstance(initializer, str)
+                    or not isinstance(line, int)
+                    or isinstance(line, bool)
+                    or not isinstance(end_line, int)
+                    or isinstance(end_line, bool)
+                ):
+                    raise ContractError(
+                        f"reviewed instance-assignment evidence is malformed: {source_path}"
+                    )
+                try:
+                    tree = ast.parse(source_text, filename=source_path)
+                except SyntaxError as exc:
+                    raise ContractError(
+                        f"reviewed source evidence is not valid Python: {source_path}"
+                    ) from exc
+                owner_nodes = [
+                    node
+                    for node in tree.body
+                    if isinstance(node, ast.ClassDef) and node.name == owner
+                ]
+                initializer_nodes = [
+                    child
+                    for owner_node in owner_nodes
+                    for child in owner_node.body
+                    if isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef))
+                    and child.name == initializer
+                ]
+                matching_assignments = []
+                pending = [
+                    child
+                    for initializer_node in initializer_nodes
+                    for child in initializer_node.body
+                ]
+                while pending:
+                    node = pending.pop()
+                    if isinstance(
+                        node,
+                        (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef, ast.Lambda),
+                    ):
+                        continue
+                    if isinstance(node, ast.Assign):
+                        targets = node.targets
+                    elif isinstance(node, ast.AnnAssign):
+                        targets = [node.target]
+                    else:
+                        targets = []
+                    if (
+                        getattr(node, "lineno", None) == line
+                        and getattr(node, "end_lineno", None) == end_line
+                    ):
+                        if any(
+                            isinstance(target, ast.Attribute)
+                            and isinstance(target.value, ast.Name)
+                            and target.value.id == "self"
+                            and target.attr == symbol
+                            for target in targets
+                        ):
+                            matching_assignments.append(node)
+                    pending.extend(ast.iter_child_nodes(node))
+                if not matching_assignments:
+                    raise ContractError(
+                        "reviewed FastAPI instance assignment differs from pinned AST: "
+                        f"{source_path}:{line}:{symbol}"
+                    )
             elif reference.get("kind") != "module-value" and not any(
                 isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
                 and node.name == symbol

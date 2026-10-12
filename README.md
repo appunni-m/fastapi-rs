@@ -3,7 +3,7 @@
 [![Sponsor on GitHub](https://img.shields.io/badge/Sponsor-GitHub%20Sponsors-ea4aaa?logo=githubsponsors)](https://github.com/sponsors/appunni-m)
 
 A Rust reimplementation of FastAPI that provides the existing `fastapi` import
-surface through a pass-through facade. The initial native vertical slice
+surface through a pass-through facade. The initial Rust vertical slice
 implements a scoped HTTP request-to-response flow; full FastAPI compatibility
 remains in progress, so no overall compatibility claim is made.
 
@@ -66,9 +66,11 @@ remains in progress, so no overall compatibility claim is made.
 - [Parity and benchmark plan](docs/PARITY_BENCHMARK_PLAN.md) and
   [license analysis](docs/LICENSING.md) define the next contract and release work.
 
-The public `fastapi` package is a thin direct re-export from the native module;
-the initial request/response behavior is implemented in Rust. The isolated
-target worker and exact comparator are present, but the operation-level
+The `fastapi-rs/` crate is the sole FastAPI implementation. `fastapi-rs-py/`
+builds its private PyO3 extension and ships the thin `fastapi` facade; it is
+binding and packaging glue, not a second implementation. The initial
+request/response behavior is implemented in Rust. The isolated target worker
+and exact comparator are present, but the operation-level
 contract and full public API implementation remain incomplete. Author
 input-only workflow recipes in `tests/fixtures/input-recipes/parity/`; run
 `make parity-inputs` to materialize ignored JSON before validation or execution.
@@ -137,11 +139,11 @@ are stored under ignored `benchmark-results/`.
 
 ## Workspace layout
 
-- `fastapi-rs/` owns Rust implementation behavior and integrates the separate
+- `fastapi-rs/` is the sole FastAPI implementation and integrates the separate
   `starlette-rs` crate.
-- `fastapi-rs-py/` owns the private PyO3 extension and thin Python `fastapi`
-  facade. Keep Python runtime modules to direct native re-exports; place all
-  FastAPI-specific behavior and control flow in `fastapi-rs/`.
+- `fastapi-rs-py/` builds the private PyO3 extension and thin Python `fastapi`
+  facade. Keep Python runtime modules to direct extension re-exports; all
+  FastAPI-specific behavior and control flow belongs in `fastapi-rs/`.
 - `tests/fixtures/` contains the source inventory, compatibility atlas, and
   input-only workflow definitions. Run `make help` for maintained build and
   quality commands.
