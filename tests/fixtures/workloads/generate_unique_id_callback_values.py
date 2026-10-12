@@ -22,10 +22,15 @@ def create_app(factory_input: dict[str, Any], event_trace: list[str]) -> FastAPI
             raise LookupError("unique ID callback failed")
         if behavior == "router-flags":
             return f"{route.deprecated!r}:{route.include_in_schema!r}:{route.path}"
+        if behavior == "mutation":
+            route.summary = "callback summary"
+            route.tags.append("callback-tag")
+            return f"{route.summary}:{','.join(route.tags)}"
         raise AssertionError(f"unknown callback behavior: {behavior}")
 
     app = FastAPI()
     router_route = None
+    mutated_route = None
     if behavior == "error":
 
         @app.get("/trigger", operation_id="trigger")
@@ -43,6 +48,14 @@ def create_app(factory_input: dict[str, Any], event_trace: list[str]) -> FastAPI
         router.get("/hidden")(lambda: {"value": "hidden"})
         router_route = router.routes[0]
         app.include_router(router, prefix="/api")
+    elif behavior == "mutation":
+        app.get(
+            "/mutated",
+            summary="before callback",
+            tags=["source-tag"],
+            generate_unique_id_function=generate,
+        )(lambda: {"value": "ok"})
+        mutated_route = next(route for route in app.routes if route.path == "/mutated")
     else:
         app.get(
             "/value",
@@ -59,6 +72,12 @@ def create_app(factory_input: dict[str, Any], event_trace: list[str]) -> FastAPI
                 "deprecated": router_route.deprecated,
                 "include_in_schema": router_route.include_in_schema,
                 "unique_id": router_route.unique_id,
+            }
+        if mutated_route is not None:
+            return {
+                "summary": mutated_route.summary,
+                "tags": mutated_route.tags,
+                "unique_id": mutated_route.unique_id,
             }
         return {
             "unique_id": next(route.unique_id for route in app.routes if route.path == "/value")

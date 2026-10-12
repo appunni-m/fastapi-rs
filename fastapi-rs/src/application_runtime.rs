@@ -1233,7 +1233,7 @@ struct PyApiRoute {
     path_format: String,
     name: String,
     methods: Vec<String>,
-    tags: Vec<String>,
+    tags: Py<PyList>,
     summary: Option<String>,
     response_description: String,
     responses: Py<PyDict>,
@@ -1280,6 +1280,11 @@ impl PyApiRoute {
     #[getter]
     fn summary(&self) -> Option<&str> {
         self.summary.as_deref()
+    }
+
+    #[setter]
+    fn set_summary(&mut self, summary: Option<String>) {
+        self.summary = summary;
     }
 
     #[getter]
@@ -1338,11 +1343,7 @@ impl PyApiRoute {
 
     #[getter]
     fn tags(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
-        let tags = PyList::empty(py);
-        for tag in &self.tags {
-            tags.append(tag)?;
-        }
-        Ok(tags.into_any().unbind())
+        Ok(self.tags.clone_ref(py).into_any())
     }
 
     #[getter]
@@ -1437,6 +1438,10 @@ fn new_api_route_view(
     config: ApiRouteViewConfig<'_>,
     endpoint: Py<PyAny>,
 ) -> PyResult<Py<PyAny>> {
+    let tags = PyList::empty(py);
+    for tag in config.tags {
+        tags.append(tag)?;
+    }
     Py::new(
         py,
         PyApiRoute {
@@ -1444,7 +1449,7 @@ fn new_api_route_view(
             path_format: config.path_format.to_owned(),
             name: config.name.to_owned(),
             methods: config.methods.to_vec(),
-            tags: config.tags.to_vec(),
+            tags: tags.unbind(),
             summary: config.summary.map(str::to_owned),
             response_description: config.response_description.to_owned(),
             responses: config.responses.clone_ref(py),
@@ -1509,6 +1514,26 @@ fn api_route_view_and_unique_id(
         cache.unique_id = Some(unique_id.clone_ref(py));
     }
     Ok((public_route, unique_id))
+}
+
+fn api_route_callback_summary_tags(
+    route: &Bound<'_, PyAny>,
+    original_summary: Option<&str>,
+    original_tags: Option<&[String]>,
+) -> PyResult<(Option<String>, Option<Vec<String>>)> {
+    let summary = route.getattr("summary")?.extract::<Option<String>>()?;
+    let tags = route.getattr("tags")?.extract::<Vec<String>>()?;
+    let tags = if tags.as_slice() == original_tags.unwrap_or_default() {
+        original_tags.map(<[String]>::to_vec)
+    } else {
+        Some(tags)
+    };
+    let summary = if summary.as_deref() == original_summary {
+        original_summary.map(str::to_owned)
+    } else {
+        summary
+    };
+    Ok((summary, tags))
 }
 
 fn set_api_route_unique_id(
@@ -1590,6 +1615,7 @@ pub(crate) fn direct_route_openapi_operation(
     }
     let method = &route.methods[0];
     let py = route.py();
+    let tags = route.tags.bind(py).extract::<Vec<String>>()?;
     let (endpoint_name, endpoint_file) = openapi_warning_identity(py, route.endpoint.bind(py))?;
     Ok(OpenApiOperation {
         path: route.path_format.clone(),
@@ -1602,7 +1628,7 @@ pub(crate) fn direct_route_openapi_operation(
         endpoint_name,
         endpoint_file,
         deprecated: None,
-        tags: (!route.tags.is_empty()).then(|| route.tags.clone()),
+        tags: (!tags.is_empty()).then_some(tags),
         openapi_extra: route
             .openapi_extra
             .as_ref()
@@ -6164,6 +6190,11 @@ impl PyOperationDecorator {
             self.operation_id.as_deref(),
             self.registration_cache.as_ref(),
         )?;
+        let (summary, tags) = api_route_callback_summary_tags(
+            public_route.bind(py),
+            self.summary.as_deref(),
+            self.tags.as_deref(),
+        )?;
         let unique_id_text = python_string_value(unique_id.bind(py))?;
         let additional = build_additional_response_fields(py, responses.bind(py), &unique_id_text)?;
         let response_field = build_response_field(py, &unique_id_text, response_model.as_ref())?;
@@ -6188,7 +6219,7 @@ impl PyOperationDecorator {
             name,
             route_scope,
             param_convertors,
-            summary: self.summary.clone(),
+            summary,
             response_description: self.response_description.clone(),
             responses,
             openapi_extra: self.openapi_extra.as_ref().map(|value| value.clone_ref(py)),
@@ -6197,7 +6228,7 @@ impl PyOperationDecorator {
             unique_id_value: unique_id,
             generate_unique_id_function: self.generate_unique_id_function.clone_ref(py),
             deprecated,
-            tags: self.tags.clone(),
+            tags,
             status_code: self.status_code,
             include_in_schema: self.include_in_schema,
             response_class,
