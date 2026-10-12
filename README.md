@@ -76,14 +76,17 @@ Recipes contain stimuli only, never expected output. Oracle artifacts under
 `parity-results/` are per-run evidence; the atlas and manifest record fixture
 scope and runner capability, not pass/fail results.
 
-The latest measured checkpoint handles declared response keys and inserts
-automatic validation responses after declared responses. Its selected gates
-passed 214 distinct normal cases and six separate fault contracts. Fresh normal
-incremental coverage added 42 Rust regions; all seven benchmark workloads
-completed, with two faster and five slower target medians. See the
-[measured contract and timings](docs/atlas/drafts/openapi-validation-response-native-contract-review-2026-10-05.md)
-for identities, scopes and remaining schema-order gaps in structural selectors.
-These selected results do not establish full API parity.
+An earlier OpenAPI response-contract checkpoint passed 214 selected normal
+cases and six separate fault contracts; its incremental coverage added 42 Rust
+regions. See the
+[checkpoint report](docs/atlas/drafts/openapi-validation-response-native-contract-review-2026-10-05.md)
+for that run's identity, scope and remaining schema-order gaps. The fresh
+2026-10-12 direct-ASGI benchmark suite ran against FastAPI-RS commit `98fd2eb`
+and passed all seven workload gates (42/42 selected comparisons). FastAPI-RS
+was faster on two workloads and slower on five; see the
+[current benchmark record](docs/PARITY_BENCHMARK_PLAN.md#latest-completed-seven-workload-run-2026-10-12-suite-schema-v2)
+for the full identities, timings and limits. Neither scoped evidence set
+establishes full API parity.
 
 Use `make parity-prepare-oracle` for the core environment and
 `make parity-validate` to check source evidence and workflow links. The

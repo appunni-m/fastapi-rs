@@ -231,7 +231,49 @@ server. Internal Rust timing attribution may be added as a measurement of this
 same implementation; it is not a separate target. Do not infer component costs
 by subtracting the Starlette control or from the end-to-end target time.
 
-#### Latest completed historical seven-workload run (suite schema v2)
+#### Latest completed seven-workload run (2026-10-12; suite schema v2)
+
+The suite completed at `2026-10-12T09:20:04Z` with suite ID
+`263a98eb-9af5-4c4e-9572-96d86853af9a` and receipt
+`benchmark-results/suite-20261012T092004Z-263a98eb-9af5-4c4e-9572-96d86853af9a.json`.
+It matches FastAPI-RS commit `98fd2eb6390bf8aededa9d658eed9b7e9365ab45`
+and the current manifest SHA-256
+`2f7360d4da3cc3871f49f0b12c92f89f0bffb0bd7f1c590b21dd3e66b6d8d172`.
+The source identities are FastAPI 0.141.1 at
+`95f8322ee1dcda7ceace7b1c4f6c9915b36d748f`, Starlette 1.6.0 at
+`4f250d6b814587e20c5365f0a5f0c4d42bcb929f`, and Starlette-RS at
+`b4c8a65c85e1b0d251ca05874412811eaa3ac7b8`. The run used CPython 3.12.13,
+macOS 15.7.7 arm64 (12 logical CPUs), Cargo/rustc 1.98.1, and the optimized
+release profile. All seven fresh parity gates passed: 42/42 selected
+comparisons, zero failed, and zero not-run. Each subject used 50 warmups and
+1,000 measured calls in five rounds. The target extension SHA-256 was
+`10370cf348b834c6b9493db0f6c854e0603e931707611bc10e773f91f3bdf3da`; the
+target binary SHA-256 was
+`1b722211b14a4e0ebe8f42435f1dbeba56b4fefbebae50b73f5b7b219ac69989`.
+
+The table reports median and p95 direct-ASGI latency in microseconds; ratios
+are FastAPI-RS divided by FastAPI, so values above `1.0x` mean FastAPI-RS took
+longer on this host. The raw samples and identity details remain in the ignored
+suite and workload receipts linked above.
+
+| Workload | FastAPI median / p95 | FastAPI-RS median / p95 | Median / p95 ratio |
+| --- | ---: | ---: | ---: |
+| Async nested dependencies, distinct query aliases | 493.4 / 520.6 µs | 307.2 / 335.4 µs | 0.623x / 0.644x |
+| Async nested dependencies, two query parameters | 409.4 / 439.5 µs | 267.0 / 288.2 µs | 0.652x / 0.656x |
+| Chunked request body | 136.1 / 156.2 µs | 153.6 / 475.7 µs | 1.129x / 3.044x |
+| Invalid request | 143.7 / 208.9 µs | 316.3 / 346.2 µs | 2.202x / 1.658x |
+| Valid request | 129.6 / 144.0 µs | 140.2 / 165.8 µs | 1.082x / 1.151x |
+| Large response model | 360.8 / 381.0 µs | 385.1 / 418.4 µs | 1.067x / 1.098x |
+| Repeated sequence query | 93.8 / 106.0 µs | 108.4 / 125.7 µs | 1.155x / 1.186x |
+
+FastAPI-RS was faster on the two nested-query workloads and slower on the other
+five. The chunked-body p95 ratio was 3.044x; retain this tail result as measured
+and inspect its raw samples before drawing an optimization conclusion. These
+single-host direct-ASGI results do not measure network/server latency or isolate
+native Rust time. `make benchmark-contract-check` passed with all seven workload
+declarations, this current suite, and its referenced results.
+
+#### Historical seven-workload run (2026-10-05; suite schema v2)
 
 The run completed at `2026-10-05T15:59:05Z` with suite ID
 `1835834f-5295-4952-bde3-cfd742f6f608`. Its archived record is
@@ -259,11 +301,10 @@ longer on this host.
 | Repeated sequence query | 98.3 / 122.6 µs | 126.3 / 229.7 µs | 1.284x / 1.873x |
 
 These are single-host direct-ASGI results; they do not measure network/server
-latency or isolate native Rust time. This is historical evidence, not a current
-benchmark result: the saved target revision and manifest identity do not match
-the current checkout, and `make benchmark-contract-check` reports no suite
-artifact compatible with the current manifest and target. The earlier six-
-workload run (`c98c3402-28d7-4c87-9c66-e4ab1717de2f`) remains historical too.
+latency or isolate native Rust time. This is retained historical evidence; its
+target revision and manifest identity do not match the current checkout. The
+earlier six-workload run (`c98c3402-28d7-4c87-9c66-e4ab1717de2f`) remains
+historical too.
 
 An earlier exploratory warm-request call profile of the invalid workload
 counted four `TypeAdapter` constructions in FastAPI-RS and none in FastAPI
@@ -272,9 +313,10 @@ after each app was constructed. FastAPI-RS currently calls
 `validate_python_value` for each validated input
 (`fastapi-rs/src/application_runtime.rs`); this identifies repeated adapter
 setup as an optimization candidate, but does not establish how much of the
-current 1.547x median gap it causes. After the public operation contract is
-complete, measure per-parameter adapter reuse on the full boundary, including
-dependency overrides, and retain the invalid error-body parity gate.
+current `2.202x` median ratio for invalid requests it causes. After the public
+operation contract is complete, measure per-parameter adapter reuse on the full
+boundary, including dependency overrides, and retain the invalid error-body
+parity gate.
 
 | Tier | Workload | Timing boundary and purpose |
 | --- | --- | --- |
